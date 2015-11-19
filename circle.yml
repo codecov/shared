@@ -1,0 +1,18 @@
+machine:
+  python:
+    version: 2.7.8
+  environment:
+    GITHUB_ACCESS_TOKEN:
+    GITLAB_ACCESS_TOKEN:
+    BITBUCKET_ACCESS_TOKEN:
+    BITBUCKET_SERVER_URL:
+    BITBUCKET_SERVER_CLIENT_ID:
+
+dependencies:
+  override:
+    - pip install -r tests/requirements.txt -r tests/requirements.txt
+
+test:
+  override:
+    - py.test tests --cov-report=term-missing
+    - codecov

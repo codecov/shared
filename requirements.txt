@@ -1,0 +1,3 @@
+requests
+tornado
+requests_oauthlib

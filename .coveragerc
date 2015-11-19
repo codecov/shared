@@ -1,0 +1,20 @@
+[run]
+branch = True
+source = scms
+
+[report]
+exclude_lines =
+    if self.debug:
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:
+ignore_errors = True
+omit =
+    venv/*
+    tests/*
+    scripts/*
+    psycopg2/*
+    app/__init__.py
+    app/**/__init__.py
+    app/worker.py
+    setup.py

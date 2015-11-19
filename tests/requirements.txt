@@ -1,0 +1,4 @@
+codecov
+ddt
+pytest
+pytest-cov
