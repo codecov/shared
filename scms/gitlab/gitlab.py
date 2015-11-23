@@ -103,6 +103,73 @@ class GitlabEngine(GitlabBase, ServiceEngine):
         return res.json()['commit']['id']
 
     @api
+    def post_status(self, commit, status, context, description, url=None, _merge=None):
+        # http://doc.gitlab.com/ce/api/commits.html#post-the-status-to-commit
+        status = dict(error='canceled', failure='failed').get(status, status)
+        res = requests.post(self.service_url + "/api/v3/projects/%s/statuses/%s" % (self.repo_service_id, commit),
+                            data=dumps(dict(state=status,
+                                            target_url=url or self.get_repo_url(ref=_merge or commit),
+                                            name=context,
+                                            description=description)), **self.session)
+        res.raise_for_status()
+        return res.json()
+
+    def is_ci_provider(self, status):
+        if set((status['name'] or '').split('/')) & self.CI_CONTEXTS:
+            return True
+        elif set((status.get('target_url') or '').split('/')) & self.CI_PROVIDERS:
+            return True
+        return False
+
+    @api
+    def get_commit_status(self, commit, _merge=None):
+        """
+        Returns the communal status of the commit.
+        """
+        # http://doc.gitlab.com/ce/api/commits.html#get-the-status-of-a-commit
+        res = requests.get(self.service_url + "/api/v3/projects/%s/repository/commits/%s/statuses" % (self.repo_service_id, commit), **self.session)
+        res.raise_for_status()
+        codecov_status = None
+        gitlab_statuses = res.json()
+        states = dict(pending='pending', success='success', error='failure', failure='failure')
+        statuses = tuple(map(lambda s: (s['name'], (s.get('finished_at', s.get('created_at')), s['state'])),
+                             filter(self.is_ci_provider, gitlab_statuses)))
+
+        if len(statuses) == 0 and _merge is None:
+            # check if its a merge commit
+            merge_commit_head = self.get_merge_commit_head(commit)
+            if merge_commit_head:
+                return self.get_commit_status(merge_commit_head, True)
+
+        codecov_status = max([(s['updated_at'], s['state'])
+                              for s in gitlab_statuses
+                              if s['name'][:8] == 'codecov/'] or [(None, None)])[1]
+
+        if len(gitlab_statuses) == 0:
+            # no gitlab statuses at all... go ahead and send notifications based on average build len
+            self.log(func="get_commit_status", commit=commit[:7], states="empty")
+            return 'builds', codecov_status
+
+        elif len(statuses) == 0:
+            # no gitlab statuses at all... go ahead and send notifications based on average build len
+            self.log(func="get_commit_status", commit=commit[:7], states="unknown", contexts=",".join(set(map(lambda s: s['context'], gitlab_statuses))))
+            return 'builds', codecov_status
+
+        by_ci = {}  # {"travis": [('today', 'success')]}
+        [by_ci.setdefault(ci, []).append(state) for ci, state in statuses]
+        # list of most recent states
+        statuses = [states[max(_)[1]] for _ in by_ci.values()]
+
+        self.log(func="get_commit_status", commit=commit[:7], states="%d/%d" % (statuses.count('success'), len(statuses)))
+
+        if 'failure' in statuses:
+            return 'failure', codecov_status
+        elif 'success' in statuses:
+            return 'success', codecov_status
+        else:
+            return 'pending', codecov_status
+
+    @api
     def post_comment(self, issueid, body):
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
         res = requests.post(self.service_url + "/api/v3/projects/%s/merge_requests/%s/notes" % (self.repo_service_id, str(issueid)),

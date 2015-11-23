@@ -102,6 +102,34 @@ class Bitbucket(ServiceEngine, Bitbucket):
         return True
 
     @api
+    def get_commit_status(self, commit, _merge=None):
+        # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
+        # Cannot get "all" builds only lookup by vendor
+        return ('builds', None)
+
+    @api
+    def post_status(self, commit, status, context, description, url=None, _merge=None):
+        # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
+        status = dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status)
+        assert status, 'status not valid'
+        res = requests.post(self.api_url + "/api/2.0/%s/commit/%s/statuses/build" % (self.slug, commit),
+                            data=dumps(dict(state=status,
+                                            key='codecov-'+context,
+                                            name=context.capitalize()+' Coverage',
+                                            url=url or self.get_repo_url(ref=_merge or commit),
+                                            description=description)), **self.headers)
+        if res.status_code not in (200, 201):
+            res = requests.put(self.api_url + "/api/2.0/%s/commit/%s/statuses/build/codecov-%s" % (self.slug, commit, context),
+                               data=dumps(dict(state=status,
+                                               name=context.capitalize()+' Coverage',
+                                               url=url or self.get_repo_url(ref=_merge or commit),
+                                               description=description)), **self.headers)
+
+        res.raise_for_status()
+        # check if the commit is a Merge
+        return res.json()
+
+    @api
     def get_user_id(self, login):
         # https://confluence.atlassian.com/display/BITBUCKET/users+Endpoint#usersEndpoint-GETtheuserprofile
         res = requests.get(self.api_url + '/api/2.0/users/' + login, **self.headers)
