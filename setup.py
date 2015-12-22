@@ -3,7 +3,7 @@ from setuptools import setup
 
 version = '0.0.1'
 
-setup(name='service-scms',
+setup(name='torngit',
       version=version,
       description="",
       long_description=None,

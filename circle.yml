@@ -1,12 +1,13 @@
 machine:
   python:
-    version: 2.7.8
+    version: 2.7.10
   environment:
-    GITHUB_ACCESS_TOKEN:
+    GITHUB_ACCESS_TOKEN: test89dic8e5sqyua46nnpjmixh3ss380wf2dgpw
     GITLAB_ACCESS_TOKEN:
     BITBUCKET_ACCESS_TOKEN:
     BITBUCKET_SERVER_URL:
     BITBUCKET_SERVER_CLIENT_ID:
+    CI_PROVIDERS: ci.custom.com
 
 dependencies:
   override:

@@ -1,0 +1,74 @@
+diff --git a/app/commit.py b/app/commit.py
+new file mode 100644
+index 0000000..d5ee3d6
+--- /dev/null
++++ b/app/commit.py
+@@ -0,0 +1,31 @@
+ l1
+-l2
++l2
++l3
+ l4
++l5
+ l6
+diff --git a/deleted.py b/deleted.py
+deleted file mode 100644
+index ec8fa25..0000000
+--- a/deleted.py
++++ /dev/null
+@@ -1,187 +0,0 @@
+-f1
+-f2
+-f3
+diff --git a/setup.py b/setup.py
+new file mode 100644
+index 0000000..d5ee3d6
+--- /dev/null
++++ b/setup.py
+@@ -0,0 +1,31 @@
+ l1
+diff --git a/no-report.py b/no-report.py
+new file mode 100644
+index 0000000..d5ee3d6
+--- /dev/null
++++ b/no-report.py
+@@ -0,0 +1,31 @@
+ l1
+-l2
++l2
++l3
+ l4
++l5
+ l6
+diff --git a/dist/chrome.crx b/dist/chrome.crx
+index d63e6a2..4f5d500 100644
+Binary files a/dist/chrome.crx and b/dist/chrome.crx differ
+diff --git a/app/base.py b/app/base.py
+index a41d310..b18749e 100644
+--- a/app/base.py
++++ b/app/base.py
+@@ -29,6 +29,7 @@
+ l29
+ l30
+ l31
++l32
+ 
+ 
+ l35
+@@ -36,13 +37,14 @@ l35
+ l36
+ 
+ 
+-l39
++l40
+ l41
+ l42
+ l43
+ l44
+ l45
+-l45
++l46
++l47
+ 
+     l49
+     l50
