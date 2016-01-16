@@ -29,9 +29,22 @@ class BaseHandler:
     _repo_url = None
     _client = None
     _ioloop = None
+    _token = None
+
+    @classmethod
+    def new(cls, ioloop=None, **kwargs):
+        self = cls()
+        self._ioloop = ioloop
+        self._token = kwargs.pop('token', None)
+        self.data = {
+            "owner": {},
+            "repo": {}
+        }
+        self.data.update(kwargs)
+        return self
 
     def log(self, *a, **k):
-        print "\033[92m..LOG..\033[0m", a, k
+        print(a, k)
 
     @property
     def fetch(self):
@@ -39,82 +52,35 @@ class BaseHandler:
             self._client = AsyncHTTPClient(self._ioloop)
         return self._client.fetch
 
-    def get_oauth_token(self, service):
-        return dict(zip(('key', 'secret'), tuple(os.getenv(service.upper() + '_ACCESS_TOKEN').split(':'))))
-
-    def __init__(self, service_id, username, repo, token=None, ioloop=None, **kwargs):
-        self._ioloop = ioloop
-        self.set_token(token)
-        self.data = {}
-        self.data.update(kwargs)
-        self.data.update(dict(repo_service_id=service_id, username=username, repo=repo))
-
     def __getitem__(self, index):
         return self.data.get(index)
 
     def __setitem__(self, index, value):
         self.data[index] = value
 
-    @property
-    def uri(self):
-        return '/'.join(('', self.service, self['username'], self['repo']))
+    # @property
+    # def uri(self):
+    #     return '/' + self.service + '/' + self.slug
 
-    def get_repo_url(self, *url, **query):
-        if self._repo_url is None:
-            self._repo_url = ('/'.join((os.getenv('CODECOV_URL'), self.service, self['username'], self['repo'])), )
-        return url_concat('/'.join(self._repo_url + filter(lambda a: a, url)),
-                          dict([(k, v) for k, v in query.iteritems() if v]))
-
-    def get_link_to(self, endpoint='repo', **data):
+    def get_href(self, endpoint='repo', **data):
         return ''
         d = self.data.copy()
         d.update(data)
         return (self.service_url + "/" + self.urls[endpoint]) % d
 
-    # def get_oauth_token(self, service):
-    #     raise NotImplemented()
+    def get_oauth_token(self, service):
+        # overridden in handlers to get current_user details
+        return dict(zip(('key', 'secret'), tuple(os.getenv(service.upper() + '_ACCESS_TOKEN').split(':'))))
 
     @property
     def token(self):
-        if not hasattr(self, '_token'):
+        if not self._token:
             self._token = self.get_oauth_token(self.service)
         return self._token
 
-
-# class ServiceEngine(ServiceBase):
-#     def __init__(self, repo_service_id, username, repo, token=None, **data):
-#         data.update(dict(repo_service_id=repo_service_id, username=username, repo=repo))
-#         self.set_token(token)
-#         self.data = data
-#         self.debug = data.get('debug') or (os.getenv("LOGLVL") == "DEBUG")
-#         self.data.setdefault('ok', False)
-
-    # def handle_error(self, error):
-        # return {}
-
-    # def __getattr__(self, index):
-    #     return self.data[index]
-
-    def set_token(self, token=None):
-        if token:
-            assert set(token.keys()) == set(('key', 'secret', 'username')), 'missing token keys'
-            self._token = token
-        else:
-            self._token = dict(zip(('key', 'secret'), tuple(os.getenv('%s_ACCESS_TOKEN' % self.service.upper()).split(':'))))
-            self._token['username'] = ''
-
-    # def get_url(self, *url, **query):
-    #     return url_concat("/".join((os.getenv('CODECOV_URL', 'https://codecov.io').strip('/'), ) + (self.service, self.username, self.repo) + url), query)
-
     @property
     def slug(self):
-        return (self['username'] + "/" + self['repo']) if self['repo'] else None
-
-    # def log(self, **kwargs):
-    #     kwargs.update(dict(service=self.service, slug=self.slug))
-    #     if self.data.get('commit'):
-    #         kwargs.setdefault('commit', self.data['commit'][:7])
-        # logger.log(**kwargs)
+        return (self['owner']['username'] + "/" + self['repo']['name']) if self['repo'].get('name') else None
 
     def diff_to_json(self, diff):
         """

@@ -1,6 +1,7 @@
 import re
 import os
 from tornado import gen
+from base64 import b64decode
 from tornado.auth import OAuth2Mixin
 from tornado.httputil import url_concat
 from tornado.escape import json_decode, json_encode
@@ -36,7 +37,7 @@ class Github(BaseHandler, OAuth2Mixin):
                     'User-Agent': os.getenv('USER_AGENT', 'Default'),
                     'Authorization': 'token ' + self.token['key']}
         _headers.update(headers or {})
-        _log = None
+        _log = {}
 
         method = (method or 'GET').upper()
 
@@ -44,7 +45,7 @@ class Github(BaseHandler, OAuth2Mixin):
             _log = dict(event='api',
                         endpoint=url,
                         method=method,
-                        consumer=self.token['username'])
+                        consumer=self.token.get('username'))
             url = self.api_url + url
 
         url = url_concat(url, args).replace(' ', '%20')
@@ -68,6 +69,10 @@ class Github(BaseHandler, OAuth2Mixin):
                      rly=e.response.headers.get('X-RateLimit-Limit'),
                      rlr=e.response.headers.get('X-RateLimit-Reset'),
                      **_log)
+
+            if '"Bad credentials"' in e.response.body:
+                e.message = 'login'
+
             raise
 
         else:
@@ -124,6 +129,12 @@ class Github(BaseHandler, OAuth2Mixin):
             raise gen.Return(None)
 
     @gen.coroutine
+    def get_is_admin(self, org):
+        # https://developer.github.com/v3/orgs/members/#get-organization-membership
+        res = yield self.api('get', '/orgs/'+org+'/memberships/'+self['username'])
+        raise gen.Return(res['active'] and res['role'] == 'admin')
+
+    @gen.coroutine
     def get_authenticated(self):
         """Returns (can_view, can_edit)"""
         # https://developer.github.com/v3/repos/#get
@@ -133,20 +144,27 @@ class Github(BaseHandler, OAuth2Mixin):
 
     @gen.coroutine
     def get_repository(self):
-        if self['repo_service_id'] is None:
+        if self['repo'].get('service_id') is None:
             # https://developer.github.com/v3/repos/#get
             res = yield self.api('get', '/repos/' + self.slug)
         else:
-            res = yield self.api('get', '/repositories/' + str(self['repo_service_id']))
+            res = yield self.api('get', '/repositories/' + str(self['repo']['service_id']))
+
+        print("\033[92mget_repository\033[0m", res)
+
         username, repo = tuple(res['full_name'].split('/', 1))
-        raise gen.Return(dict(owner_service_id=res['owner']['id'], repo_service_id=res['id'],
-                              private=res['private'], branch=res['default_branch'] or 'master',
-                              username=username, repo=repo))
+        raise gen.Return(dict(owner=dict(service_id=res['owner']['id'], username=username),
+                              repo=dict(service_id=res['id'], name=repo,
+                                        private=res['private'], branch=res['default_branch'] or 'master')))
 
     # User Endpoints
     # --------------
     @gen.coroutine
-    def list_repos(self, username=None):
+    def list_repos(self, teams):
+        """
+        GitHub includes all visible repos through
+        the same endpoint.
+        """
         headers = {}
         if self.service == 'github_enterprise':
             headers['Accept'] = 'application/vnd.github.moondragon+json'
@@ -169,12 +187,23 @@ class Github(BaseHandler, OAuth2Mixin):
                     except:
                         parent = None
 
-                data.append(dict(repo_service_id=repo['id'], owner_service_id=repo['owner']['id'],
-                                 username=_o, repo=_r,
-                                 private=_p, branch=repo['default_branch'],
-                                 fork=dict(repo_service_id=parent['id'], owner_service_id=parent['owner']['id'],
-                                           username=parent['owner']['login'], repo=parent['name'],
-                                           private=parent['private'], branch=parent['default_branch']) if parent else None))
+                if parent:
+                    fork = dict(owner=dict(service_id=parent['owner']['id'],
+                                           username=parent['owner']['login']),
+                                repo=dict(service_id=parent['id'],
+                                          name=parent['name'],
+                                          private=parent['private'],
+                                          branch=parent['default_branch']))
+                else:
+                    fork = None
+
+                data.append(dict(owner=dict(service_id=repo['owner']['id'],
+                                            username=_o),
+                                 repo=dict(service_id=repo['id'],
+                                           name=_r,
+                                           private=_p,
+                                           branch=repo['default_branch'],
+                                           fork=fork)))
 
             if len(repos) < 100:
                 break
@@ -285,9 +314,8 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def get_source(self, path, ref):
         # https://developer.github.com/v3/repos/contents/#get-contents
-        content = yield self.api('get', '/repos/'+self.slug+'/contents/'+path,
-                                 ref=ref, headers={"Accept": "application/vnd.github.v3.raw"})
-        raise gen.Return(content)
+        content = yield self.api('get', '/repos/'+self.slug+'/contents/'+path, ref=ref)
+        raise gen.Return(dict(content=b64decode(content['content']), commitid=content['sha']))
 
     @gen.coroutine
     def get_diff(self, commit, commit2=None, context=True):
@@ -306,10 +334,11 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_commit(self, commit):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         res = yield self.api('get', '/repos/'+self.slug+'/commits/'+commit)
-        raise gen.Return(dict(author_id=str(res['author']['id']) if res['author'] else None,
-                              author_login=res['author']['login'] if res['author'] else None,
-                              author_email=res['commit']['author'].get('email'),
-                              author_name=res['commit']['author'].get('name'),
+        raise gen.Return(dict(author=dict(id=str(res['author']['id']) if res['author'] else None,
+                                          username=res['author']['login'] if res['author'] else None,
+                                          email=res['commit']['author'].get('email'),
+                                          name=res['commit']['author'].get('name')),
+                              sha=commit,
                               message=res['commit']['message'],
                               date=res['commit']['author'].get('date')))
 
@@ -325,6 +354,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                         commit=res['head']['sha']),
                               open=res['state'] == 'open',
                               merged=res['merged'],
+                              title=res['title'],
                               id=str(pr), number=str(pr)))
 
     @gen.coroutine

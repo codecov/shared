@@ -16,7 +16,7 @@ class GitlabHandler(GitlabBase, BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def api(self, path, callback=None, access_token=None, method='GET', body=None, headers=None, **args):
         _headers = {"Accept": "application/json", "User-Agent": "Codecov",
-                    "Authorization": "Bearer %s" % (access_token or self.current_user.oauth_token or os.getenv("%s_ACCESS_TOKEN" % self.service.upper()))}
+                    "Authorization": "Bearer %s" % (access_token or self.current_user['oauth_token'] or os.getenv("%s_ACCESS_TOKEN" % self.service.upper()))}
 
         _headers.update(headers or {})
 

@@ -32,14 +32,14 @@ class Test(TornadoTestClass):
         result = loads(self.readfile(folder + 'result-%d.json' % f))
 
         res = loads(dumps(self.repo.diff_to_json(diff, report)))
-        print "\033[92m========== diff.json ===========\033[0m"
-        print dumps(res)
-        print "\033[92m========== end diff.json ===========\033[0m"
+        print("\033[92m========== diff.json ===========\033[0m")
+        print(dumps(res))
+        print("\033[92m========== end diff.json ===========\033[0m")
         assert res == result
 
         html = template.Loader(os.path.join(os.getcwd(), 'src/html/components')).load("diff.html").generate(handler=self, commitid='abc123', diff=res)
         html = bs(html).prettify().strip()
-        print "\033[92m========== html ===========\033[0m"
-        print html
-        print "\033[92m========== end html ===========\033[0m"
+        print("\033[92m========== html ===========\033[0m")
+        print(html)
+        print("\033[92m========== end html ===========\033[0m")
         assert html == self.readfile(folder + 'html-%d.html' % f).strip()

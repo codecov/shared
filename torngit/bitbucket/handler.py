@@ -14,8 +14,8 @@ class BitbucketHandler(Bitbucket, OAuthMixin):
         url = 'https://bitbucket.org/api/%s.0/%s' % (str(version), (path[1:] if path[0] == '/' else path))
 
         if not access_token:
-            if self.current_user.oauth_token:
-                access_token = dict(key=self.current_user.oauth_token, secret=self.current_user.oauth_secret)
+            if self.current_user['oauth_token']:
+                access_token = dict(key=self.current_user['oauth_token'], secret=self.current_user['oauth_secret'])
             else:
                 token = os.getenv('BITBUCKET_ACCESS_TOKEN')
                 if token:

@@ -88,7 +88,7 @@ class Test(AsyncTestCase):
     @gen_test
     def test_get_source(self):
         res = yield self.gh.get_source('readme.md', '99b53601f852ecc70d50dd10e172f6b7f101bbbc')
-        assert res == 'Hello world!\n'
+        assert res['content'] == 'Hello world!\n'
 
     # -------------
     # Commit Status
@@ -112,7 +112,7 @@ class Test(AsyncTestCase):
     @gen_test
     def test_set_commit_status(self):
         sha = self.make_commit()
-        print "\033[92m....\033[0m", sha
+        print(sha)
         res = yield self.gh.set_commit_status(sha, 'success', 'torngit/demo', 'Hello world')
         assert res
         res = requests.get('https://api.github.com/repos/torngit/ci/commits/%s/statuses' % sha, headers=self.headers).json()

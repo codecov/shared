@@ -48,7 +48,7 @@ class Bitbucket(ServiceEngine, Bitbucket):
 
     @api
     def refresh(self, username, ownerid):
-        repositories, page = defaultdict(list), 0
+        repositories, page = [], 0
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
@@ -59,17 +59,9 @@ class Bitbucket(ServiceEngine, Bitbucket):
                 _o, _r, _p = repo['owner']['username'], repo['full_name'].split('/', 1)[1], repo['is_private']
                 data.append(dict(repo_service_id=repo['uuid'][1:-1], owner_service_id=repo['owner']['uuid'][1:-1],
                                  username=_o, repo=_r, private=_p, branch='master', fork=None))
-                if _p:
-                    repositories[_o].append(_r)
             self.db.execute("SELECT refresh_repos('bitbucket', '%s'::json);" % dumps(data))
             if not repos.get('next'):
                 break
-
-        cache = self.db.get("SELECT cache from owners where ownerid=%s limit 1", ownerid).cache or {}
-        cache.update(repositories)
-        teams = requests.get(self.api_url + "/api/2.0/teams?role=member", **self.headers)
-        self.db.execute("UPDATE owners set cache=%s, organizations=%s where ownerid=%s;",
-                        cache, [t['username'] for t in teams.json()['values']], ownerid)
 
     @api
     def get_pull_request(self, pr):

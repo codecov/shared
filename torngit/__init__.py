@@ -6,6 +6,6 @@ from github import Github
 # from bitbucket_server import *
 
 
-def get(scm, *a, **k):
-    if scm == 'github':
-        return Github(*a, **k)
+def get(git, **data):
+    if git == 'github':
+        return Github.new(**data)

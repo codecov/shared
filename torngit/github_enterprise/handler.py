@@ -1,6 +1,6 @@
-from scms.github.handler import GithubHandler
+from scms.github.handler import Github
 from github_enterprise import GithubEnterprise
 
 
-class GithubEnterpriseHandler(GithubEnterprise, GithubHandler):
+class GithubEnterpriseHandler(GithubEnterprise, Github):
     pass

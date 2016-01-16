@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = scms
+source = torngit
 
 [report]
 exclude_lines =

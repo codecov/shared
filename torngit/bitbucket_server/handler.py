@@ -32,8 +32,8 @@ class BitbucketServerHandler(BaseHandler, BitbucketServerBase, OAuthMixin):
         # get accessing token
         if access_token:
             token = oauth.Token(*access_token)
-        elif not self.current_user.guest:
-            token = oauth.Token(self.current_user.oauth_token, self.current_user.oauth_secret)
+        elif not self.current_user['guest']:
+            token = oauth.Token(self.current_user['oauth_token'], self.current_user['oauth_secret'])
         else:
             token = None
 

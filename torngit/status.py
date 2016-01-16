@@ -27,7 +27,7 @@ class Status(object):
         """Remove ci status from list, return new object"""
         return Status(filter(lambda s: not matches(s['context'], context), self._statuses))
 
-    def __cmp__(self, other):
+    def __eq__(self, other):
         """Returns the current ci status"""
         assert other in ('success', 'failure', 'pending')
         return self._state == other
@@ -59,3 +59,8 @@ class Status(object):
 
     def filter(self, method):
         return Status(filter(method, self._statuses))
+
+    @property
+    def pending(self):
+        # return list of pending statuses
+        return [status for status in self._statuses if status['state'] == 'pending']
