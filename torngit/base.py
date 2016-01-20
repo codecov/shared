@@ -58,6 +58,12 @@ class BaseHandler:
     def __setitem__(self, index, value):
         self.data[index] = value
 
+    def _validate_language(self, language):
+        if language:
+            language = language.lower()
+            if language in ('javascript', 'shell', 'python', 'ruby', 'perl', 'dart', 'java', 'c', 'clojure', 'd', 'fortran', 'go', 'groovy', 'kotlin', 'php', 'r', 'scala', 'swift', 'objective-c', 'xtend'):
+                return language
+
     # @property
     # def uri(self):
     #     return '/' + self.service + '/' + self.slug
@@ -144,5 +150,4 @@ class BaseHandler:
                         # actual lines
                         segment['lines'].append(source)
 
-        return dict(files=results,
-                    totals=dict())
+        return dict(files=results)

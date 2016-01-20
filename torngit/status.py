@@ -64,3 +64,8 @@ class Status(object):
     def pending(self):
         # return list of pending statuses
         return [status for status in self._statuses if status['state'] == 'pending']
+
+    def get(self, context):
+        for status in self._statuses:
+            if status['context'] == context:
+                return status

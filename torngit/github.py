@@ -192,6 +192,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                            username=parent['owner']['login']),
                                 repo=dict(service_id=parent['id'],
                                           name=parent['name'],
+                                          language=self._validate_language(parent['language']),
                                           private=parent['private'],
                                           branch=parent['default_branch']))
                 else:
@@ -201,6 +202,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                             username=_o),
                                  repo=dict(service_id=repo['id'],
                                            name=_r,
+                                           language=self._validate_language(repo['language']),
                                            private=_p,
                                            branch=repo['default_branch'],
                                            fork=fork)))
