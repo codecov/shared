@@ -231,14 +231,9 @@ class Test(AsyncTestCase):
                           'username': u'torngit', 'branch': u'master', 'repo': u'example-python', 'owner_service_id': 16386719, 'private': False, 'repo_service_id': 48430557}]
 
     @gen_test
-    def test_commits_pr(self):
-        commits = yield self.gh.get_commits(pr='1')
+    def test_pull_commits(self):
+        commits = yield self.gh.get_pull_request_commits('1')
         assert commits == ['9e0ac7c916adc0573014f1d379bdf7ef45acd23e']
-
-    @gen_test
-    def test_commits_branch(self):
-        commits = yield self.gh.get_commits(branch='master')
-        assert commits == ['6b7cf45238ec409064893b51f8dfa2f3ce51c99c', '99b53601f852ecc70d50dd10e172f6b7f101bbbc']
 
     @gen_test
     def test_get_diff(self):

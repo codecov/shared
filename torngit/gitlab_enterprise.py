@@ -1,6 +1,6 @@
 import os
 
-from scms.gitlab.gitlab import Gitlab
+from torngit.gitlab import Gitlab
 
 
 class GitlabEnterprise(Gitlab):

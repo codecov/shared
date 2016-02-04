@@ -1,22 +1,9 @@
 import re
 import os
-from tornado import gen
-from tornado.httputil import url_concat
-from requests.exceptions import HTTPError
 from tornado.httpclient import AsyncHTTPClient
 
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
-
-
-def iterlines(doc):
-    prevnl = -1
-    while True:
-        nextnl = doc.find('\n', prevnl + 1)
-        if nextnl < 0:
-            break
-        yield doc[prevnl + 1:nextnl]
-        prevnl = nextnl
 
 
 class LoginRequired(Exception):
@@ -25,14 +12,16 @@ class LoginRequired(Exception):
 
 class BaseHandler:
     debug = (os.getenv('DEBUG') == 'TRUE' or os.getenv('CI') == 'TRUE')
-    _aws_key = None
+    _log_handler = None
     _repo_url = None
     _client = None
+    _aws_key = None
     _ioloop = None
     _token = None
+    timeouts = tuple(map(int, os.getenv('ASYNC_TIMEOUTS', '5,15').split(',')))
 
     @classmethod
-    def new(cls, ioloop=None, **kwargs):
+    def new(cls, ioloop=None, log_handler=None, **kwargs):
         self = cls()
         self._ioloop = ioloop
         self._token = kwargs.pop('token', None)
@@ -40,11 +29,13 @@ class BaseHandler:
             "owner": {},
             "repo": {}
         }
+        self._log_handler = log_handler
         self.data.update(kwargs)
         return self
 
-    def log(self, *a, **k):
-        print(a, k)
+    def log(self, **kwargs):
+        if self._log_handler:
+            self._log_handler(kwargs)
 
     @property
     def fetch(self):
@@ -64,10 +55,6 @@ class BaseHandler:
             if language in ('javascript', 'shell', 'python', 'ruby', 'perl', 'dart', 'java', 'c', 'clojure', 'd', 'fortran', 'go', 'groovy', 'kotlin', 'php', 'r', 'scala', 'swift', 'objective-c', 'xtend'):
                 return language
 
-    # @property
-    # def uri(self):
-    #     return '/' + self.service + '/' + self.slug
-
     def get_href(self, endpoint='repo', **data):
         return ''
         d = self.data.copy()
@@ -78,11 +65,19 @@ class BaseHandler:
         # overridden in handlers to get current_user details
         return dict(zip(('key', 'secret'), tuple(os.getenv(service.upper() + '_ACCESS_TOKEN').split(':'))))
 
+    def set_token(self, token):
+        self._token = token
+
     @property
     def token(self):
         if not self._token:
             self._token = self.get_oauth_token(self.service)
         return self._token
+
+    def _oauth_consumer_token(self):
+        service = self.service.upper()
+        return dict(key=os.getenv('%s_CLIENT_ID' % service, ''),
+                    secret=os.getenv('%s_CLIENT_SECRET' % service, ''))
 
     @property
     def slug(self):
@@ -113,7 +108,7 @@ class BaseHandler:
                 # Get coverage data on each line
                 # ------------------------------
                 # make file, this is ONE file not multiple
-                for source in iterlines('diff --git a/' + _diff + '\n'):
+                for source in ('diff --git a/' + _diff).splitlines():
                     sol4 = source[:4]
                     if sol4 == '--- ' and source != '--- /dev/null':
                         _file['before'] = source[6:]

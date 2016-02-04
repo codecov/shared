@@ -1,2 +1,0 @@
-from handler import GitlabEnterpriseHandler
-from gitlab_enterprise import GitlabEnterprise

@@ -32,7 +32,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 author='%(username)s/%(repo)s/commits?author=%(author)s',)
 
     @gen.coroutine
-    def api(self, method, url, body=None, headers=None, **args):
+    def api(self, method, url, body=None, headers=None, reraise=True, **args):
         _headers = {'Accept': 'application/json',
                     'User-Agent': os.getenv('USER_AGENT', 'Default'),
                     'Authorization': 'token ' + self.token['key']}
@@ -50,8 +50,6 @@ class Github(BaseHandler, OAuth2Mixin):
 
         url = url_concat(url, args).replace(' ', '%20')
 
-        # eta = time()
-        t1, t2 = tuple(map(int, os.getenv('ASYNC_TIMEOUTS', '5,15').split(',')))
         try:
             res = yield self.fetch(url,
                                    method=method,
@@ -59,8 +57,8 @@ class Github(BaseHandler, OAuth2Mixin):
                                    headers=_headers,
                                    ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
                                    validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                                   connect_timeout=t1,
-                                   request_timeout=t2)
+                                   connect_timeout=self.timeouts[0],
+                                   request_timeout=self.timeouts[1])
 
         except ClientError as e:
             self.log(status=e.response.code,
@@ -73,7 +71,8 @@ class Github(BaseHandler, OAuth2Mixin):
             if '"Bad credentials"' in e.response.body:
                 e.message = 'login'
 
-            raise
+            if reraise:
+                raise
 
         else:
             self.log(status=res.code,
@@ -150,12 +149,12 @@ class Github(BaseHandler, OAuth2Mixin):
         else:
             res = yield self.api('get', '/repositories/' + str(self['repo']['service_id']))
 
-        print("\033[92mget_repository\033[0m", res)
-
         username, repo = tuple(res['full_name'].split('/', 1))
         raise gen.Return(dict(owner=dict(service_id=res['owner']['id'], username=username),
-                              repo=dict(service_id=res['id'], name=repo,
-                                        private=res['private'], branch=res['default_branch'] or 'master')))
+                              repo=dict(service_id=res['id'],
+                                        name=repo,
+                                        private=res['private'],
+                                        branch=res['default_branch'] or 'master')))
 
     # User Endpoints
     # --------------
@@ -230,27 +229,29 @@ class Github(BaseHandler, OAuth2Mixin):
     # Commits
     # -------
     @gen.coroutine
-    def get_commits(self, branch=None, pr=None):
-        if pr:
-            # https://developer.github.com/v3/pulls/#list-commits-on-a-pull-request
-            # NOTE limited to 250 commits
-            res = yield self.api('get', '/repos/' + self.slug + '/pulls/' + str(pr) + '/commits')
-        else:
-            # https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository
-            res = yield self.api('get', '/repos/' + self.slug + '/commits',
-                                 sha=branch)
-
-        raise gen.Return(map(lambda c: c['sha'], res))
+    def get_pull_request_commits(self, pullid):
+        # https://developer.github.com/v3/pulls/#list-commits-on-a-pull-request
+        # NOTE limited to 250 commits
+        res = yield self.api('get', '/repos/' + self.slug + '/pulls/' + str(pullid) + '/commits')
+        raise gen.Return([c['sha'] for c in res])
 
     # Webhook
     # -------
     @gen.coroutine
-    def create_hook(self, url, events, secret):
+    def post_webhook(self, name, url, events, secret):
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
         res = yield self.api('post', '/repos/' + self.slug + '/hooks',
                              body=dict(name='web', active=True, events=events,
                                        config=dict(url=url, secret=secret, content_type='json')))
         raise gen.Return(res['id'])
+
+    @gen.coroutine
+    def edit_webhook(self, hookid, name, url, events, secret):
+        # https://developer.github.com/v3/repos/hooks/#edit-a-hook
+        yield self.api('patch', '/repos/%s/hooks/%s' % (self.slug, hookid),
+                       body=dict(name='web', active=True, events=events,
+                                 config=dict(url=url, secret=secret, content_type='json')))
+        raise gen.Return(True)
 
     # Comments
     # --------
@@ -266,6 +267,12 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         yield self.api('patch', '/repos/'+self.slug+'/issues/comments/'+str(commentid),
                        body=dict(body=body))
+        raise gen.Return(True)
+
+    @gen.coroutine
+    def delete_comment(self, issueid, commentid):
+        # https://developer.github.com/v3/issues/comments/#delete-a-comment
+        yield self.api('delete', '/repos/'+self.slug+'/issues/comments/'+str(commentid))
         raise gen.Return(True)
 
     # Commit Status
@@ -320,27 +327,42 @@ class Github(BaseHandler, OAuth2Mixin):
         raise gen.Return(dict(content=b64decode(content['content']), commitid=content['sha']))
 
     @gen.coroutine
-    def get_diff(self, commit, commit2=None, context=True):
-        if commit2:
-            # https://developer.github.com/v3/repos/commits/#compare-two-commits
-            res = yield self.api('get', '/repos/'+self.slug+'/compare/'+commit+'...'+commit2,
-                                 headers={'Accept': 'application/vnd.github.v3.diff'})
-            raise gen.Return(res)
-        else:
-            # https://developer.github.com/v3/repos/commits/#get-a-single-commit
-            res = yield self.api('get', '/repos/'+self.slug+'/commits/'+commit,
-                                 headers={'Accept': 'application/vnd.github.v3.diff'})
-            raise gen.Return(res)
+    def get_commit_diff(self, commit, context=None):
+        # https://developer.github.com/v3/repos/commits/#get-a-single-commit
+        res = yield self.api('get', '/repos/'+self.slug+'/commits/'+commit,
+                             headers={'Accept': 'application/vnd.github.v3.diff'})
+        raise gen.Return(self.diff_to_json(res))
 
     @gen.coroutine
-    def get_commit(self, commit):
+    def get_compare(self, base, head, context=None, with_commits=True):
+        # https://developer.github.com/v3/repos/commits/#compare-two-commits
+        res = yield self.api('get', '/repos/'+self.slug+'/compare/'+base+'...'+head)
+        files = {}
+        for f in res['files']:
+            diff = self.diff_to_json('diff --git a/%s b/%s%s\n%s\n%s\n%s' % (
+                                     f.get('previous_filename', f.get('filename')),
+                                     f.get('filename'),
+                                     '\ndeleted file mode 100644' if f['status'] == 'removed' else '\nnew file mode 100644' if f['status'] == 'added' else '',
+                                     '--- ' + ('/dev/null' if f['status'] == 'new' else ('a/' + f.get('previous_filename', f.get('filename')))),
+                                     '+++ ' + ('/dev/null' if f['status'] == 'removed' else ('b/' + f['filename'])),
+                                     f.get('patch')))
+            files.update(diff['files'])
+
+        raise gen.Return(dict(diff=dict(files=files),
+                              commits=[dict(commitid=c['sha'],
+                                            message=c['commit']['message'],
+                                            date=c['commit']['author']['date'],
+                                            author=c['commit']['author']) for c in ([res['base_commit']] + res['commits'])]))
+
+    @gen.coroutine
+    def get_commit(self, commitid):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
-        res = yield self.api('get', '/repos/'+self.slug+'/commits/'+commit)
+        res = yield self.api('get', '/repos/'+self.slug+'/commits/'+commitid)
         raise gen.Return(dict(author=dict(id=str(res['author']['id']) if res['author'] else None,
                                           username=res['author']['login'] if res['author'] else None,
                                           email=res['commit']['author'].get('email'),
                                           name=res['commit']['author'].get('name')),
-                              sha=commit,
+                              commitid=commitid,
                               message=res['commit']['message'],
                               date=res['commit']['author'].get('date')))
 
@@ -351,24 +373,24 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         res = yield self.api('get', '/repos/'+self.slug+'/pulls/'+str(pr))
         raise gen.Return(dict(base=dict(branch=res['base']['ref'],
-                                        commit=res['base']['sha']),
+                                        commitid=res['base']['sha']),
                               head=dict(branch=res['head']['ref'],
-                                        commit=res['head']['sha']),
+                                        commitid=res['head']['sha']),
                               open=res['state'] == 'open',
                               merged=res['merged'],
                               title=res['title'],
                               id=str(pr), number=str(pr)))
 
     @gen.coroutine
-    def get_pull_requests(self, commit=None, state='open', _was_merge_commit=False):
-        if commit:
+    def get_pull_requests(self, commitid=None, state='open', _was_merge_commit=False):
+        if commitid:
             # https://developer.github.com/v3/search/#search-issues
-            prs = yield self.api('get', '/search/issues', q='%s+repo:%s' % (commit, self.slug))
+            prs = yield self.api('get', '/search/issues', q='%s+repo:%s' % (commitid, self.slug))
             if prs['items']:
                 raise gen.Return([str(pr['number']) for pr in prs['items'] if pr['state'] == state])
 
             elif not _was_merge_commit:
-                merge_commit = yield self._get_merge_commit_head(commit)
+                merge_commit = yield self._get_merge_commit_head(commitid)
                 if merge_commit:
                     res = yield self.get_pull_requests(merge_commit, state=state, _was_merge_commit=True)
                     raise gen.Return(res)

@@ -1,6 +1,6 @@
 import os
 
-from scms.github.github import Github
+from torngit.github import Github
 
 
 class GithubEnterprise(Github):

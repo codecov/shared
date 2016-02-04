@@ -1,2 +1,0 @@
-from handler import GithubEnterpriseHandler
-from github_enterprise import GithubEnterprise

@@ -4,7 +4,7 @@ from ddt import data, ddt
 from htmldom import htmldom
 
 from tests import TornadoTestClass
-from scms.bitbucket import Bitbucket
+from torngit.bitbucket import Bitbucket
 
 
 @ddt
