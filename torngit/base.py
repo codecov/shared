@@ -6,10 +6,6 @@ from tornado.httpclient import AsyncHTTPClient
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
-class LoginRequired(Exception):
-    pass
-
-
 class BaseHandler:
     debug = (os.getenv('DEBUG') == 'TRUE' or os.getenv('CI') == 'TRUE')
     _log_handler = None
