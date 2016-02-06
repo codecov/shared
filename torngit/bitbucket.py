@@ -23,23 +23,20 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 tree='%(username)s/%(repo)s/src/%(commitid)s',
                 branch='%(username)s/%(repo)s/branch/%(branch)s',
                 pr='%(username)s/%(repo)s/pull-requests/%(pr)s',
-                compare='%(username)s/%(repo)s/')
+                compare='%(username)s/%(repo)s')
 
     @gen.coroutine
     def api(self, version, method, path, body=None, **kwargs):
-        url = 'https://bitbucket.org/api/%s.0/%s' % (str(version), (path[1:] if path[0] == '/' else path))
+        url = 'https://bitbucket.org/api/%s.0%s' % (version, path)
 
         # make oauth request
         all_args = {}
         all_args.update(kwargs)
         all_args.update(body or {})
-        oauth = self._oauth_request_parameters(url, self.token['key'], all_args, method=method.upper())
+        oauth = self._oauth_request_parameters(url, self.token, all_args, method=method.upper())
         kwargs.update(oauth)
 
-        # update url with oauth arguments
-        url = url_concat(url, kwargs)
-
-        res = yield self.fetch(url,
+        res = yield self.fetch(url_concat(url, kwargs),
                                method=method.upper(),
                                body=urllib_parse.urlencode(body) if body else None,
                                headers={'Accept': 'application/json',
@@ -55,6 +52,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
         else:
             raise gen.Return(res.body)
+
+    @gen.coroutine
+    def _oauth_get_user_future(self, access_token):
+        self.set_token(access_token)
+        user = yield self.api('2', 'get', '/user')
+        raise gen.Return(user)
 
     @gen.coroutine
     def post_webhook(self, name, url, events, secret):
@@ -87,7 +90,15 @@ class Bitbucket(BaseHandler, OAuthMixin):
     def list_teams(self):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
         res = yield self.api('1', 'get', '/user/privileges')
-        raise gen.Return(res['teams'].keys())
+        data = []
+        for username in res['teams'].keys():
+            # https://confluence.atlassian.com/bitbucket/teams-endpoint-423626335.html#teamsEndpoint-GETtheteamprofile
+            team = yield self.api('2', 'get', '/team/'+username)
+            data.append(dict(name=team['display_name'],
+                             id=team['uuid'][1:-1],
+                             email=None,
+                             username=username))
+        raise gen.Return(data)
 
     @gen.coroutine
     def get_pull_request_commits(self, pullid):

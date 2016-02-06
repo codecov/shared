@@ -2,6 +2,7 @@ import os
 from tornado import gen
 from base64 import b64decode
 from json import loads, dumps
+from tornado.httputil import urlencode
 from tornado.httputil import url_concat
 
 from torngit.status import Status
@@ -25,12 +26,12 @@ class Gitlab(BaseHandler):
                 tree='%(username)s/%(repo)s/tree/%(commitid)s')
 
     @gen.coroutine
-    def api(self, method, path, callback=None, body=None, **args):
+    def api(self, method, path, body=None, **args):
         # http://doc.gitlab.com/ce/api
         path = (self.api_url + path) if path[0] == '/' else path
         res = yield self.fetch(url_concat(path, args).replace(' ', '%20'),
                                method=method.upper(),
-                               body=dumps(body) if body else None,
+                               body=dumps(body) if type(body) is dict else body,
                                headers={'Accept': 'application/json',
                                         'User-Agent': os.getenv('USER_AGENT', 'Default'),
                                         'Authorization': 'Bearer '+self.token['key']},
@@ -43,6 +44,25 @@ class Gitlab(BaseHandler):
             raise gen.Return(None)
         else:
             raise gen.Return(loads(res.body))
+
+    @gen.coroutine
+    def get_authenticated_user(self):
+        kwargs = dict(code=self.get_argument("code"))
+        creds = self._oauth_consumer_token()
+        creds = dict(client_id=creds['key'], client_secret=creds['secret'])
+        kwargs.update(creds)
+
+        # http://doc.gitlab.com/ce/api/oauth2.html
+        res = yield self.api('post', self.service_url+'/oauth/token',
+                             body=urlencode(dict(code=self.get_argument('code'),
+                                                 grant_type='authorization_code',
+                                                 redirect_uri=self.get_url('/login/'+self.service),
+                                                 **creds)))
+
+        self.set_token(dict(key=res['access_token']))
+        user = yield self.api('get', '/user')
+        user.update(res)
+        raise gen.Return(user)
 
     @gen.coroutine
     def post_webhook(self, name, url, events, secret):
