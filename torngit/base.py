@@ -58,8 +58,9 @@ class BaseHandler:
         return (self.service_url + "/" + self.urls[endpoint]) % d
 
     def get_oauth_token(self, service):
-        # overridden in handlers to get current_user details
-        return dict(zip(('key', 'secret'), tuple(os.getenv(service.upper() + '_ACCESS_TOKEN').split(':'))))
+        tokens = os.getenv(service.upper() + '_ACCESS_TOKEN')
+        if tokens:
+            return dict(zip(('key', 'secret'), tuple(tokens.split(':'))))
 
     def set_token(self, token):
         self._token = token

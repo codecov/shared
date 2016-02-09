@@ -406,8 +406,10 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(branches)
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, state='open'):
-        # [TODO] how to find pull requests with the commitid?
+    def get_pull_requests(self, commitid=None, branch=None, state='open'):
+        if commitid:
+            raise NotImplemented('dont know how to search by commitid yet')
+
         prs, page = [], 0
         state = {'open': 'OPEN', 'close': 'DECLINED', 'merged': 'MERGED'}.get(state, 'ALL')
         while True:
@@ -418,7 +420,9 @@ class BitbucketServer(BaseHandler):
                                  withAttributes=False,
                                  withProperties=False,
                                  state=state)
-            prs.extend([(str(b['id']), b['fromRef']['id'].replace('refs/heads/', '')) for b in res['values']])
+            prs.extend([str(b['id'])
+                        for b in res['values']
+                        if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])
             if res['isLastPage']:
                 break
         raise gen.Return(prs)

@@ -14,9 +14,6 @@ from app.services.github.github import GithubEngine
 class Test(TornadoTestClass):
     repo = GithubEngine(None, 'codecov', 'ci-repo', commitid="abc123")
 
-    def get_repo_url(self, *a, **k):
-        return ''
-
     @data(("@@ -1 +1 @@", ('1', '', '1', '')),
           ("@@ -130,12 +142,15 @@ module.exports = (grunt) ->", ('130', '12', '142', '15')),
           ("@@ -0,0 +1,31 @@", ('0', '0', '1', '31')),

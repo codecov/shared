@@ -143,12 +143,12 @@ class Gitlab(BaseHandler):
         raise gen.Return(res['commit']['id'])
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url=None, _merge=None):
+    def set_commit_status(self, commit, status, context, description, url, _merge=None):
         # http://doc.gitlab.com/ce/api/commits.html#post-the-status-to-commit
         status = dict(error='canceled', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self['repo']['service_id'], commit),
                              data=dict(state=status,
-                                       target_url=url or self.get_repo_url(ref=_merge or commit),
+                                       target_url=url,
                                        name=context,
                                        description=description))
         raise gen.Return(res)
@@ -223,15 +223,19 @@ class Gitlab(BaseHandler):
         raise gen.Return([(b['name'], b['commit']['id']) for b in res])
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, state='open', _was_merge_commit=False):
+    def get_pull_requests(self, commitid=None, branch=None, state='open'):
         if commitid:
-            pass
+            raise NotImplemented('dont know how to search by commitid yet')
 
-        else:
-            # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
-            state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
-            res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self['repo']['service_id'], state))
-            raise gen.Return([b['iid'] for b in res])
+        # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
+        state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
+        res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self['repo']['service_id'], state))
+        pulls = [b['iid']
+                 for b in res
+                 if branch is None or b['source_branch'] == branch]
+        raise gen.Return(pulls)
+
+        # [TODO] filter out based on commit exists in branh
 
     @gen.coroutine
     def get_authenticated(self):

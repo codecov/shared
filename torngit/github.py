@@ -278,7 +278,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # Commit Status
     # -------------
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url=None, _merge=None):
+    def set_commit_status(self, commit, status, context, description, url, _merge=None):
         # https://developer.github.com/v3/repos/statuses
         assert status in ('pending', 'success', 'error', 'failure'), 'status not valid'
         yield self.api('post', '/repos/'+self.slug+'/statuses/'+commit,
@@ -382,11 +382,12 @@ class Github(BaseHandler, OAuth2Mixin):
                               id=str(pr), number=str(pr)))
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, state='open', _was_merge_commit=False):
+    def get_pull_requests(self, commitid=None, branch=None, state='open', _was_merge_commit=False):
         if commitid:
             # https://developer.github.com/v3/search/#search-issues
             prs = yield self.api('get', '/search/issues', q='%s+repo:%s' % (commitid, self.slug))
             if prs['items']:
+                # [TODO] filter out branches
                 raise gen.Return([str(pr['number']) for pr in prs['items'] if pr['state'] == state])
 
             elif not _was_merge_commit:
@@ -409,7 +410,10 @@ class Github(BaseHandler, OAuth2Mixin):
                 if len(res) == 0:
                     break
 
-                prs.extend([str(b['number']) for b in res if b['state'] == state])
+                prs.extend([str(b['number'])
+                            for b in res
+                            if b['state'] == state and
+                               (branch is None or b['head']['ref'] == branch)])
                 if len(res) < 100:
                     break
 
