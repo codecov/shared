@@ -51,9 +51,13 @@ class BaseHandler:
             if language in ('javascript', 'shell', 'python', 'ruby', 'perl', 'dart', 'java', 'c', 'clojure', 'd', 'fortran', 'go', 'groovy', 'kotlin', 'php', 'r', 'scala', 'swift', 'objective-c', 'xtend'):
                 return language
 
+    def renamed_repository(self, repo):
+        pass
+
     def get_href(self, endpoint='repo', **data):
-        return ''
-        d = self.data.copy()
+        d = self.data['owner'].copy()
+        d.update(self.data['repo'])
+        d.update(self.data.get('commit', {}))
         d.update(data)
         return (self.service_url + "/" + self.urls[endpoint]) % d
 

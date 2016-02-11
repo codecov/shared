@@ -15,15 +15,15 @@ class Bitbucket(BaseHandler, OAuthMixin):
     api_url = 'https://bitbucket.org'
     service_url = 'https://bitbucket.org'
 
-    urls = dict(repo='%(username)s/%(repo)s',
+    urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
-                commit='%(username)s/%(repo)s/commits/%(commitid)s',
-                commits='%(username)s/%(repo)s/commits',
-                blob='%(username)s/%(repo)s/src/%(commitid)s/%(path)s',
-                tree='%(username)s/%(repo)s/src/%(commitid)s',
-                branch='%(username)s/%(repo)s/branch/%(branch)s',
-                pr='%(username)s/%(repo)s/pull-requests/%(pr)s',
-                compare='%(username)s/%(repo)s')
+                commit='%(username)s/%(name)s/commits/%(commitid)s',
+                commits='%(username)s/%(name)s/commits',
+                blob='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
+                tree='%(username)s/%(name)s/src/%(commitid)s',
+                branch='%(username)s/%(name)s/branch/%(branch)s',
+                pr='%(username)s/%(name)s/pull-requests/%(pr)s',
+                compare='%(username)s/%(name)s')
 
     @gen.coroutine
     def api(self, version, method, path, body=None, **kwargs):

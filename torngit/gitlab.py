@@ -16,14 +16,14 @@ class Gitlab(BaseHandler):
     icon = 'fa-git'
     verify_ssl = None
     urls = dict(owner='%(username)s',
-                repo='%(username)s/%(repo)s',
-                commit='%(username)s/%(repo)s/commit/%(commitid)s',
-                commits='%(username)s/%(repo)s/commits',
-                compare='%(username)s/%(repo)s/compare/%(base)s...%(head)s',
-                blob='%(username)s/%(repo)s/blob/%(commitid)s/%(path)s',
-                branch='%(username)s/%(repo)s/tree/%(branch)s',
-                pr='%(username)s/%(repo)s/merge_requests/%(pr)s',
-                tree='%(username)s/%(repo)s/tree/%(commitid)s')
+                repo='%(username)s/%(name)s',
+                commit='%(username)s/%(name)s/commit/%(commitid)s',
+                commits='%(username)s/%(name)s/commits',
+                compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
+                blob='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
+                branch='%(username)s/%(name)s/tree/%(branch)s',
+                pr='%(username)s/%(name)s/merge_requests/%(pr)s',
+                tree='%(username)s/%(name)s/tree/%(commitid)s')
 
     @gen.coroutine
     def api(self, method, path, body=None, **args):

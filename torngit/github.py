@@ -20,16 +20,16 @@ class Github(BaseHandler, OAuth2Mixin):
     api_url = 'https://api.github.com'
     icon = 'fa-github'
     verify_ssl = None
-    urls = dict(repo='%(username)s/%(repo)s',
+    urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
-                commit='%(username)s/%(repo)s/commit/%(commitid)s',
-                commits='%(username)s/%(repo)s/commits',
-                compare='%(username)s/%(repo)s/compare/%(base)s...%(head)s',
-                pr='%(username)s/%(repo)s/pull/%(pr)s',
-                branch='%(username)s/%(repo)s/tree/%(branch)s',
-                tree='%(username)s/%(repo)s/tree/%(commitid)s',
-                src='%(username)s/%(repo)s/blob/%(commitid)s/%(path)s',
-                author='%(username)s/%(repo)s/commits?author=%(author)s',)
+                commit='%(username)s/%(name)s/commit/%(commitid)s',
+                commits='%(username)s/%(name)s/commits',
+                compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
+                pr='%(username)s/%(name)s/pull/%(pr)s',
+                branch='%(username)s/%(name)s/tree/%(branch)s',
+                tree='%(username)s/%(name)s/tree/%(commitid)s',
+                src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
+                author='%(username)s/%(name)s/commits?author=%(author)s',)
 
     @gen.coroutine
     def api(self, method, url, body=None, headers=None, reraise=True, **args):
@@ -57,10 +57,18 @@ class Github(BaseHandler, OAuth2Mixin):
                                    headers=_headers,
                                    ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
                                    validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
+                                   follow_redirects=False,
                                    connect_timeout=self.timeouts[0],
                                    request_timeout=self.timeouts[1])
 
         except ClientError as e:
+            if e.response.code == 301:
+                # repo moved
+                repo = yield self.get_repository()
+                self.data['owner']['username'] = repo['owner']['username']
+                self.data['repo']['name'] = repo['repo']['name']
+                self.renamed_repository(repo)
+
             self.log(status=e.response.code,
                      body=e.response.body,
                      rlx=e.response.headers.get('X-RateLimit-Remaining'),

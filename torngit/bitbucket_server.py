@@ -71,13 +71,13 @@ class BitbucketServer(BaseHandler):
     service_url = os.getenv('BITBUCKET_SERVER_URL')
     icon = 'fa-bitbucket'
     urls = dict(owner='projects/%(username)s',
-                repo='projects/%(username)s/repos/%(repo)s',
-                commit='projects/%(username)s/repos/%(repo)s/commits/%(commitid)s',
-                commits='projects/%(username)s/repos/%(repo)s/commits',
-                blob='projects/%(username)s/repos/%(repo)s/browse/%(path)s?at=%(commitid)s',
-                tree='projects/%(username)s/repos/%(repo)s/browse?at=%(commitid)s',
-                branch='projects/%(username)s/repos/%(repo)s/browser?at=%(branch)s',
-                pr='projects/%(username)s/repos/%(repo)s/pull-requests/%(pr)s/overview',
+                repo='projects/%(username)s/repos/%(name)s',
+                commit='projects/%(username)s/repos/%(name)s/commits/%(commitid)s',
+                commits='projects/%(username)s/repos/%(name)s/commits',
+                blob='projects/%(username)s/repos/%(name)s/browse/%(path)s?at=%(commitid)s',
+                tree='projects/%(username)s/repos/%(name)s/browse?at=%(commitid)s',
+                branch='projects/%(username)s/repos/%(name)s/browser?at=%(branch)s',
+                pr='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
                 compare='')
 
     if os.getenv('BITBUCKET_SERVER_VERIFY_SSL') == 'FALSE':
