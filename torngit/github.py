@@ -25,7 +25,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
-                pr='%(username)s/%(name)s/pull/%(pr)s',
+                pull='%(username)s/%(name)s/pull/%(pr)s',
                 branch='%(username)s/%(name)s/tree/%(branch)s',
                 tree='%(username)s/%(name)s/tree/%(commitid)s',
                 src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
@@ -136,10 +136,10 @@ class Github(BaseHandler, OAuth2Mixin):
             raise gen.Return(None)
 
     @gen.coroutine
-    def get_is_admin(self, org):
+    def get_is_admin(self, user):
         # https://developer.github.com/v3/orgs/members/#get-organization-membership
-        res = yield self.api('get', '/orgs/'+org+'/memberships/'+self['username'])
-        raise gen.Return(res['active'] and res['role'] == 'admin')
+        res = yield self.api('get', '/orgs/'+self['owner']['username']+'/memberships/'+user['username'])
+        raise gen.Return(res['state'] == 'active' and res['role'] == 'admin')
 
     @gen.coroutine
     def get_authenticated(self):
@@ -167,7 +167,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # User Endpoints
     # --------------
     @gen.coroutine
-    def list_repos(self, teams):
+    def list_repos(self):
         """
         GitHub includes all visible repos through
         the same endpoint.
@@ -371,6 +371,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                           email=res['commit']['author'].get('email'),
                                           name=res['commit']['author'].get('name')),
                               commitid=commitid,
+                              parents=[p['sha'] for p in res['parents']],
                               message=res['commit']['message'],
                               date=res['commit']['author'].get('date')))
 

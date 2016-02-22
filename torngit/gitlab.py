@@ -20,9 +20,9 @@ class Gitlab(BaseHandler):
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
-                blob='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
+                src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
                 branch='%(username)s/%(name)s/tree/%(branch)s',
-                pr='%(username)s/%(name)s/merge_requests/%(pr)s',
+                pull='%(username)s/%(name)s/merge_requests/%(pr)s',
                 tree='%(username)s/%(name)s/tree/%(commitid)s')
 
     @gen.coroutine
@@ -91,7 +91,7 @@ class Gitlab(BaseHandler):
         return super(Gitlab, self).diff_to_json('\n'.join(map(lambda a: a['diff'], diff)), report, context)
 
     @gen.coroutine
-    def list_repos(self, username, ownerid):
+    def list_repos(self):
         data, page = [], 0
         while True:
             page += 1
@@ -200,6 +200,7 @@ class Gitlab(BaseHandler):
                                           email=res['author_email'],
                                           name=res['author_name']),
                               message=res['message'],
+                              parents=res['parent_ids'],
                               commitid=commitid,
                               date=res['committed_date']))
 
@@ -241,7 +242,6 @@ class Gitlab(BaseHandler):
     def get_authenticated(self):
         # http://doc.gitlab.com/ce/api/projects.html#get-single-project
         # http://doc.gitlab.com/ce/permissions/permissions.html
-        # http://doc.gitlab.com/ce/api/groups.html#group-members
         can_edit = False
         try:
             res = yield self.api('get', '/projects/'+str(self['repo']['service_id']))
@@ -255,8 +255,12 @@ class Gitlab(BaseHandler):
         raise gen.Return((True, can_edit))
 
     @gen.coroutine
-    def get_is_admin(self):
-        pass
+    def get_is_admin(self, user):
+        # http://doc.gitlab.com/ce/permissions/permissions.html#group
+        id = int(user['service_id'])
+        res = yield self.api('get', '/groups/'+str(self['owner']['service_id']))
+        res = any(filter(lambda u: u['id'] == id and u['access_level'] > 39, res))
+        raise gen.Return(res)
 
     @gen.coroutine
     def get_commit_diff(self, commitid, context=None):

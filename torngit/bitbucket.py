@@ -19,10 +19,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 owner='%(username)s',
                 commit='%(username)s/%(name)s/commits/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
-                blob='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
+                src='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
                 tree='%(username)s/%(name)s/src/%(commitid)s',
                 branch='%(username)s/%(name)s/branch/%(branch)s',
-                pr='%(username)s/%(name)s/pull-requests/%(pr)s',
+                pull='%(username)s/%(name)s/pull-requests/%(pr)s',
                 compare='%(username)s/%(name)s')
 
     @gen.coroutine
@@ -81,10 +81,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(True)
 
     @gen.coroutine
-    def get_is_admin(self, username):
+    def get_is_admin(self, user):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
         res = yield self.api('1', 'get', '/user/privileges')
-        raise gen.Return(res['teams'].get(username) == 'admin')
+        raise gen.Return(res['teams'].get(self['owner']['username']) == 'admin')
 
     @gen.coroutine
     def list_teams(self):
@@ -217,6 +217,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                           name=author_raw[0],
                                           email=author_raw[1]),
                               commitid=commitid,
+                              parents=[p['hash'] for p in data['parents']],
                               message=data['message'],
                               date=data['date']))
 

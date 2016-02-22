@@ -1,5 +1,6 @@
 import re
 import os
+from tornwrap import logger
 from tornado.httpclient import AsyncHTTPClient
 
 
@@ -15,6 +16,12 @@ class BaseHandler:
     _ioloop = None
     _token = None
     timeouts = tuple(map(int, os.getenv('ASYNC_TIMEOUTS', '5,15').split(',')))
+
+    # Important. Leave this commented out to properly override
+    # def get_oauth_token(self, service):
+    #     return dict(key=os.getenv(service.upper() + '_ACCESS_TOKEN'),
+    #                 secret=os.getenv(service.upper() + '_ACCESS_TOKEN_SECRET'),
+    #                 username='_guest_')
 
     @classmethod
     def new(cls, ioloop=None, log_handler=None, **kwargs):
@@ -32,6 +39,12 @@ class BaseHandler:
     def log(self, **kwargs):
         if self._log_handler:
             self._log_handler(kwargs)
+
+        default = getattr(self, 'get_log_payload', dict)()
+        if hasattr(self, 'request_id'):
+            default['id'] = self.request_id
+        default.update(kwargs)
+        logger.log(**default)
 
     @property
     def fetch(self):
@@ -60,11 +73,6 @@ class BaseHandler:
         d.update(self.data.get('commit', {}))
         d.update(data)
         return (self.service_url + "/" + self.urls[endpoint]) % d
-
-    def get_oauth_token(self, service):
-        tokens = os.getenv(service.upper() + '_ACCESS_TOKEN')
-        if tokens:
-            return dict(zip(('key', 'secret'), tuple(tokens.split(':'))))
 
     def set_token(self, token):
         self._token = token

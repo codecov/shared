@@ -74,10 +74,10 @@ class BitbucketServer(BaseHandler):
                 repo='projects/%(username)s/repos/%(name)s',
                 commit='projects/%(username)s/repos/%(name)s/commits/%(commitid)s',
                 commits='projects/%(username)s/repos/%(name)s/commits',
-                blob='projects/%(username)s/repos/%(name)s/browse/%(path)s?at=%(commitid)s',
+                src='projects/%(username)s/repos/%(name)s/browse/%(path)s?at=%(commitid)s',
                 tree='projects/%(username)s/repos/%(name)s/browse?at=%(commitid)s',
                 branch='projects/%(username)s/repos/%(name)s/browser?at=%(branch)s',
-                pr='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
+                pull='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
                 compare='')
 
     if os.getenv('BITBUCKET_SERVER_VERIFY_SSL') == 'FALSE':
@@ -167,6 +167,14 @@ class BitbucketServer(BaseHandler):
         raise gen.Return((True, True))
 
     @gen.coroutine
+    def get_is_admin(self, user):
+        # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3389568
+        res = yield self.api('get', self.project+'/permissions/users', filter=user['username'])
+        id = int(user['service_id'])
+        res = any(filter(lambda v: v.get('user', {}).get('id') == id and v['permission'] == 'ADMIN', res['values']))
+        raise gen.Return(res)
+
+    @gen.coroutine
     def get_repository(self):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
         res = yield self.api('get', self.project+'/repos/'+self['repo']['name'])
@@ -228,6 +236,7 @@ class BitbucketServer(BaseHandler):
                                           email=res['author']['emailAddress'],
                                           name=res['author']['name']),
                               commitid=commitid,
+                              parents=[p['id'] for p in res['parents']],
                               message=res['message'],
                               date=res['authorTimestamp']))
 
