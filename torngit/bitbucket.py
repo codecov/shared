@@ -84,7 +84,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
     def get_is_admin(self, user):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
         res = yield self.api('1', 'get', '/user/privileges')
-        raise gen.Return(res['teams'].get(self['owner']['username']) == 'admin')
+        raise gen.Return(res['teams'].get(self.data['owner']['username']) == 'admin')
 
     @gen.coroutine
     def list_teams(self):
@@ -219,7 +219,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               commitid=commitid,
                               parents=[p['hash'] for p in data['parents']],
                               message=data['message'],
-                              date=data['date']))
+                              timestamp=data['timestamp']))
 
     @gen.coroutine
     def get_branches(self):
@@ -251,11 +251,11 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     @gen.coroutine
     def get_repository(self):
-        if self['repo']['service_id'] is None:
+        if self.data['repo']['service_id'] is None:
             # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource#repositoryResource-GETarepository
             res = yield self.api('2', 'get', '/repositories/'+self.slug)
         else:
-            res = yield self.api('2', 'get', '/repositories/%%7B%s%%7D/%%7B%s%%7D' % (self['owner']['service_id'], self['repo']['service_id']))
+            res = yield self.api('2', 'get', '/repositories/%%7B%s%%7D/%%7B%s%%7D' % (self.data['owner']['service_id'], self.data['repo']['service_id']))
         username, repo = tuple(res['full_name'].split('/', 1))
         raise gen.Return(dict(owner=dict(service_id=res['owner']['uuid'][1:-1],
                                          username=username),
@@ -266,14 +266,14 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     @gen.coroutine
     def get_authenticated(self):
-        if self['repo']['private']:
+        if self.data['repo']['private']:
             # https://confluence.atlassian.com/bitbucket/repository-resource-423626331.html#repositoryResource-GETarepository
             yield self.api('2', 'get', '/repositories/'+self.slug)
             raise gen.Return((True, True))
         else:
             # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
             groups = yield self.api('1', 'get', '/user/privileges')
-            raise gen.Return((True, self['owner']['username'] in groups['teams']))
+            raise gen.Return((True, self.data['owner']['username'] in groups['teams']))
 
     @gen.coroutine
     def get_source(self, path, ref):
@@ -290,5 +290,5 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def get_commit_diff(self, commitid, context=None):
         # https://confluence.atlassian.com/bitbucket/diff-resource-425462484.html
-        diff = yield self.api('2', 'get', '/repositories/'+self['owner']['username']+'/'+self['repo']['name']+'/diff/'+commitid)
+        diff = yield self.api('2', 'get', '/repositories/'+self.data['owner']['username']+'/'+self.data['repo']['name']+'/diff/'+commitid)
         raise gen.Return(self.diff_to_json(diff))

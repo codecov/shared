@@ -67,7 +67,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def post_webhook(self, name, url, events, secret):
         # http://doc.gitlab.com/ce/api/projects.html#add-project-hook
-        res = yield self.api('post', '/projects/%s/hooks' % self['repo']['service_id'],
+        res = yield self.api('post', '/projects/%s/hooks' % self.data['repo']['service_id'],
                              body=dict(url=url,
                                        enable_ssl_verification=True,
                                        **events))
@@ -76,7 +76,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def edit_webhook(self, hookid, name, url, events, secret):
         # http://doc.gitlab.com/ce/api/projects.html#edit-project-hook
-        yield self.api('put', '/projects/%s/hooks/%s' % (self['repo']['service_id'], hookid),
+        yield self.api('put', '/projects/%s/hooks/%s' % (self.data['repo']['service_id'], hookid),
                        body=dict(url=url,
                                  enable_ssl_verification=True,
                                  **events))
@@ -122,7 +122,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request(self, pr):
         # http://doc.gitlab.com/ce/api/merge_requests.html
-        res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self['repo']['service_id'], pr))
+        res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pr))
         for _pr in res:
             if str(_pr['iid']) == pr:
                 head = yield self._get_head_of(_pr['target_branch'])
@@ -139,14 +139,14 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def _get_head_of(self, branch):
         # http://doc.gitlab.com/ce/api/branches.html#get-single-repository-branch
-        res = yield self.api('get', '/projects/%s/repository/branches/%s' % (self['repo']['service_id'], branch))
+        res = yield self.api('get', '/projects/%s/repository/branches/%s' % (self.data['repo']['service_id'], branch))
         raise gen.Return(res['commit']['id'])
 
     @gen.coroutine
     def set_commit_status(self, commit, status, context, description, url, _merge=None):
         # http://doc.gitlab.com/ce/api/commits.html#post-the-status-to-commit
         status = dict(error='canceled', failure='failed').get(status, status)
-        res = yield self.api('post', '/projects/%s/statuses/%s' % (self['repo']['service_id'], commit),
+        res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),
                              data=dict(state=status,
                                        target_url=url,
                                        name=context,
@@ -156,7 +156,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_commit_statuses(self, commit, _merge=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-status-of-a-commit
-        statuses = yield self.api('get', '/projects/%s/repository/commits/%s/statuses' % (self['repo']['service_id'], commit))
+        statuses = yield self.api('get', '/projects/%s/repository/commits/%s/statuses' % (self.data['repo']['service_id'], commit))
         _states = dict(pending='pending', success='success', error='failure', failure='failure')
         statuses = [{'time': s.get('finished_at', s.get('created_at')),
                      'state': _states.get(s['state']),
@@ -168,14 +168,14 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def post_comment(self, issueid, body):
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
-        res = yield self.api('post', '/projects/%s/merge_requests/%s/notes' % (self['repo']['service_id'], issueid),
+        res = yield self.api('post', '/projects/%s/merge_requests/%s/notes' % (self.data['repo']['service_id'], issueid),
                              data=dict(body=body))
         raise gen.Return(res['id'])
 
     @gen.coroutine
     def edit_comment(self, issueid, commentid, body):
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
-        yield self.api('put', '/projects/%s/merge_requests/%s/notes/%s' % (self['repo']['service_id'], issueid, commentid),
+        yield self.api('put', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], issueid, commentid),
                        data=dict(body=body))
         raise gen.Return(True)
 
@@ -189,7 +189,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_commit(self, commitid):
         # http://doc.gitlab.com/ce/api/commits.html#get-a-single-commit
-        res = yield self.api('get', '/projects/%s/repository/commits/%s' % (self['repo']['service_id'], commitid))
+        res = yield self.api('get', '/projects/%s/repository/commits/%s' % (self.data['repo']['service_id'], commitid))
 
         # http://doc.gitlab.com/ce/api/users.html
         authors = yield self.api('get', '/users?search='+res['author_name'])
@@ -202,7 +202,7 @@ class Gitlab(BaseHandler):
                               message=res['message'],
                               parents=res['parent_ids'],
                               commitid=commitid,
-                              date=res['committed_date']))
+                              timestamp=res['committed_date']))
 
     @gen.coroutine
     def get_pull_request_commits(self, pullid):
@@ -210,7 +210,7 @@ class Gitlab(BaseHandler):
         while True:
             page += 1
             # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
-            commits = yield self.api('get', '/projects/%s/merge_requests/%s/commits?per_page=100&page=%d' % (self['repo']['service_id'], pullid, page))
+            commits = yield self.api('get', '/projects/%s/merge_requests/%s/commits?per_page=100&page=%d' % (self.data['repo']['service_id'], pullid, page))
             data.extend([c['id'] for c in commits])
             if len(commits) < 100:
                 break
@@ -220,7 +220,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_branches(self):
         # http://doc.gitlab.com/ce/api/projects.html#list-branches
-        res = yield self.api('get', '/projects/%s/repository/branches' % self['repo']['service_id'])
+        res = yield self.api('get', '/projects/%s/repository/branches' % self.data['repo']['service_id'])
         raise gen.Return([(b['name'], b['commit']['id']) for b in res])
 
     @gen.coroutine
@@ -230,7 +230,7 @@ class Gitlab(BaseHandler):
 
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
-        res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self['repo']['service_id'], state))
+        res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state))
         pulls = [b['iid']
                  for b in res
                  if branch is None or b['source_branch'] == branch]
@@ -244,12 +244,12 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/permissions/permissions.html
         can_edit = False
         try:
-            res = yield self.api('get', '/projects/'+str(self['repo']['service_id']))
+            res = yield self.api('get', '/projects/'+str(self.data['repo']['service_id']))
             permission = max([(res['permissions']['group_access'] or {}).get('access_level', 0),
                               (res['permissions']['project_access'] or {}).get('access_level', 0)])
             can_edit = permission > 20
         except:
-            if self['private']:
+            if self.data['private']:
                 raise
 
         raise gen.Return((True, can_edit))
@@ -258,23 +258,23 @@ class Gitlab(BaseHandler):
     def get_is_admin(self, user):
         # http://doc.gitlab.com/ce/permissions/permissions.html#group
         id = int(user['service_id'])
-        res = yield self.api('get', '/groups/'+str(self['owner']['service_id']))
+        res = yield self.api('get', '/groups/'+str(self.data['owner']['service_id']))
         res = any(filter(lambda u: u['id'] == id and u['access_level'] > 39, res))
         raise gen.Return(res)
 
     @gen.coroutine
     def get_commit_diff(self, commitid, context=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-diff-of-a-commit
-        res = yield self.api('get', '/projects/%s/repository/commits%s/diff' % (self['repo']['service_id'], commitid))
+        res = yield self.api('get', '/projects/%s/repository/commits%s/diff' % (self.data['repo']['service_id'], commitid))
         raise gen.Return(self.diff_to_json(res))
 
     @gen.coroutine
     def get_repository(self):
         # http://doc.gitlab.com/ce/api/projects.html#get-single-project
-        if self['repo']['service_id'] is None:
+        if self.data['repo']['service_id'] is None:
             res = yield self.api('get', '/projects/'+self.slug.replace('/', '%2F'))
         else:
-            res = yield self.api('get', '/projects/'+self['repo']['service_id'])
+            res = yield self.api('get', '/projects/'+self.data['repo']['service_id'])
         owner = res['namespace']
         username, repo = tuple(res['path_with_namespace'].split('/', 1))
         raise gen.Return(dict(owner=dict(service_id=owner['owner_id'] or owner['id'],
@@ -288,7 +288,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_source(self, path, ref):
         # http://doc.gitlab.com/ce/api/repository_files.html
-        res = yield self.api('get', '/projects/%s/repository/files' % self['repo']['service_id'],
+        res = yield self.api('get', '/projects/%s/repository/files' % self.data['repo']['service_id'],
                              ref=ref, file_path=path)
         raise gen.Return(dict(commitid=res['commit_id'],
                               content=b64decode(res['content'])))
@@ -296,9 +296,10 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True):
         # http://doc.gitlab.com/ce/api/repositories.html#compare-branches-tags-or-commits
-        compare = yield self.api('get', '/projects/%s/repository/compare/?from=%s&to=%s' % (self['repo']['service_id'], base, head))
+        compare = yield self.api('get', '/projects/%s/repository/compare/?from=%s&to=%s' % (self.data['repo']['service_id'], base, head))
         raise gen.Return(dict(diff=self.diff_to_json(compare['diffs']),
                               commits=[dict(commitid=c['id'],
                                             message=c['title'],
-                                            date=c['created_at'],
-                                            author=c['author_email']) for c in compare['commits']]))
+                                            timestamp=c['created_at'],
+                                            author=dict(email=c['author_email'],
+                                                        name=c['author_name'])) for c in compare['commits']]))

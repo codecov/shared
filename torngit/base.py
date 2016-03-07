@@ -52,12 +52,6 @@ class BaseHandler:
             self._client = AsyncHTTPClient(self._ioloop)
         return self._client.fetch
 
-    def __getitem__(self, index):
-        return self.data.get(index)
-
-    def __setitem__(self, index, value):
-        self.data[index] = value
-
     def _validate_language(self, language):
         if language:
             language = language.lower()
@@ -90,7 +84,7 @@ class BaseHandler:
 
     @property
     def slug(self):
-        return (self['owner']['username'] + "/" + self['repo']['name']) if self['repo'].get('name') else None
+        return (self.data['owner']['username'] + "/" + self.data['repo']['name']) if self.data['repo'].get('name') else None
 
     def diff_to_json(self, diff):
         """
@@ -99,6 +93,7 @@ class BaseHandler:
         """
         results = {}
         diff = ('\n'+diff).split('\ndiff --git a/')[1:]
+        segment = None
         for fnum, _diff in enumerate(diff):
             slt = _diff.split('\n', 2) + ['', '']
             fname = slt[0].split(' b/')[-1]
@@ -118,9 +113,12 @@ class BaseHandler:
                 # ------------------------------
                 # make file, this is ONE file not multiple
                 for source in ('diff --git a/' + _diff).splitlines():
+                    if source == '\ No newline at end of file':
+                        break
+
                     sol4 = source[:4]
                     if sol4 == '--- ' and source != '--- /dev/null':
-                        _file['before'] = source[6:]
+                        _file['before'] = source[6:] if source[4:6] in ('a/', 'b/') else source[4:]
                         _file['type'] = 'new'
 
                     elif sol4 == 'new ':
@@ -154,4 +152,18 @@ class BaseHandler:
                         # actual lines
                         segment['lines'].append(source)
 
-        return dict(files=results)
+                    # else:
+                    #     results.pop(fname)
+                    #     break
+
+        return self._add_diff_totals(dict(files=results))
+
+    def _add_diff_totals(self, diff):
+        for fname, data in diff['files'].iteritems():
+            rm = 0
+            add = 0
+            for segment in data['segments']:
+                rm += sum([1 for line in segment['lines'] if line[0] == '-'])
+                add += sum([1 for line in segment['lines'] if line[0] == '+'])
+            data['totals'] = dict(added=add, removed=rm)
+        return diff

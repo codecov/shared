@@ -25,7 +25,8 @@ class Github(BaseHandler, OAuth2Mixin):
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
-                pull='%(username)s/%(name)s/pull/%(pr)s',
+                comment='%(username)s/%(name)s/issues/%(pullid)s#issuecomment-%(commentid)s',
+                pull='%(username)s/%(name)s/pull/%(pullid)s',
                 branch='%(username)s/%(name)s/tree/%(branch)s',
                 tree='%(username)s/%(name)s/tree/%(commitid)s',
                 src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
@@ -138,7 +139,7 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def get_is_admin(self, user):
         # https://developer.github.com/v3/orgs/members/#get-organization-membership
-        res = yield self.api('get', '/orgs/'+self['owner']['username']+'/memberships/'+user['username'])
+        res = yield self.api('get', '/orgs/'+self.data['owner']['username']+'/memberships/'+user['username'])
         raise gen.Return(res['state'] == 'active' and res['role'] == 'admin')
 
     @gen.coroutine
@@ -151,11 +152,11 @@ class Github(BaseHandler, OAuth2Mixin):
 
     @gen.coroutine
     def get_repository(self):
-        if self['repo'].get('service_id') is None:
+        if self.data['repo'].get('service_id') is None:
             # https://developer.github.com/v3/repos/#get
             res = yield self.api('get', '/repos/' + self.slug)
         else:
-            res = yield self.api('get', '/repositories/' + str(self['repo']['service_id']))
+            res = yield self.api('get', '/repositories/' + str(self.data['repo']['service_id']))
 
         username, repo = tuple(res['full_name'].split('/', 1))
         raise gen.Return(dict(owner=dict(service_id=res['owner']['id'], username=username),
@@ -353,13 +354,13 @@ class Github(BaseHandler, OAuth2Mixin):
                                      '\ndeleted file mode 100644' if f['status'] == 'removed' else '\nnew file mode 100644' if f['status'] == 'added' else '',
                                      '--- ' + ('/dev/null' if f['status'] == 'new' else ('a/' + f.get('previous_filename', f.get('filename')))),
                                      '+++ ' + ('/dev/null' if f['status'] == 'removed' else ('b/' + f['filename'])),
-                                     f.get('patch')))
+                                     f.get('patch', '')))
             files.update(diff['files'])
 
         raise gen.Return(dict(diff=dict(files=files),
                               commits=[dict(commitid=c['sha'],
                                             message=c['commit']['message'],
-                                            date=c['commit']['author']['date'],
+                                            timestamp=c['commit']['author']['date'],
                                             author=c['commit']['author']) for c in ([res['base_commit']] + res['commits'])]))
 
     @gen.coroutine
@@ -373,7 +374,7 @@ class Github(BaseHandler, OAuth2Mixin):
                               commitid=commitid,
                               parents=[p['sha'] for p in res['parents']],
                               message=res['commit']['message'],
-                              date=res['commit']['author'].get('date')))
+                              timestamp=res['commit']['author'].get('date')))
 
     # Pull Requests
     # -------------

@@ -3,7 +3,7 @@ from json import loads
 from json import dumps
 from ddt import data, ddt
 from tornado import template
-from BeautifulSoup import BeautifulSoup as bs
+from bs4 import BeautifulSoup as bs
 
 from tests import TornadoTestClass
 from app.helpers import get_start_of_line
