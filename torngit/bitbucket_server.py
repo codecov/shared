@@ -121,7 +121,7 @@ class BitbucketServer(BaseHandler):
                         for l in seg['lines']:
                             segment['lines'].append(('-' if t == 'R' else '+' if t == 'A' else ' ') + l['line'])
 
-        return self._add_diff_totals(dict(files=results))
+        return self._add_diff_totals(dict(files=results)) if results else None
 
     @gen.coroutine
     def api(self, method, url, body=None, **kwargs):
@@ -217,7 +217,7 @@ class BitbucketServer(BaseHandler):
             if res['isLastPage']:
                 break
 
-        raise gen.Return(dict(commitid=None,  # [TODO] unknown atm
+        raise gen.Return(dict(commitid=None,  # [FUTURE] unknown atm
                               content='\n'.join(map(lambda a: a.get('text', ''), content))))
 
     @gen.coroutine

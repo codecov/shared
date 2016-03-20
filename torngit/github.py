@@ -1,5 +1,6 @@
 import re
 import os
+import socket
 from tornado import gen
 from base64 import b64decode
 from tornado.auth import OAuth2Mixin
@@ -26,6 +27,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
                 comment='%(username)s/%(name)s/issues/%(pullid)s#issuecomment-%(commentid)s',
+                create_file='%(username)s/%(name)s/new/%(branch)s?filename=%(path)s&value=%(content)s',
                 pull='%(username)s/%(name)s/pull/%(pullid)s',
                 branch='%(username)s/%(name)s/tree/%(branch)s',
                 tree='%(username)s/%(name)s/tree/%(commitid)s',
@@ -63,6 +65,9 @@ class Github(BaseHandler, OAuth2Mixin):
                                    request_timeout=self.timeouts[1])
 
         except ClientError as e:
+            if e.response is None:
+                raise ClientError(502, 'GitHub is was not able to be reached. Please try again.')
+
             if e.response.code == 301:
                 # repo moved
                 repo = yield self.get_repository()
@@ -82,6 +87,9 @@ class Github(BaseHandler, OAuth2Mixin):
 
             if reraise:
                 raise
+
+        except socket.gaierror:
+            raise ClientError(502, 'GitHub is was not able to be reached. Please try again.')
 
         else:
             self.log(status=res.code,

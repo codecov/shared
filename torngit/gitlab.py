@@ -20,6 +20,7 @@ class Gitlab(BaseHandler):
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
+                create_file='%(username)s/%(name)s/new/%(branch)s?file_name=%(path)s&content=%(content)s',
                 src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
                 branch='%(username)s/%(name)s/tree/%(branch)s',
                 pull='%(username)s/%(name)s/merge_requests/%(pr)s',

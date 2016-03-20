@@ -66,6 +66,7 @@ class BaseHandler:
         d.update(self.data['repo'])
         d.update(self.data.get('commit', {}))
         d.update(data)
+        # TODO need to run url_escapde on the data arguments before passing
         return (self.service_url + "/" + self.urls[endpoint]) % d
 
     def set_token(self, token):
@@ -156,7 +157,7 @@ class BaseHandler:
                     #     results.pop(fname)
                     #     break
 
-        return self._add_diff_totals(dict(files=results))
+        return self._add_diff_totals(dict(files=results)) if results else None
 
     def _add_diff_totals(self, diff):
         for fname, data in diff['files'].iteritems():

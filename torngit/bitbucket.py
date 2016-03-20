@@ -20,6 +20,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 commit='%(username)s/%(name)s/commits/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 src='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
+                create_file='%(username)s/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
                 tree='%(username)s/%(name)s/src/%(commitid)s',
                 branch='%(username)s/%(name)s/branch/%(branch)s',
                 pull='%(username)s/%(name)s/pull-requests/%(pr)s',
