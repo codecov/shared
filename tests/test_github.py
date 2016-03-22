@@ -8,7 +8,6 @@ from torngit import Github
 
 
 class Test(AsyncTestCase):
-    maxDiff = None
     headers = {"Authorization": "token %s" % os.getenv("GITHUB_ACCESS_TOKEN")}
 
     def setUp(self):
