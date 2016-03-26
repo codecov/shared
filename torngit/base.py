@@ -8,12 +8,12 @@ get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
 class BaseHandler:
-    debug = (os.getenv('DEBUG') == 'TRUE' or os.getenv('CI') == 'TRUE')
     _log_handler = None
     _repo_url = None
     _client = None
     _aws_key = None
     _ioloop = None
+    _oauth = None
     _token = None
     timeouts = tuple(map(int, os.getenv('ASYNC_TIMEOUTS', '5,15').split(',')))
 
@@ -23,11 +23,15 @@ class BaseHandler:
     #                 secret=os.getenv(service.upper() + '_ACCESS_TOKEN_SECRET'),
     #                 username='_guest_')
 
+    def _oauth_consumer_token(self):
+        return self._oauth or self.get_oauth_consumer_token()
+
     @classmethod
-    def new(cls, ioloop=None, log_handler=None, **kwargs):
+    def new(cls, ioloop=None, log_handler=None, oauth_consumer_token=None, **kwargs):
         self = cls()
         self._ioloop = ioloop
         self._token = kwargs.pop('token', None)
+        self._oauth = oauth_consumer_token
         self.data = {
             "owner": {},
             "repo": {}
@@ -66,7 +70,8 @@ class BaseHandler:
         d.update(self.data['repo'])
         d.update(self.data.get('commit', {}))
         d.update(data)
-        # TODO need to run url_escapde on the data arguments before passing
+        d = dict([(k, str(v).encode('utf-8')) for k, v in d.iteritems()])
+        # TODO need to test this to make sure the correct escaping happens for emojis
         return (self.service_url + "/" + self.urls[endpoint]) % d
 
     def set_token(self, token):
@@ -77,11 +82,6 @@ class BaseHandler:
         if not self._token:
             self._token = self.get_oauth_token(self.service)
         return self._token
-
-    def _oauth_consumer_token(self):
-        service = self.service.upper()
-        return dict(key=os.getenv('%s_CLIENT_ID' % service, ''),
-                    secret=os.getenv('%s_CLIENT_SECRET' % service, ''))
 
     @property
     def slug(self):
