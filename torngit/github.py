@@ -38,7 +38,7 @@ class Github(BaseHandler, OAuth2Mixin):
     def api(self, method, url, body=None, headers=None, reraise=True, **args):
         _headers = {'Accept': 'application/json',
                     'User-Agent': os.getenv('USER_AGENT', 'Default'),
-                    'Authorization': 'token ' + self.token['key']}
+                    'Authorization': 'token %s' % self.token['key']}
         _headers.update(headers or {})
         _log = {}
 
@@ -61,8 +61,8 @@ class Github(BaseHandler, OAuth2Mixin):
                                    ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
                                    validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
                                    follow_redirects=False,
-                                   connect_timeout=self.timeouts[0],
-                                   request_timeout=self.timeouts[1])
+                                   connect_timeout=self._timeouts[0],
+                                   request_timeout=self._timeouts[1])
 
         except ClientError as e:
             if e.response is None:
@@ -154,7 +154,7 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_authenticated(self):
         """Returns (can_view, can_edit)"""
         # https://developer.github.com/v3/repos/#get
-        r = yield self.api('get', '/repos/' + self.slug)
+        r = yield self.api('get', '/repos/%s' % self.slug)
         ok = r['permissions']['admin'] or r['permissions']['push']
         raise gen.Return((True, ok))
 
@@ -162,15 +162,30 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_repository(self):
         if self.data['repo'].get('service_id') is None:
             # https://developer.github.com/v3/repos/#get
-            res = yield self.api('get', '/repos/' + self.slug)
+            res = yield self.api('get', '/repos/%s' % self.slug)
         else:
-            res = yield self.api('get', '/repositories/' + str(self.data['repo']['service_id']))
+            res = yield self.api('get', '/repositories/%s' % self.data['repo']['service_id'])
 
         username, repo = tuple(res['full_name'].split('/', 1))
+        parent = res['parent']
+
+        if parent:
+            fork = dict(owner=dict(service_id=parent['owner']['id'],
+                                   username=parent['owner']['login']),
+                        repo=dict(service_id=parent['id'],
+                                  name=parent['name'],
+                                  language=self._validate_language(parent['language']),
+                                  private=parent['private'],
+                                  branch=parent['default_branch']))
+        else:
+            fork = None
+
         raise gen.Return(dict(owner=dict(service_id=res['owner']['id'], username=username),
                               repo=dict(service_id=res['id'],
                                         name=repo,
+                                        language=self._validate_language(res['language']),
                                         private=res['private'],
+                                        fork=fork,
                                         branch=res['default_branch'] or 'master')))
 
     # User Endpoints
@@ -193,7 +208,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                    headers=headers)
 
             for repo in repos:
-                _o, _r, _p, parent = repo['owner']['login'], repo['name'], repo['private'], None
+                _o, _r, parent = repo['owner']['login'], repo['name'], None
                 if repo['fork']:
                     # need to get its source
                     # https://developer.github.com/v3/repos/#get
@@ -219,7 +234,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                  repo=dict(service_id=repo['id'],
                                            name=_r,
                                            language=self._validate_language(repo['language']),
-                                           private=_p,
+                                           private=repo['private'],
                                            branch=repo['default_branch'],
                                            fork=fork)))
 
@@ -235,7 +250,7 @@ class Github(BaseHandler, OAuth2Mixin):
         data = []
         # organization names
         for org in orgs:
-            org = yield self.api('get', '/users/' + org['login'])
+            org = yield self.api('get', '/users/%s' % org['login'])
             data.append(dict(name=org['name'] or org['login'],
                              id=str(org['id']),
                              email=org['email'],
@@ -249,7 +264,7 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_pull_request_commits(self, pullid):
         # https://developer.github.com/v3/pulls/#list-commits-on-a-pull-request
         # NOTE limited to 250 commits
-        res = yield self.api('get', '/repos/' + self.slug + '/pulls/' + str(pullid) + '/commits')
+        res = yield self.api('get', '/repos/%s/pulls/%s/commits' % (self.slug, pullid))
         raise gen.Return([c['sha'] for c in res])
 
     # Webhook
@@ -257,7 +272,7 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def post_webhook(self, name, url, events, secret):
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
-        res = yield self.api('post', '/repos/' + self.slug + '/hooks',
+        res = yield self.api('post', '/repos/%s/hooks' % self.slug,
                              body=dict(name='web', active=True, events=events,
                                        config=dict(url=url, secret=secret, content_type='json')))
         raise gen.Return(res['id'])

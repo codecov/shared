@@ -1,5 +1,4 @@
 import re
-import os
 from tornwrap import logger
 from tornado.httpclient import AsyncHTTPClient
 
@@ -15,7 +14,6 @@ class BaseHandler:
     _ioloop = None
     _oauth = None
     _token = None
-    timeouts = tuple(map(int, os.getenv('ASYNC_TIMEOUTS', '5,15').split(',')))
 
     # Important. Leave this commented out to properly override
     # def get_oauth_token(self, service):
@@ -27,9 +25,10 @@ class BaseHandler:
         return self._oauth or self.get_oauth_consumer_token()
 
     @classmethod
-    def new(cls, ioloop=None, log_handler=None, oauth_consumer_token=None, **kwargs):
+    def new(cls, ioloop=None, log_handler=None, oauth_consumer_token=None, timeouts=None, **kwargs):
         self = cls()
         self._ioloop = ioloop
+        self._timeouts = timeouts or [10, 30]
         self._token = kwargs.pop('token', None)
         self._oauth = oauth_consumer_token
         self.data = {

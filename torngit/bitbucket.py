@@ -42,8 +42,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                body=urllib_parse.urlencode(body) if body else None,
                                headers={'Accept': 'application/json',
                                         'User-Agent': os.getenv('USER_AGENT', 'Default')},
-                               connect_timeout=self.timeouts[0],
-                               request_timeout=self.timeouts[1])
+                               connect_timeout=self._timeouts[0],
+                               request_timeout=self._timeouts[1])
 
         if res.code == 204:
             raise gen.Return(None)
@@ -128,7 +128,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                             username=repo['owner']['username']),
                                  repo=dict(service_id=repo['uuid'][1:-1],
                                            name=repo['full_name'].split('/', 1)[1],
-                                           language=repo['language'],
+                                           language=self._validate_language(repo['language']),
                                            private=repo['is_private'],
                                            branch='master',
                                            fork=None)))
@@ -263,6 +263,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               repo=dict(service_id=res['uuid'][1:-1],
                                         private=res['is_private'],
                                         branch='master',
+                                        language=self._validate_language(res['language']),
                                         name=repo)))
 
     @gen.coroutine

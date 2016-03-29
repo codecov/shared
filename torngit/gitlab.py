@@ -38,8 +38,8 @@ class Gitlab(BaseHandler):
                                         'Authorization': 'Bearer '+self.token['key']},
                                ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
                                validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                               connect_timeout=self.timeouts[0],
-                               request_timeout=self.timeouts[1])
+                               connect_timeout=self._timeouts[0],
+                               request_timeout=self._timeouts[1])
 
         if res.code == 204:
             raise gen.Return(None)
