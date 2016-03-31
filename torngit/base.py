@@ -1,5 +1,6 @@
 import re
 from tornwrap import logger
+from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
 
@@ -17,9 +18,6 @@ class BaseHandler:
 
     # Important. Leave this commented out to properly override
     # def get_oauth_token(self, service):
-    #     return dict(key=os.getenv(service.upper() + '_ACCESS_TOKEN'),
-    #                 secret=os.getenv(service.upper() + '_ACCESS_TOKEN_SECRET'),
-    #                 username='_guest_')
 
     def _oauth_consumer_token(self):
         return self._oauth or self.get_oauth_consumer_token()
@@ -32,8 +30,8 @@ class BaseHandler:
         self._token = kwargs.pop('token', None)
         self._oauth = oauth_consumer_token
         self.data = {
-            "owner": {},
-            "repo": {}
+            'owner': {},
+            'repo': {}
         }
         self._log_handler = log_handler
         self.data.update(kwargs)
@@ -69,9 +67,10 @@ class BaseHandler:
         d.update(self.data['repo'])
         d.update(self.data.get('commit', {}))
         d.update(data)
-        d = dict([(k, str(v).encode('utf-8')) for k, v in d.iteritems()])
-        # TODO need to test this to make sure the correct escaping happens for emojis
-        return (self.service_url + "/" + self.urls[endpoint]) % d
+        # d = dict([(k, v.encode('utf-8') if isinstance(v, (str, unicode)) else v) for k, v in d.iteritems()])
+        # TODO need to test this to make sure the correct escaping happens for emojis and non-acii chars
+        return '%s/%s' % (self.service_url,
+                          url_escape((self.urls[endpoint] % d).encode('utf-8')).replace('%2F', '/'))
 
     def set_token(self, token):
         self._token = token
@@ -84,7 +83,8 @@ class BaseHandler:
 
     @property
     def slug(self):
-        return (self.data['owner']['username'] + "/" + self.data['repo']['name']) if self.data['repo'].get('name') else None
+        if self.data['repo'].get('name'):
+            return ('%s/%s' % (self.data['owner']['username'], self.data['repo']['name']))
 
     def diff_to_json(self, diff):
         """
@@ -112,7 +112,7 @@ class BaseHandler:
                 # Get coverage data on each line
                 # ------------------------------
                 # make file, this is ONE file not multiple
-                for source in ('diff --git a/' + _diff).splitlines():
+                for source in ('diff --git a/%s' % _diff).splitlines():
                     if source == '\ No newline at end of file':
                         break
 
