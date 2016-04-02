@@ -4,6 +4,7 @@ from base64 import b64decode
 from json import loads, dumps
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
+from tornado.httpclient import HTTPError as ClientError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
@@ -28,22 +29,40 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def api(self, method, path, body=None, token=None, **args):
         # http://doc.gitlab.com/ce/api
-        path = (self.api_url + path) if path[0] == '/' else path
-        res = yield self.fetch(url_concat(path, args).replace(' ', '%20'),
-                               method=method.upper(),
-                               body=dumps(body) if type(body) is dict else body,
-                               headers={'Accept': 'application/json',
-                                        'User-Agent': os.getenv('USER_AGENT', 'Default'),
-                                        'Authorization': 'Bearer '+(token or self.token)['key']},
-                               ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
-                               validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                               connect_timeout=self._timeouts[0],
-                               request_timeout=self._timeouts[1])
+        if path[0] == '/':
+            _log = dict(event='api',
+                        endpoint=path,
+                        method=method,
+                        bot=(token or self.token).get('username'))
 
-        if res.code == 204:
-            raise gen.Return(None)
+        path = (self.api_url + path) if path[0] == '/' else path
+
+        try:
+            res = yield self.fetch(url_concat(path, args).replace(' ', '%20'),
+                                   method=method.upper(),
+                                   body=dumps(body) if type(body) is dict else body,
+                                   headers={'Accept': 'application/json',
+                                            'User-Agent': os.getenv('USER_AGENT', 'Default'),
+                                            'Authorization': 'Bearer '+(token or self.token)['key']},
+                                   ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
+                                   validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
+                                   connect_timeout=self._timeouts[0],
+                                   request_timeout=self._timeouts[1])
+
+        except ClientError as e:
+            self.log(status=e.response.code,
+                     body=e.response.body,
+                     **_log)
+
+            if e.response is None:
+                raise ClientError(502, 'GitLab was not able to be reached. Response empty. Please try again.')
+
+        except socket.gaierror:
+            raise ClientError(502, 'GitLab was not able to be reached. Gateway 502. Please try again.')
+
         else:
-            raise gen.Return(loads(res.body))
+            self.log(status=e.response.code, **_log)
+            raise gen.Return(None if res.code == 204 else loads(res.body))
 
     @gen.coroutine
     def get_authenticated_user(self):
@@ -120,11 +139,11 @@ class Gitlab(BaseHandler):
         raise gen.Return([g['path'] for g in groups])
 
     @gen.coroutine
-    def get_pull_request(self, pr, token=None):
+    def get_pull_request(self, pullid, token=None):
         # http://doc.gitlab.com/ce/api/merge_requests.html
-        res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pr), token=token)
+        res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pullid), token=token)
         for _pr in res:
-            if str(_pr['iid']) == pr:
+            if str(_pr['iid']) == str(pullid):
                 head = yield self._get_head_of(_pr['target_branch'])
                 base = yield self._get_head_of(_pr['source_branch'])
                 raise gen.Return(dict(base=dict(branch=_pr['target_branch'],
@@ -134,7 +153,7 @@ class Gitlab(BaseHandler):
                                       open=_pr['state'] == 'opened',
                                       merged=_pr['state'] == 'merged',
                                       title=_pr['title'],
-                                      id=_pr['id'], number=pr))
+                                      id=_pr['id'], number=str(pullid)))
 
     @gen.coroutine
     def _get_head_of(self, branch, token=None):
@@ -225,18 +244,25 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
-        if commitid:
-            raise NotImplemented('dont know how to search by commitid yet')
-
-        # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
+        # ONLY searchable by branch.
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
+        # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state), token=token)
-        pulls = [b['iid']
-                 for b in res
-                 if branch is None or b['source_branch'] == branch]
-        raise gen.Return(pulls)
+        pulls = [b['iid'] for b in res if branch is None or b['source_branch'] == branch]
+        if commitid:
+            # filter: commit must be in commits
+            # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
+            for pull in pulls:
+                res = yield self.api('get', '/projects/%s/merge_requests/%s/commits' % (self.data['repo']['service_id'], pull), token=token)
+                found = False
+                for commit in res:
+                    if commit['id'] == commitid:
+                        found = True
+                        break
+                if not found:
+                    pulls.remove(pull)
 
-        # [TODO] filter out based on commit exists in branh
+        raise gen.Return(pulls)
 
     @gen.coroutine
     def get_authenticated(self, token=None):

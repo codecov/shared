@@ -262,7 +262,7 @@ class BitbucketServer(BaseHandler):
     @gen.coroutine
     def get_commit_diff(self, commitid, context=None, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3120016
-        diff = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/commits/'+commitid+'/diff',
+        diff = yield self.api('get', '%s/repos/%s/commits/%s/diff' % (self.project, self.data['repo']['name'], commitid),
                               withComments=False,
                               whitespace='ignore-all',
                               contextLines=context or -1,
@@ -276,7 +276,7 @@ class BitbucketServer(BaseHandler):
         while True:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3370768
-            res = yield self.api('get', self.projects+'/repos/'+self.data['repo']['name']+'/commits/'+head+'/diff',
+            res = yield self.api('get', '%s/repos/%s/commits/%s/diff' % (self.project, self.data['repo']['name'], head),
                                  page=page,
                                  withComments=False,
                                  whitespace='ignore-all',
@@ -292,7 +292,7 @@ class BitbucketServer(BaseHandler):
         while with_commits:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3358848
-            res = yield self.api('get', self.projects+'/repos/'+self.data['repo']['name']+'/compare/commits',
+            res = yield self.api('get', '%s/repos/%s/compare/commits' % (self.project, self.data['repo']['name']),
                                  page=page, token=token, **{'from': base, 'to': head})
             commits.extend([dict(commitid=c['id'],
                                  message=c['message'],
@@ -306,19 +306,20 @@ class BitbucketServer(BaseHandler):
                               commits=commits))
 
     @gen.coroutine
-    def get_pull_request(self, pr, token=None):
-        # [TODO] figure out how to get base and head commitsids
+    def get_pull_request(self, pullid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2167824
-        res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/pull-requests/'+str(pr),
+        res = yield self.api('get', '%s/repos/%s/pull-requests/%s' % (self.project, self.data['repo']['name'], pullid),
                              token=None)
+        # need to get all commits, shit.
+        commits = yield self.get_pull_request_commits(pullid, token=token)
         raise gen.Return(dict(open=res['open'],
                               merged=res['state'] == 'MERGED',
-                              id=str(pr),
-                              number=str(pr),
+                              id=str(pullid),
+                              number=str(pullid),
                               base=dict(branch=res['toRef']['id'].replace('refs/heads/', ''),
-                                        commitid=None),
+                                        commitid=commits[-1]),
                               head=dict(branch=res['fromRef']['id'].replace('refs/heads/', ''),
-                                        commitid=None)))
+                                        commitid=commits[0])))
 
     @gen.coroutine
     def list_repos(self, token=None):

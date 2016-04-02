@@ -117,9 +117,13 @@ class BaseHandler:
                         break
 
                     sol4 = source[:4]
-                    if sol4 == '--- ' and source != '--- /dev/null':
-                        _file['before'] = source[6:] if source[4:6] in ('a/', 'b/') else source[4:]
-                        _file['type'] = 'new'
+                    if sol4 == '--- ':
+                        before = source[6:] if source[4:6] == 'a/' else source[4:]
+                        if before == '/dev/null':
+                            _file['type'] = 'new'
+
+                        elif before != fname:
+                            _file['before'] = before
 
                     elif sol4 == 'new ':
                         _file['type'] = 'new'
@@ -146,7 +150,7 @@ class BaseHandler:
                         _file['segments'].append(segment)
 
                     elif source == '':
-                        break
+                        continue
 
                     else:
                         # actual lines
@@ -162,8 +166,9 @@ class BaseHandler:
         for fname, data in diff['files'].iteritems():
             rm = 0
             add = 0
-            for segment in data['segments']:
-                rm += sum([1 for line in segment['lines'] if line[0] == '-'])
-                add += sum([1 for line in segment['lines'] if line[0] == '+'])
+            if 'segments' in data:
+                for segment in data['segments']:
+                    rm += sum([1 for line in segment['lines'] if line[0] == '-'])
+                    add += sum([1 for line in segment['lines'] if line[0] == '+'])
             data['totals'] = dict(added=add, removed=rm)
         return diff

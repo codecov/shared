@@ -43,11 +43,14 @@ class Github(BaseHandler, OAuth2Mixin):
 
         method = (method or 'GET').upper()
 
+        if method != 'GET' and os.getenv('TORNGIT_DISABLE_EDITS') == 'TRUE':
+            raise NotImplemented('TORNGIT_DISABLE_EDITS is enabled which rejected this api request.')
+
         if url[0] == '/':
             _log = dict(event='api',
                         endpoint=url,
                         method=method,
-                        consumer=(token or self.token).get('username'))
+                        bot=(token or self.token).get('username'))
             url = self.api_url + url
 
         url = url_concat(url, args).replace(' ', '%20')
@@ -64,9 +67,6 @@ class Github(BaseHandler, OAuth2Mixin):
                                    request_timeout=self._timeouts[1])
 
         except ClientError as e:
-            if e.response is None:
-                raise ClientError(502, 'GitHub is was not able to be reached. Please try again.')
-
             if e.response.code == 301:
                 # repo moved
                 repo = yield self.get_repository()
@@ -81,6 +81,9 @@ class Github(BaseHandler, OAuth2Mixin):
                      rlr=e.response.headers.get('X-RateLimit-Reset'),
                      **_log)
 
+            if e.response is None:
+                raise ClientError(502, 'GitHub was not able to be reached. Response empty. Please try again.')
+
             if '"Bad credentials"' in e.response.body:
                 e.message = 'login'
 
@@ -88,7 +91,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 raise
 
         except socket.gaierror:
-            raise ClientError(502, 'GitHub is was not able to be reached. Please try again.')
+            raise ClientError(502, 'GitHub was not able to be reached. Gateway 502. Please try again.')
 
         else:
             self.log(status=res.code,
@@ -378,7 +381,10 @@ class Github(BaseHandler, OAuth2Mixin):
                               commits=[dict(commitid=c['sha'],
                                             message=c['commit']['message'],
                                             timestamp=c['commit']['author']['date'],
-                                            author=c['commit']['author']) for c in ([res['base_commit']] + res['commits'])]))
+                                            author=dict(id=c['author']['id'],
+                                                        username=c['author']['login'],
+                                                        name=c['commit']['author']['name'],
+                                                        email=c['commit']['author']['email'])) for c in ([res['base_commit']] + res['commits'])]))
 
     @gen.coroutine
     def get_commit(self, commitid, token=None):
@@ -396,9 +402,9 @@ class Github(BaseHandler, OAuth2Mixin):
     # Pull Requests
     # -------------
     @gen.coroutine
-    def get_pull_request(self, pr, token=None):
+    def get_pull_request(self, pullid, token=None):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
-        res = yield self.api('get', '/repos/%s/pulls/%s' % (self.slug, pr), token=token)
+        res = yield self.api('get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
         raise gen.Return(dict(base=dict(branch=res['base']['ref'],
                                         commitid=res['base']['sha']),
                               head=dict(branch=res['head']['ref'],
@@ -406,41 +412,24 @@ class Github(BaseHandler, OAuth2Mixin):
                               open=res['state'] == 'open',
                               merged=res['merged'],
                               title=res['title'],
-                              id=str(pr), number=str(pr)))
+                              id=str(pullid), number=str(pullid)))
 
     @gen.coroutine
     def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
-        if commitid:
-            # https://developer.github.com/v3/search/#search-issues
-            prs = yield self.api('get', '/search/issues',
-                                 q='%s+repo:%s' % (commitid, self.slug),
-                                 token=token)
-            if prs['items']:
-                # [TODO] filter out branches
-                raise gen.Return([str(pr['number']) for pr in prs['items'] if pr['state'] == state])
-
-            else:
-                raise gen.Return([])
+        # https://developer.github.com/v3/search/#search-issues
+        query = 'repo:%s+type:pr%s%s' % (
+                (('%s+' % commitid) if commitid else ''),
+                self.slug,
+                (('+state:%s' % state) if state else ''),
+                (('+head:%s' % branch) if branch else ''))
+        prs = yield self.api('get', '/search/issues',
+                             q=query,
+                             token=token)
+        if prs['items']:
+            raise gen.Return([str(pr['number']) for pr in prs['items']])
 
         else:
-            # https://developer.github.com/v3/pulls/#list-pull-requests
-            page = 0
-            prs = []
-            while True:
-                page += 1
-                res = yield self.api('get', '/repos/%s/pulls' % self.slug,
-                                     state=state, per_page=100, page=page, token=token)
-                if len(res) == 0:
-                    break
-
-                prs.extend([str(b['number'])
-                            for b in res
-                            if b['state'] == state and
-                               (branch is None or b['head']['ref'] == branch)])
-                if len(res) < 100:
-                    break
-
-            raise gen.Return(prs)
+            raise gen.Return([])
 
     def get_head_if_merge_commit(self, message):
         if is_merge_commit(message):

@@ -140,9 +140,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(data)
 
     @gen.coroutine
-    def get_pull_request(self, pr, token=None):
+    def get_pull_request(self, pullid, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETaspecificpullrequest
-        res = yield self.api('2', 'get', '/repositories/%s/pullrequests/%s' % (self.slug, pr), token=token)
+        res = yield self.api('2', 'get', '/repositories/%s/pullrequests/%s' % (self.slug, pullid), token=token)
         raise gen.Return(dict(base=dict(branch=res['destination']['branch']['name'],
                                         commitid=res['destination']['commit']['hash']),  # its only 12 long...ugh
                               head=dict(branch=res['source']['branch']['name'],
@@ -151,7 +151,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               merged=res['state'] == 'MERGED',
                               title=res['title'],
                               id=str(res['id']),
-                              number=str(pr)))
+                              number=str(pullid)))
 
     @gen.coroutine
     def post_comment(self, issueid, body, token=None):
