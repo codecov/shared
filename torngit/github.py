@@ -417,7 +417,7 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
         # https://developer.github.com/v3/search/#search-issues
-        query = 'repo:%s+type:pr%s%s' % (
+        query = '%srepo:%s+type:pr%s%s' % (
                 (('%s+' % commitid) if commitid else ''),
                 self.slug,
                 (('+state:%s' % state) if state else ''),
