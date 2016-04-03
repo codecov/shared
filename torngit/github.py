@@ -132,8 +132,7 @@ class Github(BaseHandler, OAuth2Mixin):
         creds = self._oauth_consumer_token()
         session = yield self.api('get', self.service_url + '/login/oauth/access_token',
                                  code=self.get_argument('code'),
-                                 client_id=creds['key'],
-                                 client_secret=creds['secret'])
+                                 token=creds)
 
         if session.get('access_token'):
             # set current token
