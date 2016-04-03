@@ -36,8 +36,11 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def api(self, method, url, body=None, headers=None, reraise=True, token=None, **args):
         _headers = {'Accept': 'application/json',
-                    'User-Agent': os.getenv('USER_AGENT', 'Default'),
-                    'Authorization': 'token %s' % (token or self.token)['key']}
+                    'User-Agent': os.getenv('USER_AGENT', 'Default')}
+
+        if token or self.token:
+            _headers['Authorization'] = 'token %s' % (token or self.token)['key']
+
         _headers.update(headers or {})
         _log = {}
 
