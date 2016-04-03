@@ -5,8 +5,8 @@ from tornado import gen
 from base64 import b64decode
 from tornado.auth import OAuth2Mixin
 from tornado.httputil import url_concat
-from tornado.escape import json_decode, json_encode
 from tornado.httpclient import HTTPError as ClientError
+from tornado.escape import json_decode, json_encode, url_escape
 
 from torngit.status import Status
 from torngit.base import BaseHandler
@@ -416,15 +416,14 @@ class Github(BaseHandler, OAuth2Mixin):
 
     @gen.coroutine
     def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
-        # https://developer.github.com/v3/search/#search-issues
         query = '%srepo:%s+type:pr%s%s' % (
                 (('%s+' % commitid) if commitid else ''),
-                self.slug,
+                url_escape(self.slug),
                 (('+state:%s' % state) if state else ''),
                 (('+head:%s' % branch) if branch else ''))
-        prs = yield self.api('get', '/search/issues',
-                             q=query,
-                             token=token)
+
+        # https://developer.github.com/v3/search/#search-issues
+        prs = yield self.api('get', '/search/issues?q=%s' % query, token=token)
         if prs['items']:
             raise gen.Return([str(pr['number']) for pr in prs['items']])
 
