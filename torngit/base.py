@@ -7,6 +7,13 @@ from tornado.httpclient import AsyncHTTPClient
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
+def _escape_non_ascii(char, escape=True):
+    if isinstance(char, basestring):
+        return char.encode('utf-8')
+    else:
+        return char
+
+
 class BaseHandler:
     _log_handler = None
     _repo_url = None
@@ -23,11 +30,17 @@ class BaseHandler:
         return self._oauth or self.get_oauth_consumer_token()
 
     @classmethod
-    def new(cls, ioloop=None, log_handler=None, oauth_consumer_token=None, timeouts=None, **kwargs):
+    def new(cls,
+            ioloop=None,
+            log_handler=None,
+            oauth_consumer_token=None,
+            timeouts=None,
+            token=None,
+            **kwargs):
         self = cls()
         self._ioloop = ioloop
         self._timeouts = timeouts or [10, 30]
-        self._token = kwargs.pop('token', None)
+        self._token = token
         self._oauth = oauth_consumer_token
         self.data = {
             'owner': {},
@@ -67,10 +80,8 @@ class BaseHandler:
         d.update(self.data['repo'])
         d.update(self.data.get('commit', {}))
         d.update(data)
-        # d = dict([(k, v.encode('utf-8') if isinstance(v, (str, unicode)) else v) for k, v in d.iteritems()])
-        # TODO need to test this to make sure the correct escaping happens for emojis and non-acii chars
-        return '%s/%s' % (self.service_url,
-                          url_escape((self.urls[endpoint] % d).encode('utf-8')).replace('%2F', '/'))
+        d = dict([(k, _escape_non_ascii(v)) for k, v in d.iteritems() if v is not None])
+        return '%s/%s' % (self.service_url, self.urls[endpoint] % d)
 
     def set_token(self, token):
         self._token = token
