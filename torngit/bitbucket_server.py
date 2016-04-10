@@ -71,6 +71,7 @@ class BitbucketServer(BaseHandler):
     service_url = os.getenv('BITBUCKET_SERVER_URL')
     urls = dict(owner='projects/%(username)s',
                 repo='projects/%(username)s/repos/%(name)s',
+                issues='projects/%(username)s/repos/%(name)s/issues/%(issueid)s',
                 commit='projects/%(username)s/repos/%(name)s/commits/%(commitid)s',
                 commits='projects/%(username)s/repos/%(name)s/commits',
                 src='projects/%(username)s/repos/%(name)s/browse/%(path)s?at=%(commitid)s',

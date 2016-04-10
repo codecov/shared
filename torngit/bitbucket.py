@@ -16,6 +16,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
+                issues='%(username)s/%(name)s/issues/%(issueid)s',
                 commit='%(username)s/%(name)s/commits/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 src='%(username)s/%(name)s/src/%(commitid)s/%(path)s',

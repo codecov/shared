@@ -22,6 +22,7 @@ class Github(BaseHandler, OAuth2Mixin):
     verify_ssl = None
     urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
+                issues='%(username)s/%(name)s/issues/%(issueid)s',
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
@@ -334,6 +335,7 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_commit_statuses(self, commit, token=None):
         # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
         res = yield self.api('get', '/repos/%s/commits/%s/statuses' % (self.slug, commit), token=token)
+        print res
         if len(res) == 0:
             raise gen.Return(None)
 

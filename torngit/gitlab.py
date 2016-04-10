@@ -1,4 +1,5 @@
 import os
+import socket
 from tornado import gen
 from base64 import b64decode
 from json import loads, dumps
@@ -17,6 +18,7 @@ class Gitlab(BaseHandler):
     verify_ssl = None
     urls = dict(owner='%(username)s',
                 repo='%(username)s/%(name)s',
+                issues='%(username)s/%(name)s/issues/%(issueid)s',
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
                 compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
@@ -34,16 +36,19 @@ class Gitlab(BaseHandler):
                         endpoint=path,
                         method=method,
                         bot=(token or self.token).get('username'))
+        else:
+            _log = {}
 
         path = (self.api_url + path) if path[0] == '/' else path
+        headers = {'Accept': 'application/json', 'User-Agent': os.getenv('USER_AGENT', 'Default')}
+        if token or self.token:
+            headers['Authorization'] = 'Bearer '+(token or self.token)['key']
 
         try:
             res = yield self.fetch(url_concat(path, args).replace(' ', '%20'),
                                    method=method.upper(),
                                    body=dumps(body) if type(body) is dict else body,
-                                   headers={'Accept': 'application/json',
-                                            'User-Agent': os.getenv('USER_AGENT', 'Default'),
-                                            'Authorization': 'Bearer '+(token or self.token)['key']},
+                                   headers=headers,
                                    ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
                                    validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
                                    connect_timeout=self._timeouts[0],
@@ -56,12 +61,13 @@ class Gitlab(BaseHandler):
 
             if e.response is None:
                 raise ClientError(502, 'GitLab was not able to be reached. Response empty. Please try again.')
+            raise
 
         except socket.gaierror:
             raise ClientError(502, 'GitLab was not able to be reached. Gateway 502. Please try again.')
 
         else:
-            self.log(status=e.response.code, **_log)
+            self.log(status=res.code, **_log)
             raise gen.Return(None if res.code == 204 else loads(res.body))
 
     @gen.coroutine
