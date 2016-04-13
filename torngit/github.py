@@ -86,7 +86,7 @@ class Github(BaseHandler, OAuth2Mixin):
                      **_log)
 
             if e.response is None:
-                raise ClientError(502, 'GitHub was not able to be reached. Response empty. Please try again.')
+                raise ClientError(502, 'GitHub was not able to be reached. Response empty.')
 
             if '"Bad credentials"' in e.response.body:
                 e.message = 'login'
@@ -95,7 +95,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 raise
 
         except socket.gaierror:
-            raise ClientError(502, 'GitHub was not able to be reached. Gateway 502. Please try again.')
+            raise ClientError(502, 'GitHub was not able to be reached.')
 
         else:
             self.log(status=res.code,
@@ -389,7 +389,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                             author=dict(id=c['author']['id'],
                                                         username=c['author']['login'],
                                                         name=c['commit']['author']['name'],
-                                                        email=c['commit']['author']['email'])) for c in ([res['base_commit']] + res['commits'])]))
+                                                        email=c['commit']['author']['email'])) for c in ([res['base_commit']] + res['commits'])][::-1]))
 
     @gen.coroutine
     def get_commit(self, commitid, token=None):

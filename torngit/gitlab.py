@@ -334,4 +334,4 @@ class Gitlab(BaseHandler):
                                             message=c['title'],
                                             timestamp=c['created_at'],
                                             author=dict(email=c['author_email'],
-                                                        name=c['author_name'])) for c in compare['commits']]))
+                                                        name=c['author_name'])) for c in compare['commits']][::-1]))

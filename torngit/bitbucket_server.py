@@ -293,6 +293,7 @@ class BitbucketServer(BaseHandler):
         while with_commits:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3358848
+            # [TODO] what order are these commits? they need to be [latest....oldest]
             res = yield self.api('get', '%s/repos/%s/compare/commits' % (self.project, self.data['repo']['name']),
                                  page=page, token=token, **{'from': base, 'to': head})
             commits.extend([dict(commitid=c['id'],

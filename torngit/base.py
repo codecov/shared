@@ -7,11 +7,15 @@ from tornado.httpclient import AsyncHTTPClient
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
-def _escape_non_ascii(char, escape=True):
-    if isinstance(char, basestring):
-        return char.encode('utf-8')
+def unicode_escape(string, escape=True):
+    if isinstance(string, basestring):
+        if escape:
+            return url_escape(string).replace('%2F', '/')
+        elif isinstance(string, unicode):
+            return string.encode('utf-8')
+        return string
     else:
-        return char
+        return str(string)
 
 
 class BaseHandler:
@@ -75,13 +79,15 @@ class BaseHandler:
     def renamed_repository(self, repo):
         pass
 
-    def get_href(self, endpoint='repo', **data):
-        d = self.data['owner'].copy()
-        d.update(self.data['repo'])
-        d.update(self.data.get('commit', {}))
-        d.update(data)
-        d = dict([(k, _escape_non_ascii(v)) for k, v in d.iteritems() if v is not None])
-        return '%s/%s' % (self.service_url, self.urls[endpoint] % d)
+    def get_href(self, endpoint='repo', escape=True, **data):
+        if escape:
+            data = dict([(k, unicode_escape(v)) for k, v in data.iteritems()])
+
+        data.setdefault('username', self.data['owner']['username'])
+        if self.data['repo']:
+            data.setdefault('name', self.data['repo']['name'])
+
+        return '%s/%s' % (self.service_url, self.urls[endpoint] % data)
 
     def set_token(self, token):
         self._token = token
