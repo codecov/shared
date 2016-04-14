@@ -37,13 +37,19 @@ class Bitbucket(BaseHandler, OAuthMixin):
         oauth = self._oauth_request_parameters(url, token or self.token, all_args, method=method.upper())
         kwargs.update(oauth)
 
-        res = yield self.fetch(url_concat(url, kwargs),
-                               method=method.upper(),
-                               body=urllib_parse.urlencode(body) if body else None,
-                               headers={'Accept': 'application/json',
-                                        'User-Agent': os.getenv('USER_AGENT', 'Default')},
-                               connect_timeout=self._timeouts[0],
-                               request_timeout=self._timeouts[1])
+        url = url_concat(url, kwargs)
+        kwargs = dict(method=method.upper(),
+                      body=urllib_parse.urlencode(body) if body else None,
+                      headers={'Accept': 'application/json',
+                               'User-Agent': os.getenv('USER_AGENT', 'Default')},
+                      connect_timeout=self._timeouts[0],
+                      request_timeout=self._timeouts[1])
+
+        if method != 'GET' and self.torngit_disable_write:
+            getattr(self, 'torngit_disable_write_callback', lambda a: None)(url, kwargs)
+            raise gen.Return(None)
+
+        res = yield self.fetch(url, **kwargs)
 
         if res.code == 204:
             raise gen.Return(None)

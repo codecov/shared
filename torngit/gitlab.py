@@ -44,15 +44,22 @@ class Gitlab(BaseHandler):
         if token or self.token:
             headers['Authorization'] = 'Bearer '+(token or self.token)['key']
 
+        url = url_concat(path, args).replace(' ', '%20')
+        kwargs = dict(method=method.upper(),
+                      body=dumps(body) if type(body) is dict else body,
+                      headers=headers,
+                      ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
+                      validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
+                      connect_timeout=self._timeouts[0],
+                      request_timeout=self._timeouts[1])
+
+        if method != 'GET' and self.torngit_disable_write:
+            headers['Authorization'] = (token or self.token or {}).get('username')
+            getattr(self, 'torngit_disable_write_callback', lambda a: None)(url, kwargs)
+            raise gen.Return(None)
+
         try:
-            res = yield self.fetch(url_concat(path, args).replace(' ', '%20'),
-                                   method=method.upper(),
-                                   body=dumps(body) if type(body) is dict else body,
-                                   headers=headers,
-                                   ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
-                                   validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                                   connect_timeout=self._timeouts[0],
-                                   request_timeout=self._timeouts[1])
+            res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
             self.log(status=e.response.code,

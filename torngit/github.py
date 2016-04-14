@@ -1,4 +1,3 @@
-import re
 import os
 import socket
 from tornado import gen
@@ -10,9 +9,6 @@ from tornado.escape import json_decode, json_encode, url_escape
 
 from torngit.status import Status
 from torngit.base import BaseHandler
-
-
-is_merge_commit = re.compile(r'Merge \w{40} into \w{40}').match
 
 
 class Github(BaseHandler, OAuth2Mixin):
@@ -47,9 +43,6 @@ class Github(BaseHandler, OAuth2Mixin):
 
         method = (method or 'GET').upper()
 
-        if method != 'GET' and os.getenv('TORNGIT_DISABLE_EDITS') == 'TRUE':
-            raise NotImplemented('TORNGIT_DISABLE_EDITS is enabled which rejected this api request.')
-
         if url[0] == '/':
             _log = dict(event='api',
                         endpoint=url,
@@ -59,16 +52,23 @@ class Github(BaseHandler, OAuth2Mixin):
 
         url = url_concat(url, args).replace(' ', '%20')
 
+        kwargs = dict(method=method,
+                      body=json_encode(body) if body else None,
+                      headers=_headers,
+                      ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
+                      validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
+                      follow_redirects=False,
+                      connect_timeout=self._timeouts[0],
+                      request_timeout=self._timeouts[1])
+
+        if method != 'GET' and self.torngit_disable_write:
+            headers['Authorization'] = (token or self.token or {}).get('username')
+            getattr(self, 'torngit_disable_write_callback', lambda a: None)(url, kwargs)
+            raise gen.Return(None)
+
         try:
-            res = yield self.fetch(url,
-                                   method=method,
-                                   body=json_encode(body) if body else None,
-                                   headers=_headers,
-                                   ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
-                                   validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                                   follow_redirects=False,
-                                   connect_timeout=self._timeouts[0],
-                                   request_timeout=self._timeouts[1])
+            print kwargs
+            res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
             if e.response.code == 301:
@@ -434,7 +434,3 @@ class Github(BaseHandler, OAuth2Mixin):
 
         else:
             raise gen.Return([])
-
-    def get_head_if_merge_commit(self, message):
-        if is_merge_commit(message):
-            return message.split()[1]
