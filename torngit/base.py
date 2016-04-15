@@ -106,7 +106,7 @@ class BaseHandler:
 
     @property
     def slug(self):
-        if self.data['repo'].get('name'):
+        if self.data['owner'].get('username') and self.data['repo'].get('name'):
             return ('%s/%s' % (self.data['owner']['username'], self.data['repo']['name']))
 
     def diff_to_json(self, diff):

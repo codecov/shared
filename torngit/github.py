@@ -67,7 +67,6 @@ class Github(BaseHandler, OAuth2Mixin):
             raise gen.Return(None)
 
         try:
-            print kwargs
             res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
@@ -335,7 +334,6 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_commit_statuses(self, commit, token=None):
         # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
         res = yield self.api('get', '/repos/%s/commits/%s/statuses' % (self.slug, commit), token=token)
-        print res
         if len(res) == 0:
             raise gen.Return(None)
 
