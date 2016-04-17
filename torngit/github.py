@@ -62,7 +62,7 @@ class Github(BaseHandler, OAuth2Mixin):
                       request_timeout=self._timeouts[1])
 
         if method != 'GET' and self.torngit_disable_write:
-            headers['Authorization'] = (token or self.token or {}).get('username')
+            _headers['Authorization'] = (token or self.token or {}).get('username')
             getattr(self, 'torngit_disable_write_callback', lambda a: None)(url, kwargs)
             raise gen.Return(None)
 
