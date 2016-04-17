@@ -175,7 +175,7 @@ class Github(BaseHandler, OAuth2Mixin):
             res = yield self.api('get', '/repositories/%s' % self.data['repo']['service_id'], token=token)
 
         username, repo = tuple(res['full_name'].split('/', 1))
-        parent = res['parent']
+        parent = res.get('parent')
 
         if parent:
             fork = dict(owner=dict(service_id=parent['owner']['id'],
