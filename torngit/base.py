@@ -116,73 +116,70 @@ class BaseHandler:
         docs/specs/diff.json
         """
         results = {}
-        diff = ('\n'+diff).split('\ndiff --git a/')[1:]
+        diff = ('\n%s' % diff).split('\ndiff --git a/')
         segment = None
-        for fnum, _diff in enumerate(diff):
-            slt = _diff.split('\n', 2) + ['', '']
-            fname = slt[0].split(' b/')[-1]
-            _file = results[fname] = dict(type=None)
+        for _diff in diff[1:]:
+            _diff = _diff.splitlines()
+
+            before, after = _diff.pop(0).split(' b/', 1)
 
             # Is the file empty, skipped, etc
             # -------------------------------
-            if slt[1][:17] == 'deleted file mode':
-                _file['type'] = 'deleted'
+            _file = dict(type='new' if before == '/dev/null' else 'modified',
+                         before=None if before == after or before == '/dev/null' else before,
+                         segments=[])
 
-            else:
-                _file['type'] = 'modified'
-                _file['before'] = None
-                _file['segments'] = []
+            results[after] = _file
 
-                # Get coverage data on each line
-                # ------------------------------
-                # make file, this is ONE file not multiple
-                for source in ('diff --git a/%s' % _diff).splitlines():
-                    if source == '\ No newline at end of file':
-                        break
+            # Get coverage data on each line
+            # ------------------------------
+            # make file, this is ONE file not multiple
+            for source in _diff:
+                if source == '\ No newline at end of file':
+                    break
 
-                    sol4 = source[:4]
-                    if sol4 == '--- ':
-                        before = source[6:] if source[4:6] == 'a/' else source[4:]
-                        if before == '/dev/null':
-                            _file['type'] = 'new'
+                sol4 = source[:4]
+                if sol4 == 'dele':
+                    # deleted file mode 100644
+                    _file['before'] = after
+                    _file['type'] = 'deleted'
+                    _file.pop('segments')
+                    break
 
-                        elif before != fname:
-                            _file['before'] = before
+                elif sol4 == 'new ':
+                    _file['type'] = 'new'
 
-                    elif sol4 == 'new ':
-                        _file['type'] = 'new'
+                elif sol4 == 'Bina':
+                    _file['type'] = 'binary'
+                    _file.pop('before')
+                    _file.pop('segments')
+                    break
 
-                    elif sol4 == 'Bina':
-                        _file['type'] = 'binary'
-                        _file.pop('before')
-                        _file.pop('segments')
-                        break
+                elif sol4 in ('--- ', '+++ ', 'inde', 'diff'):
+                    # diff --git a/app/commit.py b/app/commit.py
+                    # new file mode 100644
+                    # index 0000000..d5ee3d6
+                    # --- /dev/null
+                    # +++ b/app/commit.py
+                    continue
 
-                    elif sol4 in ('--- ', '+++ ', 'inde', 'diff'):
-                        # diff --git a/app/commit.py b/app/commit.py
-                        # new file mode 100644
-                        # index 0000000..d5ee3d6
-                        # --- /dev/null
-                        # +++ b/app/commit.py
-                        continue
+                elif sol4 == '@@ -':
+                    # ex: "@@ -31,8 +31,8 @@ blah blah blah"
+                    # ex: "@@ -0,0 +1 @@"
+                    l = get_start_of_line(source).groups()
+                    segment = dict(header=[l[0], l[1], l[2], l[3]], lines=[])
+                    _file['segments'].append(segment)
 
-                    elif sol4 == '@@ -':
-                        # ex: "@@ -31,8 +31,8 @@ blah blah blah"
-                        # ex: "@@ -0,0 +1 @@"
-                        l = get_start_of_line(source).groups()
-                        segment = dict(header=[l[0], l[1], l[2], l[3]], lines=[])
-                        _file['segments'].append(segment)
+                elif source == '':
+                    continue
 
-                    elif source == '':
-                        continue
+                else:
+                    # actual lines
+                    segment['lines'].append(source)
 
-                    else:
-                        # actual lines
-                        segment['lines'].append(source)
-
-                    # else:
-                    #     results.pop(fname)
-                    #     break
+                # else:
+                #     results.pop(fname)
+                #     break
 
         return self._add_diff_totals(dict(files=results)) if results else None
 

@@ -87,10 +87,12 @@ class Github(BaseHandler, OAuth2Mixin):
             if e.response is None:
                 raise ClientError(502, 'GitHub was not able to be reached. Response empty.')
 
-            if '"Bad credentials"' in e.response.body:
-                e.message = 'login'
+            elif '"Bad credentials"' in e.response.body:
+                e.login = True
+                e.message = 'Bad credentials'
 
             if reraise:
+                e.message = 'GitHub API: %s' % e.message
                 raise
 
         except socket.gaierror:
@@ -384,8 +386,8 @@ class Github(BaseHandler, OAuth2Mixin):
                               commits=[dict(commitid=c['sha'],
                                             message=c['commit']['message'],
                                             timestamp=c['commit']['author']['date'],
-                                            author=dict(id=c['author']['id'],
-                                                        username=c['author']['login'],
+                                            author=dict(id=(c['author'] or {}).get('id'),
+                                                        username=(c['author'] or {}).get('login'),
                                                         name=c['commit']['author']['name'],
                                                         email=c['commit']['author']['email'])) for c in ([res['base_commit']] + res['commits'])][::-1]))
 
