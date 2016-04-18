@@ -66,12 +66,10 @@ class Github(BaseHandler, OAuth2Mixin):
             getattr(self, 'torngit_disable_write_callback', lambda a: None)(url, kwargs)
             raise gen.Return(None)
 
-        print "BEFORE GH"
         try:
             res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
-            print "GH ERROR", e.response.code
             if e.response.code == 301:
                 # repo moved
                 repo = yield self.get_repository()
