@@ -1,10 +1,13 @@
 import os
+from time import time
+from sys import stdout
 from json import loads
 from tornado import gen
 import urllib as urllib_parse
 from tornado.web import HTTPError
 from tornado.auth import OAuthMixin
 from tornado.httputil import url_concat
+from tornado.httpclient import HTTPError as ClientError
 
 from torngit.base import BaseHandler
 
@@ -49,16 +52,27 @@ class Bitbucket(BaseHandler, OAuthMixin):
             getattr(self, 'torngit_disable_write_callback', lambda u, k: None)(url, kwargs)
             raise gen.Return(None)
 
-        res = yield self.fetch(url, **kwargs)
+        start = time()
+        try:
+            res = yield self.fetch(url, **kwargs)
 
-        if res.code == 204:
-            raise gen.Return(None)
-
-        elif 'application/json' in res.headers.get('Content-Type'):
-            raise gen.Return(loads(res.body))
+        except ClientError as e:
+            self.log(status=e.response.code,
+                     body=e.response.body)
+            raise
 
         else:
-            raise gen.Return(res.body)
+            if res.code == 204:
+                raise gen.Return(None)
+
+            elif 'application/json' in res.headers.get('Content-Type'):
+                raise gen.Return(loads(res.body))
+
+            else:
+                raise gen.Return(res.body)
+
+        finally:
+            stdout.write("source=%s measure#service=%dms\n" % (self.service, int((time() - start) * 1000)))
 
     @gen.coroutine
     def _oauth_get_user_future(self, access_token):

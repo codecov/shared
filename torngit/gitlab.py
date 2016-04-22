@@ -1,5 +1,7 @@
 import os
 import socket
+from time import time
+from sys import stdout
 from tornado import gen
 from base64 import b64decode
 from json import loads, dumps
@@ -58,6 +60,7 @@ class Gitlab(BaseHandler):
             getattr(self, 'torngit_disable_write_callback', lambda u, k: None)(url, kwargs)
             raise gen.Return(None)
 
+        start = time()
         try:
             res = yield self.fetch(url, **kwargs)
 
@@ -76,6 +79,9 @@ class Gitlab(BaseHandler):
         else:
             self.log(status=res.code, **_log)
             raise gen.Return(None if res.code == 204 else loads(res.body))
+
+        finally:
+            stdout.write("source=%s measure#service=%dms\n" % (self.service, int((time() - start) * 1000)))
 
     @gen.coroutine
     def get_authenticated_user(self):

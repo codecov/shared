@@ -1,5 +1,7 @@
 import os
 import socket
+from time import time
+from sys import stdout
 from tornado import gen
 from base64 import b64decode
 from tornado.auth import OAuth2Mixin
@@ -66,6 +68,7 @@ class Github(BaseHandler, OAuth2Mixin):
             getattr(self, 'torngit_disable_write_callback', lambda u, k: None)(url, kwargs)
             raise gen.Return(None)
 
+        start = time()
         try:
             res = yield self.fetch(url, **kwargs)
 
@@ -113,6 +116,9 @@ class Github(BaseHandler, OAuth2Mixin):
 
             else:
                 raise gen.Return(res.body)
+
+        finally:
+            stdout.write("source=%s measure#service=%dms\n" % (self.service, int((time() - start) * 1000)))
 
     # Generic
     # -------
