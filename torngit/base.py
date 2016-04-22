@@ -51,6 +51,7 @@ class BaseHandler:
             'owner': {},
             'repo': {}
         }
+
         if torngit_disable_write:
             self.torngit_disable_write, self.torngit_disable_write_callback = torngit_disable_write
         else:

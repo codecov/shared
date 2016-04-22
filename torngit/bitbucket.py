@@ -46,7 +46,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                       request_timeout=self._timeouts[1])
 
         if method != 'GET' and self.torngit_disable_write:
-            getattr(self, 'torngit_disable_write_callback', lambda a: None)(url, kwargs)
+            getattr(self, 'torngit_disable_write_callback', lambda u, k: None)(url, kwargs)
             raise gen.Return(None)
 
         res = yield self.fetch(url, **kwargs)
