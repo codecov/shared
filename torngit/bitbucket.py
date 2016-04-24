@@ -9,6 +9,7 @@ from tornado.auth import OAuthMixin
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
 
+from torngit.status import Status
 from torngit.base import BaseHandler
 
 
@@ -196,10 +197,30 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(True)
 
     @gen.coroutine
-    def get_commit_status(self, commitid, token=None):
+    def get_commit_status(self, commit, token=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
-        # Cannot get "all" builds only lookup by vendor
-        raise gen.Return(None)
+        statuses = yield self.get_commit_statuses(commit, token=token)
+        raise gen.Return(str(statuses))
+
+    @gen.coroutine
+    def get_commit_statuses(self, commit, token=None):
+        statuses, page = [], 0
+        status_keys = dict(INPROGRESS='pending', SUCCESSFUL='success', FAILED='failure')
+        while True:
+            page += 1
+            # https://api.bitbucket.org/2.0/repositories/atlassian/aui/commit/d62ae57/statuses
+            res = yield self.api('2', 'get', '/repositories/%s/commit/%s/statuses' % (self.slug, commit),
+                                 page=page, token=token)
+            _statuses = res['values']
+            if len(_statuses) == 0:
+                break
+            statuses.extend([{'time': s['updated_on'],
+                              'state': status_keys.get(s['state']),
+                              'url': s['url'],
+                              'context': s['key']} for s in _statuses])
+            if len(_statuses) < 100:
+                break
+        raise gen.Return(Status(statuses))
 
     @gen.coroutine
     def set_commit_status(self, commitid, status, context, description, url, token=None):
