@@ -155,7 +155,7 @@ class Gitlab(BaseHandler):
     def list_teams(self, token=None):
         # http://doc.gitlab.com/ce/api/groups.html#list-project-groups
         groups = yield self.api('get', '/groups')
-        raise gen.Return([g['path'] for g in groups])
+        raise gen.Return([dict(name=g['name'], id=g['id'], email=None, username=g['path']) for g in groups])
 
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
