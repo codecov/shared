@@ -10,7 +10,7 @@ get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 def unicode_escape(string, escape=True):
     if isinstance(string, basestring):
         if escape:
-            return url_escape(string).replace('%2F', '/')
+            return url_escape(string, plus=False).replace('%2F', '/')
         elif isinstance(string, unicode):
             return string.encode('utf-8')
         return string
