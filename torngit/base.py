@@ -71,6 +71,9 @@ class BaseHandler:
         default.update(kwargs)
         logger.log(**default)
 
+    def __repr__(self):
+        return '<%s slug=%s/%s ownerid=%s repoid=%s>' % (self.service, self.slug, self.data['owner'].get('ownerid'), self.data['repo'].get('repoid'))
+
     @property
     def fetch(self):
         if not self._client:
