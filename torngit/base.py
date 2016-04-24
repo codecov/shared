@@ -61,11 +61,6 @@ class BaseHandler:
         self.data.update(kwargs)
         return self
 
-    def __repr__(self):
-        # for tracebacks
-        # http://cl.ly/3n2a0k3v2m2y
-        return self.data
-
     def log(self, **kwargs):
         if self._log_handler:
             self._log_handler(kwargs)
