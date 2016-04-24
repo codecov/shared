@@ -316,7 +316,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_repository(self, token=None):
         # http://doc.gitlab.com/ce/api/projects.html#get-single-project
-        if self.data['repo']['service_id'] is None:
+        if self.data['repo'].get('service_id') is None:
             res = yield self.api('get', '/projects/'+self.slug.replace('/', '%2F'), token=token)
         else:
             res = yield self.api('get', '/projects/'+self.data['repo']['service_id'], token=token)

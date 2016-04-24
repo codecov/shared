@@ -277,7 +277,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     @gen.coroutine
     def get_repository(self, token=None):
-        if self.data['repo']['service_id'] is None:
+        if self.data['repo'].get('service_id') is None:
             # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource#repositoryResource-GETarepository
             res = yield self.api('2', 'get', '/repositories/'+self.slug, token=token)
         else:
