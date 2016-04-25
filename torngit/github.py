@@ -73,30 +73,31 @@ class Github(BaseHandler, OAuth2Mixin):
             res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
-            if e.response.code == 301:
-                # repo moved
-                repo = yield self.get_repository()
-                self.data['owner']['username'] = repo['owner']['username']
-                self.data['repo']['name'] = repo['repo']['name']
-                self.renamed_repository(repo)
-
-            self.log(status=e.response.code,
-                     body=e.response.body,
-                     rlx=e.response.headers.get('X-RateLimit-Remaining'),
-                     rly=e.response.headers.get('X-RateLimit-Limit'),
-                     rlr=e.response.headers.get('X-RateLimit-Reset'),
-                     **_log)
-
             if e.response is None:
-                raise ClientError(502, 'GitHub was not able to be reached. Response empty.')
+                stdout.write('count#%s.timeout=1\n' % self.service)
+                raise ClientError(502, 'GitHub was not able to be reached, server timed out.')
 
-            elif '"Bad credentials"' in e.response.body:
-                e.login = True
-                e.message = 'Bad credentials'
+            else:
+                if e.response.code == 301:
+                    # repo moved
+                    repo = yield self.get_repository()
+                    self.data['owner']['username'] = repo['owner']['username']
+                    self.data['repo']['name'] = repo['repo']['name']
+                    self.renamed_repository(repo)
 
-            if reraise:
-                e.message = 'GitHub API: %s' % e.message
-                raise
+                self.log(status=e.response.code,
+                         body=e.response.body,
+                         rlx=e.response.headers.get('X-RateLimit-Remaining'),
+                         rly=e.response.headers.get('X-RateLimit-Limit'),
+                         rlr=e.response.headers.get('X-RateLimit-Reset'),
+                         **_log)
+
+                if '"Bad credentials"' in e.response.body:
+                    e.login = True
+                    e.message = 'Bad credentials'
+
+                if reraise:
+                    raise ClientError(e.response.code, 'GitHub API: %s' % e.message)
 
         except socket.gaierror:
             raise ClientError(502, 'GitHub was not able to be reached.')
