@@ -276,9 +276,6 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     @gen.coroutine
     def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
-        if commitid:
-            raise NotImplemented('dont know how to search by commitid yet')
-
         state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state, '')
         pulls, page = [], 0
         while True:
@@ -289,12 +286,23 @@ class Bitbucket(BaseHandler, OAuthMixin):
             _prs = res['values']
             if len(_prs) == 0:
                 break
-            pulls.extend([str(b['id'])
-                          for b in _prs
-                          if branch is None or b['source']['branch']['name'] == branch])
+
+            if commitid:
+                for b in _prs:
+                    if commitid.startswith(b['source']['commit']['hash']):
+                        raise gen.Return(str(b['id']))
+            else:
+                pulls.extend([str(b['id'])
+                              for b in _prs
+                              if branch is None or b['source']['branch']['name'] == branch])
+
             if len(_prs) < 100:
                 break
-        raise gen.Return(pulls)
+
+        if commitid:
+            raise gen.Return(None)
+        else:
+            raise gen.Return(pulls)
 
     @gen.coroutine
     def get_repository(self, token=None):
