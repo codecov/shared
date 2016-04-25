@@ -92,12 +92,11 @@ class Github(BaseHandler, OAuth2Mixin):
                          rlr=e.response.headers.get('X-RateLimit-Reset'),
                          **_log)
 
-                if '"Bad credentials"' in e.response.body:
-                    e.login = True
-                    e.message = 'Bad credentials'
-
                 if reraise:
-                    raise ClientError(e.response.code, 'GitHub API: %s' % e.message)
+                    error = ClientError(e.response.code, 'GitHub API: %s' % e.message)
+                    if '"Bad credentials"' in e.response.body:
+                        error.login = True
+                    raise error
 
         except socket.gaierror:
             raise ClientError(502, 'GitHub was not able to be reached.')
