@@ -93,7 +93,7 @@ class BaseHandler:
         if escape:
             data = dict([(k, unicode_escape(v)) for k, v in data.iteritems()])
 
-        data.setdefault('username', self.data['owner']['username'])
+        data.setdefault('username', self.data['owner'].get('username'))
         if self.data['repo']:
             data.setdefault('name', self.data['repo']['name'])
 
