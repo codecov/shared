@@ -338,7 +338,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         src = yield self.api('1', 'get', '/repositories/%s/src/%s/%s' % (self.slug, ref, path),
                              token=token)
         raise gen.Return(dict(commitid=src['node'],
-                              content=src['content']))
+                              content=src['data']))
 
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
