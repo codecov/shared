@@ -93,7 +93,7 @@ class Github(BaseHandler, OAuth2Mixin):
                          **_log)
 
                 if reraise:
-                    error = ClientError(e.response.code, reason='GitHub API: %s' % e.message)
+                    error = ClientError(e.response.code, 'GitHub API: %s' % e.message)
                     if '"Bad credentials"' in e.response.body:
                         error.login = True
                     raise error
