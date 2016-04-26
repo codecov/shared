@@ -76,6 +76,7 @@ class BitbucketServer(BaseHandler):
                 commits='projects/%(username)s/repos/%(name)s/commits',
                 src='projects/%(username)s/repos/%(name)s/browse/%(path)s?at=%(commitid)s',
                 tree='projects/%(username)s/repos/%(name)s/browse?at=%(commitid)s',
+                # [TODO] idk if this is correct
                 create_file='projects/%(username)s/repos/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
                 branch='projects/%(username)s/repos/%(name)s/browser?at=%(branch)s',
                 pull='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
