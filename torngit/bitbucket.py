@@ -58,8 +58,14 @@ class Bitbucket(BaseHandler, OAuthMixin):
             res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
-            self.log(status=e.response.code,
-                     body=e.response.body)
+            if e.response is None:
+                stdout.write('count#%s.timeout=1\n' % self.service)
+                raise ClientError(502, 'Bitbucket was not able to be reached, server timed out.')
+
+            else:
+                self.log(status=e.response.code,
+                         body=e.response.body)
+            e.message = 'Bitbucket API: %s' % e.message
             raise
 
         else:

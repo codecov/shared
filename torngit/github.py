@@ -343,7 +343,7 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
         res = yield self.api('get', '/repos/%s/commits/%s/statuses' % (self.slug, commit), token=token)
         if len(res) == 0:
-            raise gen.Return(None)
+            raise gen.Return([])
 
         statuses = [{'time': s['updated_at'],
                      'state': s['state'],
