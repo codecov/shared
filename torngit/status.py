@@ -58,7 +58,7 @@ class Status(object):
         return False
 
     def filter(self, method):
-        return Status(filter(method, self._statuses))
+        self._statuses = filter(method, self._statuses)
 
     @property
     def pending(self):
