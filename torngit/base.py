@@ -63,13 +63,7 @@ class BaseHandler:
 
     def log(self, **kwargs):
         if self._log_handler:
-            self._log_handler(kwargs)
-
-        default = getattr(self, 'get_log_payload', dict)()
-        if hasattr(self, 'request_id'):
-            default['id'] = self.request_id
-        default.update(kwargs)
-        logger.log(**default)
+            self._log_handler(**kwargs)
 
     def __repr__(self):
         return '<%s slug=%s ownerid=%s repoid=%s>' % (self.service, self.slug, self.data['owner'].get('ownerid'), self.data['repo'].get('repoid'))
