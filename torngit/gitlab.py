@@ -197,7 +197,7 @@ class Gitlab(BaseHandler):
         statuses = yield self.api('get', '/projects/%s/repository/commits/%s/statuses' % (self.data['repo']['service_id'], commit), token=token)
         _states = dict(pending='pending', success='success', error='failure', failure='failure')
         statuses = [{'time': s.get('finished_at', s.get('created_at')),
-                     'state': _states.get(s['state']),
+                     'state': _states.get(s['status']),
                      'url': s.get('target_url'),
                      'context': s['name']} for s in statuses]
 
