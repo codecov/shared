@@ -156,7 +156,7 @@ class Test(AsyncTestCase):
                 # https://developer.github.com/v3/repos/hooks/#delete-a-hook
                 requests.delete('https://api.github.com/repos/torngit/ci/hooks/%s' % str(hook['id']), headers=self.headers)
 
-        hook = yield self.gh.create_hook('http://localhost', ['push'], 'abc123')
+        hook = yield self.gh.post_webhook('http://localhost', ['push'], 'abc123')
         assert hook is not None
         # https://developer.github.com/v3/repos/hooks/#get-single-hook
         res = requests.get('https://api.github.com/repos/torngit/ci/hooks/%s' % str(hook), headers=self.headers)
