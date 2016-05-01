@@ -255,12 +255,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def get_commit(self, commitid, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/commits+or+commit+Resource#commitsorcommitResource-GETanindividualcommit
-        data = yield self.api('2', 'get', '/repositories/'+self.slug+'/commit/'+commitid, token=token)
+        data = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, commitid), token=token)
         author_login = data['author'].get('user', {}).get('username')
         author_raw = data['author']['raw'][:-1].rsplit(' <', 1)
         if author_login:
             # https://confluence.atlassian.com/display/BITBUCKET/users+Endpoint#usersEndpoint-GETtheuserprofile
-            res = yield self.api('2', 'get', '/users/'+author_login, token=token)
+            res = yield self.api('2', 'get', '/users/%s' % author_login, token=token)
             userid = res['uuid'][1:-1]
         else:
             userid = None
@@ -272,12 +272,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               commitid=commitid,
                               parents=[p['hash'] for p in data['parents']],
                               message=data['message'],
-                              timestamp=data['timestamp']))
+                              timestamp=data['date']))
 
     @gen.coroutine
     def get_branches(self, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource+1.0#repositoryResource1.0-GETlistofbranches
-        res = yield self.api('1', 'get', '/repositories/'+self.slug+'/branches', token=token)
+        res = yield self.api('1', 'get', '/repositories/%s/branches' % self.slug, token=token)
         raise gen.Return([(k, b['raw_node']) for k, b in res.iteritems()])
 
     @gen.coroutine
@@ -287,7 +287,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
-            res = yield self.api('2', 'get', '/repositories/'+self.slug+'/pullrequests',
+            res = yield self.api('2', 'get', '/repositories/%s/pullrequests' % self.slug,
                                  state=state, page=page, token=token)
             _prs = res['values']
             if len(_prs) == 0:

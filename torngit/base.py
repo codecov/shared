@@ -1,5 +1,4 @@
 import re
-from tornwrap import logger
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
