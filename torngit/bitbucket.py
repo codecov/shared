@@ -349,7 +349,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
         # https://bitbucket.org/site/master/issues/4779/ability-to-diff-between-any-two-commits
-        raise HTTPError(501, reason="Bitbucket does not support a compare api yet. Read more here https://bitbucket.org/site/master/issues/4779/ability-to-diff-between-any-two-commits.")
+        raise HTTPError(405, reason="Bitbucket does not support a compare api yet. Read more here https://bitbucket.org/site/master/issues/4779/ability-to-diff-between-any-two-commits.")
 
     @gen.coroutine
     def get_commit_diff(self, commitid, context=None, token=None):
