@@ -302,9 +302,9 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_is_admin(self, user, token=None):
         # http://doc.gitlab.com/ce/permissions/permissions.html#group
-        id = int(user['service_id'])
-        res = yield self.api('get', '/groups/'+str(self.data['owner']['service_id']), token=token)
-        res = any(filter(lambda u: u['id'] == id and u['access_level'] > 39, res))
+        user_id = int(user['service_id'])
+        res = yield self.api('get', '/groups/%s/members' % self.data['owner']['service_id'], token=token)
+        res = any(filter(lambda u: u['id'] == user_id and u['access_level'] > 39, res))
         raise gen.Return(res)
 
     @gen.coroutine
