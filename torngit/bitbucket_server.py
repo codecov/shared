@@ -325,7 +325,7 @@ class BitbucketServer(BaseHandler):
                                         commitid=commits[0])))
 
     @gen.coroutine
-    def list_repos(self, token=None):
+    def list_repos(self, username=None, token=None):
         data, page = [], 0
         while True:
             page += 1

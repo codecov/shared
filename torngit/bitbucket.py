@@ -145,12 +145,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(commits)
 
     @gen.coroutine
-    def list_repos(self, token=None):
+    def list_repos(self, username=None, token=None):
         data, page = [], 0
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
-            res = yield self.api('2', 'get', '/repositories', page=page, token=token)
+            res = yield self.api('2', 'get', '/repositories/%s' % (username or ''), page=page, token=token)
             repos = res
             for repo in repos['values']:
                 data.append(dict(owner=dict(service_id=repo['owner']['uuid'][1:-1],

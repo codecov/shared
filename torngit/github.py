@@ -206,7 +206,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # User Endpoints
     # --------------
     @gen.coroutine
-    def list_repos(self, token=None):
+    def list_repos(self, username=None, token=None):
         """
         GitHub includes all visible repos through
         the same endpoint.
@@ -219,8 +219,12 @@ class Github(BaseHandler, OAuth2Mixin):
         while True:
             page += 1
             # https://developer.github.com/v3/repos/#list-your-repositories
-            repos = yield self.api('get', '/user/repos?per_page=100&page=%d' % page,
-                                   headers=headers, token=token)
+            if username is None:
+                repos = yield self.api('get', '/user/repos?per_page=100&page=%d' % page,
+                                       headers=headers, token=token)
+            else:
+                repos = yield self.api('get', '/users/%s/repos?per_page=100&page=%d' % (username, page),
+                                       headers=headers, token=token)
 
             for repo in repos:
                 _o, _r, parent = repo['owner']['login'], repo['name'], None
