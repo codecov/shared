@@ -123,7 +123,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         data = []
         for username in res['teams'].keys():
             # https://confluence.atlassian.com/bitbucket/teams-endpoint-423626335.html#teamsEndpoint-GETtheteamprofile
-            team = yield self.api('2', 'get', '/team/%s' % username, token=token)
+            team = yield self.api('2', 'get', '/teams/%s' % username, token=token)
             data.append(dict(name=team['display_name'],
                              id=team['uuid'][1:-1],
                              email=None,
