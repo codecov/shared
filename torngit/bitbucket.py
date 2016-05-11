@@ -229,12 +229,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(Status(statuses))
 
     @gen.coroutine
-    def set_commit_status(self, commitid, status, context, description, url, token=None):
+    def set_commit_status(self, commit, status, context, description, url, token=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
         status = dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status)
         assert status, 'status not valid'
         try:
-            res = yield self.api('2', 'post', '/repositories/%s/commit/%s/statuses/build' % (self.slug, commitid),
+            res = yield self.api('2', 'post', '/repositories/%s/commit/%s/statuses/build' % (self.slug, commit),
                                  body=dict(state=status,
                                            key='codecov-'+context,
                                            name=context.capitalize()+' Coverage',
@@ -242,7 +242,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                            description=description),
                                  token=token)
         except:
-            res = yield self.api('2', 'put', '/repositories/%s/commit/%s/statuses/build/codecov-%s' % (self.slug, commitid, context),
+            res = yield self.api('2', 'put', '/repositories/%s/commit/%s/statuses/build/codecov-%s' % (self.slug, commit, context),
                                  body=dict(state=status,
                                            name=context.capitalize()+' Coverage',
                                            url=url,
@@ -253,9 +253,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(res)
 
     @gen.coroutine
-    def get_commit(self, commitid, token=None):
+    def get_commit(self, commit, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/commits+or+commit+Resource#commitsorcommitResource-GETanindividualcommit
-        data = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, commitid), token=token)
+        data = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, commit), token=token)
         author_login = data['author'].get('user', {}).get('username')
         author_raw = data['author']['raw'][:-1].rsplit(' <', 1)
         if author_login:
@@ -269,7 +269,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                           username=author_login,
                                           name=author_raw[0],
                                           email=author_raw[1]),
-                              commitid=commitid,
+                              commitid=commit,
                               parents=[p['hash'] for p in data['parents']],
                               message=data['message'],
                               timestamp=data['date']))
@@ -281,7 +281,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return([(k, b['raw_node']) for k, b in res.iteritems()])
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
+    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
         state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state, '')
         pulls, page = [], 0
         while True:
@@ -293,9 +293,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
             if len(_prs) == 0:
                 break
 
-            if commitid:
+            if commit:
                 for b in _prs:
-                    if commitid.startswith(b['source']['commit']['hash']):
+                    if commit.startswith(b['source']['commit']['hash']):
                         raise gen.Return(str(b['id']))
             else:
                 pulls.extend([str(b['id'])
@@ -305,7 +305,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             if len(_prs) < 100:
                 break
 
-        if commitid:
+        if commit:
             raise gen.Return(None)
         else:
             raise gen.Return(pulls)
@@ -352,8 +352,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise HTTPError(405, reason="Bitbucket does not support a compare api yet. Read more here https://bitbucket.org/site/master/issues/4779/ability-to-diff-between-any-two-commits.")
 
     @gen.coroutine
-    def get_commit_diff(self, commitid, context=None, token=None):
+    def get_commit_diff(self, commit, context=None, token=None):
         # https://confluence.atlassian.com/bitbucket/diff-resource-425462484.html
-        diff = yield self.api('2', 'get', '/repositories/'+self.data['owner']['username']+'/'+self.data['repo']['name']+'/diff/'+commitid,
+        diff = yield self.api('2', 'get', '/repositories/'+self.data['owner']['username']+'/'+self.data['repo']['name']+'/diff/'+commit,
                               token=token)
         raise gen.Return(self.diff_to_json(diff))

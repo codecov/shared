@@ -228,9 +228,9 @@ class BitbucketServer(BaseHandler):
                               content='\n'.join(map(lambda a: a.get('text', ''), content))))
 
     @gen.coroutine
-    def get_commit(self, commitid, token=None):
+    def get_commit(self, commit, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3530560
-        res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/commits/'+commitid, token=token)
+        res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/commits/'+commit, token=token)
 
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2598928
         _a = yield self.api('get', '/users', filter=res['author']['emailAddress'], token=token)
@@ -242,7 +242,7 @@ class BitbucketServer(BaseHandler):
                                           username=author.get('name'),
                                           email=res['author']['emailAddress'],
                                           name=res['author']['name']),
-                              commitid=commitid,
+                              commitid=commit,
                               parents=[p['id'] for p in res['parents']],
                               message=res['message'],
                               timestamp=res['authorTimestamp']))
@@ -262,9 +262,9 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(commits)
 
     @gen.coroutine
-    def get_commit_diff(self, commitid, context=None, token=None):
+    def get_commit_diff(self, commit, context=None, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3120016
-        diff = yield self.api('get', '%s/repos/%s/commits/%s/diff' % (self.project, self.data['repo']['name'], commitid),
+        diff = yield self.api('get', '%s/repos/%s/commits/%s/diff' % (self.project, self.data['repo']['name'], commit),
                               withComments=False,
                               whitespace='ignore-all',
                               contextLines=context or -1,
@@ -381,10 +381,10 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(Status(data))
 
     @gen.coroutine
-    def set_commit_status(self, commitid, status, context, description, url=None, token=None):
+    def set_commit_status(self, commit, status, context, description, url=None, token=None):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
         assert status in ('pending', 'success', 'error', 'failure'), 'status not valid'
-        yield self.api('post', self.service_url+'/rest/build-status/1.0/commits/'+commitid,
+        yield self.api('post', self.service_url+'/rest/build-status/1.0/commits/'+commit,
                        body=dict(state=dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status),
                                  key=context,
                                  name=context,
@@ -429,8 +429,8 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(branches)
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
-        if commitid:
+    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
+        if commit:
             raise NotImplemented('dont know how to search by commitid yet')
 
         prs, page = [], 0

@@ -225,9 +225,9 @@ class Gitlab(BaseHandler):
         return False
 
     @gen.coroutine
-    def get_commit(self, commitid, token=None):
+    def get_commit(self, commit, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-a-single-commit
-        res = yield self.api('get', '/projects/%s/repository/commits/%s' % (self.data['repo']['service_id'], commitid), token=token)
+        res = yield self.api('get', '/projects/%s/repository/commits/%s' % (self.data['repo']['service_id'], commit), token=token)
 
         # http://doc.gitlab.com/ce/api/users.html
         authors = yield self.api('get', '/users?search='+res['author_name'], token=token)
@@ -239,7 +239,7 @@ class Gitlab(BaseHandler):
                                           name=res['author_name']),
                               message=res['message'],
                               parents=res['parent_ids'],
-                              commitid=commitid,
+                              commitid=commit,
                               timestamp=res['committed_date']))
 
     @gen.coroutine
@@ -262,20 +262,20 @@ class Gitlab(BaseHandler):
         raise gen.Return([(b['name'], b['commit']['id']) for b in res])
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
+    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
         # ONLY searchable by branch.
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state), token=token)
         pulls = [b['iid'] for b in res if branch is None or b['source_branch'] == branch]
-        if commitid:
+        if commit:
             # filter: commit must be in commits
             # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
             for pull in pulls:
                 res = yield self.api('get', '/projects/%s/merge_requests/%s/commits' % (self.data['repo']['service_id'], pull), token=token)
                 found = False
                 for commit in res:
-                    if commit['id'] == commitid:
+                    if commit['id'] == commit:
                         found = True
                         break
                 if not found:
@@ -308,9 +308,9 @@ class Gitlab(BaseHandler):
         raise gen.Return(res)
 
     @gen.coroutine
-    def get_commit_diff(self, commitid, context=None, token=None):
+    def get_commit_diff(self, commit, context=None, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-diff-of-a-commit
-        res = yield self.api('get', '/projects/%s/repository/commits%s/diff' % (self.data['repo']['service_id'], commitid), token=token)
+        res = yield self.api('get', '/projects/%s/repository/commits%s/diff' % (self.data['repo']['service_id'], commit), token=token)
         raise gen.Return(self.diff_to_json(res))
 
     @gen.coroutine

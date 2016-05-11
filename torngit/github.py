@@ -403,14 +403,14 @@ class Github(BaseHandler, OAuth2Mixin):
                                                         email=c['commit']['author']['email'])) for c in ([res['base_commit']] + res['commits'])][::-1]))
 
     @gen.coroutine
-    def get_commit(self, commitid, token=None):
+    def get_commit(self, commit, token=None):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
-        res = yield self.api('get', '/repos/%s/commits/%s' % (self.slug, commitid), token=token)
+        res = yield self.api('get', '/repos/%s/commits/%s' % (self.slug, commit), token=token)
         raise gen.Return(dict(author=dict(id=str(res['author']['id']) if res['author'] else None,
                                           username=res['author']['login'] if res['author'] else None,
                                           email=res['commit']['author'].get('email'),
                                           name=res['commit']['author'].get('name')),
-                              commitid=commitid,
+                              commitid=commit,
                               parents=[p['sha'] for p in res['parents']],
                               message=res['commit']['message'],
                               timestamp=res['commit']['author'].get('date')))
@@ -431,9 +431,9 @@ class Github(BaseHandler, OAuth2Mixin):
                               id=str(pullid), number=str(pullid)))
 
     @gen.coroutine
-    def get_pull_requests(self, commitid=None, branch=None, state='open', token=None):
+    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
         query = '%srepo:%s+type:pr%s%s' % (
-                (('%s+' % commitid) if commitid else ''),
+                (('%s+' % commit) if commit else ''),
                 url_escape(self.slug),
                 (('+state:%s' % state) if state else ''),
                 (('+head:%s' % branch) if branch else ''))
