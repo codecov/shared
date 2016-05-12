@@ -55,11 +55,6 @@ class Gitlab(BaseHandler):
                       connect_timeout=self._timeouts[0],
                       request_timeout=self._timeouts[1])
 
-        if method != 'GET' and self.torngit_disable_write:
-            headers['Authorization'] = (token or self.token or {}).get('username')
-            getattr(self, 'torngit_disable_write_callback', lambda u, k: None)(url, kwargs)
-            raise gen.Return(None)
-
         start = time()
         try:
             res = yield self.fetch(url, **kwargs)

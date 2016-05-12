@@ -39,7 +39,6 @@ class BaseHandler:
             oauth_consumer_token=None,
             timeouts=None,
             token=None,
-            torngit_disable_write=None,
             **kwargs):
         self = cls()
         self._ioloop = ioloop
@@ -50,11 +49,6 @@ class BaseHandler:
             'owner': {},
             'repo': {}
         }
-
-        if torngit_disable_write:
-            self.torngit_disable_write, self.torngit_disable_write_callback = torngit_disable_write
-        else:
-            self.torngit_disable_write = False
 
         self._log_handler = log_handler
         self.data.update(kwargs)
