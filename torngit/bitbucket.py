@@ -107,6 +107,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(True)
 
     @gen.coroutine
+    def delete_webhook(self, hookid, token=None):
+        # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html#webhooksResource-DELETEthewebhook
+        yield self.api('2', 'delete', '/repositories/%s/hooks/%s' % (self.slug, hookid), token=token)
+        raise gen.Return(True)
+
+    @gen.coroutine
     def get_is_admin(self, user, token=None):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
         res = yield self.api('1', 'get', '/user/privileges', token=token)

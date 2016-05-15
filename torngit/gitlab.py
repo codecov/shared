@@ -115,6 +115,12 @@ class Gitlab(BaseHandler):
                                  **events), token=token)
         raise gen.Return(True)
 
+    @gen.coroutine
+    def delete_webhook(self, hookid, token=None):
+        # http://docs.gitlab.com/ce/api/projects.html#delete-project-hook
+        yield self.api('delete', '/projects/%s/hooks/%s' % (self.data['repo']['service_id'], hookid), token=token)
+        raise gen.Return(True)
+
     def diff_to_json(self, diff):
         for d in diff:
             mode = ''

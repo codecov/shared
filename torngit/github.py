@@ -302,6 +302,12 @@ class Github(BaseHandler, OAuth2Mixin):
                        token=token)
         raise gen.Return(True)
 
+    @gen.coroutine
+    def delete_webhook(self, hookid, token=None):
+        # https://developer.github.com/v3/repos/hooks/#delete-a-hook
+        yield self.api('delete', '/repos/%s/hooks/%s' % (self.slug, hookid), token=token)
+        raise gen.Return(True)
+
     # Comments
     # --------
     @gen.coroutine
