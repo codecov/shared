@@ -436,8 +436,7 @@ class Github(BaseHandler, OAuth2Mixin):
         query = '%srepo:%s+type:pr%s%s' % (
                 (('%s+' % commit) if commit else ''),
                 url_escape(self.slug),
-                (('+state:%s' % state) if state else ''),
-                (('+head:%s' % branch) if branch else ''))
+                (('+state:%s' % state) if state else ''))
 
         # https://developer.github.com/v3/search/#search-issues
         prs = yield self.api('get', '/search/issues?q=%s' % query, token=token)
