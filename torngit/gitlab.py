@@ -290,9 +290,9 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/permissions/permissions.html
         can_edit = False
         try:
-            res = yield self.api('get', '/projects/'+str(self.data['repo']['service_id']), token=token)
-            permission = max([(res['permissions']['group_access'] or {}).get('access_level', 0),
-                              (res['permissions']['project_access'] or {}).get('access_level', 0)])
+            res = yield self.api('get', '/projects/%s' % self.data['repo']['service_id'], token=token)
+            permission = max([(res['permissions']['group_access'] or {}).get('access_level') or 0,
+                              (res['permissions']['project_access'] or {}).get('access_level') or 0])
             can_edit = permission > 20
         except:
             if self.data['private']:
