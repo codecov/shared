@@ -386,7 +386,7 @@ class Github(BaseHandler, OAuth2Mixin):
         files = {}
         for f in res['files']:
             diff = self.diff_to_json('diff --git a/%s b/%s%s\n%s\n%s\n%s' % (
-                                     f.get('previous_filename', f.get('filename')),
+                                     f.get('previous_filename') or f.get('filename'),
                                      f.get('filename'),
                                      '\ndeleted file mode 100644' if f['status'] == 'removed' else '\nnew file mode 100644' if f['status'] == 'added' else '',
                                      '--- ' + ('/dev/null' if f['status'] == 'new' else ('a/' + f.get('previous_filename', f.get('filename')))),

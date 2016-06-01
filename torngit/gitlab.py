@@ -60,12 +60,13 @@ class Gitlab(BaseHandler):
             res = yield self.fetch(url, **kwargs)
 
         except ClientError as e:
+            if e.response is None:
+                raise ClientError(502, 'GitLab was not able to be reached. Response empty. Please try again.')
+
             self.log(status=e.response.code,
                      body=e.response.body,
                      **_log)
 
-            if e.response is None:
-                raise ClientError(502, 'GitLab was not able to be reached. Response empty. Please try again.')
             raise
 
         except socket.gaierror:
