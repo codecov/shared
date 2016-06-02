@@ -25,6 +25,7 @@ class BaseHandler:
     _ioloop = None
     _oauth = None
     _token = None
+    _verify_ssl = None
 
     # Important. Leave this commented out to properly override
     # def get_oauth_token(self, service):
@@ -50,7 +51,7 @@ class BaseHandler:
             'owner': {},
             'repo': {}
         }
-        self.verify_ssl = verify_ssl
+        self._verify_ssl = verify_ssl
 
         self._log_handler = log_handler
         self.data.update(kwargs)

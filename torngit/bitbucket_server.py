@@ -82,17 +82,6 @@ class BitbucketServer(BaseHandler):
                 pull='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
                 compare='')
 
-    if os.getenv('BITBUCKET_SERVER_VERIFY_SSL') == 'FALSE':
-        # https://github.com/joestump/python-oauth2/blob/9d5a569fc9edda678102edccb330e1f692122a5a/oauth2/__init__.py#L627
-        # https://github.com/jcgregorio/httplib2/blob/e7f6e622047107e701ee70e7ec586717d97b0cbb/python2/httplib2/__init__.py#L1158
-        verify_ssl = dict(disable_ssl_certificate_validation=True, ca_certs=False)
-
-    elif os.getenv('BITBUCKET_SERVER_SSL_PEM'):
-        verify_ssl = dict(ca_certs=os.getenv('BITBUCKET_SERVER_SSL_PEM'))
-
-    else:
-        verify_ssl = dict(ca_certs=os.getenv('REQUESTS_CA_BUNDLE'))
-
     @property
     def project(self):
         if str(self.data['owner_service_id'])[0] == 'U':
@@ -144,7 +133,14 @@ class BitbucketServer(BaseHandler):
             token = None
 
         # create oauth consumer
-        client = oauth.Client(oauth.Consumer(self._oauth_consumer_token()['key'], ''), token, **self.verify_ssl)
+        if self._verify_ssl is False:
+            # https://github.com/joestump/python-oauth2/blob/9d5a569fc9edda678102edccb330e1f692122a5a/oauth2/__init__.py#L627
+            # https://github.com/jcgregorio/httplib2/blob/e7f6e622047107e701ee70e7ec586717d97b0cbb/python2/httplib2/__init__.py#L1158
+            _verify_ssl = dict(disable_ssl_certificate_validation=True, ca_certs=False)
+        else:
+            _verify_ssl = dict(ca_certs=self._verify_ssl)
+
+        client = oauth.Client(oauth.Consumer(self._oauth_consumer_token()['key'], ''), token, **_verify_ssl)
         client.set_signature_method(signature)
 
         response, content = client.request(url, method.upper(), body or '')

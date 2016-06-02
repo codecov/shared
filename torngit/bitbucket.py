@@ -17,7 +17,6 @@ class Bitbucket(BaseHandler, OAuthMixin):
     service = 'bitbucket'
     api_url = 'https://bitbucket.org'
     service_url = 'https://bitbucket.org'
-
     urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
                 issues='%(username)s/%(name)s/issues/%(issueid)s',
@@ -44,6 +43,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
         url = url_concat(url, kwargs)
         kwargs = dict(method=method.upper(),
                       body=urllib_parse.urlencode(body) if body else None,
+                      ca_certs=self._verify_ssl if type(self._verify_ssl) is not bool else None,
+                      validate_cert=self._verify_ssl if type(self._verify_ssl) is bool else None,
                       headers={'Accept': 'application/json',
                                'User-Agent': os.getenv('USER_AGENT', 'Default')},
                       connect_timeout=self._timeouts[0],
