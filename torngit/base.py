@@ -39,6 +39,7 @@ class BaseHandler:
             oauth_consumer_token=None,
             timeouts=None,
             token=None,
+            verify_ssl=None,
             **kwargs):
         self = cls()
         self._ioloop = ioloop
@@ -49,6 +50,7 @@ class BaseHandler:
             'owner': {},
             'repo': {}
         }
+        self.verify_ssl = verify_ssl
 
         self._log_handler = log_handler
         self.data.update(kwargs)
