@@ -140,7 +140,7 @@ class BaseHandler:
                     _file.pop('segments')
                     break
 
-                elif sol4 == 'new ':
+                elif sol4 == 'new ' and not source.startswith('new mode '):
                     _file['type'] = 'new'
 
                 elif sol4 == 'Bina':
@@ -149,7 +149,7 @@ class BaseHandler:
                     _file.pop('segments')
                     break
 
-                elif sol4 in ('--- ', '+++ ', 'inde', 'diff'):
+                elif sol4 in ('--- ', '+++ ', 'inde', 'diff', 'old ', 'new '):
                     # diff --git a/app/commit.py b/app/commit.py
                     # new file mode 100644
                     # index 0000000..d5ee3d6
@@ -167,7 +167,7 @@ class BaseHandler:
                 elif source == '':
                     continue
 
-                else:
+                elif segment:
                     # actual lines
                     segment['lines'].append(source)
 
