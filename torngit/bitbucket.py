@@ -142,7 +142,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             res = yield self.api('2', 'get', '/repositories/%s/pullrequests/%s/commits' % (self.slug, pullid),
                                  page=page, token=token)
             commits.extend([c['hash'] for c in res['values']])
-            if not res.get('next'):
+            if not res.get('next') or len(res['values']) == 0:
                 break
 
         raise gen.Return(commits)
