@@ -43,7 +43,7 @@ class Gitlab(BaseHandler):
         path = (self.api_url + path) if path[0] == '/' else path
         headers = {'Accept': 'application/json', 'User-Agent': os.getenv('USER_AGENT', 'Default')}
         if token or self.token:
-            headers['Authorization'] = 'Bearer '+(token or self.token)['key']
+            headers['Authorization'] = 'Bearer %s' % (token or self.token)['key']
 
         url = url_concat(path, args).replace(' ', '%20')
         kwargs = dict(method=method.upper(),
@@ -295,7 +295,7 @@ class Gitlab(BaseHandler):
                               (res['permissions']['project_access'] or {}).get('access_level') or 0])
             can_edit = permission > 20
         except:
-            if self.data['private']:
+            if self.data['repo']['private']:
                 raise
 
         raise gen.Return((True, can_edit))
