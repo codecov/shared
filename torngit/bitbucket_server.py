@@ -439,7 +439,7 @@ class BitbucketServer(BaseHandler):
                                  withAttributes=False,
                                  withProperties=False,
                                  state=state, token=token)
-            prs.extend([str(b['id'])
+            prs.extend([(None, str(b['id']))
                         for b in res['values']
                         if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])
             if res['isLastPage']:

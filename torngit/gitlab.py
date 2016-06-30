@@ -173,7 +173,8 @@ class Gitlab(BaseHandler):
                                       open=_pr['state'] == 'opened',
                                       merged=_pr['state'] == 'merged',
                                       title=_pr['title'],
-                                      id=_pr['id'], number=str(pullid)))
+                                      id=str(res['id']),
+                                      number=str(pullid)))
 
     @gen.coroutine
     def _get_head_of(self, branch, token=None):
@@ -245,6 +246,7 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def get_pull_request_commits(self, pullid, token=None):
+        # IMPORTANT! Must provide internal id for the pullid here
         data, page = [], 0
         while True:
             page += 1
@@ -268,19 +270,19 @@ class Gitlab(BaseHandler):
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state), token=token)
-        pulls = [b['iid'] for b in res if branch is None or b['source_branch'] == branch]
+        pulls = [(b['id'], b['iid']) for b in res if branch is None or b['source_branch'] == branch]
         if commit:
             # filter: commit must be in commits
             # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
-            for pull in pulls:
-                res = yield self.api('get', '/projects/%s/merge_requests/%s/commits' % (self.data['repo']['service_id'], pull), token=token)
+            for issueid, pullid in pulls:
+                res = yield self.api('get', '/projects/%s/merge_requests/%s/commits' % (self.data['repo']['service_id'], issueid), token=token)
                 found = False
                 for commit in res:
                     if commit['id'] == commit:
                         found = True
                         break
                 if not found:
-                    pulls.remove(pull)
+                    pulls.remove((issueid, pullid))
 
         raise gen.Return(pulls)
 

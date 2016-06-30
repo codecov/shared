@@ -301,7 +301,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                     if commit.startswith(b['source']['commit']['hash']):
                         raise gen.Return(str(b['id']))
             else:
-                pulls.extend([str(b['id'])
+                pulls.extend([(None, str(b['id']))
                               for b in _prs
                               if branch is None or b['source']['branch']['name'] == branch])
 

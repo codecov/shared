@@ -440,7 +440,7 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/search/#search-issues
         prs = yield self.api('get', '/search/issues?q=%s' % query, token=token)
         if prs['items']:
-            raise gen.Return([str(pr['number']) for pr in prs['items']])
+            raise gen.Return([(None, str(pr['number'])) for pr in prs['items']])
 
         else:
             raise gen.Return([])

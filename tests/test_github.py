@@ -35,22 +35,22 @@ class Test(AsyncTestCase):
     @gen_test
     def test_get_pull_requests_at_sha(self):
         res = yield self.gh.get_pull_requests('9e0ac7c916adc0573014f1d379bdf7ef45acd23e')
-        assert res == ['1']
+        assert res == [(None, '1')]
 
     @gen_test
     def test_get_pull_requests(self):
         res = yield self.gh.get_pull_requests()
-        assert res == ['1']
+        assert res == [(None, '1')]
 
     @gen_test
     def test_get_pull_requests_state_closed(self):
         res = yield self.gh.get_pull_requests(state='closed')
-        assert res == ['2']
+        assert res == [(None, '2')]
 
     @gen_test
     def test_get_pull_requests_state_opened(self):
         res = yield self.gh.get_pull_requests(state='open')
-        assert res == ['1']
+        assert res == [(None, '1')]
 
     @gen_test
     def test_get_pull_request(self):
@@ -64,7 +64,7 @@ class Test(AsyncTestCase):
     @gen_test
     def test_get_pull_request_merge_commit(self):
         res = yield self.gh.get_pull_requests('6b7cf45238ec409064893b51f8dfa2f3ce51c99c')
-        assert res == ['1']
+        assert res == [(None, '1')]
 
     @gen_test
     def test_get_pull_request_sha_not_found(self):
