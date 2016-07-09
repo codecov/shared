@@ -149,7 +149,6 @@ class BitbucketServer(BaseHandler):
         response, content = client.request(url, method.upper(), dumps(body) if body else '',
                                            headers={'Content-Type': 'application/json'} if body else {})
         status = int(response['status'])
-        print 'API:', url, status, content
 
         if status in (200, 201):
             if 'application/json' in response.get('content-type'):
@@ -368,23 +367,6 @@ class BitbucketServer(BaseHandler):
                 organizations[repo['owner']['service_id']] = dict(id=repo['owner']['service_id'],
                                                                   username=repo['owner']['username'])
         raise gen.Return(organizations.values())
-
-    # @gen.coroutine
-    # def get_commit_status(self, commit, _merge=None, token=None):
-    #     # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
-    #     page, data = 0, []
-    #     while True:
-    #         page += 1
-    #         res = yield self.api('get', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
-    #                              page=page, token=token)
-    #         data.extend([{'time': s['dateAdded'],
-    #                       'state': s['state'],
-    #                       'url': s['url'],
-    #                       'context': s['name']} for s in res['values']])
-    #         if res['isLastPage']:
-    #             break
-    #
-    #     raise gen.Return(Status(data))
 
     @gen.coroutine
     def get_commit_statuses(self, commit, _merge=None, token=None):
