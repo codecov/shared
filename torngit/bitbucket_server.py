@@ -176,8 +176,9 @@ class BitbucketServer(BaseHandler):
     def get_is_admin(self, user, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3389568
         res = yield self.api('get', '%s/permissions/users' % self.project, filter=user['username'], token=token)
-        id = int(user['service_id'].replace('U', ''))
-        res = any(filter(lambda v: v.get('user', {}).get('id') == id and v['permission'] == 'ADMIN', res['values']))
+        userid = str(user['service_id']).replace('U', '')
+        # PROJECT_READ, PROJECT_WRITE, PROJECT_ADMIN, ADMIMN
+        res = any(filter(lambda v: str(v['user']['id']) == userid and 'ADMIN' in v['permission'], res['values']))
         raise gen.Return(res)
 
     @gen.coroutine
