@@ -19,6 +19,7 @@ class Github(BaseHandler, OAuth2Mixin):
     api_url = 'https://api.github.com'
     urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
+                user='%(username)s',
                 issues='%(username)s/%(name)s/issues/%(issueid)s',
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
@@ -321,7 +322,7 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         yield self.api('patch', '/repos/%s/issues/comments/%s' % (self.slug, commentid),
                        body=dict(body=body), token=token)
-        raise gen.Return(True)
+        raise gen.Return(commentid)
 
     @gen.coroutine
     def delete_comment(self, issueid, commentid, token=None):

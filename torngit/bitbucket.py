@@ -19,6 +19,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
     service_url = 'https://bitbucket.org'
     urls = dict(repo='%(username)s/%(name)s',
                 owner='%(username)s',
+                user='%(username)s',
                 issues='%(username)s/%(name)s/issues/%(issueid)s',
                 commit='%(username)s/%(name)s/commits/%(commitid)s',
                 commits='%(username)s/%(name)s/commits',
@@ -196,7 +197,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource+1.0#pullrequestsResource1.0-PUTanupdateonacomment
         yield self.api('1', 'put', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
                        body=dict(content=body), token=token)
-        raise gen.Return(True)
+        raise gen.Return(commentid)
 
     @gen.coroutine
     def delete_comment(self, issueid, commentid, body, token=None):

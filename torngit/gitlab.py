@@ -18,6 +18,7 @@ class Gitlab(BaseHandler):
     service_url = 'https://gitlab.com'
     api_url = 'https://gitlab.com/api/v3'
     urls = dict(owner='%(username)s',
+                user='%(username)s',
                 repo='%(username)s/%(name)s',
                 issues='%(username)s/%(name)s/issues/%(issueid)s',
                 commit='%(username)s/%(name)s/commit/%(commitid)s',
@@ -217,7 +218,7 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
         yield self.api('put', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], issueid, commentid),
                        data=dict(body=body), token=token)
-        raise gen.Return(True)
+        raise gen.Return(commentid)
 
     def delete_comment(self, issueid, commentid, token=None):
         # not implemented by gitlab yet

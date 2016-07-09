@@ -1,8 +1,10 @@
 import os
 import base64
+import urllib
 import oauth2 as oauth
-from json import loads
 from tornado import gen
+from json import loads, dumps
+from datetime import datetime
 from urlparse import parse_qsl
 from tornado.web import HTTPError
 from tlslite.utils import keyfactory
@@ -69,7 +71,8 @@ class BitbucketServer(BaseHandler):
     # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html
     service = 'bitbucket_server'
     service_url = os.getenv('BITBUCKET_SERVER_URL')
-    urls = dict(owner='projects/%(username)s',
+    urls = dict(user='users/%(username)s',
+                owner='projects/%(username)s',
                 repo='projects/%(username)s/repos/%(name)s',
                 issues='projects/%(username)s/repos/%(name)s/issues/%(issueid)s',
                 commit='projects/%(username)s/repos/%(name)s/commits/%(commitid)s',
@@ -84,20 +87,20 @@ class BitbucketServer(BaseHandler):
 
     @property
     def project(self):
-        if str(self.data['owner_service_id'])[0] == 'U':
-            return '/project/~'+self.data['username'].upper()
+        if self.data['owner']['service_id'][0] == 'U':
+            return '/projects/~%s' % self.data['owner']['username'].upper()
         else:
-            return '/project/'+self.data['username'].upper()
+            return '/projects/%s' % self.data['owner']['username'].upper()
 
     def diff_to_json(self, diff_json):
         results = {}
-        for _diff in diff_json['diffs']:
-            if not _diff['destination']:
+        for _diff in diff_json:
+            if not _diff.get('destination'):
                 results[_diff['source']['toString']] = dict(type='deleted')
 
             else:
                 fname = _diff['destination']['toString']
-                _before = _diff['source']['toString'] if _diff['source'] else None
+                _before = _diff['source']['toString'] if _diff.get('source') else None
                 _file = results.setdefault(fname, dict(before=_before if _before != fname else None,
                                                        type='new' if _before is None else 'modified',
                                                        segments=[]))
@@ -118,7 +121,7 @@ class BitbucketServer(BaseHandler):
     def api(self, method, url, body=None, token=None, **kwargs):
         # process desired api path
         if not url.startswith('http'):
-            url = self.service_url+'/rest/api/1.0'+url
+            url = '%s/rest/api/1.0%s' % (self.service_url, url)
 
         # process inline arguments
         if kwargs:
@@ -143,8 +146,10 @@ class BitbucketServer(BaseHandler):
         client = oauth.Client(oauth.Consumer(self._oauth_consumer_token()['key'], ''), token, **_verify_ssl)
         client.set_signature_method(signature)
 
-        response, content = client.request(url, method.upper(), body or '')
+        response, content = client.request(url, method.upper(), dumps(body) if body else '',
+                                           headers={'Content-Type': 'application/json'} if body else {})
         status = int(response['status'])
+        print 'API:', url, status, content
 
         if status in (200, 201):
             if 'application/json' in response.get('content-type'):
@@ -165,14 +170,14 @@ class BitbucketServer(BaseHandler):
     @gen.coroutine
     def get_authenticated(self, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
-        if self.data['private']:
-            yield self.api('get', self.project+'/repos/'+self.data['repo']['name'], token=token)
+        if self.data['repo']['private']:
+            yield self.api('get', '%s/repos/%s' % (self.project, self.data['repo']['name']), token=token)
         raise gen.Return((True, True))
 
     @gen.coroutine
     def get_is_admin(self, user, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3389568
-        res = yield self.api('get', self.project+'/permissions/users', filter=user['username'], token=token)
+        res = yield self.api('get', '%s/permissions/users' % self.project, filter=user['username'], token=token)
         id = int(user['service_id'])
         res = any(filter(lambda v: v.get('user', {}).get('id') == id and v['permission'] == 'ADMIN', res['values']))
         raise gen.Return(res)
@@ -180,7 +185,7 @@ class BitbucketServer(BaseHandler):
     @gen.coroutine
     def get_repository(self, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
-        res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name'], token=token)
+        res = yield self.api('get', '%s/repos/%s' % (self.project, self.data['repo']['name']), token=token)
         owner_service_id = res['project']['id']
         if res['project']['type'] == 'PERSONAL':
             owner_service_id = 'U%d' % res['project']['owner']['id']
@@ -214,7 +219,7 @@ class BitbucketServer(BaseHandler):
         while True:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2028128
-            res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/browser/'+path,
+            res = yield self.api('get', '%s/repos/%s/browse/%s' % (self.project, self.data['repo']['name'], path),
                                  at=ref, page=page, token=token)
             content.extend(res['lines'])
             if res['isLastPage']:
@@ -226,7 +231,8 @@ class BitbucketServer(BaseHandler):
     @gen.coroutine
     def get_commit(self, commit, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3530560
-        res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/commits/'+commit, token=token)
+        res = yield self.api('get', '%s/repos/%s/commits/%s' % (self.project, self.data['repo']['name'], commit),
+                             token=token)
 
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2598928
         _a = yield self.api('get', '/users', filter=res['author']['emailAddress'], token=token)
@@ -234,14 +240,14 @@ class BitbucketServer(BaseHandler):
             _a = yield self.api('get', '/users', filter=res['author']['name'])
         author = _a['values'][0] if _a['size'] else {}
 
-        raise gen.Return(dict(author=dict(id=author.get('id'),
+        raise gen.Return(dict(author=dict(id='U%s' % author.get('id'),
                                           username=author.get('name'),
                                           email=res['author']['emailAddress'],
                                           name=res['author']['name']),
                               commitid=commit,
                               parents=[p['id'] for p in res['parents']],
                               message=res['message'],
-                              timestamp=res['authorTimestamp']))
+                              timestamp=datetime.fromtimestamp(int(str(res['authorTimestamp'])[:10])).strftime('%Y-%m-%d %H:%M:%S')))
 
     @gen.coroutine
     def get_pull_request_commits(self, pullid, token=None):
@@ -249,7 +255,7 @@ class BitbucketServer(BaseHandler):
         while True:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2519392
-            res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/pull-requests/'+str(pullid),
+            res = yield self.api('get', '%s/repos/%s/pull-requests/%s/commits' % (self.project, self.data['repo']['name'], pullid),
                                  page=page, token=token)
             commits.extend([c['id'] for c in res['values']])
             if res['isLastPage']:
@@ -270,20 +276,13 @@ class BitbucketServer(BaseHandler):
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
         # get diff
-        diff, page = [], 0
-        while True:
-            page += 1
-            # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3370768
-            res = yield self.api('get', '%s/repos/%s/commits/%s/diff' % (self.project, self.data['repo']['name'], head),
-                                 page=page,
-                                 withComments=False,
-                                 whitespace='ignore-all',
-                                 contextLines=context or -1,
-                                 since=base,
-                                 token=None)
-            diff.extend(res['diffs'])
-            if res['isLastPage']:
-                break
+        # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3370768
+        diff = (yield self.api('get', '%s/repos/%s/commits/%s/diff' % (self.project, self.data['repo']['name'], head),
+                               withComments=False,
+                               whitespace='ignore-all',
+                               contextLines=context or -1,
+                               since=base,
+                               token=token))['diffs']
 
         # get commits
         commits, page = [], 0
@@ -308,7 +307,7 @@ class BitbucketServer(BaseHandler):
     def get_pull_request(self, pullid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2167824
         res = yield self.api('get', '%s/repos/%s/pull-requests/%s' % (self.project, self.data['repo']['name'], pullid),
-                             token=None)
+                             token=token)
         # need to get all commits, shit.
         commits = yield self.get_pull_request_commits(pullid, token=token)
         raise gen.Return(dict(open=res['open'],
@@ -328,13 +327,13 @@ class BitbucketServer(BaseHandler):
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1847760
             res = yield self.api('get', '/repos', token=token)
             for repo in res['values']:
-                ownerid = repo['project']['id']
+                ownerid = str(repo['project']['id'])
                 if repo['project']['type'] == 'PERSONAL':
                     ownerid = 'U'+str(repo['project']['owner']['id'])
 
                 fork = None
-                if repo['origin']:
-                    _fork_owner_service_id = repo['origin']['project']['id']
+                if repo.get('origin'):
+                    _fork_owner_service_id = str(repo['origin']['project']['id'])
                     if repo['origin']['project']['type'] == 'PERSONAL':
                         _fork_owner_service_id = 'U%d' % repo['origin']['project']['owner']['id']
 
@@ -360,12 +359,40 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(data)
 
     @gen.coroutine
-    def get_commit_status(self, commit, _merge=None, token=None):
+    def list_teams(self, token=None):
+        repos = yield self.list_repos(token=token)
+        organizations = {}
+        # extract projects from repos
+        for repo in repos:
+            if repo['owner']['service_id'] not in organizations and repo['owner']['service_id'][0] != 'U':
+                organizations[repo['owner']['service_id']] = dict(id=repo['owner']['service_id'],
+                                                                  username=repo['owner']['username'])
+        raise gen.Return(organizations.values())
+
+    # @gen.coroutine
+    # def get_commit_status(self, commit, _merge=None, token=None):
+    #     # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
+    #     page, data = 0, []
+    #     while True:
+    #         page += 1
+    #         res = yield self.api('get', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
+    #                              page=page, token=token)
+    #         data.extend([{'time': s['dateAdded'],
+    #                       'state': s['state'],
+    #                       'url': s['url'],
+    #                       'context': s['name']} for s in res['values']])
+    #         if res['isLastPage']:
+    #             break
+    #
+    #     raise gen.Return(Status(data))
+
+    @gen.coroutine
+    def get_commit_statuses(self, commit, _merge=None, token=None):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
         page, data = 0, []
         while True:
             page += 1
-            res = yield self.api('get', self.service_url+'/rest/build-status/1.0/commits/'+commit,
+            res = yield self.api('get', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
                                  page=page, token=token)
             data.extend([{'time': s['dateAdded'],
                           'state': s['state'],
@@ -380,13 +407,13 @@ class BitbucketServer(BaseHandler):
     def set_commit_status(self, commit, status, context, description, url=None, token=None):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
         assert status in ('pending', 'success', 'error', 'failure'), 'status not valid'
-        yield self.api('post', self.service_url+'/rest/build-status/1.0/commits/'+commit,
+        yield self.api('post', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
                        body=dict(state=dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status),
                                  key=context,
                                  name=context,
                                  url=url,
                                  description=description),
-                       token=None)
+                       token=token)
         raise gen.Return(True)
 
     @gen.coroutine
@@ -394,20 +421,20 @@ class BitbucketServer(BaseHandler):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3165808
         res = yield self.api('post', '%s/repos/%s/pull-requests/%s/comments' % (self.project, self.data['repo']['name'], issueid),
                              body=dict(text=body), token=token)
-        raise gen.Return(str(res['id'])+':'+str(res['version']))
+        raise gen.Return('%(id)s:%(version)s' % res)
 
     @gen.coroutine
     def edit_comment(self, issueid, commentid, body, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3184624
-        commentid, version = commentid.split(':', 2)
+        commentid, version = commentid.split(':', 1)
         res = yield self.api('put', '%s/repos/%s/pull-requests/%s/comments/%s' % (self.project, self.data['repo']['name'], issueid, commentid),
                              body=dict(text=body, version=version), token=token)
-        raise gen.Return(str(res['id'])+':'+str(res['version']))
+        raise gen.Return('%(id)s:%(version)s' % res)
 
     @gen.coroutine
     def delete_comment(self, issueid, commentid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3189408
-        commentid, version = commentid.split(':', 2)
+        commentid, version = commentid.split(':', 1)
         yield self.api('delete', '%s/repos/%s/pull-requests/%s/comments/%s' % (self.project, self.data['repo']['name'], issueid, commentid),
                        version=version, token=token)
         raise gen.Return(True)
@@ -418,7 +445,8 @@ class BitbucketServer(BaseHandler):
         while True:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2243696
-            res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/branches', page=page, token=token)
+            res = yield self.api('get', '%s/repos/%s/branches' % (self.project, self.data['repo']['name']),
+                                 page=page, token=token)
             branches.extend([(b['displayId'], b['latestCommit']) for b in res['values']])
             if res['isLastPage']:
                 break
@@ -426,19 +454,17 @@ class BitbucketServer(BaseHandler):
 
     @gen.coroutine
     def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
-        if commit:
-            raise NotImplemented('dont know how to search by commitid yet')
-
         prs, page = [], 0
         state = {'open': 'OPEN', 'close': 'DECLINED', 'merged': 'MERGED'}.get(state, 'ALL')
         while True:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2048560
-            res = yield self.api('get', self.project+'/repos/'+self.data['repo']['name']+'/pull-requests',
-                                 page=page,
+            res = yield self.api('get', '%s/repos/%s/pull-requests' % (self.project, self.data['repo']['name']),
+                                 state=state,
                                  withAttributes=False,
                                  withProperties=False,
-                                 state=state, token=token)
+                                 page=page,
+                                 token=token)
             prs.extend([(None, str(b['id']))
                         for b in res['values']
                         if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])
