@@ -79,8 +79,7 @@ class BitbucketServer(BaseHandler):
                 commits='projects/%(username)s/repos/%(name)s/commits',
                 src='projects/%(username)s/repos/%(name)s/browse/%(path)s?at=%(commitid)s',
                 tree='projects/%(username)s/repos/%(name)s/browse?at=%(commitid)s',
-                # [TODO] idk if this is correct
-                create_file='projects/%(username)s/repos/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
+                create_file=None,
                 branch='projects/%(username)s/repos/%(name)s/browser?at=%(branch)s',
                 pull='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
                 compare='')
@@ -177,7 +176,7 @@ class BitbucketServer(BaseHandler):
     def get_is_admin(self, user, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3389568
         res = yield self.api('get', '%s/permissions/users' % self.project, filter=user['username'], token=token)
-        id = int(user['service_id'])
+        id = int(user['service_id'].replace('U', ''))
         res = any(filter(lambda v: v.get('user', {}).get('id') == id and v['permission'] == 'ADMIN', res['values']))
         raise gen.Return(res)
 
