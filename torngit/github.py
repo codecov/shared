@@ -57,8 +57,8 @@ class Github(BaseHandler, OAuth2Mixin):
         kwargs = dict(method=method,
                       body=json_encode(body) if body else None,
                       headers=_headers,
-                      ca_certs=self._verify_ssl if type(self._verify_ssl) is not bool else None,
-                      validate_cert=self._verify_ssl if type(self._verify_ssl) is bool else None,
+                      ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
+                      validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
                       follow_redirects=False,
                       connect_timeout=self._timeouts[0],
                       request_timeout=self._timeouts[1])

@@ -50,8 +50,8 @@ class Gitlab(BaseHandler):
         kwargs = dict(method=method.upper(),
                       body=dumps(body) if type(body) is dict else body,
                       headers=headers,
-                      ca_certs=self._verify_ssl if type(self._verify_ssl) is not bool else None,
-                      validate_cert=self._verify_ssl if type(self._verify_ssl) is bool else None,
+                      ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
+                      validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
                       connect_timeout=self._timeouts[0],
                       request_timeout=self._timeouts[1])
 
