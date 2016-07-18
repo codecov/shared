@@ -258,6 +258,8 @@ class BitbucketServer(BaseHandler):
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2519392
             res = yield self.api('get', '%s/repos/%s/pull-requests/%s/commits' % (self.project, self.data['repo']['name'], pullid),
                                  page=page, token=token)
+            if len(res['values']) == 0:
+                break
             commits.extend([c['id'] for c in res['values']])
             if res['isLastPage']:
                 break
@@ -381,6 +383,8 @@ class BitbucketServer(BaseHandler):
             page += 1
             res = yield self.api('get', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
                                  page=page, token=token)
+            if len(res['values']) == 0:
+                break
             data.extend([{'time': s['dateAdded'],
                           'state': s['state'],
                           'url': s['url'],
@@ -434,6 +438,8 @@ class BitbucketServer(BaseHandler):
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2243696
             res = yield self.api('get', '%s/repos/%s/branches' % (self.project, self.data['repo']['name']),
                                  page=page, token=token)
+            if len(res['values']) == 0:
+                break
             branches.extend([(b['displayId'], b['latestCommit']) for b in res['values']])
             if res['isLastPage']:
                 break
@@ -452,6 +458,8 @@ class BitbucketServer(BaseHandler):
                                  withProperties=False,
                                  page=page,
                                  token=token)
+            if len(res['values']) == 0:
+                break
             prs.extend([(None, str(b['id']))
                         for b in res['values']
                         if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])

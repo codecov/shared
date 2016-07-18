@@ -142,8 +142,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
             # https://confluence.atlassian.com/bitbucket/pullrequests-resource-423626332.html#pullrequestsResource-GETthecommitsforapullrequest
             res = yield self.api('2', 'get', '/repositories/%s/pullrequests/%s/commits' % (self.slug, pullid),
                                  page=page, token=token)
+            if len(res['values']) == 0:
+                break
             commits.extend([c['hash'] for c in res['values']])
-            if not res.get('next') or len(res['values']) == 0:
+            if not res.get('next'):
                 break
 
         raise gen.Return(commits)
@@ -151,12 +153,16 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def list_repos(self, username=None, token=None):
         data, page = [], 0
+        assert username, 'WTF. must include username, otherwise EVERY repo is queried on Bitbucket'
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
-            res = yield self.api('2', 'get', '/repositories/%s' % (username or ''), page=page, token=token)
-            repos = res
-            for repo in repos['values']:
+            res = yield self.api('2', 'get', '/repositories/%s' % (username or ''),
+                                 page=page,
+                                 token=token)
+            if len(res['values']) == 0:
+                break
+            for repo in res['values']:
                 data.append(dict(owner=dict(service_id=repo['owner']['uuid'][1:-1],
                                             username=repo['owner']['username']),
                                  repo=dict(service_id=repo['uuid'][1:-1],
@@ -165,8 +171,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                            private=repo['is_private'],
                                            branch='master',
                                            fork=None)))
-
-            if not repos.get('next'):
+            if not res.get('next'):
                 break
 
         raise gen.Return(data)
@@ -228,7 +233,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               'state': status_keys.get(s['state']),
                               'url': s['url'],
                               'context': s['key']} for s in _statuses])
-            if len(_statuses) < 100:
+            if not res.get('next'):
                 break
         raise gen.Return(Status(statuses))
 
@@ -305,8 +310,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 pulls.extend([(None, str(b['id']))
                               for b in _prs
                               if branch is None or b['source']['branch']['name'] == branch])
-
-            if len(_prs) < 100:
+            if not res.get('next'):
                 break
 
         if commit:
