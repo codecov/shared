@@ -86,7 +86,7 @@ class BitbucketServer(BaseHandler):
 
     @property
     def project(self):
-        if self.data['owner']['service_id'][0] == 'U':
+        if self.data['owner'].get('service_id', '?')[0] == 'U':
             return '/projects/~%s' % self.data['owner']['username'].upper()
         else:
             return '/projects/%s' % self.data['owner']['username'].upper()
