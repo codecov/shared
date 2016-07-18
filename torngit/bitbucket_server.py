@@ -326,7 +326,10 @@ class BitbucketServer(BaseHandler):
         while True:
             page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1847760
-            res = yield self.api('get', '/repos', token=token)
+            res = yield self.api('get', '/repos', page=page, token=token)
+            if len(res['values']) == 0:
+                break
+
             for repo in res['values']:
                 ownerid = str(repo['project']['id'])
                 if repo['project']['type'] == 'PERSONAL':
