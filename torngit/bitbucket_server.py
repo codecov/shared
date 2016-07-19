@@ -192,7 +192,7 @@ class BitbucketServer(BaseHandler):
             owner_service_id = 'U%d' % res['project']['owner']['id']
 
         fork = None
-        if res['origin']:
+        if res.get('origin'):
             _fork_owner_service_id = res['origin']['project']['id']
             if res['origin']['project']['type'] == 'PERSONAL':
                 _fork_owner_service_id = 'U%d' % res['origin']['project']['owner']['id']
@@ -221,8 +221,9 @@ class BitbucketServer(BaseHandler):
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2028128
             res = yield self.api('get', '%s/repos/%s/browse/%s' % (self.project, self.data['repo']['name'], path),
                                  at=ref, start=start, token=token)
+
             content.extend(res['lines'])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -242,7 +243,7 @@ class BitbucketServer(BaseHandler):
             _a = yield self.api('get', '/users', filter=res['author']['name'])
         author = _a['values'][0] if _a['size'] else {}
 
-        raise gen.Return(dict(author=dict(id='U%s' % author.get('id'),
+        raise gen.Return(dict(author=dict(id=('U%s' % author.get('id')) if author.get('id') else None,
                                           username=author.get('name'),
                                           email=res['author']['emailAddress'],
                                           name=res['author']['name']),
@@ -261,7 +262,7 @@ class BitbucketServer(BaseHandler):
             if len(res['values']) == 0:
                 break
             commits.extend([c['id'] for c in res['values']])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -301,7 +302,7 @@ class BitbucketServer(BaseHandler):
                                  timestamp=c['authorTimestamp'],
                                  author=dict(name=c['author']['name'],
                                              email=c['author']['emailAddress'])) for c in res['values']])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -361,7 +362,7 @@ class BitbucketServer(BaseHandler):
                                            private=(not repo.get('public', repo.get('origin', {}).get('public'))),
                                            branch='master',
                                            fork=fork)))
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -378,7 +379,7 @@ class BitbucketServer(BaseHandler):
                 break
             data.extend([dict(id=row['id'], username=row['key'], name=row['name'])
                          for row in res['values']])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -398,7 +399,7 @@ class BitbucketServer(BaseHandler):
                           'state': s['state'],
                           'url': s['url'],
                           'context': s['name']} for s in res['values']])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -451,7 +452,7 @@ class BitbucketServer(BaseHandler):
             if len(res['values']) == 0:
                 break
             branches.extend([(b['displayId'], b['latestCommit']) for b in res['values']])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
@@ -474,7 +475,7 @@ class BitbucketServer(BaseHandler):
             prs.extend([(None, str(b['id']))
                         for b in res['values']
                         if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])
-            if res['isLastPage']:
+            if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
