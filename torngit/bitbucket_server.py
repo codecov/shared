@@ -142,7 +142,7 @@ class BitbucketServer(BaseHandler):
         elif self.verify_ssl:
             verify_ssl = dict(ca_certs=self.verify_ssl)
         else:
-            verify_ssl = {}
+            verify_ssl = dict(ca_certs=os.getenv('REQUESTS_CA_BUNDLE'))
 
         client = oauth.Client(oauth.Consumer(self._oauth_consumer_token()['key'], ''), token, **verify_ssl)
         client.set_signature_method(signature)
