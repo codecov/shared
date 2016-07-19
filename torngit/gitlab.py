@@ -233,13 +233,24 @@ class Gitlab(BaseHandler):
         res = yield self.api('get', '/projects/%s/repository/commits/%s' % (self.data['repo']['service_id'], commit), token=token)
 
         # http://doc.gitlab.com/ce/api/users.html
-        authors = yield self.api('get', '/users?search='+res['author_name'], token=token)
-        author_id = (filter(lambda a: a['username'] == res['author_name'], authors) or [dict(id=None)])[0]['id']
+        email = res['author_email']
+        name = res['author_name']
+        _id = None
+        username = None
+        authors = yield self.api('get', '/users', search=email or name, token=token)
+        if authors:
+            for author in authors:
+                if author['email'] == email or author['name'] == name:
+                    _id = author['id']
+                    username = author['username']
+                    email = author['email']
+                    name = author['name']
+                    break
 
-        raise gen.Return(dict(author=dict(id=author_id,
-                                          username=res['author_name'],
-                                          email=res['author_email'],
-                                          name=res['author_name']),
+        raise gen.Return(dict(author=dict(id=_id,
+                                          username=username,
+                                          email=email,
+                                          name=name),
                               message=res['message'],
                               parents=res['parent_ids'],
                               commitid=commit,
