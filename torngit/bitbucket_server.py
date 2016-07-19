@@ -216,15 +216,16 @@ class BitbucketServer(BaseHandler):
 
     @gen.coroutine
     def get_source(self, path, ref, token=None):
-        content, page = [], 0
+        content, start = [], 0
         while True:
-            page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2028128
             res = yield self.api('get', '%s/repos/%s/browse/%s' % (self.project, self.data['repo']['name'], path),
-                                 at=ref, page=page, token=token)
+                                 at=ref, start=start, token=token)
             content.extend(res['lines'])
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
 
         raise gen.Return(dict(commitid=None,  # [FUTURE] unknown atm
                               content='\n'.join(map(lambda a: a.get('text', ''), content))))
@@ -252,17 +253,18 @@ class BitbucketServer(BaseHandler):
 
     @gen.coroutine
     def get_pull_request_commits(self, pullid, token=None):
-        commits, page = [], 0
+        commits, start = [], 0
         while True:
-            page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2519392
             res = yield self.api('get', '%s/repos/%s/pull-requests/%s/commits' % (self.project, self.data['repo']['name'], pullid),
-                                 page=page, token=token)
+                                 start=start, token=token)
             if len(res['values']) == 0:
                 break
             commits.extend([c['id'] for c in res['values']])
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
 
         raise gen.Return(commits)
 
@@ -288,13 +290,12 @@ class BitbucketServer(BaseHandler):
                                token=token))['diffs']
 
         # get commits
-        commits, page = [], 0
+        commits, start = [], 0
         while with_commits:
-            page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3358848
             # [TODO] what order are these commits? they need to be [latest....oldest]
             res = yield self.api('get', '%s/repos/%s/compare/commits' % (self.project, self.data['repo']['name']),
-                                 page=page, token=token, **{'from': base, 'to': head})
+                                 start=start, limit=100, token=token, **{'from': base, 'to': head})
             commits.extend([dict(commitid=c['id'],
                                  message=c['message'],
                                  timestamp=c['authorTimestamp'],
@@ -302,6 +303,8 @@ class BitbucketServer(BaseHandler):
                                              email=c['author']['emailAddress'])) for c in res['values']])
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
 
         raise gen.Return(dict(diff=self.diff_to_json(diff),
                               commits=commits))
@@ -324,11 +327,10 @@ class BitbucketServer(BaseHandler):
 
     @gen.coroutine
     def list_repos(self, username=None, token=None):
-        data, page = [], 0
+        data, start = [], 0
         while True:
-            page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1847760
-            res = yield self.api('get', '/repos', page=page, token=token)
+            res = yield self.api('get', '/repos', start=start, token=token)
             if len(res['values']) == 0:
                 break
 
@@ -361,28 +363,35 @@ class BitbucketServer(BaseHandler):
                                            fork=fork)))
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
 
         raise gen.Return(data)
 
     @gen.coroutine
     def list_teams(self, token=None):
-        repos = yield self.list_repos(token=token)
-        organizations = {}
-        # extract projects from repos
-        for repo in repos:
-            if repo['owner']['service_id'] not in organizations and repo['owner']['service_id'][0] != 'U':
-                organizations[repo['owner']['service_id']] = dict(id=repo['owner']['service_id'],
-                                                                  username=repo['owner']['username'])
-        raise gen.Return(organizations.values())
+        data, start = [], 0
+        while True:
+            # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2301216
+            res = yield self.api('get', '/projects', start=start, token=token)
+            if len(res['values']) == 0:
+                break
+            data.extend([dict(id=row['id'], username=row['key'], name=row['name'])
+                         for row in res['values']])
+            if res['isLastPage']:
+                break
+            else:
+                start = res['nextPageStart']
+
+        raise gen.Return(data)
 
     @gen.coroutine
     def get_commit_statuses(self, commit, _merge=None, token=None):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
-        page, data = 0, []
+        start, data = 0, []
         while True:
-            page += 1
             res = yield self.api('get', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
-                                 page=page, token=token)
+                                 start=start, token=token)
             if len(res['values']) == 0:
                 break
             data.extend([{'time': s['dateAdded'],
@@ -391,6 +400,8 @@ class BitbucketServer(BaseHandler):
                           'context': s['name']} for s in res['values']])
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
 
         raise gen.Return(Status(data))
 
@@ -432,31 +443,31 @@ class BitbucketServer(BaseHandler):
 
     @gen.coroutine
     def get_branches(self, token=None):
-        branches, page = [], 0
+        branches, start = [], 0
         while True:
-            page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2243696
             res = yield self.api('get', '%s/repos/%s/branches' % (self.project, self.data['repo']['name']),
-                                 page=page, token=token)
+                                 start=start, token=token)
             if len(res['values']) == 0:
                 break
             branches.extend([(b['displayId'], b['latestCommit']) for b in res['values']])
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
         raise gen.Return(branches)
 
     @gen.coroutine
     def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
-        prs, page = [], 0
+        prs, start = [], 0
         state = {'open': 'OPEN', 'close': 'DECLINED', 'merged': 'MERGED'}.get(state, 'ALL')
         while True:
-            page += 1
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2048560
             res = yield self.api('get', '%s/repos/%s/pull-requests' % (self.project, self.data['repo']['name']),
                                  state=state,
                                  withAttributes=False,
                                  withProperties=False,
-                                 page=page,
+                                 start=start,
                                  token=token)
             if len(res['values']) == 0:
                 break
@@ -465,4 +476,6 @@ class BitbucketServer(BaseHandler):
                         if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])
             if res['isLastPage']:
                 break
+            else:
+                start = res['nextPageStart']
         raise gen.Return(prs)
