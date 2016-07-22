@@ -318,6 +318,7 @@ class BitbucketServer(BaseHandler):
         # need to get all commits, shit.
         commits = yield self.get_pull_request_commits(pullid, token=token)
         raise gen.Return(dict(open=res['open'],
+                              title=res['title'],
                               merged=res['state'] == 'MERGED',
                               id=str(pullid),
                               number=str(pullid),
