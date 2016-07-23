@@ -68,7 +68,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             raise
 
         else:
-            self.log(status=e.response.code, endpoint=path)
+            self.log(status=res.code, endpoint=path)
             if res.code == 204:
                 raise gen.Return(None)
 
