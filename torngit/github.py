@@ -261,15 +261,21 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def list_teams(self, token=None):
         # https://developer.github.com/v3/orgs/#list-your-organizations
-        orgs = yield self.api('get', '/user/orgs', token=token)
-        data = []
-        # organization names
-        for org in orgs:
-            org = yield self.api('get', '/users/%s' % org['login'], token=token)
-            data.append(dict(name=org['name'] or org['login'],
-                             id=str(org['id']),
-                             email=org['email'],
-                             username=org['login']))
+        page, data = 0, []
+        while True:
+            page += 1
+            orgs = yield self.api('get', '/user/orgs', limt page=page, token=token)
+            if len(orgs) == 0:
+                break
+            # organization names
+            for org in orgs:
+                org = yield self.api('get', '/users/%s' % org['login'], token=token)
+                data.append(dict(name=org['name'] or org['login'],
+                                 id=str(org['id']),
+                                 email=org['email'],
+                                 username=org['login']))
+            if len(orgs) < 30:
+                break
 
         raise gen.Return(data)
 
