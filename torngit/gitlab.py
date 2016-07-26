@@ -325,7 +325,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_commit_diff(self, commit, context=None, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-diff-of-a-commit
-        res = yield self.api('get', '/projects/%s/repository/commits%s/diff' % (self.data['repo']['service_id'], commit), token=token)
+        res = yield self.api('get', '/projects/%s/repository/commits/%s/diff' % (self.data['repo']['service_id'], commit), token=token)
         raise gen.Return(self.diff_to_json(res))
 
     @gen.coroutine
