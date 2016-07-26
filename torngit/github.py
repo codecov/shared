@@ -264,7 +264,7 @@ class Github(BaseHandler, OAuth2Mixin):
         page, data = 0, []
         while True:
             page += 1
-            orgs = yield self.api('get', '/user/orgs', limt page=page, token=token)
+            orgs = yield self.api('get', '/user/orgs', page=page, token=token)
             if len(orgs) == 0:
                 break
             # organization names
