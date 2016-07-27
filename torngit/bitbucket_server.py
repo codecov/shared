@@ -267,6 +267,7 @@ class BitbucketServer(BaseHandler):
             else:
                 start = res['nextPageStart']
 
+        # order is NEWEST...OLDEST
         raise gen.Return(commits)
 
     @gen.coroutine
@@ -317,7 +318,7 @@ class BitbucketServer(BaseHandler):
                              token=token)
         # need to get all commits, shit.
         commits = yield self.get_pull_request_commits(pullid, token=token)
-        first_commit = yield self.api('get', '%s/repos/%s/commits/%s' % (self.project, self.data['repo']['name'], commit),
+        first_commit = yield self.api('get', '%s/repos/%s/commits/%s' % (self.project, self.data['repo']['name'], commits[-1]),
                                       token=token)
         base_commit_sha = first_commit['parents'][0]['id']
         raise gen.Return(dict(open=res['open'],
