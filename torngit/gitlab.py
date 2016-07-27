@@ -42,7 +42,11 @@ class Gitlab(BaseHandler):
             _log = {}
 
         path = (self.api_url + path) if path[0] == '/' else path
-        headers = {'Accept': 'application/json', 'User-Agent': os.getenv('USER_AGENT', 'Default')}
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'User-Agent': os.getenv('USER_AGENT', 'Default')
+        }
         if token or self.token:
             headers['Authorization'] = 'Bearer %s' % (token or self.token)['key']
 
@@ -63,9 +67,7 @@ class Gitlab(BaseHandler):
             if e.response is None:
                 raise ClientError(502, 'GitLab was not able to be reached. Response empty. Please try again.')
 
-            self.log(status=e.response.code,
-                     body=e.response.body,
-                     **_log)
+            self.log(status=e.response.code, body=e.response.body, **_log)
 
             raise
 
