@@ -188,7 +188,7 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/api/commits.html#post-the-status-to-commit
         status = dict(error='canceled', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),
-                             data=dict(state=status,
+                             body=dict(state=status,
                                        target_url=url,
                                        name=context,
                                        description=description), token=token)
@@ -210,14 +210,14 @@ class Gitlab(BaseHandler):
     def post_comment(self, issueid, body, token=None):
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
         res = yield self.api('post', '/projects/%s/merge_requests/%s/notes' % (self.data['repo']['service_id'], issueid),
-                             data=dict(body=body), token=token)
+                             body=dict(body=body), token=token)
         raise gen.Return(res['id'])
 
     @gen.coroutine
     def edit_comment(self, issueid, commentid, body, token=None):
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
         yield self.api('put', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], issueid, commentid),
-                       data=dict(body=body), token=token)
+                       body=dict(body=body), token=token)
         raise gen.Return(commentid)
 
     def delete_comment(self, issueid, commentid, token=None):
