@@ -2,6 +2,7 @@ import os
 from time import time
 from sys import stdout
 from json import loads
+from json import dumps
 from tornado import gen
 import urllib as urllib_parse
 from tornado.web import HTTPError
@@ -31,23 +32,27 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 compare='%(username)s/%(name)s')
 
     @gen.coroutine
-    def api(self, version, method, path, body=None, token=None, **kwargs):
+    def api(self, version, method, path, json=False, body=None, token=None, **kwargs):
         url = 'https://bitbucket.org/api/%s.0%s' % (version, path)
+        headers = {'Accept': 'application/json',
+                   'User-Agent': os.getenv('USER_AGENT', 'Default')}
 
         # make oauth request
         all_args = {}
         all_args.update(kwargs)
-        all_args.update(body or {})
+        if json:
+            headers['Content-Type'] = 'application/json'
+        else:
+            all_args.update(body or {})
         oauth = self._oauth_request_parameters(url, token or self.token, all_args, method=method.upper())
         kwargs.update(oauth)
 
         url = url_concat(url, kwargs)
         kwargs = dict(method=method.upper(),
-                      body=urllib_parse.urlencode(body) if body else None,
+                      body=dumps(body) if json else urllib_parse.urlencode(body) if body else None,
                       ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
                       validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                      headers={'Accept': 'application/json',
-                               'User-Agent': os.getenv('USER_AGENT', 'Default')},
+                      headers=headers,
                       connect_timeout=self._timeouts[0],
                       request_timeout=self._timeouts[1])
 
@@ -61,14 +66,15 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 raise ClientError(502, 'Bitbucket was not able to be reached, server timed out.')
 
             else:
-                self.log(status=e.response.code,
+                self.log(url=url,
+                         status=e.response.code,
                          endpoint=path,
                          body=e.response.body)
             e.message = 'Bitbucket API: %s' % e.message
             raise
 
         else:
-            self.log(status=res.code, endpoint=path)
+            self.log(url=url, status=res.code, endpoint=path)
             if res.code == 204:
                 raise gen.Return(None)
 
@@ -96,6 +102,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                        active=True,
                                        events=events,
                                        url=url),
+                             json=True,
                              token=token)
         raise gen.Return(res['uuid'][1:-1])
 
@@ -107,6 +114,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                  active=True,
                                  events=events,
                                  url=url),
+                       json=True,
                        token=token)
         raise gen.Return(True)
 
