@@ -294,10 +294,10 @@ class BitbucketServer(BaseHandler):
         # get commits
         commits, start = [], 0
         while with_commits:
-            # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3358848
-            # [TODO] what order are these commits? they need to be [latest....oldest]
-            res = yield self.api('get', '%s/repos/%s/compare/commits' % (self.project, self.data['repo']['name']),
-                                 start=start, limit=100, token=token, **{'from': base, 'to': head})
+            # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3513104
+            res = yield self.api('get', '%s/repos/%s/commits' % (self.project, self.data['repo']['name']),
+                                 start=start, token=token, since=base, until=head)
+            #  listed [newest...oldest]
             commits.extend([dict(commitid=c['id'],
                                  message=c['message'],
                                  timestamp=c['authorTimestamp'],
@@ -309,7 +309,7 @@ class BitbucketServer(BaseHandler):
                 start = res['nextPageStart']
 
         raise gen.Return(dict(diff=self.diff_to_json(diff),
-                              commits=commits))
+                              commits=commits[::-1]))
 
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
