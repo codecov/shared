@@ -400,6 +400,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                      f.get('patch', '')))
             files.update(diff['files'])
 
+        # commits are returned in reverse chronological order. ie [newest...oldest]
         raise gen.Return(dict(diff=dict(files=files),
                               commits=[dict(commitid=c['sha'],
                                             message=c['commit']['message'],
