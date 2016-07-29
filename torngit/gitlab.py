@@ -241,13 +241,9 @@ class Gitlab(BaseHandler):
         username = None
         authors = yield self.api('get', '/users', search=email or name, token=token)
         if authors:
-            for author in authors:
-                if author['email'] == email or author['name'] == name:
-                    _id = author['id']
-                    username = author['username']
-                    email = author['email']
-                    name = author['name']
-                    break
+            _id = authors[0]['id']
+            username = authors[0]['username']
+            name = authors[0]['name']
 
         raise gen.Return(dict(author=dict(id=_id,
                                           username=username,
