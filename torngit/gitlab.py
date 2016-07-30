@@ -44,9 +44,12 @@ class Gitlab(BaseHandler):
         path = (self.api_url + path) if path[0] == '/' else path
         headers = {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'User-Agent': os.getenv('USER_AGENT', 'Default')
         }
+
+        if type(body) is dict:
+            headers['Content-Type'] = 'application/json'
+
         if token or self.token:
             headers['Authorization'] = 'Bearer %s' % (token or self.token)['key']
 
