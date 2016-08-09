@@ -412,7 +412,7 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(Status(data))
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url=None, token=None):
+    def set_commit_status(self, commit, status, context, description, url=None, merge_commit=None, token=None):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
         assert status in ('pending', 'success', 'error', 'failure'), 'status not valid'
         yield self.api('post', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, commit),
@@ -422,6 +422,14 @@ class BitbucketServer(BaseHandler):
                                  url=url,
                                  description=description),
                        token=token)
+        if merge_commit:
+            yield self.api('post', '%s/rest/build-status/1.0/commits/%s' % (self.service_url, merge_commit[0]),
+                           body=dict(state=dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status),
+                                     key=merge_commit[1],
+                                     name=merge_commit[1],
+                                     url=url,
+                                     description=description),
+                           token=token)
         raise gen.Return(True)
 
     @gen.coroutine

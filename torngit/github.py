@@ -339,7 +339,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # Commit Status
     # -------------
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, token=None):
+    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
         # https://developer.github.com/v3/repos/statuses
         assert status in ('pending', 'success', 'error', 'failure'), 'status not valid'
         yield self.api('post', '/repos/%s/statuses/%s' % (self.slug, commit),
@@ -348,6 +348,13 @@ class Github(BaseHandler, OAuth2Mixin):
                                  context=context,
                                  description=description),
                        token=token)
+        if merge_commit:
+            yield self.api('post', '/repos/%s/statuses/%s' % (self.slug, merge_commit[0]),
+                           body=dict(state=status,
+                                     target_url=url,
+                                     context=merge_commit[1],
+                                     description=description),
+                           token=token)
         raise gen.Return(True)
 
     @gen.coroutine

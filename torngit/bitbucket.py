@@ -248,7 +248,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(Status(statuses))
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, token=None):
+    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
         status = dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status)
         assert status, 'status not valid'
@@ -256,18 +256,34 @@ class Bitbucket(BaseHandler, OAuthMixin):
             res = yield self.api('2', 'post', '/repositories/%s/commit/%s/statuses/build' % (self.slug, commit),
                                  body=dict(state=status,
                                            key='codecov-'+context,
-                                           name=context.capitalize()+' Coverage',
+                                           name=context.replace('/', ' ').capitalize()+' Coverage',
                                            url=url,
                                            description=description),
                                  token=token)
         except:
             res = yield self.api('2', 'put', '/repositories/%s/commit/%s/statuses/build/codecov-%s' % (self.slug, commit, context),
                                  body=dict(state=status,
-                                           name=context.capitalize()+' Coverage',
+                                           name=context.replace('/', ' ').capitalize()+' Coverage',
                                            url=url,
                                            description=description),
                                  token=token)
 
+        if merge_commit:
+            try:
+                res = yield self.api('2', 'post', '/repositories/%s/commit/%s/statuses/build' % (self.slug, merge_commit[0]),
+                                     body=dict(state=status,
+                                               key='codecov-'+merge_commit[1],
+                                               name=merge_commit[1].replace('/', ' ').capitalize()+' Coverage',
+                                               url=url,
+                                               description=description),
+                                     token=token)
+            except:
+                res = yield self.api('2', 'put', '/repositories/%s/commit/%s/statuses/build/codecov-%s' % (self.slug, merge_commit[0], context),
+                                     body=dict(state=status,
+                                               name=merge_commit[1].replace('/', ' ').capitalize()+' Coverage',
+                                               url=url,
+                                               description=description),
+                                     token=token)
         # check if the commit is a Merge
         raise gen.Return(res)
 

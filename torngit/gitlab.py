@@ -189,7 +189,7 @@ class Gitlab(BaseHandler):
         raise gen.Return(res['commit']['id'])
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, _merge=None, token=None):
+    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#post-the-status-to-commit
         status = dict(error='canceled', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),
@@ -197,6 +197,13 @@ class Gitlab(BaseHandler):
                                        target_url=url,
                                        name=context,
                                        description=description), token=token)
+
+        if merge_commit:
+            yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], merge_commit[0]),
+                           body=dict(state=status,
+                                     target_url=url,
+                                     name=merge_commit[1],
+                                     description=description), token=token)
         raise gen.Return(res)
 
     @gen.coroutine
