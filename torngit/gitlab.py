@@ -179,7 +179,7 @@ class Gitlab(BaseHandler):
                                       open=_pr['state'] == 'opened',
                                       merged=_pr['state'] == 'merged',
                                       title=_pr['title'],
-                                      id=str(res['id']),
+                                      id=str(_pr['id']),
                                       number=str(pullid)))
 
     @gen.coroutine
