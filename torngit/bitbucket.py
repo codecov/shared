@@ -382,8 +382,46 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
-        # https://bitbucket.org/site/master/issues/4779/ability-to-diff-between-any-two-commits
-        raise HTTPError(405, reason="Bitbucket does not support a compare api yet. Read more here https://bitbucket.org/site/master/issues/4779/ability-to-diff-between-any-two-commits.")
+        # https://developer.atlassian.com/bitbucket/api/2/reference/resource/snippets/%7Busername%7D/%7Bencoded_id%7D/%7Brevision%7D/diff%C2%A0%E2%80%A6
+        # https://api.bitbucket.org/2.0/repositories/markadams-atl/test-repo/diff/1b03803..fcba34b
+        diff = yield self.api('2', 'get', '/repositories/%s/diff/%s..%s' % (self.slug, base, head),
+                              context=context or 0,
+                              token=token)
+
+        commits = []
+        if with_commits:
+            page = 0
+            while page > -1:
+                page += 1
+                # https://api.bitbucket.org/2.0/repositories/markadams-atl/test-repo/commits/fcba34b
+                res = yield self.api('2', 'get', '/repositories/%s/commits/%s' % (self.slug, head),
+                                     page=page, token=token)
+
+                if len(res['values']) == 0:
+                    break
+
+                for commit in res['values']:
+                    if commit['hash'] == base:
+                        page = -1
+                        break
+
+                    try:
+                        author = dict(id=commit['author']['user']['uuid'][1:-1],
+                                      username=commit['author']['user']['username'],
+                                      name=commit['author']['user']['name'])
+                    except:
+                        author = {}
+
+                    commits.append(dict(commitid=commit['hash'],
+                                        message=commit['message'],
+                                        timestamp=commit['date'],
+                                        author=author))
+
+                if len(res['values']) < res['pagelen']:
+                    break
+
+        raise gen.Return(dict(diff=dict(files=self.diff_to_json(diff)),
+                              commits=commits))
 
     @gen.coroutine
     def get_commit_diff(self, commit, context=None, token=None):
