@@ -184,10 +184,11 @@ class BaseHandler:
                 #     results.pop(fname)
                 #     break
 
-        return self._add_diff_totals(dict(files=results)) if results else None
+        if results:
+            return dict(files=self._add_diff_totals(results))
 
     def _add_diff_totals(self, diff):
-        for fname, data in diff['files'].iteritems():
+        for fname, data in diff.iteritems():
             rm = 0
             add = 0
             if 'segments' in data:

@@ -420,7 +420,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 if len(res['values']) < res['pagelen']:
                     break
 
-        raise gen.Return(dict(diff=dict(files=self.diff_to_json(diff)),
+        raise gen.Return(dict(diff=self.diff_to_json(diff),
                               commits=commits))
 
     @gen.coroutine

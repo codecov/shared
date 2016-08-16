@@ -114,7 +114,8 @@ class BitbucketServer(BaseHandler):
                         for l in seg['lines']:
                             segment['lines'].append(('-' if t == 'R' else '+' if t == 'A' else ' ') + l['line'])
 
-        return self._add_diff_totals(dict(files=results)) if results else None
+        if results:
+            return dict(files=self._add_diff_totals(results))
 
     @gen.coroutine
     def api(self, method, url, body=None, token=None, **kwargs):
