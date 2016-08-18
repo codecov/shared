@@ -334,7 +334,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             if commit:
                 for b in _prs:
                     if commit.startswith(b['source']['commit']['hash']):
-                        raise gen.Return(str(b['id']))
+                        raise gen.Return([str(b['id'])])
             else:
                 pulls.extend([(None, str(b['id']))
                               for b in _prs
