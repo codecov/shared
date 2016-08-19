@@ -387,7 +387,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
         # https://developer.atlassian.com/bitbucket/api/2/reference/resource/snippets/%7Busername%7D/%7Bencoded_id%7D/%7Brevision%7D/diff%C2%A0%E2%80%A6
         # https://api.bitbucket.org/2.0/repositories/markadams-atl/test-repo/diff/1b03803..fcba34b
-        diff = yield self.api('2', 'get', '/repositories/%s/diff/%s..%s' % (self.slug, base, head),
+        # IMPORANT it is reversed
+        diff = yield self.api('2', 'get', '/repositories/%s/diff/%s..%s' % (self.slug, head, base),
                               context=context or 0,
                               token=token)
 
