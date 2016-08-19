@@ -405,10 +405,6 @@ class Bitbucket(BaseHandler, OAuthMixin):
                     break
 
                 for commit in res['values']:
-                    if commit['hash'] == base:
-                        page = -1
-                        break
-
                     try:
                         author = dict(id=commit['author']['user']['uuid'][1:-1],
                                       username=commit['author']['user']['username'],
@@ -420,6 +416,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                         message=commit['message'],
                                         timestamp=commit['date'],
                                         author=author))
+
+                    if commit['hash'].startswith(base):
+                        page = -1
+                        break
 
                 if len(res['values']) < res['pagelen']:
                     break
