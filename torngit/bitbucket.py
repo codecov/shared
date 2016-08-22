@@ -8,6 +8,7 @@ import urllib as urllib_parse
 from tornado.web import HTTPError
 from tornado.auth import OAuthMixin
 from tornado.httputil import url_concat
+from requests_oauthlib import OAuth1Session
 from tornado.httpclient import HTTPError as ClientError
 
 from torngit.status import Status
@@ -213,12 +214,20 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def edit_comment(self, issueid, commentid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource+1.0#pullrequestsResource1.0-PUTanupdateonacomment
-        yield self.api('1', 'put', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
-                       body=dict(content=body), token=token)
+        # yield self.api('1', 'put', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
+        #                body=dict(content=body), token=token)
+        client = self._oauth_consumer_token()
+        token = (token or self.token)
+        url = 'https://bitbucket.org/api/1.0/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid)
+        oauth = OAuth1Session(client['key'], client_secret=client['secret'],
+                              resource_owner_key=token['key'],
+                              resource_owner_secret=token['secret'])
+        res = oauth.put(url, data=dict(content=body))
+        assert res.status_code == 200
         raise gen.Return(commentid)
 
     @gen.coroutine
-    def delete_comment(self, issueid, commentid, body, token=None):
+    def delete_comment(self, issueid, commentid, token=None):
         # https://confluence.atlassian.com/bitbucket/pullrequests-resource-1-0-296095210.html#pullrequestsResource1.0-PUTanupdateonacomment
         yield self.api('1', 'delete', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
                        token=token)
