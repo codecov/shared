@@ -327,7 +327,7 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/permissions/permissions.html#group
         user_id = int(user['service_id'])
         res = yield self.api('get', '/groups/%s/members' % self.data['owner']['service_id'], token=token)
-        res = any(filter(lambda u: u['id'] == user_id and u['access_level'] > 39, res))
+        res = any(filter(lambda u: u and (u['id'] == user_id and u['access_level'] > 39), res))
         raise gen.Return(res)
 
     @gen.coroutine

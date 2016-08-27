@@ -118,13 +118,17 @@ class BaseHandler:
             try:
                 before, after = _diff.pop(0).split(' b/', 1)
             except:
+                before, after = None, None
                 # find the --- a
-                for source in diff:
+                for source in _diff:
                     if source.startswith('--- a/'):
                         before = source[6:]
                     elif source.startswith('+++ b/'):
                         after = source[6:]
                         break
+
+            if after is None:
+                continue
 
             # Is the file empty, skipped, etc
             # -------------------------------
