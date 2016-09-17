@@ -222,7 +222,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 repos = yield self.api('get', '/users/%s/repos?per_page=100&page=%d' % (username, page),
                                        token=token)
 
-            for repo in (repos if installation else repos['repositories']):
+            for repo in (repos if not installation else repos['repositories']):
                 _o, _r, parent = repo['owner']['login'], repo['name'], None
                 if not installation and repo['fork']:
                     # need to get its source
