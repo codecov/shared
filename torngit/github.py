@@ -201,34 +201,35 @@ class Github(BaseHandler, OAuth2Mixin):
     # User Endpoints
     # --------------
     @gen.coroutine
-    def list_repos(self, username=None, token=None):
+    def list_repos(self, username=None, token=None, installation=False):
         """
         GitHub includes all visible repos through
         the same endpoint.
         """
-        headers = {}
-        if self.service == 'github_enterprise':
-            headers['Accept'] = 'application/vnd.github.moondragon+json'
         page = 0
         data = []
         while True:
             page += 1
             # https://developer.github.com/v3/repos/#list-your-repositories
-            if username is None:
+            if installation:
+                repos = yield self.api('get', '/installation/repositories?per_page=100&page=%d' % page,
+                                       headers={'Accept': 'application/vnd.github.machine-man-preview+json'},
+                                       token=token)
+            elif username is None:
                 repos = yield self.api('get', '/user/repos?per_page=100&page=%d' % page,
-                                       headers=headers, token=token)
+                                       token=token)
             else:
                 repos = yield self.api('get', '/users/%s/repos?per_page=100&page=%d' % (username, page),
-                                       headers=headers, token=token)
+                                       token=token)
 
-            for repo in repos:
+            for repo in (repos if installation else repos['repositories']):
                 _o, _r, parent = repo['owner']['login'], repo['name'], None
-                if repo['fork']:
+                if not installation and repo['fork']:
                     # need to get its source
                     # https://developer.github.com/v3/repos/#get
                     try:
                         parent = yield self.api('get', '/repos/%s/%s' % (_o, _r),
-                                                headers=headers, token=token)
+                                                token=token)
                         parent = parent['source']
                     except:
                         parent = None
@@ -248,12 +249,16 @@ class Github(BaseHandler, OAuth2Mixin):
                                             username=_o),
                                  repo=dict(service_id=repo['id'],
                                            name=_r,
+                                           installation=installation,
                                            language=self._validate_language(repo['language']),
                                            private=repo['private'],
                                            branch=repo['default_branch'],
                                            fork=fork)))
 
-            if len(repos) < 100:
+            if installation:
+                if len(repos['repositories']) < 100:
+                    break
+            elif len(repos) < 100:
                 break
 
         raise gen.Return(data)

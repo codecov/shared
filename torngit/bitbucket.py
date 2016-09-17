@@ -164,7 +164,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def list_repos(self, username=None, token=None):
         data, page = [], 0
-        assert username, 'WTF. must include username, otherwise EVERY repo is queried on Bitbucket'
+        assert username, 'Must include username to list repos'
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
