@@ -387,7 +387,8 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_source(self, path, ref, token=None):
         # https://developer.github.com/v3/repos/contents/#get-contents
         content = yield self.api('get', '/repos/%s/contents/%s' % (self.slug, path), ref=ref, token=token)
-        raise gen.Return(dict(content=b64decode(content['content']), commitid=content['sha']))
+        raise gen.Return(dict(content=b64decode(content['content']).encode('utf-8'),
+                              commitid=content['sha']))
 
     @gen.coroutine
     def get_commit_diff(self, commit, context=None, token=None):
