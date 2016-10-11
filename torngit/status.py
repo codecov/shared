@@ -15,8 +15,10 @@ class Status(object):
     def __init__(self, statuses):
         # reduce based on time
         contexts = defaultdict(list)
-        [contexts[status['context']].append((status['time'], status)) for status in statuses]
-        contexts = [sorted(context, key=lambda (t, d): t)[-1][1] for context in contexts.values()]
+        # group by context(time, !pending, <status>)
+        [contexts[status['context']].append((status['time'], status['state'] != 'pending', status)) for status in statuses]
+        # extract most recent sorted(time, !pending)
+        contexts = [sorted(context, key=lambda (t, s, d): (t, s))[-1][2] for context in contexts.values()]
         self._statuses = contexts
         states = set(map(lambda s: s['state'], contexts))
         self._state = 'failure' if 'failure' in states \
