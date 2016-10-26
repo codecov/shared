@@ -304,7 +304,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         # https://confluence.atlassian.com/display/BITBUCKET/commits+or+commit+Resource#commitsorcommitResource-GETanindividualcommit
         data = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, commit), token=token)
         author_login = data['author'].get('user', {}).get('username')
-        author_raw = data['author']['raw'][:-1].rsplit(' <', 1) if ' <' in data['author']['raw'] else None
+        author_raw = data['author'].get('raw', '')[:-1].rsplit(' <', 1) if ' <' in data['author']['raw'] else None
         if author_login:
             # https://confluence.atlassian.com/display/BITBUCKET/users+Endpoint#usersEndpoint-GETtheuserprofile
             res = yield self.api('2', 'get', '/users/%s' % author_login, token=token)
