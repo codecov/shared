@@ -7,7 +7,7 @@ def matches(string, pattern):
         return True
     else:
         if '*' in pattern:
-            return re.match('^'+pattern.replace('*', '.*')+'$', string) is not None
+            return re.match('^%s$' % pattern.replace('*', '.*'), string) is not None
         return False
 
 

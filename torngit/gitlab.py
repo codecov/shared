@@ -297,8 +297,8 @@ class Gitlab(BaseHandler):
             for issueid, pullid in pulls:
                 res = yield self.api('get', '/projects/%s/merge_requests/%s/commits' % (self.data['repo']['service_id'], issueid), token=token)
                 found = False
-                for commit in res:
-                    if commit['id'] == commit:
+                for _commit in res:
+                    if _commit['id'] == commit:
                         found = True
                         break
                 if not found:
