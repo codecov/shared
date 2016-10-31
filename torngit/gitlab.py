@@ -171,7 +171,7 @@ class Gitlab(BaseHandler):
         for _pr in res:
             if str(_pr['iid']) == str(pullid):
                 # this is the tip of master not the actual base of PR :(
-                base = yield self._get_head_of(_pr['source_branch'])
+                base = yield self._get_head_of(_pr['target_branch'])
                 raise gen.Return(dict(base=dict(branch=_pr['target_branch'],
                                                 commitid=base),
                                       head=dict(branch=_pr['source_branch'],
