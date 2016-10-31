@@ -170,12 +170,12 @@ class Gitlab(BaseHandler):
         res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pullid), token=token)
         for _pr in res:
             if str(_pr['iid']) == str(pullid):
-                head = yield self._get_head_of(_pr['target_branch'])
+                # this is the tip of master not the actual base of PR :(
                 base = yield self._get_head_of(_pr['source_branch'])
                 raise gen.Return(dict(base=dict(branch=_pr['target_branch'],
                                                 commitid=base),
                                       head=dict(branch=_pr['source_branch'],
-                                                commitid=head),
+                                                commitid=_pr['sha']),
                                       open=_pr['state'] == 'opened',
                                       merged=_pr['state'] == 'merged',
                                       title=_pr['title'],
