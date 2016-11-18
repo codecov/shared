@@ -199,5 +199,5 @@ class BaseHandler:
                 for segment in data['segments']:
                     rm += sum([1 for line in segment['lines'] if line[0] == '-'])
                     add += sum([1 for line in segment['lines'] if line[0] == '+'])
-            data['totals'] = dict(added=add, removed=rm)
+            data['stats'] = dict(added=add, removed=rm)
         return diff
