@@ -402,7 +402,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               token=token)
 
         commits = []
-        if with_commits:
+        if with_commits and False:  # need to change to /patch
             page = 0
             while page > -1:
                 page += 1
