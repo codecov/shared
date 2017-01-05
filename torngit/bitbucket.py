@@ -402,36 +402,39 @@ class Bitbucket(BaseHandler, OAuthMixin):
                               token=token)
 
         commits = []
-        if with_commits and False:  # need to change to /patch
-            page = 0
-            while page > -1:
-                page += 1
-                # https://api.bitbucket.org/2.0/repositories/markadams-atl/test-repo/commits/fcba34b
-                res = yield self.api('2', 'get', '/repositories/%s/commits/%s' % (self.slug, head),
-                                     page=page, token=token)
+        if with_commits:
+            commits = [{'commitid': head}, {'commitid': base}]
 
-                if len(res['values']) == 0:
-                    break
-
-                for commit in res['values']:
-                    try:
-                        author = dict(id=commit['author']['user']['uuid'][1:-1],
-                                      username=commit['author']['user']['username'],
-                                      name=commit['author']['user']['name'])
-                    except:
-                        author = {}
-
-                    commits.append(dict(commitid=commit['hash'],
-                                        message=commit['message'],
-                                        timestamp=commit['date'],
-                                        author=author))
-
-                    if commit['hash'].startswith(base):
-                        page = -1
-                        break
-
-                if len(res['values']) < res['pagelen']:
-                    break
+            # # need to change to /patch
+            # page = 0
+            # while page > -1:
+            #     page += 1
+            #     # https://api.bitbucket.org/2.0/repositories/markadams-atl/test-repo/commits/fcba34b
+            #     res = yield self.api('2', 'get', '/repositories/%s/commits/%s' % (self.slug, head),
+            #                          page=page, token=token)
+            #
+            #     if len(res['values']) == 0:
+            #         break
+            #
+            #     for commit in res['values']:
+            #         try:
+            #             author = dict(id=commit['author']['user']['uuid'][1:-1],
+            #                           username=commit['author']['user']['username'],
+            #                           name=commit['author']['user']['name'])
+            #         except:
+            #             author = {}
+            #
+            #         commits.append(dict(commitid=commit['hash'],
+            #                             message=commit['message'],
+            #                             timestamp=commit['date'],
+            #                             author=author))
+            #
+            #         if commit['hash'].startswith(base):
+            #             page = -1
+            #             break
+            #
+            #     if len(res['values']) < res['pagelen']:
+            #         break
 
         raise gen.Return(dict(diff=self.diff_to_json(diff),
                               commits=commits))
