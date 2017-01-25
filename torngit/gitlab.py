@@ -266,17 +266,11 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def get_pull_request_commits(self, pullid, token=None):
-        # IMPORTANT! Must provide internal id for the pullid here
-        data, page = [], 0
-        while True:
-            page += 1
-            # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
-            commits = yield self.api('get', '/projects/%s/merge_requests/%s/commits?per_page=100&page=%d' % (self.data['repo']['service_id'], pullid, page), token=token)
-            data.extend([c['id'] for c in commits])
-            if len(commits) < 100:
-                break
-
-        raise gen.Return(data)
+        # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
+        commits = yield self.api('get', '/projects/{0}/merge_requests/{1}/commits'.format(
+            self.data['repo']['service_id'], pullid
+        ), token=token)
+        raise gen.Return([c['id'] for c in commits])
 
     @gen.coroutine
     def get_branches(self, token=None):
