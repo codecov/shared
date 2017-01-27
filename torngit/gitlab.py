@@ -144,7 +144,7 @@ class Gitlab(BaseHandler):
             repos = yield self.api('get', '/projects?per_page=100&page=%d' % page, token=token)
             for repo in repos:
                 owner = repo['namespace']
-                data.append(dict(owner=dict(service_id=owner['owner_id'] or owner['id'],
+                data.append(dict(owner=dict(service_id=owner.get('owner_id') or owner.get('id'),
                                             username=owner['path']),
                                  repo=dict(service_id=repo['id'],
                                            name=repo['path'],
@@ -339,7 +339,7 @@ class Gitlab(BaseHandler):
             res = yield self.api('get', '/projects/'+self.data['repo']['service_id'], token=token)
         owner = res['namespace']
         username, repo = tuple(res['path_with_namespace'].split('/', 1))
-        raise gen.Return(dict(owner=dict(service_id=owner['owner_id'] or owner['id'],
+        raise gen.Return(dict(owner=dict(service_id=owner.get('owner_id') or owner.get('id'),
                                          username=username),
                               repo=dict(service_id=res['id'],
                                         private=not res['public'],
