@@ -198,10 +198,28 @@ class Github(BaseHandler, OAuth2Mixin):
                                         fork=fork,
                                         branch=res['default_branch'] or 'master')))
 
-    # User Endpoints
-    # --------------
     @gen.coroutine
-    def list_repos(self, username=None, token=None, installation=False):
+    def list_repos_using_installation(self, username):
+        """
+        returns list of service_id's of repos included in this integration
+        """
+        repos = []
+        page = 0
+        while True:
+            page += 1
+            # https://developer.github.com/v3/repos/#list-your-repositories
+            res = yield self.api('get', '/installation/repositories?per_page=100&page=%d' % page,
+                                 headers={'Accept': 'application/vnd.github.machine-man-preview+json'})
+            if len(res['repositories']) == 0:
+                break
+            repos.extend([repo['id'] for repo in res['repositories']])
+            if len(res['repositories']) <= 100:
+                break
+
+        raise gen.Return(repos)
+
+    @gen.coroutine
+    def list_repos(self, username=None, token=None):
         """
         GitHub includes all visible repos through
         the same endpoint.
@@ -211,20 +229,16 @@ class Github(BaseHandler, OAuth2Mixin):
         while True:
             page += 1
             # https://developer.github.com/v3/repos/#list-your-repositories
-            if installation:
-                repos = yield self.api('get', '/installation/repositories?per_page=100&page=%d' % page,
-                                       headers={'Accept': 'application/vnd.github.machine-man-preview+json'},
-                                       token=token)
-            elif username is None:
+            if username is None:
                 repos = yield self.api('get', '/user/repos?per_page=100&page=%d' % page,
                                        token=token)
             else:
                 repos = yield self.api('get', '/users/%s/repos?per_page=100&page=%d' % (username, page),
                                        token=token)
 
-            for repo in (repos if not installation else repos['repositories']):
+            for repo in repos:
                 _o, _r, parent = repo['owner']['login'], repo['name'], None
-                if not installation and repo['fork']:
+                if repo['fork']:
                     # need to get its source
                     # https://developer.github.com/v3/repos/#get
                     try:
@@ -255,10 +269,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                            branch=repo['default_branch'],
                                            fork=fork)))
 
-            if installation:
-                if len(repos['repositories']) < 100:
-                    break
-            elif len(repos) < 100:
+            if len(repos) < 100:
                 break
 
         raise gen.Return(data)
