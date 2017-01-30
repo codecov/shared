@@ -29,7 +29,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 create_file='%(username)s/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
                 tree='%(username)s/%(name)s/src/%(commitid)s',
                 branch='%(username)s/%(name)s/branch/%(branch)s',
-                pull='%(username)s/%(name)s/pull-requests/%(pr)s',
+                pull='%(username)s/%(name)s/pull-requests/%(pullid)s',
                 compare='%(username)s/%(name)s')
 
     @gen.coroutine
