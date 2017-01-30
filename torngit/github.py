@@ -263,7 +263,6 @@ class Github(BaseHandler, OAuth2Mixin):
                                             username=_o),
                                  repo=dict(service_id=repo['id'],
                                            name=_r,
-                                           installation=installation,
                                            language=self._validate_language(repo['language']),
                                            private=repo['private'],
                                            branch=repo['default_branch'],
