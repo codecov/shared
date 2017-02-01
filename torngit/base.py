@@ -11,7 +11,7 @@ def unicode_escape(string, escape=True):
         if escape:
             return url_escape(string, plus=False).replace('%2F', '/')
         elif isinstance(string, unicode):
-            return string.encode('utf-8')
+            return string.encode('utf-8', 'replace')
         return string
     else:
         return str(string)

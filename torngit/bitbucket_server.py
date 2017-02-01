@@ -327,9 +327,9 @@ class BitbucketServer(BaseHandler):
                               merged=res['state'] == 'MERGED',
                               id=str(pullid),
                               number=str(pullid),
-                              base=dict(branch=res['toRef']['id'].replace('refs/heads/', ''),
+                              base=dict(branch=res['toRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', ''),
                                         commitid=base_commit_sha),
-                              head=dict(branch=res['fromRef']['id'].replace('refs/heads/', ''),
+                              head=dict(branch=res['fromRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', ''),
                                         commitid=commits[0])))
 
     @gen.coroutine
@@ -465,7 +465,7 @@ class BitbucketServer(BaseHandler):
                                  start=start, token=token)
             if len(res['values']) == 0:
                 break
-            branches.extend([(b['displayId'], b['latestCommit']) for b in res['values']])
+            branches.extend([(b['displayId'].encode('utf-8', 'replace'), b['latestCommit']) for b in res['values']])
             if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
@@ -488,7 +488,7 @@ class BitbucketServer(BaseHandler):
                 break
             prs.extend([(None, str(b['id']))
                         for b in res['values']
-                        if branch is None or branch == b['fromRef']['id'].replace('refs/heads/', '')])
+                        if branch is None or branch.encode('utf-8', 'replace') == b['fromRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', '')])
             if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:

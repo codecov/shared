@@ -194,9 +194,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
         # the commit sha is only {12}. need to get full sha
         base = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, res['destination']['commit']['hash']), token=token)
         head = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, res['source']['commit']['hash']), token=token)
-        raise gen.Return(dict(base=dict(branch=res['destination']['branch']['name'],
+        raise gen.Return(dict(base=dict(branch=res['destination']['branch']['name'].encode('utf-8', 'replace'),
                                         commitid=base['hash']),
-                              head=dict(branch=res['source']['branch']['name'],
+                              head=dict(branch=res['source']['branch']['name'].encode('utf-8', 'replace'),
                                         commitid=head['hash']),
                               open=res['state'] == 'OPEN',
                               merged=res['state'] == 'MERGED',
@@ -347,7 +347,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             else:
                 pulls.extend([(None, str(b['id']))
                               for b in _prs
-                              if branch is None or b['source']['branch']['name'] == branch])
+                              if branch is None or b['source']['branch']['name'].encode('utf-8', 'replace') == branch.encode('utf-8', 'replace')])
             if not res.get('next'):
                 break
 

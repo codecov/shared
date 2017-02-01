@@ -145,13 +145,13 @@ class Gitlab(BaseHandler):
             for repo in repos:
                 owner = repo.get('owner', repo['namespace'])
                 data.append(dict(owner=dict(service_id=owner['id'],
-                                            username=owner['path']),
+                                            username=owner.get('path', owner.get('username'))),
                                  repo=dict(service_id=repo['id'],
-                                           name=repo['path'],
+                                           name=repo.get('path', repo.get('name')),
                                            fork=None,
                                            private=not repo['public'],
                                            language=None,
-                                           branch=repo['default_branch'] or 'master')))
+                                           branch=(repo['default_branch'] or 'master').encode('utf-8', 'replace'))))
 
             if len(repos) < 100:
                 break
@@ -171,10 +171,10 @@ class Gitlab(BaseHandler):
         for _pr in res:
             if str(_pr['iid']) == str(pullid):
                 # this is the tip of master not the actual base of PR :(
-                base = yield self._get_head_of(_pr['target_branch'])
-                raise gen.Return(dict(base=dict(branch=_pr['target_branch'],
+                base = yield self._get_head_of((_pr['target_branch'] or '').encode('utf-8', 'replace'))
+                raise gen.Return(dict(base=dict(branch=(_pr['target_branch'] or '').encode('utf-8', 'replace'),
                                                 commitid=base),
-                                      head=dict(branch=_pr['source_branch'],
+                                      head=dict(branch=(_pr['source_branch'] or '').encode('utf-8', 'replace'),
                                                 commitid=_pr['sha']),
                                       open=_pr['state'] == 'opened',
                                       merged=_pr['state'] == 'merged',
@@ -190,7 +190,7 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
-        # http://doc.gitlab.com/ce/api/commits.html#post-the-status-to-commit
+        # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
         status = dict(error='canceled', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),
                              body=dict(state=status,
@@ -284,7 +284,7 @@ class Gitlab(BaseHandler):
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state), token=token)
-        pulls = [(b['id'], b['iid']) for b in res if branch is None or b['source_branch'] == branch]
+        pulls = [(b['id'], b['iid']) for b in res if branch is None or (b['source_branch'] or '').encode('utf-8', 'replace') == branch.encode('utf-8', 'replace')]
         if commit:
             # filter: commit must be in commits
             # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
@@ -344,7 +344,7 @@ class Gitlab(BaseHandler):
                               repo=dict(service_id=res['id'],
                                         private=not res['public'],
                                         language=None,
-                                        branch=res['default_branch'] or 'master',
+                                        branch=(res['default_branch'] or 'master').encode('utf-8', 'replace'),
                                         name=repo)))
 
     @gen.coroutine

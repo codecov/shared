@@ -186,7 +186,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                   name=parent['name'],
                                   language=self._validate_language(parent['language']),
                                   private=parent['private'],
-                                  branch=parent['default_branch']))
+                                  branch=parent['default_branch'].encode('utf-8', 'replace')))
         else:
             fork = None
 
@@ -255,7 +255,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                           name=parent['name'],
                                           language=self._validate_language(parent['language']),
                                           private=parent['private'],
-                                          branch=parent['default_branch']))
+                                          branch=parent['default_branch'].encode('utf-8', 'replace')))
                 else:
                     fork = None
 
@@ -265,7 +265,7 @@ class Github(BaseHandler, OAuth2Mixin):
                                            name=_r,
                                            language=self._validate_language(repo['language']),
                                            private=repo['private'],
-                                           branch=repo['default_branch'],
+                                           branch=repo['default_branch'].encode('utf-8', 'replace'),
                                            fork=fork)))
 
             if len(repos) < 100:
@@ -452,9 +452,9 @@ class Github(BaseHandler, OAuth2Mixin):
     def get_pull_request(self, pullid, token=None):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         res = yield self.api('get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
-        raise gen.Return(dict(base=dict(branch=res['base']['ref'],
+        raise gen.Return(dict(base=dict(branch=res['base']['ref'].encode('utf-8', 'replace'),
                                         commitid=res['base']['sha']),
-                              head=dict(branch=res['head']['ref'],
+                              head=dict(branch=res['head']['ref'].encode('utf-8', 'replace'),
                                         commitid=res['head']['sha']),
                               open=res['state'] == 'open',
                               merged=res['merged'],
