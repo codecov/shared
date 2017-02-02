@@ -128,12 +128,15 @@ class Gitlab(BaseHandler):
         raise gen.Return(True)
 
     def diff_to_json(self, diff):
-        for d in diff:
-            mode = ''
-            if d['deleted_file']:
-                mode = 'deleted file mode\n'
-            d['diff'] = ('diff --git a/%(old_path)s b/%(new_path)s\n' % d) + mode + d['diff']
-        return BaseHandler.diff_to_json(self, '\n'.join(map(lambda a: a['diff'], diff)))
+        if type(diff) is list:
+            for d in diff:
+                mode = ''
+                if d['deleted_file']:
+                    mode = 'deleted file mode\n'
+                d['diff'] = ('diff --git a/%(old_path)s b/%(new_path)s\n' % d) + mode + d['diff']
+            return BaseHandler.diff_to_json(self, '\n'.join(map(lambda a: a['diff'], diff)))
+        else:
+            return BaseHandler.diff_to_json(self, diff)
 
     @gen.coroutine
     def list_repos(self, username=None, token=None):
