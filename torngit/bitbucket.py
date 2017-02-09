@@ -198,7 +198,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                         commitid=base['hash']),
                               head=dict(branch=res['source']['branch']['name'].encode('utf-8', 'replace'),
                                         commitid=head['hash']),
-                              state={'OPEN': 'open', 'MERGED', 'merged', 'DECLINED': 'closed'}.get(res['state']),
+                              state={'OPEN': 'open', 'MERGED': 'merged', 'DECLINED': 'closed'}.get(res['state']),
                               title=res['title'],
                               id=str(pullid),
                               number=str(pullid)))

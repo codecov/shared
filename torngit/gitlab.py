@@ -297,6 +297,7 @@ class Gitlab(BaseHandler):
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
         merge_request_url = '/projects/%s/merge_requests/{0}/commits' % self.data['repo']['service_id']
 
+        # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state),
                              token=token)
