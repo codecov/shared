@@ -471,8 +471,8 @@ class BitbucketServer(BaseHandler):
         raise gen.Return(branches)
 
     @gen.coroutine
-    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
-        prs, start = [], 0
+    def find_pull_request(self, commit=None, branch=None, state='open', token=None):
+        pulls, start = [], 0
         state = {'open': 'OPEN', 'close': 'DECLINED', 'merged': 'MERGED'}.get(state, 'ALL')
         while True:
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2048560
@@ -484,11 +484,32 @@ class BitbucketServer(BaseHandler):
                                  token=token)
             if len(res['values']) == 0:
                 break
-            prs.extend([(None, str(b['id']))
-                        for b in res['values']
-                        if branch is None or branch.encode('utf-8', 'replace') == b['fromRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', '')])
+            pulls.extend([pull['id']
+                          for pull in res['values']
+                          if branch is None or branch.encode('utf-8', 'replace') == pull['fromRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', '')])
             if res['isLastPage'] or res.get('nextPageStart') is None:
                 break
             else:
                 start = res['nextPageStart']
-        raise gen.Return(prs)
+        raise gen.Return(pulls)
+
+    @gen.coroutine
+    def get_pull_requests(self, state='open', token=None):
+        pulls, start = [], 0
+        state = {'open': 'OPEN', 'close': 'DECLINED', 'merged': 'MERGED'}.get(state, 'ALL')
+        while True:
+            # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2048560
+            res = yield self.api('get', '%s/repos/%s/pull-requests' % (self.project, self.data['repo']['name']),
+                                 state=state,
+                                 withAttributes=False,
+                                 withProperties=False,
+                                 start=start,
+                                 token=token)
+            if len(res['values']) == 0:
+                break
+            pulls.extend([pull['id'] for pull in res['values']])
+            if res['isLastPage'] or res.get('nextPageStart') is None:
+                break
+            else:
+                start = res['nextPageStart']
+        raise gen.Return(pulls)

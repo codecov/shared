@@ -198,8 +198,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                         commitid=base['hash']),
                               head=dict(branch=res['source']['branch']['name'].encode('utf-8', 'replace'),
                                         commitid=head['hash']),
-                              open=res['state'] == 'OPEN',
-                              merged=res['state'] == 'MERGED',
+                              state={'OPEN': 'open', 'MERGED', 'merged', 'DECLINED': 'closed'}.get(res['state']),
                               title=res['title'],
                               id=str(pullid),
                               number=str(pullid)))
@@ -328,7 +327,23 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return([(k, b['raw_node']) for k, b in res.iteritems()])
 
     @gen.coroutine
-    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
+    def get_pull_requests(self, state='open', token=None):
+        state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state)
+        pulls, page = [], 0
+        while True:
+            page += 1
+            # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
+            res = yield self.api('2', 'get', '/repositories/%s/pullrequests' % self.slug,
+                                 state=state, page=page, token=token)
+            if len(res['values']) == 0:
+                break
+            pulls.extend([pull['id'] for pull in res['values']])
+            if not res.get('next'):
+                break
+        raise gen.Return(pulls)
+
+    @gen.coroutine
+    def find_pull_request(self, commit=None, branch=None, state='open', token=None):
         state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state, '')
         pulls, page = [], 0
         while True:

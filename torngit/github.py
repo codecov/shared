@@ -448,30 +448,51 @@ class Github(BaseHandler, OAuth2Mixin):
 
     # Pull Requests
     # -------------
+    def _pull(self, data):
+        return dict(base=dict(branch=pull['base']['ref'].encode('utf-8', 'replace'),
+                                        commitid=pull['base']['sha']),
+                              head=dict(branch=pull['head']['ref'].encode('utf-8', 'replace'),
+                                        commitid=pull['head']['sha']),
+                              state='merged' if pull['merged'] else pull['state'],
+                              title=pull['title'],
+                              id=str(pull['id']),
+                              number=str(pull['id']))
+
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         res = yield self.api('get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
-        raise gen.Return(dict(base=dict(branch=res['base']['ref'].encode('utf-8', 'replace'),
-                                        commitid=res['base']['sha']),
-                              head=dict(branch=res['head']['ref'].encode('utf-8', 'replace'),
-                                        commitid=res['head']['sha']),
-                              open=res['state'] == 'open',
-                              merged=res['merged'],
-                              title=res['title'],
-                              id=str(pullid), number=str(pullid)))
+        raise gen.Return(self._pull(res))
 
     @gen.coroutine
-    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
+    def get_pull_requests(self, state='open', token=None):
+        # https://developer.github.com/v3/pulls/#list-pull-requests
+        page, pulls = 0, []
+        while True:
+            page += 1
+            res = yield self.api('get', '/repos/%s/pulls' % self.slug,
+                                 page=page,
+                                 per_page=25,
+                                 state=state,
+                                 token=token)
+            if len(res) == 0:
+                break
+
+            pulls.extend([pull['id'] for pull in res])
+
+            if len(pulls) < 25:
+                break
+
+        raise gen.Return(pulls)
+
+    @gen.coroutine
+    def find_pull_request(self, commit=None, branch=None, state='open', token=None):
         query = '%srepo:%s+type:pr%s' % (
                 (('%s+' % commit) if commit else ''),
                 url_escape(self.slug),
                 (('+state:%s' % state) if state else ''))
 
         # https://developer.github.com/v3/search/#search-issues
-        prs = yield self.api('get', '/search/issues?q=%s' % query, token=token)
-        if prs['items']:
-            raise gen.Return([(None, str(pr['number'])) for pr in prs['items']])
-
-        else:
-            raise gen.Return([])
+        res = yield self.api('get', '/search/issues?q=%s' % query, token=token)
+        if res['items']:
+            raise gen.Return(res['items'][0]['number'])

@@ -177,12 +177,11 @@ class Gitlab(BaseHandler):
                 base = yield self._get_head_of((pull['target_branch'] or '').encode('utf-8', 'replace'))
                 raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
                                                 commitid=base),
-                                      head=dict(branch=(_pr['source_branch'] or '').encode('utf-8', 'replace'),
-                                                commitid=_pr['sha']),
-                                      open=_pr['state'] == 'opened',
-                                      merged=_pr['state'] == 'merged',
-                                      title=_pr['title'],
-                                      id=str(_pr['id']),
+                                      head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
+                                                commitid=pull['sha']),
+                                      state='open' if pull['state'] == 'opened' else pull['state'],
+                                      title=pull['title'],
+                                      id=str(pull['id']),
                                       number=str(pullid)))
 
     @gen.coroutine
@@ -281,26 +280,42 @@ class Gitlab(BaseHandler):
         raise gen.Return([(b['name'], b['commit']['id']) for b in res])
 
     @gen.coroutine
+    def get_pull_requests(self, state='open', token=None):
+        # ONLY searchable by branch.
+        state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
+        merge_request_url = '/projects/%s/merge_requests/{0}/commits' % self.data['repo']['service_id']
+        # [TODO] pagination coming soon
+        # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
+        res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state),
+                             token=token)
+        # first check if the sha matches
+        raise gen.Return([pull['id'] for pull in res])
+
+    @gen.coroutine
     def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
         # ONLY searchable by branch.
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
-        # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
-        res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state), token=token)
-        pulls = [(b['id'], b['iid']) for b in res if branch is None or (b['source_branch'] or '').encode('utf-8', 'replace') == branch.encode('utf-8', 'replace')]
-        if commit:
-            # filter: commit must be in commits
-            # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
-            for issueid, pullid in pulls:
-                res = yield self.api('get', '/projects/%s/merge_requests/%s/commits' % (self.data['repo']['service_id'], issueid), token=token)
-                found = False
-                for _commit in res:
-                    if _commit['id'] == commit:
-                        found = True
-                        break
-                if not found:
-                    pulls.remove((issueid, pullid))
+        merge_request_url = '/projects/%s/merge_requests/{0}/commits' % self.data['repo']['service_id']
 
-        raise gen.Return(pulls)
+        # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
+        res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state),
+                             token=token)
+        # first check if the sha matches
+        if commit:
+            for pull in res:
+                if pull['sha'] == commit:
+                    raise gen.Return([(pull['id'], pull['iid'])])
+
+        elif branch:
+            branch = branch.encode('utf-8', 'replace')
+            raise gen.Return(
+                [(pull['id'], pull['iid'])
+                  for pull in res
+                  if pull['source_branch'] and pull['source_branch'].encode('utf-8', 'replace') == branch]
+            )
+
+        else:
+            raise gen.Return([(pull['id'], pull['iid']) for pull in res])
 
     @gen.coroutine
     def get_authenticated(self, token=None):
