@@ -448,7 +448,7 @@ class Github(BaseHandler, OAuth2Mixin):
 
     # Pull Requests
     # -------------
-    def _pull(self, data):
+    def _pull(self, pull):
         return dict(base=dict(branch=pull['base']['ref'].encode('utf-8', 'replace'),
                                         commitid=pull['base']['sha']),
                               head=dict(branch=pull['head']['ref'].encode('utf-8', 'replace'),
