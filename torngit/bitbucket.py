@@ -402,7 +402,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def get_source(self, path, ref, token=None):
         # https://confluence.atlassian.com/bitbucket/src-resources-296095214.html
-        src = yield self.api('1', 'get', '/repositories/%s/src/%s/%s' % (self.slug, ref, path),
+        src = yield self.api('1', 'get', '/repositories/%s/src/%s/%s' % (self.slug, ref, path.replace(' ', '%20')),
                              token=token)
         raise gen.Return(dict(commitid=src['node'],
                               content=src['data']))

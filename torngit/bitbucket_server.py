@@ -220,7 +220,7 @@ class BitbucketServer(BaseHandler):
         content, start = [], 0
         while True:
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2028128
-            res = yield self.api('get', '%s/repos/%s/browse/%s' % (self.project, self.data['repo']['name'], path),
+            res = yield self.api('get', '%s/repos/%s/browse/%s' % (self.project, self.data['repo']['name'], path.replace(' ', '%20')),
                                  at=ref, start=start, token=token)
 
             content.extend(res['lines'])

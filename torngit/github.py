@@ -396,7 +396,7 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def get_source(self, path, ref, token=None):
         # https://developer.github.com/v3/repos/contents/#get-contents
-        content = yield self.api('get', '/repos/%s/contents/%s' % (self.slug, path), ref=ref, token=token)
+        content = yield self.api('get', '/repos/%s/contents/%s' % (self.slug, path.replace(' ', '%20')), ref=ref, token=token)
         raise gen.Return(dict(content=b64decode(content['content']),
                               commitid=content['sha']))
 
@@ -448,7 +448,7 @@ class Github(BaseHandler, OAuth2Mixin):
 
     # Pull Requests
     # -------------
-    def _pull(self, pull):
+    def _pull(self, data):
         return dict(base=dict(branch=pull['base']['ref'].encode('utf-8', 'replace'),
                                         commitid=pull['base']['sha']),
                               head=dict(branch=pull['head']['ref'].encode('utf-8', 'replace'),

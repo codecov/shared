@@ -87,6 +87,9 @@ class BaseHandler:
         if self.data['repo']:
             data.setdefault('name', self.data['repo']['name'])
 
+        if 'path' in data:
+            data['path'] = data['path'].replace(' ', '%20')
+
         return '%s/%s' % (self.service_url, self.urls[endpoint] % data)
 
     def set_token(self, token):
