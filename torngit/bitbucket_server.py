@@ -239,10 +239,10 @@ class BitbucketServer(BaseHandler):
                              token=token)
 
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2598928
-        _a = yield self.api('get', '/users', filter=res['author']['emailAddress'], token=token)
-        if not _a['size']:
-            _a = yield self.api('get', '/users', filter=res['author']['name'])
-        author = _a['values'][0] if _a['size'] else {}
+        author = yield self.api('get', '/users', filter=res['author']['emailAddress'], token=token)
+        if not author['size']:
+            author = yield self.api('get', '/users', filter=res['author']['name'])
+        author = author['values'][0] if author['size'] else {}
 
         raise gen.Return(dict(author=dict(id=('U%s' % author.get('id')) if author.get('id') else None,
                                           username=author.get('name'),
@@ -318,19 +318,17 @@ class BitbucketServer(BaseHandler):
         res = yield self.api('get', '%s/repos/%s/pull-requests/%s' % (self.project, self.data['repo']['name'], pullid),
                              token=token)
         # need to get all commits, shit.
-        commits = yield self.get_pull_request_commits(pullid, token=token)
-        first_commit = yield self.api('get', '%s/repos/%s/commits/%s' % (self.project, self.data['repo']['name'], commits[-1]),
-                                      token=token)
-        base_commit_sha = first_commit['parents'][0]['id']
-        raise gen.Return(dict(open=res['open'],
-                              title=res['title'],
-                              merged=res['state'] == 'MERGED',
+        pull_commitids = yield self.get_pull_request_commits(pullid, token=token)
+        first_commit = (yield self.api('get', '%s/repos/%s/commits/%s' % (self.project, self.data['repo']['name'], pull_commitids[-1]),
+                                       token=token))['parents'][0]['id']
+        raise gen.Return(dict(title=res['title'],
+                              state={'OPEN': 'open', 'DECLINED': 'close', 'MERGED': 'merged'}.get(res['state']),
                               id=str(pullid),
                               number=str(pullid),
                               base=dict(branch=res['toRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', ''),
-                                        commitid=base_commit_sha),
+                                        commitid=first_commit),
                               head=dict(branch=res['fromRef']['id'].encode('utf-8', 'replace').replace('refs/heads/', ''),
-                                        commitid=commits[0])))
+                                        commitid=pull_commitids[0])))
 
     @gen.coroutine
     def list_repos(self, username=None, token=None):

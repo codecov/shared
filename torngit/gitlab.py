@@ -163,19 +163,19 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def list_teams(self, token=None):
-        # http://doc.gitlab.com/ce/api/groups.html#list-project-groups
+        # https://docs.gitlab.com/ce/api/groups.html#list-groups
         groups = yield self.api('get', '/groups')
         raise gen.Return([dict(name=g['name'], id=g['id'], username=g['path']) for g in groups])
 
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
-        # http://doc.gitlab.com/ce/api/merge_requests.html
+        # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
         res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pullid), token=token)
-        for _pr in res:
-            if str(_pr['iid']) == str(pullid):
+        for pull in res:
+            if str(pull['iid']) == str(pullid):
                 # this is the tip of master not the actual base of PR :(
-                base = yield self._get_head_of((_pr['target_branch'] or '').encode('utf-8', 'replace'))
-                raise gen.Return(dict(base=dict(branch=(_pr['target_branch'] or '').encode('utf-8', 'replace'),
+                base = yield self._get_head_of((pull['target_branch'] or '').encode('utf-8', 'replace'))
+                raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
                                                 commitid=base),
                                       head=dict(branch=(_pr['source_branch'] or '').encode('utf-8', 'replace'),
                                                 commitid=_pr['sha']),
@@ -236,11 +236,10 @@ class Gitlab(BaseHandler):
         raise gen.Return(commentid)
 
     def delete_comment(self, issueid, commentid, token=None):
-        # not implemented by gitlab yet
-        # $('.note').each(function(){ console.log($(this).attr('id').substr(5));
-        #     $.ajax({'method': 'delete', 'url': 'https://gitlab.com/codecov/ci-repo/notes/'+$(this).attr('id').substr(5)});
-        # });
-        return False
+        # https://docs.gitlab.com/ce/api/notes.html#delete-a-merge-request-note
+        yield self.api('delete', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], issueid, commentid),
+                       token=token)
+        raise gen.Return(True)
 
     @gen.coroutine
     def get_commit(self, commit, token=None):
