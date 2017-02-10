@@ -292,7 +292,7 @@ class Gitlab(BaseHandler):
         raise gen.Return([pull['id'] for pull in res])
 
     @gen.coroutine
-    def get_pull_requests(self, commit=None, branch=None, state='open', token=None):
+    def find_pull_request(self, commit=None, branch=None, state='open', token=None):
         # ONLY searchable by branch.
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
         merge_request_url = '/projects/%s/merge_requests/{0}/commits' % self.data['repo']['service_id']
