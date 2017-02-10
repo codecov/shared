@@ -396,7 +396,10 @@ class Github(BaseHandler, OAuth2Mixin):
     @gen.coroutine
     def get_source(self, path, ref, token=None):
         # https://developer.github.com/v3/repos/contents/#get-contents
-        content = yield self.api('get', '/repos/%s/contents/%s' % (self.slug, path.replace(' ', '%20')), ref=ref, token=token)
+        content = yield self.api('get', '/repos/{0}/contents/{1}'.format(
+            self.slug,
+            path.replace('+', '%20').replace(' ', '%20')
+        ), ref=ref, token=token)
         raise gen.Return(dict(content=b64decode(content['content']),
                               commitid=content['sha']))
 
