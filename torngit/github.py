@@ -458,8 +458,8 @@ class Github(BaseHandler, OAuth2Mixin):
                                         commitid=pull['head']['sha']),
                               state='merged' if pull['merged'] else pull['state'],
                               title=pull['title'],
-                              id=str(pull['id']),
-                              number=str(pull['id']))
+                              id=str(pull['number']),
+                              number=str(pull['number']))
 
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
@@ -481,7 +481,7 @@ class Github(BaseHandler, OAuth2Mixin):
             if len(res) == 0:
                 break
 
-            pulls.extend([pull['id'] for pull in res])
+            pulls.extend([pull['number'] for pull in res])
 
             if len(pulls) < 25:
                 break
