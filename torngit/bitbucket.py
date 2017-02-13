@@ -346,30 +346,28 @@ class Bitbucket(BaseHandler, OAuthMixin):
     def find_pull_request(self, commit=None, branch=None, state='open', token=None):
         state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state, '')
         pulls, page = [], 0
-        while True:
-            page += 1
-            # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
-            res = yield self.api('2', 'get', '/repositories/%s/pullrequests' % self.slug,
-                                 state=state, page=page, token=token)
-            _prs = res['values']
-            if len(_prs) == 0:
-                break
+        if commit or branch:
+            branch = branch.encode('utf-8', 'replace') if branch else ''
+            while True:
+                page += 1
+                # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
+                res = yield self.api('2', 'get', '/repositories/%s/pullrequests' % self.slug,
+                                     state=state, page=page, token=token)
+                _prs = res['values']
+                if len(_prs) == 0:
+                    break
 
-            if commit:
-                for b in _prs:
-                    if commit.startswith(b['source']['commit']['hash']):
-                        raise gen.Return([(None, str(b['id']))])
-            else:
-                pulls.extend([(None, str(b['id']))
-                              for b in _prs
-                              if branch is None or b['source']['branch']['name'].encode('utf-8', 'replace') == branch.encode('utf-8', 'replace')])
-            if not res.get('next'):
-                break
+                if commit:
+                    for pull in _prs:
+                        if commit.startswith(pull['source']['commit']['hash']):
+                            raise gen.Return(str(pull['id']))
+                else:
+                    for pull in _prs:
+                        if pull['source']['branch']['name'].encode('utf-8', 'replace') == branch:
+                            raise gen.Return(str(pull['id']))
 
-        if commit:
-            raise gen.Return(None)
-        else:
-            raise gen.Return(pulls)
+                if not res.get('next'):
+                    break
 
     @gen.coroutine
     def get_repository(self, token=None):

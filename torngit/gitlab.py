@@ -170,19 +170,19 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
-        res = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pullid), token=token)
-        for pull in res:
-            if str(pull['iid']) == str(pullid):
-                # this is the tip of master not the actual base of PR :(
-                base = yield self._get_head_of((pull['target_branch'] or '').encode('utf-8', 'replace'))
-                raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
-                                                commitid=base),
-                                      head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
-                                                commitid=pull['sha']),
-                                      state='open' if pull['state'] == 'opened' else pull['state'],
-                                      title=pull['title'],
-                                      id=str(pull['id']),
-                                      number=str(pullid)))
+        pull = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pullid), token=token)
+        if pull:
+            pull = pull[0]
+            # this is the tip of master not the actual base of PR :(
+            base = yield self._get_head_of((pull['target_branch'] or '').encode('utf-8', 'replace'))
+            raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
+                                            commitid=base),
+                                  head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
+                                            commitid=pull['sha']),
+                                  state='open' if pull['state'] == 'opened' else pull['state'],
+                                  title=pull['title'],
+                                  id=str(pull['id']),
+                                  number=str(pullid)))
 
     @gen.coroutine
     def _get_head_of(self, branch, token=None):
@@ -289,7 +289,7 @@ class Gitlab(BaseHandler):
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state),
                              token=token)
         # first check if the sha matches
-        raise gen.Return([pull['id'] for pull in res])
+        raise gen.Return([pull['iid'] for pull in res])
 
     @gen.coroutine
     def find_pull_request(self, commit=None, branch=None, state='open', token=None):
@@ -305,18 +305,19 @@ class Gitlab(BaseHandler):
         if commit:
             for pull in res:
                 if pull['sha'] == commit:
-                    raise gen.Return([(pull['id'], pull['iid'])])
+                    raise gen.Return(pull['iid'])
 
         elif branch:
-            branch = branch.encode('utf-8', 'replace')
-            raise gen.Return(
-                [(pull['id'], pull['iid'])
-                  for pull in res
-                  if pull['source_branch'] and pull['source_branch'].encode('utf-8', 'replace') == branch]
-            )
+            branch = branch.encode('utf-8', 'replace') if branch else ''
+            for pull in res:
+                if (
+                    pull['source_branch'] and
+                    pull['source_branch'].encode('utf-8', 'replace') == branch
+                ):
+                    raise gen.Return(pull['iid'])
 
         else:
-            raise gen.Return([(pull['id'], pull['iid']) for pull in res])
+            raise gen.Return(res[0]['iid'])
 
     @gen.coroutine
     def get_authenticated(self, token=None):
