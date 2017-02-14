@@ -179,7 +179,7 @@ class Gitlab(BaseHandler):
                                             commitid=base),
                                   head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
                                             commitid=pull['sha']),
-                                  state='open' if pull['state'] == 'opened' else pull['state'],
+                                  state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
                                   title=pull['title'],
                                   id=str(pull['id']),
                                   number=str(pullid)))
