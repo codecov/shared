@@ -175,6 +175,8 @@ class Gitlab(BaseHandler):
             pull = pull[0]
             # this is the tip of master not the actual base of PR :(
             base = yield self._get_head_of((pull['target_branch'] or '').encode('utf-8', 'replace'))
+            if pull['state'] == 'locked':
+                pull['state'] = 'closed'
             raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
                                             commitid=base),
                                   head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
