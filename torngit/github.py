@@ -374,15 +374,26 @@ class Github(BaseHandler, OAuth2Mixin):
 
     @gen.coroutine
     def get_commit_statuses(self, commit, token=None):
-        # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
-        res = yield self.api('get', '/repos/%s/commits/%s/statuses' % (self.slug, commit), token=token)
-        if len(res) == 0:
-            raise gen.Return(Status([]))
+        page = 0
+        statuses = []
+        while True:
+            page += 1
+            # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+            res = yield self.api('get',
+                                 '/repos/%s/commits/%s/statuses' % (self.slug, commit),
+                                 page=page,
+                                 per_page=100,
+                                 token=token)
+            if len(res) == 0:
+                break
 
-        statuses = [{'time': s['updated_at'],
-                     'state': s['state'],
-                     'url': s['target_url'],
-                     'context': s['context']} for s in res]
+            statuses.extend([{'time': s['updated_at'],
+                              'state': s['state'],
+                              'url': s['target_url'],
+                              'context': s['context']} for s in res])
+            if len(res) < 100:
+                break
+
         raise gen.Return(Status(statuses))
 
     @gen.coroutine
