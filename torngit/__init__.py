@@ -6,16 +6,16 @@ from bitbucket import Bitbucket
 from bitbucket_server import BitbucketServer
 
 
-def get(git, **data):
+def get(git, async=True, **data):
     if git == 'github':
-        return Github.new(**data)
+        return Github.new(async=async, **data)
     elif git == 'github_enterprise':
-        return GithubEnterprise.new(**data)
+        return GithubEnterprise.new(async=async, **data)
     elif git == 'bitbucket':
-        return Bitbucket.new(**data)
+        return Bitbucket.new(async=async, **data)
     elif git == 'bitbucket_server':
-        return BitbucketServer.new(**data)
+        return BitbucketServer.new(async=async, **data)
     elif git == 'gitlab':
-        return Gitlab.new(**data)
+        return Gitlab.new(async=async, **data)
     elif git == 'gitlab_enterprise':
-        return GitlabEnterprise.new(**data)
+        return GitlabEnterprise.new(async=async, **data)

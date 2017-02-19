@@ -235,7 +235,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def get_commit_status(self, commit, token=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
-        statuses = yield self.get_commit_statuses(commit, token=token)
+        statuses = yield self.get_commit_statuses(commit, _in_loop=True, token=token)
         raise gen.Return(str(statuses))
 
     @gen.coroutine

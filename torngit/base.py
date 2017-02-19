@@ -1,9 +1,24 @@
 import re
+from tornado import gen
+from tornado.ioloop import IOLoop
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
+
+
+def sync(func):
+    def wrapped(*args, **kwargs):
+        if kwargs.pop('_in_loop', False):
+            return func(*args, **kwargs)
+        else:
+            @gen.coroutine
+            def inner():
+                res = yield func(*args, **kwargs)
+                raise gen.Return(res)
+            return IOLoop.current().run_sync(inner)
+    return wrapped
 
 
 def unicode_escape(string, escape=True):
@@ -15,6 +30,37 @@ def unicode_escape(string, escape=True):
         return string
     else:
         return str(string)
+
+
+methods = (
+    'get_repository',
+    'get_branches',
+    'get_authenticated_user',
+    'get_is_admin',
+    'get_authenticated',
+    'get_repository',
+    'list_repos_using_installation',
+    'list_repos',
+    'list_teams',
+    '_get_head_of',
+    'get_pull_request_commits',
+    'post_webhook',
+    'edit_webhook',
+    'delete_webhook',
+    'post_comment',
+    'edit_comment',
+    'delete_comment',
+    'set_commit_status',
+    'get_commit_statuses',
+    'get_commit_status',
+    'get_source',
+    'get_commit_diff',
+    'get_compare',
+    'get_commit',
+    'get_pull_request',
+    'get_pull_requests',
+    'find_pull_request'
+)
 
 
 class BaseHandler:
@@ -40,6 +86,7 @@ class BaseHandler:
             oauth_consumer_token=None,
             timeouts=None,
             token=None,
+            async=True,
             verify_ssl=None,
             **kwargs):
         self = cls()
@@ -55,6 +102,12 @@ class BaseHandler:
 
         self._log_handler = log_handler
         self.data.update(kwargs)
+
+        if not async:
+            for method in methods:
+                if hasattr(self, method):
+                    setattr(self, method, sync(getattr(self, method)))
+
         return self
 
     def log(self, **kwargs):

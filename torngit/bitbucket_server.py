@@ -321,7 +321,7 @@ class BitbucketServer(BaseHandler):
         res = yield self.api('get', '%s/repos/%s/pull-requests/%s' % (self.project, self.data['repo']['name'], pullid),
                              token=token)
         # need to get all commits, shit.
-        pull_commitids = yield self.get_pull_request_commits(pullid, token=token)
+        pull_commitids = yield self.get_pull_request_commits(pullid, token=token, _in_loop=True)
         first_commit = (yield self.api('get', '%s/repos/%s/commits/%s' % (self.project, self.data['repo']['name'], pull_commitids[-1]),
                                        token=token))['parents'][0]['id']
         raise gen.Return(dict(title=res['title'],

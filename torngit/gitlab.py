@@ -178,14 +178,15 @@ class Gitlab(BaseHandler):
             # get first commit on pull
             first_commit = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
                 self.data['repo']['service_id'], pull['id']
-            ), token=token))[-1]
+            ), token=token))[-1]['id']
             # get commit parent
             parent = (yield self.api('get', '/projects/{}/repository/commits/{}'.format(
-                self.data['repo']['service_id'], first_commit['id']
+                self.data['repo']['service_id'], first_commit
             ), token=token))['parent_ids'][0]
 
             if pull['state'] == 'locked':
                 pull['state'] = 'closed'
+
             raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
                                             commitid=parent),
                                   head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
@@ -194,12 +195,6 @@ class Gitlab(BaseHandler):
                                   title=pull['title'],
                                   id=str(pull['id']),
                                   number=str(pullid)))
-
-    @gen.coroutine
-    def _get_head_of(self, branch, token=None):
-        # http://doc.gitlab.com/ce/api/branches.html#get-single-repository-branch
-        res = yield self.api('get', '/projects/%s/repository/branches/%s' % (self.data['repo']['service_id'], branch), token=token)
-        raise gen.Return(res['commit']['id'])
 
     @gen.coroutine
     def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):

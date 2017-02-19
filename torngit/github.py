@@ -76,7 +76,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 if e.response.code == 301:
                     # repo moved
                     self.data['repo']['service_id'] = e.response.effective_url.split('/')[4]
-                    repo = yield self.get_repository()
+                    repo = yield self.get_repository(_in_loop=True)
                     self.data['owner']['username'] = repo['owner']['username']
                     self.data['repo']['name'] = repo['repo']['name']
                     self.renamed_repository(repo)
