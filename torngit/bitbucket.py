@@ -403,7 +403,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         src = yield self.api('1', 'get', '/repositories/{0}/src/{1}/{2}'.format(
             self.slug,
             ref,
-            path.replace('+', '%20').replace(' ', '%20')
+            path.replace(' ', '%20')
         ), token=token)
 
         raise gen.Return(dict(commitid=src['node'],

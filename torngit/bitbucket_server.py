@@ -223,7 +223,7 @@ class BitbucketServer(BaseHandler):
             res = yield self.api('get', '{0}/repos/{1}/browse/{2}'.format(
                 self.project,
                 self.data['repo']['name'],
-                path.replace('+', '%20').replace(' ', '%20')
+                path.replace(' ', '%20')
             ), at=ref, start=start, token=token)
 
             content.extend(res['lines'])

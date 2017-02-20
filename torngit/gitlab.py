@@ -373,7 +373,7 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/api/repository_files.html
         res = yield self.api('get', '/projects/%s/repository/files' % self.data['repo']['service_id'],
                              ref=ref,
-                             file_path=path.replace('+', '%20').replace(' ', '%20'),
+                             file_path=path.replace(' ', '%20'),
                              token=token)
 
         raise gen.Return(dict(commitid=res['commit_id'],
