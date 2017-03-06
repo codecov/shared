@@ -170,15 +170,24 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
-        pull = yield self.api('get', '/projects/%s/merge_requests?iid=%s' % (self.data['repo']['service_id'], pullid), token=token)
+        pull = yield self.api('get', '/projects/{}/merge_requests?iid={}'.format(
+            self.data['repo']['service_id'], pullid
+        ), token=token)
         if pull:
             pull = pull[0]
-            # this is the tip of master not the actual base of PR :(
-            base = yield self._get_head_of((pull['target_branch'] or '').encode('utf-8', 'replace'))
+            # get first commit on pull
+            first_commit = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
+                self.data['repo']['service_id'], pull['id']
+            ), token=token))[-1]
+            # get commit parent
+            parent = (yield self.api('get', '/projects/{}/repository/commits/{}'.format(
+                self.data['repo']['service_id'], first_commit
+            ), token=token))['parent_ids'][0]
+
             if pull['state'] == 'locked':
                 pull['state'] = 'closed'
             raise gen.Return(dict(base=dict(branch=(pull['target_branch'] or '').encode('utf-8', 'replace'),
-                                            commitid=base),
+                                            commitid=parent),
                                   head=dict(branch=(pull['source_branch'] or '').encode('utf-8', 'replace'),
                                             commitid=pull['sha']),
                                   state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
