@@ -464,13 +464,13 @@ class Github(BaseHandler, OAuth2Mixin):
     # -------------
     def _pull(self, pull):
         return dict(base=dict(branch=pull['base']['ref'].encode('utf-8', 'replace'),
-                                        commitid=pull['base']['sha']),
-                              head=dict(branch=pull['head']['ref'].encode('utf-8', 'replace'),
-                                        commitid=pull['head']['sha']),
-                              state='merged' if pull['merged'] else pull['state'],
-                              title=pull['title'],
-                              id=str(pull['number']),
-                              number=str(pull['number']))
+                              commitid=pull['base']['sha']),
+                    head=dict(branch=pull['head']['ref'].encode('utf-8', 'replace'),
+                              commitid=pull['head']['sha']),
+                    state='merged' if pull['merged'] else pull['state'],
+                    title=pull['title'],
+                    id=str(pull['number']),
+                    number=str(pull['number']))
 
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
