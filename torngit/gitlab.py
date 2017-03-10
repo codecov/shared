@@ -181,7 +181,7 @@ class Gitlab(BaseHandler):
             ), token=token))[-1]
             # get commit parent
             parent = (yield self.api('get', '/projects/{}/repository/commits/{}'.format(
-                self.data['repo']['service_id'], first_commit
+                self.data['repo']['service_id'], first_commit['id']
             ), token=token))['parent_ids'][0]
 
             if pull['state'] == 'locked':
