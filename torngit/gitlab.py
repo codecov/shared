@@ -108,7 +108,7 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/api/projects.html#add-project-hook
         res = yield self.api('post', '/projects/%s/hooks' % self.data['repo']['service_id'],
                              body=dict(url=url,
-                                       enable_ssl_verification=True,
+                                       enable_ssl_verification=self.verify_ssl if type(self.verify_ssl) is bool else True,
                                        **events), token=token)
         raise gen.Return(res['id'])
 
@@ -117,7 +117,7 @@ class Gitlab(BaseHandler):
         # http://doc.gitlab.com/ce/api/projects.html#edit-project-hook
         yield self.api('put', '/projects/%s/hooks/%s' % (self.data['repo']['service_id'], hookid),
                        body=dict(url=url,
-                                 enable_ssl_verification=True,
+                                 enable_ssl_verification=self.verify_ssl if type(self.verify_ssl) is bool else True,
                                  **events), token=token)
         raise gen.Return(True)
 
