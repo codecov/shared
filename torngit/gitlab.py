@@ -199,7 +199,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
         # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
-        status = dict(error='canceled', failure='failed').get(status, status)
+        status = dict(error='failed', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),
                              body=dict(state=status,
                                        target_url=url,
@@ -258,9 +258,12 @@ class Gitlab(BaseHandler):
         username = None
         authors = yield self.api('get', '/users', search=email or name, token=token)
         if authors:
-            _id = authors[0]['id']
-            username = authors[0]['username']
-            name = authors[0]['name']
+            for author in authors:
+                if author['name'] == name or author['email'] == email:
+                    _id = authors[0]['id']
+                    username = authors[0]['username']
+                    name = authors[0]['name']
+                    break
 
         raise gen.Return(dict(author=dict(id=_id,
                                           username=username,
