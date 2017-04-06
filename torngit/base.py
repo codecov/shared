@@ -38,7 +38,6 @@ methods = (
     'get_authenticated_user',
     'get_is_admin',
     'get_authenticated',
-    'get_repository',
     'list_repos_using_installation',
     'list_repos',
     'list_teams',
