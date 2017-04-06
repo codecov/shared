@@ -259,7 +259,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(Status(statuses))
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
+    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None, coverage=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
         status = dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status)
         assert status, 'status not valid'

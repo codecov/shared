@@ -5,6 +5,7 @@ from sys import stdout
 from tornado import gen
 from base64 import b64decode
 from json import loads, dumps
+from tornado.escape import url_escape
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
@@ -16,7 +17,7 @@ from torngit.base import BaseHandler
 class Gitlab(BaseHandler):
     service = 'gitlab'
     service_url = 'https://gitlab.com'
-    api_url = 'https://gitlab.com/api/v3'
+    api_url = 'https://gitlab.com/api/v4'
     urls = dict(owner='%(username)s',
                 user='%(username)s',
                 repo='%(username)s/%(name)s',
@@ -170,7 +171,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
-        pull = yield self.api('get', '/projects/{}/merge_requests?iid={}'.format(
+        pull = yield self.api('get', '/projects/{}/merge_requests?iid[]={}'.format(
             self.data['repo']['service_id'], pullid
         ), token=token)
         if pull:
@@ -197,12 +198,13 @@ class Gitlab(BaseHandler):
                                   number=str(pullid)))
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
+    def set_commit_status(self, commit, status, context, description, url, coverage=None, merge_commit=None, token=None):
         # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
-        status = dict(error='failed', failure='failed').get(status, status)
+        status = dict(error='canceled', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),
                              body=dict(state=status,
                                        target_url=url,
+                                       coverage=coverage,
                                        name=context,
                                        description=description), token=token)
 
@@ -210,6 +212,7 @@ class Gitlab(BaseHandler):
             yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], merge_commit[0]),
                            body=dict(state=status,
                                      target_url=url,
+                                     coverage=coverage,
                                      name=merge_commit[1],
                                      description=description), token=token)
         raise gen.Return(res)
@@ -218,7 +221,7 @@ class Gitlab(BaseHandler):
     def get_commit_statuses(self, commit, _merge=None, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-status-of-a-commit
         statuses = yield self.api('get', '/projects/%s/repository/commits/%s/statuses' % (self.data['repo']['service_id'], commit), token=token)
-        _states = dict(pending='pending', success='success', error='failure', failure='failure')
+        _states = dict(pending='pending', success='success', error='failure', failure='failure', cancelled='failure')
         statuses = [{'time': s.get('finished_at', s.get('created_at')),
                      'state': _states.get(s['status']),
                      'url': s.get('target_url'),
@@ -292,7 +295,6 @@ class Gitlab(BaseHandler):
     def get_pull_requests(self, state='open', token=None):
         # ONLY searchable by branch.
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
-        merge_request_url = '/projects/%s/merge_requests/{0}/commits' % self.data['repo']['service_id']
         # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         res = yield self.api('get', '/projects/%s/merge_requests?state=%s' % (self.data['repo']['service_id'], state),
@@ -304,7 +306,6 @@ class Gitlab(BaseHandler):
     def find_pull_request(self, commit=None, branch=None, state='open', token=None):
         # ONLY searchable by branch.
         state = {'merged': 'merged', 'open': 'opened', 'close': 'closed'}.get(state, 'all')
-        merge_request_url = '/projects/%s/merge_requests/{0}/commits' % self.data['repo']['service_id']
 
         # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
@@ -346,11 +347,11 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def get_is_admin(self, user, token=None):
-        # http://doc.gitlab.com/ce/permissions/permissions.html#group
+        # https://docs.gitlab.com/ce/api/members.html#get-a-member-of-a-group-or-project
         user_id = int(user['service_id'])
-        res = yield self.api('get', '/groups/%s/members' % self.data['owner']['service_id'], token=token)
-        res = any(filter(lambda u: u and (u['id'] == user_id and u['access_level'] > 39), res))
-        raise gen.Return(res)
+        res = yield self.api('get', '/groups/{}/members/{}'.format(self.data['owner']['service_id'], user_id),
+                             token=token)
+        raise gen.Return(bool(res['active'] and res['access_level'] > 39))
 
     @gen.coroutine
     def get_commit_diff(self, commit, context=None, token=None):
@@ -360,36 +361,37 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def get_repository(self, token=None):
-        # http://doc.gitlab.com/ce/api/projects.html#get-single-project
+        # https://docs.gitlab.com/ce/api/projects.html#get-single-project
         if self.data['repo'].get('service_id') is None:
             res = yield self.api('get', '/projects/'+self.slug.replace('/', '%2F'), token=token)
         else:
             res = yield self.api('get', '/projects/'+self.data['repo']['service_id'], token=token)
-        owner = res.get('owner', res['namespace'])
+        owner = res['namespace']
         username, repo = tuple(res['path_with_namespace'].split('/', 1))
         raise gen.Return(dict(owner=dict(service_id=owner['id'],
                                          username=username),
                               repo=dict(service_id=res['id'],
-                                        private=not res['public'],
+                                        private=res['visibility'] != 'public',
                                         language=None,
                                         branch=(res['default_branch'] or 'master').encode('utf-8', 'replace'),
                                         name=repo)))
 
     @gen.coroutine
     def get_source(self, path, ref, token=None):
-        # http://doc.gitlab.com/ce/api/repository_files.html
-        res = yield self.api('get', '/projects/%s/repository/files' % self.data['repo']['service_id'],
-                             ref=ref,
-                             file_path=path.replace(' ', '%20'),
-                             token=token)
+        # https://docs.gitlab.com/ce/api/repository_files.html#get-raw-file-from-repository
+        res = yield self.api('get', '/projects/{}/repository/files/{}/raw'.format(
+            self.data['repo']['service_id'], url_escape(path)
+        ), ref=ref, token=token)
 
-        raise gen.Return(dict(commitid=res['commit_id'],
-                              content=b64decode(res['content'])))
+        raise gen.Return(dict(commitid=None, content=res))
 
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
-        # http://doc.gitlab.com/ce/api/repositories.html#compare-branches-tags-or-commits
-        compare = yield self.api('get', '/projects/%s/repository/compare/?from=%s&to=%s' % (self.data['repo']['service_id'], base, head), token=token)
+        # https://docs.gitlab.com/ee/api/repositories.html#compare-branches-tags-or-commits
+        compare = yield self.api('get', '/projects/{}/repository/compare/?from={}&to={}'.format(
+            self.data['repo']['service_id'], base, head
+        ), token=token)
+
         raise gen.Return(dict(diff=self.diff_to_json(compare['diffs']),
                               commits=[dict(commitid=c['id'],
                                             message=c['title'],
