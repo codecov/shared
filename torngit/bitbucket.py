@@ -239,7 +239,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         raise gen.Return(str(statuses))
 
     @gen.coroutine
-    def get_commit_statuses(self, commit, token=None):
+    def get_commit_statuses(self, commit, token=None, _in_loop=None):
         statuses, page = [], 0
         status_keys = dict(INPROGRESS='pending', SUCCESSFUL='success', FAILED='failure')
         while True:

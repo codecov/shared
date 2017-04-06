@@ -257,7 +257,7 @@ class BitbucketServer(BaseHandler):
                               timestamp=datetime.fromtimestamp(int(str(res['authorTimestamp'])[:10])).strftime('%Y-%m-%d %H:%M:%S')))
 
     @gen.coroutine
-    def get_pull_request_commits(self, pullid, token=None):
+    def get_pull_request_commits(self, pullid, token=None, _in_loop=None):
         commits, start = [], 0
         while True:
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2519392

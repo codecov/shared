@@ -169,7 +169,7 @@ class Github(BaseHandler, OAuth2Mixin):
         raise gen.Return((True, ok))
 
     @gen.coroutine
-    def get_repository(self, token=None):
+    def get_repository(self, token=None, _in_loop=None):
         if self.data['repo'].get('service_id') is None:
             # https://developer.github.com/v3/repos/#get
             res = yield self.api('get', '/repos/%s' % self.slug, token=token)
