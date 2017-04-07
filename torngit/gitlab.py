@@ -262,7 +262,7 @@ class Gitlab(BaseHandler):
         authors = yield self.api('get', '/users', search=email or name, token=token)
         if authors:
             for author in authors:
-                if author['name'] == name or author['email'] == email:
+                if author['name'] == name or author.get('email') == email:
                     _id = authors[0]['id']
                     username = authors[0]['username']
                     name = authors[0]['name']
