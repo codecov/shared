@@ -190,10 +190,16 @@ class Bitbucket(BaseHandler, OAuthMixin):
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETaspecificpullrequest
-        res = yield self.api('2', 'get', '/repositories/%s/pullrequests/%s' % (self.slug, pullid), token=token)
+        res = yield self.api('2', 'get', '/repositories/{}/pullrequests/{}'.format(
+            self.slug, pullid
+        ), token=token)
         # the commit sha is only {12}. need to get full sha
-        base = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, res['destination']['commit']['hash']), token=token)
-        head = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, res['source']['commit']['hash']), token=token)
+        base = yield self.api('2', 'get', '/repositories/{}/commit/{}'.format(
+            self.slug, res['destination']['commit']['hash']
+        ), token=token)
+        head = yield self.api('2', 'get', '/repositories/{}/commit/{}'.format(
+            self.slug, res['source']['commit']['hash']
+        ), token=token)
         raise gen.Return(dict(base=dict(branch=res['destination']['branch']['name'].encode('utf-8', 'replace'),
                                         commitid=base['hash']),
                               head=dict(branch=res['source']['branch']['name'].encode('utf-8', 'replace'),
