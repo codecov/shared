@@ -351,7 +351,7 @@ class Gitlab(BaseHandler):
         user_id = int(user['service_id'])
         res = yield self.api('get', '/groups/{}/members/{}'.format(self.data['owner']['service_id'], user_id),
                              token=token)
-        raise gen.Return(bool(res['active'] and res['access_level'] > 39))
+        raise gen.Return(bool(res['state'] == 'active' and res['access_level'] > 39))
 
     @gen.coroutine
     def get_commit_diff(self, commit, context=None, token=None):
