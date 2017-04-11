@@ -5,7 +5,6 @@ from sys import stdout
 from tornado import gen
 from base64 import b64decode
 from json import loads, dumps
-from tornado.escape import url_escape
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
@@ -378,12 +377,13 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def get_source(self, path, ref, token=None):
-        # https://docs.gitlab.com/ce/api/repository_files.html#get-raw-file-from-repository
-        res = yield self.api('get', '/projects/{}/repository/files/{}/raw'.format(
-            self.data['repo']['service_id'], url_escape(path)
+        # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository
+        res = yield self.api('get', '/projects/{}/repository/files/{}'.format(
+            self.data['repo']['service_id'], path
         ), ref=ref, token=token)
 
-        raise gen.Return(dict(commitid=None, content=res))
+        raise gen.Return(dict(commitid=None,
+                              content=b64decode(res['content'])))
 
     @gen.coroutine
     def get_compare(self, base, head, context=None, with_commits=True, token=None):
