@@ -170,19 +170,14 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
-        pull = yield self.api('get', '/projects/{}/merge_requests?iid[]={}'.format(
+        pull = yield self.api('get', '/projects/{}/merge_requests/{}'.format(
             self.data['repo']['service_id'], pullid
         ), token=token)
         if pull:
-            pull = pull[0]
             # get first commit on pull
-            first_commit = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
-                self.data['repo']['service_id'], pull['id']
-            ), token=token))[-1]['id']
-            # get commit parent
-            parent = (yield self.api('get', '/projects/{}/repository/commits/{}'.format(
-                self.data['repo']['service_id'], first_commit
-            ), token=token))['parent_ids'][0]
+            parent = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
+                self.data['repo']['service_id'], pullid
+            ), token=token))[-1]['parent_ids'][0]
 
             if pull['state'] == 'locked':
                 pull['state'] = 'closed'
@@ -193,7 +188,7 @@ class Gitlab(BaseHandler):
                                             commitid=pull['sha']),
                                   state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
                                   title=pull['title'],
-                                  id=str(pull['id']),
+                                  id=str(pullid),
                                   number=str(pullid)))
 
     @gen.coroutine
@@ -229,22 +224,22 @@ class Gitlab(BaseHandler):
         raise gen.Return(Status(statuses))
 
     @gen.coroutine
-    def post_comment(self, issueid, body, token=None):
+    def post_comment(self, pullid, body, token=None):
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
-        res = yield self.api('post', '/projects/%s/merge_requests/%s/notes' % (self.data['repo']['service_id'], issueid),
+        res = yield self.api('post', '/projects/%s/merge_requests/%s/notes' % (self.data['repo']['service_id'], pullid),
                              body=dict(body=body), token=token)
         raise gen.Return(res['id'])
 
     @gen.coroutine
-    def edit_comment(self, issueid, commentid, body, token=None):
+    def edit_comment(self, pullid, commentid, body, token=None):
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
-        yield self.api('put', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], issueid, commentid),
+        yield self.api('put', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], pullid, commentid),
                        body=dict(body=body), token=token)
         raise gen.Return(commentid)
 
-    def delete_comment(self, issueid, commentid, token=None):
+    def delete_comment(self, pullid, commentid, token=None):
         # https://docs.gitlab.com/ce/api/notes.html#delete-a-merge-request-note
-        yield self.api('delete', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], issueid, commentid),
+        yield self.api('delete', '/projects/%s/merge_requests/%s/notes/%s' % (self.data['repo']['service_id'], pullid, commentid),
                        token=token)
         raise gen.Return(True)
 
@@ -279,7 +274,7 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request_commits(self, pullid, token=None):
         # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
-        commits = yield self.api('get', '/projects/{0}/merge_requests/{1}/commits'.format(
+        commits = yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
             self.data['repo']['service_id'], pullid
         ), token=token)
         raise gen.Return([c['id'] for c in commits])
