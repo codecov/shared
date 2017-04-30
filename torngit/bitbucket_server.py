@@ -405,6 +405,7 @@ class BitbucketServer(BaseHandler):
             data.extend([{'time': s['dateAdded'],
                           'state': s['state'],
                           'url': s['url'],
+                          'description': s['description'],
                           'context': s['name']} for s in res['values']])
             if res['isLastPage'] or res.get('nextPageStart') is None:
                 break

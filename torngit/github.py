@@ -389,6 +389,7 @@ class Github(BaseHandler, OAuth2Mixin):
 
             statuses.extend([{'time': s['updated_at'],
                               'state': s['state'],
+                              'description': s['description'],
                               'url': s['target_url'],
                               'context': s['context']} for s in res])
             if len(res) < 100:

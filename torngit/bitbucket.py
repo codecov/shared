@@ -258,6 +258,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 break
             statuses.extend([{'time': s['updated_on'],
                               'state': status_keys.get(s['state']),
+                              'description': s['description'],
                               'url': s['url'],
                               'context': s['key']} for s in _statuses])
             if not res.get('next'):

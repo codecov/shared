@@ -218,6 +218,7 @@ class Gitlab(BaseHandler):
         _states = dict(pending='pending', success='success', error='failure', failure='failure', cancelled='failure')
         statuses = [{'time': s.get('finished_at', s.get('created_at')),
                      'state': _states.get(s['status']),
+                     'description': s['description'],
                      'url': s.get('target_url'),
                      'context': s['name']} for s in statuses]
 
