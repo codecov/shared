@@ -152,7 +152,7 @@ class Gitlab(BaseHandler):
                                  repo=dict(service_id=repo['id'],
                                            name=repo.get('path', repo.get('name')),
                                            fork=None,
-                                           private=not repo['public'],
+                                           private=(repo['visibility'] != 'public'),
                                            language=None,
                                            branch=(repo['default_branch'] or 'master').encode('utf-8', 'replace'))))
 
