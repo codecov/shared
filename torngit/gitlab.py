@@ -188,7 +188,7 @@ class Gitlab(BaseHandler):
                                             commitid=pull['sha']),
                                   state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
                                   title=pull['title'],
-                                  id=str(pullid),
+                                  id=str(pull['id']) if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID') else str(pullid),
                                   number=str(pullid)))
 
     @gen.coroutine
