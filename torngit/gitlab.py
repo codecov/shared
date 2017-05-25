@@ -170,14 +170,26 @@ class Gitlab(BaseHandler):
     @gen.coroutine
     def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
-        pull = yield self.api('get', '/projects/{}/merge_requests/{}'.format(
-            self.data['repo']['service_id'], pullid
-        ), token=token)
+        if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID'):
+            pull = yield self.api('get', '/projects/{}/merge_requests?iid={}'.format(
+                self.data['repo']['service_id'], pullid
+            ), token=token)
+            if pull:
+                pull = pull[0]
+                pullid = pull['id']
+        else:
+            pull = yield self.api('get', '/projects/{}/merge_requests/{}'.format(
+                self.data['repo']['service_id'], pullid
+            ), token=token)
+
         if pull:
             # get first commit on pull
-            parent = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
-                self.data['repo']['service_id'], pullid
-            ), token=token))[-1]['parent_ids'][0]
+            try:
+                parent = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
+                    self.data['repo']['service_id'], pullid
+                ), token=token))[-1]['parent_ids'][0]
+            except:
+                parent = None
 
             if pull['state'] == 'locked':
                 pull['state'] = 'closed'
@@ -188,8 +200,8 @@ class Gitlab(BaseHandler):
                                             commitid=pull['sha']),
                                   state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
                                   title=pull['title'],
-                                  id=str(pull['id']) if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID') else str(pullid),
-                                  number=str(pullid)))
+                                  id=str(pull['iid']),
+                                  number=str(pull['iid'])))
 
     @gen.coroutine
     def set_commit_status(self, commit, status, context, description, url, coverage=None, merge_commit=None, token=None):
