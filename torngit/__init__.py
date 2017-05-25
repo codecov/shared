@@ -1,6 +1,8 @@
 from github import Github
 from github_enterprise import GithubEnterprise
+from github_enterprise3 import GithubEnterprise as GithubEnterprise3
 from gitlab import Gitlab
+from gitlab3 import Gitlab as GitLab3
 from gitlab_enterprise import GitlabEnterprise
 from bitbucket import Bitbucket
 from bitbucket_server import BitbucketServer
@@ -15,6 +17,11 @@ def get(git, async=True, **data):
         return Bitbucket.new(async=async, **data)
     elif git == 'bitbucket_server':
         return BitbucketServer.new(async=async, **data)
+    elif os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID'):
+        if git == 'gitlab':
+            return Gitlab3.new(async=async, **data)
+        elif git == 'gitlab_enterprise':
+            return GitlabEnterprise3.new(async=async, **data)
     elif git == 'gitlab':
         return Gitlab.new(async=async, **data)
     elif git == 'gitlab_enterprise':
