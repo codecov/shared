@@ -16,7 +16,7 @@ from torngit.base import BaseHandler
 class Gitlab(BaseHandler):
     service = 'gitlab'
     service_url = 'https://gitlab.com'
-    api_url = 'https://gitlab.com/api/v4'
+    api_url = 'https://gitlab.com/api/v{}'
     urls = dict(owner='%(username)s',
                 user='%(username)s',
                 repo='%(username)s/%(name)s',
@@ -31,7 +31,7 @@ class Gitlab(BaseHandler):
                 tree='%(username)s/%(name)s/tree/%(commitid)s')
 
     @gen.coroutine
-    def api(self, method, path, body=None, token=None, **args):
+    def api(self, method, path, body=None, token=None, version=4, **args):
         # http://doc.gitlab.com/ce/api
         if path[0] == '/':
             _log = dict(event='api',
@@ -41,7 +41,7 @@ class Gitlab(BaseHandler):
         else:
             _log = {}
 
-        path = (self.api_url + path) if path[0] == '/' else path
+        path = (self.api_url.format(version) + path) if path[0] == '/' else path
         headers = {
             'Accept': 'application/json',
             'User-Agent': os.getenv('USER_AGENT', 'Default')
@@ -144,7 +144,9 @@ class Gitlab(BaseHandler):
         while True:
             page += 1
             # http://doc.gitlab.com/ce/api/projects.html#projects
-            repos = yield self.api('get', '/projects?per_page=100&page=%d' % page, token=token)
+            repos = yield self.api('get', '/projects?per_page=100&page=%d' % page,
+                                   version=3,
+                                   token=token)
             for repo in repos:
                 owner = repo.get('owner', repo['namespace'])
                 data.append(dict(owner=dict(service_id=owner['id'],
@@ -152,7 +154,7 @@ class Gitlab(BaseHandler):
                                  repo=dict(service_id=repo['id'],
                                            name=repo.get('path', repo.get('name')),
                                            fork=None,
-                                           private=(repo['visibility'] != 'public'),
+                                           private=(not repo['public']),
                                            language=None,
                                            branch=(repo['default_branch'] or 'master').encode('utf-8', 'replace'))))
 
@@ -173,7 +175,7 @@ class Gitlab(BaseHandler):
         if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID'):
             pull = yield self.api('get', '/projects/{}/merge_requests?iid={}'.format(
                 self.data['repo']['service_id'], pullid
-            ), token=token)
+            ), version=3, token=token)
             if pull:
                 pull = pull[0]
                 pullid = pull['id']
