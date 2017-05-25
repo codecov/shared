@@ -1,9 +1,9 @@
 from github import Github
 from github_enterprise import GithubEnterprise
-from github_enterprise3 import GithubEnterprise as GithubEnterprise3
 from gitlab import Gitlab
-from gitlab3 import Gitlab as GitLab3
 from gitlab_enterprise import GitlabEnterprise
+from gitlab3 import Gitlab as Gitlab3
+from gitlab_enterprise3 import GitlabEnterprise as GitlabEnterprise3
 from bitbucket import Bitbucket
 from bitbucket_server import BitbucketServer
 
