@@ -140,33 +140,53 @@ class Gitlab(BaseHandler):
 
     @gen.coroutine
     def list_repos(self, username=None, token=None):
-        data, page = [], 0
-        while True:
-            page += 1
-            # http://doc.gitlab.com/ce/api/projects.html#projects
-            repos = yield self.api('get', '/projects?per_page=100&page=%d' % page,
-                                   version=3,
-                                   token=token)
-            for repo in repos:
-                owner = repo.get('owner', repo['namespace'])
-                data.append(dict(owner=dict(service_id=owner['id'],
-                                            username=owner.get('path', owner.get('username'))),
-                                 repo=dict(service_id=repo['id'],
-                                           name=repo.get('path', repo.get('name')),
-                                           fork=None,
-                                           private=(not repo['public']),
-                                           language=None,
-                                           branch=(repo['default_branch'] or 'master').encode('utf-8', 'replace'))))
+        """
+        V4 will return ALL projects, so we need to loop groups first
+        """
+        user = yield self.api('get', '/user', token=token)
+        user['is_user'] = True
+        if username:
+            if username.lower() == user['username'].lower():
+                # just me
+                groups = [user]
+            else:
+                # a group
+                groups = [(yield self.api('get', '/groups/{}'.format(username), token=token))]
+        else:
+            # user and all groups
+            groups = yield self.api('get', '/groups?per_page=100', token=token)
+            groups.append(user)
 
-            if len(repos) < 100:
-                break
+        data = []
+        for group in groups:
+            page = 0
+            while True:
+                page += 1
+                # http://doc.gitlab.com/ce/api/projects.html#projects
+                if group.get('is_user'):
+                    repos = yield self.api('get', '/projects?owned=true&per_page=50&page={}'.format(page),
+                                           token=token)
+                else:
+                    repos = yield self.api('get', '/groups/{}/projects?per_page=50&page={}'.format(group['id'], page),
+                                           token=token)
+                for repo in repos:
+                    data.append(dict(owner=dict(service_id=repo['namespace']['id'],
+                                                username=repo['namespace']['path']),
+                                     repo=dict(service_id=repo['id'],
+                                               name=repo['path'],
+                                               fork=None,
+                                               private=(repo['visibility'] != 'public'),
+                                               language=None,
+                                               branch=(repo['default_branch'] or 'master').encode('utf-8', 'replace'))))
+                if len(repos) < 50:
+                    break
 
         raise gen.Return(data)
 
     @gen.coroutine
     def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups
-        groups = yield self.api('get', '/groups')
+        groups = yield self.api('get', '/groups?per_page=100', token=token)
         raise gen.Return([dict(name=g['name'], id=g['id'], username=g['path']) for g in groups])
 
     @gen.coroutine

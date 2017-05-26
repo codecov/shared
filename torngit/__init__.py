@@ -1,3 +1,5 @@
+import os
+
 from github import Github
 from github_enterprise import GithubEnterprise
 from gitlab import Gitlab
