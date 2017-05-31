@@ -200,7 +200,7 @@ class Gitlab(BaseHandler):
                                   number=str(pullid)))
 
     @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None):
+    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, coverage=None, token=None):
         # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
         status = dict(error='failed', failure='failed').get(status, status)
         res = yield self.api('post', '/projects/%s/statuses/%s' % (self.data['repo']['service_id'], commit),

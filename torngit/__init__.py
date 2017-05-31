@@ -19,12 +19,10 @@ def get(git, async=True, **data):
         return Bitbucket.new(async=async, **data)
     elif git == 'bitbucket_server':
         return BitbucketServer.new(async=async, **data)
-    elif os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID'):
-        if git == 'gitlab':
-            return Gitlab3.new(async=async, **data)
-        elif git == 'gitlab_enterprise':
-            return GitlabEnterprise3.new(async=async, **data)
     elif git == 'gitlab':
         return Gitlab.new(async=async, **data)
     elif git == 'gitlab_enterprise':
-        return GitlabEnterprise.new(async=async, **data)
+        if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID') or os.getenv('GITLAB_8'):
+            return GitlabEnterprise3.new(async=async, **data)
+        else:
+            return GitlabEnterprise.new(async=async, **data)
