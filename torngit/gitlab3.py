@@ -183,7 +183,7 @@ class Gitlab(BaseHandler):
             try:
                 parent = (yield self.api('get', '/projects/{}/repository/commits/{}'.format(
                     self.data['repo']['service_id'], first_commit
-                ), token=token))[-1]['parent_ids'][0]
+                ), token=token))['parent_ids'][-1]
             except:
                 parent = None
 
