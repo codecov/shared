@@ -198,12 +198,21 @@ class Gitlab(BaseHandler):
 
         if pull:
             # get first commit on pull
+            parent = None
             try:
-                parent = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
+                # get list of commits and first one out
+                first_commit = (yield self.api('get', '/projects/{}/merge_requests/{}/commits'.format(
                     self.data['repo']['service_id'], pullid
-                ), token=token))[-1]['parent_ids'][0]
+                ), token=token))[-1]
+                if len(first_commit['parent_ids']) > 0:
+                    parent = first_commit['parent_ids'][0]
+                else:
+                    # try querying the parent commit for this parent
+                    parent = (yield self.api('get', '/projects/{}/repository/commits/{}'.format(
+                        self.data['repo']['service_id'], first_commit['id']), token=token)
+                    )['parent_ids'][0]
             except:
-                parent = None
+                pass
 
             if pull['state'] == 'locked':
                 pull['state'] = 'closed'
