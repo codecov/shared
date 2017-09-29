@@ -100,7 +100,7 @@ class Github(BaseHandler, OAuth2Mixin):
 
         else:
             self.log('info',
-                     'GitHub HTTP %s' % e.response.code,
+                     'GitHub HTTP %s' % res.code,
                      rlx=res.headers.get('X-RateLimit-Remaining'),
                      rly=res.headers.get('X-RateLimit-Limit'),
                      rlr=res.headers.get('X-RateLimit-Reset'),

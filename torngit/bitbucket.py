@@ -68,7 +68,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
             else:
                 self.log('error',
-                         'Bitbucket HTTP %s' % (e.response.code),
+                         'Bitbucket HTTP %s' % e.response.code,
                          url=url,
                          endpoint=path,
                          body=e.response.body)
