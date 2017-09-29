@@ -70,7 +70,10 @@ class Gitlab(BaseHandler):
             if e.response is None:
                 raise ClientError(502, 'GitLab was not able to be reached. Response empty. Please try again.')
 
-            self.log(status=e.response.code, body=e.response.body, **_log)
+            self.log('error',
+                     'GitLab HTTP %s' % e.response.code,
+                     body=e.response.body,
+                     **_log)
 
             raise
 
@@ -78,7 +81,9 @@ class Gitlab(BaseHandler):
             raise ClientError(502, 'GitLab was not able to be reached. Gateway 502. Please try again.')
 
         else:
-            self.log(status=res.code, **_log)
+            self.log('info',
+                     'GitLab HTTP %s' % res.code,
+                     **_log)
             raise gen.Return(None if res.code == 204 else loads(res.body))
 
         finally:

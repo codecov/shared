@@ -67,15 +67,19 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 raise ClientError(502, 'Bitbucket was not able to be reached, server timed out.')
 
             else:
-                self.log(url=url,
-                         status=e.response.code,
+                self.log('error',
+                         'Bitbucket HTTP %s' % (e.response.code),
+                         url=url,
                          endpoint=path,
                          body=e.response.body)
             e.message = 'Bitbucket API: %s' % e.message
             raise
 
         else:
-            self.log(url=url, status=res.code, endpoint=path)
+            self.log('info',
+                     'Bitbucket HTTP %s' % res.code,
+                     url=url,
+                     endpoint=path)
             if res.code == 204:
                 raise gen.Return(None)
 

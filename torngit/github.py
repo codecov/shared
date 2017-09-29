@@ -81,7 +81,8 @@ class Github(BaseHandler, OAuth2Mixin):
                     self.data['repo']['name'] = repo['repo']['name']
                     self.renamed_repository(repo)
 
-                self.log(status=e.response.code,
+                self.log('error',
+                         'GitHub HTTP %s' % e.response.code,
                          body=e.response.body,
                          rlx=e.response.headers.get('X-RateLimit-Remaining'),
                          rly=e.response.headers.get('X-RateLimit-Limit'),
@@ -98,7 +99,8 @@ class Github(BaseHandler, OAuth2Mixin):
             raise ClientError(502, 'GitHub was not able to be reached.')
 
         else:
-            self.log(status=res.code,
+            self.log('info',
+                     'GitHub HTTP %s' % e.response.code,
                      rlx=res.headers.get('X-RateLimit-Remaining'),
                      rly=res.headers.get('X-RateLimit-Limit'),
                      rlr=res.headers.get('X-RateLimit-Reset'),
