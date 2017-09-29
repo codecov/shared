@@ -109,9 +109,9 @@ class BaseHandler:
 
         return self
 
-    def log(self, **kwargs):
+    def log(self, *args, **kwargs):
         if self._log_handler:
-            self._log_handler(**kwargs)
+            self._log_handler(*args, **kwargs)
 
     def __repr__(self):
         return '<%s slug=%s ownerid=%s repoid=%s>' % (self.service, self.slug, self.data['owner'].get('ownerid'), self.data['repo'].get('repoid'))

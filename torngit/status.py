@@ -50,6 +50,17 @@ class Status(object):
     def is_failure(self):
         return self._state == 'failure'
 
+    @property
+    def state(self):
+        return self._state
+
+    def as_bool(self):
+        if self.is_success:
+            return True
+        elif self.is_failure:
+            return False
+        return None
+
     def __len__(self):
         return len(self._statuses)
 
@@ -60,7 +71,7 @@ class Status(object):
         return False
 
     def filter(self, method):
-        self._statuses = filter(method, self._statuses)
+        return Status(filter(method, self._statuses))
 
     @property
     def pending(self):
