@@ -410,7 +410,8 @@ class Gitlab(BaseHandler):
     def get_source(self, path, ref, token=None):
         # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository
         res = yield self.api('get', '/projects/{}/repository/files/{}'.format(
-            self.data['repo']['service_id'], urlencode(path)
+            self.data['repo']['service_id'],
+            urlencode(dict(a=path))[2:]
         ), ref=ref, token=token)
 
         raise gen.Return(dict(commitid=None,
