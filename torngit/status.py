@@ -23,6 +23,7 @@ class Status(object):
         states = set(map(lambda s: s['state'], contexts))
         self._state = 'failure' if 'failure' in states \
                       else 'pending' if 'pending' in states \
+                      else 'failure' if 'error' in states \
                       else 'success'
 
     def __sub__(self, context):
