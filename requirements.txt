@@ -1,0 +1,7 @@
+attrs==17.4.0
+colour==0.1.5
+funcsigs==1.0.2
+pluggy==0.6.0
+py==1.5.2
+pytest==3.4.0
+six==1.11.0
