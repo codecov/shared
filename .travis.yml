@@ -4,4 +4,4 @@ python:
 install:
     - pip install -r requirements.txt
 script:
-    - python -m pytest -v
+    - pytest --cov=src --cov-report=term-missing
