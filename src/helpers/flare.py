@@ -53,11 +53,6 @@ def _dict_to_children(n, d, color, classes):
                 children=children)
 
 
-def network_to_path_and_totals(network):
-    return ((path, _NetworkFile[0])
-            for path, _NetworkFile in network)
-
-
 def report_to_flare(files, color, classes=None):
     flare = Dict(__l=0, __h=0)
     fa = flare.add_child
