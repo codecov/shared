@@ -1,6 +1,3 @@
-from collections import namedtuple
-
-
 class Session(object):
     def __init__(self, id=None, t=None, d=None, a=None, f=None,
                  c=None, n=None, j=None, u=None, p=None, e=None,
