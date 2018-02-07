@@ -1,9 +1,12 @@
 import pytest
 from json import dumps, loads
+from mock import Mock
 from src.reports import *
+
 
 def json(d):
     return loads(dumps(d))
+
 
 @pytest.mark.parametrize('_in, out', [
     ([(1, 2, 0), (4, 10, 1)], [[1, 2, 0], [4, 10, 1]]),  # outer == same
@@ -178,3 +181,113 @@ def test_merge_missed_branches(sessions, res):
     assert merge_missed_branches(sessions) == res
     sessions.reverse()
     assert merge_missed_branches(sessions) == res
+
+
+@pytest.mark.parametrize('l1, l2, res', [
+    (None, (1, ), (1, )),  # no line to merge
+
+    # sessions
+    (('1/2', None, [[1, '1/2', ['1']]]),
+    ('1/2', None, [[1, '1/2', ['2']]]),
+    ('2/2', None, [LineSession(1, '2/2', [])])),
+
+    # session, w/ single mb
+    (('1/2', None, [[1, '1/2', ['1']]]),
+    ('1/2', None, [[1, '1/2', ['1']]]),
+    ('1/2', None, [LineSession(1, '1/2', ['1'])])),
+
+    # different sessions
+    (('1/2', None, [[1, '1/2', ['1']]]),
+    ('1/2', None, [[2, '1/2', ['2']]]),
+    ('2/2', None, [LineSession(1, '1/2', ['1']),
+                    LineSession(2, '1/2', ['2'])])),
+    # add coverage
+    ((1, None, [[1, 1]]),
+    (2, None, [[1, 2]]),
+    (2, None, [LineSession(1, 2)])),
+
+    # merge sessions
+    (('2/2', None, [[1, '2/2']]),
+    ('0/2', None, [[2, '0/2', [1, 2]]]),
+    ('2/2', None, [LineSession(1, '2/2'),
+                    LineSession(2, '0/2', [1, 2])])),
+
+    # types
+    ((1, None, [[1, 1]]),
+    (1, 'b', [[1, 1]]),
+    (1, 'b', [LineSession(1, 1)])),
+
+    # messages
+    # ((0, None, None, [{'s': '1', 't': 'a'}], 's': {'1': {'c': 0}}},
+    #  (1, None, None, [{'s': '1', 't': 'a'}], 's': {'1': {'c': 1}}},
+    #  (1, None, None, [{'s': '1', 't': 'a'}, {'s':
+])
+def test_merge_line(l1, l2, res):
+    assert merge_line(ReportLine(*l1) if l1 else None, ReportLine(*l2) if l2 else None) == ReportLine(*res)
+    res = merge_line(ReportLine(*l2) if l2 else None, ReportLine(*l1) if l1 else None)
+    try:
+        assert res == ReportLine(*res)
+    except:
+        res[2].reverse()
+        assert res == ReportLine(*res)
+
+
+@pytest.mark.parametrize('s1, s2, res', [
+    (LineSession(0, '1/2', ['exit']), LineSession(0, '2/2'), LineSession(0, '2/2', [])),
+    (LineSession(0, '1/2'), LineSession(0, '2/2'), LineSession(0, '2/2')),
+    (LineSession(0, '1/2', ['exit']), LineSession(0, '1/2', ['1']), LineSession(0, '2/2', [])),
+    (LineSession(0, '2/3', ['1']), LineSession(0, '1/3', ['1', '2']), LineSession(0, '2/3', ['1'])),
+])
+def test_merge_line_session(s1, s2, res):
+    assert merge_line_session(s1, s2) == res
+    assert merge_line_session(s2, s1) == res
+
+
+@pytest.mark.parametrize('cov, res', [
+    (1, False), (True, True), ('1/2', True)
+])
+def test_is_branch(cov, res):
+    assert res == is_branch(cov)
+
+
+@pytest.mark.parametrize('br, res', [
+    (True, 2), ('1/4', 4), ('4/4', 4)
+])
+def test_branch_value(br, res):
+    assert res == branch_value(br)
+
+
+@pytest.mark.parametrize('totals, res', [
+    ([None, xrange(6), xrange(6)], [2, 2, 4, 6, 8, '200.00000']),
+    ([None, ReportTotals(*range(6)), ReportTotals(*range(6))], [2, 2, 4, 6, 8, '200.00000', 0, 0, 0, 0, 0, 0, 0]),
+    ([], list((0, ) * 13))
+])
+def test_agg_totals(totals, res):
+    assert agg_totals(totals) == res
+
+
+def test_dumps_not_none():
+    assert dumps_not_none(None) == ''
+    assert dumps_not_none([1]) == '[1]'
+
+
+def test_report_file_merge_rb_boiling_before():
+    file1 = ReportFile('~.rb', lines=[ReportLine(coverage=0), ReportLine(coverage=0), ReportLine(coverage=0)])
+    file2 = ReportFile('~.rb', lines=[None, ReportLine(coverage=1)])
+    assert file1.merge(file2) is True, 'did merge'
+    assert file1._totals is None, 'should remove totals cache'
+    assert len(file1._lines) == 2, 'should only be 2 lines'
+    assert file1._lines.count(None) == 1, 'should only have '
+    assert file1.get(1) is None, 'line 1 is empty'
+    assert file1[2].coverage == 1, 'line 2 should be hit'
+
+def test_report_file_merge_rb_boiling_after():
+    file1 = ReportFile('~.rb', lines=[None, ReportLine(coverage=1)])
+    totals = file1._totals = Mock()
+    file2 = ReportFile('~.rb', lines=[ReportLine(coverage=0), ReportLine(coverage=0), ReportLine(coverage=0)])
+    assert file1.merge(file2) is False, 'did not merge'
+    assert file1._totals == totals, 'should not remove totals cache'
+    assert len(file1._lines) == 2, 'should only be 2 lines'
+    assert file1._lines.count(None) == 1, 'should only have '
+    assert file1.get(1) is None, 'line 1 is empty'
+    assert file1[2].coverage == 1, 'line 2 should be hit'

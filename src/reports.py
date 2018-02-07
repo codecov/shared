@@ -813,27 +813,16 @@ class ReportFile(object):
     def _process_totals(self):
         """return dict of totals
         """
-        types, messages, data = [], [], []
-        _types, _messages = types.append, messages.append
-        hits, partials, misses, partial_branch_hits, partial_branch_total = 0, 0, 0, 0.0, 0.0
-        partial_hit, partial_total = 0, 0
+        cov, types, messages = [], [], []
+        _cov, _types, _messages = cov.append, types.append, messages.append
         for ln, line in self.lines:
-            if type(line.coverage) in (str, unicode):
-                data = line.coverage.split('/')
-                partial_hit = int(data[0])
-                partial_total = int(data[1])
-
+            _cov(line_type(line.coverage))
             _types(line.type)
             _messages(len(line.messages or []))
-            if line.coverage == 0 or partial_hit == 0:
-                misses = misses + 1
-            elif line.coverage == 1 or partial_hit == partial_total:
-                hits = hits + 1
-            else:
-                partials = partials + 1
-                partial_branch_hits = partial_branch_hits + partial_hit
-                partial_branch_total = partial_branch_total + partial_total
 
+        hits = cov.count(0)
+        misses = cov.count(1)
+        partials = cov.count(2)
         lines = hits + misses + partials
 
         def sum_of_complexity(l):
@@ -858,7 +847,7 @@ class ReportFile(object):
                             hits=hits,
                             misses=misses,
                             partials=partials,
-                            coverage=ratio(hits + (partial_branch_hits/partial_branch_total), lines) if lines else None,
+                            coverage=ratio(hits, lines) if lines else None,
                             branches=types.count('b'),
                             methods=types.count('m'),
                             messages=sum(messages),
@@ -964,9 +953,16 @@ class Report(object):
 
     @property
     def network(self):
-        # [TODO] respect filtering
-        for fname, data in self._files.iteritems():
-            yield fname, make_network_file(*data[1:])
+        if self._path_filter:
+            for fname, data in self._files.iteritems():
+                file = self.get(fname)
+                if file:
+                    yield fname, make_network_file(
+                        file.totals
+                    )
+        else:
+            for fname, data in self._files.iteritems():
+                yield fname, make_network_file(*data[1:])
 
     def __repr__(self):
         try:
@@ -1557,12 +1553,14 @@ class WithNone:
         pass
 
 
-def process_commit(commit):
+def process_commit(commit, flags=None):
     if commit and commit['totals']:
         _commit = commit.pop('report', None) or {}
         _commit.setdefault('totals', commit.get('totals', None))
         _commit.setdefault('chunks', commit.pop('chunks', None))
         commit['report'] = Report(**_commit)
+        if flags:
+            commit['report'].filter(flags=flags)
 
     return commit
 
