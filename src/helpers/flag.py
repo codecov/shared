@@ -1,4 +1,4 @@
-from src.helpers.yml import walk
+from src.utils.Yaml import Yaml
 
 
 class Flag(object):
@@ -12,7 +12,7 @@ class Flag(object):
     def report(self):
         """returns the report filtered by this flag
         """
-        paths = walk(self._report.yaml, ('flags', self.name, 'paths'))
+        paths = Yaml.walk(self._report.yaml, ('flags', self.name, 'paths'))
         return self._report.filter(paths=paths, flags=[self.name])
 
     @property

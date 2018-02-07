@@ -6,8 +6,8 @@ from operator import itemgetter
 from collections import defaultdict
 from itertools import chain, groupby, izip_longest, izip, imap, starmap
 
-from tuples import *
-from helpers.yml import walk
+from src.utils.tuples import *
+from utils.Yaml import Yaml
 from helpers.flag import Flag
 from helpers.ratio import ratio
 from helpers.sessions import Session
@@ -1359,7 +1359,7 @@ class Report(object):
         """
         if diff and diff.get('files'):
             for path, data in diff['files'].iteritems():
-                future_state = walk(future_diff, ('files', path, 'type'))
+                future_state = Yaml.walk(future_diff, ('files', path, 'type'))
                 if (
                     data['type'] == 'deleted' and  # deleted
                     path in self                   # and tracked
@@ -1493,7 +1493,7 @@ class Report(object):
 
 def get_paths_from_flags(repository, flags):
     if flags:
-        return list(set(list(chain(*[(walk(repository, ('yaml', 'flags', flag, 'paths')) or [])
+        return list(set(list(chain(*[(Yaml.walk(repository, ('yaml', 'flags', flag, 'paths')) or [])
                                      for flag in flags]))))
     else:
         return []
