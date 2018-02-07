@@ -333,12 +333,6 @@ def test_file_ignore_lines():
         assert not _file.get(ln)
 
 
-def test_maxint():
-    assert maxint('123456') == 99999
-    assert maxint('0') == 0
-    assert maxint('123') == 123
-
-
 def test_get_paths_from_flags():
     assert get_paths_from_flags(None, None) == []
     assert get_paths_from_flags({'yaml': {'flags': {'a': {'paths': ['b']}}}}, ['a']) == ['b']
