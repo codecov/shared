@@ -3,9 +3,10 @@ import types as ObjTypes
 from json import JSONEncoder
 from json import loads, dumps
 from operator import itemgetter
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 from itertools import chain, groupby, izip_longest, izip, imap, starmap
 
+from tuples import *
 from helpers.yml import walk
 from helpers.flag import Flag
 from helpers.ratio import ratio
@@ -478,33 +479,7 @@ ReportTotals = namedtuple('ReportTotals', [
 ReportTotals.__new__.__defaults__ = (0,) * len(ReportTotals._fields)
 null = ReportTotals()
 
-ReportLine = namedtuple('ReportLine', [
-    'coverage',
-    'type',
-    'sessions',
-    'messages',
-    'complexity'  # [int | tuple(int, int)]
-])
-ReportLine.__new__.__defaults__ = (None,) * len(ReportLine._fields)
 
-LineSession = namedtuple('LineSession', [
-    'id',
-    'coverage',
-    'branches',
-    'partials',
-    'complexity'
-])
-LineSession.__new__.__defaults__ = (None,) * len(LineSession._fields)
-
-EMPTY = ''
-TOTALS_MAP = tuple('fnhmpcbdMsCN')
-
-
-NetworkFile = namedtuple('NetworkFile', [
-    'totals',          # 0
-    'session_totals',  # 1
-    'diff_totals'      # 2
-])
 
 
 def make_network_file(totals, sessions=None, diff=None):
