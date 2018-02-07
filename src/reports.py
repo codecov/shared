@@ -1499,12 +1499,6 @@ def get_paths_from_flags(repository, flags):
         return []
 
 
-class WithNone:
-    def __enter__(self):
-        pass
-
-    def __exit__(self, *args):
-        pass
 
 
 def process_commit(commit, flags=None):
@@ -1517,9 +1511,3 @@ def process_commit(commit, flags=None):
             commit['report'].filter(flags=flags)
 
     return commit
-
-
-def maxint(string):
-    if len(string) > 5:
-        return 99999
-    return int(string)
