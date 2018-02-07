@@ -1,7 +1,8 @@
 import pytest
 from json import dumps, loads
-from mock import Mock
+from mock import patch, Mock
 from src.reports import *
+from tests.test_helpers import v2_to_v3
 
 
 def json(d):
@@ -79,16 +80,16 @@ def test_list_to_dict(lines, res):
 
 
 @pytest.mark.parametrize('b1, b2, res', [
-    (u'1/2', u'2/2',  u'2/2'),
-    (u'0/2', u'2/2',  u'2/2'),
-    (u'0/2',      1,       1),
-    (u'0/2',     -1,      -1),
-    (0,       '2/2',   '2/2'),
-    (True,    '2/2',   '2/2'),
-    (None,    '2/2',   '2/2'),
-    ('1/2',   '2/3',   '2/3'),
-    (u'0/2', u'0/2',  u'0/2'),
-    (u'0/2', u'0/2',  u'0/2'),
+    (u'1/2', u'2/2', u'2/2'),
+    (u'0/2', u'2/2', u'2/2'),
+    (u'0/2', 1, 1),
+    (u'0/2', -1, -1),
+    (0, '2/2', '2/2'),
+    (True, '2/2', '2/2'),
+    (None, '2/2', '2/2'),
+    ('1/2', '2/3', '2/3'),
+    (u'0/2', u'0/2', u'0/2'),
+    (u'0/2', u'0/2', u'0/2'),
     (u'0/2', [[1, 2, None]], [[1, 2, None]]),
     ([[1, 2, None]], u'0/2', [[1, 2, None]]),
 ])
@@ -184,38 +185,38 @@ def test_merge_missed_branches(sessions, res):
 
 
 @pytest.mark.parametrize('l1, l2, res', [
-    (None, (1, ), (1, )),  # no line to merge
+    (None, (1,), (1,)),  # no line to merge
 
     # sessions
     (('1/2', None, [[1, '1/2', ['1']]]),
-    ('1/2', None, [[1, '1/2', ['2']]]),
-    ('2/2', None, [LineSession(1, '2/2', [])])),
+     ('1/2', None, [[1, '1/2', ['2']]]),
+     ('2/2', None, [LineSession(1, '2/2', [])])),
 
     # session, w/ single mb
     (('1/2', None, [[1, '1/2', ['1']]]),
-    ('1/2', None, [[1, '1/2', ['1']]]),
-    ('1/2', None, [LineSession(1, '1/2', ['1'])])),
+     ('1/2', None, [[1, '1/2', ['1']]]),
+     ('1/2', None, [LineSession(1, '1/2', ['1'])])),
 
     # different sessions
     (('1/2', None, [[1, '1/2', ['1']]]),
-    ('1/2', None, [[2, '1/2', ['2']]]),
-    ('2/2', None, [LineSession(1, '1/2', ['1']),
+     ('1/2', None, [[2, '1/2', ['2']]]),
+     ('2/2', None, [LineSession(1, '1/2', ['1']),
                     LineSession(2, '1/2', ['2'])])),
     # add coverage
     ((1, None, [[1, 1]]),
-    (2, None, [[1, 2]]),
-    (2, None, [LineSession(1, 2)])),
+     (2, None, [[1, 2]]),
+     (2, None, [LineSession(1, 2)])),
 
     # merge sessions
     (('2/2', None, [[1, '2/2']]),
-    ('0/2', None, [[2, '0/2', [1, 2]]]),
-    ('2/2', None, [LineSession(1, '2/2'),
+     ('0/2', None, [[2, '0/2', [1, 2]]]),
+     ('2/2', None, [LineSession(1, '2/2'),
                     LineSession(2, '0/2', [1, 2])])),
 
     # types
     ((1, None, [[1, 1]]),
-    (1, 'b', [[1, 1]]),
-    (1, 'b', [LineSession(1, 1)])),
+     (1, 'b', [[1, 1]]),
+     (1, 'b', [LineSession(1, 1)])),
 
     # messages
     # ((0, None, None, [{'s': '1', 't': 'a'}], 's': {'1': {'c': 0}}},
@@ -260,7 +261,7 @@ def test_branch_value(br, res):
 @pytest.mark.parametrize('totals, res', [
     ([None, xrange(6), xrange(6)], [2, 2, 4, 6, 8, '200.00000']),
     ([None, ReportTotals(*range(6)), ReportTotals(*range(6))], [2, 2, 4, 6, 8, '200.00000', 0, 0, 0, 0, 0, 0, 0]),
-    ([], list((0, ) * 13))
+    ([], list((0,) * 13))
 ])
 def test_agg_totals(totals, res):
     assert agg_totals(totals) == res
@@ -331,6 +332,7 @@ def test_file_ignore_lines():
         _file[ln] = ReportLine(1)
         assert not _file.get(ln)
 
+
 def test_maxint():
     assert maxint('123456') == 99999
     assert maxint('0') == 0
@@ -369,3 +371,100 @@ def test_report_has_flag():
     report = Report(sessions={1: dict(flags=['a'])})
     assert report.has_flag('a')
     assert not report.has_flag('b')
+
+
+def test_apply_diff():
+    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 0}}}}})
+    diff = {
+        'files': {
+            'a': {'type': 'new', 'segments': [{'header': list('1313'), 'lines': list('---+++')}]},
+            'b': {'type': 'deleted'},
+            'c': {'type': 'modified'}
+        }
+    }
+    assert report.apply_diff(None) is None
+    assert report.apply_diff({}) is None
+    res = report.apply_diff(diff)
+    assert res == diff['totals']
+    print res
+    assert diff['totals'].coverage == '50.00000'
+
+
+def test_apply_diff_no_append():
+    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 0}}}}})
+    diff = {
+        'files': {
+            'a': {'type': 'new', 'segments': [{'header': list('1313'), 'lines': list('---+++')}]},
+            'b': {'type': 'deleted'},
+            'c': {'type': 'modified'}
+        }
+    }
+    res = report.apply_diff(diff, _save=False)
+    assert 'totals' not in diff
+    assert 'totals' not in diff['files']['a']
+    assert 'totals' not in diff['files']['c']
+    assert res.coverage == '50.00000'
+
+
+@pytest.mark.parametrize('diff, res', [
+    (None, False),
+    ({'files': {}}, False),
+    ({'files': {'b': {'type': 'modified'}}}, False),
+    ({'files': {'a': {'type': 'new'}}}, False),
+    ({'files': {'a': {'type': 'modified'}}}, True),
+])
+def test_shift_lines_by_diff(diff, res):
+    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}}}}})
+    with patch('src.reports.ReportFile.shift_lines_by_diff') as shift_lines_by_diff:
+        report.shift_lines_by_diff(diff)
+        assert shift_lines_by_diff.called == res
+
+
+@pytest.mark.parametrize('diff, future, future_diff, res', [
+    ({}, None, None, False),  # empty
+    (None, None, None, False),  # empty
+    ({'files': {}}, None, None, False),  # empty
+    ({'files': {'b': {'type': 'new'}}}, None, None, False),  # new file not tracked
+    ({'files': {'b': {'type': 'new'}}}, {'files': {'b': {'l': {'1': {'c': 1}}}}}, None, True),  # new file is tracked
+    ({'files': {'b': {'type': 'modified'}}}, None, None, False),  # file not tracked in base or head
+    ({'files': {'a': {'type': 'deleted'}}}, None, None, True),  # tracked file deleted
+    ({'files': {'b': {'type': 'deleted'}}}, None, None, False),  # not-tracked file deleted
+    ({'files': {'z': {'type': 'modified'}}}, None, None, True),  # modified file missing in base
+    ({'files': {'a': {'type': 'modified'}}}, None, None, True),  # modified file missing in head
+    ({'files': {'a': {'type': 'modified', 'segments': [{'header': [0, 1, 1, 2], 'lines': ['- a', '+ a']}]}}},
+     {'files': {'a': {'l': {'1': {'c': 1}}}}}, None, True),  # tracked line deleted
+    ({'files': {'a': {'type': 'modified', 'segments': [{'header': [0, 1, 1, 2], 'lines': ['- a', '+ a']}]}}},
+     {'files': {'a': {'l': {'1': {'c': 1}}}}},
+     {'files': {'a': {'type': 'modified'}}},
+     True),  # tracked line deleted
+    ({'files': {'a': {'type': 'modified', 'segments': [{'header': [10, 1, 10, 2], 'lines': ['- a', '+ a']}]}}},
+     {'files': {'a': {'l': {'1': {'c': 1}}}}}, None, False)  # lines not tracked`
+])
+def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
+    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 1}}}}})
+    if future:
+        future = v2_to_v3(future)
+    else:
+        future = v2_to_v3({'files': {'z': {}}})
+
+    with patch('src.reports.ReportFile.shift_lines_by_diff') as shift_lines_by_diff:
+        assert report.does_diff_adjust_tracked_lines(diff, future, future_diff) == res
+        assert shift_lines_by_diff.called == bool(future_diff)
+
+
+def test_append_file_not_joined():
+    report = Report()
+    appended = report.append(ReportFile('a', totals=ReportTotals(1, 50, 10), lines=[ReportLine(1)]), False)
+    assert appended
+    assert report.totals.lines == 50
+    assert report.totals.hits == 0
+    assert report['a'].totals.files == 0
+    assert report['a'].totals.lines == 50
+    assert report['a'].totals.hits == 0
+
+
+def test_report_resolve_paths():
+    r = Report({'a': [0], 'b': [1], 'c': [2]}, chunks=[{}, {}, {}])
+    r.resolve_paths([('a', 'x'), ('b', 'b'), ('c', None), ('d', None)])
+    assert r._files.keys() == ['x', 'b']
+    assert r._chunks == [{}, {}, None]
