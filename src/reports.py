@@ -461,30 +461,9 @@ def agg_totals(totals):
     return totals
 
 
-ReportTotals = namedtuple('ReportTotals', [
-    'files',             # 0
-    'lines',             # 1
-    'hits',              # 2
-    'misses',            # 3
-    'partials',          # 4
-    'coverage',          # 5
-    'branches',          # 6
-    'methods',           # 7
-    'messages',          # 8
-    'sessions',          # 9
-    'complexity',        # 10
-    'complexity_total',  # 11
-    'diff'               # 12, a <ReportTotals> obj
-])
-ReportTotals.__new__.__defaults__ = (0,) * len(ReportTotals._fields)
-null = ReportTotals()
-
-
-
-
 def make_network_file(totals, sessions=None, diff=None):
     return NetworkFile(
-        ReportTotals(*totals) if totals else null,
+        ReportTotals(*totals) if totals else ReportTotals(),
         [ReportTotals(*session) if session else None for session in sessions] if sessions else None,
         ReportTotals(*diff) if diff else None
     )
