@@ -281,6 +281,7 @@ def test_report_file_merge_rb_boiling_before():
     assert file1.get(1) is None, 'line 1 is empty'
     assert file1[2].coverage == 1, 'line 2 should be hit'
 
+
 def test_report_file_merge_rb_boiling_after():
     file1 = ReportFile('~.rb', lines=[None, ReportLine(coverage=1)])
     totals = file1._totals = Mock()
@@ -291,3 +292,80 @@ def test_report_file_merge_rb_boiling_after():
     assert file1._lines.count(None) == 1, 'should only have '
     assert file1.get(1) is None, 'line 1 is empty'
     assert file1[2].coverage == 1, 'line 2 should be hit'
+
+
+def test_report_ignore_lines():
+    r = Report()
+    r.append(ReportFile('a', lines=[ReportLine(coverage=1), ReportLine(coverage=1)]))
+    r.ignore_lines({'a': {'lines': {1, 20}}})
+    with pytest.raises(IndexError):
+        r['a'][1]
+    assert r['a'][2].coverage == 1
+
+
+def test_report_file_ignore_lines():
+    f = ReportFile('a', lines=[ReportLine(coverage=1), ReportLine(coverage=1), ReportLine(coverage=1)])
+    f.ignore_lines(lines={1}, eof=2)
+    with pytest.raises(IndexError):
+        f[1]
+    assert f[2].coverage == 1
+    with pytest.raises(IndexError):
+        f[3]
+    assert len(f._lines) == 2
+
+
+def test_file_ignore_lines():
+    _file = ReportFile('a', ignore={'lines': xrange(10, 20), 'eof': 50})
+    for ln in xrange(1, 10):
+        assert _file.append(ln, ReportLine(1))
+        _file[ln] = ReportLine(1)
+        assert _file.get(ln)
+
+    for ln in xrange(10, 20):
+        assert not _file.append(ln, ReportLine(1))
+        _file[ln] = ReportLine(1)
+        assert not _file.get(ln)
+
+    for ln in xrange(100, 110):
+        assert not _file.append(ln, ReportLine(1))
+        _file[ln] = ReportLine(1)
+        assert not _file.get(ln)
+
+def test_maxint():
+    assert maxint('123456') == 99999
+    assert maxint('0') == 0
+    assert maxint('123') == 123
+
+
+def test_get_paths_from_flags():
+    assert get_paths_from_flags(None, None) == []
+    assert get_paths_from_flags({'yaml': {'flags': {'a': {'paths': ['b']}}}}, ['a']) == ['b']
+    assert get_paths_from_flags({'yaml': {'flags': {'a': {'paths': ['b']}}}}, ['c']) == []
+
+
+def test_assume_flags():
+    report = Report()
+    report.add_session(Session())
+    report.append(ReportFile('a', lines=[ReportLine(0)]))
+    report.append(ReportFile('b', lines=[ReportLine(1)]))
+
+    report2 = Report()
+    report2.add_session(Session(flags=['a']))
+    report2.append(ReportFile('a', lines=[ReportLine(1, sessions=[[0, 1]])]))
+    report2.append(ReportFile('b', lines=[None, ReportLine(1, sessions=[[0, 1]])]))
+    report2.append(ReportFile('c', lines=[ReportLine(1, sessions=[[0, 1]])]))
+
+    report.assume_flags(['a'], report2)
+
+    assert len(report.sessions) == 2, 'There should be two sesisons on master report'
+    assert report.sessions[1].name == 'Assumed', 'The last session should be the assumed one'
+    assert report['a'][1].coverage == 1, 'Line a:1 should be covered'
+    assert report['b'][1].coverage == 1, 'Line b:1 should be covered'
+    assert report['b'][2].coverage == 1, 'Line b:2 should exist'
+    assert report['c'][1].coverage == 1, 'File c should exist'
+
+
+def test_report_has_flag():
+    report = Report(sessions={1: dict(flags=['a'])})
+    assert report.has_flag('a')
+    assert not report.has_flag('b')
