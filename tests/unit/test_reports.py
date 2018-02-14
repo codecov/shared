@@ -159,12 +159,10 @@ def test_merge_coverage(l1, l2, brm, res):
     assert merge_coverage(l2, l1, brm) == res
 
 
-@pytest.mark.parametrize('totals, res', [
-    ([ReportTotals(), ReportTotals(3, 3, 3, 3), ReportTotals()], ReportTotals(3, 3, 3, 3, 0, '100')),
-    ([ReportTotals()], ReportTotals(1, 0, 0, 0, 0, '100'))
-])
-def test_sum_totals(totals, res):
-    assert sum_totals(totals) == res
+# def test_report_encoder():
+#     l = ReportEncoder().default(ReportTotals())
+#     print l
+#     assert ReportEncoder().default(ReportTotals()) == []
 
 
 @pytest.mark.parametrize('sessions, res', [
@@ -258,15 +256,6 @@ def test_branch_value(br, res):
     assert res == branch_value(br)
 
 
-@pytest.mark.parametrize('totals, res', [
-    ([None, xrange(6), xrange(6)], [2, 2, 4, 6, 8, '200.00000']),
-    ([None, ReportTotals(*range(6)), ReportTotals(*range(6))], [2, 2, 4, 6, 8, '200.00000', 0, 0, 0, 0, 0, 0, 0]),
-    ([], list((0,) * 13))
-])
-def test_agg_totals(totals, res):
-    assert agg_totals(totals) == res
-
-
 def test_dumps_not_none():
     assert dumps_not_none(None) == ''
     assert dumps_not_none([1]) == '[1]'
@@ -331,12 +320,6 @@ def test_file_ignore_lines():
         assert not _file.append(ln, ReportLine(1))
         _file[ln] = ReportLine(1)
         assert not _file.get(ln)
-
-
-def test_get_paths_from_flags():
-    assert get_paths_from_flags(None, None) == []
-    assert get_paths_from_flags({'yaml': {'flags': {'a': {'paths': ['b']}}}}, ['a']) == ['b']
-    assert get_paths_from_flags({'yaml': {'flags': {'a': {'paths': ['b']}}}}, ['c']) == []
 
 
 def test_assume_flags():
@@ -414,38 +397,6 @@ def test_shift_lines_by_diff(diff, res):
         assert shift_lines_by_diff.called == res
 
 
-@pytest.mark.parametrize('diff, future, future_diff, res', [
-    ({}, None, None, False),  # empty
-    (None, None, None, False),  # empty
-    ({'files': {}}, None, None, False),  # empty
-    ({'files': {'b': {'type': 'new'}}}, None, None, False),  # new file not tracked
-    ({'files': {'b': {'type': 'new'}}}, {'files': {'b': {'l': {'1': {'c': 1}}}}}, None, True),  # new file is tracked
-    ({'files': {'b': {'type': 'modified'}}}, None, None, False),  # file not tracked in base or head
-    ({'files': {'a': {'type': 'deleted'}}}, None, None, True),  # tracked file deleted
-    ({'files': {'b': {'type': 'deleted'}}}, None, None, False),  # not-tracked file deleted
-    ({'files': {'z': {'type': 'modified'}}}, None, None, True),  # modified file missing in base
-    ({'files': {'a': {'type': 'modified'}}}, None, None, True),  # modified file missing in head
-    ({'files': {'a': {'type': 'modified', 'segments': [{'header': [0, 1, 1, 2], 'lines': ['- a', '+ a']}]}}},
-     {'files': {'a': {'l': {'1': {'c': 1}}}}}, None, True),  # tracked line deleted
-    ({'files': {'a': {'type': 'modified', 'segments': [{'header': [0, 1, 1, 2], 'lines': ['- a', '+ a']}]}}},
-     {'files': {'a': {'l': {'1': {'c': 1}}}}},
-     {'files': {'a': {'type': 'modified'}}},
-     True),  # tracked line deleted
-    ({'files': {'a': {'type': 'modified', 'segments': [{'header': [10, 1, 10, 2], 'lines': ['- a', '+ a']}]}}},
-     {'files': {'a': {'l': {'1': {'c': 1}}}}}, None, False)  # lines not tracked`
-])
-def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
-    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 1}}}}})
-    if future:
-        future = v2_to_v3(future)
-    else:
-        future = v2_to_v3({'files': {'z': {}}})
-
-    with patch('src.reports.ReportFile.shift_lines_by_diff') as shift_lines_by_diff:
-        assert report.does_diff_adjust_tracked_lines(diff, future, future_diff) == res
-        assert shift_lines_by_diff.called == bool(future_diff)
-
-
 def test_append_file_not_joined():
     report = Report()
     appended = report.append(ReportFile('a', totals=ReportTotals(1, 50, 10), lines=[ReportLine(1)]), False)
@@ -462,3 +413,31 @@ def test_report_resolve_paths():
     r.resolve_paths([('a', 'x'), ('b', 'b'), ('c', None), ('d', None)])
     assert r._files.keys() == ['x', 'b']
     assert r._chunks == [{}, {}, None]
+
+
+def test_get_complexity_from_sessions():
+    assert get_complexity_from_sessions([[1, 2, 3, 4, 5]]) == 5
+    assert get_complexity_from_sessions([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]]) == (5, 6)
+
+
+def test_merge_partial_line():
+    assert merge_partial_line([1], []) == [1]
+
+
+def test_report_encoder():
+    assert ReportEncoder().default(ReportTotals()) == []
+    assert ReportEncoder().default(ReportTotals('files', 'lines')) == ['files', 'lines']
+    print 'NEXT:'
+    assert ReportEncoder().default(Session('id', 'totals')) == {
+        'N': None,
+        'a': None,
+        'c': None,
+        'e': None,
+        'd': None,
+        'f': None,
+        'j': None,
+        'n': None,
+        'p': None,
+        'u': None,
+        't': 'totals'
+    }
