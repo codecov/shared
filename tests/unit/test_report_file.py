@@ -34,3 +34,12 @@ def test_set_item():
     with pytest.raises(Exception) as e_info:
         r[-1] = ReportLine()
     assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+
+
+def test_contains():
+    r = ReportFile('folder/file.py')
+    with pytest.raises(Exception) as e_info:
+        'str' in r
+    assert e_info.value.message == "expecting type int got <type 'str'>"
+    boolean = 100 in r
+    assert boolean is False
