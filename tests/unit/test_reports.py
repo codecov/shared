@@ -236,7 +236,9 @@ def test_merge_line(l1, l2, res):
     (LineSession(0, '1/2'), LineSession(0, '2/2'), LineSession(0, '2/2')),
     (LineSession(0, '1/2', ['exit']), LineSession(0, '1/2', ['1']), LineSession(0, '2/2', [])),
     (LineSession(0, '2/3', ['1']), LineSession(0, '1/3', ['1', '2']), LineSession(0, '2/3', ['1'])),
-    (LineSession(0, '1/2'), LineSession(0, '2/2', ['branch']), LineSession(id=0, coverage='1/2', branches=['branch'], partials=None, complexity=None)),
+    # (LineSession(0, '1/2'), LineSession(0, '2/2', ['branch']), LineSession(0, '1/2', ['branch'])),
+    # (LineSession(0, 1, None, [1]), LineSession(0, 1), LineSession(0, 1, None, [1])),
+    # (LineSession(0, 1, None, [2, 3]), LineSession(0, 1, None, [1, 5]), LineSession()),
 ])
 def test_merge_line_session(s1, s2, res):
     assert merge_line_session(s1, s2) == res

@@ -518,6 +518,18 @@ class ReportFile(object):
                  session_totals=None,
                  lines=None, line_modifier=None,
                  ignore=None):
+        """
+        name = string, filename. "folder/name.py"
+        totals = [0,1,0,...] (map out to one ReportTotals)
+        session_totals = [[],[]] (map to list of Session())
+        lines = [] or string
+           if [] then [null, line@1, null, line@3, line@4]
+           if str then "\nline@1\n\nline@3"
+           a line is [] that maps to ReportLine:obj
+        line_modifier = function, filter lines by sessions.
+        ignore is for report buildling only, it filters out lines that should be not covered
+            {eof:N, lines:[1,10]}
+        """
         self.name = name
         # lines = [<details dict()>, <Line #1>, ....]
         if lines:
@@ -553,10 +565,14 @@ class ReportFile(object):
 
     def _line(self, line):
         if isinstance(line, ReportLine):
+            # line is already mapped to obj
             return line
         elif type(line) is list:
+            # line needs to be mapped to ReportLine
+            # line = [1, 'b', [], null, null] = ReportLine()
             return ReportLine(*line)
         else:
+            # these are old versions
             line = loads(line)
             if len(line) > 2 and line[2]:
                 line[2] = [LineSession(*tuple(session)) for session in line[2] if session]
@@ -690,6 +706,7 @@ class ReportFile(object):
                 func = self._line_modifier
                 line = self._line(line)
                 if func:
+                    # need to filter this line by sessions
                     line = func(line)
                     if not line:
                         return None
@@ -1300,7 +1317,11 @@ class Report(object):
             if paths:
                 if not isinstance(paths, (list, set, tuple)):
                     raise TypeError('expecting list for argument paths got %s' % type(paths))
-                self._path_filter = lambda filename: match(paths, filename)
+
+                def _pf(filename):
+                    return match(paths, filename)
+
+                self._path_filter = _pf
 
             # flags: filter them out
             if flags:
@@ -1479,8 +1500,8 @@ class Report(object):
                 return True
         return False
 
-    def assume_flags(self, flags, report, name=None):
-        with report.filter(flags=flags) as filtered:
+    def assume_flags(self, flags, prev_report, name=None):
+        with prev_report.filter(flags=flags) as filtered:
             # add the "assumed session"
             self.add_session(Session(
                 flags=flags,
