@@ -57,7 +57,7 @@ def test_report_file_get_errors():
 
 def test_report_file_get_filter():
     def filter_lines(line):
-        return None
+        return
     r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=filter_lines)
     assert r.get(1) is None
 
@@ -73,3 +73,12 @@ def test_report_file_errors():
     with pytest.raises(Exception) as e_info:
         r.append(-1, ReportLine())
     assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+
+
+def test_report_file_merge_none():
+    r = ReportFile('folder/file.py')
+    assert r.merge(None) is None
+    with pytest.raises(Exception) as e_info:
+        r.merge('str')
+    assert e_info.value.message == "expecting type ReportFile got <type 'str'>"
+
