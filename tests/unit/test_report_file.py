@@ -43,3 +43,20 @@ def test_contains():
     assert e_info.value.message == "expecting type int got <type 'str'>"
     boolean = 100 in r
     assert boolean is False
+
+
+def test_report_file_get_errors():
+    r = ReportFile('folder/file.py')
+    with pytest.raises(Exception) as e_info:
+        r.get('str')
+    assert e_info.value.message == "expecting type int got <type 'str'>"
+    with pytest.raises(Exception) as e_info:
+        r.get(-1)
+    assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+
+
+def test_report_file_filter():
+    def filter_lines(line):
+        return None
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=filter_lines)
+    assert r.get(1) is None
