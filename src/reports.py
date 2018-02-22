@@ -1558,17 +1558,3 @@ def get_paths_from_flags(repository, flags):
                                      for flag in flags]))))
     else:
         return []
-
-
-
-
-def process_commit(commit, flags=None):
-    if commit and commit['totals']:
-        _commit = commit.pop('report', None) or {}
-        _commit.setdefault('totals', commit.get('totals', None))
-        _commit.setdefault('chunks', commit.pop('chunks', None))
-        commit['report'] = Report(**_commit)
-        if flags:
-            commit['report'].filter(flags=flags)
-
-    return commit
