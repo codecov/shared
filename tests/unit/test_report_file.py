@@ -1,5 +1,5 @@
 import pytest
-from src.reports import ReportFile, ReportTotals, ReportLine
+from src.reports import ReportFile, ReportTotals, ReportLine, _encode_chunk
 
 
 def test_report_file_constructor():
@@ -82,3 +82,17 @@ def test_report_file_merge_none():
         r.merge('str')
     assert e_info.value.message == "expecting type ReportFile got <type 'str'>"
 
+
+def test_shift_lines_by_diff():
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()])
+    assert len(list(r.lines)) == 2
+    r.shift_lines_by_diff({
+        'segments': [
+            {
+                # [-, -, POS_to_start, new_lines_added]
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    })
+    assert len(list(r.lines)) == 1

@@ -667,6 +667,18 @@ class ReportFile(object):
 
     def __getslice__(self, start, stop):
         """Retrns a stream of lines between two indexes
+
+        slice = report[5:25]
+
+
+        for ln, line in report[5:25]:
+            ...
+
+        slice = report[5:25]
+        assert slice is gernerator.
+        list(slice) == [(1, Line), (2, Line)]
+
+
         """
         func = self._line_modifier
         for ln, line in enumerate(self._lines[start-1:stop-1], start=start):
@@ -885,6 +897,34 @@ def _encode_chunk(chunk):
 
 END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'
 
+# files={
+#     "filename": [chunk_i, ....]
+# }
+# chunks="""
+# null
+# [1,...]  # data at line 1
+# [1,...]  # data at line 2
+#
+# [1,...]  # data at line 4
+# <<<<< end_of_chunk >>>>>
+# null
+# [1,...]  # data at line 1
+# [1,...]  # data at line 2
+#
+# [1,...]  # data at line 4
+#
+# """
+#
+# files['filename'][0] => 1
+#
+# chunks[1] => """null
+# [1,...]  # data at line 1
+# [1,...]  # data at line 2
+#
+# [1,...]  # data at line 4
+# """
+#
+# chunks[1].splitlines()[4]  = json.loads("[1,...]  # data at line 4")
 
 class Report(object):
     file_class = ReportFile
@@ -920,7 +960,7 @@ class Report(object):
         self._line_modifier = None
         self._filter_cache = (None, None)
         self.diff_totals = diff_totals
-        self.yaml = yaml
+        self.yaml = yaml  # ignored
 
     @property
     def network(self):
