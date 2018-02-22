@@ -1021,7 +1021,7 @@ class Report(object):
             # dont append empty files
             return False
 
-        assert _file.name, 'file nust have a name'
+        assert _file.name, 'file must have a name'
 
         session_n = len(self.sessions) - 1
 

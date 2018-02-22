@@ -1,5 +1,5 @@
 import pytest
-from src.reports import ReportFile, ReportTotals, ReportLine, _encode_chunk
+from src.reports import ReportFile, ReportTotals, ReportLine, Report
 
 
 def test_report_file_constructor():
@@ -96,3 +96,32 @@ def test_shift_lines_by_diff():
         ]
     })
     assert len(list(r.lines)) == 1
+
+
+# def test_idk():
+    # r = Report(chunks='test', totals=ReportTotals())
+
+
+def test_report_repr():
+    assert repr(Report()) == '<Report files=0>'
+
+
+def test_append_none():
+    r = Report()
+    r_test = Report()
+    assert repr(r) == repr(r_test)
+    assert r_test.append(None) == False
+    assert repr(r) == repr(r_test)
+
+
+def test_append_error():
+    r = Report()
+    with pytest.raises(Exception) as e_info:
+        r.append('str')
+    assert e_info.value.message == "expecting ReportFile got <type 'str'>"
+    assert r.append(ReportFile('name.py')) == False
+
+
+def test_get_filtered_out():
+    r = Report().filter(paths=['test/path/file.py'])
+    assert r.get('wrong/test/path/file.py') is None
