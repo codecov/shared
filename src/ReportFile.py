@@ -1,28 +1,9 @@
-
-from copy import copy
-import types as ObjTypes
 from src.utils.merge import *
-from json import JSONEncoder
 from json import loads, dumps
-from operator import itemgetter
-from collections import defaultdict
-from itertools import chain, groupby, izip_longest, izip, imap, starmap
-
+from itertools import izip_longest
 from src.utils.tuples import *
-from utils.Yaml import Yaml
-from helpers.flag import Flag
 from helpers.ratio import ratio
-from helpers.sessions import Session
-from helpers.flare import report_to_flare
 from utils.ReportEncoder import ReportEncoder
-from helpers.migrate import migrate_totals
-from helpers.match import match, match_any
-
-
-
-
-
-
 
 
 class ReportFile(object):

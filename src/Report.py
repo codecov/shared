@@ -1,25 +1,13 @@
 from src.ReportFile import ReportFile
 from src.utils.ReportEncoder import ReportEncoder
-from src.helpers.sessions import Session
-from src.utils.tuples import ReportTotals
-from helpers.flare import report_to_flare
-from helpers.flag import Flag
 from src.utils.merge import *
-from helpers.migrate import migrate_totals
-from helpers.match import match, match_any
 from src.utils.make_network_file import make_network_file
 from copy import copy
-import types as ObjTypes
-from json import JSONEncoder
-from json import loads, dumps
-from operator import itemgetter
-from collections import defaultdict
-from itertools import chain, groupby, izip_longest, izip, imap, starmap
-
+from json import dumps
+from itertools import chain
 from src.utils.tuples import *
 from utils.Yaml import Yaml
 from helpers.flag import Flag
-from helpers.ratio import ratio
 from helpers.sessions import Session
 from helpers.flare import report_to_flare
 from helpers.migrate import migrate_totals
