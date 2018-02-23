@@ -2,8 +2,8 @@ from src.utils.merge import *
 from json import loads, dumps
 from itertools import izip_longest
 from src.utils.tuples import *
-from helpers.ratio import ratio
-from utils.ReportEncoder import ReportEncoder
+from src.helpers.ratio import ratio
+from src.utils.ReportEncoder import ReportEncoder
 
 
 class ReportFile(object):

@@ -6,15 +6,15 @@ from copy import copy
 from json import dumps
 from itertools import chain
 from src.utils.tuples import *
-from utils.Yaml import Yaml
-from helpers.flag import Flag
-from helpers.sessions import Session
-from helpers.flare import report_to_flare
-from helpers.migrate import migrate_totals
-from helpers.match import match, match_any
-from utils.agg_totals import agg_totals
-from utils.sum_totals import sum_totals
-from utils.zfill import zfill
+from src.utils.Yaml import Yaml
+from src.helpers.flag import Flag
+from src.helpers.sessions import Session
+from src.helpers.flare import report_to_flare
+from src.helpers.migrate import migrate_totals
+from src.helpers.match import match, match_any
+from src.utils.agg_totals import agg_totals
+from src.utils.sum_totals import sum_totals
+from src.utils.zfill import zfill
 
 END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'
 
