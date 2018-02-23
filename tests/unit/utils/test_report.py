@@ -51,3 +51,18 @@ def test_to_archive():
 def test_to_database():
     r = Report(totals=[1, 1, 1, 2, ])
     assert r.to_database() == ({'M': 0, 'c': 0, 'b': 0, 'd': 0, 'f': 1, 'h': 1, 'm': 2, 'C': 0, 'n': 1, 'p': 0, 's': 0, 'diff': None, 'N': 0}, '{"files": {}, "sessions": {}}')
+
+
+def test_manifest():
+    r = Report()
+    assert r.manifest == []
+    r = Report(files={
+        'name1.py': [],
+        'name2.py': []
+    })
+    assert r.manifest == ['name1.py', 'name2.py']
+    r = Report(files={
+        'name1.py': [],
+        'name2.py': []
+    }).filter(['name1.py'])
+    assert r.manifest == ['name1.py']
