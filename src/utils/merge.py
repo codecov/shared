@@ -1,8 +1,10 @@
 from collections import defaultdict
-from itertools import chain, groupby, izip_longest, izip, imap, starmap
-from src.utils.tuples import ReportLine
+from itertools import groupby, starmap
 import types as ObjTypes
+from src.utils.tuples import ReportLine
 from src.utils.tuples import LineSession
+
+
 def merge_all(coverages, missing_branches=None):
     if len(coverages) == 1:
         return coverages[0]
@@ -11,6 +13,8 @@ def merge_all(coverages, missing_branches=None):
     for _ in coverages[1:]:
         cov = merge_coverage(cov, _, missing_branches)
     return cov
+
+
 def merge_branch(b1, b2):
     if b1 == b2:  # 1/2 == 1/2
         return b1

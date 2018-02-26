@@ -1,7 +1,7 @@
-from src.utils.merge import *
 from json import loads, dumps
-from itertools import izip_longest
 from src.utils.tuples import *
+from itertools import izip_longest
+from src.utils.merge import *
 from src.helpers.ratio import ratio
 from src.utils.ReportEncoder import ReportEncoder
 
