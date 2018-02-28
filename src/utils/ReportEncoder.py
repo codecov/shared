@@ -1,8 +1,8 @@
 from json import JSONEncoder
+import types as ObjTypes
 from src.utils.tuples import ReportTotals
 from src.ReportFile import ReportFile
 from src.helpers.sessions import Session
-import types as ObjTypes
 
 
 class ReportEncoder(JSONEncoder):
