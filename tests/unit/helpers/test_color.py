@@ -11,5 +11,5 @@ from src.helpers.color import coverage_to_color
     (70, 100, 99.99999, '#48cc10'),
     (50, 90, 95.0, '#4c1'),
 ])
-def test_coverage_to_color(range_low, range_high, cov, hex):
-    assert coverage_to_color(range_low, range_high)(cov).hex == hex
+def test_coverage_to_color(range_low, range_high, cov, hex_val):
+    assert coverage_to_color(range_low, range_high)(cov).hex == hex_val
