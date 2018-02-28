@@ -2,7 +2,7 @@ import pytest
 from src.helpers.color import coverage_to_color
 
 
-@pytest.mark.parametrize('range_low, range_high, cov, hex', [
+@pytest.mark.parametrize('range_low, range_high, cov, hex_val', [
     (70, 100, 60.0, '#e05d44'),
     (70, 100, 70.0, '#e05d44'),
     (70, 100, 80.0, '#efa41b'),
