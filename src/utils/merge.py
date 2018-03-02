@@ -72,6 +72,7 @@ def merge_partial_line(p1, p2):
 
     return pp
 
+
 def merge_coverage(l1, l2, branches_missing=True):
     if l1 is None or l2 is None:
         return l1 if l1 is not None else l2
@@ -119,8 +120,6 @@ def merge_coverage(l1, l2, branches_missing=True):
                           partials_to_line(l2) if l2t is list else l2)
 
 
-
-
 def merge_missed_branches(sessions):
     """returns
     None: if there is no branch data provided
@@ -165,7 +164,7 @@ def merge_line(l1, l2, joined=True):
         return l1 or l2
 
     # merge sessions
-    sessions = merge_sessions(list(l1.sessions or []), list(l2.sessions or []))
+    sessions = _merge_sessions(list(l1.sessions or []), list(l2.sessions or []))
 
     return ReportLine(type=l1.type or l2.type,
                       coverage=get_coverage_from_sessions(sessions) if joined else l1.coverage,
@@ -212,7 +211,7 @@ def merge_line_session(s1, s2):
     return LineSession(s1.id, merge_coverage(s1.coverage, s2.coverage, mb), mb, partials)
 
 
-def merge_sessions(s1, s2):
+def _merge_sessions(s1, s2):
     """Merges two lists of different sessions into one
     """
     if not s1 or not s2:
@@ -238,13 +237,13 @@ def merge_sessions(s1, s2):
 
     return list(starmap(LineSession, s1))
 
+
 def _ifg(s, e, c):
     """
     s=start, e=end, c=coverage
     Insures the end is larger then the start.
     """
     return [s, e if e > s else s+1, c]
-
 
 
 _types = {
@@ -256,10 +255,6 @@ _types = {
     ObjTypes.ListType: ObjTypes.ListType,
     ObjTypes.BooleanType: ObjTypes.BooleanType
 }.get
-
-
-
-
 
 
 def line_type(line):
@@ -278,8 +273,6 @@ def line_type(line):
                         1 if line is not None else None
 
 
-
-
 def branch_type(b):
     """
     0 = hit
@@ -288,10 +281,6 @@ def branch_type(b):
     """
     b1, b2 = tuple(b.split('/', 1))
     return 0 if b1 == b2 else 1 if b1 == '0' else 2
-
-
-
-
 
 
 def partials_to_line(partials):
@@ -308,6 +297,7 @@ def partials_to_line(partials):
         return partials[0][2]
     return '%s/%s' % (sum([1 for (sc, ec, hits) in partials if hits > 0]), ln)
 
+
 def get_complexity_from_sessions(sessions):
     _type = type(sessions[0][4])
     if _type is int:
@@ -315,6 +305,7 @@ def get_complexity_from_sessions(sessions):
     elif _type in (tuple, list):
         return (max([(s[4] or (0, 0))[0] for s in sessions]),
                 max([(s[4] or (0, 0))[1] for s in sessions]))
+
 
 def get_coverage_from_sessions(sessions):
     return merge_all([s[1] for s in sessions], merge_missed_branches(sessions))

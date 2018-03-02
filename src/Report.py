@@ -658,7 +658,7 @@ def _encode_chunk(chunk):
 
 
 
-
+# TODO IMPORT THSES?
 def get_complexity_from_sessions(sessions):
     _type = type(sessions[0][4])
     if _type is int:
