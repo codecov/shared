@@ -1,8 +1,8 @@
-from src.utils.merge import *
 from json import JSONEncoder
 from json import loads, dumps
 from itertools import izip_longest
 from src.utils.tuples import *
+from src.utils.merge import *
 from src.helpers.sessions import Session
 from src.helpers.ratio import ratio
 
@@ -45,7 +45,7 @@ class ReportFile(object):
 
         # <line_modifier callable>
         self._line_modifier = line_modifier
-        self._ignore = ignore_to_func(ignore) if ignore else None
+        self._ignore = _ignore_to_func(ignore) if ignore else None
 
         if line_modifier:
             self._totals = None  # need to reprocess these
@@ -283,7 +283,7 @@ class ReportFile(object):
 
     def _encode(self):
         return '%s\n%s' % (dumps(self._details, separators=(',', ':')),
-                           '\n'.join(map(dumps_not_none, self._lines)))
+                           '\n'.join(map(_dumps_not_none, self._lines)))
 
     @property
     def totals(self):
@@ -382,7 +382,7 @@ class ReportFile(object):
             pass
 
 
-def ignore_to_func(ignore):
+def _ignore_to_func(ignore):
     eof = ignore.get('eof')
     lines = ignore.get('lines') or []
     if eof:
@@ -390,7 +390,7 @@ def ignore_to_func(ignore):
     else:
         return lambda l: l in lines
 
-def dumps_not_none(value):
+def _dumps_not_none(value):
     if isinstance(value, (list, ReportLine)):
         return dumps(_rstrip_none(list(value)),
                      cls=ReportEncoder)
