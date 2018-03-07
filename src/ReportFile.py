@@ -3,6 +3,7 @@ from json import loads, dumps
 from itertools import izip_longest
 from src.utils.tuples import *
 from src.utils.merge import *
+from src.utils.ReportEncoder import ReportEncoder
 from src.helpers.sessions import Session
 from src.helpers.ratio import ratio
 
@@ -401,21 +402,3 @@ def _rstrip_none(lst):
     while lst[-1] is None:
         lst.pop(-1)
     return lst
-
-
-class ReportEncoder(JSONEncoder):
-    separators = (',', ':')
-
-    def default(self, obj):
-        if isinstance(obj, ReportTotals):
-            # reduce totals
-            obj = list(obj)
-            while obj and obj[-1] in ('0', 0):
-                obj.pop()
-            return obj
-        elif isinstance(obj, (ReportFile, Session)):
-            return obj._encode()
-        elif isinstance(obj, ObjTypes.GeneratorType):
-            obj = list(obj)
-        # let the base class default method raise the typeerror
-        return JSONEncoder.default(self, obj)
