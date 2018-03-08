@@ -58,6 +58,16 @@ def test_set_item_exception(index, set_val, error_message):
     assert e_info.value.message == error_message
 
 
+def test_len():
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(), None])
+    assert len(r) == 2
+
+
+def test_eol():
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(), None])
+    assert r.eof == 4
+
+
 def test_contains():
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
