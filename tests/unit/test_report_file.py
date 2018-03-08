@@ -100,16 +100,12 @@ def test_report_file_get():
 
 
 def test_report_file_get_filter():
-    def filter_lines(line):
-        return line
-    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=filter_lines)
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=lambda l: l)
     assert r.get(1) == ReportLine()
 
 
 def test_report_file_get_filter_none():
-    def filter_lines(line):
-        return
-    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=filter_lines)
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=lambda l: None)
     assert r.get(1) is None
 
 
@@ -124,7 +120,14 @@ def test_report_file_get_exception(get_val, error_message):
     assert e_info.value.message == error_message
 
 
-# TODO: unit test for append (mock the merge)
+# TODO branch where this method merges
+@pytest.mark.parametrize('r, boolean, lines', [
+    (ReportFile(name='folder/file.py', ignore={'eof':'N', 'lines':[1,10]}), False, []),
+    (ReportFile(name='file.py'), True, [(1, ReportLine(1))]),
+])
+def test_append(r, boolean, lines):
+    assert r.append(1, ReportLine(1)) is boolean
+    assert list(r.lines) == lines
 
 
 @pytest.mark.parametrize('key, val, error_message', [
