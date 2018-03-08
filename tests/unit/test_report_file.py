@@ -77,6 +77,14 @@ def test_get_slice():
     assert list(r[2:4]) == [(2, ReportLine(coverage=2, type=None, sessions=None, messages=None, complexity=None))]
 
 
+@pytest.mark.parametrize('r, boolean', [
+    (ReportFile(name='name.py'), False),
+    (ReportFile(name='name.py', lines=[ReportLine(1)]), True),
+])
+def test_non_zero(r, boolean):
+    assert bool(r) is boolean
+
+
 def test_contains():
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
@@ -105,41 +113,38 @@ def test_report_file_get_filter_none():
     assert r.get(1) is None
 
 
-def test_report_file_get_exception():
+@pytest.mark.parametrize('get_val, error_message', [
+    ('str', "expecting type int got <type 'str'>"),
+    (-1, 'Line number must be greater then 0. Got -1'),
+])
+def test_report_file_get_exception(get_val, error_message):
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
-        r.get('str')
-    assert e_info.value.message == "expecting type int got <type 'str'>"
-    with pytest.raises(Exception) as e_info:
-        r.get(-1)
-    assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+        r.get(get_val)
+    assert e_info.value.message == error_message
 
 
 # TODO: unit test for append (mock the merge)
 
 
-def test_report_file_append_exception():
+@pytest.mark.parametrize('key, val, error_message', [
+    ('str', ReportLine(), "expecting type int got <type 'str'>"),
+    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
+])
+def test_report_file_append_exception(key, val, error_message):
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
-        r.append('str', ReportLine())
-    assert e_info.value.message == "expecting type int got <type 'str'>"
-    with pytest.raises(Exception) as e_info:
-        r.append(1, 'str')
-    assert e_info.value.message == "expecting type ReportLine got <type 'str'>"
-    with pytest.raises(Exception) as e_info:
-        r.append(-1, ReportLine())
-    assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+        r.append(key, val)
+    assert e_info.value.message == error_message
 
 
-def test_report_file_lines():
-    def filter_lines(line):
-        if line.coverage == 0:
-            return
-        return line
-    r1 = ReportFile(name='folder/file.py', lines=[ReportLine(coverage=1), ReportLine(coverage=0)], line_modifier=filter_lines)
-    assert list(r1.lines) == [(1, ReportLine(coverage=1))]
-    r2 = ReportFile(name='asd', lines=[[1]])
-    assert list(r2.lines) == [(1, ReportLine(coverage=1))]
+@pytest.mark.parametrize('r, lines', [
+    (ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(0)], line_modifier=lambda line: None), []),
+    (ReportFile(name='asd', lines=[[1]]), [(1, ReportLine(1))]),
+])
+def test_report_file_lines(r, lines):
+    assert list(r.lines) == lines
 
 
 def test_report_iter():
