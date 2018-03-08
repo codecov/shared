@@ -137,7 +137,6 @@ class ReportFile(object):
     def __setitem__(self, ln, line):
         """Append line to file, without merging if previously set
         """
-        print self._ignore
         if not type(ln) is int:
             raise TypeError('expecting type int got %s' % type(ln))
         elif not isinstance(line, ReportLine):
@@ -145,7 +144,6 @@ class ReportFile(object):
         elif ln < 1:
             raise ValueError('Line number must be greater then 0. Got %s' % ln)
         elif self._ignore and self._ignore(ln):
-            print 'SKERTT'
             return
 
         length = len(self._lines)

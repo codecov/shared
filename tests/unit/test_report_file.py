@@ -68,6 +68,15 @@ def test_eol():
     assert r.eof == 4
 
 
+def test_get_slice():
+    def filter_lines(line):
+        if line.coverage == 3:
+            return
+        return line
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(2), ReportLine(3), ReportLine(4)], line_modifier=filter_lines)
+    assert list(r[2:4]) == [(2, ReportLine(coverage=2, type=None, sessions=None, messages=None, complexity=None))]
+
+
 def test_contains():
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
