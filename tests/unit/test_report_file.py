@@ -120,7 +120,7 @@ def test_report_file_get_exception(get_val, error_message):
     assert e_info.value.message == error_message
 
 
-# TODO branch where this method merges
+# TODO branch where this calls merge_line
 @pytest.mark.parametrize('r, boolean, lines', [
     (ReportFile(name='folder/file.py', ignore={'eof':'N', 'lines':[1,10]}), False, []),
     (ReportFile(name='file.py'), True, [(1, ReportLine(1))]),
@@ -140,6 +140,25 @@ def test_report_file_append_exception(key, val, error_message):
     with pytest.raises(Exception) as e_info:
         r.append(key, val)
     assert e_info.value.message == error_message
+
+
+# TODO branch where merge_line is called
+@pytest.mark.parametrize('r, list_before, merge_val, merge_return, list_after', [
+    (ReportFile(name='file.py'), [], None, None, []),
+    (ReportFile(name='file.rb'), [], ReportFile(name='file.rb', lines=[ReportLine(2)]), True, [(1, ReportLine(2))]),
+    (ReportFile(name='file.rb', totals=[1, 2, 3]), [], ReportFile(name='file.rb'), False, []),
+])
+def test_merge(r, list_before, merge_val, merge_return, list_after):
+    assert list(r.lines) == list_before
+    assert r.merge(merge_val) == merge_return
+    assert list(r.lines) == list_after
+
+
+def test_merge_exception():
+    r = ReportFile(name='name.py')
+    with pytest.raises(Exception) as e_info:
+        r.merge('str')
+    assert e_info.value.message == "expecting type ReportFile got <type 'str'>"
 
 
 @pytest.mark.parametrize('r, lines', [
