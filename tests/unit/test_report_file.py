@@ -16,28 +16,46 @@ def test_repr():
     assert repr(r) == '<ReportFile name=folder/file.py lines=0>'
 
 
-def test_get_item():
+@pytest.mark.parametrize('r, get_val, res', [
+    (ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None), 'totals', ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+    (ReportFile('file.py', lines=[ReportLine(), ReportLine()]), 1, ReportLine()),
+])
+def test_get_item(r, get_val, res):
+    assert r[get_val] == res
+
+
+@pytest.mark.parametrize('get_val, error_message', [
+    ([], "expecting type int got <type 'list'>"),
+    (-1, 'Line number must be greater then 0. Got -1'),
+    (1, 'Line #1 not found in report'),
+])
+def test_get_item_exception(get_val, error_message):
     r = ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None)
-    assert r['totals'] == ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     with pytest.raises(Exception) as e_info:
-        r[[]]
-    assert e_info.value.message == "expecting type int got <type 'list'>"
-    with pytest.raises(Exception) as e_info:
-        r[-1]
-    assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+        r[get_val]
+    assert e_info.value.message == error_message
 
 
-def test_set_item():
+@pytest.mark.parametrize('r, get_val', [
+    (ReportFile(name='folder/file.py', lines=[ReportLine(1)], ignore={'eof':'N', 'lines':[1,10]}), ReportLine(1)),
+    (ReportFile(name='folder/file.py', lines=[ReportLine(1)]), ReportLine(0)),
+])
+def test_set_item(r, get_val):
+    assert r[1] == ReportLine(1)
+    r[1] = ReportLine(0)
+    assert r[1] == get_val
+
+
+@pytest.mark.parametrize('index, set_val, error_message', [
+    ('str', 1, "expecting type int got <type 'str'>"),
+    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
+])
+def test_set_item_exception(index, set_val, error_message):
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
-        r['str'] = 1
-    assert e_info.value.message == "expecting type int got <type 'str'>"
-    with pytest.raises(Exception) as e_info:
-        r[1] = 'str'
-    assert e_info.value.message == "expecting type ReportLine got <type 'str'>"
-    with pytest.raises(Exception) as e_info:
-        r[-1] = ReportLine()
-    assert e_info.value.message == 'Line number must be greater then 0. Got -1'
+        r[index] = set_val
+    assert e_info.value.message == error_message
 
 
 def test_contains():
@@ -110,8 +128,8 @@ def test_report_iter():
         if line.coverage == 0:
             return
         return line
-    r1 = ReportFile(name='folder/file.py', lines=[ReportLine(coverage=1), ReportLine(coverage=0)], line_modifier=filter_lines)
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(coverage=1), ReportLine(coverage=0)], line_modifier=filter_lines)
     lines = []
-    for ln in r1:
+    for ln in r:
         lines.append(ln)
     assert lines == [ReportLine(coverage=1), None, None]  # TODO why extra None?
