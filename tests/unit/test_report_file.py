@@ -86,6 +86,11 @@ def test_non_zero(r, boolean):
 
 
 def test_contains():
+    r = ReportFile('file.py', lines=[ReportLine(1), ReportLine(2)])
+    assert r.get(2) == ReportLine(2)
+
+
+def test_contains_exception():
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
         'str' in r
@@ -198,3 +203,51 @@ def test_report_iter():
     for ln in r:
         lines.append(ln)
     assert lines == [ReportLine(coverage=1), None, None]  # TODO why extra None?
+
+
+@pytest.mark.parametrize('r, diff, new_file, boolean', [
+    (ReportFile('file.py'), {
+        'segments': []
+    }, ReportFile('new.py'), False),
+    (ReportFile('file.py'), {
+        'segments': [
+            {
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    }, ReportFile('new.py'), False),
+    (ReportFile('file.py', lines=[ReportLine(1), ReportLine(2)]), {
+        'segments': [
+            {
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    }, ReportFile('new.py'), True),
+    (ReportFile('file.py'), {
+        'segments': [
+            {
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    }, ReportFile('new.py', lines=[ReportLine(1), ReportLine(2)]), True),
+])
+def test_does_diff_adjust_tracked_lines(r, diff, new_file, boolean):
+    assert r.does_diff_adjust_tracked_lines(diff, new_file) is boolean
+
+
+def test_shift_lines_by_diff():
+    r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()])
+    assert len(list(r.lines)) == 2
+    r.shift_lines_by_diff({
+        'segments': [
+            {
+                # [-, -, POS_to_start, new_lines_added]
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    })
+    assert len(list(r.lines)) == 1
