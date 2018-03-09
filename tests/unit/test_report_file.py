@@ -161,8 +161,16 @@ def test_merge_exception():
     assert e_info.value.message == "expecting type ReportFile got <type 'str'>"
 
 
+@pytest.mark.parametrize('r, totals', [
+    (ReportFile(name='file.py', totals=[0]), ReportTotals(0)),
+    (ReportFile(name='file.py', totals=[0], line_modifier=lambda l: l), ReportTotals(0, coverage=None)),
+])
+def test_totals(r, totals):
+    assert r.totals == totals
+
+
 @pytest.mark.parametrize('r, lines', [
-    (ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(0)], line_modifier=lambda line: None), []),
+    (ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(0)], line_modifier=lambda l: None), []),
     (ReportFile(name='asd', lines=[[1]]), [(1, ReportLine(1))]),
 ])
 def test_report_file_lines(r, lines):
