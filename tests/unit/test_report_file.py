@@ -259,3 +259,23 @@ def test_shift_lines_by_diff():
 ])
 def test_encode(r, encoded_val):
     assert r._encode() == encoded_val
+
+
+@pytest.mark.parametrize('r, lines_before, ignore_options, lines_after', [
+    (ReportFile('file.py', lines=[ReportLine(0)]),
+     [(1, ReportLine(0))],
+     {},
+     [(1, ReportLine(0))]),
+    (ReportFile('file.py', lines=[ReportLine(0), ReportLine(1), ReportLine(2)]),
+     [(1, ReportLine(0)), (2, ReportLine(1)), (3, ReportLine(2))],
+     {'eof': 1},
+     [(1, ReportLine(0))]),
+    (ReportFile('file.py', lines=[ReportLine(0), ReportLine(1), ReportLine(2)]),
+     [(1, ReportLine(0)), (2, ReportLine(1)), (3, ReportLine(2))],
+     {'lines': [1, 2]},
+     [(3, ReportLine(2))]),
+])
+def test_ignore_lines(r, lines_before, ignore_options, lines_after):
+    assert list(r.lines) == lines_before
+    r.ignore_lines(**ignore_options)
+    assert list(r.lines) == lines_after
