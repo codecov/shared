@@ -251,3 +251,11 @@ def test_shift_lines_by_diff():
         ]
     })
     assert len(list(r.lines)) == 1
+
+
+@pytest.mark.parametrize('r, encoded_val', [
+    (ReportFile('name.py'), '{}\n'),
+    (ReportFile('name.py', lines=[ReportLine(1), ReportLine(2)]), 'null\n[1]\n[2]'),
+])
+def test_encode(r, encoded_val):
+    assert r._encode() == encoded_val

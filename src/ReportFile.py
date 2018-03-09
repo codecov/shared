@@ -349,7 +349,6 @@ class ReportFile(object):
             pos = (int(segment['header'][2]) or 1)
             for line in segment['lines']:
                 if line[0] == '-':
-                    print 'SKERT'
                     if pos in self:
                         # tracked line removed
                         return True
