@@ -169,6 +169,17 @@ def test_totals(r, totals):
     assert r.totals == totals
 
 
+@pytest.mark.parametrize('lines_before, line_modifier, lines_after', [
+    ([(1, ReportLine(1)), (2, ReportLine(2))], None, [(1, ReportLine(1)), (2, ReportLine(2))]),
+    ([(1, ReportLine(1)), (2, ReportLine(2))], lambda l: None, []),
+])
+def test_apply_line_modifier(lines_before, line_modifier, lines_after):
+    r = ReportFile('files', lines=[ReportLine(1), ReportLine(2)])
+    assert list(r.lines) == lines_before
+    r.apply_line_modifier(line_modifier)
+    assert list(r.lines) == lines_after
+
+
 @pytest.mark.parametrize('r, lines', [
     (ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(0)], line_modifier=lambda l: None), []),
     (ReportFile(name='asd', lines=[[1]]), [(1, ReportLine(1))]),
