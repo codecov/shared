@@ -81,7 +81,7 @@ class BitbucketServer(BaseHandler):
                 tree='projects/%(username)s/repos/%(name)s/browse?at=%(commitid)s',
                 create_file=None,
                 branch='projects/%(username)s/repos/%(name)s/browser?at=%(branch)s',
-                pull='projects/%(username)s/repos/%(name)s/pull-requests/%(pr)s/overview',
+                pull='projects/%(username)s/repos/%(name)s/pull-requests/%(pullid)s/overview',
                 compare='')
 
     @property
