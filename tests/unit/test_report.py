@@ -76,22 +76,27 @@ def test_append_error():
     assert e_info.value.message == "expecting ReportFile got <type 'str'>"
 
 
-@pytest.mark.parametrize('r, file_repr', [
+@pytest.mark.parametrize('r, file_repr, lines', [
     (Report(files={
         'file.py': [0, ReportTotals(1)]
-    }), '<ReportFile name=file.py lines=0>'),
+    }), '<ReportFile name=file.py lines=0>', []),
     (Report(files={
         'file.py': [0, ReportTotals(1)]
-    }).filter(paths=['py.py']), 'None'),
+    }).filter(paths=['py.py']), 'None', None),
     (Report(files={
         'file.py': [0, ReportTotals(1)]
-    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), '<ReportFile name=file.py lines=3>'),
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), '<ReportFile name=file.py lines=3>', [(1, ReportLine(1)), (2, ReportLine(1)), (3, ReportLine(1))]),
     (Report(files={
         'file.py': [0, ReportTotals(1)]
-    }, chunks=[ReportFile(name='file.py')]), '<ReportFile name=file.py lines=0>'),
+    }, chunks=[ReportFile(name='file.py')]), '<ReportFile name=file.py lines=0>', []),
+    (Report(files={
+        'file.py': [1, ReportTotals(1)]
+    }, chunks=[ReportFile(name='other-file.py')]), '<ReportFile name=file.py lines=0>', []),
 ])
-def test_get(r, file_repr):
+def test_get(r, file_repr, lines):
     assert repr(r.get('file.py')) == file_repr
+    if lines:
+        assert list(r.get('file.py').lines) == lines
 
 
 def test_rename():
