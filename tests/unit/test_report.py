@@ -145,6 +145,16 @@ def test_manifest(r, manifest):
     assert r.manifest == manifest
 
 
+def test_flags():
+    r = Report(files={
+        'py.py': [0, ReportTotals(1)]
+    }, sessions={1: {
+        'id': 'id',
+        'f': ['a', 1, 'test'],
+    }})
+    assert r.flags.keys() == ['a', 1, 'test']
+
+
 def test_iter():
     r = Report(files={
         'file1.py': [0, ReportTotals(1)],
@@ -332,3 +342,18 @@ def test_add_session():
 def test_flare(r, params, flare):
     assert r.flare(**params) == flare
 
+
+def test_filter():
+    r = Report().filter(paths=['test/path/file.py'])
+    assert r.get('wrong/test/path/file.py') is None
+
+    r1 = Report(files={
+        'file.py':[0, ReportTotals(1)]
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]').filter(flags='test')
+    # print r1.get('file.py')  # TODO better test
+
+
+def test_filter_exception():
+    with pytest.raises(Exception) as e_info:
+        Report().filter(paths='str')
+    assert e_info.value.message == "expecting list for argument paths got <type 'str'>"
