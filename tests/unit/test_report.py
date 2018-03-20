@@ -149,6 +149,15 @@ def test_manifest(r, manifest):
     assert r.manifest == manifest
 
 
+def test_get_folder_totals():
+    r = Report(files={
+        'path/file1.py': [0, ReportTotals(1)],
+        'path/file2.py': [0, ReportTotals(1)],
+        'wrong/path/file2.py': [0, ReportTotals(1)],
+    }, chunks=[ReportFile(name='path/file1.py', totals=[1, 2, 1]), ReportFile(name='path/file2.py', totals=[1, 2, 1])])
+    assert r.get_folder_totals('/path/') == ReportTotals(files=2, lines=4, hits=2, misses=0, partials=0, coverage='50.00000')
+
+
 def test_flags():
     r = Report(files={
         'py.py': [0, ReportTotals(1)]
