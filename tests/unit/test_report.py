@@ -76,23 +76,22 @@ def test_append_error():
     assert e_info.value.message == "expecting ReportFile got <type 'str'>"
 
 
-def test_get():
-    r = Report(files={
+@pytest.mark.parametrize('r, file_repr', [
+    (Report(files={
         'file.py': [0, ReportTotals(1)]
-    })
-    assert repr(r.get('file.py')) == '<ReportFile name=file.py lines=0>'
-
-    r2 = Report(files={
+    }), '<ReportFile name=file.py lines=0>'),
+    (Report(files={
         'file.py': [0, ReportTotals(1)]
-    }).filter(paths=['py.py'])
-
-    assert r2.get('file.py') is None
-
-    r3 = Report(files={
+    }).filter(paths=['py.py']), 'None'),
+    (Report(files={
         'file.py': [0, ReportTotals(1)]
-    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]')
-
-    assert repr(r3.get('file.py')) == '<ReportFile name=file.py lines=3>'
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), '<ReportFile name=file.py lines=3>'),
+    (Report(files={
+        'file.py': [0, ReportTotals(1)]
+    }, chunks=[ReportFile(name='file.py')]), '<ReportFile name=file.py lines=0>'),
+])
+def test_get(r, file_repr):
+    assert repr(r.get('file.py')) == file_repr
 
 
 def test_rename():
