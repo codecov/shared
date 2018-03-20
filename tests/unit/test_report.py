@@ -1,7 +1,7 @@
 import pytest
-from mock import patch
 from tests.helper import v2_to_v3
 from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
+from src.helpers.sessions import Session
 from src.ReportFile import ReportFile
 from src.Report import Report, get_complexity_from_sessions
 
@@ -56,7 +56,6 @@ def test_resolve_paths():
     assert r.files == ['py.py']
     r.resolve_paths([('py.py', 'file.py')])
     assert r.files == ['file.py']
-    print r.files
 
 
 @pytest.mark.parametrize('r, _file, joined, boolean, lines, hits', [
@@ -304,3 +303,32 @@ def test_report_has_flag():
 def test_get_complexity_from_sessions(sessions, complexity):
     assert get_complexity_from_sessions(sessions) == complexity
     assert get_complexity_from_sessions(sessions) == complexity
+
+
+def test_add_session():
+    s = Session(5)
+    r = Report(files={
+        'file.py': [0, ReportTotals(0)]
+    }, totals=ReportTotals(0))
+    assert r.totals.sessions == 0
+    assert r.sessions == {}
+    assert r.add_session(s) == (0, s)
+    assert r.totals.sessions == 1
+    assert r.sessions == {0: s}
+
+
+@pytest.mark.parametrize('r, params, flare', [
+    (Report(files={
+        'py.py': [0, ReportTotals(1)]
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'),
+     {'color': lambda cov: 'purple' if cov is None else '#e1e1e1' if cov == 0 else 'green' if cov > 0 else 'red'},
+     [{'name': '', 'coverage': 100, 'color': 'green', '_class': None, 'lines': 0, 'children': [{'color': '#e1e1e1', '_class': None, 'lines': 0, 'name': 'py.py', 'coverage': 0}]}]),
+    (Report(files={
+        'py.py': [0, ReportTotals(1)]
+    }),
+     {'changes': {}},
+     [{'name': '', 'coverage': 100, 'color': 'green', '_class': None, 'lines': 0, 'children': [{'color': '#e1e1e1', '_class': None, 'lines': 0, 'name': 'py.py', 'coverage': 0}]}]),
+])
+def test_flare(r, params, flare):
+    assert r.flare(**params) == flare
+
