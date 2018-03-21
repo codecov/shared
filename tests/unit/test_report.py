@@ -3,7 +3,7 @@ from tests.helper import v2_to_v3
 from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
 from src.helpers.sessions import Session
 from src.ReportFile import ReportFile
-from src.Report import Report, get_complexity_from_sessions
+from src.Report import Report, get_complexity_from_sessions, _encode_chunk
 
 
 def test_report_repr():
@@ -380,3 +380,12 @@ def test_filter_exception():
     with pytest.raises(Exception) as e_info:
         Report().filter(paths='str')
     assert e_info.value.message == "expecting list for argument paths got <type 'str'>"
+
+
+@pytest.mark.parametrize('chunk, res', [
+    (None, 'null'),
+    (ReportFile(name='name.ply'), '{}\n'),
+    ([ReportLine(2), ReportLine(1)], '[[2,null,null,null,null],[1,null,null,null,null]]')
+])
+def test_encode_chunk(chunk, res):
+    assert _encode_chunk(chunk) == res
