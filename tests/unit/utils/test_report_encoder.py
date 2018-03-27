@@ -1,6 +1,6 @@
 import pytest
 from src.utils.tuples import ReportTotals
-from src.helpers.sessions import Session
+from src.utils.sessions import Session
 from src.utils.ReportEncoder import ReportEncoder
 
 

@@ -1,10 +1,8 @@
-from json import JSONEncoder
 from json import loads, dumps
 from itertools import izip_longest
 from src.utils.tuples import *
 from src.utils.merge import *
 from src.utils.ReportEncoder import ReportEncoder
-from src.helpers.sessions import Session
 from src.helpers.ratio import ratio
 
 

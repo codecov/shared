@@ -1,4 +1,4 @@
-from src.helpers.flare import report_to_flare
+from src.utils.flare import report_to_flare
 
 
 def test_report_to_flare():

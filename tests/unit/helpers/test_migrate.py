@@ -1,5 +1,5 @@
 import pytest
-from src.helpers.migrate import *
+from src.utils.migrate import *
 
 
 @pytest.mark.parametrize('totals, res', [

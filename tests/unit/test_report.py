@@ -1,7 +1,7 @@
 import pytest
 from tests.helper import v2_to_v3
 from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
-from src.helpers.sessions import Session
+from src.utils.sessions import Session
 from src.ReportFile import ReportFile
 from src.Report import Report, get_complexity_from_sessions, _encode_chunk
 

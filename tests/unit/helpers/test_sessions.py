@@ -1,4 +1,4 @@
-from src.helpers.sessions import Session
+from src.utils.sessions import Session
 
 
 def test_sessions():

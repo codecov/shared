@@ -1,5 +1,5 @@
 import pytest
-from src.utils.zfill import zfill
+from src.helpers.zfill import zfill
 
 
 @pytest.mark.parametrize('lst, index, value, res', [

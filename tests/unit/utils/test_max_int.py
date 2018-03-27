@@ -1,5 +1,5 @@
 import pytest
-from src.utils.MaxInt import MaxInt
+from src.helpers.MaxInt import MaxInt
 
 
 @pytest.mark.parametrize('string, number', [

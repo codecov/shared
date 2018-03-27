@@ -1,5 +1,5 @@
 import pytest
-from src.helpers.match import *
+from src.utils.match import *
 
 
 @pytest.mark.parametrize('patterns, string, boolean', [
