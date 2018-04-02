@@ -87,7 +87,8 @@ def test_non_zero(r, boolean):
 
 def test_contains():
     r = ReportFile('file.py', lines=[ReportLine(1), ReportLine(2)])
-    assert r.get(2) == ReportLine(2)
+    assert (2 in r) is True
+    assert (7 in r) is False
 
 
 def test_contains_exception():
@@ -95,8 +96,6 @@ def test_contains_exception():
     with pytest.raises(Exception) as e_info:
         'str' in r
     assert e_info.value.message == "expecting type int got <type 'str'>"
-    boolean = 100 in r
-    assert boolean is False
 
 
 def test_report_file_get():
