@@ -1,5 +1,5 @@
 import pytest
-from mock import patch, PropertyMock
+from mock import PropertyMock
 from src.utils.tuples import ReportLine, ReportTotals
 from src.ReportFile import ReportFile, _ignore_to_func
 
