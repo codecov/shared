@@ -158,3 +158,111 @@ def test_report_file_get_exception(get_val, error_message, patch):
     with pytest.raises(Exception) as e_info:
         r.get(get_val)
     assert e_info.value.message == error_message
+
+
+@pytest.mark.parametrize('ignore, boolean, lines', [
+    ({'eof':'N', 'lines':[1,10]}, False, []),
+    ({}, True, [(1, ReportLine(1))]),
+])
+def test_append(ignore, boolean, lines, patch):
+    patch.init(ReportFile)
+    r = ReportFile()
+    type(r)._ignore = PropertyMock(return_value=_ignore_to_func(ignore))
+    type(r)._line_modifier = PropertyMock(return_value=None)
+    type(r)._lines = []
+    assert r.append(1, ReportLine(1)) is boolean
+    assert list(r.lines) == lines
+
+
+@pytest.mark.parametrize('key, val, error_message', [
+    ('str', ReportLine(), "expecting type int got <type 'str'>"),
+    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
+])
+def test_report_file_append_exception(key, val, error_message, patch):
+    patch.init(ReportFile)
+    r = ReportFile()
+    with pytest.raises(Exception) as e_info:
+        r.append(key, val)
+    assert e_info.value.message == error_message
+
+
+@pytest.mark.parametrize('name, totals, list_before, merge_val, merge_return, list_after', [
+    ('file.py', None, [], None, None, []),
+    ('file.rb', None, [], ReportFile(name='file.rb', lines=[ReportLine(2)]), True, [(1, ReportLine(2))]),
+])
+def test_merge(name, totals, list_before, merge_val, merge_return, list_after, patch):
+    patch.init(ReportFile)
+    r = ReportFile()
+    type(r).name = name
+    type(r)._lines = []
+    type(r)._totals = totals
+    assert list(r.lines) == list_before
+    assert r.merge(merge_val) == merge_return
+    assert list(r.lines) == list_after
+
+
+@pytest.mark.parametrize('_process_totals_return_val, _totals, is_process_called, totals', [
+    (ReportTotals(1), None, True, ReportTotals(1)),
+    (ReportTotals(2), ReportTotals(1), False, ReportTotals(1)),
+])
+def test_totals(_process_totals_return_val, _totals, is_process_called, totals, patch):
+    patch.init(ReportFile)
+    patch.object(ReportFile, '_process_totals', return_value=_process_totals_return_val)
+    r = ReportFile()
+    type(r)._totals = _totals
+    assert r.totals == totals
+    assert ReportFile._process_totals.called is is_process_called
+
+
+@pytest.mark.parametrize('lines, diff, new_file, boolean', [
+    ([], {
+        'segments': []
+    }, ReportFile('new.py'), False),
+    ([], {
+        'segments': [
+            {
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    }, ReportFile('new.py'), False),
+    ([ReportLine(1), ReportLine(2)], {
+        'segments': [
+            {
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    }, ReportFile('new.py'), True),
+    ([], {
+        'segments': [
+            {
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    }, ReportFile('new.py', lines=[ReportLine(1), ReportLine(2)]), True),
+])
+def test_does_diff_adjust_tracked_lines(lines, diff, new_file, boolean, patch):
+    patch.init(ReportFile)
+    r = ReportFile()
+    type(r)._lines = lines
+    assert r.does_diff_adjust_tracked_lines(diff, new_file) is boolean
+
+
+def test_shift_lines_by_diff(patch):
+    patch.init(ReportFile)
+    r = ReportFile()
+    type(r)._lines = [ReportLine(), ReportLine()]
+    assert len(list(r.lines)) == 2
+    r.shift_lines_by_diff({
+        'segments': [
+            {
+                # [-, -, POS_to_start, new_lines_added]
+                'header': [1, 1, 1, 1],
+                'lines': ['- afefe', '+ fefe', '=']
+            }
+        ]
+    })
+    assert len(list(r.lines)) == 1
