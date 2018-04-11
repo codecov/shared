@@ -5,3 +5,5 @@ install:
     - pip install -r requirements.txt
 script:
     - pytest --cov=src --cov-report=term-missing
+after_success:
+    - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
