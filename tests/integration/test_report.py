@@ -227,7 +227,7 @@ def test_assume_flags():
     assert r.sessions.keys() == []
     r.assume_flags('int', prev_r)
     assert repr(r) == '<Report files=2>'
-    assert r.sessions.keys() == [0]  # TODO filter should work
+    assert r.sessions.keys() == [0]  # TODO filter should work but does not because of the issue with filter
 
 
 @pytest.mark.integration
