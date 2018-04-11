@@ -7,8 +7,8 @@ from src.ReportFile import ReportFile
 def test_report_file_constructor():
     r1 = ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None)
     assert r1.name == 'folder/file.py'
-    r2 = ReportFile('file.py', lines='\nline@1\n\nline@3') # TODO what should be in lines because r2.lines not working
-    # print r2.lines.next()
+    r2 = ReportFile(name='file.py', lines='\n[1,2]\n[1,1]')
+    assert list(r2.lines) == [(1, ReportLine(1, 2)), (2, ReportLine(1, 1))]
     assert r2.name == 'file.py'
 
 
@@ -225,7 +225,7 @@ def test_report_iter():
     lines = []
     for ln in r:
         lines.append(ln)
-    assert lines == [ReportLine(coverage=1), None, None]  # TODO why extra None?
+    assert lines == [ReportLine(coverage=1), None, None]
 
 
 @pytest.mark.integration

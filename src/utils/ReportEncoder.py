@@ -7,7 +7,7 @@ class ReportEncoder(JSONEncoder):
     separators = (',', ':')
 
     def default(self, obj):
-        if isinstance(obj, ReportTotals): # TODO remove this block
+        if isinstance(obj, ReportTotals):
             # reduce totals
             obj = list(obj)
             while obj and obj[-1] in ('0', 0):

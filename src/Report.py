@@ -199,6 +199,7 @@ class Report(object):
     def ignore_lines(self, ignore_lines):
         """
         :ignore_lines {"path": {"lines": ["1"]}}
+        only used during processing and does not effect the chunks inside this Report object
         """
         for path, data in ignore_lines.iteritems():
             _file = self.get(path)

@@ -470,7 +470,7 @@ def test_flare(files, chunks, params, flare, patch):
     type(r)._chunks = chunks
     assert r.flare(**params) == flare
 
-
+# TODO see filter method on Report(), method does nothing because self.reset() is called after _filter_cache is set
 # @pytest.mark.unit
 # def test_filter():
 #     r = Report().filter(paths=['test/path/file.py'])
@@ -479,7 +479,24 @@ def test_flare(files, chunks, params, flare, patch):
 #     r1 = Report(files={
 #         'file.py':[0, ReportTotals(1)]
 #     }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]').filter(flags='test')
-#     # print r1.get('file.py')  # TODO better test
+
+
+def test_test(patch):
+    patch.init(ReportFile)
+    patch.init(Report)
+    patch.object(ReportFile, 'ignore_lines', return_value=None)
+    r = Report()
+    type(r)._files = PropertyMock(return_value={
+        'py.py': [0, ReportTotals(1)]
+    })
+    type(r)._chunks = PropertyMock(return_value='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'.split(END_OF_CHUNK))
+    r.ignore_lines({
+        'py.py': {
+            'lines': [0, 1, 2]
+        }
+    })
+    assert ReportFile.ignore_lines.called is True
+
 
 @pytest.mark.unit
 def test_filter_exception(patch):
