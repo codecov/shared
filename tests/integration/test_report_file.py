@@ -3,6 +3,7 @@ from src.utils.tuples import ReportTotals, ReportLine
 from src.ReportFile import ReportFile
 
 
+@pytest.mark.integration
 def test_report_file_constructor():
     r1 = ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None)
     assert r1.name == 'folder/file.py'
@@ -11,11 +12,13 @@ def test_report_file_constructor():
     assert r2.name == 'file.py'
 
 
+@pytest.mark.integration
 def test_repr():
     r = ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None)
     assert repr(r) == '<ReportFile name=folder/file.py lines=0>'
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, get_val, res', [
     (ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None), 'totals', ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
     (ReportFile('file.py', lines=[ReportLine(), ReportLine()]), 1, ReportLine()),
@@ -24,6 +27,7 @@ def test_get_item(r, get_val, res):
     assert r[get_val] == res
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('get_val, error_message', [
     ([], "expecting type int got <type 'list'>"),
     (-1, 'Line number must be greater then 0. Got -1'),
@@ -36,6 +40,7 @@ def test_get_item_exception(get_val, error_message):
     assert e_info.value.message == error_message
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, get_val', [
     (ReportFile(name='folder/file.py', lines=[ReportLine(1)], ignore={'eof':'N', 'lines':[1,10]}), ReportLine(1)),
     (ReportFile(name='folder/file.py', lines=[ReportLine(1)]), ReportLine(0)),
@@ -46,6 +51,7 @@ def test_set_item(r, get_val):
     assert r[1] == get_val
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('index, set_val, error_message', [
     ('str', 1, "expecting type int got <type 'str'>"),
     (1, 'str', "expecting type ReportLine got <type 'str'>"),
@@ -58,16 +64,19 @@ def test_set_item_exception(index, set_val, error_message):
     assert e_info.value.message == error_message
 
 
+@pytest.mark.integration
 def test_len():
     r = ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(), None])
     assert len(r) == 2
 
 
+@pytest.mark.integration
 def test_eol():
     r = ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(), None])
     assert r.eof == 4
 
 
+@pytest.mark.integration
 def test_get_slice():
     def filter_lines(line):
         if line.coverage == 3:
@@ -77,6 +86,7 @@ def test_get_slice():
     assert list(r[2:4]) == [(2, ReportLine(coverage=2, type=None, sessions=None, messages=None, complexity=None))]
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, boolean', [
     (ReportFile(name='name.py'), False),
     (ReportFile(name='name.py', lines=[ReportLine(1)]), True),
@@ -85,12 +95,14 @@ def test_non_zero(r, boolean):
     assert bool(r) is boolean
 
 
+@pytest.mark.integration
 def test_contains():
     r = ReportFile('file.py', lines=[ReportLine(1), ReportLine(2)])
     assert (2 in r) is True
     assert (7 in r) is False
 
 
+@pytest.mark.integration
 def test_contains_exception():
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
@@ -98,21 +110,25 @@ def test_contains_exception():
     assert e_info.value.message == "expecting type int got <type 'str'>"
 
 
+@pytest.mark.integration
 def test_report_file_get():
     r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()])
     assert r.get(1) == ReportLine()
 
 
+@pytest.mark.integration
 def test_report_file_get_filter():
     r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=lambda l: l)
     assert r.get(1) == ReportLine()
 
 
+@pytest.mark.integration
 def test_report_file_get_filter_none():
     r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()], line_modifier=lambda l: None)
     assert r.get(1) is None
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('get_val, error_message', [
     ('str', "expecting type int got <type 'str'>"),
     (-1, 'Line number must be greater then 0. Got -1'),
@@ -125,6 +141,7 @@ def test_report_file_get_exception(get_val, error_message):
 
 
 # TODO branch where this calls merge_line
+@pytest.mark.integration
 @pytest.mark.parametrize('r, boolean, lines', [
     (ReportFile(name='folder/file.py', ignore={'eof':'N', 'lines':[1,10]}), False, []),
     (ReportFile(name='file.py'), True, [(1, ReportLine(1))]),
@@ -134,6 +151,7 @@ def test_append(r, boolean, lines):
     assert list(r.lines) == lines
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('key, val, error_message', [
     ('str', ReportLine(), "expecting type int got <type 'str'>"),
     (1, 'str', "expecting type ReportLine got <type 'str'>"),
@@ -147,6 +165,7 @@ def test_report_file_append_exception(key, val, error_message):
 
 
 # TODO branch where merge_line is called
+@pytest.mark.integration
 @pytest.mark.parametrize('r, list_before, merge_val, merge_return, list_after', [
     (ReportFile(name='file.py'), [], None, None, []),
     (ReportFile(name='file.rb'), [], ReportFile(name='file.rb', lines=[ReportLine(2)]), True, [(1, ReportLine(2))]),
@@ -158,6 +177,7 @@ def test_merge(r, list_before, merge_val, merge_return, list_after):
     assert list(r.lines) == list_after
 
 
+@pytest.mark.integration
 def test_merge_exception():
     r = ReportFile(name='name.py')
     with pytest.raises(Exception) as e_info:
@@ -165,6 +185,7 @@ def test_merge_exception():
     assert e_info.value.message == "expecting type ReportFile got <type 'str'>"
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, totals', [
     (ReportFile(name='file.py', totals=[0]), ReportTotals(0)),
     (ReportFile(name='file.py', totals=[0], line_modifier=lambda l: l), ReportTotals(0, coverage=None)),
@@ -173,6 +194,7 @@ def test_totals(r, totals):
     assert r.totals == totals
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('lines_before, line_modifier, lines_after', [
     ([(1, ReportLine(1)), (2, ReportLine(2))], None, [(1, ReportLine(1)), (2, ReportLine(2))]),
     ([(1, ReportLine(1)), (2, ReportLine(2))], lambda l: None, []),
@@ -184,6 +206,7 @@ def test_apply_line_modifier(lines_before, line_modifier, lines_after):
     assert list(r.lines) == lines_after
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, lines', [
     (ReportFile(name='folder/file.py', lines=[ReportLine(1), ReportLine(0)], line_modifier=lambda l: None), []),
     (ReportFile(name='asd', lines=[[1]]), [(1, ReportLine(1))]),
@@ -192,6 +215,7 @@ def test_report_file_lines(r, lines):
     assert list(r.lines) == lines
 
 
+@pytest.mark.integration
 def test_report_iter():
     def filter_lines(line):
         if line.coverage == 0:
@@ -204,6 +228,7 @@ def test_report_iter():
     assert lines == [ReportLine(coverage=1), None, None]  # TODO why extra None?
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, diff, new_file, boolean', [
     (ReportFile('file.py'), {
         'segments': []
@@ -237,6 +262,7 @@ def test_does_diff_adjust_tracked_lines(r, diff, new_file, boolean):
     assert r.does_diff_adjust_tracked_lines(diff, new_file) is boolean
 
 
+@pytest.mark.integration
 def test_shift_lines_by_diff():
     r = ReportFile(name='folder/file.py', lines=[ReportLine(), ReportLine()])
     assert len(list(r.lines)) == 2
@@ -252,6 +278,7 @@ def test_shift_lines_by_diff():
     assert len(list(r.lines)) == 1
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, encoded_val', [
     (ReportFile('name.py'), '{}\n'),
     (ReportFile('name.py', lines=[ReportLine(1), ReportLine(2)]), 'null\n[1]\n[2]'),
@@ -260,6 +287,7 @@ def test_encode(r, encoded_val):
     assert r._encode() == encoded_val
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, lines_before, ignore_options, lines_after', [
     (ReportFile('file.py', lines=[ReportLine(0)]),
      [(1, ReportLine(0))],

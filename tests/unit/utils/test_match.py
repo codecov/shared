@@ -2,6 +2,7 @@ import pytest
 from src.utils.match import *
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('patterns, string, boolean', [
     (['branch*'],'branch', True),
     (['features/.*', 'develop'], 'features/a', True),

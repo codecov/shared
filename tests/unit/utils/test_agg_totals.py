@@ -3,6 +3,7 @@ from src.utils.tuples import ReportTotals
 from src.utils.agg_totals import agg_totals
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('totals, res', [
     ([None, xrange(6), xrange(6)], [2, 2, 4, 6, 8, '200.00000']),
     ([None, ReportTotals(*range(6)), ReportTotals(*range(6))], [2, 2, 4, 6, 8, '200.00000', 0, 0, 0, 0, 0, 0, 0]),

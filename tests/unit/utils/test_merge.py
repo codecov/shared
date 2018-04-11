@@ -2,6 +2,7 @@ import pytest
 from src.utils.merge import *
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('cov_list, res', [
     ([0], 0),
     ([0, 1], 1),
@@ -12,6 +13,7 @@ def test_merge_all(cov_list, res):
     assert merge_all(cov_list) == res
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('b1, b2, res', [
     (u'1/2', u'2/2', u'2/2'),
     (u'0/2', u'2/2', u'2/2'),
@@ -31,6 +33,7 @@ def test_merge_branch(b1, b2, res):
     assert res == merge_branch(b2, b1), '%s <> %s expected %s got %s' % (b2, b1, res, str(merge_branch(b2, b1)))
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('p1, p2, res', [
     ([], [[1, 2, 3]], [[1, 2, 3]]),
     ([[1, None, 1]], [], [[1, None, 1]]),  # one
@@ -48,6 +51,7 @@ def test_merge_partial_lines(p1, p2, res):
     assert res == merge_partial_line(p2, p1)
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('l1, l2, brm, res', [
     (1, 5, None, 5),
     (1, 0, None, 1),
@@ -78,6 +82,7 @@ def test_merge_coverage(l1, l2, brm, res):
     assert merge_coverage(l2, l1, brm) == res
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('sessions, res', [
     ([LineSession(1, 0, [1, 2, 3]), LineSession(1, 0, [2, 3])], [2, 3]),  # 2,3 missing
     ([LineSession(1, 0, [1, 2]), LineSession(1, 0, [1, 2])], [1, 2]),  # 1,2 missing
@@ -95,6 +100,7 @@ def test_merge_missed_branches(sessions, res):
     assert merge_missed_branches(sessions) == res
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('l1, l2, res', [
     (None, (1,), (1,)),  # no line to merge
 
@@ -144,6 +150,7 @@ def test_merge_line(l1, l2, res):
         assert res == ReportLine(*res)
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('s1, s2, res', [
     (LineSession(0, '1/2', ['exit']), LineSession(0, '2/2'), LineSession(0, '2/2', [])),
     (LineSession(0, '1/2'), LineSession(0, '2/2'), LineSession(0, '2/2')),
@@ -158,6 +165,7 @@ def test_merge_line_session(s1, s2, res):
     assert merge_line_session(s2, s1) == res
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('line, _line_type', [
     (True, 2),
     (1, 0),
@@ -173,6 +181,7 @@ def test_line_type(line, _line_type):
     assert line_type(line) == _line_type
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('x, y', [
     ('0/2', 1), ('1/2', 2), ('2/2', 0),
 ])
@@ -181,6 +190,7 @@ def test_branch_type(x, y):
     assert branch_type(unicode(x)) == y
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('partials, res', [
     ([(1, 5, 1), (5, 7, 0), (8, 9, 0)], '1/3'),
     ([(1, None, 1)], 1),
@@ -195,6 +205,7 @@ def test_partials_to_line(partials, res):
     assert res == partials_to_line(partials)
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize('sessions, res', [
     ([[1, 2, 3, 4, 5]], 5),
     ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]], (5, 6)),
@@ -203,5 +214,6 @@ def test_get_complexity_from_sessions(sessions, res):
     assert get_complexity_from_sessions(sessions) == res
 
 
+@pytest.mark.unit
 def test_get_coverage_from_sessions():
     assert get_coverage_from_sessions([LineSession(1, '2/2'), LineSession(2, '0/2', [1, 2])]) == '2/2'

@@ -6,10 +6,12 @@ from src.ReportFile import ReportFile
 from src.Report import Report, get_complexity_from_sessions, _encode_chunk
 
 
+@pytest.mark.integration
 def test_report_repr():
     assert repr(Report()) == '<Report files=0>'
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, network', [
     (Report(files={
         'py.py': [0, ReportTotals(1)]
@@ -24,6 +26,7 @@ def test_network(r, network):
     assert list(r.network) == network
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r', [
     (Report(files={
         'py.py': [0, ReportTotals(1)]
@@ -36,6 +39,7 @@ def test_files(r):
     assert r.files == ['py.py']
 
 
+@pytest.mark.integration
 def test_ignore_lines():
     r = Report(files={
         'py.py': [0, ReportTotals(1)]
@@ -49,6 +53,7 @@ def test_ignore_lines():
     # print list(r.get('py.py').lines) # TODO help here
 
 
+@pytest.mark.integration
 def test_resolve_paths():
     r = Report(files={
         'py.py': [0, ReportTotals(1)]
@@ -58,6 +63,7 @@ def test_resolve_paths():
     assert r.files == ['file.py']
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, _file, joined, boolean, lines, hits', [
     (Report(), ReportFile('a', totals=ReportTotals(1, 50, 10), lines=[ReportLine(1)]), False, True, 50, 0),
     (Report(), None, True, False, 0, 0),
@@ -69,6 +75,7 @@ def test_append(r, _file, joined, boolean, lines, hits):
     assert r.totals.hits == hits
 
 
+@pytest.mark.integration
 def test_append_error():
     r = Report()
     with pytest.raises(Exception) as e_info:
@@ -76,6 +83,7 @@ def test_append_error():
     assert e_info.value.message == "expecting ReportFile got <type 'str'>"
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, file_repr, lines', [
     (Report(files={
         'file.py': [0, ReportTotals(1)]
@@ -99,6 +107,7 @@ def test_get(r, file_repr, lines):
         assert list(r.get('file.py').lines) == lines
 
 
+@pytest.mark.integration
 def test_rename():
     r = Report(files={
         'file.py': [0, ReportTotals(1)]
@@ -110,6 +119,7 @@ def test_rename():
     assert repr(r.get('name.py')) == '<ReportFile name=name.py lines=3>'
 
 
+@pytest.mark.integration
 def test_get_item():
     r = Report(files={
         'file.py': [0, ReportTotals(1)]
@@ -117,6 +127,7 @@ def test_get_item():
     assert repr(r['file.py']) == '<ReportFile name=file.py lines=0>'
 
 
+@pytest.mark.integration
 def test_get_item_exception():
     r = Report(files={
         'file.py': [0, ReportTotals(1)]
@@ -126,6 +137,7 @@ def test_get_item_exception():
     assert e_info.value.message == 'File at path name.py not found in report'
 
 
+@pytest.mark.integration
 def test_del_item():
     r = Report(files={
         'file.py': [0, ReportTotals(1)]
@@ -135,6 +147,7 @@ def test_del_item():
     assert r.get('file.py') is None
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, manifest', [
     (Report(files={
         'file1.py': [0, ReportTotals(1)],
@@ -149,6 +162,7 @@ def test_manifest(r, manifest):
     assert r.manifest == manifest
 
 
+@pytest.mark.integration
 def test_get_folder_totals():
     r = Report(files={
         'path/file1.py': [0, ReportTotals(1)],
@@ -158,6 +172,7 @@ def test_get_folder_totals():
     assert r.get_folder_totals('/path/') == ReportTotals(files=2, lines=4, hits=2, misses=0, partials=0, coverage='50.00000')
 
 
+@pytest.mark.integration
 def test_flags():
     r = Report(files={
         'py.py': [0, ReportTotals(1)]
@@ -168,6 +183,7 @@ def test_flags():
     assert r.flags.keys() == ['a', 1, 'test']
 
 
+@pytest.mark.integration
 def test_iter():
     r = Report(files={
         'file1.py': [0, ReportTotals(1)],
@@ -179,6 +195,7 @@ def test_iter():
     assert repr(files) == '[<ReportFile name=file1.py lines=0>, <ReportFile name=file2.py lines=0>]'
 
 
+@pytest.mark.integration
 def test_contains():
     r = Report(files={
         'file1.py': [0, ReportTotals(1)],
@@ -187,6 +204,7 @@ def test_contains():
     assert ('file2.py' in r) is False
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, new_report, manifest', [
     (Report(files={
         'file.py': [0, ReportTotals(1)],
@@ -206,6 +224,7 @@ def test_merge(r, new_report, manifest):
     assert r.manifest == manifest
 
 
+@pytest.mark.integration
 def test_assume_flags():
     prev_r = Report(files={
         'file.py': [0, ReportTotals(1)]
@@ -225,6 +244,7 @@ def test_assume_flags():
     assert r.sessions.keys() == [0]  # TODO filter should work
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, boolean', [
     (Report(), True),
     (Report(files={
@@ -238,6 +258,7 @@ def test_is_empty(r, boolean):
     assert r.is_empty() is boolean
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, boolean', [
     (Report(), False),
     (Report(files={
@@ -248,6 +269,7 @@ def test_non_zero(r, boolean):
     assert bool(r) is boolean
 
 
+@pytest.mark.integration
 def test_to_archive():
     assert Report(files={
         'file.py': [0, ReportTotals()]
@@ -255,6 +277,7 @@ def test_to_archive():
            'null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'
 
 
+@pytest.mark.integration
 def test_to_database():
     assert Report(files={
         'file.py': [0, ReportTotals()]
@@ -262,6 +285,7 @@ def test_to_database():
            ({'M': 0, 'c': '100', 'b': 0, 'd': 0, 'f': 1, 'h': 0, 'm': 0, 'C': 0, 'n': 0, 'p': 0, 's': 0, 'diff': None, 'N': 0}, '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]}, "sessions": {}}')
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('diff, future, future_diff, res', [
     ({}, None, None, False),  # empty
     (None, None, None, False),  # empty
@@ -283,16 +307,18 @@ def test_to_database():
      {'files': {'a': {'l': {'1': {'c': 1}}}}}, None, False)  # lines not tracked`
 ])
 def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
-    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 1}}}}})
+    report = Report(**v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 1}}}}}))
     if future:
-        future = v2_to_v3(future)
+        future = Report(**v2_to_v3(future))
     else:
-        future = v2_to_v3({'files': {'z': {}}})
+        future = Report(**v2_to_v3({'files': {'z': {}}}))
 
     assert report.does_diff_adjust_tracked_lines(diff, future, future_diff) == res
 
+
+@pytest.mark.integration
 def test_apply_diff():
-    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 0}}}}})
+    report = Report(**v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 0}}}}}))
     diff = {
         'files': {
             'a': {'type': 'new', 'segments': [{'header': list('1313'), 'lines': list('---+++')}]},
@@ -307,8 +333,9 @@ def test_apply_diff():
     assert diff['totals'].coverage == '50.00000'
 
 
+@pytest.mark.integration
 def test_apply_diff_no_append():
-    report = v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 0}}}}})
+    report = Report(**v2_to_v3({'files': {'a': {'l': {'1': {'c': 1}, '2': {'c': 0}}}}}))
     diff = {
         'files': {
             'a': {'type': 'new', 'segments': [{'header': list('1313'), 'lines': list('---+++')}]},
@@ -323,12 +350,14 @@ def test_apply_diff_no_append():
     assert res.coverage == '50.00000'
 
 
+@pytest.mark.integration
 def test_report_has_flag():
     report = Report(sessions={1: dict(flags=['a'])})
     assert report.has_flag('a')
     assert not report.has_flag('b')
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('sessions, complexity', [
     ([[1, 2, 3, 4, 5]], 5),
     ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]], (5, 6)),
@@ -338,6 +367,7 @@ def test_get_complexity_from_sessions(sessions, complexity):
     assert get_complexity_from_sessions(sessions) == complexity
 
 
+@pytest.mark.integration
 def test_add_session():
     s = Session(5)
     r = Report(files={
@@ -350,6 +380,7 @@ def test_add_session():
     assert r.sessions == {0: s}
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('r, params, flare', [
     (Report(files={
         'py.py': [0, ReportTotals(1)]
@@ -366,6 +397,7 @@ def test_flare(r, params, flare):
     assert r.flare(**params) == flare
 
 
+@pytest.mark.integration
 def test_filter():
     r = Report().filter(paths=['test/path/file.py'])
     assert r.get('wrong/test/path/file.py') is None
@@ -376,12 +408,14 @@ def test_filter():
     # print r1.get('file.py')  # TODO better test
 
 
+@pytest.mark.integration
 def test_filter_exception():
     with pytest.raises(Exception) as e_info:
         Report().filter(paths='str')
     assert e_info.value.message == "expecting list for argument paths got <type 'str'>"
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize('chunk, res', [
     (None, 'null'),
     (ReportFile(name='name.ply'), '{}\n'),
