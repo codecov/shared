@@ -1,6 +1,8 @@
-from src.helpers.flare import report_to_flare
+import pytest
+from src.utils.flare import report_to_flare
 
 
+@pytest.mark.unit
 def test_report_to_flare():
     files = [
         ('a/b/c.py', [None, 100, 47, None, None, '47.00000']),

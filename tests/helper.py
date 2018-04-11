@@ -1,4 +1,4 @@
-from src.reports import Report
+from src.Report import Report
 from json import dumps
 
 
@@ -24,7 +24,9 @@ def v2_to_v3(report):
                     chunk.append('')
         chunks.append('\n'.join(chunk))
 
-    return Report(files=files,
-                  sessions=dict([(int(sid), data) for sid, data in report.get('sessions', {}).iteritems()]),
-                  totals=report.get('totals', {}),
-                  chunks=chunks)
+    return {
+        'files': files,
+        'sessions': dict([(int(sid), data) for sid, data in report.get('sessions', {}).iteritems()]),
+        'totals': report.get('totals', {}),
+        'chunks': chunks
+    }

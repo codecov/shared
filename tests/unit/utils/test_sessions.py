@@ -1,6 +1,8 @@
-from src.helpers.sessions import Session
+import pytest
+from src.utils.sessions import *
 
 
+@pytest.mark.unit
 def test_sessions():
     s = Session('id', 'totals', 'time', 'archive', 'flags', 'provider', 'build', 'job', 'url', 'state', 'env', 'name')
     assert s._encode() == {
