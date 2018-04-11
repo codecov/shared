@@ -3,7 +3,7 @@ from tests.helper import v2_to_v3
 from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
 from src.utils.sessions import Session
 from src.ReportFile import ReportFile
-from src.Report import Report, get_complexity_from_sessions, _encode_chunk
+from src.Report import Report, _encode_chunk
 
 
 @pytest.mark.integration
@@ -355,16 +355,6 @@ def test_report_has_flag():
     report = Report(sessions={1: dict(flags=['a'])})
     assert report.has_flag('a')
     assert not report.has_flag('b')
-
-
-@pytest.mark.integration
-@pytest.mark.parametrize('sessions, complexity', [
-    ([[1, 2, 3, 4, 5]], 5),
-    ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]], (5, 6)),
-])
-def test_get_complexity_from_sessions(sessions, complexity):
-    assert get_complexity_from_sessions(sessions) == complexity
-    assert get_complexity_from_sessions(sessions) == complexity
 
 
 @pytest.mark.integration

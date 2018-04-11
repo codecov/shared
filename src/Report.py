@@ -654,18 +654,3 @@ def _encode_chunk(chunk):
         return dumps(chunk, separators=(',', ':'))
     else:
         return chunk
-
-
-
-
-# TODO IMPORT THSES?
-def get_complexity_from_sessions(sessions):
-    _type = type(sessions[0][4])
-    if _type is int:
-        return max([(s[4] or 0) for s in sessions])
-    elif _type in (tuple, list):
-        return (max([(s[4] or (0, 0))[0] for s in sessions]),
-                max([(s[4] or (0, 0))[1] for s in sessions]))
-
-def get_coverage_from_sessions(sessions):
-    return merge_all([s[1] for s in sessions], merge_missed_branches(sessions))

@@ -205,13 +205,14 @@ def test_partials_to_line(partials, res):
     assert res == partials_to_line(partials)
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize('sessions, res', [
+@pytest.mark.unir
+@pytest.mark.parametrize('sessions, complexity', [
     ([[1, 2, 3, 4, 5]], 5),
     ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]], (5, 6)),
 ])
-def test_get_complexity_from_sessions(sessions, res):
-    assert get_complexity_from_sessions(sessions) == res
+def test_get_complexity_from_sessions(sessions, complexity):
+    assert get_complexity_from_sessions(sessions) == complexity
+    assert get_complexity_from_sessions(sessions) == complexity
 
 
 @pytest.mark.unit

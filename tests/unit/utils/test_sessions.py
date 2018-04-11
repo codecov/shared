@@ -1,5 +1,5 @@
 import pytest
-from src.utils.sessions import Session
+from src.utils.sessions import *
 
 
 @pytest.mark.unit
