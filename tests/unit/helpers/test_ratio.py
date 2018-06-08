@@ -1,5 +1,5 @@
 import pytest
-from src.helpers.ratio import ratio
+from covreports.helpers.ratio import ratio
 
 
 @pytest.mark.parametrize('x, y, percent', [

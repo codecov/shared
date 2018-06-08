@@ -1,11 +1,11 @@
 import pytest
 from mock import PropertyMock
+
+from covreports.resources import Report, ReportFile, _encode_chunk
+from covreports.utils.match import match
+from covreports.utils.sessions import Session
+from covreports.utils.tuples import ReportLine, ReportTotals, NetworkFile
 from tests.helper import v2_to_v3
-from src.utils.sessions import Session
-from src.utils.match import match
-from src.utils.tuples import ReportLine, ReportTotals, NetworkFile
-from src.Report import Report, _encode_chunk
-from src.ReportFile import ReportFile
 
 END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'
 

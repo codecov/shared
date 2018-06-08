@@ -1,5 +1,5 @@
 import pytest
-from src.helpers.color import coverage_to_color
+from covreports.helpers.color import coverage_to_color
 
 
 @pytest.mark.parametrize('range_low, range_high, cov, hex_val', [

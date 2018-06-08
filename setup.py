@@ -8,11 +8,11 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='report',
+    name='covreports',
     version='0.1.0',
     description='Reporting for Codecov',
     long_description=long_description,
-    url='https://github.com/TomPed/report',
+    url='https://github.com/codecov/report',
     author='Codecov',
     author_email='support@codecov.io',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),

@@ -1,6 +1,6 @@
 from json import loads
 from itertools import izip_longest
-from src.helpers.ratio import ratio
+from covreports.helpers.ratio import ratio
 
 
 TOTALS_MAP = ('f', 'n', 'h', 'm', 'p', 'c', 'b', 'd', 'M', 's', 'C', 'N', 'diff')

@@ -1,8 +1,8 @@
 from collections import defaultdict
 from itertools import groupby, starmap
 import types as ObjTypes
-from src.utils.tuples import ReportLine
-from src.utils.tuples import LineSession
+from covreports.utils.tuples import ReportLine
+from covreports.utils.tuples import LineSession
 
 
 def merge_all(coverages, missing_branches=None):

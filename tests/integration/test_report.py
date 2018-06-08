@@ -1,9 +1,9 @@
 import pytest
+
+from covreports.resources import Report, ReportFile, _encode_chunk
+from covreports.utils.sessions import Session
+from covreports.utils.tuples import ReportTotals, ReportLine, NetworkFile
 from tests.helper import v2_to_v3
-from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
-from src.utils.sessions import Session
-from src.ReportFile import ReportFile
-from src.Report import Report, _encode_chunk
 
 
 @pytest.mark.integration

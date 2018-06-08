@@ -1,5 +1,5 @@
 import pytest
-from src.utils.flare import report_to_flare
+from covreports.utils.flare import report_to_flare
 
 
 @pytest.mark.unit

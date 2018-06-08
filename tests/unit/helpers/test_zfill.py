@@ -1,5 +1,5 @@
 import pytest
-from src.helpers.zfill import zfill
+from covreports.helpers.zfill import zfill
 
 
 @pytest.mark.parametrize('lst, index, value, res', [

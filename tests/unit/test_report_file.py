@@ -1,7 +1,8 @@
 import pytest
 from mock import PropertyMock
-from src.utils.tuples import ReportLine, ReportTotals
-from src.ReportFile import ReportFile, _ignore_to_func
+
+from covreports.resources import ReportFile, _ignore_to_func
+from covreports.utils.tuples import ReportLine, ReportTotals
 
 
 @pytest.mark.unit

@@ -1,4 +1,4 @@
-from src.helpers.color import coverage_to_color
+from covreports.helpers.color import coverage_to_color
 
 
 class Dict(dict):
