@@ -1,9 +1,9 @@
 import pytest
-from tests.helper import v2_to_v3
-from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
+
+from src.resources import Report, ReportFile, _encode_chunk
 from src.utils.sessions import Session
-from src.ReportFile import ReportFile
-from src.Report import Report, _encode_chunk
+from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
+from tests.helper import v2_to_v3
 
 
 @pytest.mark.integration

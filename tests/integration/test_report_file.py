@@ -1,6 +1,7 @@
 import pytest
+
+from src.resources import ReportFile
 from src.utils.tuples import ReportTotals, ReportLine
-from src.ReportFile import ReportFile
 
 
 @pytest.mark.integration
