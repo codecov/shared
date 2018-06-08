@@ -1,5 +1,5 @@
 import pytest
-from src.helpers.MaxInt import MaxInt
+from covreports.helpers.MaxInt import MaxInt
 
 
 @pytest.mark.parametrize('string, number', [

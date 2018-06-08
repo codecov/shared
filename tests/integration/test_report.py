@@ -1,8 +1,8 @@
 import pytest
 
-from src.resources import Report, ReportFile, _encode_chunk
-from src.utils.sessions import Session
-from src.utils.tuples import ReportTotals, ReportLine, NetworkFile
+from covreports.resources import Report, ReportFile, _encode_chunk
+from covreports.utils.sessions import Session
+from covreports.utils.tuples import ReportTotals, ReportLine, NetworkFile
 from tests.helper import v2_to_v3
 
 

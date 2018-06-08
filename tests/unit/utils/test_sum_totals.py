@@ -1,6 +1,6 @@
 import pytest
-from src.utils.tuples import ReportTotals
-from src.utils.sum_totals import sum_totals
+from covreports.utils.tuples import ReportTotals
+from covreports.utils.sum_totals import sum_totals
 
 
 @pytest.mark.unit

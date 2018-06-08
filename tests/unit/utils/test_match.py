@@ -1,5 +1,5 @@
 import pytest
-from src.utils.match import *
+from covreports.utils.match import *
 
 
 @pytest.mark.unit

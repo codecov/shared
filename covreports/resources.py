@@ -3,20 +3,20 @@ from itertools import chain
 from itertools import izip_longest
 from json import loads, dumps
 
-from src.helpers.Yaml import Yaml
-from src.helpers.flag import Flag
-from src.helpers.ratio import ratio
-from src.helpers.zfill import zfill
-from src.utils.ReportEncoder import ReportEncoder
-from src.utils.agg_totals import agg_totals
-from src.utils.flare import report_to_flare
-from src.utils.make_network_file import make_network_file
-from src.utils.match import match, match_any
-from src.utils.merge import *
-from src.utils.migrate import migrate_totals
-from src.utils.sessions import Session
-from src.utils.sum_totals import sum_totals
-from src.utils.tuples import *
+from covreports.helpers.Yaml import Yaml
+from covreports.helpers.flag import Flag
+from covreports.helpers.ratio import ratio
+from covreports.helpers.zfill import zfill
+from covreports.utils.ReportEncoder import ReportEncoder
+from covreports.utils.agg_totals import agg_totals
+from covreports.utils.flare import report_to_flare
+from covreports.utils.make_network_file import make_network_file
+from covreports.utils.match import match, match_any
+from covreports.utils.merge import *
+from covreports.utils.migrate import migrate_totals
+from covreports.utils.sessions import Session
+from covreports.utils.sum_totals import sum_totals
+from covreports.utils.tuples import *
 
 END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'
 

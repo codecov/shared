@@ -1,6 +1,6 @@
 from json import JSONEncoder
 from types import GeneratorType
-from src.utils.tuples import ReportTotals
+from covreports.utils.tuples import ReportTotals
 
 
 class ReportEncoder(JSONEncoder):

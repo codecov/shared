@@ -1,4 +1,4 @@
-from src.helpers.Yaml import Yaml
+from covreports.helpers.Yaml import Yaml
 
 
 class Flag(object):

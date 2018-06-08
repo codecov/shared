@@ -1,7 +1,7 @@
 import pytest
-from src.utils.tuples import ReportTotals
-from src.utils.sessions import Session
-from src.utils.ReportEncoder import ReportEncoder
+from covreports.utils.tuples import ReportTotals
+from covreports.utils.sessions import Session
+from covreports.utils.ReportEncoder import ReportEncoder
 
 
 @pytest.mark.unit
