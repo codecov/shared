@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.Yaml import Yaml
+from covreports.helpers.yaml import Yaml
 
 
 @pytest.mark.parametrize('_dict, keys, _else, res', [

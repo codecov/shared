@@ -1,5 +1,5 @@
 from covreports.utils.tuples import ReportTotals
-from covreports.helpers.ratio import ratio
+from covreports.helpers.numeric import ratio
 from itertools import izip, imap
 
 
