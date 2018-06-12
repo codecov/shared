@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.numeric import MaxInt
+from covreports.helpers.numeric import maxint
 
 
 @pytest.mark.parametrize('string, number', [
@@ -7,4 +7,4 @@ from covreports.helpers.numeric import MaxInt
     ('1231412412', 99999),
 ])
 def test_max_int(string, number):
-    assert MaxInt(string).get_value() == number
+    assert maxint(string) == number
