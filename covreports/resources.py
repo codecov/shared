@@ -8,14 +8,13 @@ from covreports.helpers.flag import Flag
 from covreports.helpers.numeric import ratio
 from covreports.helpers.zfill import zfill
 from covreports.utils.ReportEncoder import ReportEncoder
-from covreports.utils.agg_totals import agg_totals
+from covreports.utils.totals import agg_totals, sum_totals
 from covreports.utils.flare import report_to_flare
 from covreports.utils.make_network_file import make_network_file
 from covreports.utils.match import match, match_any
 from covreports.utils.merge import *
 from covreports.utils.migrate import migrate_totals
 from covreports.utils.sessions import Session
-from covreports.utils.sum_totals import sum_totals
 from covreports.utils.tuples import *
 
 END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'

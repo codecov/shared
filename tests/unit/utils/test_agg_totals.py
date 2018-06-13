@@ -1,6 +1,6 @@
 import pytest
 from covreports.utils.tuples import ReportTotals
-from covreports.utils.agg_totals import agg_totals
+from covreports.utils.totals import agg_totals
 
 
 @pytest.mark.unit
