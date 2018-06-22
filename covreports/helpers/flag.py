@@ -1,4 +1,4 @@
-from covreports.helpers.yaml import Yaml
+from covreports.helpers.yaml import walk
 
 
 class Flag(object):
@@ -12,7 +12,7 @@ class Flag(object):
     def report(self):
         """returns the report filtered by this flag
         """
-        paths = Yaml.walk(self._report.yaml, ('flags', self.name, 'paths'))
+        paths = walk(self._report.yaml, ('flags', self.name, 'paths'))
         return self._report.filter(paths=paths, flags=[self.name])
 
     @property

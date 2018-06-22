@@ -3,7 +3,7 @@ from itertools import chain
 from itertools import izip_longest
 from json import loads, dumps
 
-from covreports.helpers.yaml import Yaml
+from covreports.helpers.yaml import walk
 from covreports.helpers.flag import Flag
 from covreports.helpers.numeric import ratio
 from covreports.helpers.zfill import zfill
@@ -891,7 +891,7 @@ class Report(object):
         """
         if diff and diff.get('files'):
             for path, data in diff['files'].iteritems():
-                future_state = Yaml.walk(future_diff, ('files', path, 'type'))
+                future_state = walk(future_diff, ('files', path, 'type'))
                 if (
                         data['type'] == 'deleted' and  # deleted
                         path in self                   # and tracked

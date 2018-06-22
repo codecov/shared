@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.yaml import Yaml
+from covreports.helpers.yaml import walk
 
 
 @pytest.mark.parametrize('_dict, keys, _else, res', [
@@ -9,4 +9,4 @@ from covreports.helpers.yaml import Yaml
     ({'a': {'_': 'c'}}, ('a', 'b'), None,  None),
 ])
 def test_yaml_walk(_dict, keys, _else, res):
-    assert Yaml.walk(_dict, keys, _else) == res
+    assert walk(_dict, keys, _else) == res
