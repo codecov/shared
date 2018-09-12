@@ -1,5 +1,6 @@
 from collections import defaultdict
 from itertools import groupby, starmap
+import types as ObjTypes
 from covreports.utils.tuples import ReportLine
 from covreports.utils.tuples import LineSession
 
@@ -19,9 +20,9 @@ def merge_branch(b1, b2):
         return b1
     elif b1 == -1 or b2 == -1:
         return -1
-    elif type(b1) in (int, int) and b1 > 0:
+    elif type(b1) in (int, long) and b1 > 0:
         return b1
-    elif type(b2) in (int, int) and b2 > 0:
+    elif type(b2) in (int, long) and b2 > 0:
         return b2
     elif b1 in (0, None, True):
         return b2
@@ -52,16 +53,16 @@ def merge_partial_line(p1, p2):
         return np
 
     fl = defaultdict(list)
-    [[fl[x].append(_c) for x in range(_s or 0, _e + 1)] for _s, _e, _c in np if _e is not None]
-    ks = list(fl.keys())
+    [[fl[x].append(_c) for x in xrange(_s or 0, _e + 1)] for _s, _e, _c in np if _e is not None]
+    ks = fl.keys()
     mx = max(ks)+1 if ks else 0
     # appends coverage on each column when [X, None, C]
-    [[fl[x].append(_c) for x in range(_s or 0, mx)] for _s, _e, _c in np if _e is None]
-    ks = list(fl.keys())
+    [[fl[x].append(_c) for x in xrange(_s or 0, mx)] for _s, _e, _c in np if _e is None]
+    ks = fl.keys()
     # fl = {1: [1], 2: [1], 4: [0], 3: [1], 5: [0], 7: [0], 8: [0]}
     pp = []
     append = pp.append
-    for cov, group in groupby(sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]):
+    for cov, group in groupby(sorted([(cl, max(cv)) for cl, cv in fl.items()]), lambda c: c[1]):
         group = list(group)
         append(_ifg(group[0][0], group[-1][0], cov))
 
@@ -80,8 +81,8 @@ def merge_coverage(l1, l2, branches_missing=True):
         # ignored line
         return -1
 
-    l1t = cast_ints_float(l1)
-    l2t = cast_ints_float(l2)
+    l1t = _types(type(l1))
+    l2t = _types(type(l2))
 
     if l1t is float and l2t is float:
         return l1 if l1 >= l2 else l2
@@ -140,7 +141,7 @@ def merge_missed_branches(sessions):
 
         else:
             # missing branches, remove "None"s
-            mb = [_f for _f in mb if _f]
+            mb = filter(None, mb)
             # # no branch data provided
             # if not mb:
             #     return []
@@ -151,7 +152,7 @@ def merge_missed_branches(sessions):
 
             else:
                 # combine the branches
-                mb = list(map(set, mb))
+                mb = map(set, mb)
                 m1 = mb.pop(0)
                 for m in mb:
                     m1 = m1 & m
@@ -229,7 +230,7 @@ def _merge_sessions(s1, s2):
                                        LineSession(*s2.pop(s)))
 
         # add remaining new sessions
-        s1 = list(s1.values()) + list(s2.values())
+        s1 = s1.values() + s2.values()
 
     else:
         s1.extend(s2)
@@ -244,12 +245,17 @@ def _ifg(s, e, c):
     """
     return [s, e if e > s else s+1, c]
 
-def cast_ints_float(value):
-    """
-    When doing a merge we'd like to convert all ints to floats. this method takes in a value and
-    converts it to flaot if type(value) is int
-    """
-    return value if type(value) is not int else float(value)
+
+_types = {
+    ObjTypes.StringType: ObjTypes.StringType,
+    ObjTypes.UnicodeType: ObjTypes.StringType,
+    ObjTypes.LongType: ObjTypes.FloatType,
+    ObjTypes.IntType: ObjTypes.FloatType,
+    ObjTypes.FloatType: ObjTypes.FloatType,
+    ObjTypes.ListType: ObjTypes.ListType,
+    ObjTypes.BooleanType: ObjTypes.BooleanType
+}.get
+
 
 def line_type(line):
     """
@@ -260,7 +266,7 @@ def line_type(line):
     None = ignore (because it has messages or something)
     """
     return 2 if line is True else \
-        branch_type(line) if type(line) is (str,) else \
+        branch_type(line) if type(line) in (str, unicode) else \
             -1 if line == -1 else \
                 None if line is False else \
                     0 if line else \

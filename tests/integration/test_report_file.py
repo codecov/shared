@@ -30,7 +30,7 @@ def test_get_item(r, get_val, res):
 
 @pytest.mark.integration
 @pytest.mark.parametrize('get_val, error_message', [
-    ([], "expecting type int got <type 'list'>"),
+    ([], "expecting type int got <class 'list'>"),
     (-1, 'Line number must be greater then 0. Got -1'),
     (1, 'Line #1 not found in report'),
 ])
@@ -38,7 +38,7 @@ def test_get_item_exception(get_val, error_message):
     r = ReportFile('folder/file.py', [0, 1, 1, 1], None, None, None, None)
     with pytest.raises(Exception) as e_info:
         r[get_val]
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 @pytest.mark.integration
@@ -54,15 +54,15 @@ def test_set_item(r, get_val):
 
 @pytest.mark.integration
 @pytest.mark.parametrize('index, set_val, error_message', [
-    ('str', 1, "expecting type int got <type 'str'>"),
-    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    ('str', 1, "expecting type int got <class 'str'>"),
+    (1, 'str', "expecting type ReportLine got <class 'str'>"),
     (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
 ])
 def test_set_item_exception(index, set_val, error_message):
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
         r[index] = set_val
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 @pytest.mark.integration
@@ -108,7 +108,7 @@ def test_contains_exception():
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
         'str' in r
-    assert e_info.value.message == "expecting type int got <type 'str'>"
+    assert str(e_info.value) == "expecting type int got <class 'str'>"
 
 
 @pytest.mark.integration
@@ -131,14 +131,14 @@ def test_report_file_get_filter_none():
 
 @pytest.mark.integration
 @pytest.mark.parametrize('get_val, error_message', [
-    ('str', "expecting type int got <type 'str'>"),
+    ('str', "expecting type int got <class 'str'>"),
     (-1, 'Line number must be greater then 0. Got -1'),
 ])
 def test_report_file_get_exception(get_val, error_message):
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
         r.get(get_val)
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 # TODO branch where this calls merge_line
@@ -154,15 +154,15 @@ def test_append(r, boolean, lines):
 
 @pytest.mark.integration
 @pytest.mark.parametrize('key, val, error_message', [
-    ('str', ReportLine(), "expecting type int got <type 'str'>"),
-    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    ('str', ReportLine(), "expecting type int got <class 'str'>"),
+    (1, 'str', "expecting type ReportLine got <class 'str'>"),
     (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
 ])
 def test_report_file_append_exception(key, val, error_message):
     r = ReportFile('folder/file.py')
     with pytest.raises(Exception) as e_info:
         r.append(key, val)
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 # TODO branch where merge_line is called
@@ -183,7 +183,7 @@ def test_merge_exception():
     r = ReportFile(name='name.py')
     with pytest.raises(Exception) as e_info:
         r.merge('str')
-    assert e_info.value.message == "expecting type ReportFile got <type 'str'>"
+    assert str(e_info.value) == "expecting type ReportFile got <class 'str'>"
 
 
 @pytest.mark.integration

@@ -88,7 +88,7 @@ def test_append_error(patch):
     r = Report()
     with pytest.raises(Exception) as e_info:
         r.append('str')
-    assert str(e_info.value) == "expecting ReportFile got <class 'str'>"
+    assert e_info.value.message == "expecting ReportFile got <type 'str'>"
 
 
 @pytest.mark.unit
@@ -160,7 +160,7 @@ def test_get_item_exception(patch):
     })
     with pytest.raises(Exception) as e_info:
         r['name.py']
-    assert str(e_info.value) == 'File at path name.py not found in report'
+    assert e_info.value.message == 'File at path name.py not found in report'
 
 
 @pytest.mark.unit
@@ -221,7 +221,7 @@ def test_flags(patch):
     })
     type(r)._chunks = PropertyMock(return_value=None)
     type(r).sessions = {1: Session(flags={'a': 1, 1: 1, 'test': 1})}
-    assert list(r.flags.keys()) == ['a', 1, 'test']
+    assert r.flags.keys() == ['a', 1, 'test']
 
 
 @pytest.mark.unit
@@ -504,7 +504,7 @@ def test_filter_exception(patch):
     Report._filter_cache = (None, None)
     with pytest.raises(Exception) as e_info:
         Report().filter(paths='str')
-    assert str(e_info.value) == "expecting list for argument paths got <class 'str'>"
+    assert e_info.value.message == "expecting list for argument paths got <type 'str'>"
 
 
 @pytest.mark.unit

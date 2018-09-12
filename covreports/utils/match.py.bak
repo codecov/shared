@@ -5,8 +5,8 @@ def match(patterns, string):
     if patterns is None or string in patterns:
         return True
 
-    patterns = set([_f for _f in patterns if _f])
-    negatives = [a for a in patterns if a.startswith(('^!', '!'))]
+    patterns = set(filter(None, patterns))
+    negatives = filter(lambda a: a.startswith(('^!', '!')), patterns)
     positives = patterns - set(negatives)
 
     # must not match

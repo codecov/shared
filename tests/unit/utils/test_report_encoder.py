@@ -30,4 +30,4 @@ def test_report_encoder(obj, res):
 def test_exception_report_encoder():
     with pytest.raises(Exception) as e_info:
         ReportEncoder().default([1, 2])
-    assert e_info.value.message == '[1, 2] is not JSON serializable'
+    assert str(e_info.value) == '[1, 2] is not JSON serializable'
