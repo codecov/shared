@@ -19,9 +19,9 @@ def merge_branch(b1, b2):
         return b1
     elif b1 == -1 or b2 == -1:
         return -1
-    elif type(b1) in (int, int) and b1 > 0:
+    elif type(b1) is int and b1 > 0:
         return b1
-    elif type(b2) in (int, int) and b2 > 0:
+    elif type(b2) is int and b2 > 0:
         return b2
     elif b1 in (0, None, True):
         return b2
@@ -103,7 +103,7 @@ def merge_coverage(l1, l2, branches_missing=True):
             l1 = l1.split('/')[-1]
             return '%s/%s' % (l1, l1)
 
-        elif type(branches_missing) is list:
+        elif isinstance(branches_missing, list):
             # we know how many are missing
             target = int(l1.split('/')[-1])
             bf = (target - len(branches_missing))
@@ -262,7 +262,7 @@ def line_type(line):
     None = ignore (because it has messages or something)
     """
     return 2 if line is True else \
-        branch_type(line) if type(line) is (str,) else \
+        branch_type(line) if type(line) is str else \
             -1 if line == -1 else \
                 None if line is False else \
                     0 if line else \
