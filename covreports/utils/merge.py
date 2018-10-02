@@ -89,7 +89,7 @@ def merge_coverage(l1, l2, branches_missing=True):
         return l1 if l1 >= l2 else l2
 
     elif isinstance(l1t, str) or isinstance(l2t, str):
-        if l1t is float:
+        if isinstance(l1t, float):
             # using or here because if l1 is 0 return l2
             # this will trigger 100% if l1 is > 0
             branches_missing = [] if l1 else False
