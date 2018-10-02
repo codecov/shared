@@ -61,6 +61,8 @@ def merge_partial_line(p1, p2):
     # fl = {1: [1], 2: [1], 4: [0], 3: [1], 5: [0], 7: [0], 8: [0]}
     pp = []
     append = pp.append
+    print("####" * 20)
+    print(str(list(fl.items())))
     for cov, group in groupby(sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]):
         group = list(group)
         append(_ifg(group[0][0], group[-1][0], cov))
@@ -82,18 +84,22 @@ def merge_coverage(l1, l2, branches_missing=True):
 
     l1t = cast_ints_float(l1)
     l2t = cast_ints_float(l2)
+    print("111")
+    print(l1t)
+    print("222")
+    print(l2t)
 
-    if l1t is float and l2t is float:
+    if isinstance(l1t, float) and isinstance(l2t, float):
         return l1 if l1 >= l2 else l2
 
-    elif l1t is str or l2t is str:
+    elif isinstance(l1t, str) or isinstance(l2t, str):
         if l1t is float:
             # using or here because if l1 is 0 return l2
             # this will trigger 100% if l1 is > 0
             branches_missing = [] if l1 else False
             l1 = l2
 
-        elif l2t is float:
+        elif isinstance(l2t, float):
             branches_missing = [] if l2 else False
 
         if branches_missing == []:
@@ -109,14 +115,16 @@ def merge_coverage(l1, l2, branches_missing=True):
 
         return merge_branch(l1, l2)
 
-    elif l1t is list and l2t is list:
+    elif isinstance(l1t, list) and isinstance(l2t, list):
         return merge_partial_line(l1, l2)
 
-    elif l1t is bool or l2t is bool:
-        return (l2 or l1) if l1t is bool else (l1 or l2)
+    elif isinstance(l1t, bool) or isinstance(l2t, bool):
+        return (l2 or l1) if isinstance(l1t, bool) else (l1 or l2)
+    else:
+        print ("here")
 
-    return merge_coverage(partials_to_line(l1) if l1t is list else l1,
-                          partials_to_line(l2) if l2t is list else l2)
+    return merge_coverage(partials_to_line(l1) if isinstance(l1t, list) else l1,
+                          partials_to_line(l2) if isinstance(l2t, list) else l2)
 
 
 def merge_missed_branches(sessions):
