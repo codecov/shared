@@ -84,10 +84,6 @@ def merge_coverage(l1, l2, branches_missing=True):
 
     l1t = cast_ints_float(l1)
     l2t = cast_ints_float(l2)
-    print("111")
-    print(l1t)
-    print("222")
-    print(l2t)
 
     if isinstance(l1t, float) and isinstance(l2t, float):
         return l1 if l1 >= l2 else l2
@@ -120,8 +116,6 @@ def merge_coverage(l1, l2, branches_missing=True):
 
     elif isinstance(l1t, bool) or isinstance(l2t, bool):
         return (l2 or l1) if isinstance(l1t, bool) else (l1 or l2)
-    else:
-        print ("here")
 
     return merge_coverage(partials_to_line(l1) if isinstance(l1t, list) else l1,
                           partials_to_line(l2) if isinstance(l2t, list) else l2)
