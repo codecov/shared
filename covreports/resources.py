@@ -334,8 +334,8 @@ class ReportFile(object):
                 return c
 
         complexity = tuple(map(sum,
-                               list(zip(*list(map(sum_of_complexity,
-                                        self.lines)))))) or (0, 0)
+                               zip(*map(sum_of_complexity,
+                                        self.lines)))) or (0, 0)
 
         return ReportTotals(files=0,
                             lines=lines,
@@ -746,7 +746,7 @@ class Report(object):
     def to_database(self):
         """returns (totals, report) to be stored in database
         """
-        totals = dict(list(zip(TOTALS_MAP, self.totals)))
+        totals = dict(zip(TOTALS_MAP, self.totals)) 
         totals['diff'] = self.diff_totals
         return (totals,
                 dumps({'files': self._files,
