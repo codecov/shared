@@ -2,6 +2,7 @@ from copy import copy
 from itertools import chain
 from itertools import zip_longest
 from json import loads, dumps
+from collections import OrderedDict
 
 from covreports.helpers.yaml import walk
 from covreports.helpers.flag import Flag
@@ -471,11 +472,11 @@ class Report(object):
     def flags(self):
         """returns dict(:name=<Flag>)
         """
-        return {flag: Flag(self, flag)
+        return OrderedDict((flag, Flag(self, flag))
                 for flag
                 in set(chain(*((session.flags or [])
                                for sid, session
-                               in self.sessions.items())))}
+                               in self.sessions.items()))))
 
     def append(self, _file, joined=True):
         """adds or merged a file into the report
@@ -741,7 +742,8 @@ class Report(object):
         return self.is_empty() is False
 
     def to_archive(self):
-        return END_OF_CHUNK.join(map(_encode_chunk, self._chunks)).encode("utf-8")
+        # TODO: confirm removing encoding here is fine
+        return END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
 
     def to_database(self):
         """returns (totals, report) to be stored in database
@@ -1026,7 +1028,7 @@ def _ignore_to_func(ignore):
     eof = ignore.get('eof')
     lines = ignore.get('lines') or []
     if eof:
-        return lambda l: l > eof or l in lines
+        return lambda l: str(l) > eof or l in lines
     else:
         return lambda l: l in lines
 
