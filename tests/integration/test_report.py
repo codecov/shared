@@ -202,7 +202,7 @@ def test_contains():
         'file.py': [0, ReportTotals(1)],
     }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>'), Report(files={
         'other-file.py': [1, ReportTotals(2)]
-    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['other-file.py', 'file.py']),
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['file.py', 'other-file.py']),
 ])
 def test_merge(r, new_report, manifest):
     assert r.manifest == ['file.py']

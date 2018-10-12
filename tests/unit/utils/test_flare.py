@@ -15,7 +15,7 @@ def test_report_to_flare():
         ('b.py', [None, 100, 80, None, None, '80.00000'])
     ]
 
-    result = [
+    expected_result = [
         {
             "name": "",
             "coverage": 48.375,
@@ -109,4 +109,25 @@ def test_report_to_flare():
             ]
         }
     ]
-    assert report_to_flare(files, [0, 100]) == result
+
+    def _compare_nested_children_node(result, excpected):
+        """
+        helper method to compare nested dicts, if an item of a dict is a list, the list is sorted and then compared
+        agaisnt the expected result
+        """
+        if type(result) == list:
+            sorted_list = sorted(result, key=lambda k: k['name'])
+            sorted_expected = sorted(excpected, key=lambda k: k['name'])
+            for i in range(len(sorted_list)):
+                _compare_nested_children_node( sorted_list[i],sorted_expected[i])
+        else:
+            for key in result.keys():
+                if key == "children":
+                    _compare_nested_children_node(result["children"], excpected["children"])
+                else:
+                    assert result[key] == excpected[key]
+
+    report_results =  report_to_flare(files, [0, 100])
+    assert len(expected_result) == len(report_results)
+    for i in range(len(expected_result)):
+        _compare_nested_children_node(expected_result, report_results)

@@ -139,6 +139,8 @@ class ReportFile(object):
         """
         if ln == 'totals':
             return self.totals
+        if type(ln) is slice:
+            return self._getslice(ln.start, ln.stop)
         if not type(ln) is int:
             raise TypeError('expecting type int got %s' % type(ln))
         elif ln < 1:
@@ -178,7 +180,7 @@ class ReportFile(object):
         """
         return len(self._lines) + 1
 
-    def __getslice__(self, start, stop):
+    def _getslice(self, start, stop):
         """Retrns a stream of lines between two indexes
 
         slice = report[5:25]
@@ -191,7 +193,7 @@ class ReportFile(object):
         assert slice is gernerator.
         list(slice) == [(1, Line), (2, Line)]
 
-
+        NOTE: not be confused with the builtin function __getslice__ that was deprecated in python 3.x
         """
         func = self._line_modifier
         for ln, line in enumerate(self._lines[start-1:stop-1], start=start):
@@ -472,11 +474,11 @@ class Report(object):
     def flags(self):
         """returns dict(:name=<Flag>)
         """
-        return OrderedDict((flag, Flag(self, flag))
-                for flag
-                in set(chain(*((session.flags or [])
-                               for sid, session
-                               in self.sessions.items()))))
+        flags_dict = {}
+        for sid, session in self.sessions.items():
+            for flag in session.flags:
+                flags_dict[flag] = Flag(self, flag)
+        return flags_dict
 
     def append(self, _file, joined=True):
         """adds or merged a file into the report
@@ -493,7 +495,6 @@ class Report(object):
             return False
 
         assert _file.name, 'file must have a name'
-
         session_n = len(self.sessions) - 1
 
         # check if file already exists
@@ -674,10 +675,10 @@ class Report(object):
         """returns a list of files in the report
         """
         if self._path_filter:
-            return list(filter(self._path_filter, list(self._files.keys())))
+            return list(filter(self._path_filter, list(self._files)))
 
         else:
-            return list(self._files.keys())
+            return list(self._files)
 
     def add_session(self, session):
         sessionid = len(self.sessions)

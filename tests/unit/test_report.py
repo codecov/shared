@@ -262,7 +262,7 @@ def test_contains(patch):
          'file.py': [0, ReportTotals(1)],
      }, 'null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>'.split(END_OF_CHUNK), Report(files={
         'other-file.py': [1, ReportTotals(2)]
-    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['other-file.py', 'file.py']),
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['file.py', 'other-file.py']),
 ])
 def test_merge(files, chunks, new_report, manifest, patch):
     patch.init(Report)
