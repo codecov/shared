@@ -61,8 +61,6 @@ def merge_partial_line(p1, p2):
     # fl = {1: [1], 2: [1], 4: [0], 3: [1], 5: [0], 7: [0], 8: [0]}
     pp = []
     append = pp.append
-    print("####" * 20)
-    print(str(list(fl.items())))
     for cov, group in groupby(sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]):
         group = list(group)
         append(_ifg(group[0][0], group[-1][0], cov))
