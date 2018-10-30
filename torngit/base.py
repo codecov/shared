@@ -4,7 +4,6 @@ from tornado.ioloop import IOLoop
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
-
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
@@ -13,16 +12,19 @@ def sync(func):
         if kwargs.pop('_in_loop', False):
             return func(*args, **kwargs)
         else:
+
             @gen.coroutine
             def inner():
                 res = yield func(*args, **kwargs)
-                raise gen.Return(res)
+                return res
+
             return IOLoop.current().run_sync(inner)
+
     return wrapped
 
 
 def unicode_escape(string, escape=True):
-    if isinstance(string, basestring):
+    if isinstance(string, str):
         if escape:
             return url_escape(string, plus=False).replace('%2F', '/')
         elif isinstance(string, unicode):
@@ -32,37 +34,18 @@ def unicode_escape(string, escape=True):
         return str(string)
 
 
-methods = (
-    'get_repository',
-    'get_branches',
-    'get_authenticated_user',
-    'get_is_admin',
-    'get_authenticated',
-    'list_repos_using_installation',
-    'list_repos',
-    'list_teams',
-    '_get_head_of',
-    'get_pull_request_commits',
-    'post_webhook',
-    'edit_webhook',
-    'delete_webhook',
-    'post_comment',
-    'edit_comment',
-    'delete_comment',
-    'set_commit_status',
-    'get_commit_statuses',
-    'get_commit_status',
-    'get_source',
-    'get_commit_diff',
-    'get_compare',
-    'get_commit',
-    'get_pull_request',
-    'get_pull_requests',
-    'find_pull_request'
-)
+methods = ('get_repository', 'get_branches', 'get_authenticated_user',
+           'get_is_admin', 'get_authenticated',
+           'list_repos_using_installation', 'list_repos', 'list_teams',
+           '_get_head_of', 'get_pull_request_commits', 'post_webhook',
+           'edit_webhook', 'delete_webhook', 'post_comment', 'edit_comment',
+           'delete_comment', 'set_commit_status', 'get_commit_statuses',
+           'get_commit_status', 'get_source', 'get_commit_diff', 'get_compare',
+           'get_commit', 'get_pull_request', 'get_pull_requests',
+           'find_pull_request')
 
 
-class BaseHandler:
+class BaseHandler(object):
     _log_handler = None
     _repo_url = None
     _client = None
@@ -93,10 +76,7 @@ class BaseHandler:
         self._timeouts = timeouts or [10, 30]
         self._token = token
         self._oauth = oauth_consumer_token
-        self.data = {
-            'owner': {},
-            'repo': {}
-        }
+        self.data = {'owner': {}, 'repo': {}}
         self.verify_ssl = verify_ssl
 
         self._log_handler = log_handler
@@ -114,7 +94,9 @@ class BaseHandler:
             self._log_handler(*args, **kwargs)
 
     def __repr__(self):
-        return '<%s slug=%s ownerid=%s repoid=%s>' % (self.service, self.slug, self.data['owner'].get('ownerid'), self.data['repo'].get('repoid'))
+        return '<%s slug=%s ownerid=%s repoid=%s>' % (
+            self.service, self.slug, self.data['owner'].get('ownerid'),
+            self.data['repo'].get('repoid'))
 
     @property
     def fetch(self):
@@ -125,7 +107,10 @@ class BaseHandler:
     def _validate_language(self, language):
         if language:
             language = language.lower()
-            if language in ('javascript', 'shell', 'python', 'ruby', 'perl', 'dart', 'java', 'c', 'clojure', 'd', 'fortran', 'go', 'groovy', 'kotlin', 'php', 'r', 'scala', 'swift', 'objective-c', 'xtend'):
+            if language in ('javascript', 'shell', 'python', 'ruby', 'perl',
+                            'dart', 'java', 'c', 'clojure', 'd', 'fortran',
+                            'go', 'groovy', 'kotlin', 'php', 'r', 'scala',
+                            'swift', 'objective-c', 'xtend'):
                 return language
 
     def renamed_repository(self, repo):
@@ -156,8 +141,10 @@ class BaseHandler:
     @property
     def slug(self):
         if self.data['owner'] and self.data['repo']:
-            if self.data['owner'].get('username') and self.data['repo'].get('name'):
-                return ('%s/%s' % (self.data['owner']['username'], self.data['repo']['name']))
+            if self.data['owner'].get('username') and self.data['repo'].get(
+                    'name'):
+                return ('%s/%s' % (self.data['owner']['username'],
+                                   self.data['repo']['name']))
 
     def diff_to_json(self, diff):
         """
@@ -172,7 +159,7 @@ class BaseHandler:
 
             try:
                 before, after = _diff.pop(0).split(' b/', 1)
-            except:
+            except IndexError:
                 before, after = None, None
                 # find the --- a
                 for source in _diff:
@@ -187,9 +174,11 @@ class BaseHandler:
 
             # Is the file empty, skipped, etc
             # -------------------------------
-            _file = dict(type='new' if before == '/dev/null' else 'modified',
-                         before=None if before == after or before == '/dev/null' else before,
-                         segments=[])
+            _file = dict(
+                type='new' if before == '/dev/null' else 'modified',
+                before=None
+                if before == after or before == '/dev/null' else before,
+                segments=[])
 
             results[after] = _file
 
@@ -252,7 +241,9 @@ class BaseHandler:
             add = 0
             if 'segments' in data:
                 for segment in data['segments']:
-                    rm += sum([1 for line in segment['lines'] if line[0] == '-'])
-                    add += sum([1 for line in segment['lines'] if line[0] == '+'])
+                    rm += sum(
+                        [1 for line in segment['lines'] if line[0] == '-'])
+                    add += sum(
+                        [1 for line in segment['lines'] if line[0] == '+'])
             data['stats'] = dict(added=add, removed=rm)
         return diff
