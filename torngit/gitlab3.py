@@ -2,9 +2,9 @@ import os
 import socket
 from time import time
 from sys import stdout
-from tornado import gen
 from base64 import b64decode
 from json import loads, dumps
+
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError

@@ -2,8 +2,8 @@ import os
 import socket
 from time import time
 from sys import stdout
-from tornado import gen
 from base64 import b64decode
+
 from tornado.auth import OAuth2Mixin
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
@@ -82,7 +82,7 @@ class Github(BaseHandler, OAuth2Mixin):
 
         start = time()
         try:
-            res = yield self.fetch(url, **kwargs)
+            res = await self.fetch(url, **kwargs)
 
         except ClientError as e:
             if e.response is None:
@@ -96,7 +96,7 @@ class Github(BaseHandler, OAuth2Mixin):
                     # repo moved
                     self.data['repo'][
                         'service_id'] = e.response.effective_url.split('/')[4]
-                    repo = yield self.get_repository(_in_loop=True)
+                    repo = await self.get_repository(_in_loop=True)
                     self.data['owner']['username'] = repo['owner']['username']
                     self.data['repo']['name'] = repo['repo']['name']
                     self.renamed_repository(repo)

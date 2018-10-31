@@ -1,17 +1,17 @@
-import os
-from time import time
-from sys import stdout
-from json import loads
 from json import dumps
+from json import loads
+from sys import stdout
+from time import time
+import os
 import urllib as urllib_parse
 
-from tornado.auth import OAuthMixin
-from tornado.httputil import url_concat
 from requests_oauthlib import OAuth1Session
+from tornado.auth import OAuthMixin
 from tornado.httpclient import HTTPError as ClientError
+from tornado.httputil import url_concat
 
-from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.status import Status
 
 
 class Bitbucket(BaseHandler, OAuthMixin):

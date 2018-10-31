@@ -1,14 +1,18 @@
 import random
+
+import pytest
 import requests
 from ddt import data, ddt
 from htmldom import htmldom
 
-from tests import TornadoTestClass
+from tornado.testing import AsyncTestCase, gen_test
 from torngit.bitbucket import Bitbucket
 
 
 @ddt
-class Test(TornadoTestClass):
+class GithubTest(AsyncTestCase):
+
+    @pytest.mark.depends_app
     @data(
         ('codecov/private', None, 404, False),  # private guest
         ('codecov/private', 'testfxv0vfkohpqj5lruzp81y1f4868oo4a3', 200,
@@ -24,7 +28,8 @@ class Test(TornadoTestClass):
         ('codecov-example-team/blank', 'testfxv0vfkohpqj5lruzp81y1f4868oo4a3',
          404, False),  # team private auth
     )
-    def test_worthy(self, (repo, token, code, authorized)):
+    def test_worthy(self, repo_token_code_authorized):
+        repo, token, code, authorized = repo_token_code_authorized
         if token:
             res = self.fetch('/bitbucket/%s?access_token=%s' % (repo, token))
         else:
@@ -33,6 +38,7 @@ class Test(TornadoTestClass):
         assert ('<meta name="can_edit" value="%s">' %
                 str(authorized).lower()) in res.body
 
+    @pytest.mark.depends_app
     @data(('codecov-test',
            [{
                'repo': 'example-private',
@@ -51,7 +57,8 @@ class Test(TornadoTestClass):
                'repo': 'blank',
                'service_id': '21cd46b1-a4aa-496d-8898-2306ca2f60b1'
            }], '5cccb375-a2d4-4a9c-89ac-0459bea2cb53'))
-    def test_refresh(self, (user, repos, token)):
+    def test_refresh(self, user_repos_token):
+        user, repos, token = user_repos_token
         self.db.query("TRUNCATE repos cascade;")
         res = self.fetch('/bitbucket/' + user + '?refresh=t&access_token=' +
                          token)
@@ -59,6 +66,7 @@ class Test(TornadoTestClass):
         rows = self.db.query("SELECT service_id, repo from repos;")
         self.assertItemsEqual(rows, repos)
 
+    @pytest.mark.depends_app
     def test_bitbucket_file_404(self):
         self.skipTest("not supported yet")
         self.db.query(
@@ -70,6 +78,7 @@ class Test(TornadoTestClass):
         assert result.headers.get('Location').endswith(
             '/bitbucket/codecov-test/example-public/README.md')
 
+    @pytest.mark.depends_app
     def test_bitbucket_repo_moved(self):
         self.db.query("""UPDATE repos set repo='blah' where repoid=7;""")
         result = self.fetch(
@@ -154,6 +163,7 @@ class Test(TornadoTestClass):
         commit = Bitbucket(None, 'codecov', 'ci-repo').get_commit('none')
         assert commit is None
 
-    def test_branches(self):
-        branches = sorted(Bitbucket(None, 'codecov', 'ci-repo').get_branches())
+    @gen_test
+    async def test_branches(self):
+        branches = sorted(await Bitbucket(None, 'codecov', 'ci-repo').get_branches())
         assert map(lambda a: a[0], branches) == ['master', 'pr']

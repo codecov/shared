@@ -5,14 +5,15 @@ from ddt import data, ddt
 from tornado import template
 from bs4 import BeautifulSoup as bs
 
-from tests import TornadoTestClass
-from app.helpers import get_start_of_line
-from app.services.github.github import GithubEngine
+from tests.base import BaseTestCase
+
+from torngit.base import get_start_of_line
+from torngit.github import Github
 
 
 @ddt
-class Test(TornadoTestClass):
-    repo = GithubEngine(None, 'codecov', 'ci-repo', commitid="abc123")
+class DiffTestCase(BaseTestCase):
+    repo = Github(None, 'codecov', 'ci-repo', commitid="abc123")
 
     @data(("@@ -1 +1 @@", ('1', '', '1', '')),
           ("@@ -130,12 +142,15 @@ module.exports = (grunt) ->",
@@ -20,7 +21,8 @@ class Test(TornadoTestClass):
                                          ('0', '0', '1', '31')),
           ("@@ -325,44 +388,153 @@ window.Github = (function() {",
            ('325', '44', '388', '153')))
-    def test_line_number(self, (diff, eq)):
+    def test_line_number(self, diff_eq):
+        diff, eq = diff_eq
         assert get_start_of_line(diff).groups() == eq
 
     @data(1, 2)

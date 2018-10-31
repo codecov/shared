@@ -22,7 +22,7 @@ class Status(object):
                 (status['time'], status['state'] != 'pending', status))
         # extract most recent sorted(time, !pending)
         contexts = [
-            sorted(context, key=lambda (t, s, d): (t, s))[-1][2]
+            sorted(context, key=lambda t: (t[0], t[1]))[-1][2]
             for context in contexts.values()
         ]
         self._statuses = contexts

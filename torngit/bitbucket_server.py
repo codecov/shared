@@ -1,11 +1,10 @@
 import os
 import base64
-import urllib
-import oauth2 as oauth
-from tornado import gen
 from json import loads, dumps
 from datetime import datetime
-from urlparse import parse_qsl
+from urllib.parse import parse_qsl
+
+import oauth2 as oauth
 from tornado.web import HTTPError
 from tlslite.utils import keyfactory
 from tornado.httputil import url_concat

@@ -1,26 +1,9 @@
 import re
-from tornado import gen
-from tornado.ioloop import IOLoop
+
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
-
-
-def sync(func):
-    def wrapped(*args, **kwargs):
-        if kwargs.pop('_in_loop', False):
-            return func(*args, **kwargs)
-        else:
-
-            @gen.coroutine
-            def inner():
-                res = yield func(*args, **kwargs)
-                return res
-
-            return IOLoop.current().run_sync(inner)
-
-    return wrapped
 
 
 def unicode_escape(string, escape=True):
@@ -68,7 +51,6 @@ class BaseHandler(object):
             oauth_consumer_token=None,
             timeouts=None,
             token=None,
-            async=True,
             verify_ssl=None,
             **kwargs):
         self = cls()
@@ -81,12 +63,6 @@ class BaseHandler(object):
 
         self._log_handler = log_handler
         self.data.update(kwargs)
-
-        if not async:
-            for method in methods:
-                if hasattr(self, method):
-                    setattr(self, method, sync(getattr(self, method)))
-
         return self
 
     def log(self, *args, **kwargs):
