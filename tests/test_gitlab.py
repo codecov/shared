@@ -1,223 +1,455 @@
-import subprocess
-from ddt import data, ddt
-
 import pytest
-from tornado.testing import AsyncTestCase, gen_test
 
 from torngit.gitlab import Gitlab
+from torngit.exceptions import ObjectNotFoundException
 
 
-@ddt
-class GitlabTestCase(AsyncTestCase):
-    def test_no_github(self):
-        res = subprocess.check_output(
-            'grep -R "github" app/services/gitlab/* || echo "ok"',
-            shell=True).strip()
-        assert str(res) == 'ok'
-
-    @pytest.mark.depends_app
-    def test_file_structure(self):
-        "files are all showing up, reporting accurate figures"
-        response = self.fetch('/gitlab/codecov/ci-repo')
-        assert response.code == 200
-        self.assertExists('table.table>tbody>tr')
-        assert response.dom.find('tbody>tr').first().find(
-            'td').last().text().strip() == "54.55%"
-
-    @pytest.mark.depends_app
-    def test_file_ref(self):
-        assert self.fetch(
-            '/gitlab/codecov/ci-repo/README.md?ref=master').code == 200
-
-    @pytest.mark.depends_app
-    def test_not_a_user(self):
-        response = self.fetch("/gitlab/not-a-real-user-with-repos?refresh=t")
-        assert response.code == 200
-
-    @pytest.mark.depends_app
-    def test_no_repo(self):
-        "404: repo does not exist"
-        assert self.fetch('/gitlab/codecov/not-real').code == 404
-
-    @pytest.mark.depends_app
-    def test_ref_commit(self):
-        "?ref=:commit"
-        assert self.fetch(
-            '/gitlab/codecov/ci-repo?ref=0028015f7fa260f5fd68f78c0deffc15183d955e'
-        ).code == 200
-
-    @pytest.mark.depends_app
-    def test_new_repo(self):
-        assert self.fetch('/gitlab/twbs/bootstrap').code == 404
-
-    @pytest.mark.depends_app
-    def test_get_open_prs(self):
-        assert Gitlab('187725', 'codecov',
-                            'ci-repo').get_open_prs() == [('#1', None)]
-
-    @pytest.mark.depends_app
-    def test_will_fetch_repo_logged_in(self):
-        self.db.query("DELETE from repos cascade;")
-        assert self.fetch(
-            '/gitlab/codecov/ci-repo?access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2'
-        ).code == 200
-        assert self.fetch(
-            '/gitlab/codecov/ci-private?access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2'
-        ).code == 200
-
-    @pytest.mark.depends_app
-    def test_refresh(self):
-        response = self.fetch(
-            "/gitlab/codecov?refresh=t&access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2"
+@pytest.fixture
+def valid_handler():
+    return Gitlab(
+        repo=dict(service_id='187725'),
+        owner=dict(username='stevepeak'),
+        token=dict(
+            key='testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w'
         )
-        assert response.code == 200
-        repos = self.db.query(
-            "SELECT branch, private, repo from repos where ownerid=10;")
-        self.assertItemsEqual(repos, [{
-            'branch': 'master',
-            'private': False,
-            'repo': 'ci-repo'
-        }, {
-            'branch': 'master',
-            'private': True,
-            'repo': 'ci-private'
-        }])
+    )
 
-    @pytest.mark.depends_app
-    def test_is_member(self):
-        ownerid = self.db.get(
-            """INSERT INTO owners (service_id, service, username, oauth_token, oauth_secret) VALUES ('109479', 'gitlab', 'stevepeak', null, null) returning ownerid;"""
-        ).ownerid
-        token = self.db.get(
-            "INSERT INTO sessions (ownerid, type) values (%s, 'login') returning sessionid;",
-            ownerid).sessionid
-        self.db.get(
-            """INSERT INTO repos (service_id, ownerid, private, repo, upload_token, image_token, features) VALUES ('187440', %s, false, 'ci-repo', '58bbb451-1832-43ad-9d6b-6813f1386de3', '9903897381', null);""",
-            ownerid)
-        response = self.fetch("/gitlab/stevepeak/ci-repo?access_token=" +
-                              token)
-        assert response.code == 200
-        token = self.db.get(
-            "SELECT upload_token from repos where repo='ci-repo' and ownerid=(select ownerid from owners where service='gitlab' and username='stevepeak' limit 1);"
-        ).upload_token
-        assert token in response.body
 
-    @pytest.mark.depends_app
-    def test_is_member_group(self):
-        res = self.fetch(
-            "/gitlab/codecov-group?refresh=t&access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2"
-        )
-        assert res.code == 200
-        res = self.fetch(
-            "/gitlab/codecov-group?access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2"
-        )
-        assert res.code == 200
-        assert '/gitlab/codecov-group/ci-repo' in res.body
+class TestGitlabTestCase(object):
 
-    @pytest.mark.depends_app
-    def test_is_not_member_public(self):
-        ownerid = self.db.get(
-            """INSERT INTO owners (service_id, service, username, organizations, oauth_token, oauth_secret) VALUES ('109479', 'gitlab', 'stevepeak', null, null, null) returning ownerid;"""
-        ).ownerid
-        token = self.db.get(
-            "INSERT INTO sessions (ownerid, type) values (%s, 'login') returning sessionid;",
-            ownerid).sessionid
-        self.db.query(
-            """INSERT INTO repos (service_id, ownerid, private, repo, upload_token, image_token, features) VALUES ('202581', %s, false, 'ci-repo-2', '58bbb451-1832-43ad-9d6b-6813f1386de3', '9903897381', null);""",
-            ownerid)
-        response = self.fetch("/gitlab/stevepeak/ci-repo-2?access_token=" +
-                              token)
-        assert response.code == 200
+    @pytest.mark.asyncio
+    async def test_post_comment(self, valid_handler, codecov_vcr):
+        expected_result = {
+            'id': 113977323,
+            'noteable_id': 59639,
+            'noteable_iid': 1,
+            'noteable_type': 'MergeRequest',
+            'resolvable': False,
+            'system': False,
+            'type': None,
+            'updated_at': '2018-11-02T05:25:09.363Z',
+            'attachment': None,
+            'author': {
+                'avatar_url': 'https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80&d=identicon',
+                'name': 'Codecov',
+                'state': 'active',
+                'id': 109640,
+                'username': 'codecov',
+                'web_url': 'https://gitlab.com/codecov'
+            },
+            'body': 'Hello world',
+            'created_at': '2018-11-02T05:25:09.363Z'
+        }
+        res = await valid_handler.post_comment("1", "Hello world")
+        assert res['author'] == expected_result['author']
+        assert res == expected_result
 
-    @pytest.mark.depends_app
-    def test_is_not_member_private(self):
-        ownerid = self.db.get(
-            """INSERT INTO owners (service_id, service, username, organizations, oauth_token, oauth_secret) VALUES ('109479', 'gitlab', 'stevepeak', null, null, null) returning ownerid;"""
-        ).ownerid
-        self.db.query(
-            """INSERT INTO repos (service_id, ownerid, private, repo, upload_token, image_token, features) VALUES ('202581', %s, true, 'ci-repo-2', '58bbb451-1832-43ad-9d6b-6813f1386de3', '9903897381', null);""",
-            ownerid)
-        response = self.fetch(
-            "/gitlab/stevepeak/ci-repo-2?access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2"
-        )
-        assert response.code == 404
+    @pytest.mark.asyncio
+    async def test_edit_comment(self, valid_handler, codecov_vcr):
+        res = await valid_handler.edit_comment("1", "113977323", "Hello world number 2")
+        assert res is not None
+        assert res['id'] == 113977323
 
-    @pytest.mark.depends_app
-    def test_private(self):
-        response = self.fetch(
-            "/gitlab/codecov-group/ci-private?access_token=testthtqqsfqxr2q1yyes8zzs4zndsu6nsb2"
-        )
-        assert response.code == 200
+    @pytest.mark.asyncio
+    async def test_edit_comment_not_found(self, valid_handler, codecov_vcr):
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.edit_comment("1", 113979999, "Hello world number 2")
 
-    @pytest.mark.depends_app
-    def test_file_not_exists(self):
-        assert self.fetch(
-            '/gitlab/codecov/ci-repo/other/file.md?ref=0028015f7fa260f5fd68f78c0deffc15183d955e'
-        ).code == 404
+    @pytest.mark.asyncio
+    async def test_delete_comment(self, valid_handler, codecov_vcr):
+        assert await valid_handler.delete_comment("1", "113977323") is True
 
-    @gen_test
-    async def test_find_pull_request(self):
-        handler = Gitlab(None, 'stevepeak', 'not-a-repo')
-        assert await handler.find_pull_request('a' * 40, 'no-branch') is None
+    @pytest.mark.asyncio
+    async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.delete_comment("1", 113977999)
 
-    @gen_test
-    async def test_post_comment(self):
-        handler = Gitlab(None, 'stevepeak', 'not-a-repo')
-        assert await handler.post_comment(1, "Hello world") is None
+    @pytest.mark.asyncio
+    async def test_find_pull_request_nothing_found(self, valid_handler, codecov_vcr):
+        assert await valid_handler.find_pull_request('a' * 40, 'no-branch') is None
 
-    @gen_test
-    async def test_edit_comment(self):
-        handler = Gitlab(None, 'stevepeak', 'not-a-repo')
-        assert await handler.edit_comment(1, 1, "Hello world") is None
+    @pytest.mark.asyncio
+    async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.get_pull_request("100")
 
-    @gen_test
-    async def test_get_pull_request_fail(self):
-        handler = Gitlab(None, 'stevepeak', 'not-a-repo')
-        assert await handler.get_pull_request("1") is None
+    get_pull_request_test_data = [
+        (
+            '1',
+            {
+                'base': {
+                    'branch': u'master',
+                    'head': {
+                        'branch': u'other-branch',
+                        'commitid': 'dd798926730aad14aadf72281204bdb85734fe67'
+                    },
+                    'number': '1',
+                    'id': '1',
+                    'state': 'open',
+                    'title': 'Other branch'
+                }
+            }
+        ),
+    ]
 
-    @gen_test
-    @data(('1', {
-        'base': {
-            'branch': u'master',
-            'commit': '0028015f7fa260f5fd68f78c0deffc15183d955e'
-        },
-        'head': {
-            'branch': u'other-branch',
-            'commit': 'dd798926730aad14aadf72281204bdb85734fe67'
-        },
-        'number': '1',
-        'id': 59639,
-        'open': True
-    }), ('100', None))
-    async def test_get_pull_request(self, a_b):
-        (a, b) = a_b
-        handler = Gitlab(
-            '187725', 'codecov', 'ci-repo', token=dict(
-                key='testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w'
-            )
-        )
-        assert await handler.get_pull_request(a) == b
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("a,b", get_pull_request_test_data)
+    async def test_get_pull_request(self, valid_handler, a, b, codecov_vcr):
+        res = await valid_handler.get_pull_request(a)
+        assert res == b
 
-    @gen_test
-    async def test_get_commit(self):
-        handler = Gitlab('187725', 'codecov', 'ci-repo')
-        commit = await handler.get_commit('0028015f7fa260f5fd68f78c0deffc15183d955e')
+    @pytest.mark.asyncio
+    async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
+        expected_result = ["dd798926730aad14aadf72281204bdb85734fe67"]
+        res = await valid_handler.get_pull_request_commits("1")
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_requests(self, valid_handler, codecov_vcr):
+        expected_result = [1]
+        res = await valid_handler.get_pull_requests()
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_commit(self, valid_handler, codecov_vcr):
+        commit = await valid_handler.get_commit('0028015f7fa260f5fd68f78c0deffc15183d955e')
         assert commit == {
-            'date': '2014-10-19T14:32:33.000+00:00',
-            'author_login': 'stevepeak',
-            'author_name': 'stevepeak',
-            'author_email': 'steve@stevepeak.net',
-            'author_id': '109479'
+            'author': {
+                'id': None,
+                'username': None,
+                'email': 'steve@stevepeak.net',
+                'name': 'stevepeak'
+            },
+            'message': 'added large file\n',
+            'parents': ['5716de23b27020419d1a40dd93b469c041a1eeef'],
+            'commitid': '0028015f7fa260f5fd68f78c0deffc15183d955e',
+            'timestamp': '2014-10-19T14:32:33.000Z'
         }
 
-    @gen_test
-    async def test_get_commit_not_found(self):
-        handler = Gitlab('187725', 'codecov', 'ci-repo')
-        commit = await handler.get_commit('none')
-        assert commit is None
+    @pytest.mark.asyncio
+    async def test_get_commit_not_found(self, valid_handler, codecov_vcr):
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.get_commit('none')
 
-    @gen_test
-    async def test_branches(self):
-        handler = Gitlab('187725', 'codecov', 'ci-repo')
-        branches = sorted(await handler.get_branches())
-        assert map(lambda a: a[0], branches) == ['master', 'other-branch']
+    @pytest.mark.asyncio
+    async def test_get_commit_diff_file_change(self, valid_handler, codecov_vcr):
+        expected_result = {
+            'files': {
+                'large.md': {
+                    'before': None,
+                    'segments': [{
+                        'header': ['0', '0', '1', '816'],
+                    }],
+                    'stats': {
+                        'added': 816,
+                        'removed': 0
+                    },
+                    'type': 'modified'
+                }
+            }
+        }
+        res = await valid_handler.get_commit_diff('0028015f7fa260f5fd68f78c0deffc15183d955e')
+        assert 'files' in res
+        assert 'large.md' in res['files']
+        assert 'segments' in res['files']['large.md']
+        assert len(res['files']['large.md']['segments']) == 1
+        assert 'lines' in res['files']['large.md']['segments'][0]
+        assert len(res['files']['large.md']['segments'][0].pop('lines')) == 816
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_commit_diff(self, valid_handler, codecov_vcr):
+        expected_result = {
+            'files': {
+                'README.md': {
+                    'before': None,
+                    'segments': [{
+                        'header': ['1', '5', '1', '15'],
+                        'lines': [
+                            '-### Example', '+### CI Testing', ' ',
+                            '-> This repo is used for CI '
+                            'Testing. Enjoy this gif as a '
+                            'reward!', '+> This repo is used for CI '
+                            'Testing', '+', '+', '+| [https://codecov.io/][1] '
+                            '| [@codecov][2] | '
+                            '[hello@codecov.io][3] |', '+| ------------------------ '
+                            '| ------------- | '
+                            '--------------------- |', '+', '+-----', '+', '+',
+                            '+[1]: https://codecov.io/', '+[2]: '
+                            'https://twitter.com/codecov', '+[3]: '
+                            'mailto:hello@codecov.io', ' ', '-![i can do '
+                            'that](http://gph.is/17cvPc4)'
+                        ]
+                    }],
+                    'stats': {
+                        'added': 13,
+                        'removed': 3
+                    },
+                    'type': 'modified'
+                }
+            }
+        }
+        res = await valid_handler.get_commit_diff('c739768fcac68144a3a6d82305b9c4106934d31a')
+        print(list(res.keys()))
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_commit_statuses(self, valid_handler, codecov_vcr):
+        res = await valid_handler.get_commit_statuses('c739768fcac68144a3a6d82305b9c4106934d31a')
+        assert res == 'success'
+
+    @pytest.mark.asyncio
+    async def test_set_commit_status(self, valid_handler, codecov_vcr):
+        target_url = 'https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67'
+        expected_result = {
+            'allow_failure': False,
+            'author': {
+                'avatar_url': 'https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80&d=identicon',
+                'id': 109640,
+                'name': 'Codecov',
+                'state': 'active',
+                'username': 'codecov',
+                'web_url': 'https://gitlab.com/codecov'
+            },
+            'coverage': None,
+            'description': 'aaaaaaaaaa',
+            'finished_at': '2018-11-05T20:11:18.137Z',
+            'id': 116703167,
+            'name': 'context',
+            'ref': 'master',
+            'sha': 'c739768fcac68144a3a6d82305b9c4106934d31a',
+            'started_at': None,
+            'status': 'success',
+            'target_url': target_url,
+            'created_at': '2018-11-05T20:11:18.104Z'
+        }
+        res = await valid_handler.set_commit_status(
+            'c739768fcac68144a3a6d82305b9c4106934d31a',
+            'success',
+            'context',
+            'aaaaaaaaaa',
+            target_url
+        )
+        assert res['author'] == expected_result['author']
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_branches(self, valid_handler, codecov_vcr):
+        branches = sorted(await valid_handler.get_branches())
+        print(branches)
+        assert list(map(lambda a: a[0], branches)) == ['master', 'other-branch']
+
+    @pytest.mark.asyncio
+    async def test_post_webhook(self, valid_handler, codecov_vcr):
+        url = 'http://requestbin.net/r/1ecyaj51'
+        name, events, secret = 'a', {'job_events': True}, 'd'
+        expected_result = {
+            'confidential_issues_events': False,
+            'confidential_note_events': None,
+            'created_at': '2018-11-06T04:51:57.164Z',
+            'enable_ssl_verification': True,
+            'id': 422507,
+            'issues_events': False,
+            'job_events': True,
+            'merge_requests_events': False,
+            'note_events': False,
+            'pipeline_events': False,
+            'project_id': 187725,
+            'push_events': True,
+            'push_events_branch_filter': None,
+            'repository_update_events': False,
+            'tag_push_events': False,
+            'url': 'http://requestbin.net/r/1ecyaj51',
+            'wiki_page_events': False,
+        }
+        res = await valid_handler.post_webhook(name, url, events, secret)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_edit_webhook(self, valid_handler, codecov_vcr):
+        url = 'http://requestbin.net/r/1ecyaj51'
+        events = {'tag_push_events': True, 'note_events': True}
+        new_name, secret = 'new_name', 'new_secret'
+        expected_result = {
+            'confidential_issues_events': False,
+            'confidential_note_events': None,
+            'created_at': '2018-11-06T04:51:57.164Z',
+            'enable_ssl_verification': True,
+            'id': 422507,
+            'issues_events': False,
+            'job_events': True,
+            'merge_requests_events': False,
+            'note_events': True,  # Notice this changed
+            'pipeline_events': False,
+            'project_id': 187725,
+            'push_events': True,
+            'push_events_branch_filter': None,
+            'repository_update_events': False,
+            'tag_push_events': True,  # Notice this changeds
+            'url': 'http://requestbin.net/r/1ecyaj51',
+            'wiki_page_events': False,
+        }
+        res = await valid_handler.edit_webhook('422507', new_name, url, events, secret)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_delete_webhook(self, valid_handler, codecov_vcr):
+        res = await valid_handler.delete_webhook('422507')
+        assert res is True
+
+    @pytest.mark.asyncio
+    async def test_delete_webhook_not_found(self, valid_handler, codecov_vcr):
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.delete_webhook('422507987')
+
+    @pytest.mark.asyncio
+    async def test_get_authenticated(self, valid_handler, codecov_vcr):
+        res = await valid_handler.get_authenticated()
+        assert res == (True, True)
+
+    @pytest.mark.asyncio
+    async def test_get_compare(self, valid_handler, codecov_vcr):
+        base, head = 'b33e1281', '5716de23'
+        expected_result = {
+            'diff': {
+                'files': {
+                    'README.md': {
+                        'type': 'modified',
+                        'before': None,
+                        'segments': [
+                            {
+                                'header': ['1', '5', '1', '15'],
+                                'lines': ['-### Example', '+### CI Testing', ' ', '-> This repo is used for CI Testing. Enjoy this gif as a reward!', '+> This repo is used for CI Testing', '+', '+', '+| [https://codecov.io/][1] | [@codecov][2] | [hello@codecov.io][3] |', '+| ------------------------ | ------------- | --------------------- |', '+', '+-----', '+', '+', '+[1]: https://codecov.io/', '+[2]: https://twitter.com/codecov', '+[3]: mailto:hello@codecov.io', ' ', '-![i can do that](http://gph.is/17cvPc4)']
+                            }
+                        ],
+                        'stats': {
+                            'added': 13, 'removed': 3
+                        }
+                    },
+                    'folder/hello-world.txt': {
+                        'type': 'modified',
+                        'before': None,
+                        'segments': [
+                            {
+                                'header': ['0', '0', '1', ''],
+                                'lines': ['+hello world']
+                            }
+                        ],
+                        'stats': {'added': 1, 'removed': 0}
+                    }
+                }
+            },
+            'commits': [
+                {
+                    'commitid': '5716de23b27020419d1a40dd93b469c041a1eeef',
+                    'message': 'addd folder',
+                    'timestamp': '2014-08-21T18:36:38.000Z',
+                    'author': {'email': 'steve@stevepeak.net', 'name': 'stevepeak'}
+                },
+                {
+                    'commitid': 'c739768fcac68144a3a6d82305b9c4106934d31a',
+                    'message': "shhhh i'm batman!",
+                    'timestamp': '2014-08-20T21:52:44.000Z',
+                    'author': {'email': 'steve@stevepeak.net', 'name': 'stevepeak'}
+                }
+            ]
+        }
+        res = await valid_handler.get_compare(base, head)
+        print(res)
+        assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
+        for key in res:
+            assert res[key] == expected_result[key]
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_repository(self, valid_handler, codecov_vcr):
+        expected_result = {
+            'owner': {'service_id': 126816, 'username': 'codecov'},
+            'repo': {
+                'branch': b'master',
+                'language': None,
+                'name': 'ci-repo',
+                'private': False,
+                'service_id': 187725
+            }
+        }
+        res = await valid_handler.get_repository()
+        assert res['repo'] == expected_result['repo']
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_source_master(self, valid_handler, codecov_vcr):
+        expected_result = {
+            'commitid': None,
+            'content': b"import unittest\nimport my_package\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(my_package.add(10), 20)\n\nif __name__ == '__main__':\n    unittest.main()\n"
+        }
+        path, ref = 'tests.py', 'master'
+        res = await valid_handler.get_source(path, ref)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_source_random_commit(self, valid_handler, codecov_vcr):
+        expected_result = {
+            'commitid': None,
+            'content': b'hello world\n'
+        }
+        path, ref = 'folder/hello-world.txt', '5716de23'
+        res = await valid_handler.get_source(path, ref)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_repos(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                'owner': {'service_id': 223023, 'username': 'morerunes'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': 'delectamentum-mud-server',
+                    'private': False,
+                    'service_id': 1384844
+                }
+            },
+            {
+                'owner': {'service_id': 126816, 'username': 'codecov'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': 'example-python',
+                    'private': False,
+                    'service_id': 580838}},
+            {
+                'owner': {'service_id': 126816, 'username': 'codecov'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': 'ci-private',
+                    'private': True,
+                    'service_id': 190307
+                }
+            },
+            {
+                'owner': {'service_id': 126816, 'username': 'codecov'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': 'ci-repo',
+                    'private': False,
+                    'service_id': 187725
+                }
+            }
+        ]
+        res = await valid_handler.list_repos()
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_teams(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {'id': 726800, 'name': 'delectamentum-mud', 'username': 'delectamentum-mud'}
+        ]
+        res = await valid_handler.list_teams()
+        assert res == expected_result
