@@ -226,8 +226,7 @@ class Gitlab(BaseHandler):
                                 private=(repo['visibility'] != 'public'),
                                 language=None,
                                 branch=(repo['default_branch']
-                                        or 'master').encode(
-                                            'utf-8', 'replace'))))
+                                        or 'master'))))
                 if len(repos) < 50:
                     break
 
@@ -491,10 +490,8 @@ class Gitlab(BaseHandler):
                     return pull['iid']
 
         elif branch:
-            branch = branch.encode('utf-8', 'replace') if branch else ''
             for pull in res:
-                if (pull['source_branch'] and pull['source_branch'].encode(
-                        'utf-8', 'replace') == branch):
+                if (pull['source_branch'] and pull['source_branch'] == branch):
                     return pull['iid']
 
         else:
@@ -560,8 +557,7 @@ class Gitlab(BaseHandler):
                 service_id=res['id'],
                 private=res['visibility'] != 'public',
                 language=None,
-                branch=(res['default_branch'] or 'master').encode(
-                    'utf-8', 'replace'),
+                branch=(res['default_branch'] or 'master'),
                 name=repo)))
 
     async def get_source(self, path, ref, token=None):
