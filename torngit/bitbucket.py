@@ -259,18 +259,21 @@ class Bitbucket(BaseHandler, OAuthMixin):
         return dict(
             base=dict(
                 branch=res['destination']['branch']['name'],
-                commitid=base['hash'],
-                head=dict(
-                    branch=res['source']['branch']['name'],
-                    commitid=head['hash']),
-                state={
-                    'OPEN': 'open',
-                    'MERGED': 'merged',
-                    'DECLINED': 'closed'
-                }.get(res['state']),
-                title=res['title'],
-                id=str(pullid),
-                number=str(pullid)))
+                commitid=base['hash']
+            ),
+            head=dict(
+                branch=res['source']['branch']['name'],
+                commitid=head['hash']
+            ),
+            state={
+                'OPEN': 'open',
+                'MERGED': 'merged',
+                'DECLINED': 'closed'
+            }.get(res['state']),
+            title=res['title'],
+            id=str(pullid),
+            number=str(pullid)
+        )
 
     async def post_comment(self, issueid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/issues+Resource#issuesResource-POSTanewcommentontheissue

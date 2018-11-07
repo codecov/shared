@@ -281,16 +281,16 @@ class Gitlab(BaseHandler):
 
             return dict(
                 base=dict(
-                    branch=pull['target_branch'] or '',
-                    head=dict(
-                        branch=pull['source_branch'] or '',
-                        commitid=pull['sha']
-                    ),
-                    state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
-                    title=pull['title'],
-                    id=str(pull['iid']),
-                    number=str(pull['iid'])
-                )
+                    branch=pull['target_branch'] or ''
+                ),
+                head=dict(
+                    branch=pull['source_branch'] or '',
+                    commitid=pull['sha']
+                ),
+                state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
+                title=pull['title'],
+                id=str(pull['iid']),
+                number=str(pull['iid'])
             )
 
     async def set_commit_status(self,
@@ -317,7 +317,6 @@ class Gitlab(BaseHandler):
                     description=description),
                 token=token)
         except ClientError as ce:
-            print(ce)
             raise
 
         if merge_commit:

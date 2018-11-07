@@ -1,5 +1,3 @@
-import random
-
 import pytest
 
 from torngit.exceptions import ObjectNotFoundException
@@ -93,16 +91,16 @@ class TestBitbucketTestCase(object):
             {
                 'base': {
                     'branch': 'master',
-                    'head': {
-                        'branch': 'second-branch',
-                        'commitid': '3017d534ab41e217bdf34d4c615fb355b0081f4b'
-                    },
-                    'number': '1',
-                    'id': '1',
-                    'state': 'open',
-                    'title': 'Hahaa That is a PR',
                     'commitid': 'b92edba44fdd29fcc506317cc3ddeae1a723dd08'
-                }
+                },
+                'head': {
+                    'branch': 'second-branch',
+                    'commitid': '3017d534ab41e217bdf34d4c615fb355b0081f4b'
+                },
+                'number': '1',
+                'id': '1',
+                'state': 'open',
+                'title': 'Hahaa That is a PR',
             }
         ),
     ]
