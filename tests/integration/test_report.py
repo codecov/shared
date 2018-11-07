@@ -66,7 +66,7 @@ def test_append_error():
     r = Report()
     with pytest.raises(Exception) as e_info:
         r.append('str')
-    assert e_info.value.message == "expecting ReportFile got <type 'str'>"
+    assert str(e_info.value) == "expecting ReportFile got <class 'str'>"
 
 
 @pytest.mark.integration
@@ -120,7 +120,7 @@ def test_get_item_exception():
     })
     with pytest.raises(Exception) as e_info:
         r['name.py']
-    assert e_info.value.message == 'File at path name.py not found in report'
+    assert str(e_info.value) == 'File at path name.py not found in report'
 
 
 @pytest.mark.integration
@@ -166,7 +166,7 @@ def test_flags():
         'id': 'id',
         'f': ['a', 1, 'test'],
     }})
-    assert r.flags.keys() == ['a', 1, 'test']
+    assert list(r.flags.keys()) == ['a', 1, 'test']
 
 
 @pytest.mark.integration
@@ -202,7 +202,7 @@ def test_contains():
         'file.py': [0, ReportTotals(1)],
     }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>'), Report(files={
         'other-file.py': [1, ReportTotals(2)]
-    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['other-file.py', 'file.py']),
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['file.py', 'other-file.py']),
 ])
 def test_merge(r, new_report, manifest):
     assert r.manifest == ['file.py']
@@ -224,10 +224,10 @@ def test_assume_flags():
     }, chunks=[ReportFile(name='py.py', totals=[1, 2, 1])])
 
     assert repr(r) == '<Report files=1>'
-    assert r.sessions.keys() == []
+    assert list(r.sessions.keys()) == []
     r.assume_flags('int', prev_r)
     assert repr(r) == '<Report files=2>'
-    assert r.sessions.keys() == [0]  # TODO filter should work but does not because of the issue with filter
+    assert list(r.sessions.keys()) == [0]  # TODO filter should work but does not because of the issue with filter
 
 
 @pytest.mark.integration
@@ -382,7 +382,7 @@ def test_flare(r, params, flare):
 def test_filter_exception():
     with pytest.raises(Exception) as e_info:
         Report().filter(paths='str')
-    assert e_info.value.message == "expecting list for argument paths got <type 'str'>"
+    assert str(e_info.value) == "expecting list for argument paths got <class 'str'>"
 
 
 @pytest.mark.integration

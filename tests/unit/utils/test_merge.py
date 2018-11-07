@@ -15,18 +15,18 @@ def test_merge_all(cov_list, res):
 
 @pytest.mark.unit
 @pytest.mark.parametrize('b1, b2, res', [
-    (u'1/2', u'2/2', u'2/2'),
-    (u'0/2', u'2/2', u'2/2'),
-    (u'0/2', 1, 1),
-    (u'0/2', -1, -1),
+    ('1/2', '2/2', '2/2'),
+    ('0/2', '2/2', '2/2'),
+    ('0/2', 1, 1),
+    ('0/2', -1, -1),
     (0, '2/2', '2/2'),
     (True, '2/2', '2/2'),
     (None, '2/2', '2/2'),
     ('1/2', '2/3', '2/3'),
-    (u'0/2', u'0/2', u'0/2'),
-    (u'0/2', u'0/2', u'0/2'),
-    (u'0/2', [[1, 2, None]], [[1, 2, None]]),
-    ([[1, 2, None]], u'0/2', [[1, 2, None]]),
+    ('0/2', '0/2', '0/2'),
+    ('0/2', '0/2', '0/2'),
+    ('0/2', [[1, 2, None]], [[1, 2, None]]),
+    ([[1, 2, None]], '0/2', [[1, 2, None]]),
 ])
 def test_merge_branch(b1, b2, res):
     assert res == merge_branch(b1, b2), '%s <> %s expected %s got %s' % (b1, b2, res, str(merge_branch(b1, b2)))
@@ -173,9 +173,9 @@ def test_merge_line_session(s1, s2, res):
     (None, None),
     (False, None),
     (-1, -1),
-    (u'0/2', 1),
+    ('0/2', 1),
     (str('1/2'), 2),
-    (u'2/2', 0),
+    ('2/2', 0),
 ])
 def test_line_type(line, _line_type):
     assert line_type(line) == _line_type
@@ -187,7 +187,7 @@ def test_line_type(line, _line_type):
 ])
 def test_branch_type(x, y):
     assert branch_type(x) == y
-    assert branch_type(unicode(x)) == y
+    assert branch_type(str(x)) == y
 
 
 @pytest.mark.unit

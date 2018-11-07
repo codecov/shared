@@ -1,13 +1,13 @@
 from covreports.utils.tuples import ReportTotals
 from covreports.helpers.numeric import ratio
-from itertools import izip, imap
+
 from operator import itemgetter
 
 
 def agg_totals(totals):
-    totals = filter(None, totals)
+    totals = [_f for _f in totals if _f]
     n_files = len(totals)
-    totals = list(imap(_sum, izip(*totals)))
+    totals = list(map(_sum, zip(*totals)))
     if not totals:
         return list(ReportTotals.__new__.__defaults__)
     totals[0] = n_files
@@ -16,7 +16,7 @@ def agg_totals(totals):
 
 
 def sum_totals(totals):
-    totals = filter(None, totals)
+    totals = [_f for _f in totals if _f]
     if not totals:
         return ReportTotals()
 
@@ -38,11 +38,11 @@ def sum_totals(totals):
 
 def _sum(array):
     if array:
-        if not isinstance(array[0], (type(None), basestring)):
+        if not isinstance(array[0], (type(None), str)):
             try:
                 return sum(array)
             except:
                 # https://sentry.io/codecov/v4/issues/159966549/
-                return sum(map(lambda a: a if type(a) is int else 0, array))
+                return sum([a if type(a) is int else 0 for a in array])
     return None
 

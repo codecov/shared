@@ -1,4 +1,5 @@
 from covreports.helpers.color import coverage_to_color
+import collections
 
 
 class Dict(dict):
@@ -37,7 +38,7 @@ def _dict_to_children(n, d, color, classes):
     c = color(coverage)
 
     children = [_dict_to_children(key, value, color, classes)
-                for key, value in d.iteritems()
+                for key, value in d.items()
                 if key not in ('__l', '__h')]
 
     if len(children) == 1 and children[0].get('children'):
@@ -62,5 +63,5 @@ def report_to_flare(files, color, classes=None):
 
     return [_dict_to_children('',
                               flare,
-                              color if callable(color) else coverage_to_color(*color) if color else None,
+                              color if isinstance(color, collections.Callable) else coverage_to_color(*color) if color else None,
                               classes or {})]

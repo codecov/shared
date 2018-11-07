@@ -88,7 +88,7 @@ def test_append_error(patch):
     r = Report()
     with pytest.raises(Exception) as e_info:
         r.append('str')
-    assert e_info.value.message == "expecting ReportFile got <type 'str'>"
+    assert str(e_info.value) == "expecting ReportFile got <class 'str'>"
 
 
 @pytest.mark.unit
@@ -160,7 +160,7 @@ def test_get_item_exception(patch):
     })
     with pytest.raises(Exception) as e_info:
         r['name.py']
-    assert e_info.value.message == 'File at path name.py not found in report'
+    assert str(e_info.value) == 'File at path name.py not found in report'
 
 
 @pytest.mark.unit
@@ -221,7 +221,7 @@ def test_flags(patch):
     })
     type(r)._chunks = PropertyMock(return_value=None)
     type(r).sessions = {1: Session(flags={'a': 1, 1: 1, 'test': 1})}
-    assert r.flags.keys() == ['a', 1, 'test']
+    assert list(r.flags.keys()) == ['a', 1, 'test']
 
 
 @pytest.mark.unit
@@ -262,7 +262,7 @@ def test_contains(patch):
          'file.py': [0, ReportTotals(1)],
      }, 'null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>'.split(END_OF_CHUNK), Report(files={
         'other-file.py': [1, ReportTotals(2)]
-    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['other-file.py', 'file.py']),
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'), ['file.py', 'other-file.py']),
 ])
 def test_merge(files, chunks, new_report, manifest, patch):
     patch.init(Report)
@@ -504,7 +504,7 @@ def test_filter_exception(patch):
     Report._filter_cache = (None, None)
     with pytest.raises(Exception) as e_info:
         Report().filter(paths='str')
-    assert e_info.value.message == "expecting list for argument paths got <type 'str'>"
+    assert str(e_info.value) == "expecting list for argument paths got <class 'str'>"
 
 
 @pytest.mark.unit

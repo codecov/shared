@@ -1,7 +1,8 @@
 from copy import copy
 from itertools import chain
-from itertools import izip_longest
+from itertools import zip_longest
 from json import loads, dumps
+from collections import OrderedDict
 
 from covreports.helpers.yaml import walk
 from covreports.helpers.flag import Flag
@@ -138,6 +139,8 @@ class ReportFile(object):
         """
         if ln == 'totals':
             return self.totals
+        if type(ln) is slice:
+            return self._getslice(ln.start, ln.stop)
         if not type(ln) is int:
             raise TypeError('expecting type int got %s' % type(ln))
         elif ln < 1:
@@ -169,7 +172,7 @@ class ReportFile(object):
     def __len__(self):
         """Returns count(number of lines with coverage data)
         """
-        return len(filter(None, self._lines))
+        return len([_f for _f in self._lines if _f])
 
     @property
     def eof(self):
@@ -177,7 +180,7 @@ class ReportFile(object):
         """
         return len(self._lines) + 1
 
-    def __getslice__(self, start, stop):
+    def _getslice(self, start, stop):
         """Retrns a stream of lines between two indexes
 
         slice = report[5:25]
@@ -190,7 +193,7 @@ class ReportFile(object):
         assert slice is gernerator.
         list(slice) == [(1, Line), (2, Line)]
 
-
+        NOTE: not be confused with the builtin function __getslice__ that was deprecated in python 3.x
         """
         func = self._line_modifier
         for ln, line in enumerate(self._lines[start-1:stop-1], start=start):
@@ -210,7 +213,7 @@ class ReportFile(object):
         except IndexError:
             return False
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.totals.lines > 0
 
     def get(self, ln):
@@ -290,7 +293,7 @@ class ReportFile(object):
             # set new lines object
             self._lines = [merge_line(before, after, joined)
                            for before, after
-                           in izip_longest(self, other_file)]
+                           in zip_longest(self, other_file)]
 
         self._totals = None
         return True
@@ -408,10 +411,10 @@ class Report(object):
         # {1: {...}}
         self.sessions = dict((sid, Session(**session))
                              for sid, session
-                             in sessions.iteritems()) if sessions else {}
+                             in sessions.items()) if sessions else {}
 
         # ["<json>", ...]
-        if isinstance(chunks, basestring):
+        if isinstance(chunks, str):
             # came from archive
             chunks = chunks.split(END_OF_CHUNK)
         self._chunks = chunks or []
@@ -435,14 +438,14 @@ class Report(object):
     @property
     def network(self):
         if self._path_filter:
-            for fname, data in self._files.iteritems():
+            for fname, data in self._files.items():
                 file = self.get(fname)
                 if file:
                     yield fname, make_network_file(
                         file.totals
                     )
         else:
-            for fname, data in self._files.iteritems():
+            for fname, data in self._files.items():
                 yield fname, make_network_file(*data[1:])
 
     def __repr__(self):
@@ -461,21 +464,21 @@ class Report(object):
         if path_filter:
             # return filtered list of filenames
             return [filename
-                    for filename, _ in self._files.iteritems()
+                    for filename, _ in self._files.items()
                     if self._path_filter(filename)]
         else:
             # return the fill list of filenames
-            return self._files.keys()
+            return list(self._files.keys())
 
     @property
     def flags(self):
         """returns dict(:name=<Flag>)
         """
-        return {flag: Flag(self, flag)
-                for flag
-                in set(chain(*((session.flags or [])
-                               for sid, session
-                               in self.sessions.iteritems())))}
+        flags_dict = {}
+        for sid, session in self.sessions.items():
+            for flag in session.flags:
+                flags_dict[flag] = Flag(self, flag)
+        return flags_dict
 
     def append(self, _file, joined=True):
         """adds or merged a file into the report
@@ -492,7 +495,6 @@ class Report(object):
             return False
 
         assert _file.name, 'file must have a name'
-
         session_n = len(self.sessions) - 1
 
         # check if file already exists
@@ -555,7 +557,7 @@ class Report(object):
                     lines = self._chunks[_file[0]]
                 except:
                     lines = None
-                    print '[DEBUG] file not found in chunk', _file[0]
+                    print('[DEBUG] file not found in chunk', _file[0])
             else:
                 # may be tree_only request
                 lines = None
@@ -578,7 +580,7 @@ class Report(object):
         :ignore_lines {"path": {"lines": ["1"]}}
         only used during processing and does not effect the chunks inside this Report object
         """
-        for path, data in ignore_lines.iteritems():
+        for path, data in ignore_lines.items():
             _file = self.get(path)
             if _file is not None:
                 _file.ignore_lines(**data)
@@ -630,7 +632,7 @@ class Report(object):
         """
         path = path.strip('/') + '/'
         return sum_totals((self[filename].totals
-                           for filename, _ in self._files.iteritems()
+                           for filename, _ in self._files.items()
                            if filename.startswith(path)))
 
     @property
@@ -648,7 +650,7 @@ class Report(object):
         _line_modifier = self._line_modifier
 
         def _iter_totals():
-            for filename, data in self._files.iteritems():
+            for filename, data in self._files.items():
                 if not _path_filter(filename):
                     continue
                 elif _line_modifier or data[1] is None:
@@ -661,7 +663,7 @@ class Report(object):
         if self._filter_cache and self._filter_cache[1]:
             flags = set(self._filter_cache[1])
             totals[9] = len([1
-                             for _, session in self.sessions.iteritems()
+                             for _, session in self.sessions.items()
                              if set(session.flags or []) & flags])
         else:
             totals[9] = len(self.sessions)
@@ -673,10 +675,10 @@ class Report(object):
         """returns a list of files in the report
         """
         if self._path_filter:
-            return filter(self._path_filter, self._files.keys())
+            return list(filter(self._path_filter, list(self._files)))
 
         else:
-            return self._files.keys()
+            return list(self._files)
 
     def add_session(self, session):
         sessionid = len(self.sessions)
@@ -690,7 +692,7 @@ class Report(object):
         """Iter through all the files
         yielding <ReportFile>
         """
-        for filename, _file in self._files.iteritems():
+        for filename, _file in self._files.items():
             if self._path_filter and not self._path_filter(filename):
                 # filtered out
                 continue
@@ -733,20 +735,21 @@ class Report(object):
         """returns boolean if the report has no content
         """
         if self._path_filter:
-            return len(filter(self._path_filter, self._files.keys())) == 0
+            return len(list(filter(self._path_filter, list(self._files.keys())))) == 0
         else:
             return len(self._files) == 0
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.is_empty() is False
 
     def to_archive(self):
-        return END_OF_CHUNK.join(map(_encode_chunk, self._chunks)).encode("utf-8")
+        # TODO: confirm removing encoding here is fine
+        return END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
 
     def to_database(self):
         """returns (totals, report) to be stored in database
         """
-        totals = dict(zip(TOTALS_MAP, self.totals))
+        totals = dict(zip(TOTALS_MAP, self.totals)) 
         totals['diff'] = self.diff_totals
         return (totals,
                 dumps({'files': self._files,
@@ -842,7 +845,7 @@ class Report(object):
                 # get all session ids that have this falg
                 sessions = set([int(sid)
                                 for sid, session
-                                in self.sessions.iteritems()
+                                in self.sessions.items()
                                 if match_any(flags, session.flags)])
 
                 # the line has data from this session
@@ -890,7 +893,7 @@ class Report(object):
         lines added in the diff are tracked by codecov
         """
         if diff and diff.get('files'):
-            for path, data in diff['files'].iteritems():
+            for path, data in diff['files'].items():
                 future_state = walk(future_diff, ('files', path, 'type'))
                 if (
                         data['type'] == 'deleted' and  # deleted
@@ -941,7 +944,7 @@ class Report(object):
         Takes a <diff> and offsets the line based on additions and removals
         """
         if diff and diff.get('files'):
-            for path, data in diff['files'].iteritems():
+            for path, data in diff['files'].items():
                 if (
                         data['type'] == 'modified' and
                         path in self
@@ -961,7 +964,7 @@ class Report(object):
         """
         if diff and diff.get('files'):
             totals = []
-            for path, data in diff['files'].iteritems():
+            for path, data in diff['files'].items():
                 if data['type'] in ('modified', 'new'):
                     _file = self.get(path)
                     if _file:
@@ -970,8 +973,7 @@ class Report(object):
                         le = lines.extend
                         # add all new lines data to a new file to get totals
                         [le([fg(i)
-                             for i, line in enumerate(filter(lambda l: l[0] != '-',
-                                                             segment['lines']),
+                             for i, line in enumerate([l for l in segment['lines'] if l[0] != '-'],
                                                       start=int(segment['header'][2]) or 1)
                              if line[0] == '+'])
                          for segment in data['segments']]
@@ -1006,7 +1008,7 @@ class Report(object):
         """
         Returns boolean: if the flag is found
         """
-        for sid, data in self.sessions.iteritems():
+        for sid, data in self.sessions.items():
             if flag_name in (data.flags or []):
                 return True
         return False
@@ -1027,7 +1029,7 @@ def _ignore_to_func(ignore):
     eof = ignore.get('eof')
     lines = ignore.get('lines') or []
     if eof:
-        return lambda l: l > eof or l in lines
+        return lambda l: str(l) > eof or l in lines
     else:
         return lambda l: l in lines
 

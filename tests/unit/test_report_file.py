@@ -67,7 +67,7 @@ def test_get_item(patch):
 
 @pytest.mark.unit
 @pytest.mark.parametrize('get_val, error_message', [
-    ([], "expecting type int got <type 'list'>"),
+    ([], "expecting type int got <class 'list'>"),
     (-1, 'Line number must be greater then 0. Got -1'),
     (1, 'Line #1 not found in report'),
 
@@ -78,7 +78,7 @@ def test_get_item_exception(get_val, error_message, patch):
     type(r)._lines = PropertyMock(return_value=[])
     with pytest.raises(Exception) as e_info:
         r[get_val]
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 @pytest.mark.unit
@@ -99,8 +99,8 @@ def test_set_item(ignore, get_val, patch):
 
 @pytest.mark.unit
 @pytest.mark.parametrize('index, set_val, error_message', [
-    ('str', 1, "expecting type int got <type 'str'>"),
-    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    ('str', 1, "expecting type int got <class 'str'>"),
+    (1, 'str', "expecting type ReportLine got <class 'str'>"),
     (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
 ])
 def test_set_item_exception(index, set_val, error_message, patch):
@@ -108,7 +108,7 @@ def test_set_item_exception(index, set_val, error_message, patch):
     r = ReportFile()
     with pytest.raises(Exception) as e_info:
         r[index] = set_val
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 @pytest.mark.unit
@@ -135,7 +135,7 @@ def test_contains_exception(patch):
     r = ReportFile()
     with pytest.raises(Exception) as e_info:
         'str' in r
-    assert e_info.value.message == "expecting type int got <type 'str'>"
+    assert str(e_info.value) == "expecting type int got <class 'str'>"
 
 
 @pytest.mark.unit
@@ -165,7 +165,7 @@ def test_get(line_modifier, line, patch):
 
 @pytest.mark.unit
 @pytest.mark.parametrize('get_val, error_message', [
-    ('str', "expecting type int got <type 'str'>"),
+    ('str', "expecting type int got <class 'str'>"),
     (-1, 'Line number must be greater then 0. Got -1'),
 ])
 def test_report_file_get_exception(get_val, error_message, patch):
@@ -173,7 +173,7 @@ def test_report_file_get_exception(get_val, error_message, patch):
     r = ReportFile()
     with pytest.raises(Exception) as e_info:
         r.get(get_val)
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 @pytest.mark.unit
@@ -193,8 +193,8 @@ def test_append(ignore, boolean, lines, patch):
 
 @pytest.mark.unit
 @pytest.mark.parametrize('key, val, error_message', [
-    ('str', ReportLine(), "expecting type int got <type 'str'>"),
-    (1, 'str', "expecting type ReportLine got <type 'str'>"),
+    ('str', ReportLine(), "expecting type int got <class 'str'>"),
+    (1, 'str', "expecting type ReportLine got <class 'str'>"),
     (-1, ReportLine(), 'Line number must be greater then 0. Got -1'),
 ])
 def test_report_file_append_exception(key, val, error_message, patch):
@@ -202,7 +202,7 @@ def test_report_file_append_exception(key, val, error_message, patch):
     r = ReportFile()
     with pytest.raises(Exception) as e_info:
         r.append(key, val)
-    assert e_info.value.message == error_message
+    assert str(e_info.value) == error_message
 
 
 @pytest.mark.unit
