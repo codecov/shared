@@ -1,0 +1,59 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: DELETE
+    uri: https://gitlab.com/api/v4/projects/187725/hooks/422507
+  response:
+    body: {string: ''}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 05:02:13 GMT']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - [no-cache]
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Request-Id
+      - [f2d875ed-8876-4b72-931c-d659574d6264]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.049754']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['1']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['599']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541480593']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Wed, 06 Nov 2018 05:03:13 GMT']
+    status: {code: 204, message: No Content}
+    url: https://gitlab.com/api/v4/projects/187725/hooks/422507
+version: 1
