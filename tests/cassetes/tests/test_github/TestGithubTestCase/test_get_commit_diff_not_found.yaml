@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/vnd.github.v3.diff]
+      User-Agent: [Default]
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/commits/3be850c135ccaa425cb2c239b9321e78dcfb78ff
+  response:
+    body: {string: '{"message":"No commit found for SHA: 3be850c135ccaa425cb2c239b9321e78dcfb78ff","documentation_url":"https://developer.github.com/v3/repos/commits/#get-a-single-commit"}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [GitHub.com]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 22:56:41 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - Content-Length
+      - ['168']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Status
+      - [422 Unprocessable Entity]
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - ['5000']
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - ['4978']
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - ['1541633471']
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['admin:repo_hook, read:user, repo, write:discussion']
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - ['']
+    - !!python/tuple
+      - X-Oauth-Client-Id
+      - [999247146557c3ba045c]
+    - !!python/tuple
+      - X-Github-Media-Type
+      - [github.v3; param=diff]
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - ['ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type']
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - ['*']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubdomains; preload]
+    - !!python/tuple
+      - X-Frame-Options
+      - [deny]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Xss-Protection
+      - [1; mode=block]
+    - !!python/tuple
+      - Referrer-Policy
+      - ['origin-when-cross-origin, strict-origin-when-cross-origin']
+    - !!python/tuple
+      - Content-Security-Policy
+      - [default-src 'none']
+    - !!python/tuple
+      - X-Github-Request-Id
+      - ['28AF:26DE:E8262D:1EF9E20:5BE36DA8']
+    status: {code: 422, message: Unprocessable Entity}
+    url: https://api.github.com/repos/ThiagoCodecov/example-python/commits/3be850c135ccaa425cb2c239b9321e78dcfb78ff
+version: 1
