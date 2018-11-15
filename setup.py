@@ -18,4 +18,9 @@ setup(
     zip_safe=True,
     install_requires=[
         "requests>=2.0.0",
+        "tornado",
+        "requests_oauthlib",
+        "oauth2",
+        "tlslite-ng",
+        "htmldom",
     ])
