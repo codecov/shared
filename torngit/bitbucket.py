@@ -3,7 +3,7 @@ from json import loads
 from sys import stdout
 from time import time
 import os
-import urllib as urllib_parse
+import urllib.parse as urllib_parse
 
 from requests_oauthlib import OAuth1Session
 from tornado.auth import OAuthMixin
@@ -12,9 +12,14 @@ from tornado.httputil import url_concat
 
 from torngit.base import BaseHandler
 from torngit.status import Status
+from torngit.exceptions import ObjectNotFoundException
 
 
 class Bitbucket(BaseHandler, OAuthMixin):
+    _OAUTH_REQUEST_TOKEN_URL = 'https://bitbucket.org/api/1.0/oauth/request_token'
+    _OAUTH_ACCESS_TOKEN_URL = 'https://bitbucket.org/api/1.0/oauth/access_token'
+    _OAUTH_AUTHORIZE_URL = 'https://bitbucket.org/api/1.0/oauth/authenticate'
+    _OAUTH_VERSION = '1.0a'
     service = 'bitbucket'
     api_url = 'https://bitbucket.org'
     service_url = 'https://bitbucket.org'
@@ -56,6 +61,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             all_args.update(body or {})
         oauth = self._oauth_request_parameters(
             url, token or self.token, all_args, method=method.upper())
+        print(oauth)
         kwargs.update(oauth)
 
         url = url_concat(url, kwargs)
@@ -122,27 +128,34 @@ class Bitbucket(BaseHandler, OAuthMixin):
             body=dict(description=name, active=True, events=events, url=url),
             json=True,
             token=token)
-        return res['uuid'][1:-1]
+        res['id'] = res['uuid'][1:-1]
+        return res
 
     async def edit_webhook(self, hookid, name, url, events, secret,
                            token=None):
         # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html#webhooksResource-PUTawebhookupdate
-        await self.api(
+        res = await self.api(
             '2',
             'put',
             '/repositories/%s/hooks/%s' % (self.slug, hookid),
             body=dict(description=name, active=True, events=events, url=url),
             json=True,
             token=token)
-        return True
+        res['id'] = res['uuid'][1:-1]
+        return res
 
     async def delete_webhook(self, hookid, token=None):
         # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html#webhooksResource-DELETEthewebhook
-        await self.api(
-            '2',
-            'delete',
-            '/repositories/%s/hooks/%s' % (self.slug, hookid),
-            token=token)
+        try:
+            await self.api(
+                '2',
+                'delete',
+                '/repositories/%s/hooks/%s' % (self.slug, hookid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Webhook with id {hookid} does not exist")
+            raise
         return True
 
     async def get_is_admin(self, user, token=None):
@@ -220,11 +233,16 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     async def get_pull_request(self, pullid, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETaspecificpullrequest
-        res = await self.api(
-            '2',
-            'get',
-            '/repositories/{}/pullrequests/{}'.format(self.slug, pullid),
-            token=token)
+        try:
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/{}/pullrequests/{}'.format(self.slug, pullid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"PR with id {pullid} does not exist")
+            raise
         # the commit sha is only {12}. need to get full sha
         base = await self.api(
             '2',
@@ -240,20 +258,22 @@ class Bitbucket(BaseHandler, OAuthMixin):
             token=token)
         return dict(
             base=dict(
-                branch=res['destination']['branch']['name'].encode(
-                    'utf-8', 'replace', commitid=base['hash']),
-                head=dict(
-                    branch=res['source']['branch']['name'].encode(
-                        'utf-8', 'replace'),
-                    commitid=head['hash']),
-                state={
-                    'OPEN': 'open',
-                    'MERGED': 'merged',
-                    'DECLINED': 'closed'
-                }.get(res['state']),
-                title=res['title'],
-                id=str(pullid),
-                number=str(pullid)))
+                branch=res['destination']['branch']['name'],
+                commitid=base['hash']
+            ),
+            head=dict(
+                branch=res['source']['branch']['name'],
+                commitid=head['hash']
+            ),
+            state={
+                'OPEN': 'open',
+                'MERGED': 'merged',
+                'DECLINED': 'closed'
+            }.get(res['state']),
+            title=res['title'],
+            id=str(pullid),
+            number=str(pullid)
+        )
 
     async def post_comment(self, issueid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/issues+Resource#issuesResource-POSTanewcommentontheissue
@@ -263,7 +283,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
             '/repositories/%s/pullrequests/%s/comments' % (self.slug, issueid),
             body=dict(content=body),
             token=token)
-        return res['comment_id']
+        res['id'] = res['comment_id']
+        return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource+1.0#pullrequestsResource1.0-PUTanupdateonacomment
@@ -279,17 +300,26 @@ class Bitbucket(BaseHandler, OAuthMixin):
             resource_owner_key=token['key'],
             resource_owner_secret=token['secret'])
         res = oauth.put(url, data=dict(content=body))
-        assert res.status_code == 200
-        return commentid
+        if res.status_code == 200:
+            res_json = res.json()
+            res_json['id'] = res_json['comment_id']
+            return res_json
+        if res.status_code == 404:
+            raise ObjectNotFoundException(f"Comment {commentid} from PR {issueid} cannot be found")
 
     async def delete_comment(self, issueid, commentid, token=None):
         # https://confluence.atlassian.com/bitbucket/pullrequests-resource-1-0-296095210.html#pullrequestsResource1.0-PUTanupdateonacomment
-        await self.api(
-            '1',
-            'delete',
-            '/repositories/%s/pullrequests/%s/comments/%s' %
-            (self.slug, issueid, commentid),
-            token=token)
+        try:
+            await self.api(
+                '1',
+                'delete',
+                '/repositories/%s/pullrequests/%s/comments/%s' %
+                (self.slug, issueid, commentid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Comment {commentid} from PR {issueid} cannot be found")
+            raise
         return True
 
     async def get_commit_status(self, commit, token=None):
@@ -400,11 +430,16 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     async def get_commit(self, commit, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/commits+or+commit+Resource#commitsorcommitResource-GETanindividualcommit
-        data = await self.api(
-            '2',
-            'get',
-            '/repositories/%s/commit/%s' % (self.slug, commit),
-            token=token)
+        try:
+            data = await self.api(
+                '2',
+                'get',
+                '/repositories/%s/commit/%s' % (self.slug, commit),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Commit {commit} cannot be found")
+            raise
         author_login = data['author'].get('user', {}).get('username')
         author_raw = data['author'].get('raw', '')[:-1].rsplit(
             ' <', 1) if ' <' in data['author'].get('raw', '') else None
@@ -431,7 +466,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource+1.0#repositoryResource1.0-GETlistofbranches
         res = await self.api(
             '1', 'get', '/repositories/%s/branches' % self.slug, token=token)
-        return [(k, b['raw_node']) for k, b in res.iteritems()]
+        return [(k, b['raw_node']) for k, b in res.items()]
 
     async def get_pull_requests(self, state='open', token=None):
         state = {
@@ -469,7 +504,6 @@ class Bitbucket(BaseHandler, OAuthMixin):
         }.get(state, '')
         pulls, page = [], 0
         if commit or branch:
-            branch = branch.encode('utf-8', 'replace') if branch else ''
             while True:
                 page += 1
                 # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
@@ -490,8 +524,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                             return str(pull['id'])
                 else:
                     for pull in _prs:
-                        if pull['source']['branch']['name'].encode(
-                                'utf-8', 'replace') == branch:
+                        if pull['source']['branch']['name'] == branch:
                             return str(pull['id'])
 
                 if not res.get('next'):
@@ -522,7 +555,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 name=repo)))
 
     async def get_authenticated(self, token=None):
-        if self.data['repo']['private']:
+        if self.data['repo'].get('private'):
             # https://confluence.atlassian.com/bitbucket/repository-resource-423626331.html#repositoryResource-GETarepository
             await self.api(
                 '2', 'get', '/repositories/' + self.slug, token=token)
@@ -565,7 +598,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             commits = [{'commitid': head}, {'commitid': base}]
             # No endpoint to get commits yet... ugh
 
-        return dict(diff=self.diff_to_json(diff, commits=commits))
+        return dict(diff=self.diff_to_json(diff.decode('utf8')), commits=commits)
 
     async def get_commit_diff(self, commit, context=None, token=None):
         # https://confluence.atlassian.com/bitbucket/diff-resource-425462484.html
@@ -575,4 +608,4 @@ class Bitbucket(BaseHandler, OAuthMixin):
             '/repositories/' + self.data['owner']['username'] + '/' +
             self.data['repo']['name'] + '/diff/' + commit,
             token=token)
-        return self.diff_to_json(diff)
+        return self.diff_to_json(diff.decode('utf8'))

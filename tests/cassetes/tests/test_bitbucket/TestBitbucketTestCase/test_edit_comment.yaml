@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: content=Hello+world+numbah+2
+    headers:
+      Accept:
+      - !!binary |
+        Ki8q
+      Accept-Encoding:
+      - !!binary |
+        Z3ppcCwgZGVmbGF0ZQ==
+      Connection:
+      - !!binary |
+        a2VlcC1hbGl2ZQ==
+      Content-Length: ['28']
+      Content-Type:
+      - !!binary |
+        YXBwbGljYXRpb24veC13d3ctZm9ybS11cmxlbmNvZGVk
+      User-Agent:
+      - !!binary |
+        cHl0aG9uLXJlcXVlc3RzLzIuMjAuMA==
+    method: PUT
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/81514270
+  response:
+    body: {string: '{"display_name": "Thiago Ramos", "parent_id": null, "filename_hash":
+        null, "filename": null, "content": "Hello world numbah 2", "content_rendered":
+        "<p>Hello world numbah 2</p>", "user_avatar_url": "https://bitbucket.org/account/ThiagoCodecov/avatar/?ts=1541519035",
+        "user_avatar_url_2x": "https://bitbucket.org/account/ThiagoCodecov/avatar/64/?ts=1541519035",
+        "utc_created_on": "2018-11-06 16:04:23+00:00", "username": "ThiagoCodecov",
+        "pr_repo": {"owner": "ThiagoCodecov", "slug": "example-python"}, "deleted":
+        false, "comment_id": 81514270, "comparespec": "ThiagoCodecov/example-python:3017d534ab41\rb92edba44fdd",
+        "line_to": null, "is_spam": false, "pull_request_id": 1, "utc_last_updated":
+        "2018-11-06 16:10:12+00:00", "is_entity_author": true, "convert_markup": false,
+        "line_from": null, "dest_rev": null, "anchor": null, "is_repo_owner": true}'}
+    headers:
+      Connection: [Keep-Alive]
+      Content-Length: ['850']
+      Content-Type: [application/json; charset=utf-8]
+      Date: ['Tue, 06 Nov 2018 16:10:12 GMT']
+      ETag: ['"ea8be922646d2fbffe8f9033039e8c1f"']
+      Server: [nginx]
+      Strict-Transport-Security: [max-age=31536000; includeSubDomains; preload]
+      Vary: [Authorization]
+      X-Accepted-OAuth-Scopes: [pullrequest]
+      X-Cache-Info: [not cacheable; request wasn't a GET or HEAD]
+      X-Content-Type-Options: [nosniff]
+      X-Credential-Type: [oauth1]
+      X-Frame-Options: [SAMEORIGIN]
+      X-OAuth-Scopes: ['pipeline:variable, webhook, snippet:write, wiki, issue:write,
+          pullrequest:write, repository:delete, repository:admin, project:write, team:write,
+          account:write']
+      X-Render-Time: ['0.507030963898']
+      X-Request-Count: ['46']
+      X-Served-By: [app-144]
+      X-Static-Version: [4ea3c9800ace]
+      X-Version: [4ea3c9800ace]
+    status: {code: 200, message: OK}
+version: 1

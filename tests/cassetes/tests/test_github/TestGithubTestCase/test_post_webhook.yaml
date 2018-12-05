@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: '{"name": "web", "active": true, "events": ["push", "pull_request"], "config":
+      {"url": "http://requestbin.net/r/1ecyaj51", "secret": "d", "content_type": "json"}}'
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: POST
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/hooks
+  response:
+    body: {string: '{"type":"Repository","id":61813206,"name":"web","active":true,"events":["pull_request","push"],"config":{"content_type":"json","secret":"********","url":"http://requestbin.net/r/1ecyaj51","insecure_ssl":"0"},"updated_at":"2018-11-07T23:03:28Z","created_at":"2018-11-07T23:03:28Z","url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206","test_url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206/test","ping_url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206/pings","last_response":{"code":null,"status":"unused","message":null}}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [GitHub.com]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 23:03:28 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - Content-Length
+      - ['607']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Status
+      - [201 Created]
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - ['5000']
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - ['4972']
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - ['1541633471']
+    - !!python/tuple
+      - Cache-Control
+      - ['private, max-age=60, s-maxage=60']
+    - !!python/tuple
+      - Vary
+      - ['Accept, Authorization, Cookie, X-GitHub-OTP']
+    - !!python/tuple
+      - Etag
+      - ['"873e55baacf179c2f5896aea02274ee0"']
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['admin:repo_hook, read:user, repo, write:discussion']
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - ['admin:repo_hook, public_repo, repo, write:repo_hook']
+    - !!python/tuple
+      - X-Oauth-Client-Id
+      - [999247146557c3ba045c]
+    - !!python/tuple
+      - Location
+      - ['https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206']
+    - !!python/tuple
+      - X-Github-Media-Type
+      - [github.v3]
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - ['ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type']
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - ['*']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubdomains; preload]
+    - !!python/tuple
+      - X-Frame-Options
+      - [deny]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Xss-Protection
+      - [1; mode=block]
+    - !!python/tuple
+      - Referrer-Policy
+      - ['origin-when-cross-origin, strict-origin-when-cross-origin']
+    - !!python/tuple
+      - Content-Security-Policy
+      - [default-src 'none']
+    - !!python/tuple
+      - X-Github-Request-Id
+      - ['28D5:26DF:123B3F5:245C671:5BE36F3F']
+    status: {code: 201, message: Created}
+    url: https://api.github.com/repos/ThiagoCodecov/example-python/hooks
+version: 1

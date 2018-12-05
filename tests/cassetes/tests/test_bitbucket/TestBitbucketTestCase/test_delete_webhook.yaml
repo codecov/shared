@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: DELETE
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
+  response:
+    body: {string: ''}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Content-Type
+      - [text/plain]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 14:48:36 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-188]
+    - !!python/tuple
+      - Etag
+      - ['"d41d8cd98f00b204e9800998ecf8427e"']
+    - !!python/tuple
+      - X-Static-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [webhook]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.100928068161']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['182']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Cache-Info
+      - [not cacheable; request wasn't a GET or HEAD]
+    - !!python/tuple
+      - Content-Length
+      - ['0']
+    status: {code: 204, message: No Content}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
+version: 1

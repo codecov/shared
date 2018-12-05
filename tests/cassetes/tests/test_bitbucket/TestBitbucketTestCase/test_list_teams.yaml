@@ -1,0 +1,75 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://bitbucket.org/api/1.0/user/privileges?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516660&oauth_nonce=f0b5b624b4854a54928d3912efd1d8f0&oauth_version=1.0&oauth_signature=XaYvo0Go7Z17jBkkIvAYWhkQbQ4%3D
+  response:
+    body: {string: '{"teams": {}}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Cache-Control
+      - [max-age=900]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 15:04:21 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-159]
+    - !!python/tuple
+      - X-Static-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - Etag
+      - ['"a6e0c24c3bbc6b5a00497cb4d74e8c41"']
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.021103143692']
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [account]
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Request-Count
+      - ['432']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Cache-Info
+      - [caching]
+    - !!python/tuple
+      - Content-Length
+      - ['13']
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/1.0/user/privileges?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516660&oauth_nonce=f0b5b624b4854a54928d3912efd1d8f0&oauth_version=1.0&oauth_signature=XaYvo0Go7Z17jBkkIvAYWhkQbQ4%3D
+version: 1

@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: DELETE
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/81514270?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599361&oauth_nonce=c5741bb13a274e2498771eaaea9801b6&oauth_version=1.0&oauth_signature=OqbEplAh6OV9nhVeDgZBYXCrJVQ%3D
+  response:
+    body: {string: '{"pull_request_id": 1, "comment_id": 81514270, "pr_repo": {"owner":
+        "ThiagoCodecov", "slug": "example-python"}, "deleted": true, "filename_hash":
+        null, "filename": null, "is_entity_author": true, "parent_id": null, "comparespec":
+        "ThiagoCodecov/example-python:3017d534ab41\rb92edba44fdd", "line_from": null,
+        "line_to": null, "dest_rev": null, "anchor": null, "is_spam": false}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 14:02:41 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-144]
+    - !!python/tuple
+      - Etag
+      - ['"187c71d29354a6e7392578183b6c5c62"']
+    - !!python/tuple
+      - X-Static-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [pullrequest]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.130213022232']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['312']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Cache-Info
+      - [not cacheable; request wasn't a GET or HEAD]
+    - !!python/tuple
+      - Content-Length
+      - ['376']
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/81514270?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599361&oauth_nonce=c5741bb13a274e2498771eaaea9801b6&oauth_version=1.0&oauth_signature=OqbEplAh6OV9nhVeDgZBYXCrJVQ%3D
+version: 1
