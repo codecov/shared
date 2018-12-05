@@ -11,6 +11,7 @@ from tornado.escape import json_decode, json_encode, url_escape
 
 from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.exceptions import ObjectNotFoundException
 
 
 class Github(BaseHandler, OAuth2Mixin):
@@ -113,7 +114,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 if reraise:
                     error = ClientError(e.response.code,
                                         'GitHub API: %s' % e.message)
-                    if '"Bad credentials"' in e.response.body:
+                    if b'"Bad credentials"' in e.response.body:
                         error.login = True
                     raise error
 
@@ -223,22 +224,26 @@ class Github(BaseHandler, OAuth2Mixin):
                     name=parent['name'],
                     language=self._validate_language(parent['language']),
                     private=parent['private'],
-                    branch=parent['default_branch'].encode('utf-8',
-                                                           'replace')))
+                    branch=parent['default_branch']
+                )
+            )
         else:
             fork = None
 
         return dict(
             owner=dict(
                 service_id=res['owner']['id'],
-                username=username,
-                repo=dict(
-                    service_id=res['id'],
-                    name=repo,
-                    language=self._validate_language(res['language']),
-                    private=res['private'],
-                    fork=fork,
-                    branch=res['default_branch'] or 'master')))
+                username=username
+            ),
+            repo=dict(
+                service_id=res['id'],
+                name=repo,
+                language=self._validate_language(res['language']),
+                private=res['private'],
+                fork=fork,
+                branch=res['default_branch'] or 'master'
+            )
+        )
 
     async def list_repos_using_installation(self, username):
         """
@@ -307,8 +312,7 @@ class Github(BaseHandler, OAuth2Mixin):
                             language=self._validate_language(
                                 parent['language']),
                             private=parent['private'],
-                            branch=parent['default_branch'].encode(
-                                'utf-8', 'replace')))
+                            branch=parent['default_branch']))
                 else:
                     fork = None
 
@@ -321,8 +325,7 @@ class Github(BaseHandler, OAuth2Mixin):
                             name=_r,
                             language=self._validate_language(repo['language']),
                             private=repo['private'],
-                            branch=repo['default_branch'].encode(
-                                'utf-8', 'replace'),
+                            branch=repo['default_branch'],
                             fork=fork)))
 
             if len(repos) < 100:
@@ -377,26 +380,35 @@ class Github(BaseHandler, OAuth2Mixin):
                 events=events,
                 config=dict(url=url, secret=secret, content_type='json')),
             token=token)
-        return res['id']
+        return res
 
     async def edit_webhook(self, hookid, name, url, events, secret,
                            token=None):
         # https://developer.github.com/v3/repos/hooks/#edit-a-hook
-        await self.api(
-            'patch',
-            '/repos/%s/hooks/%s' % (self.slug, hookid),
-            body=dict(
-                name='web',
-                active=True,
-                events=events,
-                config=dict(url=url, secret=secret, content_type='json')),
-            token=token)
-        return True
+        try:
+            return await self.api(
+                'patch',
+                '/repos/%s/hooks/%s' % (self.slug, hookid),
+                body=dict(
+                    name='web',
+                    active=True,
+                    events=events,
+                    config=dict(url=url, secret=secret, content_type='json')),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Cannot find webhook {hookid}")
+            raise
 
     async def delete_webhook(self, hookid, token=None):
         # https://developer.github.com/v3/repos/hooks/#delete-a-hook
-        await self.api(
-            'delete', '/repos/%s/hooks/%s' % (self.slug, hookid), token=token)
+        try:    
+            await self.api(
+                'delete', '/repos/%s/hooks/%s' % (self.slug, hookid), token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Cannot find webhook {hookid}")
+            raise
         return True
 
     # Comments
@@ -408,23 +420,32 @@ class Github(BaseHandler, OAuth2Mixin):
             '/repos/%s/issues/%s/comments' % (self.slug, issueid),
             body=dict(body=body),
             token=token)
-        return res['id']
+        return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
-        await self.api(
-            'patch',
-            '/repos/%s/issues/comments/%s' % (self.slug, commentid),
-            body=dict(body=body),
-            token=token)
-        return commentid
+        try:
+            return await self.api(
+                'patch',
+                '/repos/%s/issues/comments/%s' % (self.slug, commentid),
+                body=dict(body=body),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Cannot find comment {commentid} from PR {issueid}")
+            raise
 
     async def delete_comment(self, issueid, commentid, token=None):
         # https://developer.github.com/v3/issues/comments/#delete-a-comment
-        await self.api(
-            'delete',
-            '/repos/%s/issues/comments/%s' % (self.slug, commentid),
-            token=token)
+        try:
+            await self.api(
+                'delete',
+                '/repos/%s/issues/comments/%s' % (self.slug, commentid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Cannot find comment {commentid} from PR {issueid}")
+            raise
         return True
 
     # Commit Status
@@ -441,15 +462,18 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/repos/statuses
         assert status in ('pending', 'success', 'error',
                           'failure'), 'status not valid'
-        await self.api(
-            'post',
-            '/repos/%s/statuses/%s' % (self.slug, commit),
-            body=dict(
-                state=status,
-                target_url=url,
-                context=context,
-                description=description),
-            token=token)
+        try:
+            res = await self.api(
+                'post',
+                '/repos/%s/statuses/%s' % (self.slug, commit),
+                body=dict(
+                    state=status,
+                    target_url=url,
+                    context=context,
+                    description=description),
+                token=token)
+        except ClientError as ce:
+            raise
         if merge_commit:
             await self.api(
                 'post',
@@ -460,7 +484,7 @@ class Github(BaseHandler, OAuth2Mixin):
                     context=merge_commit[1],
                     description=description),
                 token=token)
-        return True
+        return res
 
     async def get_commit_statuses(self, commit, token=None):
         page = 0
@@ -508,16 +532,23 @@ class Github(BaseHandler, OAuth2Mixin):
             ref=ref,
             token=token)
         return dict(
-            content=b64decode(content['content'], commitid=content['sha']))
+            content=b64decode(content['content']),
+            commitid=content['sha']
+        )
 
     async def get_commit_diff(self, commit, context=None, token=None):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
-        res = await self.api(
-            'get',
-            '/repos/%s/commits/%s' % (self.slug, commit),
-            headers={'Accept': 'application/vnd.github.v3.diff'},
-            token=token)
-        return self.diff_to_json(res)
+        try:
+            res = await self.api(
+                'get',
+                '/repos/%s/commits/%s' % (self.slug, commit),
+                headers={'Accept': 'application/vnd.github.v3.diff'},
+                token=token)
+        except ClientError as ce:
+            if ce.code == 422:
+                raise ObjectNotFoundException(f"Commit with id {commit} does not exist")
+            raise
+        return self.diff_to_json(res.decode('utf-8'))
 
     async def get_compare(self,
                           base,
@@ -547,45 +578,52 @@ class Github(BaseHandler, OAuth2Mixin):
         # commits are returned in reverse chronological order. ie [newest...oldest]
         return dict(
             diff=dict(
-                files=files,
-                commits=[
-                    dict(
-                        commitid=c['sha'],
-                        message=c['commit']['message'],
-                        timestamp=c['commit']['author']['date'],
-                        author=dict(
-                            id=(c['author'] or {}).get('id'),
-                            username=(c['author'] or {}).get('login'),
-                            name=c['commit']['author']['name'],
-                            email=c['commit']['author']['email']))
-                    for c in ([res['base_commit']] + res['commits'])
-                ][::-1]))
+                files=files
+            ),
+            commits=[
+                dict(
+                    commitid=c['sha'],
+                    message=c['commit']['message'],
+                    timestamp=c['commit']['author']['date'],
+                    author=dict(
+                        id=(c['author'] or {}).get('id'),
+                        username=(c['author'] or {}).get('login'),
+                        name=c['commit']['author']['name'],
+                        email=c['commit']['author']['email']))
+                for c in ([res['base_commit']] + res['commits'])
+            ][::-1]
+        )
 
     async def get_commit(self, commit, token=None):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
-        res = await self.api(
-            'get', '/repos/%s/commits/%s' % (self.slug, commit), token=token)
+        try:
+            res = await self.api(
+                'get', '/repos/%s/commits/%s' % (self.slug, commit), token=token)
+        except ClientError as ce:
+            if ce.code == 422:
+                raise ObjectNotFoundException(f"Commit with id {commit} does not exist")
+            raise
         return dict(
             author=dict(
-                id=str(
-                    res['author']['id'] if res['author'] else None,
-                    username=res['author']['login'] if res['author'] else None,
-                    email=res['commit']['author'].get('email'),
-                    name=res['commit']['author'].get('name')),
-                commitid=commit,
-                parents=[p['sha'] for p in res['parents']],
-                message=res['commit']['message'],
-                timestamp=res['commit']['author'].get('date')))
+                id=str(res['author']['id']) if res['author'] else None,
+                username=res['author']['login'] if res['author'] else None,
+                email=res['commit']['author'].get('email'),
+                name=res['commit']['author'].get('name')
+            ),
+            commitid=commit,
+            parents=[p['sha'] for p in res['parents']],
+            message=res['commit']['message'],
+            timestamp=res['commit']['author'].get('date'))
 
     # Pull Requests
     # -------------
     def _pull(self, pull):
         return dict(
             base=dict(
-                branch=pull['base']['ref'].encode('utf-8', 'replace'),
+                branch=pull['base']['ref'],
                 commitid=pull['base']['sha']),
             head=dict(
-                branch=pull['head']['ref'].encode('utf-8', 'replace'),
+                branch=pull['head']['ref'],
                 commitid=pull['head']['sha']),
             state='merged' if pull['merged'] else pull['state'],
             title=pull['title'],
@@ -594,8 +632,13 @@ class Github(BaseHandler, OAuth2Mixin):
 
     async def get_pull_request(self, pullid, token=None):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
-        res = await self.api(
-            'get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
+        try:
+            res = await self.api(
+                'get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Pull Request {pullid} not found")
+            raise
         return self._pull(res)
 
     async def get_pull_requests(self, state='open', token=None):

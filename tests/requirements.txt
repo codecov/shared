@@ -4,3 +4,4 @@ pytest
 pytest-cov
 beautifulsoup4
 pytest-asyncio
+vcrpy

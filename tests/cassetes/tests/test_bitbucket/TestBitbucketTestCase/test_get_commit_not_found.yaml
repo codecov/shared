@@ -1,0 +1,75 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/none?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516650&oauth_nonce=c540a957a26c4efa8c99d95b3559ec24&oauth_version=1.0&oauth_signature=1lAqnWwUkGv4ivSZ3G%2BGByd7Alo%3D
+  response:
+    body: {string: '{"type": "error", "error": {"message": "Changeset not found."}}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Cache-Control
+      - [max-age=900]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 15:04:11 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-188]
+    - !!python/tuple
+      - Etag
+      - ['"ee9474a321558b5791a6292d0f19fd94"']
+    - !!python/tuple
+      - X-Static-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [repository]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.0715439319611']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['200']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - Last-Modified
+      - ['Tue, 06 Nov 2018 12:53:06 GMT']
+    - !!python/tuple
+      - X-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Cache-Info
+      - [caching]
+    - !!python/tuple
+      - Content-Length
+      - ['63']
+    status: {code: 404, message: Not Found}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/none?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516650&oauth_nonce=c540a957a26c4efa8c99d95b3559ec24&oauth_version=1.0&oauth_signature=1lAqnWwUkGv4ivSZ3G%2BGByd7Alo%3D
+version: 1

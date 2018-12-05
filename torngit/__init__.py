@@ -12,17 +12,17 @@ from torngit.bitbucket_server import BitbucketServer
 
 def get(git, **data):
     if git == 'github':
-        return Github.new(**data)
+        return Github(**data)
     elif git == 'github_enterprise':
-        return GithubEnterprise.new(**data)
+        return GithubEnterprise(**data)
     elif git == 'bitbucket':
-        return Bitbucket.new(**data)
+        return Bitbucket(**data)
     elif git == 'bitbucket_server':
-        return BitbucketServer.new(**data)
+        return BitbucketServer(**data)
     elif git == 'gitlab':
-        return Gitlab.new(**data)
+        return Gitlab(**data)
     elif git == 'gitlab_enterprise':
         if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID') or os.getenv('GITLAB_8'):
-            return GitlabEnterprise3.new(**data)
+            return GitlabEnterprise3(**data)
         else:
-            return GitlabEnterprise.new(**data)
+            return GitlabEnterprise(**data)

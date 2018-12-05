@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/statuses
+  response:
+    body: {string: '[]'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Mon, 05 Nov 2018 20:02:49 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json]
+    - !!python/tuple
+      - Content-Length
+      - ['2']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - ['max-age=0, private, must-revalidate']
+    - !!python/tuple
+      - Etag
+      - [W/"d751713988987e9331980363e24189ce"]
+    - !!python/tuple
+      - Link
+      - ['<https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/statuses?id=187725&page=1&per_page=20&sha=c739768fcac68144a3a6d82305b9c4106934d31a>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/statuses?id=187725&page=1&per_page=20&sha=c739768fcac68144a3a6d82305b9c4106934d31a>;
+          rel="last"']
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Next-Page
+      - ['']
+    - !!python/tuple
+      - X-Page
+      - ['1']
+    - !!python/tuple
+      - X-Per-Page
+      - ['20']
+    - !!python/tuple
+      - X-Prev-Page
+      - ['']
+    - !!python/tuple
+      - X-Request-Id
+      - [060be9e7-929c-4c24-aa93-df4459474b89]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.039247']
+    - !!python/tuple
+      - X-Total
+      - ['0']
+    - !!python/tuple
+      - X-Total-Pages
+      - ['1']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['1']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['599']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541448229']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Tue, 05 Nov 2018 20:03:49 GMT']
+    status: {code: 200, message: OK}
+    url: https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/statuses
+version: 1

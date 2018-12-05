@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/repository/files/folder%2Fhello-world.txt?ref=5716de23
+  response:
+    body: {string: '{"file_name":"hello-world.txt","file_path":"folder/hello-world.txt","size":12,"encoding":"base64","content_sha256":"a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447","ref":"5716de23","blob_id":"3b18e512dba79e4c8300dd08aeb37f8e728b8dad","commit_id":"5716de23b27020419d1a40dd93b469c041a1eeef","last_commit_id":"5716de23b27020419d1a40dd93b469c041a1eeef","content":"aGVsbG8gd29ybGQK"}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 05:37:40 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json]
+    - !!python/tuple
+      - Content-Length
+      - ['396']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - ['max-age=0, private, must-revalidate']
+    - !!python/tuple
+      - Etag
+      - [W/"759767a41423c19cd8f76131b2ada4f8"]
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Gitlab-Blob-Id
+      - [3b18e512dba79e4c8300dd08aeb37f8e728b8dad]
+    - !!python/tuple
+      - X-Gitlab-Commit-Id
+      - [5716de23b27020419d1a40dd93b469c041a1eeef]
+    - !!python/tuple
+      - X-Gitlab-Content-Sha256
+      - [a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447]
+    - !!python/tuple
+      - X-Gitlab-Encoding
+      - [base64]
+    - !!python/tuple
+      - X-Gitlab-File-Name
+      - [hello-world.txt]
+    - !!python/tuple
+      - X-Gitlab-File-Path
+      - [folder/hello-world.txt]
+    - !!python/tuple
+      - X-Gitlab-Last-Commit-Id
+      - [5716de23b27020419d1a40dd93b469c041a1eeef]
+    - !!python/tuple
+      - X-Gitlab-Ref
+      - [5716de23]
+    - !!python/tuple
+      - X-Gitlab-Size
+      - ['12']
+    - !!python/tuple
+      - X-Request-Id
+      - [ec0fd6ff-5bb2-4fba-b185-90604d3853da]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.038130']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['1']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['599']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541482720']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Wed, 06 Nov 2018 05:38:40 GMT']
+    status: {code: 200, message: OK}
+    url: https://gitlab.com/api/v4/projects/187725/repository/files/folder%2Fhello-world.txt?ref=5716de23
+version: 1

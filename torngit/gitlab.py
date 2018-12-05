@@ -11,6 +11,7 @@ from tornado.httpclient import HTTPError as ClientError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.exceptions import ObjectNotFoundException
 
 
 class Gitlab(BaseHandler):
@@ -73,7 +74,6 @@ class Gitlab(BaseHandler):
         start = time()
         try:
             res = await self.fetch(url, **kwargs)
-
         except ClientError as e:
             if e.response is None:
                 raise ClientError(
@@ -86,7 +86,6 @@ class Gitlab(BaseHandler):
                 'GitLab HTTP %s' % e.response.code,
                 body=e.response.body,
                 **_log)
-
             raise
 
         except socket.gaierror:
@@ -103,8 +102,7 @@ class Gitlab(BaseHandler):
             stdout.write("source=%s measure#service=%dms\n" %
                          (self.service, int((time() - start) * 1000)))
 
-    async def get_authenticated_user(self):
-        kwargs = dict(code=self.get_argument("code"))
+    async def get_authenticated_user(self, **kwargs):
         creds = self._oauth_consumer_token()
         creds = dict(client_id=creds['key'], client_secret=creds['secret'])
         kwargs.update(creds)
@@ -132,16 +130,15 @@ class Gitlab(BaseHandler):
             '/projects/%s/hooks' % self.data['repo']['service_id'],
             body=dict(
                 url=url,
-                enable_ssl_verification=self.verify_ssl
-                if type(self.verify_ssl) is bool else True,
+                enable_ssl_verification=self.verify_ssl if isinstance(self.verify_ssl, bool) else True,
                 **events),
             token=token)
-        return res['id']
+        return res
 
     async def edit_webhook(self, hookid, name, url, events, secret,
                            token=None):
         # http://doc.gitlab.com/ce/api/projects.html#edit-project-hook
-        await self.api(
+        return await self.api(
             'put',
             '/projects/%s/hooks/%s' % (self.data['repo']['service_id'],
                                        hookid),
@@ -151,15 +148,19 @@ class Gitlab(BaseHandler):
                 if type(self.verify_ssl) is bool else True,
                 **events),
             token=token)
-        return True
 
     async def delete_webhook(self, hookid, token=None):
         # http://docs.gitlab.com/ce/api/projects.html#delete-project-hook
-        await self.api(
-            'delete',
-            '/projects/%s/hooks/%s' % (self.data['repo']['service_id'],
-                                       hookid),
-            token=token)
+        try:
+            await self.api(
+                'delete',
+                '/projects/%s/hooks/%s' % (self.data['repo']['service_id'],
+                                           hookid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Webhook with id {hookid} does not exist")
+            raise
         return True
 
     def diff_to_json(self, diff):
@@ -170,10 +171,10 @@ class Gitlab(BaseHandler):
                     mode = 'deleted file mode\n'
                 d['diff'] = ('diff --git a/%(old_path)s b/%(new_path)s\n' %
                              d) + mode + d['diff']
-            return BaseHandler.diff_to_json(
-                self, '\n'.join(map(lambda a: a['diff'], diff)))
+            return super().diff_to_json(
+                '\n'.join(map(lambda a: a['diff'], diff)))
         else:
-            return BaseHandler.diff_to_json(self, diff)
+            return super().diff_to_json(self, diff)
 
     async def list_repos(self, username=None, token=None):
         """
@@ -225,8 +226,7 @@ class Gitlab(BaseHandler):
                                 private=(repo['visibility'] != 'public'),
                                 language=None,
                                 branch=(repo['default_branch']
-                                        or 'master').encode(
-                                            'utf-8', 'replace'))))
+                                        or 'master'))))
                 if len(repos) < 50:
                     break
 
@@ -242,11 +242,16 @@ class Gitlab(BaseHandler):
 
     async def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
-        pull = await self.api(
-            'get',
-            '/projects/{}/merge_requests/{}'.format(
-                self.data['repo']['service_id'], pullid),
-            token=token)
+        try:
+            pull = await self.api(
+                'get',
+                '/projects/{}/merge_requests/{}'.format(
+                    self.data['repo']['service_id'], pullid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"PR with id {pullid} does not exist")
+            raise
 
         if pull:
             # get first commit on pull
@@ -276,17 +281,17 @@ class Gitlab(BaseHandler):
 
             return dict(
                 base=dict(
-                    branch=(pull['target_branch'] or ''
-                            ).encode('utf-8', 'replace', commitid=parent),
-                    head=dict(
-                        branch=(pull['source_branch'] or ''
-                                ).encode('utf-8', 'replace'),
-                        commitid=pull['sha']),
-                    state='open' if pull['state'] in (
-                        'opened', 'reopened') else pull['state'],
-                    title=pull['title'],
-                    id=str(pull['iid']),
-                    number=str(pull['iid'])))
+                    branch=pull['target_branch'] or ''
+                ),
+                head=dict(
+                    branch=pull['source_branch'] or '',
+                    commitid=pull['sha']
+                ),
+                state='open' if pull['state'] in ('opened', 'reopened') else pull['state'],
+                title=pull['title'],
+                id=str(pull['iid']),
+                number=str(pull['iid'])
+            )
 
     async def set_commit_status(self,
                                 commit,
@@ -299,17 +304,20 @@ class Gitlab(BaseHandler):
                                 token=None):
         # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
         status = dict(error='failed', failure='failed').get(status, status)
-        res = await self.api(
-            'post',
-            '/projects/%s/statuses/%s' % (self.data['repo']['service_id'],
-                                          commit),
-            body=dict(
-                state=status,
-                target_url=url,
-                coverage=coverage,
-                name=context,
-                description=description),
-            token=token)
+        try:
+            res = await self.api(
+                'post',
+                '/projects/%s/statuses/%s' % (self.data['repo']['service_id'],
+                                              commit),
+                body=dict(
+                    state=status,
+                    target_url=url,
+                    coverage=coverage,
+                    name=context,
+                    description=description),
+                token=token)
+        except ClientError as ce:
+            raise
 
         if merge_commit:
             await self.api(
@@ -350,41 +358,53 @@ class Gitlab(BaseHandler):
 
     async def post_comment(self, pullid, body, token=None):
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
-        res = await self.api(
+        return await self.api(
             'post',
             '/projects/%s/merge_requests/%s/notes' %
             (self.data['repo']['service_id'], pullid),
             body=dict(body=body),
             token=token)
-        return res['id']
 
     async def edit_comment(self, pullid, commentid, body, token=None):
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
-        await self.api(
-            'put',
-            '/projects/%s/merge_requests/%s/notes/%s' %
-            (self.data['repo']['service_id'], pullid, commentid),
-            body=dict(body=body),
-            token=token)
-        return commentid
+        try:
+            return await self.api(
+                'put',
+                '/projects/%s/merge_requests/%s/notes/%s' %
+                (self.data['repo']['service_id'], pullid, commentid),
+                body=dict(body=body),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Comment {commentid} in PR {pullid} does not exist")
+            raise
 
     async def delete_comment(self, pullid, commentid, token=None):
         # https://docs.gitlab.com/ce/api/notes.html#delete-a-merge-request-note
-        await self.api(
-            'delete',
-            '/projects/%s/merge_requests/%s/notes/%s' %
-            (self.data['repo']['service_id'], pullid, commentid),
-            token=token)
+        try:
+            await self.api(
+                'delete',
+                '/projects/%s/merge_requests/%s/notes/%s' %
+                (self.data['repo']['service_id'], pullid, commentid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Comment {commentid} in PR {pullid} does not exist")
+            raise
         return True
 
     async def get_commit(self, commit, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-a-single-commit
-        res = await self.api(
-            'get',
-            '/projects/%s/repository/commits/%s' %
-            (self.data['repo']['service_id'], commit),
-            token=token)
-
+        try:
+            res = await self.api(
+                'get',
+                '/projects/%s/repository/commits/%s' %
+                (self.data['repo']['service_id'], commit),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException
+            raise
         # http://doc.gitlab.com/ce/api/users.html
         email = res['author_email']
         name = res['author_name']
@@ -400,12 +420,13 @@ class Gitlab(BaseHandler):
                     name = authors[0]['name']
                     break
 
-        return (dict(
+        return dict(
             author=dict(id=_id, username=username, email=email, name=name),
             message=res['message'],
             parents=res['parent_ids'],
             commitid=commit,
-            timestamp=res['committed_date']))
+            timestamp=res['committed_date']
+        )
 
     async def get_pull_request_commits(self, pullid, token=None):
         # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
@@ -468,10 +489,8 @@ class Gitlab(BaseHandler):
                     return pull['iid']
 
         elif branch:
-            branch = branch.encode('utf-8', 'replace') if branch else ''
             for pull in res:
-                if (pull['source_branch'] and pull['source_branch'].encode(
-                        'utf-8', 'replace') == branch):
+                if (pull['source_branch'] and pull['source_branch'] == branch):
                     return pull['iid']
 
         else:
@@ -487,11 +506,12 @@ class Gitlab(BaseHandler):
                 '/projects/%s' % self.data['repo']['service_id'],
                 token=token)
             permission = max(
-                [(res['permissions']['group_access'] or {}).get('access_level')
-                 or 0, (res['permissions']['project_access']
-                        or {}).get('access_level') or 0])
+                [
+                    (res['permissions']['group_access'] or {}).get('access_level') or 0,
+                    (res['permissions']['project_access'] or {}).get('access_level') or 0
+                ])
             can_edit = permission > 20
-        except Exception:
+        except ClientError:
             if self.data['repo']['private']:
                 raise
 
@@ -536,8 +556,7 @@ class Gitlab(BaseHandler):
                 service_id=res['id'],
                 private=res['visibility'] != 'public',
                 language=None,
-                branch=(res['default_branch'] or 'master').encode(
-                    'utf-8', 'replace'),
+                branch=(res['default_branch'] or 'master'),
                 name=repo)))
 
     async def get_source(self, path, ref, token=None):
@@ -566,14 +585,13 @@ class Gitlab(BaseHandler):
             token=token)
 
         return dict(
-            diff=self.diff_to_json(
-                compare['diffs'],
-                commits=[
-                    dict(
-                        commitid=c['id'],
-                        message=c['title'],
-                        timestamp=c['created_at'],
-                        author=dict(
-                            email=c['author_email'], name=c['author_name']))
-                    for c in compare['commits']
-                ][::-1]))
+            diff=self.diff_to_json(compare['diffs']),
+            commits=[
+                dict(
+                    commitid=c['id'],
+                    message=c['title'],
+                    timestamp=c['created_at'],
+                    author=dict(
+                        email=c['author_email'], name=c['author_name']))
+                for c in compare['commits']
+            ][::-1])

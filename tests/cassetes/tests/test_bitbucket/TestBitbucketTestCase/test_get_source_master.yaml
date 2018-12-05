@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/src/master/tests.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516659&oauth_nonce=72a2e5b4254748889ace5044f25e9ff5&oauth_version=1.0&oauth_signature=7rUOr7HfUCOoF6WK8BUX5HkAfFs%3D
+  response:
+    body: {string: '{"node": "b92edba44fdd", "path": "tests.py", "data": "import unittest\n\nimport
+        awesome\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(awesome.smile(),
+        \":)\")\n\n\nif __name__ == ''__main__'':\n    unittest.main()\n", "size":
+        193}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Cache-Control
+      - ['no-cache, no-store, must-revalidate, max-age=0']
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 15:04:19 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-161]
+    - !!python/tuple
+      - Expires
+      - ['Tue, 06 Nov 2018 15:04:19 GMT']
+    - !!python/tuple
+      - Etag
+      - ['"21df1991cb888f0fb07751a2710fa57f"']
+    - !!python/tuple
+      - X-Static-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [repository]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.0401740074158']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['652']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - Last-Modified
+      - ['Tue, 06 Nov 2018 15:04:19 GMT']
+    - !!python/tuple
+      - X-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Cache-Info
+      - ['not cacheable; response specified "Cache-Control: no-cache"']
+    - !!python/tuple
+      - Content-Length
+      - ['276']
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/src/master/tests.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516659&oauth_nonce=72a2e5b4254748889ace5044f25e9ff5&oauth_version=1.0&oauth_signature=7rUOr7HfUCOoF6WK8BUX5HkAfFs%3D
+version: 1

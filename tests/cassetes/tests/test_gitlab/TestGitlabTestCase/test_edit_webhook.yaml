@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"url": "http://requestbin.net/r/1ecyaj51", "enable_ssl_verification":
+      true, "tag_push_events": true, "note_events": true}'
+    headers:
+      Accept: [application/json]
+      Content-Type: [application/json]
+      User-Agent: [Default]
+    method: PUT
+    uri: https://gitlab.com/api/v4/projects/187725/hooks/422507
+  response:
+    body: {string: '{"id":422507,"url":"http://requestbin.net/r/1ecyaj51","created_at":"2018-11-06T04:51:57.164Z","push_events":true,"tag_push_events":true,"merge_requests_events":false,"repository_update_events":false,"enable_ssl_verification":true,"project_id":187725,"issues_events":false,"confidential_issues_events":false,"note_events":true,"confidential_note_events":null,"pipeline_events":false,"wiki_page_events":false,"job_events":true,"push_events_branch_filter":null}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 05:00:26 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json]
+    - !!python/tuple
+      - Content-Length
+      - ['458']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - ['max-age=0, private, must-revalidate']
+    - !!python/tuple
+      - Etag
+      - [W/"9def5c5ade40d26af196eeecaf5fee6a"]
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Request-Id
+      - [73c95306-3e10-49f7-8f1e-6a92e7633d06]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.138632']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['1']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['599']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541480486']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Wed, 06 Nov 2018 05:01:26 GMT']
+    status: {code: 200, message: OK}
+    url: https://gitlab.com/api/v4/projects/187725/hooks/422507
+version: 1
