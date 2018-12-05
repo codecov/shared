@@ -1,131 +1,81 @@
 import re
-from tornado import gen
-from tornado.ioloop import IOLoop
+from typing import Tuple
+
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
-
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
-def sync(func):
-    def wrapped(*args, **kwargs):
-        if kwargs.pop('_in_loop', False):
-            return func(*args, **kwargs)
-        else:
-            @gen.coroutine
-            def inner():
-                res = yield func(*args, **kwargs)
-                raise gen.Return(res)
-            return IOLoop.current().run_sync(inner)
-    return wrapped
-
-
 def unicode_escape(string, escape=True):
-    if isinstance(string, basestring):
+    if isinstance(string, str):
         if escape:
             return url_escape(string, plus=False).replace('%2F', '/')
-        elif isinstance(string, unicode):
+        elif isinstance(string, str):
             return string.encode('utf-8', 'replace')
         return string
     else:
         return str(string)
 
 
-methods = (
-    'get_repository',
-    'get_branches',
-    'get_authenticated_user',
-    'get_is_admin',
-    'get_authenticated',
-    'list_repos_using_installation',
-    'list_repos',
-    'list_teams',
-    '_get_head_of',
-    'get_pull_request_commits',
-    'post_webhook',
-    'edit_webhook',
-    'delete_webhook',
-    'post_comment',
-    'edit_comment',
-    'delete_comment',
-    'set_commit_status',
-    'get_commit_statuses',
-    'get_commit_status',
-    'get_source',
-    'get_commit_diff',
-    'get_compare',
-    'get_commit',
-    'get_pull_request',
-    'get_pull_requests',
-    'find_pull_request'
-)
-
-
-class BaseHandler:
+class BaseHandler(object):
     _log_handler = None
     _repo_url = None
-    _client = None
     _aws_key = None
-    _ioloop = None
     _oauth = None
     _token = None
     verify_ssl = None
 
-    # Important. Leave this commented out to properly override
-    # def get_oauth_token(self, service):
+    valid_languages = (
+        'javascript', 'shell', 'python', 'ruby', 'perl',
+        'dart', 'java', 'c', 'clojure', 'd', 'fortran',
+        'go', 'groovy', 'kotlin', 'php', 'r', 'scala',
+        'swift', 'objective-c', 'xtend'
+    )
 
     def _oauth_consumer_token(self):
         return self._oauth or self.get_oauth_consumer_token()
 
-    @classmethod
-    def new(cls,
-            ioloop=None,
+    def __init__(
+            self,
             log_handler=None,
             oauth_consumer_token=None,
             timeouts=None,
             token=None,
-            async=True,
             verify_ssl=None,
             **kwargs):
-        self = cls()
-        self._ioloop = ioloop
+        self._client = None
         self._timeouts = timeouts or [10, 30]
         self._token = token
         self._oauth = oauth_consumer_token
-        self.data = {
-            'owner': {},
-            'repo': {}
-        }
+        self.data = {'owner': {}, 'repo': {}}
         self.verify_ssl = verify_ssl
 
         self._log_handler = log_handler
         self.data.update(kwargs)
-
-        if not async:
-            for method in methods:
-                if hasattr(self, method):
-                    setattr(self, method, sync(getattr(self, method)))
-
-        return self
 
     def log(self, *args, **kwargs):
         if self._log_handler:
             self._log_handler(*args, **kwargs)
 
     def __repr__(self):
-        return '<%s slug=%s ownerid=%s repoid=%s>' % (self.service, self.slug, self.data['owner'].get('ownerid'), self.data['repo'].get('repoid'))
+        return '<%s slug=%s ownerid=%s repoid=%s>' % (
+            self.service, self.slug, self.data['owner'].get('ownerid'),
+            self.data['repo'].get('repoid'))
 
     @property
-    def fetch(self):
-        if not self._client:
-            self._client = AsyncHTTPClient(self._ioloop)
-        return self._client.fetch
+    def client(self):
+        if self._client is None:
+            self._client = AsyncHTTPClient()
+        return self._client
+
+    async def fetch(self, *args, **kwargs):
+        return await self.client.fetch(*args, **kwargs)
 
     def _validate_language(self, language):
         if language:
             language = language.lower()
-            if language in ('javascript', 'shell', 'python', 'ruby', 'perl', 'dart', 'java', 'c', 'clojure', 'd', 'fortran', 'go', 'groovy', 'kotlin', 'php', 'r', 'scala', 'swift', 'objective-c', 'xtend'):
+            if language in self.valid_languages:
                 return language
 
     def renamed_repository(self, repo):
@@ -150,14 +100,16 @@ class BaseHandler:
     @property
     def token(self):
         if not self._token:
-            self._token = self.get_oauth_token(self.service)
+            self._token = self._oauth_consumer_token()
         return self._token
 
     @property
     def slug(self):
         if self.data['owner'] and self.data['repo']:
-            if self.data['owner'].get('username') and self.data['repo'].get('name'):
-                return ('%s/%s' % (self.data['owner']['username'], self.data['repo']['name']))
+            if self.data['owner'].get('username') and self.data['repo'].get(
+                    'name'):
+                return ('%s/%s' % (self.data['owner']['username'],
+                                   self.data['repo']['name']))
 
     def diff_to_json(self, diff):
         """
@@ -172,7 +124,7 @@ class BaseHandler:
 
             try:
                 before, after = _diff.pop(0).split(' b/', 1)
-            except:
+            except IndexError:
                 before, after = None, None
                 # find the --- a
                 for source in _diff:
@@ -187,9 +139,11 @@ class BaseHandler:
 
             # Is the file empty, skipped, etc
             # -------------------------------
-            _file = dict(type='new' if before == '/dev/null' else 'modified',
-                         before=None if before == after or before == '/dev/null' else before,
-                         segments=[])
+            _file = dict(
+                type='new' if before == '/dev/null' else 'modified',
+                before=None
+                if before == after or before == '/dev/null' else before,
+                segments=[])
 
             results[after] = _file
 
@@ -247,12 +201,106 @@ class BaseHandler:
             return dict(files=self._add_diff_totals(results))
 
     def _add_diff_totals(self, diff):
-        for fname, data in diff.iteritems():
+        for fname, data in diff.items():
             rm = 0
             add = 0
             if 'segments' in data:
                 for segment in data['segments']:
-                    rm += sum([1 for line in segment['lines'] if line[0] == '-'])
-                    add += sum([1 for line in segment['lines'] if line[0] == '+'])
+                    rm += sum(
+                        [1 for line in segment['lines'] if line[0] == '-'])
+                    add += sum(
+                        [1 for line in segment['lines'] if line[0] == '+'])
             data['stats'] = dict(added=add, removed=rm)
         return diff
+
+    # COMMENT LOGIC
+
+    async def delete_comment(self, pullid: str, commentid: str, token: str=None) -> bool:
+        """Deletes a comment on a PR from the provider
+
+        Args:
+            pullid (str): The pull request identifier. If not str, will be stingified on the
+                formatting of url
+            commentid (str): The commend identifier
+            token (str, optional): An optional token that can be used instead of the client default
+
+        Raises:
+            NotImplementedError: If the adapter does not have this ability implemented
+            exceptions.ObjectNotFoundException: If this comment could not be found
+            tornado.httpclient.HTTPError: If any other HTTP error occurs
+        """
+        raise NotImplementedError()
+
+    async def post_comment(self, pullid: str, body: str, token=None) -> dict:
+        raise NotImplementedError()
+
+    async def edit_comment(self, pullid: str, commentid: str, body: str, token=None) -> dict:
+        raise NotImplementedError()
+
+    # PULL REQUEST LOGIC
+
+    async def find_pull_request(self, commit=None, branch=None, state='open', token=None):
+        raise NotImplementedError()
+
+    async def get_pull_request(self, pullid: str, token=None):
+        raise NotImplementedError()
+
+    async def get_pull_request_commits(self, pullid: str, token=None):
+        raise NotImplementedError()
+
+    async def get_pull_requests(self, state='open', token=None):
+        raise NotImplementedError()
+
+    # COMMIT LOGIC
+
+    async def get_commit(self, commit: str, token=None):
+        raise NotImplementedError()
+
+    async def get_commit_diff(self, commit: str, context=None, token=None):
+        raise NotImplementedError()
+
+    async def get_commit_statuses(self, commit: str, _merge=None, token=None):
+        raise NotImplementedError()
+
+    async def set_commit_status(self, commit: str, status, context, description, url, coverage=None, merge_commit=None, token=None):
+        raise NotImplementedError()
+
+    # WEBHOOK LOGIC
+
+    async def post_webhook(self, name, url, events: dict, secret, token=None) -> dict:
+        raise NotImplementedError()
+
+    async def delete_webhook(self, hookid: str, token=None):
+        raise NotImplementedError()
+
+    async def edit_webhook(self, hookid: str, name, url, events: dict, secret, token=None) -> dict:
+        raise NotImplementedError()
+
+    # OTHERS
+
+    async def get_authenticated(self, token=None) -> Tuple[bool, bool]:
+        raise NotImplementedError()
+
+    async def get_authenticated_user(self, **kwargs):
+        raise NotImplementedError()
+
+    async def get_branches(self, token=None):
+        raise NotImplementedError()
+
+    async def get_compare(self, base, head, context=None, with_commits=True, token=None):
+        raise NotImplementedError()
+
+    async def get_is_admin(self, user: dict, token=None):
+        raise NotImplementedError()
+
+    async def get_repository(self, token=None):
+        raise NotImplementedError()
+
+    async def get_source(self, path, ref, token=None):
+        raise NotImplementedError()
+
+    async def list_repos(self, username=None, token=None):
+        raise NotImplementedError()
+
+    async def list_teams(self, token=None):
+        raise NotImplementedError()

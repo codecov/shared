@@ -1,28 +1,28 @@
 import os
 
-from github import Github
-from github_enterprise import GithubEnterprise
-from gitlab import Gitlab
-from gitlab_enterprise import GitlabEnterprise
-from gitlab3 import Gitlab as Gitlab3
-from gitlab_enterprise3 import GitlabEnterprise as GitlabEnterprise3
-from bitbucket import Bitbucket
-from bitbucket_server import BitbucketServer
+from torngit.github import Github
+from torngit.github_enterprise import GithubEnterprise
+from torngit.gitlab import Gitlab
+from torngit.gitlab_enterprise import GitlabEnterprise
+from torngit.gitlab3 import Gitlab as Gitlab3
+from torngit.gitlab_enterprise3 import GitlabEnterprise as GitlabEnterprise3
+from torngit.bitbucket import Bitbucket
+from torngit.bitbucket_server import BitbucketServer
 
 
-def get(git, async=True, **data):
+def get(git, **data):
     if git == 'github':
-        return Github.new(async=async, **data)
+        return Github(**data)
     elif git == 'github_enterprise':
-        return GithubEnterprise.new(async=async, **data)
+        return GithubEnterprise(**data)
     elif git == 'bitbucket':
-        return Bitbucket.new(async=async, **data)
+        return Bitbucket(**data)
     elif git == 'bitbucket_server':
-        return BitbucketServer.new(async=async, **data)
+        return BitbucketServer(**data)
     elif git == 'gitlab':
-        return Gitlab.new(async=async, **data)
+        return Gitlab(**data)
     elif git == 'gitlab_enterprise':
         if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID') or os.getenv('GITLAB_8'):
-            return GitlabEnterprise3.new(async=async, **data)
+            return GitlabEnterprise3(**data)
         else:
-            return GitlabEnterprise.new(async=async, **data)
+            return GitlabEnterprise(**data)

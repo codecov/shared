@@ -5,20 +5,24 @@ from ddt import data, ddt
 from tornado import template
 from bs4 import BeautifulSoup as bs
 
-from tests import TornadoTestClass
-from app.helpers import get_start_of_line
-from app.services.github.github import GithubEngine
+from tests.base import BaseTestCase
+
+from torngit.base import get_start_of_line
+from torngit.github import Github
 
 
 @ddt
-class Test(TornadoTestClass):
-    repo = GithubEngine(None, 'codecov', 'ci-repo', commitid="abc123")
+class DiffTestCase(BaseTestCase):
+    repo = Github(None, 'codecov', 'ci-repo', commitid="abc123")
 
     @data(("@@ -1 +1 @@", ('1', '', '1', '')),
-          ("@@ -130,12 +142,15 @@ module.exports = (grunt) ->", ('130', '12', '142', '15')),
-          ("@@ -0,0 +1,31 @@", ('0', '0', '1', '31')),
-          ("@@ -325,44 +388,153 @@ window.Github = (function() {", ('325', '44', '388', '153')))
-    def test_line_number(self, (diff, eq)):
+          ("@@ -130,12 +142,15 @@ module.exports = (grunt) ->",
+           ('130', '12', '142', '15')), ("@@ -0,0 +1,31 @@",
+                                         ('0', '0', '1', '31')),
+          ("@@ -325,44 +388,153 @@ window.Github = (function() {",
+           ('325', '44', '388', '153')))
+    def test_line_number(self, diff_eq):
+        diff, eq = diff_eq
         assert get_start_of_line(diff).groups() == eq
 
     @data(1, 2)
@@ -34,7 +38,10 @@ class Test(TornadoTestClass):
         print("\033[92m========== end diff.json ===========\033[0m")
         assert res == result
 
-        html = template.Loader(os.path.join(os.getcwd(), 'src/html/components')).load("diff.html").generate(handler=self, commitid='abc123', diff=res)
+        html = template.Loader(
+            os.path.join(os.getcwd(),
+                         'src/html/components')).load("diff.html").generate(
+                             handler=self, commitid='abc123', diff=res)
         html = bs(html).prettify().strip()
         print("\033[92m========== html ===========\033[0m")
         print(html)

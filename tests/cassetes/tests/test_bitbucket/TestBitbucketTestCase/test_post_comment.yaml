@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: content=Hello+world
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: POST
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541520263&oauth_nonce=854733aec8354bad9b5669bac3a724e6&oauth_version=1.0&oauth_signature=FHpsqCmJHz%2FkB9AWeEHOWokWDoU%3D
+  response:
+    body: {string: '{"display_name": "Thiago Ramos", "parent_id": null, "filename_hash":
+        null, "filename": null, "content": "Hello world", "content_rendered": "<p>Hello
+        world</p>", "user_avatar_url": "https://bitbucket.org/account/ThiagoCodecov/avatar/?ts=1541519035",
+        "user_avatar_url_2x": "https://bitbucket.org/account/ThiagoCodecov/avatar/64/?ts=1541519035",
+        "utc_created_on": "2018-11-06 16:04:23+00:00", "username": "ThiagoCodecov",
+        "pr_repo": {"owner": "ThiagoCodecov", "slug": "example-python"}, "deleted":
+        false, "comment_id": 81514270, "comparespec": "ThiagoCodecov/example-python:3017d534ab41\rb92edba44fdd",
+        "line_to": null, "is_spam": false, "pull_request_id": 1, "utc_last_updated":
+        "2018-11-06 16:04:23+00:00", "is_entity_author": true, "convert_markup": false,
+        "line_from": null, "dest_rev": null, "anchor": null, "is_repo_owner": true}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 16:04:24 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-140]
+    - !!python/tuple
+      - Etag
+      - ['"ba91a79f59b1f9e9c515772b425966a0"']
+    - !!python/tuple
+      - X-Static-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [pullrequest]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.32688498497']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['50']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Cache-Info
+      - [not cacheable; request wasn't a GET or HEAD]
+    - !!python/tuple
+      - Content-Length
+      - ['832']
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541520263&oauth_nonce=854733aec8354bad9b5669bac3a724e6&oauth_version=1.0&oauth_signature=FHpsqCmJHz%2FkB9AWeEHOWokWDoU%3D
+version: 1

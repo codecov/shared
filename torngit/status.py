@@ -7,7 +7,8 @@ def matches(string, pattern):
         return True
     else:
         if '*' in pattern:
-            return re.match('^%s$' % pattern.replace('*', '.*'), string) is not None
+            return re.match('^%s$' % pattern.replace('*', '.*'),
+                            string) is not None
         return False
 
 
@@ -16,9 +17,14 @@ class Status(object):
         # reduce based on time
         contexts = defaultdict(list)
         # group by context(time, !pending, <status>)
-        [contexts[status['context']].append((status['time'], status['state'] != 'pending', status)) for status in statuses]
+        for status in statuses:
+            contexts[status['context']].append(
+                (status['time'], status['state'] != 'pending', status))
         # extract most recent sorted(time, !pending)
-        contexts = [sorted(context, key=lambda (t, s, d): (t, s))[-1][2] for context in contexts.values()]
+        contexts = [
+            sorted(context, key=lambda t: (t[0], t[1]))[-1][2]
+            for context in contexts.values()
+        ]
         self._statuses = contexts
         states = set(map(lambda s: s['state'], contexts))
         self._state = 'failure' if 'failure' in states \
@@ -28,7 +34,9 @@ class Status(object):
 
     def __sub__(self, context):
         """Remove ci status from list, return new object"""
-        return Status(filter(lambda s: not matches(s['context'], context), self._statuses))
+        return Status(
+            filter(lambda s: not matches(s['context'], context),
+                   self._statuses))
 
     def __eq__(self, other):
         """Returns the current ci status"""
@@ -77,7 +85,9 @@ class Status(object):
     @property
     def pending(self):
         # return list of pending statuses
-        return [status for status in self._statuses if status['state'] == 'pending']
+        return [
+            status for status in self._statuses if status['state'] == 'pending'
+        ]
 
     def get(self, context):
         for status in self._statuses:

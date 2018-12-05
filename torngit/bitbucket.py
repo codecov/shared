@@ -1,42 +1,56 @@
-import os
-from time import time
-from sys import stdout
-from json import loads
 from json import dumps
-from tornado import gen
-import urllib as urllib_parse
-from tornado.web import HTTPError
-from tornado.auth import OAuthMixin
-from tornado.httputil import url_concat
-from requests_oauthlib import OAuth1Session
-from tornado.httpclient import HTTPError as ClientError
+from json import loads
+from sys import stdout
+from time import time
+import os
+import urllib.parse as urllib_parse
 
-from torngit.status import Status
+from requests_oauthlib import OAuth1Session
+from tornado.auth import OAuthMixin
+from tornado.httpclient import HTTPError as ClientError
+from tornado.httputil import url_concat
+
 from torngit.base import BaseHandler
+from torngit.status import Status
+from torngit.exceptions import ObjectNotFoundException
 
 
 class Bitbucket(BaseHandler, OAuthMixin):
+    _OAUTH_REQUEST_TOKEN_URL = 'https://bitbucket.org/api/1.0/oauth/request_token'
+    _OAUTH_ACCESS_TOKEN_URL = 'https://bitbucket.org/api/1.0/oauth/access_token'
+    _OAUTH_AUTHORIZE_URL = 'https://bitbucket.org/api/1.0/oauth/authenticate'
+    _OAUTH_VERSION = '1.0a'
     service = 'bitbucket'
     api_url = 'https://bitbucket.org'
     service_url = 'https://bitbucket.org'
-    urls = dict(repo='%(username)s/%(name)s',
-                owner='%(username)s',
-                user='%(username)s',
-                issues='%(username)s/%(name)s/issues/%(issueid)s',
-                commit='%(username)s/%(name)s/commits/%(commitid)s',
-                commits='%(username)s/%(name)s/commits',
-                src='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
-                create_file='%(username)s/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
-                tree='%(username)s/%(name)s/src/%(commitid)s',
-                branch='%(username)s/%(name)s/branch/%(branch)s',
-                pull='%(username)s/%(name)s/pull-requests/%(pullid)s',
-                compare='%(username)s/%(name)s')
+    urls = dict(
+        repo='%(username)s/%(name)s',
+        owner='%(username)s',
+        user='%(username)s',
+        issues='%(username)s/%(name)s/issues/%(issueid)s',
+        commit='%(username)s/%(name)s/commits/%(commitid)s',
+        commits='%(username)s/%(name)s/commits',
+        src='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
+        create_file=
+        '%(username)s/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
+        tree='%(username)s/%(name)s/src/%(commitid)s',
+        branch='%(username)s/%(name)s/branch/%(branch)s',
+        pull='%(username)s/%(name)s/pull-requests/%(pullid)s',
+        compare='%(username)s/%(name)s')
 
-    @gen.coroutine
-    def api(self, version, method, path, json=False, body=None, token=None, **kwargs):
+    async def api(self,
+                  version,
+                  method,
+                  path,
+                  json=False,
+                  body=None,
+                  token=None,
+                  **kwargs):
         url = 'https://bitbucket.org/api/%s.0%s' % (version, path)
-        headers = {'Accept': 'application/json',
-                   'User-Agent': os.getenv('USER_AGENT', 'Default')}
+        headers = {
+            'Accept': 'application/json',
+            'User-Agent': os.getenv('USER_AGENT', 'Default')
+        }
 
         # make oauth request
         all_args = {}
@@ -45,325 +59,461 @@ class Bitbucket(BaseHandler, OAuthMixin):
             headers['Content-Type'] = 'application/json'
         else:
             all_args.update(body or {})
-        oauth = self._oauth_request_parameters(url, token or self.token, all_args, method=method.upper())
+        oauth = self._oauth_request_parameters(
+            url, token or self.token, all_args, method=method.upper())
+        print(oauth)
         kwargs.update(oauth)
 
         url = url_concat(url, kwargs)
-        kwargs = dict(method=method.upper(),
-                      body=dumps(body) if json else urllib_parse.urlencode(body) if body else None,
-                      ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
-                      validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-                      headers=headers,
-                      connect_timeout=self._timeouts[0],
-                      request_timeout=self._timeouts[1])
+        kwargs = dict(
+            method=method.upper(),
+            body=dumps(body)
+            if json else urllib_parse.urlencode(body) if body else None,
+            ca_certs=self.verify_ssl
+            if not isinstance(self.verify_ssl, bool) else None,
+            validate_cert=self.verify_ssl
+            if isinstance(self.verify_ssl, bool) else None,
+            headers=headers,
+            connect_timeout=self._timeouts[0],
+            request_timeout=self._timeouts[1])
 
         start = time()
         try:
-            res = yield self.fetch(url, **kwargs)
-
+            res = await self.fetch(url, **kwargs)
         except ClientError as e:
             if e.response is None:
                 stdout.write('count#%s.timeout=1\n' % self.service)
-                raise ClientError(502, 'Bitbucket was not able to be reached, server timed out.')
+                raise ClientError(
+                    502,
+                    'Bitbucket was not able to be reached, server timed out.')
 
             else:
-                self.log('error',
-                         'Bitbucket HTTP %s' % e.response.code,
-                         url=url,
-                         endpoint=path,
-                         body=e.response.body)
+                self.log(
+                    'error',
+                    'Bitbucket HTTP %s' % e.response.code,
+                    url=url,
+                    endpoint=path,
+                    body=e.response.body)
             e.message = 'Bitbucket API: %s' % e.message
             raise
 
         else:
-            self.log('info',
-                     'Bitbucket HTTP %s' % res.code,
-                     url=url,
-                     endpoint=path)
+            self.log(
+                'info', 'Bitbucket HTTP %s' % res.code, url=url, endpoint=path)
             if res.code == 204:
-                raise gen.Return(None)
+                return None
 
             elif 'application/json' in res.headers.get('Content-Type'):
-                raise gen.Return(loads(res.body))
+                return loads(res.body)
 
             else:
-                raise gen.Return(res.body)
+                return res.body
 
         finally:
-            stdout.write("source=%s measure#service=%dms\n" % (self.service, int((time() - start) * 1000)))
+            stdout.write("source=%s measure#service=%dms\n" %
+                         (self.service, int((time() - start) * 1000)))
 
-    @gen.coroutine
-    def _oauth_get_user_future(self, access_token):
+    async def _oauth_get_user_future(self, access_token):
         self.set_token(access_token)
-        user = yield self.api('2', 'get', '/user')
-        raise gen.Return(user)
+        user = await self.api('2', 'get', '/user')
+        return user
 
-    @gen.coroutine
-    def post_webhook(self, name, url, events, secret, token=None):
+    async def post_webhook(self, name, url, events, secret, token=None):
         # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html
         # https://confluence.atlassian.com/bitbucket/event-payloads-740262817.html
-        res = yield self.api('2', 'post', '/repositories/%s/hooks' % self.slug,
-                             body=dict(description=name,
-                                       active=True,
-                                       events=events,
-                                       url=url),
-                             json=True,
-                             token=token)
-        raise gen.Return(res['uuid'][1:-1])
+        res = await self.api(
+            '2',
+            'post',
+            '/repositories/%s/hooks' % self.slug,
+            body=dict(description=name, active=True, events=events, url=url),
+            json=True,
+            token=token)
+        res['id'] = res['uuid'][1:-1]
+        return res
 
-    @gen.coroutine
-    def edit_webhook(self, hookid, name, url, events, secret, token=None):
+    async def edit_webhook(self, hookid, name, url, events, secret,
+                           token=None):
         # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html#webhooksResource-PUTawebhookupdate
-        yield self.api('2', 'put', '/repositories/%s/hooks/%s' % (self.slug, hookid),
-                       body=dict(description=name,
-                                 active=True,
-                                 events=events,
-                                 url=url),
-                       json=True,
-                       token=token)
-        raise gen.Return(True)
+        res = await self.api(
+            '2',
+            'put',
+            '/repositories/%s/hooks/%s' % (self.slug, hookid),
+            body=dict(description=name, active=True, events=events, url=url),
+            json=True,
+            token=token)
+        res['id'] = res['uuid'][1:-1]
+        return res
 
-    @gen.coroutine
-    def delete_webhook(self, hookid, token=None):
+    async def delete_webhook(self, hookid, token=None):
         # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html#webhooksResource-DELETEthewebhook
-        yield self.api('2', 'delete', '/repositories/%s/hooks/%s' % (self.slug, hookid), token=token)
-        raise gen.Return(True)
+        try:
+            await self.api(
+                '2',
+                'delete',
+                '/repositories/%s/hooks/%s' % (self.slug, hookid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Webhook with id {hookid} does not exist")
+            raise
+        return True
 
-    @gen.coroutine
-    def get_is_admin(self, user, token=None):
+    async def get_is_admin(self, user, token=None):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
-        res = yield self.api('1', 'get', '/user/privileges', token=token)
-        raise gen.Return(res['teams'].get(self.data['owner']['username']) == 'admin')
+        res = await self.api('1', 'get', '/user/privileges', token=token)
+        return (res['teams'].get(self.data['owner']['username']) == 'admin')
 
-    @gen.coroutine
-    def list_teams(self, token=None):
+    async def list_teams(self, token=None):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
-        res = yield self.api('1', 'get', '/user/privileges', token=token)
+        res = await self.api('1', 'get', '/user/privileges', token=token)
         data = []
         for username in res['teams'].keys():
             # https://confluence.atlassian.com/bitbucket/teams-endpoint-423626335.html#teamsEndpoint-GETtheteamprofile
-            team = yield self.api('2', 'get', '/teams/%s' % username, token=token)
-            data.append(dict(name=team['display_name'],
-                             id=team['uuid'][1:-1],
-                             email=None,
-                             username=username))
-        raise gen.Return(data)
+            team = await self.api(
+                '2', 'get', '/teams/%s' % username, token=token)
+            data.append(
+                dict(
+                    name=team['display_name'],
+                    id=team['uuid'][1:-1],
+                    email=None,
+                    username=username))
+        return data
 
-    @gen.coroutine
-    def get_pull_request_commits(self, pullid, token=None):
+    async def get_pull_request_commits(self, pullid, token=None):
         commits, page = [], 0
         while True:
             page += 1
             # https://confluence.atlassian.com/bitbucket/pullrequests-resource-423626332.html#pullrequestsResource-GETthecommitsforapullrequest
-            res = yield self.api('2', 'get', '/repositories/%s/pullrequests/%s/commits' % (self.slug, pullid),
-                                 page=page, token=token)
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/%s/pullrequests/%s/commits' % (self.slug,
+                                                              pullid),
+                page=page,
+                token=token)
             if len(res['values']) == 0:
                 break
             commits.extend([c['hash'] for c in res['values']])
             if not res.get('next'):
                 break
 
-        raise gen.Return(commits)
+        return commits
 
-    @gen.coroutine
-    def list_repos(self, username=None, token=None):
+    async def list_repos(self, username=None, token=None):
         data, page = [], 0
         assert username, 'Must include username to list repos'
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
-            res = yield self.api('2', 'get', '/repositories/%s' % (username or ''),
-                                 page=page,
-                                 token=token)
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/%s' % (username or ''),
+                page=page,
+                token=token)
             if len(res['values']) == 0:
                 break
             for repo in res['values']:
-                data.append(dict(owner=dict(service_id=repo['owner']['uuid'][1:-1],
-                                            username=repo['owner']['username']),
-                                 repo=dict(service_id=repo['uuid'][1:-1],
-                                           name=repo['full_name'].split('/', 1)[1],
-                                           language=self._validate_language(repo['language']),
-                                           private=repo['is_private'],
-                                           branch='master',
-                                           fork=None)))
+                data.append(
+                    dict(
+                        owner=dict(
+                            service_id=repo['owner']['uuid'][1:-1],
+                            username=repo['owner']['username']),
+                        repo=dict(
+                            service_id=repo['uuid'][1:-1],
+                            name=repo['full_name'].split('/', 1)[1],
+                            language=self._validate_language(repo['language']),
+                            private=repo['is_private'],
+                            branch='master',
+                            fork=None)))
             if not res.get('next'):
                 break
 
-        raise gen.Return(data)
+        return data
 
-    @gen.coroutine
-    def get_pull_request(self, pullid, token=None):
+    async def get_pull_request(self, pullid, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETaspecificpullrequest
-        res = yield self.api('2', 'get', '/repositories/{}/pullrequests/{}'.format(
-            self.slug, pullid
-        ), token=token)
+        try:
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/{}/pullrequests/{}'.format(self.slug, pullid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"PR with id {pullid} does not exist")
+            raise
         # the commit sha is only {12}. need to get full sha
-        base = yield self.api('2', 'get', '/repositories/{}/commit/{}'.format(
-            self.slug, res['destination']['commit']['hash']
-        ), token=token)
-        head = yield self.api('2', 'get', '/repositories/{}/commit/{}'.format(
-            self.slug, res['source']['commit']['hash']
-        ), token=token)
-        raise gen.Return(dict(base=dict(branch=res['destination']['branch']['name'].encode('utf-8', 'replace'),
-                                        commitid=base['hash']),
-                              head=dict(branch=res['source']['branch']['name'].encode('utf-8', 'replace'),
-                                        commitid=head['hash']),
-                              state={'OPEN': 'open', 'MERGED': 'merged', 'DECLINED': 'closed'}.get(res['state']),
-                              title=res['title'],
-                              id=str(pullid),
-                              number=str(pullid)))
+        base = await self.api(
+            '2',
+            'get',
+            '/repositories/{}/commit/{}'.format(
+                self.slug, res['destination']['commit']['hash']),
+            token=token)
+        head = await self.api(
+            '2',
+            'get',
+            '/repositories/{}/commit/{}'.format(
+                self.slug, res['source']['commit']['hash']),
+            token=token)
+        return dict(
+            base=dict(
+                branch=res['destination']['branch']['name'],
+                commitid=base['hash']
+            ),
+            head=dict(
+                branch=res['source']['branch']['name'],
+                commitid=head['hash']
+            ),
+            state={
+                'OPEN': 'open',
+                'MERGED': 'merged',
+                'DECLINED': 'closed'
+            }.get(res['state']),
+            title=res['title'],
+            id=str(pullid),
+            number=str(pullid)
+        )
 
-    @gen.coroutine
-    def post_comment(self, issueid, body, token=None):
+    async def post_comment(self, issueid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/issues+Resource#issuesResource-POSTanewcommentontheissue
-        res = yield self.api('1', 'post', '/repositories/%s/pullrequests/%s/comments' % (self.slug, issueid),
-                             body=dict(content=body), token=token)
-        raise gen.Return(res['comment_id'])
+        res = await self.api(
+            '1',
+            'post',
+            '/repositories/%s/pullrequests/%s/comments' % (self.slug, issueid),
+            body=dict(content=body),
+            token=token)
+        res['id'] = res['comment_id']
+        return res
 
-    @gen.coroutine
-    def edit_comment(self, issueid, commentid, body, token=None):
+    async def edit_comment(self, issueid, commentid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource+1.0#pullrequestsResource1.0-PUTanupdateonacomment
-        # yield self.api('1', 'put', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
+        # await self.api('1', 'put', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
         #                body=dict(content=body), token=token)
         client = self._oauth_consumer_token()
         token = (token or self.token)
-        url = 'https://bitbucket.org/api/1.0/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid)
-        oauth = OAuth1Session(client['key'], client_secret=client['secret'],
-                              resource_owner_key=token['key'],
-                              resource_owner_secret=token['secret'])
+        url = 'https://bitbucket.org/api/1.0/repositories/%s/pullrequests/%s/comments/%s' % (
+            self.slug, issueid, commentid)
+        oauth = OAuth1Session(
+            client['key'],
+            client_secret=client['secret'],
+            resource_owner_key=token['key'],
+            resource_owner_secret=token['secret'])
         res = oauth.put(url, data=dict(content=body))
-        assert res.status_code == 200
-        raise gen.Return(commentid)
+        if res.status_code == 200:
+            res_json = res.json()
+            res_json['id'] = res_json['comment_id']
+            return res_json
+        if res.status_code == 404:
+            raise ObjectNotFoundException(f"Comment {commentid} from PR {issueid} cannot be found")
 
-    @gen.coroutine
-    def delete_comment(self, issueid, commentid, token=None):
+    async def delete_comment(self, issueid, commentid, token=None):
         # https://confluence.atlassian.com/bitbucket/pullrequests-resource-1-0-296095210.html#pullrequestsResource1.0-PUTanupdateonacomment
-        yield self.api('1', 'delete', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
-                       token=token)
-        raise gen.Return(True)
+        try:
+            await self.api(
+                '1',
+                'delete',
+                '/repositories/%s/pullrequests/%s/comments/%s' %
+                (self.slug, issueid, commentid),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Comment {commentid} from PR {issueid} cannot be found")
+            raise
+        return True
 
-    @gen.coroutine
-    def get_commit_status(self, commit, token=None):
+    async def get_commit_status(self, commit, token=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
-        statuses = yield self.get_commit_statuses(commit, _in_loop=True, token=token)
-        raise gen.Return(str(statuses))
+        statuses = await self.get_commit_statuses(
+            commit, _in_loop=True, token=token)
+        return str(statuses)
 
-    @gen.coroutine
-    def get_commit_statuses(self, commit, token=None, _in_loop=None):
+    async def get_commit_statuses(self, commit, token=None, _in_loop=None):
         statuses, page = [], 0
-        status_keys = dict(INPROGRESS='pending', SUCCESSFUL='success', FAILED='failure')
+        status_keys = dict(
+            INPROGRESS='pending', SUCCESSFUL='success', FAILED='failure')
         while True:
             page += 1
             # https://api.bitbucket.org/2.0/repositories/atlassian/aui/commit/d62ae57/statuses
-            res = yield self.api('2', 'get', '/repositories/%s/commit/%s/statuses' % (self.slug, commit),
-                                 page=page, token=token)
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/%s/commit/%s/statuses' % (self.slug, commit),
+                page=page,
+                token=token)
             _statuses = res['values']
             if len(_statuses) == 0:
                 break
-            statuses.extend([{'time': s['updated_on'],
-                              'state': status_keys.get(s['state']),
-                              'description': s['description'],
-                              'url': s['url'],
-                              'context': s['key']} for s in _statuses])
+            statuses.extend([{
+                'time': s['updated_on'],
+                'state': status_keys.get(s['state']),
+                'description': s['description'],
+                'url': s['url'],
+                'context': s['key']
+            } for s in _statuses])
             if not res.get('next'):
                 break
-        raise gen.Return(Status(statuses))
+        return Status(statuses)
 
-    @gen.coroutine
-    def set_commit_status(self, commit, status, context, description, url, merge_commit=None, token=None, coverage=None):
+    async def set_commit_status(self,
+                                commit,
+                                status,
+                                context,
+                                description,
+                                url,
+                                merge_commit=None,
+                                token=None,
+                                coverage=None):
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
-        status = dict(pending='INPROGRESS', success='SUCCESSFUL', error='FAILED', failure='FAILED').get(status)
+        status = dict(
+            pending='INPROGRESS',
+            success='SUCCESSFUL',
+            error='FAILED',
+            failure='FAILED').get(status)
         assert status, 'status not valid'
         try:
-            res = yield self.api('2', 'post', '/repositories/%s/commit/%s/statuses/build' % (self.slug, commit),
-                                 body=dict(state=status,
-                                           key='codecov-'+context,
-                                           name=context.replace('/', ' ').capitalize()+' Coverage',
-                                           url=url,
-                                           description=description),
-                                 token=token)
-        except:
-            res = yield self.api('2', 'put', '/repositories/%s/commit/%s/statuses/build/codecov-%s' % (self.slug, commit, context),
-                                 body=dict(state=status,
-                                           name=context.replace('/', ' ').capitalize()+' Coverage',
-                                           url=url,
-                                           description=description),
-                                 token=token)
+            res = await self.api(
+                '2',
+                'post',
+                '/repositories/%s/commit/%s/statuses/build' % (self.slug,
+                                                               commit),
+                body=dict(
+                    state=status,
+                    key='codecov-' + context,
+                    name=context.replace('/', ' ').capitalize() + ' Coverage',
+                    url=url,
+                    description=description),
+                token=token)
+        except Exception:
+            res = await self.api(
+                '2',
+                'put',
+                '/repositories/%s/commit/%s/statuses/build/codecov-%s' %
+                (self.slug, commit, context),
+                body=dict(
+                    state=status,
+                    name=context.replace('/', ' ').capitalize() + ' Coverage',
+                    url=url,
+                    description=description),
+                token=token)
 
         if merge_commit:
             try:
-                res = yield self.api('2', 'post', '/repositories/%s/commit/%s/statuses/build' % (self.slug, merge_commit[0]),
-                                     body=dict(state=status,
-                                               key='codecov-'+merge_commit[1],
-                                               name=merge_commit[1].replace('/', ' ').capitalize()+' Coverage',
-                                               url=url,
-                                               description=description),
-                                     token=token)
-            except:
-                res = yield self.api('2', 'put', '/repositories/%s/commit/%s/statuses/build/codecov-%s' % (self.slug, merge_commit[0], context),
-                                     body=dict(state=status,
-                                               name=merge_commit[1].replace('/', ' ').capitalize()+' Coverage',
-                                               url=url,
-                                               description=description),
-                                     token=token)
+                res = await self.api(
+                    '2',
+                    'post',
+                    '/repositories/%s/commit/%s/statuses/build' %
+                    (self.slug, merge_commit[0]),
+                    body=dict(
+                        state=status,
+                        key='codecov-' + merge_commit[1],
+                        name=merge_commit[1].replace('/', ' ').capitalize() +
+                        ' Coverage',
+                        url=url,
+                        description=description),
+                    token=token)
+            except Exception:
+                res = await self.api(
+                    '2',
+                    'put',
+                    '/repositories/%s/commit/%s/statuses/build/codecov-%s' %
+                    (self.slug, merge_commit[0], context),
+                    body=dict(
+                        state=status,
+                        name=merge_commit[1].replace('/', ' ').capitalize() +
+                        ' Coverage',
+                        url=url,
+                        description=description),
+                    token=token)
         # check if the commit is a Merge
-        raise gen.Return(res)
+        return res
 
-    @gen.coroutine
-    def get_commit(self, commit, token=None):
+    async def get_commit(self, commit, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/commits+or+commit+Resource#commitsorcommitResource-GETanindividualcommit
-        data = yield self.api('2', 'get', '/repositories/%s/commit/%s' % (self.slug, commit), token=token)
+        try:
+            data = await self.api(
+                '2',
+                'get',
+                '/repositories/%s/commit/%s' % (self.slug, commit),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Commit {commit} cannot be found")
+            raise
         author_login = data['author'].get('user', {}).get('username')
-        author_raw = data['author'].get('raw', '')[:-1].rsplit(' <', 1) if ' <' in data['author'].get('raw', '') else None
+        author_raw = data['author'].get('raw', '')[:-1].rsplit(
+            ' <', 1) if ' <' in data['author'].get('raw', '') else None
         if author_login:
             # https://confluence.atlassian.com/display/BITBUCKET/users+Endpoint#usersEndpoint-GETtheuserprofile
-            res = yield self.api('2', 'get', '/users/%s' % author_login, token=token)
+            res = await self.api(
+                '2', 'get', '/users/%s' % author_login, token=token)
             userid = res['uuid'][1:-1]
         else:
             userid = None
 
-        raise gen.Return(dict(author=dict(id=userid,
-                                          username=author_login,
-                                          name=author_raw[0] if author_raw else None,
-                                          email=author_raw[1] if author_raw else None),
-                              commitid=commit,
-                              parents=[p['hash'] for p in data['parents']],
-                              message=data['message'],
-                              timestamp=data['date']))
+        return (dict(
+            author=dict(
+                id=userid,
+                username=author_login,
+                name=author_raw[0] if author_raw else None,
+                email=author_raw[1] if author_raw else None),
+            commitid=commit,
+            parents=[p['hash'] for p in data['parents']],
+            message=data['message'],
+            timestamp=data['date']))
 
-    @gen.coroutine
-    def get_branches(self, token=None):
+    async def get_branches(self, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource+1.0#repositoryResource1.0-GETlistofbranches
-        res = yield self.api('1', 'get', '/repositories/%s/branches' % self.slug, token=token)
-        raise gen.Return([(k, b['raw_node']) for k, b in res.iteritems()])
+        res = await self.api(
+            '1', 'get', '/repositories/%s/branches' % self.slug, token=token)
+        return [(k, b['raw_node']) for k, b in res.items()]
 
-    @gen.coroutine
-    def get_pull_requests(self, state='open', token=None):
-        state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state)
+    async def get_pull_requests(self, state='open', token=None):
+        state = {
+            'open': 'OPEN',
+            'merged': 'MERGED',
+            'close': 'DECLINED'
+        }.get(state)
         pulls, page = [], 0
         while True:
             page += 1
             # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
-            res = yield self.api('2', 'get', '/repositories/%s/pullrequests' % self.slug,
-                                 state=state, page=page, token=token)
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/%s/pullrequests' % self.slug,
+                state=state,
+                page=page,
+                token=token)
             if len(res['values']) == 0:
                 break
             pulls.extend([pull['id'] for pull in res['values']])
             if not res.get('next'):
                 break
-        raise gen.Return(pulls)
+        return pulls
 
-    @gen.coroutine
-    def find_pull_request(self, commit=None, branch=None, state='open', token=None):
-        state = {'open': 'OPEN', 'merged': 'MERGED', 'close': 'DECLINED'}.get(state, '')
+    async def find_pull_request(self,
+                                commit=None,
+                                branch=None,
+                                state='open',
+                                token=None):
+        state = {
+            'open': 'OPEN',
+            'merged': 'MERGED',
+            'close': 'DECLINED'
+        }.get(state, '')
         pulls, page = [], 0
         if commit or branch:
-            branch = branch.encode('utf-8', 'replace') if branch else ''
             while True:
                 page += 1
                 # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETalistofopenpullrequests
-                res = yield self.api('2', 'get', '/repositories/%s/pullrequests' % self.slug,
-                                     state=state, page=page, token=token)
+                res = await self.api(
+                    '2',
+                    'get',
+                    '/repositories/%s/pullrequests' % self.slug,
+                    state=state,
+                    page=page,
+                    token=token)
                 _prs = res['values']
                 if len(_prs) == 0:
                     break
@@ -371,75 +521,91 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 if commit:
                     for pull in _prs:
                         if commit.startswith(pull['source']['commit']['hash']):
-                            raise gen.Return(str(pull['id']))
+                            return str(pull['id'])
                 else:
                     for pull in _prs:
-                        if pull['source']['branch']['name'].encode('utf-8', 'replace') == branch:
-                            raise gen.Return(str(pull['id']))
+                        if pull['source']['branch']['name'] == branch:
+                            return str(pull['id'])
 
                 if not res.get('next'):
                     break
 
-    @gen.coroutine
-    def get_repository(self, token=None):
+    async def get_repository(self, token=None):
         if self.data['repo'].get('service_id') is None:
             # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource#repositoryResource-GETarepository
-            res = yield self.api('2', 'get', '/repositories/'+self.slug, token=token)
+            res = await self.api(
+                '2', 'get', '/repositories/' + self.slug, token=token)
         else:
-            res = yield self.api('2', 'get', '/repositories/%%7B%s%%7D/%%7B%s%%7D' % (self.data['owner']['service_id'], self.data['repo']['service_id']),
-                                 token=token)
+            res = await self.api(
+                '2',
+                'get',
+                '/repositories/%%7B%s%%7D/%%7B%s%%7D' %
+                (self.data['owner']['service_id'],
+                 self.data['repo']['service_id']),
+                token=token)
         username, repo = tuple(res['full_name'].split('/', 1))
-        raise gen.Return(dict(owner=dict(service_id=res['owner']['uuid'][1:-1],
-                                         username=username),
-                              repo=dict(service_id=res['uuid'][1:-1],
-                                        private=res['is_private'],
-                                        branch='master',
-                                        language=self._validate_language(res['language']),
-                                        name=repo)))
+        return (dict(
+            owner=dict(
+                service_id=res['owner']['uuid'][1:-1], username=username),
+            repo=dict(
+                service_id=res['uuid'][1:-1],
+                private=res['is_private'],
+                branch='master',
+                language=self._validate_language(res['language']),
+                name=repo)))
 
-    @gen.coroutine
-    def get_authenticated(self, token=None):
-        if self.data['repo']['private']:
+    async def get_authenticated(self, token=None):
+        if self.data['repo'].get('private'):
             # https://confluence.atlassian.com/bitbucket/repository-resource-423626331.html#repositoryResource-GETarepository
-            yield self.api('2', 'get', '/repositories/'+self.slug, token=token)
-            raise gen.Return((True, True))
+            await self.api(
+                '2', 'get', '/repositories/' + self.slug, token=token)
+            return (True, True)
         else:
             # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
-            groups = yield self.api('1', 'get', '/user/privileges', token=token)
-            raise gen.Return((True, self.data['owner']['username'] in groups['teams']))
+            groups = await self.api(
+                '1', 'get', '/user/privileges', token=token)
+            return (True, self.data['owner']['username'] in groups['teams'])
 
-    @gen.coroutine
-    def get_source(self, path, ref, token=None):
+    async def get_source(self, path, ref, token=None):
         # https://confluence.atlassian.com/bitbucket/src-resources-296095214.html
-        src = yield self.api('1', 'get', '/repositories/{0}/src/{1}/{2}'.format(
-            self.slug,
-            ref,
-            path.replace(' ', '%20')
-        ), token=token)
+        src = await self.api(
+            '1',
+            'get',
+            '/repositories/{0}/src/{1}/{2}'.format(self.slug, ref,
+                                                   path.replace(' ', '%20')),
+            token=token)
 
-        raise gen.Return(dict(commitid=src['node'],
-                              content=src['data']))
+        return (dict(commitid=src['node'], content=src['data']))
 
-    @gen.coroutine
-    def get_compare(self, base, head, context=None, with_commits=True, token=None):
+    async def get_compare(self,
+                          base,
+                          head,
+                          context=None,
+                          with_commits=True,
+                          token=None):
         # https://developer.atlassian.com/bitbucket/api/2/reference/resource/snippets/%7Busername%7D/%7Bencoded_id%7D/%7Brevision%7D/diff%C2%A0%E2%80%A6
         # https://api.bitbucket.org/2.0/repositories/markadams-atl/test-repo/diff/1b03803..fcba34b
         # IMPORANT it is reversed
-        diff = yield self.api('2', 'get', '/repositories/%s/diff/%s..%s' % (self.slug, head, base),
-                              context=context or 0,
-                              token=token)
+        diff = await self.api(
+            '2',
+            'get',
+            '/repositories/%s/diff/%s..%s' % (self.slug, head, base),
+            context=context or 0,
+            token=token)
 
         commits = []
         if with_commits:
             commits = [{'commitid': head}, {'commitid': base}]
             # No endpoint to get commits yet... ugh
 
-        raise gen.Return(dict(diff=self.diff_to_json(diff),
-                              commits=commits))
+        return dict(diff=self.diff_to_json(diff.decode('utf8')), commits=commits)
 
-    @gen.coroutine
-    def get_commit_diff(self, commit, context=None, token=None):
+    async def get_commit_diff(self, commit, context=None, token=None):
         # https://confluence.atlassian.com/bitbucket/diff-resource-425462484.html
-        diff = yield self.api('2', 'get', '/repositories/'+self.data['owner']['username']+'/'+self.data['repo']['name']+'/diff/'+commit,
-                              token=token)
-        raise gen.Return(self.diff_to_json(diff))
+        diff = await self.api(
+            '2',
+            'get',
+            '/repositories/' + self.data['owner']['username'] + '/' +
+            self.data['repo']['name'] + '/diff/' + commit,
+            token=token)
+        return self.diff_to_json(diff.decode('utf8'))

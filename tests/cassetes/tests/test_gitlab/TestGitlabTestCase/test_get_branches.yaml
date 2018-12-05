@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/repository/branches
+  response:
+    body: {string: '[{"name":"master","commit":{"id":"0028015f7fa260f5fd68f78c0deffc15183d955e","short_id":"0028015f","title":"added
+        large file","created_at":"2014-10-19T14:32:33.000+00:00","parent_ids":null,"message":"added
+        large file","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-10-19T14:32:33.000+00:00","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-10-19T14:32:33.000+00:00"},"merged":false,"protected":false,"developers_can_push":false,"developers_can_merge":false,"can_push":true,"default":true},{"name":"other-branch","commit":{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
+        blank","created_at":"2014-09-04T16:13:44.000+00:00","parent_ids":null,"message":"left
+        blank","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-09-04T16:13:44.000+00:00","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-09-04T16:13:44.000+00:00"},"merged":false,"protected":false,"developers_can_push":false,"developers_can_merge":false,"can_push":true,"default":false}]'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Mon, 05 Nov 2018 19:13:10 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json]
+    - !!python/tuple
+      - Content-Length
+      - ['1132']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - ['max-age=0, private, must-revalidate']
+    - !!python/tuple
+      - Etag
+      - [W/"1a04e16fb74995f2f09ab731f1b1b420"]
+    - !!python/tuple
+      - Link
+      - ['<https://gitlab.com/api/v4/projects/187725/repository/branches?id=187725&page=1&per_page=20>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/repository/branches?id=187725&page=1&per_page=20>;
+          rel="last"']
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Next-Page
+      - ['']
+    - !!python/tuple
+      - X-Page
+      - ['1']
+    - !!python/tuple
+      - X-Per-Page
+      - ['20']
+    - !!python/tuple
+      - X-Prev-Page
+      - ['']
+    - !!python/tuple
+      - X-Request-Id
+      - [f0666f2f-7db1-410f-a8c1-2685abe5742c]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.066216']
+    - !!python/tuple
+      - X-Total
+      - ['2']
+    - !!python/tuple
+      - X-Total-Pages
+      - ['1']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['3']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['597']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541445250']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Tue, 05 Nov 2018 19:14:10 GMT']
+    status: {code: 200, message: OK}
+    url: https://gitlab.com/api/v4/projects/187725/repository/branches
+version: 1

@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: DELETE
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516645&oauth_nonce=45d3aaca843347ec89674b27cc011540&oauth_version=1.0&oauth_signature=yYYeH2pDUzAPXWV1wx%2BWfbVtGTc%3D
+  response:
+    body: {string: Not Found}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Content-Type
+      - [text/plain]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 15:04:06 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-140]
+    - !!python/tuple
+      - Etag
+      - ['"9d1ead73e678fa2f51a70a933b0bf017"']
+    - !!python/tuple
+      - X-Static-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [pullrequest]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.207561016083']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['133']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [4ea3c9800ace]
+    - !!python/tuple
+      - X-Cache-Info
+      - [not cacheable; request wasn't a GET or HEAD]
+    - !!python/tuple
+      - Content-Length
+      - ['9']
+    status: {code: 404, message: Not Found}
+    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516645&oauth_nonce=45d3aaca843347ec89674b27cc011540&oauth_version=1.0&oauth_signature=yYYeH2pDUzAPXWV1wx%2BWfbVtGTc%3D
+version: 1
