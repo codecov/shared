@@ -79,15 +79,15 @@ class TestGitlabTestCase(object):
             {
                 'base': {
                     'branch': u'master',
-                    'head': {
-                        'branch': u'other-branch',
-                        'commitid': 'dd798926730aad14aadf72281204bdb85734fe67'
-                    },
-                    'number': '1',
-                    'id': '1',
-                    'state': 'open',
-                    'title': 'Other branch'
-                }
+                },
+                'head': {
+                    'branch': u'other-branch',
+                    'commitid': 'dd798926730aad14aadf72281204bdb85734fe67'
+                },
+                'number': '1',
+                'id': '1',
+                'state': 'open',
+                'title': 'Other branch'
             }
         ),
     ]
@@ -366,7 +366,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             'owner': {'service_id': 126816, 'username': 'codecov'},
             'repo': {
-                'branch': b'master',
+                'branch': 'master',
                 'language': None,
                 'name': 'ci-repo',
                 'private': False,
@@ -403,7 +403,7 @@ class TestGitlabTestCase(object):
             {
                 'owner': {'service_id': 223023, 'username': 'morerunes'},
                 'repo': {
-                    'branch': b'master',
+                    'branch': 'master',
                     'fork': None,
                     'language': None,
                     'name': 'delectamentum-mud-server',
@@ -414,7 +414,7 @@ class TestGitlabTestCase(object):
             {
                 'owner': {'service_id': 126816, 'username': 'codecov'},
                 'repo': {
-                    'branch': b'master',
+                    'branch': 'master',
                     'fork': None,
                     'language': None,
                     'name': 'example-python',
@@ -423,7 +423,7 @@ class TestGitlabTestCase(object):
             {
                 'owner': {'service_id': 126816, 'username': 'codecov'},
                 'repo': {
-                    'branch': b'master',
+                    'branch': 'master',
                     'fork': None,
                     'language': None,
                     'name': 'ci-private',
@@ -434,7 +434,7 @@ class TestGitlabTestCase(object):
             {
                 'owner': {'service_id': 126816, 'username': 'codecov'},
                 'repo': {
-                    'branch': b'master',
+                    'branch': 'master',
                     'fork': None,
                     'language': None,
                     'name': 'ci-repo',
