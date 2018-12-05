@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602817&oauth_nonce=74c8ea07cd4044999b4ccc8f1c4a2b8d&oauth_version=1.0&oauth_signature=Oa%2FdEL67XpVU1qc10YA8EiXLcts%3D
+  response:
+    body: {string: '{"node": "96492d409fc8", "path": "awesome/__init__.py", "data":
+        "def smile():\n    return \":)\"\n\ndef frown():\n    return \":(\"\n", "size":
+        59}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Cache-Control
+      - [max-age=900]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 15:00:18 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-161]
+    - !!python/tuple
+      - Etag
+      - ['"e1e2a22fc555c8cd5e4f9b376f39499a"']
+    - !!python/tuple
+      - X-Static-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [repository]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.107926130295']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['399']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Cache-Info
+      - [caching]
+    - !!python/tuple
+      - Content-Length
+      - ['147']
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602817&oauth_nonce=74c8ea07cd4044999b4ccc8f1c4a2b8d&oauth_version=1.0&oauth_signature=Oa%2FdEL67XpVU1qc10YA8EiXLcts%3D
+version: 1

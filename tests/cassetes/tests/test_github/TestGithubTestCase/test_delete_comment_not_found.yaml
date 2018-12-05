@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: DELETE
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/113977999
+  response:
+    body: {string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3/issues/comments/#delete-a-comment"}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [GitHub.com]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 22:50:37 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - Transfer-Encoding
+      - [chunked]
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Status
+      - [404 Not Found]
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - ['5000']
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - ['4986']
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - ['1541633471']
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['admin:repo_hook, read:user, repo, write:discussion']
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [repo]
+    - !!python/tuple
+      - X-Oauth-Client-Id
+      - [999247146557c3ba045c]
+    - !!python/tuple
+      - X-Github-Media-Type
+      - [github.v3]
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - ['ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type']
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - ['*']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubdomains; preload]
+    - !!python/tuple
+      - X-Frame-Options
+      - [deny]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Xss-Protection
+      - [1; mode=block]
+    - !!python/tuple
+      - Referrer-Policy
+      - ['origin-when-cross-origin, strict-origin-when-cross-origin']
+    - !!python/tuple
+      - Content-Security-Policy
+      - [default-src 'none']
+    - !!python/tuple
+      - X-Github-Request-Id
+      - ['2898:26DE:E7B395:1EEA951:5BE36C3D']
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - [gzip]
+    status: {code: 404, message: Not Found}
+    url: https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/113977999
+version: 1

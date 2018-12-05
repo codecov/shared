@@ -1,0 +1,99 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/branches?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541601328&oauth_nonce=51004017ff1f4e7b838066b05a430601&oauth_version=1.0&oauth_signature=W%2FtWsDEb4z7VhJFuCZIJK7MC1tY%3D
+  response:
+    body: {string: '{"second-branch": {"node": "3017d534ab41", "files": [{"type":
+        "added", "file": "awesome/code_fib.py"}], "raw_author": "Thiago Ribeiro Ramos
+        <thiago@ribeiroramos.com>", "utctimestamp": "2018-11-06 15:42:45+00:00", "author":
+        "Thiago Ribeiro Ramos", "timestamp": "2018-11-06 16:42:45", "raw_node": "3017d534ab41e217bdf34d4c615fb355b0081f4b",
+        "parents": ["b92edba44fdd"], "branch": "second-branch", "message": "Creating
+        second branch :happy:\n", "revision": null, "size": -1}, "future": {"node":
+        "e451bd2ad777", "files": [], "raw_author": "Codecov Test Bot <hello@codecov.io>",
+        "utctimestamp": "2017-04-07 18:39:44+00:00", "author": "codecov-test", "timestamp":
+        "2017-04-07 20:39:44", "raw_node": "e451bd2ad777a858a665c05a2bfe484a2250cd15",
+        "parents": ["3adc4957bc50"], "branch": "future", "message": "Circle build
+        #437\nhttps://circleci.com/gh/codecov/testsuite/437\nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)
+        -v -u https://codecov.io -Z", "revision": null, "size": -1}, "master": {"node":
+        "b92edba44fdd", "files": [{"type": "modified", "file": "README.rst"}], "raw_author":
+        "Jerrod <jerrod@fundersclub.com>", "utctimestamp": "2018-07-09 23:51:16+00:00",
+        "author": "Jerrod", "timestamp": "2018-07-10 01:51:16", "raw_node": "b92edba44fdd29fcc506317cc3ddeae1a723dd08",
+        "parents": ["c7f608036a3d"], "branch": "master", "message": "Update README.rst",
+        "revision": null, "size": -1}, "example": {"node": "204d5bdef94d", "files":
+        [{"type": "modified", "file": "tests.py"}], "raw_author": "Steve Peak <steve@codecov.io>",
+        "utctimestamp": "2016-08-17 16:02:13+00:00", "author": "Steve Peak", "timestamp":
+        "2016-08-17 18:02:13", "raw_node": "204d5bdef94d5aa07db499096d7f5ae93ed769a4",
+        "parents": ["ca27c05556fa"], "branch": "example", "message": "Update tests.py",
+        "revision": null, "size": -1}}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - ['Authorization, Accept-Encoding']
+    - !!python/tuple
+      - Cache-Control
+      - [max-age=900]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 14:35:29 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-159]
+    - !!python/tuple
+      - Accept-Ranges
+      - [bytes]
+    - !!python/tuple
+      - Etag
+      - ['"gz[b646c0ab7e9ae49fd2d3988dd180c48b]"']
+    - !!python/tuple
+      - X-Static-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [repository]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.224669933319']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Request-Count
+      - ['403']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [1f6d684e3c29]
+    - !!python/tuple
+      - X-Cache-Info
+      - [caching]
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - [gzip]
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/branches?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541601328&oauth_nonce=51004017ff1f4e7b838066b05a430601&oauth_version=1.0&oauth_signature=W%2FtWsDEb4z7VhJFuCZIJK7MC1tY%3D
+version: 1
