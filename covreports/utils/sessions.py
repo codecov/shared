@@ -1,7 +1,7 @@
 class Session(object):
     def __init__(self, id=None, t=None, d=None, a=None, f=None,
                  c=None, n=None, j=None, u=None, p=None, e=None,
-                 N=None,
+                 N=None, s=None,
                  **kwargs):
         # the kwargs are for old reports
         self.id = id
@@ -16,6 +16,7 @@ class Session(object):
         self.state = p or kwargs.get('state')
         self.env = e or kwargs.get('env')
         self.name = N or kwargs.get('name')
+        self.storage_path = s or ('v4/raw' + self.archive.split('v4/raw')[1] if self.archive else None)
 
     def _encode(self):
         return {
@@ -29,5 +30,6 @@ class Session(object):
             'j': self.job,
             'u': self.url,
             'p': self.state,
-            'e': self.env
+            'e': self.env,
+            's': self.storage_path
         }
