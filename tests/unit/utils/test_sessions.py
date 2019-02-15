@@ -4,7 +4,7 @@ from covreports.utils.sessions import *
 
 @pytest.mark.unit
 def test_sessions():
-    s = Session('id', 'totals', 'time', 'archive', 'flags', 'provider', 'build', 'job', 'url', 'state', 'env', 'name')
+    s = Session('id', 'totals', 'time', 'archive', 'flags', 'provider', 'build', 'job', 'url', 'state', 'env', 'name', 'path')
     assert s._encode() == {
             't': 'totals',
             'd': 'time',
@@ -17,4 +17,5 @@ def test_sessions():
             'u': 'url',
             'p': 'state',
             'e': 'env',
+            'storage_path': 'path'
         }
