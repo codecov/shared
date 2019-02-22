@@ -289,7 +289,8 @@ def partials_to_line(partials):
     ln = len(partials)
     if ln == 1:
         return partials[0][2]
-    return '%s/%s' % (sum([1 for (sc, ec, hits) in partials if hits > 0]), ln)
+    v = sum([1 for (sc, ec, hits) in partials if hits > 0])
+    return f'{v}/{ln}'
 
 
 def get_complexity_from_sessions(sessions):
