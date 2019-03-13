@@ -1,5 +1,6 @@
 from json import JSONEncoder
 from types import GeneratorType
+from fractions import Fraction
 from covreports.utils.tuples import ReportTotals
 
 
@@ -7,6 +8,8 @@ class ReportEncoder(JSONEncoder):
     separators = (',', ':')
 
     def default(self, obj):
+        if isinstance(obj, Fraction):
+            return str(obj)
         if isinstance(obj, ReportTotals):
             # reduce totals
             obj = list(obj)
