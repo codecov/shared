@@ -66,7 +66,20 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_find_pull_request_nothing_found(self, valid_handler, codecov_vcr):
+        # nothing matches commit or branch
         assert await valid_handler.find_pull_request('a' * 40, 'no-branch') is None
+
+    @pytest.mark.asyncio
+    async def test_find_pull_request_merge_requests_disabled(self, valid_handler, codecov_vcr):
+        # merge requests turned off on Gitlab settings
+        res = await valid_handler.find_pull_request('a' * 40)
+        assert res is None
+
+    @pytest.mark.asyncio
+    async def test_find_pull_request_project_not_found(self, valid_handler, codecov_vcr):
+        with pytest.raises(HTTPClientError) as excinfo:
+            await valid_handler.find_pull_request('a' * 40)
+        assert excinfo.value.code == 404
 
     @pytest.mark.asyncio
     async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):

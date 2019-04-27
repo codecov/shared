@@ -477,11 +477,18 @@ class Gitlab(BaseHandler):
 
         # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
-        res = await self.api(
-            'get',
-            '/projects/%s/merge_requests?state=%s' %
-            (self.data['repo']['service_id'], state),
-            token=token)
+        try:
+            res = await self.api(
+                'get',
+                '/projects/%s/merge_requests?state=%s' %
+                (self.data['repo']['service_id'], state),
+                token=token)
+        except ClientError as e:
+            if e.code == 403:
+                # will get 403 if merge requests are disabled on gitlab
+                return None
+            raise
+
         # first check if the sha matches
         if commit:
             for pull in res:
