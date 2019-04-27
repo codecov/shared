@@ -2,6 +2,7 @@ import pytest
 
 from torngit.gitlab import Gitlab
 from torngit.exceptions import ObjectNotFoundException
+from tornado.httpclient import HTTPError as ClientError
 
 
 @pytest.fixture
@@ -77,7 +78,7 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_find_pull_request_project_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(HTTPClientError) as excinfo:
+        with pytest.raises(ClientError) as excinfo:
             await valid_handler.find_pull_request('a' * 40)
         assert excinfo.value.code == 404
 
