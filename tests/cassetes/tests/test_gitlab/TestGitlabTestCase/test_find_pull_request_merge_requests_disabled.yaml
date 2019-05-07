@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+  response:
+    body: {string: '{"message":"403 Forbidden"}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Mon, 05 Nov 2018 19:13:26 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json]
+    - !!python/tuple
+      - Content-Length
+      - ['1084']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - ['max-age=0, private, must-revalidate']
+    - !!python/tuple
+      - Etag
+      - [W/"89a964567a1549306cc2fe9aa5ca23ae"]
+    - !!python/tuple
+      - Link
+      - ['<https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
+          rel="last"']
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Next-Page
+      - ['']
+    - !!python/tuple
+      - X-Page
+      - ['1']
+    - !!python/tuple
+      - X-Per-Page
+      - ['20']
+    - !!python/tuple
+      - X-Prev-Page
+      - ['']
+    - !!python/tuple
+      - X-Request-Id
+      - [f9101899-1557-4c8e-a461-0db681ffe5fd]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.060825']
+    - !!python/tuple
+      - X-Total
+      - ['1']
+    - !!python/tuple
+      - X-Total-Pages
+      - ['1']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['5']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['595']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541445266']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Tue, 05 Nov 2018 19:14:26 GMT']
+    status: {code: 403, message: Forbidden}
+    url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+version: 1
