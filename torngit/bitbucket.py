@@ -199,17 +199,11 @@ class Bitbucket(BaseHandler, OAuthMixin):
                                                               pullid),
                 **kwargs)
             commits.extend([c['hash'] for c in res['values']])
-            if res.get('next') is None:
-                break
-            import urllib.parse as urlparse
-            url = res['next']
-            print(url)
-            parsed = urlparse.urlparse(url)
-            page = urlparse.parse_qs(parsed.query)['page'][0]
-            print(page)
             if not res.get('next'):
                 break
-
+            url = res['next']
+            parsed = urllib_parse.urlparse(url)
+            page = urllib_parse.parse_qs(parsed.query)['page'][0]
         return commits
 
     async def list_repos(self, username=None, token=None):
