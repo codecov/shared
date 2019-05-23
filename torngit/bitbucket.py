@@ -180,23 +180,30 @@ class Bitbucket(BaseHandler, OAuthMixin):
         return data
 
     async def get_pull_request_commits(self, pullid, token=None):
-        commits, page = [], 0
+        commits, page = [], None
         while True:
-            page += 1
             # https://confluence.atlassian.com/bitbucket/pullrequests-resource-423626332.html#pullrequestsResource-GETthecommitsforapullrequest
+            if page is not None:
+                kwargs = dict(
+                    page=page,
+                    token=token
+                )
+            else:
+                kwargs = dict(
+                    token=token
+                )
             res = await self.api(
                 '2',
                 'get',
                 '/repositories/%s/pullrequests/%s/commits' % (self.slug,
                                                               pullid),
-                page=page,
-                token=token)
-            if len(res['values']) == 0:
-                break
+                **kwargs)
             commits.extend([c['hash'] for c in res['values']])
             if not res.get('next'):
                 break
-
+            url = res['next']
+            parsed = urllib_parse.urlparse(url)
+            page = urllib_parse.parse_qs(parsed.query)['page'][0]
         return commits
 
     async def list_repos(self, username=None, token=None):

@@ -15,8 +15,8 @@ def valid_handler():
             secret='testrgj6ezg5b4zc5z8t2rspg90rw6dp'
         ),
         token=dict(
-            secret='testfl91v29591opmdfrxkzmu28qeixn',
-            key='AgCFzqcDEXKjWZLPFD'
+            secret='test3spp3gm9db4f43y0zfm2jvvkpnd6',
+            key='testm0141jl7b6ux9l'
         )
     )
 
@@ -115,6 +115,24 @@ class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
         expected_result = ["3017d534ab41e217bdf34d4c615fb355b0081f4b"]
+        res = await valid_handler.get_pull_request_commits("1")
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_commits_multiple_pages(self, valid_handler, codecov_vcr):
+        expected_result = [
+            'f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04',
+            'd3bedda462a79fafe4f5dfdb0ecf710f558e6aab',
+            'bd666be433ce4123ab0674fc8eb86708d340c31b',
+            'c80b02c4b65d141f0274ebb13e2a88f22a31820c',
+            'b3fe71aeb1a405219f4bf58d44ba9a0057072d06',
+            '2909d0fae30c1d3e628cab1f549e29e1da7b385d',
+            '3fe51078bb5f6000617d71e32cfde4ebed6f2052',
+            '974bce36e097868d6eb087656f929dd698d0507e',
+            '3b2aa7b423369c766173121e8a8bfa2d225ee235',
+            'f1b9dc07dcd5301c215824d1884816435cf269ea',
+            '266e6b98f88847c8c4b6e8cf38cf5397266211d3',
+            '3017d534ab41e217bdf34d4c615fb355b0081f4b']
         res = await valid_handler.get_pull_request_commits("1")
         assert res == expected_result
 

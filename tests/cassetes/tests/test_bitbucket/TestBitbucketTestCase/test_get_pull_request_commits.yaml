@@ -5,7 +5,7 @@ interactions:
       Accept: [application/json]
       User-Agent: [Default]
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519413&oauth_nonce=401c6a537f0e46d2b357542f24057969&oauth_version=1.0&oauth_signature=2zPCCRBaeqTbJgmyHfAV9sIHPsI%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557329523&oauth_nonce=8a1e01a50d7a4652b0fb66154494e464&oauth_version=1.0&oauth_signature=8Owtyk%2B%2BfFJ9ZcOdPBnT1OCgN%2Bo%3D
   response:
     body: {string: '{"pagelen": 10, "values": [{"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b",
         "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
@@ -27,7 +27,7 @@ interactions:
         "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
         "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"}}}],
         "date": "2018-11-06T15:42:45+00:00", "message": "Creating second branch :happy:\n",
-        "type": "commit"}], "page": 1, "size": 1}'}
+        "type": "commit"}], "page": 1}'}
     headers:
     - !!python/tuple
       - Server
@@ -50,19 +50,19 @@ interactions:
       - [max-age=31536000; includeSubDomains; preload]
     - !!python/tuple
       - Date
-      - ['Tue, 06 Nov 2018 15:50:14 GMT']
+      - ['Wed, 08 May 2019 15:32:04 GMT']
     - !!python/tuple
       - X-Served-By
-      - [app-143]
+      - [app-141]
     - !!python/tuple
       - Accept-Ranges
       - [bytes]
     - !!python/tuple
       - Etag
-      - ['"gz[90e65ac6e617922fd19bb0036c27384d]"']
+      - ['"gz[e5d9f6d88a26a126574ec9c4d56ed69b]"']
     - !!python/tuple
       - X-Static-Version
-      - [4ea3c9800ace]
+      - [86a24bb2f896]
     - !!python/tuple
       - X-Content-Type-Options
       - [nosniff]
@@ -74,19 +74,19 @@ interactions:
       - [oauth1]
     - !!python/tuple
       - X-Render-Time
-      - ['0.147607088089']
+      - ['0.547208070755']
     - !!python/tuple
       - Connection
       - [close]
     - !!python/tuple
       - X-Request-Count
-      - ['622']
+      - ['89']
     - !!python/tuple
       - X-Frame-Options
       - [SAMEORIGIN]
     - !!python/tuple
       - X-Version
-      - [4ea3c9800ace]
+      - [86a24bb2f896]
     - !!python/tuple
       - X-Cache-Info
       - [caching]
@@ -94,5 +94,5 @@ interactions:
       - X-Consumed-Content-Encoding
       - [gzip]
     status: {code: 200, message: OK}
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519413&oauth_nonce=401c6a537f0e46d2b357542f24057969&oauth_version=1.0&oauth_signature=2zPCCRBaeqTbJgmyHfAV9sIHPsI%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557329523&oauth_nonce=8a1e01a50d7a4652b0fb66154494e464&oauth_version=1.0&oauth_signature=8Owtyk%2B%2BfFJ9ZcOdPBnT1OCgN%2Bo%3D
 version: 1
