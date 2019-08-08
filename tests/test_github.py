@@ -10,7 +10,7 @@ def valid_handler():
     return Github(
         repo=dict(name='example-python'),
         owner=dict(username='ThiagoCodecov'),
-        token=dict(key='testyhmil9snn07dczp6i0ivu2ofivio2hn0mwxw')
+        token=dict(key='test16riktah0708pwaldsik7mi2nlgh522bfo4w')
         # oauth_consumer_token=dict(),
         # http://localhost:8080/callback?code=9dd09c3d672558d3de72
         # b'access_token=testyhmil9snn07dczp6i0ivu2ofivio2hn0mwxw&scope=admin%3Arepo_hook%2Cread%3Auser%2Crepo%2Cwrite%3Adiscussion&token_type=bearer'
@@ -513,6 +513,12 @@ class TestGithubTestCase(object):
         path, ref = 'awesome/__init__.py', '96492d409fc86aa7ae31b214dfe6b08ae860458a'
         res = await valid_handler.get_source(path, ref)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
+        path, ref = 'awesome/non_exising_file.py', '96492d409fc86aa7ae31b214dfe6b08ae860458a'
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.get_source(path, ref)
 
     @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):

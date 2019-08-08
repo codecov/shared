@@ -568,13 +568,18 @@ class Gitlab(BaseHandler):
 
     async def get_source(self, path, ref, token=None):
         # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository
-        res = await self.api(
-            'get',
-            '/projects/{}/repository/files/{}'.format(
-                self.data['repo']['service_id'],
-                urlencode(dict(a=path))[2:]),
-            ref=ref,
-            token=token)
+        try:
+            res = await self.api(
+                'get',
+                '/projects/{}/repository/files/{}'.format(
+                    self.data['repo']['service_id'],
+                    urlencode(dict(a=path))[2:]),
+                ref=ref,
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+            raise
 
         return (dict(commitid=None, content=b64decode(res['content'])))
 

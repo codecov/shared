@@ -432,23 +432,28 @@ class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
-            'commitid': 'b92edba44fdd',
-            'content': 'import unittest\n\nimport awesome\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(awesome.smile(), ":)")\n\n\nif __name__ == \'__main__\':\n    unittest.main()\n'
+            'commitid': None,
+            'content': "from kaploft import smile, fib\n\n\ndef test_something():\n    assert smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n    assert fib(3) == 3\n"
         }
-        path, ref = 'tests.py', 'master'
+        path, ref = 'tests/test_k.py', 'master'
         res = await valid_handler.get_source(path, ref)
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_source_random_commit(self, valid_handler, codecov_vcr):
         expected_result = {
-            'commitid': '96492d409fc8',
+            'commitid': None,
             'content': 'def smile():\n    return ":)"\n\ndef frown():\n    return ":("\n'
         }
         path, ref = 'awesome/__init__.py', '96492d409fc86aa7ae31b214dfe6b08ae860458a'
         res = await valid_handler.get_source(path, ref)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
+        path, ref = 'awesome/non_exising_file.py', '96492d409fc86aa7ae31b214dfe6b08ae860458a'
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.get_source(path, ref)
 
     @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):

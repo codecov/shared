@@ -5,11 +5,10 @@ interactions:
       Accept: [application/json]
       User-Agent: [Default]
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
   response:
-    body: {string: "from kaploft import smile, fib\n\n\ndef test_something():\n    assert
-        smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n
-        \   assert fib(3) == 3\n"}
+    body: {string: '{"type":"error","error":{"message":"No such file or directory:
+        awesome/non_exising_file.py"}}'}
     headers:
     - !!python/tuple
       - Server
@@ -22,7 +21,7 @@ interactions:
       - [max-age=900]
     - !!python/tuple
       - Content-Type
-      - [text/plain]
+      - [application/json; charset=utf-8]
     - !!python/tuple
       - X-Oauth-Scopes
       - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
@@ -32,19 +31,16 @@ interactions:
       - [max-age=31536000; includeSubDomains; preload]
     - !!python/tuple
       - Date
-      - ['Thu, 08 Aug 2019 15:30:05 GMT']
+      - ['Thu, 08 Aug 2019 15:25:52 GMT']
     - !!python/tuple
       - X-Served-By
-      - [app-142]
+      - [app-149]
     - !!python/tuple
       - Etag
-      - ['-4866249612541806531']
+      - ['"cset:1:e91bf881850e779a3f7bcce71f838c8ec0a6aa88"']
     - !!python/tuple
       - X-Static-Version
       - [d7eafd731394]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
     - !!python/tuple
       - X-Accepted-Oauth-Scopes
       - [repository]
@@ -53,7 +49,7 @@ interactions:
       - [oauth1]
     - !!python/tuple
       - X-Render-Time
-      - ['0.142271995544']
+      - ['0.055340051651']
     - !!python/tuple
       - Connection
       - [close]
@@ -62,7 +58,7 @@ interactions:
       - [default]
     - !!python/tuple
       - X-Request-Count
-      - ['369']
+      - ['242']
     - !!python/tuple
       - X-Frame-Options
       - [SAMEORIGIN]
@@ -74,7 +70,7 @@ interactions:
       - [caching]
     - !!python/tuple
       - Content-Length
-      - ['171']
-    status: {code: 200, message: OK}
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
+      - ['93']
+    status: {code: 404, message: NOT FOUND}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
 version: 1

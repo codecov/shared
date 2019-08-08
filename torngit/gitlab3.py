@@ -11,6 +11,7 @@ from tornado.httpclient import HTTPError as ClientError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.exceptions import ObjectNotFoundException
 
 
 class Gitlab(BaseHandler):
@@ -508,12 +509,17 @@ class Gitlab(BaseHandler):
 
     async def get_source(self, path, ref, token=None):
         # http://doc.gitlab.com/ce/api/repository_files.html
-        res = await self.api(
-            'get',
-            '/projects/%s/repository/files' % self.data['repo']['service_id'],
-            ref=ref,
-            file_path=path.replace(' ', '%20'),
-            token=token)
+        try:
+            res = await self.api(
+                'get',
+                '/projects/%s/repository/files' % self.data['repo']['service_id'],
+                ref=ref,
+                file_path=path.replace(' ', '%20'),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+            raise
 
         return (dict(commitid=None, content=b64decode(res['content'])))
 

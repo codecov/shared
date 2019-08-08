@@ -8,9 +8,13 @@ import oauth2 as oauth
 from tornado.web import HTTPError
 from tlslite.utils import keyfactory
 from tornado.httputil import url_concat
+from tornado.httpclient import HTTPError as ClientError
+
 
 from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.exceptions import ObjectNotFoundException
+
 
 PEM = """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQC9d2iMTFiXglyvHmp5ExoNK2X8nxJ+1mlxgWOyTUpTrOKRiDUb
@@ -254,14 +258,19 @@ class BitbucketServer(BaseHandler):
         content, start = [], 0
         while True:
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2028128
-            res = await self.api(
-                'get',
-                '{0}/repos/{1}/browse/{2}'.format(self.project,
-                                                  self.data['repo']['name'],
-                                                  path.replace(' ', '%20')),
-                at=ref,
-                start=start,
-                token=token)
+            try:
+                res = await self.api(
+                    'get',
+                    '{0}/repos/{1}/browse/{2}'.format(self.project,
+                                                      self.data['repo']['name'],
+                                                      path.replace(' ', '%20')),
+                    at=ref,
+                    start=start,
+                    token=token)
+            except ClientError as ce:
+                if ce.code == 404:
+                    raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+                raise
 
             content.extend(res['lines'])
             if res['isLastPage'] or res.get('nextPageStart') is None:

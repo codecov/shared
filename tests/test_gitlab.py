@@ -412,6 +412,12 @@ class TestGitlabTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
+        path, ref = 'awesome/non_exising_file.py', '5716de23'
+        with pytest.raises(ObjectNotFoundException):
+            await valid_handler.get_source(path, ref)
+
+    @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):
         expected_result = [
             {

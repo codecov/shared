@@ -61,7 +61,6 @@ class Bitbucket(BaseHandler, OAuthMixin):
             all_args.update(body or {})
         oauth = self._oauth_request_parameters(
             url, token or self.token, all_args, method=method.upper())
-        print(oauth)
         kwargs.update(oauth)
 
         url = url_concat(url, kwargs)
@@ -575,14 +574,18 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     async def get_source(self, path, ref, token=None):
         # https://confluence.atlassian.com/bitbucket/src-resources-296095214.html
-        src = await self.api(
-            '1',
-            'get',
-            '/repositories/{0}/src/{1}/{2}'.format(self.slug, ref,
-                                                   path.replace(' ', '%20')),
-            token=token)
-
-        return (dict(commitid=src['node'], content=src['data']))
+        try:
+            src = await self.api(
+                '2',
+                'get',
+                '/repositories/{0}/src/{1}/{2}'.format(self.slug, ref,
+                                                       path.replace(' ', '%20')),
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+            raise
+        return (dict(commitid=None, content=src.decode()))
 
     async def get_compare(self,
                           base,

@@ -525,12 +525,17 @@ class Github(BaseHandler, OAuth2Mixin):
     # ------
     async def get_source(self, path, ref, token=None):
         # https://developer.github.com/v3/repos/contents/#get-contents
-        content = await self.api(
-            'get',
-            '/repos/{0}/contents/{1}'.format(self.slug, path.replace(
-                ' ', '%20')),
-            ref=ref,
-            token=token)
+        try:
+            content = await self.api(
+                'get',
+                '/repos/{0}/contents/{1}'.format(self.slug, path.replace(
+                    ' ', '%20')),
+                ref=ref,
+                token=token)
+        except ClientError as ce:
+            if ce.code == 404:
+                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+            raise
         return dict(
             content=b64decode(content['content']),
             commitid=content['sha']
