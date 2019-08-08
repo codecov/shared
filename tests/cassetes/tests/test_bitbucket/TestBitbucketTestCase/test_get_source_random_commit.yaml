@@ -5,11 +5,9 @@ interactions:
       Accept: [application/json]
       User-Agent: [Default]
     method: GET
-    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602817&oauth_nonce=74c8ea07cd4044999b4ccc8f1c4a2b8d&oauth_version=1.0&oauth_signature=Oa%2FdEL67XpVU1qc10YA8EiXLcts%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
   response:
-    body: {string: '{"node": "96492d409fc8", "path": "awesome/__init__.py", "data":
-        "def smile():\n    return \":)\"\n\ndef frown():\n    return \":(\"\n", "size":
-        59}'}
+    body: {string: "def smile():\n    return \":)\"\n\ndef frown():\n    return \":(\"\n"}
     headers:
     - !!python/tuple
       - Server
@@ -22,7 +20,7 @@ interactions:
       - [max-age=900]
     - !!python/tuple
       - Content-Type
-      - [application/json; charset=utf-8]
+      - [text/plain]
     - !!python/tuple
       - X-Oauth-Scopes
       - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
@@ -32,16 +30,16 @@ interactions:
       - [max-age=31536000; includeSubDomains; preload]
     - !!python/tuple
       - Date
-      - ['Wed, 07 Nov 2018 15:00:18 GMT']
+      - ['Thu, 08 Aug 2019 15:25:51 GMT']
     - !!python/tuple
       - X-Served-By
-      - [app-161]
+      - [app-146]
     - !!python/tuple
       - Etag
-      - ['"e1e2a22fc555c8cd5e4f9b376f39499a"']
+      - ['-8639567690277796124']
     - !!python/tuple
       - X-Static-Version
-      - [1f6d684e3c29]
+      - [d7eafd731394]
     - !!python/tuple
       - X-Content-Type-Options
       - [nosniff]
@@ -53,25 +51,28 @@ interactions:
       - [oauth1]
     - !!python/tuple
       - X-Render-Time
-      - ['0.107926130295']
+      - ['0.0693199634552']
     - !!python/tuple
       - Connection
       - [close]
     - !!python/tuple
+      - X-Reads-Before-Write-From
+      - [default]
+    - !!python/tuple
       - X-Request-Count
-      - ['399']
+      - ['94']
     - !!python/tuple
       - X-Frame-Options
       - [SAMEORIGIN]
     - !!python/tuple
       - X-Version
-      - [1f6d684e3c29]
+      - [d7eafd731394]
     - !!python/tuple
       - X-Cache-Info
       - [caching]
     - !!python/tuple
       - Content-Length
-      - ['147']
+      - ['59']
     status: {code: 200, message: OK}
-    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602817&oauth_nonce=74c8ea07cd4044999b4ccc8f1c4a2b8d&oauth_version=1.0&oauth_signature=Oa%2FdEL67XpVU1qc10YA8EiXLcts%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
 version: 1
