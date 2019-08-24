@@ -1,9 +1,9 @@
 from json import dumps
 from json import loads
-from sys import stdout
 from time import time
 import os
 import urllib.parse as urllib_parse
+import logging
 
 from requests_oauthlib import OAuth1Session
 from tornado.auth import OAuthMixin
@@ -12,7 +12,12 @@ from tornado.httputil import url_concat
 
 from torngit.base import BaseHandler
 from torngit.status import Status
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import (
+    TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
+    TorngitClientError
+)
+
+log = logging.getLogger(__name__)
 
 
 class Bitbucket(BaseHandler, OAuthMixin):
@@ -24,19 +29,19 @@ class Bitbucket(BaseHandler, OAuthMixin):
     api_url = 'https://bitbucket.org'
     service_url = 'https://bitbucket.org'
     urls = dict(
-        repo='%(username)s/%(name)s',
-        owner='%(username)s',
-        user='%(username)s',
-        issues='%(username)s/%(name)s/issues/%(issueid)s',
-        commit='%(username)s/%(name)s/commits/%(commitid)s',
-        commits='%(username)s/%(name)s/commits',
-        src='%(username)s/%(name)s/src/%(commitid)s/%(path)s',
+        repo='{username}/{name}',
+        owner='{username}',
+        user='{username}',
+        issues='{username}/{name}/issues/{issueid}',
+        commit='{username}/{name}/commits/{commitid}',
+        commits='{username}/{name}/commits',
+        src='{username}/{name}/src/{commitid}/{path}',
         create_file=
-        '%(username)s/%(name)s/create-file/%(commitid)s?at=%(branch)s&filename=%(path)s&content=%(content)s',
-        tree='%(username)s/%(name)s/src/%(commitid)s',
-        branch='%(username)s/%(name)s/branch/%(branch)s',
-        pull='%(username)s/%(name)s/pull-requests/%(pullid)s',
-        compare='%(username)s/%(name)s')
+        '{username}/{name}/create-file/{commitid}?at={branch}&filename={path}&content={content}',
+        tree='{username}/{name}/src/{commitid}',
+        branch='{username}/{name}/branch/{branch}',
+        pull='{username}/{name}/pull-requests/{pullid}',
+        compare='{username}/{name}')
 
     async def api(self,
                   version,
@@ -80,25 +85,24 @@ class Bitbucket(BaseHandler, OAuthMixin):
         try:
             res = await self.fetch(url, **kwargs)
         except ClientError as e:
-            if e.response is None:
-                stdout.write('count#%s.timeout=1\n' % self.service)
-                raise ClientError(
-                    502,
-                    'Bitbucket was not able to be reached, server timed out.')
-
-            else:
-                self.log(
-                    'error',
-                    'Bitbucket HTTP %s' % e.response.code,
+            if e.code == 599:
+                log.info('count#%s.timeout=1\n' % self.service)
+                raise TorngitServerUnreachableError('Bitbucket was not able to be reached, server timed out.')
+            elif e.code >= 500:
+                raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
+            log.error(
+                'Bitbucket HTTP %s' % e.response.code,
+                extra=dict(
                     url=url,
                     endpoint=path,
-                    body=e.response.body)
-            e.message = 'Bitbucket API: %s' % e.message
-            raise
+                    body=e.response.body
+                )
+            )
+            message = f'Bitbucket API: {e.message}'
+            raise TorngitClientError(e.code, e.response, message)
 
         else:
-            self.log(
-                'info', 'Bitbucket HTTP %s' % res.code, url=url, endpoint=path)
+            log.info('Bitbucket HTTP %s' % res.code, url=url, endpoint=path)
             if res.code == 204:
                 return None
 
@@ -109,7 +113,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 return res.body
 
         finally:
-            stdout.write("source=%s measure#service=%dms\n" %
+            log.debug("source=%s measure#service=%dms\n" %
                          (self.service, int((time() - start) * 1000)))
 
     async def _oauth_get_user_future(self, access_token):
@@ -151,9 +155,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 'delete',
                 '/repositories/%s/hooks/%s' % (self.slug, hookid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Webhook with id {hookid} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"Webhook with id {hookid} does not exist")
             raise
         return True
 
@@ -245,9 +249,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 'get',
                 '/repositories/{}/pullrequests/{}'.format(self.slug, pullid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"PR with id {pullid} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"PR with id {pullid} does not exist")
             raise
         # the commit sha is only {12}. need to get full sha
         base = await self.api(
@@ -284,34 +288,27 @@ class Bitbucket(BaseHandler, OAuthMixin):
     async def post_comment(self, issueid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/issues+Resource#issuesResource-POSTanewcommentontheissue
         res = await self.api(
-            '1',
+            '2',
             'post',
             '/repositories/%s/pullrequests/%s/comments' % (self.slug, issueid),
-            body=dict(content=body),
+            body=dict(content=dict(raw=body)),
+            json=True,
             token=token)
-        res['id'] = res['comment_id']
         return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource+1.0#pullrequestsResource1.0-PUTanupdateonacomment
         # await self.api('1', 'put', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid),
         #                body=dict(content=body), token=token)
-        client = self._oauth_consumer_token()
-        token = (token or self.token)
-        url = 'https://bitbucket.org/api/1.0/repositories/%s/pullrequests/%s/comments/%s' % (
-            self.slug, issueid, commentid)
-        oauth = OAuth1Session(
-            client['key'],
-            client_secret=client['secret'],
-            resource_owner_key=token['key'],
-            resource_owner_secret=token['secret'])
-        res = oauth.put(url, data=dict(content=body))
-        if res.status_code == 200:
-            res_json = res.json()
-            res_json['id'] = res_json['comment_id']
-            return res_json
-        if res.status_code == 404:
-            raise ObjectNotFoundException(f"Comment {commentid} from PR {issueid} cannot be found")
+        try:
+            res = await self.api(
+                '2', 'put', f'/repositories/{self.slug}/pullrequests/{issueid}/comments/{commentid}',
+                body=dict(content=dict(raw=body)), json=True, token=token)
+        except TorngitClientError as ce:
+            if ce.code == 404:
+                raise TorngitObjectNotFoundError(ce.response, f"Comment {commentid} from PR {issueid} cannot be found")
+            raise
+        return res
 
     async def delete_comment(self, issueid, commentid, token=None):
         # https://confluence.atlassian.com/bitbucket/pullrequests-resource-1-0-296095210.html#pullrequestsResource1.0-PUTanupdateonacomment
@@ -322,9 +319,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 '/repositories/%s/pullrequests/%s/comments/%s' %
                 (self.slug, issueid, commentid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Comment {commentid} from PR {issueid} cannot be found")
+                raise TorngitObjectNotFoundError(ce.response, f"Comment {commentid} from PR {issueid} cannot be found")
             raise
         return True
 
@@ -442,9 +439,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 'get',
                 '/repositories/%s/commit/%s' % (self.slug, commit),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Commit {commit} cannot be found")
+                raise TorngitObjectNotFoundError(ce.response, f"Commit {commit} cannot be found")
             raise
         author_login = data['author'].get('user', {}).get('username')
         author_raw = data['author'].get('raw', '')[:-1].rsplit(
@@ -581,9 +578,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 '/repositories/{0}/src/{1}/{2}'.format(self.slug, ref,
                                                        path.replace(' ', '%20')),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+                raise TorngitObjectNotFoundError(ce.response, f"Path {path} not found at {ref}")
             raise
         return (dict(commitid=None, content=src.decode()))
 

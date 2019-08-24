@@ -1,8 +1,8 @@
 import os
 import socket
 from time import time
-from sys import stdout
 from base64 import b64decode
+import logging
 
 from tornado.auth import OAuth2Mixin
 from tornado.httputil import url_concat
@@ -11,7 +11,12 @@ from tornado.escape import json_decode, json_encode, url_escape
 
 from torngit.status import Status
 from torngit.base import BaseHandler
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import (
+    TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
+    TorngitClientError
+)
+
+log = logging.getLogger(__name__)
 
 
 class Github(BaseHandler, OAuth2Mixin):
@@ -42,7 +47,6 @@ class Github(BaseHandler, OAuth2Mixin):
                   url,
                   body=None,
                   headers=None,
-                  reraise=True,
                   token=None,
                   **args):
         _headers = {
@@ -55,12 +59,12 @@ class Github(BaseHandler, OAuth2Mixin):
                                                       or self.token)['key']
 
         _headers.update(headers or {})
-        _log = {}
+        log_dict = {}
 
         method = (method or 'GET').upper()
 
         if url[0] == '/':
-            _log = dict(
+            log_dict = dict(
                 event='api',
                 endpoint=url,
                 method=method,
@@ -86,50 +90,38 @@ class Github(BaseHandler, OAuth2Mixin):
             res = await self.fetch(url, **kwargs)
 
         except ClientError as e:
-            if e.response is None:
-                stdout.write('count#%s.timeout=1\n' % self.service)
-                raise ClientError(
-                    502,
-                    'GitHub was not able to be reached, server timed out.')
-
-            else:
-                if e.response.code == 301:
-                    # repo moved
-                    self.data['repo'][
-                        'service_id'] = e.response.effective_url.split('/')[4]
-                    repo = await self.get_repository(_in_loop=True)
-                    self.data['owner']['username'] = repo['owner']['username']
-                    self.data['repo']['name'] = repo['repo']['name']
-                    self.renamed_repository(repo)
-
-                self.log(
-                    'error',
-                    'GitHub HTTP %s' % e.response.code,
+            if e.code == 599:
+                log.info('count#%s.timeout=1\n' % self.service)
+                raise TorngitServerUnreachableError('Github was not able to be reached, server timed out.')
+            elif e.code >= 500:
+                raise TorngitServer5xxCodeError("Github is having 5xx issues")
+            log.error(
+                'Github HTTP %s' % e.response.code,
+                extra=dict(
+                    url=url,
                     body=e.response.body,
                     rlx=e.response.headers.get('X-RateLimit-Remaining'),
                     rly=e.response.headers.get('X-RateLimit-Limit'),
                     rlr=e.response.headers.get('X-RateLimit-Reset'),
-                    **_log)
-
-                if reraise:
-                    error = ClientError(e.response.code,
-                                        'GitHub API: %s' % e.message)
-                    if b'"Bad credentials"' in e.response.body:
-                        error.login = True
-                    raise error
+                    **log_dict
+                )
+            )
+            message = f'Github API: {e.message}'
+            raise TorngitClientError(e.code, e.response, message)
 
         except socket.gaierror:
-            raise ClientError(502, 'GitHub was not able to be reached.')
+            raise TorngitServerUnreachableError('GitHub was not able to be reached.')
 
         else:
-            self.log(
-                'info',
+            log.info(
                 'GitHub HTTP %s' % res.code,
-                rlx=res.headers.get('X-RateLimit-Remaining'),
-                rly=res.headers.get('X-RateLimit-Limit'),
-                rlr=res.headers.get('X-RateLimit-Reset'),
-                **_log)
-
+                extra=dict(
+                    rlx=res.headers.get('X-RateLimit-Remaining'),
+                    rly=res.headers.get('X-RateLimit-Limit'),
+                    rlr=res.headers.get('X-RateLimit-Reset'),
+                    **log_dict
+                )
+            )
             if res.code == 204:
                 return None
 
@@ -140,7 +132,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 return res.body
 
         finally:
-            stdout.write("source=%s measure#service=%dms\n" %
+            log.debug("source=%s measure#service=%dms\n" %
                          (self.service, int((time() - start) * 1000)))
 
     # Generic
@@ -395,9 +387,9 @@ class Github(BaseHandler, OAuth2Mixin):
                     events=events,
                     config=dict(url=url, secret=secret, content_type='json')),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Cannot find webhook {hookid}")
+                raise TorngitObjectNotFoundError(ce.response, f"Cannot find webhook {hookid}")
             raise
 
     async def delete_webhook(self, hookid, token=None):
@@ -405,9 +397,9 @@ class Github(BaseHandler, OAuth2Mixin):
         try:    
             await self.api(
                 'delete', '/repos/%s/hooks/%s' % (self.slug, hookid), token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Cannot find webhook {hookid}")
+                raise TorngitObjectNotFoundError(ce.response, f"Cannot find webhook {hookid}")
             raise
         return True
 
@@ -430,9 +422,9 @@ class Github(BaseHandler, OAuth2Mixin):
                 '/repos/%s/issues/comments/%s' % (self.slug, commentid),
                 body=dict(body=body),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Cannot find comment {commentid} from PR {issueid}")
+                raise TorngitObjectNotFoundError(ce.response, f"Cannot find comment {commentid} from PR {issueid}")
             raise
 
     async def delete_comment(self, issueid, commentid, token=None):
@@ -442,9 +434,9 @@ class Github(BaseHandler, OAuth2Mixin):
                 'delete',
                 '/repos/%s/issues/comments/%s' % (self.slug, commentid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Cannot find comment {commentid} from PR {issueid}")
+                raise TorngitObjectNotFoundError(ce.response, f"Cannot find comment {commentid} from PR {issueid}")
             raise
         return True
 
@@ -472,7 +464,7 @@ class Github(BaseHandler, OAuth2Mixin):
                     context=context,
                     description=description),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             raise
         if merge_commit:
             await self.api(
@@ -532,9 +524,9 @@ class Github(BaseHandler, OAuth2Mixin):
                     ' ', '%20')),
                 ref=ref,
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+                raise TorngitObjectNotFoundError(ce.response, f"Path {path} not found at {ref}")
             raise
         return dict(
             content=b64decode(content['content']),
@@ -549,9 +541,9 @@ class Github(BaseHandler, OAuth2Mixin):
                 '/repos/%s/commits/%s' % (self.slug, commit),
                 headers={'Accept': 'application/vnd.github.v3.diff'},
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 422:
-                raise ObjectNotFoundException(f"Commit with id {commit} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"Commit with id {commit} does not exist")
             raise
         return self.diff_to_json(res.decode('utf-8'))
 
@@ -604,9 +596,9 @@ class Github(BaseHandler, OAuth2Mixin):
         try:
             res = await self.api(
                 'get', '/repos/%s/commits/%s' % (self.slug, commit), token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 422:
-                raise ObjectNotFoundException(f"Commit with id {commit} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"Commit with id {commit} does not exist")
             raise
         return dict(
             author=dict(
@@ -640,9 +632,9 @@ class Github(BaseHandler, OAuth2Mixin):
         try:
             res = await self.api(
                 'get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Pull Request {pullid} not found")
+                raise TorngitObjectNotFoundError(ce.response, f"Pull Request {pullid} not found")
             raise
         return self._pull(res)
 

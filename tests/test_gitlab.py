@@ -1,8 +1,7 @@
 import pytest
 
 from torngit.gitlab import Gitlab
-from torngit.exceptions import ObjectNotFoundException
-from tornado.httpclient import HTTPError as ClientError
+from torngit.exceptions import TorngitObjectNotFoundError, TorngitClientError
 
 
 @pytest.fixture
@@ -53,7 +52,7 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_edit_comment_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.edit_comment("1", 113979999, "Hello world number 2")
 
     @pytest.mark.asyncio
@@ -62,7 +61,7 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_comment("1", 113977999)
 
     @pytest.mark.asyncio
@@ -78,13 +77,13 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_find_pull_request_project_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ClientError) as excinfo:
+        with pytest.raises(TorngitClientError) as excinfo:
             await valid_handler.find_pull_request('a' * 40)
         assert excinfo.value.code == 404
 
     @pytest.mark.asyncio
     async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_pull_request("100")
 
     get_pull_request_test_data = [
@@ -142,7 +141,7 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_commit('none')
 
     @pytest.mark.asyncio
@@ -313,7 +312,7 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_webhook_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_webhook('422507987')
 
     @pytest.mark.asyncio
@@ -414,7 +413,7 @@ class TestGitlabTestCase(object):
     @pytest.mark.asyncio
     async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
         path, ref = 'awesome/non_exising_file.py', '5716de23'
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_source(path, ref)
 
     @pytest.mark.asyncio

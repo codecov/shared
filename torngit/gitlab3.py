@@ -4,14 +4,18 @@ from time import time
 from sys import stdout
 from base64 import b64decode
 from json import loads, dumps
-
+import logging
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPError as ClientError
+from tornado.httpclient import HTTPError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import (
+    TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
+    TorngitClientError
+)
+log = logging.getLogger(__name__)
 
 
 class Gitlab(BaseHandler):
@@ -73,29 +77,29 @@ class Gitlab(BaseHandler):
         try:
             res = await self.fetch(url, **kwargs)
 
-        except ClientError as e:
-            if e.response is None:
-                raise ClientError(
-                    502,
-                    'GitLab was not able to be reached. Response empty. Please try again.'
+        except HTTPError as e:
+            if e.code == 599:
+                log.info('count#%s.timeout=1\n' % self.service)
+                raise TorngitServerUnreachableError('Gitlab3 was not able to be reached, server timed out.')
+            elif e.code >= 500:
+                raise TorngitServer5xxCodeError("Gitlab3 is having 5xx issues")
+            log.error(
+                'Gitlab3 HTTP %s' % e.response.code,
+                extra=dict(
+                    url=url,
+                    body=e.response.body
                 )
-
-            self.log(
-                'error',
-                'GitLab HTTP %s' % e.response.code,
-                body=e.response.body,
-                **_log)
-
-            raise
+            )
+            message = f'Gitlab3 API: {e.message}'
+            raise TorngitClientError(e.code, e.response, message)
 
         except socket.gaierror:
-            raise ClientError(
-                502,
+            raise TorngitServerUnreachableError(
                 'GitLab was not able to be reached. Gateway 502. Please try again.'
             )
 
         else:
-            self.log('info', 'GitLab HTTP %s' % res.code, **_log)
+            log.info('GitLab3 HTTP %s' % res.code, **_log)
             return None if res.code == 204 else loads(res.body)
 
         finally:
@@ -516,9 +520,9 @@ class Gitlab(BaseHandler):
                 ref=ref,
                 file_path=path.replace(' ', '%20'),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+                raise TorngitObjectNotFoundError(f"Path {path} not found at {ref}")
             raise
 
         return (dict(commitid=None, content=b64decode(res['content'])))

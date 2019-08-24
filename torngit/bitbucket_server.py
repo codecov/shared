@@ -13,7 +13,7 @@ from tornado.httpclient import HTTPError as ClientError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import TorngitObjectNotFoundError
 
 
 PEM = """-----BEGIN RSA PRIVATE KEY-----
@@ -269,7 +269,7 @@ class BitbucketServer(BaseHandler):
                     token=token)
             except ClientError as ce:
                 if ce.code == 404:
-                    raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+                    raise TorngitObjectNotFoundError(f"Path {path} not found at {ref}")
                 raise
 
             content.extend(res['lines'])

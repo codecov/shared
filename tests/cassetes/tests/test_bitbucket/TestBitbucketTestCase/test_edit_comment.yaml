@@ -1,57 +1,90 @@
 interactions:
 - request:
-    body: content=Hello+world+numbah+2
+    body: '{"content": {"raw": "Hello world numbah 2"}}'
     headers:
-      Accept:
-      - !!binary |
-        Ki8q
-      Accept-Encoding:
-      - !!binary |
-        Z3ppcCwgZGVmbGF0ZQ==
-      Connection:
-      - !!binary |
-        a2VlcC1hbGl2ZQ==
-      Content-Length: ['28']
-      Content-Type:
-      - !!binary |
-        YXBwbGljYXRpb24veC13d3ctZm9ybS11cmxlbmNvZGVk
-      User-Agent:
-      - !!binary |
-        cHl0aG9uLXJlcXVlc3RzLzIuMjAuMA==
+      Accept: [application/json]
+      Content-Type: [application/json]
+      User-Agent: [Default]
     method: PUT
-    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/81514270
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631440&oauth_nonce=5aa764bebf044e64beb9d9df2912cc08&oauth_version=1.0&oauth_signature=2mI6UpQrKaN8s0sL9N%2F9ItZaF7o%3D
   response:
-    body: {string: '{"display_name": "Thiago Ramos", "parent_id": null, "filename_hash":
-        null, "filename": null, "content": "Hello world numbah 2", "content_rendered":
-        "<p>Hello world numbah 2</p>", "user_avatar_url": "https://bitbucket.org/account/ThiagoCodecov/avatar/?ts=1541519035",
-        "user_avatar_url_2x": "https://bitbucket.org/account/ThiagoCodecov/avatar/64/?ts=1541519035",
-        "utc_created_on": "2018-11-06 16:04:23+00:00", "username": "ThiagoCodecov",
-        "pr_repo": {"owner": "ThiagoCodecov", "slug": "example-python"}, "deleted":
-        false, "comment_id": 81514270, "comparespec": "ThiagoCodecov/example-python:3017d534ab41\rb92edba44fdd",
-        "line_to": null, "is_spam": false, "pull_request_id": 1, "utc_last_updated":
-        "2018-11-06 16:10:12+00:00", "is_entity_author": true, "convert_markup": false,
-        "line_from": null, "dest_rev": null, "anchor": null, "is_repo_owner": true}'}
+    body: {string: '{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127"},
+        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127"}},
+        "deleted": false, "pullrequest": {"type": "pullrequest", "id": 1, "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1"},
+        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1"}},
+        "title": "Hahaa That is a PR"}, "content": {"raw": "Hello world numbah 2",
+        "markup": "markdown", "html": "<p>Hello world numbah 2</p>", "type": "rendered"},
+        "created_on": "2019-08-24T07:22:19.710114+00:00", "user": {"display_name":
+        "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "updated_on": "2019-08-24T07:24:00.990289+00:00", "type": "pullrequest_comment",
+        "id": 114320127}'}
     headers:
-      Connection: [Keep-Alive]
-      Content-Length: ['850']
-      Content-Type: [application/json; charset=utf-8]
-      Date: ['Tue, 06 Nov 2018 16:10:12 GMT']
-      ETag: ['"ea8be922646d2fbffe8f9033039e8c1f"']
-      Server: [nginx]
-      Strict-Transport-Security: [max-age=31536000; includeSubDomains; preload]
-      Vary: [Authorization]
-      X-Accepted-OAuth-Scopes: [pullrequest]
-      X-Cache-Info: [not cacheable; request wasn't a GET or HEAD]
-      X-Content-Type-Options: [nosniff]
-      X-Credential-Type: [oauth1]
-      X-Frame-Options: [SAMEORIGIN]
-      X-OAuth-Scopes: ['pipeline:variable, webhook, snippet:write, wiki, issue:write,
-          pullrequest:write, repository:delete, repository:admin, project:write, team:write,
-          account:write']
-      X-Render-Time: ['0.507030963898']
-      X-Request-Count: ['46']
-      X-Served-By: [app-144]
-      X-Static-Version: [4ea3c9800ace]
-      X-Version: [4ea3c9800ace]
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization, Accept-Encoding]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Sat, 24 Aug 2019 07:24:01 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-144]
+    - !!python/tuple
+      - Etag
+      - ['"gz[b66344ea32af191ed90c8f1655af55b3]"']
+    - !!python/tuple
+      - X-Static-Version
+      - [4973dbe55bef]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [pullrequest]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.526782035828']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - [default]
+    - !!python/tuple
+      - X-Request-Count
+      - ['78']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [4973dbe55bef]
+    - !!python/tuple
+      - X-Cache-Info
+      - [not cacheable; request wasn't a GET or HEAD]
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - [gzip]
     status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631440&oauth_nonce=5aa764bebf044e64beb9d9df2912cc08&oauth_version=1.0&oauth_signature=2mI6UpQrKaN8s0sL9N%2F9ItZaF7o%3D
 version: 1

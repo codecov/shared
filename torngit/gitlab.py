@@ -4,14 +4,20 @@ from time import time
 from sys import stdout
 from base64 import b64decode
 from json import loads, dumps
+import logging
 
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPError as ClientError
+from tornado.httpclient import HTTPError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import (
+    TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
+    TorngitClientError
+)
+
+log = logging.getLogger(__name__)
 
 
 class Gitlab(BaseHandler):
@@ -74,28 +80,29 @@ class Gitlab(BaseHandler):
         start = time()
         try:
             res = await self.fetch(url, **kwargs)
-        except ClientError as e:
-            if e.response is None:
-                raise ClientError(
-                    502,
-                    'GitLab was not able to be reached. Response empty. Please try again.'
+        except HTTPError as e:
+            if e.code == 599:
+                log.info('count#%s.timeout=1\n' % self.service)
+                raise TorngitServerUnreachableError('Gitlab was not able to be reached, server timed out.')
+            elif e.code >= 500:
+                raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
+            log.error(
+                'Gitlab HTTP %s' % e.response.code,
+                extra=dict(
+                    url=url,
+                    body=e.response.body
                 )
-
-            self.log(
-                'error',
-                'GitLab HTTP %s' % e.response.code,
-                body=e.response.body,
-                **_log)
-            raise
+            )
+            message = f'Gitlab API: {e.message}'
+            raise TorngitClientError(e.code, e.response, message)
 
         except socket.gaierror:
-            raise ClientError(
-                502,
+            raise TorngitServerUnreachableError(
                 'GitLab was not able to be reached. Gateway 502. Please try again.'
             )
 
         else:
-            self.log('info', 'GitLab HTTP %s' % res.code, **_log)
+            log.info('GitLab HTTP %s' % res.code, **_log)
             return None if res.code == 204 else loads(res.body)
 
         finally:
@@ -157,9 +164,9 @@ class Gitlab(BaseHandler):
                 '/projects/%s/hooks/%s' % (self.data['repo']['service_id'],
                                            hookid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Webhook with id {hookid} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"Webhook with id {hookid} does not exist")
             raise
         return True
 
@@ -248,9 +255,9 @@ class Gitlab(BaseHandler):
                 '/projects/{}/merge_requests/{}'.format(
                     self.data['repo']['service_id'], pullid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"PR with id {pullid} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"PR with id {pullid} does not exist")
             raise
 
         if pull:
@@ -316,7 +323,7 @@ class Gitlab(BaseHandler):
                     name=context,
                     description=description),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             raise
 
         if merge_commit:
@@ -374,9 +381,9 @@ class Gitlab(BaseHandler):
                 (self.data['repo']['service_id'], pullid, commentid),
                 body=dict(body=body),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Comment {commentid} in PR {pullid} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"Comment {commentid} in PR {pullid} does not exist")
             raise
 
     async def delete_comment(self, pullid, commentid, token=None):
@@ -387,9 +394,9 @@ class Gitlab(BaseHandler):
                 '/projects/%s/merge_requests/%s/notes/%s' %
                 (self.data['repo']['service_id'], pullid, commentid),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Comment {commentid} in PR {pullid} does not exist")
+                raise TorngitObjectNotFoundError(ce.response, f"Comment {commentid} in PR {pullid} does not exist")
             raise
         return True
 
@@ -401,9 +408,10 @@ class Gitlab(BaseHandler):
                 '/projects/%s/repository/commits/%s' %
                 (self.data['repo']['service_id'], commit),
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException
+                message = f"Commit {commit} not found in repo {self.data['repo']['service_id']}"
+                raise TorngitObjectNotFoundError(ce.response, message)
             raise
         # http://doc.gitlab.com/ce/api/users.html
         email = res['author_email']
@@ -483,7 +491,7 @@ class Gitlab(BaseHandler):
                 '/projects/%s/merge_requests?state=%s' %
                 (self.data['repo']['service_id'], state),
                 token=token)
-        except ClientError as e:
+        except TorngitClientError as e:
             if e.code == 403:
                 # will get 403 if merge requests are disabled on gitlab
                 return None
@@ -518,7 +526,7 @@ class Gitlab(BaseHandler):
                     (res['permissions']['project_access'] or {}).get('access_level') or 0
                 ])
             can_edit = permission > 20
-        except ClientError:
+        except TorngitClientError:
             if self.data['repo']['private']:
                 raise
 
@@ -576,9 +584,9 @@ class Gitlab(BaseHandler):
                     urlencode(dict(a=path))[2:]),
                 ref=ref,
                 token=token)
-        except ClientError as ce:
+        except TorngitClientError as ce:
             if ce.code == 404:
-                raise ObjectNotFoundException(f"Path {path} not found at {ref}")
+                raise TorngitObjectNotFoundError(ce.response, f"Path {path} not found at {ref}")
             raise
 
         return (dict(commitid=None, content=b64decode(res['content'])))

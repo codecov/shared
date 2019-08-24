@@ -1,6 +1,6 @@
 import pytest
 
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import TorngitObjectNotFoundError
 
 from torngit.bitbucket import Bitbucket
 
@@ -26,45 +26,61 @@ class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_post_comment(self, valid_handler, codecov_vcr):
         expected_result = {
-            'anchor': None,
-            'comment_id': 81514270,
-            'comparespec': 'ThiagoCodecov/example-python:3017d534ab41\rb92edba44fdd',
-            'content': 'Hello world',
-            'content_rendered': '<p>Hello world</p>',
-            'convert_markup': False,
             'deleted': False,
-            'dest_rev': None,
-            'display_name': 'Thiago Ramos',
-            'filename': None,
-            'filename_hash': None,
-            'id': 81514270,
-            'is_entity_author': True,
-            'is_repo_owner': True,
-            'is_spam': False,
-            'line_from': None,
-            'line_to': None,
-            'parent_id': None,
-            'pr_repo': {'owner': 'ThiagoCodecov', 'slug': 'example-python'},
-            'pull_request_id': 1,
-            'user_avatar_url': 'https://bitbucket.org/account/ThiagoCodecov/avatar/?ts=1541519035',
-            'user_avatar_url_2x': 'https://bitbucket.org/account/ThiagoCodecov/avatar/64/?ts=1541519035',
-            'username': 'ThiagoCodecov',
-            'utc_created_on': '2018-11-06 16:04:23+00:00',
-            'utc_last_updated': '2018-11-06 16:04:23+00:00',
+            'id': 114320127,
+            'content': {
+                'html': '<p>Hello world</p>',
+                'markup': 'markdown',
+                'raw': 'Hello world',
+                'type': 'rendered'
+            },
+            'created_on': '2019-08-24T07:22:19.710114+00:00',
+            'links': {
+                'html': {'href': 'https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127'},
+                'self': {'href': 'https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127'}
+            },
+            'pullrequest': {
+                'id': 1,
+                'links': {
+                    'html': {
+                        'href': 'https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1'
+                    },
+                    'self': {
+                        'href': 'https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1'
+                    }
+                },
+                'title': 'Hahaa That is a PR',
+                'type': 'pullrequest'
+            },
+            'type': 'pullrequest_comment',
+            'updated_on': '2019-08-24T07:22:19.719805+00:00',
+            'user': {
+                'account_id': '5bce04c759d0e84f8c7555e9',
+                'display_name': 'Thiago Ramos',
+                'links': {
+                    'avatar': {'href': 'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png'},
+                    'html': {
+                        'href': 'https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/'
+                    },
+                    'self': {'href': 'https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D'}},
+                'nickname': 'thiago',
+                'type': 'user',
+                'uuid': '{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}'
+            }
         }
         res = await valid_handler.post_comment("1", "Hello world")
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_edit_comment(self, valid_handler, codecov_vcr):
-        res = await valid_handler.edit_comment("1", "81514270", "Hello world numbah 2")
+        res = await valid_handler.edit_comment("1", "114320127", "Hello world numbah 2")
         assert res is not None
-        assert res['id'] == 81514270
-        assert res['content'] == 'Hello world numbah 2'
+        assert res['id'] == 114320127
+        assert res['content']['raw'] == 'Hello world numbah 2'
 
     @pytest.mark.asyncio
     async def test_edit_comment_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.edit_comment("1", 113979999, "Hello world number 2")
 
     @pytest.mark.asyncio
@@ -73,7 +89,7 @@ class TestBitbucketTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_comment("1", 113977999)
 
     @pytest.mark.asyncio
@@ -82,7 +98,7 @@ class TestBitbucketTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_pull_request("100")
 
     get_pull_request_test_data = [
@@ -160,7 +176,7 @@ class TestBitbucketTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_commit('none')
 
     @pytest.mark.asyncio
@@ -344,7 +360,7 @@ class TestBitbucketTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_webhook_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_webhook('4742f011-8397-aa77-8876-5e9a06f10f98')
 
     @pytest.mark.asyncio
@@ -452,7 +468,7 @@ class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
         path, ref = 'awesome/non_exising_file.py', '96492d409fc86aa7ae31b214dfe6b08ae860458a'
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_source(path, ref)
 
     @pytest.mark.asyncio

@@ -54,10 +54,6 @@ class BaseHandler(object):
         self._log_handler = log_handler
         self.data.update(kwargs)
 
-    def log(self, *args, **kwargs):
-        if self._log_handler:
-            self._log_handler(*args, **kwargs)
-
     def __repr__(self):
         return '<%s slug=%s ownerid=%s repoid=%s>' % (
             self.service, self.slug, self.data['owner'].get('ownerid'),
@@ -77,22 +73,6 @@ class BaseHandler(object):
             language = language.lower()
             if language in self.valid_languages:
                 return language
-
-    def renamed_repository(self, repo):
-        pass
-
-    def get_href(self, endpoint='repo', escape=True, **data):
-        if escape:
-            data = dict([(k, unicode_escape(v)) for k, v in data.iteritems()])
-
-        data.setdefault('username', self.data['owner'].get('username'))
-        if self.data['repo']:
-            data.setdefault('name', self.data['repo']['name'])
-
-        if 'path' in data:
-            data['path'] = data['path'].replace(' ', '%20')
-
-        return '%s/%s' % (self.service_url, self.urls[endpoint] % data)
 
     def set_token(self, token):
         self._token = token
