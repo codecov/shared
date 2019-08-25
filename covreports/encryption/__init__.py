@@ -11,12 +11,15 @@ class StandardEncryptor(object):
 
     def __init__(self, *keys, iv=None):
         self.backend = default_backend()
-        self.joined = ''.join(keys)
-        self.key = hashlib.sha256(
-            self.joined.encode()
-        ).digest()
+        self.key = self.generate_key(*keys)
         self.bs = 16
         self.iv = iv
+
+    def generate_key(self, *keys):
+        joined = ''.join(keys)
+        return hashlib.sha256(
+            joined.encode()
+        ).digest()
 
     def decode(self, string):
         string = b64decode(string)
@@ -50,3 +53,9 @@ class StandardEncryptor(object):
             token['key'] = _oauth
             token['secret'] = None
         return token
+
+
+class EncryptorWithAlreadyGeneratedKey(StandardEncryptor):
+
+    def generate_key(self, *keys):
+        return keys[0]
