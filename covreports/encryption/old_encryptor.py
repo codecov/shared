@@ -1,16 +1,18 @@
+"""Old encryptor based on pycrypto
+
+JUST KEEPING THIS TO MAKE SURE THE NEW CRYPTOGRAPHY PACKAGE IS DOING THE SAME
+"""
+
 import hashlib
-import os
 
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-
+from Crypto import Random
+from Crypto.Cipher import AES
 from base64 import b64encode, b64decode
 
 
-class StandardEncryptor(object):
+class OldEncryptor(object):
 
     def __init__(self, *keys, iv=None):
-        self.backend = default_backend()
         self.joined = ''.join(keys)
         self.key = hashlib.sha256(
             self.joined.encode()
@@ -20,20 +22,17 @@ class StandardEncryptor(object):
 
     def decode(self, string):
         string = b64decode(string)
-        iv, to_decrypt = string[:16], string[16:]
-        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=self.backend)
-        decryptor = cipher.decryptor()
-        return self.unpad(decryptor.update(to_decrypt) + decryptor.finalize()).decode()
+        iv = string[:16]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return self.unpad(cipher.decrypt(string[16:])).decode()
 
     def encode(self, string):
         if self.iv is None:
-            iv = os.urandom(self.bs)
+            iv = Random.new().read(AES.block_size)
         else:
             iv = self.iv
-        cipher = Cipher(algorithms.AES(self.key), modes.CBC(iv), backend=self.backend)
-        encryptor = cipher.encryptor()
-        result = encryptor.update(self.pad(string).encode()) + encryptor.finalize()
-        return b64encode(iv + result)
+        des = AES.new(self.key, AES.MODE_CBC, iv)
+        return b64encode(iv + des.encrypt(self.pad(string).encode()))
 
     def unpad(self, s):
         return s[:-ord(s[len(s)-1:])]

@@ -26,8 +26,8 @@ setup(
         "py==1.5.2",
         "pytest==4.5.0",
         "pytest-cov==2.5.1",
-        "pytest-mock==1.7.1",
+        "pytest-mock==1.10.1",
         "six==1.11.0",
-        "pycrypto==2.6.1",
+        "cryptography==2.7",
     ]
 )
