@@ -1,7 +1,12 @@
 import pytest
 
 from torngit.gitlab import Gitlab
-from torngit.exceptions import TorngitObjectNotFoundError, TorngitClientError
+from torngit.exceptions import (
+    TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
+    TorngitClientError
+)
+
+from tornado.httpclient import HTTPError
 
 
 @pytest.fixture
@@ -16,6 +21,34 @@ def valid_handler():
 
 
 class TestGitlabTestCase(object):
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_unreachable(self, valid_handler, mocker):
+        mocked_fetch = mocker.patch.object(Gitlab, 'fetch')
+        mocked_fetch.side_effect = HTTPError(599, 'message')
+        method = 'GET'
+        url = 'random_url'
+        with pytest.raises(TorngitServerUnreachableError):
+            await valid_handler.api(method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_server_error(self, valid_handler, mocker):
+        mocked_fetch = mocker.patch.object(Gitlab, 'fetch')
+        mocked_fetch.side_effect = HTTPError(503, 'message')
+        method = 'GET'
+        url = 'random_url'
+        with pytest.raises(TorngitServer5xxCodeError):
+            await valid_handler.api(method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_client_error(self, valid_handler, mocker):
+        mocked_fetch = mocker.patch.object(Gitlab, 'fetch')
+        mock_response = mocker.MagicMock()
+        mocked_fetch.side_effect = HTTPError(404, 'message', mock_response)
+        method = 'GET'
+        url = 'random_url'
+        with pytest.raises(TorngitClientError):
+            await valid_handler.api(method, url)
 
     @pytest.mark.asyncio
     async def test_post_comment(self, valid_handler, codecov_vcr):

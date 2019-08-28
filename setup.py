@@ -23,4 +23,5 @@ setup(
         "oauth2",
         "tlslite-ng",
         "htmldom",
+        "pytest-mock==1.10.1"
     ])
