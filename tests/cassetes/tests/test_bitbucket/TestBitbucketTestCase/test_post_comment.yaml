@@ -1,29 +1,35 @@
 interactions:
 - request:
-    body: content=Hello+world
+    body: '{"content": {"raw": "Hello world"}}'
     headers:
       Accept: [application/json]
+      Content-Type: [application/json]
       User-Agent: [Default]
     method: POST
-    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541520263&oauth_nonce=854733aec8354bad9b5669bac3a724e6&oauth_version=1.0&oauth_signature=FHpsqCmJHz%2FkB9AWeEHOWokWDoU%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
   response:
-    body: {string: '{"display_name": "Thiago Ramos", "parent_id": null, "filename_hash":
-        null, "filename": null, "content": "Hello world", "content_rendered": "<p>Hello
-        world</p>", "user_avatar_url": "https://bitbucket.org/account/ThiagoCodecov/avatar/?ts=1541519035",
-        "user_avatar_url_2x": "https://bitbucket.org/account/ThiagoCodecov/avatar/64/?ts=1541519035",
-        "utc_created_on": "2018-11-06 16:04:23+00:00", "username": "ThiagoCodecov",
-        "pr_repo": {"owner": "ThiagoCodecov", "slug": "example-python"}, "deleted":
-        false, "comment_id": 81514270, "comparespec": "ThiagoCodecov/example-python:3017d534ab41\rb92edba44fdd",
-        "line_to": null, "is_spam": false, "pull_request_id": 1, "utc_last_updated":
-        "2018-11-06 16:04:23+00:00", "is_entity_author": true, "convert_markup": false,
-        "line_from": null, "dest_rev": null, "anchor": null, "is_repo_owner": true}'}
+    body: {string: '{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127"},
+        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127"}},
+        "deleted": false, "pullrequest": {"type": "pullrequest", "id": 1, "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1"},
+        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1"}},
+        "title": "Hahaa That is a PR"}, "content": {"raw": "Hello world", "markup":
+        "markdown", "html": "<p>Hello world</p>", "type": "rendered"}, "created_on":
+        "2019-08-24T07:22:19.710114+00:00", "user": {"display_name": "Thiago Ramos",
+        "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "updated_on": "2019-08-24T07:22:19.719805+00:00", "type": "pullrequest_comment",
+        "id": 114320127}'}
     headers:
     - !!python/tuple
       - Server
       - [nginx]
     - !!python/tuple
       - Vary
-      - [Authorization]
+      - [Authorization, Accept-Encoding]
     - !!python/tuple
       - Content-Type
       - [application/json; charset=utf-8]
@@ -36,16 +42,19 @@ interactions:
       - [max-age=31536000; includeSubDomains; preload]
     - !!python/tuple
       - Date
-      - ['Tue, 06 Nov 2018 16:04:24 GMT']
+      - ['Sat, 24 Aug 2019 07:22:19 GMT']
+    - !!python/tuple
+      - Location
+      - ['https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127']
     - !!python/tuple
       - X-Served-By
-      - [app-140]
+      - [app-146]
     - !!python/tuple
       - Etag
-      - ['"ba91a79f59b1f9e9c515772b425966a0"']
+      - ['"gz[18e862913e8cea383d83bfaadb5d8482]"']
     - !!python/tuple
       - X-Static-Version
-      - [4ea3c9800ace]
+      - [4973dbe55bef]
     - !!python/tuple
       - X-Content-Type-Options
       - [nosniff]
@@ -57,25 +66,28 @@ interactions:
       - [oauth1]
     - !!python/tuple
       - X-Render-Time
-      - ['0.32688498497']
+      - ['0.294704914093']
     - !!python/tuple
       - Connection
       - [close]
     - !!python/tuple
+      - X-Reads-Before-Write-From
+      - [default]
+    - !!python/tuple
       - X-Request-Count
-      - ['50']
+      - ['59']
     - !!python/tuple
       - X-Frame-Options
       - [SAMEORIGIN]
     - !!python/tuple
       - X-Version
-      - [4ea3c9800ace]
+      - [4973dbe55bef]
     - !!python/tuple
       - X-Cache-Info
       - [not cacheable; request wasn't a GET or HEAD]
     - !!python/tuple
-      - Content-Length
-      - ['832']
-    status: {code: 200, message: OK}
-    url: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541520263&oauth_nonce=854733aec8354bad9b5669bac3a724e6&oauth_version=1.0&oauth_signature=FHpsqCmJHz%2FkB9AWeEHOWokWDoU%3D
+      - X-Consumed-Content-Encoding
+      - [gzip]
+    status: {code: 201, message: CREATED}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
 version: 1

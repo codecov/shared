@@ -1,8 +1,12 @@
 import pytest
 
-from torngit.exceptions import ObjectNotFoundException
+from torngit.exceptions import (
+    TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
+    TorngitClientError
+)
 
 from torngit.github import Github
+from tornado.httpclient import HTTPError
 
 
 @pytest.fixture
@@ -11,9 +15,6 @@ def valid_handler():
         repo=dict(name='example-python'),
         owner=dict(username='ThiagoCodecov'),
         token=dict(key='test16riktah0708pwaldsik7mi2nlgh522bfo4w')
-        # oauth_consumer_token=dict(),
-        # http://localhost:8080/callback?code=9dd09c3d672558d3de72
-        # b'access_token=testyhmil9snn07dczp6i0ivu2ofivio2hn0mwxw&scope=admin%3Arepo_hook%2Cread%3Auser%2Crepo%2Cwrite%3Adiscussion&token_type=bearer'
     )
 
 
@@ -63,7 +64,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_edit_comment_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.edit_comment("1", "113979999", "Hello world number 2")
 
     @pytest.mark.asyncio
@@ -72,7 +73,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_comment("1", 113977999)
 
     @pytest.mark.asyncio
@@ -81,7 +82,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_pull_request("100")
 
     get_pull_request_test_data = [
@@ -108,8 +109,35 @@ class TestGithubTestCase(object):
     @pytest.mark.parametrize("a,b", get_pull_request_test_data)
     async def test_get_pull_request(self, valid_handler, a, b, codecov_vcr):
         res = await valid_handler.get_pull_request(a)
-        print(res)
         assert res == b
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_unreachable(self, valid_handler, mocker):
+        mocked_fetch = mocker.patch.object(Github, 'fetch')
+        mocked_fetch.side_effect = HTTPError(599, 'message')
+        method = 'GET'
+        url = 'random_url'
+        with pytest.raises(TorngitServerUnreachableError):
+            await valid_handler.api(method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_server_error(self, valid_handler, mocker):
+        mocked_fetch = mocker.patch.object(Github, 'fetch')
+        mocked_fetch.side_effect = HTTPError(503, 'message')
+        method = 'GET'
+        url = 'random_url'
+        with pytest.raises(TorngitServer5xxCodeError):
+            await valid_handler.api(method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_client_error(self, valid_handler, mocker):
+        mocked_fetch = mocker.patch.object(Github, 'fetch')
+        mock_response = mocker.MagicMock()
+        mocked_fetch.side_effect = HTTPError(404, 'message', mock_response)
+        method = 'GET'
+        url = 'random_url'
+        with pytest.raises(TorngitClientError):
+            await valid_handler.api(method, url)
 
     @pytest.mark.asyncio
     async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
@@ -144,7 +172,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_commit('6b7cf45238ec409064893b51f8dfa2f3ce51c888')
 
     @pytest.mark.asyncio
@@ -169,7 +197,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_diff_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_commit_diff('3be850c135ccaa425cb2c239b9321e78dcfb78ff')
 
     @pytest.mark.asyncio
@@ -309,7 +337,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_webhook_not_found(self, valid_handler, codecov_vcr):
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_webhook('4742f011-8397-aa77-8876-5e9a06f10f98')
 
     @pytest.mark.asyncio
@@ -517,7 +545,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
         path, ref = 'awesome/non_exising_file.py', '96492d409fc86aa7ae31b214dfe6b08ae860458a'
-        with pytest.raises(ObjectNotFoundException):
+        with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_source(path, ref)
 
     @pytest.mark.asyncio

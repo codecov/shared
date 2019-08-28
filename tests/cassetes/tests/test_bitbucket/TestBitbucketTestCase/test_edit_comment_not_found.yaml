@@ -1,47 +1,73 @@
 interactions:
 - request:
-    body: content=Hello+world+number+2
+    body: '{"content": {"raw": "Hello world number 2"}}'
     headers:
-      Accept:
-      - !!binary |
-        Ki8q
-      Accept-Encoding:
-      - !!binary |
-        Z3ppcCwgZGVmbGF0ZQ==
-      Connection:
-      - !!binary |
-        a2VlcC1hbGl2ZQ==
-      Content-Length: ['28']
-      Content-Type:
-      - !!binary |
-        YXBwbGljYXRpb24veC13d3ctZm9ybS11cmxlbmNvZGVk
-      User-Agent:
-      - !!binary |
-        cHl0aG9uLXJlcXVlc3RzLzIuMjAuMA==
+      Accept: [application/json]
+      Content-Type: [application/json]
+      User-Agent: [Default]
     method: PUT
-    uri: https://bitbucket.org/api/1.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113979999
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113979999?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631150&oauth_nonce=5aeac543acea436d9f0594d750a98dd3&oauth_version=1.0&oauth_signature=16DIGrfTGyeo8k90tViVI%2BcqBPw%3D
   response:
-    body: {string: Not Found}
+    body: {string: '{"type": "error", "error": {"message": "113979999"}}'}
     headers:
-      Connection: [Keep-Alive]
-      Content-Length: ['9']
-      Content-Type: [text/plain]
-      Date: ['Tue, 06 Nov 2018 15:04:04 GMT']
-      ETag: ['"9d1ead73e678fa2f51a70a933b0bf017"']
-      Server: [nginx]
-      Strict-Transport-Security: [max-age=31536000; includeSubDomains; preload]
-      Vary: [Authorization]
-      X-Accepted-OAuth-Scopes: [pullrequest]
-      X-Cache-Info: [not cacheable; request wasn't a GET or HEAD]
-      X-Credential-Type: [oauth1]
-      X-Frame-Options: [SAMEORIGIN]
-      X-OAuth-Scopes: ['pipeline:variable, webhook, snippet:write, wiki, issue:write,
-          pullrequest:write, repository:delete, repository:admin, project:write, team:write,
-          account:write']
-      X-Render-Time: ['0.190995931625']
-      X-Request-Count: ['23']
-      X-Served-By: [app-141]
-      X-Static-Version: [4ea3c9800ace]
-      X-Version: [4ea3c9800ace]
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - [Authorization]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Sat, 24 Aug 2019 07:19:11 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-159]
+    - !!python/tuple
+      - Etag
+      - ['"f30cdf4645cc1f60db842d167b97cab5"']
+    - !!python/tuple
+      - X-Static-Version
+      - [4973dbe55bef]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [pullrequest]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['0.0458209514618']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - [default]
+    - !!python/tuple
+      - X-Request-Count
+      - ['614']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Version
+      - [4973dbe55bef]
+    - !!python/tuple
+      - X-Cache-Info
+      - [not cacheable; request wasn't a GET or HEAD]
+    - !!python/tuple
+      - Content-Length
+      - ['52']
     status: {code: 404, message: Not Found}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113979999?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631150&oauth_nonce=5aeac543acea436d9f0594d750a98dd3&oauth_version=1.0&oauth_signature=16DIGrfTGyeo8k90tViVI%2BcqBPw%3D
 version: 1
