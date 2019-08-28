@@ -19,7 +19,6 @@ def unicode_escape(string, escape=True):
 
 
 class BaseHandler(object):
-    _log_handler = None
     _repo_url = None
     _aws_key = None
     _oauth = None
@@ -38,7 +37,6 @@ class BaseHandler(object):
 
     def __init__(
             self,
-            log_handler=None,
             oauth_consumer_token=None,
             timeouts=None,
             token=None,
@@ -51,7 +49,6 @@ class BaseHandler(object):
         self.data = {'owner': {}, 'repo': {}}
         self.verify_ssl = verify_ssl
 
-        self._log_handler = log_handler
         self.data.update(kwargs)
 
     def __repr__(self):
