@@ -281,3 +281,17 @@ class BaseHandler(object):
 
     async def list_teams(self, token=None):
         raise NotImplementedError()
+
+    async def list_top_level_files(self, ref, token=None):
+        """List the files on the top level of the repository
+
+        Returns:
+            list[dict] - A list of dicts, one for each file/directory on the top
+                level of the repo. While different implementations might
+                return a different set of values on each dict, the only keys you
+                can safely expect from each dict are:
+
+                - `path` - The path of the structure
+                - `type` - The type: can be "folder" or "file" or "other"
+        """
+        raise NotImplementedError()

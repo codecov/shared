@@ -531,3 +531,33 @@ class TestBitbucketTestCase(object):
         expected_result = []
         res = await valid_handler.list_teams()
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_top_level_files_multiple_pages(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {'path': 'awesome', 'type': 'folder'},
+            {'path': 'kaploft', 'type': 'folder'},
+            {'path': 'tests', 'type': 'folder'},
+            {'path': '.coverage', 'type': 'file'},
+            {'path': '.gitignore', 'type': 'file'},
+            {'path': 'README.rst', 'type': 'file'},
+            {'path': '__init__.py', 'type': 'file'},
+            {'path': 'a1.txt', 'type': 'file'},
+            {'path': 'a10.txt', 'type': 'file'},
+            {'path': 'a11.txt', 'type': 'file'},
+            {'path': 'a2.txt', 'type': 'file'},
+            {'path': 'a3.txt', 'type': 'file'},
+            {'path': 'a4.txt', 'type': 'file'},
+            {'path': 'a5.txt', 'type': 'file'},
+            {'path': 'a6.txt', 'type': 'file'},
+            {'path': 'a7.txt', 'type': 'file'},
+            {'path': 'a8.txt', 'type': 'file'},
+            {'path': 'a9.txt', 'type': 'file'},
+            {'path': 'bitbucket-pipelines.yml', 'type': 'file'},
+            {'path': 'coverage.xml', 'type': 'file'},
+            {'path': 'filet2.py', 'type': 'file'},
+            {'path': 'requirements.txt', 'type': 'file'}
+        ]
+
+        res = await valid_handler.list_top_level_files('second-branch')
+        assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])

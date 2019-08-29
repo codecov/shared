@@ -673,3 +673,25 @@ class Github(BaseHandler, OAuth2Mixin):
         res = await self.api('get', '/search/issues?q=%s' % query, token=token)
         if res['items']:
             return res['items'][0]['number']
+
+    async def list_top_level_files(self, ref, token=None):
+        # https://developer.github.com/v3/repos/contents/#get-contents
+        content = await self.api(
+            'get',
+            f'/repos/{self.slug}/contents',
+            ref=ref,
+            token=token)
+        return [
+            {
+                'name': f['name'],
+                'path': f['path'],
+                'type': self._github_type_to_torngit_type(f['type'])
+            } for f in content
+        ]
+
+    def _github_type_to_torngit_type(self, val):
+        if val == 'file':
+            return 'file'
+        elif val == 'dir':
+            return 'folder'
+        return 'other'
