@@ -584,3 +584,17 @@ class TestGithubTestCase(object):
         }]
         res = await valid_handler.list_teams()
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_top_level_files(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {'name': '.gitignore', 'path': '.gitignore', 'type': 'file'},
+            {'name': '.travis.yml', 'path': '.travis.yml', 'type': 'file'},
+            {'name': 'README.rst', 'path': 'README.rst', 'type': 'file'},
+            {'name': 'awesome', 'path': 'awesome', 'type': 'folder'},
+            {'name': 'codecov', 'path': 'codecov', 'type': 'file'},
+            {'name': 'codecov.yaml', 'path': 'codecov.yaml', 'type': 'file'},
+            {'name': 'tests', 'path': 'tests', 'type': 'folder'}
+        ]
+        res = await valid_handler.list_top_level_files('master')
+        assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])

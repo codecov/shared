@@ -86,7 +86,7 @@ class Gitlab(BaseHandler):
                 raise TorngitServerUnreachableError('Gitlab was not able to be reached, server timed out.')
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
-            log.error(
+            log.warning(
                 'Gitlab HTTP %s' % e.response.code,
                 extra=dict(
                     url=url,
@@ -615,3 +615,20 @@ class Gitlab(BaseHandler):
                         email=c['author_email'], name=c['author_name']))
                 for c in compare['commits']
             ][::-1])
+
+    async def list_top_level_files(self, ref, token=None):
+        # https://docs.gitlab.com/ee/api/repositories.html#list-repository-tree
+        result = await self.api(
+            'get',
+            f"/projects/{self.data['repo']['service_id']}/repository/tree",
+            ref=ref,
+            token=token
+        )
+        for res in result:
+            if res['type'] == 'blob':
+                res['type'] = 'file'
+            elif res['type'] == 'tree':
+                res['type'] = 'folder'
+            else:
+                res['type'] = 'other'
+        return result

@@ -505,3 +505,60 @@ class TestGitlabTestCase(object):
         ]
         res = await valid_handler.list_teams()
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_top_level_files(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                'id': '1da1ddbfe1ed846f7493964bf489754e464eef64',
+                'mode': '040000',
+                'name': 'folder',
+                'path': 'folder',
+                'type': 'folder'
+            },
+            {
+                'id': 'c77cff04774d6debf9f8f645323fbe1cea368692',
+                'mode': '100644',
+                'name': '.gitignore',
+                'path': '.gitignore',
+                'type': 'file'
+            },
+            {
+                'id': '321cc67810818865affe8f6bac28f50d3c0a761c',
+                'mode': '100644',
+                'name': '.travis.yml',
+                'path': '.travis.yml',
+                'type': 'file'
+            },
+            {
+                'id': '7974a2260a70aab9ce8ae581fba307c6d448c468',
+                'mode': '100644',
+                'name': 'README.md',
+                'path': 'README.md',
+                'type': 'file'
+            },
+            {
+                'id': 'c6b04a8c4a6bd3f8c12e65c7ad3ac759166298dd',
+                'mode': '100644',
+                'name': 'large.md',
+                'path': 'large.md',
+                'type': 'file'
+            },
+            {
+                'id': '478e1519b72ffd69712d77c5f50dd45b203846c4',
+                'mode': '100644',
+                'name': 'my_package.py',
+                'path': 'my_package.py',
+                'type': 'file'
+            },
+            {
+                'id': '20642e5c79ebd16b1c87ca300ff8b1afd478be5e',
+                'mode': '100644',
+                'name': 'tests.py',
+                'path': 'tests.py',
+                'type': 'file'
+            }
+        ]
+
+        res = await valid_handler.list_top_level_files('master')
+        assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])

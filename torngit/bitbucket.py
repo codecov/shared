@@ -90,7 +90,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 raise TorngitServerUnreachableError('Bitbucket was not able to be reached, server timed out.')
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
-            log.error(
+            log.warning(
                 'Bitbucket HTTP %s' % e.response.code,
                 extra=dict(
                     url=url,
@@ -616,3 +616,45 @@ class Bitbucket(BaseHandler, OAuthMixin):
             self.data['repo']['name'] + '/diff/' + commit,
             token=token)
         return self.diff_to_json(diff.decode('utf8'))
+
+    async def list_top_level_files(self, ref, token=None):
+        page = None
+        has_more = True
+        files = []
+        while has_more:
+            # https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/src#get
+            if page is not None:
+                kwargs = dict(
+                    page=page,
+                    token=token
+                )
+            else:
+                kwargs = dict(
+                    token=token
+                )
+            results = await self.api(
+                '2',
+                'get',
+                f'/repositories/{self.slug}/src/{ref}/',
+                **kwargs
+            )
+            files.extend(results['values'])
+            if 'next' in results:
+                url = results['next']
+                parsed = urllib_parse.urlparse(url)
+                page = urllib_parse.parse_qs(parsed.query)['page'][0]
+            else:
+                has_more = False
+        return [
+            {
+                'path': f['path'],
+                'type': self._bitbucket_type_to_torngit_type(f['type'])
+            } for f in files
+        ]
+
+    def _bitbucket_type_to_torngit_type(self, val):
+        if val == 'commit_file':
+            return 'file'
+        elif val == 'commit_directory':
+            return 'folder'
+        return 'other'
