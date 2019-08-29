@@ -86,7 +86,7 @@ class Gitlab(BaseHandler):
                 raise TorngitServerUnreachableError('Gitlab was not able to be reached, server timed out.')
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
-            log.error(
+            log.warning(
                 'Gitlab HTTP %s' % e.response.code,
                 extra=dict(
                     url=url,

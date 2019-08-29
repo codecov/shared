@@ -90,7 +90,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 raise TorngitServerUnreachableError('Bitbucket was not able to be reached, server timed out.')
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
-            log.error(
+            log.warning(
                 'Bitbucket HTTP %s' % e.response.code,
                 extra=dict(
                     url=url,

@@ -95,7 +95,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 raise TorngitServerUnreachableError('Github was not able to be reached, server timed out.')
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Github is having 5xx issues")
-            log.error(
+            log.warning(
                 'Github HTTP %s' % e.response.code,
                 extra=dict(
                     url=url,
