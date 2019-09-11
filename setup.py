@@ -18,16 +18,18 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=[
         "attrs==17.4.0",
+        "boto3==1.9.218",
         "colour==0.1.5",
         "coverage==4.5",
-        "funcsigs==1.0.2",
+        "cryptography==2.7",
+        "google-cloud-storage==1.18.0",
+        "minio==4.0.19",
         "mock==2.0.0",
-        "pbr==3.1.1",
-        "py==1.5.2",
-        "pytest==4.5.0",
+        "pycrypto==2.6.1",
         "pytest-cov==2.5.1",
         "pytest-mock==1.10.1",
+        "pytest==4.5.0",
         "six==1.11.0",
-        "cryptography==2.7",
+        "vcrpy==2.1.0"
     ]
 )
