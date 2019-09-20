@@ -88,6 +88,12 @@ class BaseHandler(object):
                 return ('%s/%s' % (self.data['owner']['username'],
                                    self.data['repo']['name']))
 
+    def build_tree_from_commits(self, start, commit_mapping):
+        parents = []
+        for p in commit_mapping.get(start, []):
+            parents.append(self.build_tree_from_commits(p, commit_mapping))
+        return {'commitid': start, 'parents': parents}
+
     def diff_to_json(self, diff):
         """
         Processes a full diff (multiple files) into the object pattern below

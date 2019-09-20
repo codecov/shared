@@ -1,0 +1,840 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?include=6ae5f17&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1568980339&oauth_nonce=1dcb7a2eedd544b395184b18231388a8&oauth_version=1.0&oauth_signature=XdUUtgGHNy2XcsbYlW%2Ftq3Od4qo%3D
+  response:
+    body: {string: "{\"pagelen\": 30, \"values\": [{\"rendered\": {\"message\": {\"raw\":
+        \"Update README.rst\", \"markup\": \"markdown\", \"html\": \"<p>Update README.rst</p>\",
+        \"type\": \"rendered\"}}, \"hash\": \"6ae5f1795a441884ed2847bb31154814ac01ef38\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/6ae5f1795a441884ed2847bb31154814ac01ef38\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/6ae5f1795a441884ed2847bb31154814ac01ef38\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f1795a441884ed2847bb31154814ac01ef38\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38/statuses\"}},
+        \"author\": {\"raw\": \"Thomas Pedbereznak <tom@tomped.com>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.rst\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.rst</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"8631ea09b9b689de0a348d5abf70bdd7273d2ae3\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/8631ea09b9b689de0a348d5abf70bdd7273d2ae3\"}}}],
+        \"date\": \"2018-04-26T08:35:58+00:00\", \"message\": \"Update README.rst\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge pull
+        request #31 from Gabswim/fix/typo\\n\\nfixing a typo in the README\", \"markup\":
+        \"markdown\", \"html\": \"<p>Merge pull request #31 from Gabswim/fix/typo</p>\\n<p>fixing
+        a typo in the README</p>\", \"type\": \"rendered\"}}, \"hash\": \"8631ea09b9b689de0a348d5abf70bdd7273d2ae3\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/8631ea09b9b689de0a348d5abf70bdd7273d2ae3\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/8631ea09b9b689de0a348d5abf70bdd7273d2ae3\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #31 from Gabswim/fix/typo\\n\\nfixing
+        a typo in the README\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull
+        request #31 from Gabswim/fix/typo</p>\\n<p>fixing a typo in the README</p>\",
+        \"type\": \"rendered\"}, \"parents\": [{\"hash\": \"48f47f9d1b58ba418fdcd50117fc9781c10a27fb\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"}}},
+        {\"hash\": \"087ede6771099a66dccb968c8aacfa04e9ba27a8\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/087ede6771099a66dccb968c8aacfa04e9ba27a8\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/087ede6771099a66dccb968c8aacfa04e9ba27a8\"}}}],
+        \"date\": \"2018-02-13T09:13:36+00:00\", \"message\": \"Merge pull request
+        #31 from Gabswim/fix/typo\\n\\nfixing a typo in the README\", \"type\": \"commit\"},
+        {\"rendered\": {\"message\": {\"raw\": \"fixing a typo in the README\\n\\n\",
+        \"markup\": \"markdown\", \"html\": \"<p>fixing a typo in the README</p>\",
+        \"type\": \"rendered\"}}, \"hash\": \"087ede6771099a66dccb968c8aacfa04e9ba27a8\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/087ede6771099a66dccb968c8aacfa04e9ba27a8\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/087ede6771099a66dccb968c8aacfa04e9ba27a8/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/087ede6771099a66dccb968c8aacfa04e9ba27a8\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/087ede6771099a66dccb968c8aacfa04e9ba27a8\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/087ede6771099a66dccb968c8aacfa04e9ba27a8\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/087ede6771099a66dccb968c8aacfa04e9ba27a8/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/087ede6771099a66dccb968c8aacfa04e9ba27a8/statuses\"}},
+        \"author\": {\"raw\": \"Gabriel Legault <gablegault1@hotmail.com>\", \"type\":
+        \"author\", \"user\": {\"display_name\": \"Gabriel Legault\", \"uuid\": \"{8cfe2ef8-b235-4c8b-9eed-26bbd95514e8}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7B8cfe2ef8-b235-4c8b-9eed-26bbd95514e8%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7B8cfe2ef8-b235-4c8b-9eed-26bbd95514e8%7D/\"},
+        \"avatar\": {\"href\": \"https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:bb7fe615-4804-442d-b0f1-048767b867bf/edac59b9-d999-4dc3-b7c0-1f7471e753e4/128\"}},
+        \"nickname\": \"Gabswim\", \"type\": \"user\", \"account_id\": \"557058:bb7fe615-4804-442d-b0f1-048767b867bf\"}},
+        \"summary\": {\"raw\": \"fixing a typo in the README\\n\\n\", \"markup\":
+        \"markdown\", \"html\": \"<p>fixing a typo in the README</p>\", \"type\":
+        \"rendered\"}, \"parents\": [{\"hash\": \"48f47f9d1b58ba418fdcd50117fc9781c10a27fb\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"}}}],
+        \"date\": \"2018-02-13T01:06:57+00:00\", \"message\": \"fixing a typo in the
+        README\\n\\n\", \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\":
+        \"Merge pull request #30 from Jay54520/master\\n\\n#29/Pytest doc error\",
+        \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #30 from Jay54520/master</p>\\n<p>#29/Pytest
+        doc error</p>\", \"type\": \"rendered\"}}, \"hash\": \"48f47f9d1b58ba418fdcd50117fc9781c10a27fb\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #30 from Jay54520/master\\n\\n#29/Pytest
+        doc error\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #30
+        from Jay54520/master</p>\\n<p>#29/Pytest doc error</p>\", \"type\": \"rendered\"},
+        \"parents\": [{\"hash\": \"76003ff147414ce80d2a14ab5f1b78d165e9a468\", \"type\":
+        \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/76003ff147414ce80d2a14ab5f1b78d165e9a468\"}}},
+        {\"hash\": \"d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"}}}],
+        \"date\": \"2018-01-30T11:57:49+00:00\", \"message\": \"Merge pull request
+        #30 from Jay54520/master\\n\\n#29/Pytest doc error\", \"type\": \"commit\"},
+        {\"rendered\": {\"message\": {\"raw\": \"#29/Pytest doc error\\n\", \"markup\":
+        \"markdown\", \"html\": \"<p>#29/Pytest doc error</p>\", \"type\": \"rendered\"}},
+        \"hash\": \"d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\", \"repository\": {\"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7/statuses\"}},
+        \"author\": {\"raw\": \"\u63ED\u601D\u654F <jsm0834@175game.com>\", \"type\":
+        \"author\"}, \"summary\": {\"raw\": \"#29/Pytest doc error\\n\", \"markup\":
+        \"markdown\", \"html\": \"<p>#29/Pytest doc error</p>\", \"type\": \"rendered\"},
+        \"parents\": [{\"hash\": \"76003ff147414ce80d2a14ab5f1b78d165e9a468\", \"type\":
+        \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/76003ff147414ce80d2a14ab5f1b78d165e9a468\"}}}],
+        \"date\": \"2018-01-28T07:12:57+00:00\", \"message\": \"#29/Pytest doc error\\n\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.rst\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.rst</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"76003ff147414ce80d2a14ab5f1b78d165e9a468\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/76003ff147414ce80d2a14ab5f1b78d165e9a468\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/76003ff147414ce80d2a14ab5f1b78d165e9a468\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/76003ff147414ce80d2a14ab5f1b78d165e9a468\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.rst\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.rst</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"f9253b0bf56d0e808ab01fdcc70412ac010f5c34\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f9253b0bf56d0e808ab01fdcc70412ac010f5c34\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/f9253b0bf56d0e808ab01fdcc70412ac010f5c34\"}}}],
+        \"date\": \"2018-01-22T13:40:28+00:00\", \"message\": \"Update README.rst\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge pull
+        request #24 from gundalow/README_md_to_rst\\n\\nReadme md to rst\", \"markup\":
+        \"markdown\", \"html\": \"<p>Merge pull request #24 from gundalow/README_md_to_rst</p>\\n<p>Readme
+        md to rst</p>\", \"type\": \"rendered\"}}, \"hash\": \"f9253b0bf56d0e808ab01fdcc70412ac010f5c34\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f9253b0bf56d0e808ab01fdcc70412ac010f5c34\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f9253b0bf56d0e808ab01fdcc70412ac010f5c34/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/f9253b0bf56d0e808ab01fdcc70412ac010f5c34\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/f9253b0bf56d0e808ab01fdcc70412ac010f5c34\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f9253b0bf56d0e808ab01fdcc70412ac010f5c34/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f9253b0bf56d0e808ab01fdcc70412ac010f5c34/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #24 from gundalow/README_md_to_rst\\n\\nReadme
+        md to rst\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #24
+        from gundalow/README_md_to_rst</p>\\n<p>Readme md to rst</p>\", \"type\":
+        \"rendered\"}, \"parents\": [{\"hash\": \"1e906160c09128765a75afbcbd60d1cbd3c8d10a\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"}}},
+        {\"hash\": \"2903ade6074f09319c1854850ffee2c254c3e17c\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2903ade6074f09319c1854850ffee2c254c3e17c\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/2903ade6074f09319c1854850ffee2c254c3e17c\"}}}],
+        \"date\": \"2017-12-11T10:13:41+00:00\", \"message\": \"Merge pull request
+        #24 from gundalow/README_md_to_rst\\n\\nReadme md to rst\", \"type\": \"commit\"},
+        {\"rendered\": {\"message\": {\"raw\": \"typo\\n\", \"markup\": \"markdown\",
+        \"html\": \"<p>typo</p>\", \"type\": \"rendered\"}}, \"hash\": \"2903ade6074f09319c1854850ffee2c254c3e17c\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2903ade6074f09319c1854850ffee2c254c3e17c\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2903ade6074f09319c1854850ffee2c254c3e17c/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/2903ade6074f09319c1854850ffee2c254c3e17c\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/2903ade6074f09319c1854850ffee2c254c3e17c\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/2903ade6074f09319c1854850ffee2c254c3e17c\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2903ade6074f09319c1854850ffee2c254c3e17c/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2903ade6074f09319c1854850ffee2c254c3e17c/statuses\"}},
+        \"author\": {\"raw\": \"John Barker <john@johnrbarker.com>\", \"type\": \"author\",
+        \"user\": {\"display_name\": \"John Barker\", \"uuid\": \"{395fd7e0-98bc-4e5e-95aa-0043c9d22301}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7B395fd7e0-98bc-4e5e-95aa-0043c9d22301%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7B395fd7e0-98bc-4e5e-95aa-0043c9d22301%7D/\"},
+        \"avatar\": {\"href\": \"https://secure.gravatar.com/avatar/8b7582c16d73324155a1bb826ffa930c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJB-4.png\"}},
+        \"nickname\": \"sloop\", \"type\": \"user\", \"account_id\": \"557058:8c5b4ffb-c7e2-4503-83a2-73648e3f5cdc\"}},
+        \"summary\": {\"raw\": \"typo\\n\", \"markup\": \"markdown\", \"html\": \"<p>typo</p>\",
+        \"type\": \"rendered\"}, \"parents\": [{\"hash\": \"0073e9e074081bc2588b9ee311fc01bc9adfa967\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/0073e9e074081bc2588b9ee311fc01bc9adfa967\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/0073e9e074081bc2588b9ee311fc01bc9adfa967\"}}}],
+        \"date\": \"2017-12-09T13:35:07+00:00\", \"message\": \"typo\\n\", \"type\":
+        \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Valid badge\\n\", \"markup\":
+        \"markdown\", \"html\": \"<p>Valid badge</p>\", \"type\": \"rendered\"}},
+        \"hash\": \"0073e9e074081bc2588b9ee311fc01bc9adfa967\", \"repository\": {\"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/0073e9e074081bc2588b9ee311fc01bc9adfa967\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/0073e9e074081bc2588b9ee311fc01bc9adfa967/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/0073e9e074081bc2588b9ee311fc01bc9adfa967\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/0073e9e074081bc2588b9ee311fc01bc9adfa967\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/0073e9e074081bc2588b9ee311fc01bc9adfa967\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/0073e9e074081bc2588b9ee311fc01bc9adfa967/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/0073e9e074081bc2588b9ee311fc01bc9adfa967/statuses\"}},
+        \"author\": {\"raw\": \"John Barker <john@johnrbarker.com>\", \"type\": \"author\",
+        \"user\": {\"display_name\": \"John Barker\", \"uuid\": \"{395fd7e0-98bc-4e5e-95aa-0043c9d22301}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7B395fd7e0-98bc-4e5e-95aa-0043c9d22301%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7B395fd7e0-98bc-4e5e-95aa-0043c9d22301%7D/\"},
+        \"avatar\": {\"href\": \"https://secure.gravatar.com/avatar/8b7582c16d73324155a1bb826ffa930c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJB-4.png\"}},
+        \"nickname\": \"sloop\", \"type\": \"user\", \"account_id\": \"557058:8c5b4ffb-c7e2-4503-83a2-73648e3f5cdc\"}},
+        \"summary\": {\"raw\": \"Valid badge\\n\", \"markup\": \"markdown\", \"html\":
+        \"<p>Valid badge</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"8d437d531af955c068c03f35a1f6f19667c6d215\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8d437d531af955c068c03f35a1f6f19667c6d215\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/8d437d531af955c068c03f35a1f6f19667c6d215\"}}}],
+        \"date\": \"2017-12-09T13:33:54+00:00\", \"message\": \"Valid badge\\n\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Convert README.md
+        to RST\\n\\n* Update formatting fixes #3\\n* Add example badge (and how to
+        use)\\n* Make it cleared that bash uploader should be used\\n\", \"markup\":
+        \"markdown\", \"html\": \"<p>Convert README.md to RST</p>\\n<ul>\\n<li>Update
+        formatting fixes #3</li>\\n<li>Add example badge (and how to use)</li>\\n<li>Make
+        it cleared that bash uploader should be used</li>\\n</ul>\", \"type\": \"rendered\"}},
+        \"hash\": \"8d437d531af955c068c03f35a1f6f19667c6d215\", \"repository\": {\"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8d437d531af955c068c03f35a1f6f19667c6d215\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8d437d531af955c068c03f35a1f6f19667c6d215/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/8d437d531af955c068c03f35a1f6f19667c6d215\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/8d437d531af955c068c03f35a1f6f19667c6d215\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/8d437d531af955c068c03f35a1f6f19667c6d215\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8d437d531af955c068c03f35a1f6f19667c6d215/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8d437d531af955c068c03f35a1f6f19667c6d215/statuses\"}},
+        \"author\": {\"raw\": \"John Barker <john@johnrbarker.com>\", \"type\": \"author\",
+        \"user\": {\"display_name\": \"John Barker\", \"uuid\": \"{395fd7e0-98bc-4e5e-95aa-0043c9d22301}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7B395fd7e0-98bc-4e5e-95aa-0043c9d22301%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7B395fd7e0-98bc-4e5e-95aa-0043c9d22301%7D/\"},
+        \"avatar\": {\"href\": \"https://secure.gravatar.com/avatar/8b7582c16d73324155a1bb826ffa930c?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FJB-4.png\"}},
+        \"nickname\": \"sloop\", \"type\": \"user\", \"account_id\": \"557058:8c5b4ffb-c7e2-4503-83a2-73648e3f5cdc\"}},
+        \"summary\": {\"raw\": \"Convert README.md to RST\\n\\n* Update formatting
+        fixes #3\\n* Add example badge (and how to use)\\n* Make it cleared that bash
+        uploader should be used\\n\", \"markup\": \"markdown\", \"html\": \"<p>Convert
+        README.md to RST</p>\\n<ul>\\n<li>Update formatting fixes #3</li>\\n<li>Add
+        example badge (and how to use)</li>\\n<li>Make it cleared that bash uploader
+        should be used</li>\\n</ul>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"1e906160c09128765a75afbcbd60d1cbd3c8d10a\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"}}}],
+        \"date\": \"2017-12-09T13:28:02+00:00\", \"message\": \"Convert README.md
+        to RST\\n\\n* Update formatting fixes #3\\n* Add example badge (and how to
+        use)\\n* Make it cleared that bash uploader should be used\\n\", \"type\":
+        \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge pull request #22
+        from IanLee1521/patch-1\\n\\nFixed minor typo\", \"markup\": \"markdown\",
+        \"html\": \"<p>Merge pull request #22 from IanLee1521/patch-1</p>\\n<p>Fixed
+        minor typo</p>\", \"type\": \"rendered\"}}, \"hash\": \"1e906160c09128765a75afbcbd60d1cbd3c8d10a\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/1e906160c09128765a75afbcbd60d1cbd3c8d10a/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/1e906160c09128765a75afbcbd60d1cbd3c8d10a\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/1e906160c09128765a75afbcbd60d1cbd3c8d10a/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/1e906160c09128765a75afbcbd60d1cbd3c8d10a/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #22 from IanLee1521/patch-1\\n\\nFixed
+        minor typo\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request
+        #22 from IanLee1521/patch-1</p>\\n<p>Fixed minor typo</p>\", \"type\": \"rendered\"},
+        \"parents\": [{\"hash\": \"3230594a7aa8782fbcf51329b2395118f7cf0d15\", \"type\":
+        \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3230594a7aa8782fbcf51329b2395118f7cf0d15\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3230594a7aa8782fbcf51329b2395118f7cf0d15\"}}},
+        {\"hash\": \"b066c93c2676bc957d971d2c4188e77b3e383b77\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b066c93c2676bc957d971d2c4188e77b3e383b77\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/b066c93c2676bc957d971d2c4188e77b3e383b77\"}}}],
+        \"date\": \"2017-10-04T09:43:08+00:00\", \"message\": \"Merge pull request
+        #22 from IanLee1521/patch-1\\n\\nFixed minor typo\", \"type\": \"commit\"},
+        {\"rendered\": {\"message\": {\"raw\": \"Fixed minor typo\", \"markup\": \"markdown\",
+        \"html\": \"<p>Fixed minor typo</p>\", \"type\": \"rendered\"}}, \"hash\":
+        \"b066c93c2676bc957d971d2c4188e77b3e383b77\", \"repository\": {\"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b066c93c2676bc957d971d2c4188e77b3e383b77\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b066c93c2676bc957d971d2c4188e77b3e383b77/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/b066c93c2676bc957d971d2c4188e77b3e383b77\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/b066c93c2676bc957d971d2c4188e77b3e383b77\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/b066c93c2676bc957d971d2c4188e77b3e383b77\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b066c93c2676bc957d971d2c4188e77b3e383b77/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b066c93c2676bc957d971d2c4188e77b3e383b77/statuses\"}},
+        \"author\": {\"raw\": \"Ian Lee <IanLee1521@gmail.com>\", \"type\": \"author\",
+        \"user\": {\"display_name\": \"Ian Lee\", \"uuid\": \"{f5f64a51-ab76-49a6-bf39-8cc62cfd9277}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7Bf5f64a51-ab76-49a6-bf39-8cc62cfd9277%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7Bf5f64a51-ab76-49a6-bf39-8cc62cfd9277%7D/\"},
+        \"avatar\": {\"href\": \"https://secure.gravatar.com/avatar/c416a04a16b233e65afd993815c167dd?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FIL-5.png\"}},
+        \"nickname\": \"IanLee1521\", \"type\": \"user\", \"account_id\": \"557058:9efc8d4e-be21-43b6-b1b7-ecdf9e2e7601\"}},
+        \"summary\": {\"raw\": \"Fixed minor typo\", \"markup\": \"markdown\", \"html\":
+        \"<p>Fixed minor typo</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"3230594a7aa8782fbcf51329b2395118f7cf0d15\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3230594a7aa8782fbcf51329b2395118f7cf0d15\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3230594a7aa8782fbcf51329b2395118f7cf0d15\"}}}],
+        \"date\": \"2017-09-29T19:29:42+00:00\", \"message\": \"Fixed minor typo\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"3230594a7aa8782fbcf51329b2395118f7cf0d15\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3230594a7aa8782fbcf51329b2395118f7cf0d15\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3230594a7aa8782fbcf51329b2395118f7cf0d15/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3230594a7aa8782fbcf51329b2395118f7cf0d15\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3230594a7aa8782fbcf51329b2395118f7cf0d15\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3230594a7aa8782fbcf51329b2395118f7cf0d15\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3230594a7aa8782fbcf51329b2395118f7cf0d15/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3230594a7aa8782fbcf51329b2395118f7cf0d15/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"6560cbff33fbff8740f0407f4cac1091bc25e6ae\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6560cbff33fbff8740f0407f4cac1091bc25e6ae\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/6560cbff33fbff8740f0407f4cac1091bc25e6ae\"}}}],
+        \"date\": \"2017-08-30T14:02:20+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"6560cbff33fbff8740f0407f4cac1091bc25e6ae\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6560cbff33fbff8740f0407f4cac1091bc25e6ae\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6560cbff33fbff8740f0407f4cac1091bc25e6ae/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/6560cbff33fbff8740f0407f4cac1091bc25e6ae\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/6560cbff33fbff8740f0407f4cac1091bc25e6ae\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/6560cbff33fbff8740f0407f4cac1091bc25e6ae\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6560cbff33fbff8740f0407f4cac1091bc25e6ae/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6560cbff33fbff8740f0407f4cac1091bc25e6ae/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"feb5100831541db79eb83a263986df129573f3de\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/feb5100831541db79eb83a263986df129573f3de\"}}}],
+        \"date\": \"2017-02-02T19:10:16+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge pull
+        request #20 from briandant/master\\n\\nAdd further instructions for using
+        env vars\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #20
+        from briandant/master</p>\\n<p>Add further instructions for using env vars</p>\",
+        \"type\": \"rendered\"}}, \"hash\": \"feb5100831541db79eb83a263986df129573f3de\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/feb5100831541db79eb83a263986df129573f3de\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/feb5100831541db79eb83a263986df129573f3de\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #20 from briandant/master\\n\\nAdd
+        further instructions for using env vars\", \"markup\": \"markdown\", \"html\":
+        \"<p>Merge pull request #20 from briandant/master</p>\\n<p>Add further instructions
+        for using env vars</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"}}},
+        {\"hash\": \"6802411a35f438bf62ee8a1c1928cd36ca50d534\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6802411a35f438bf62ee8a1c1928cd36ca50d534\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/6802411a35f438bf62ee8a1c1928cd36ca50d534\"}}}],
+        \"date\": \"2017-02-02T19:09:38+00:00\", \"message\": \"Merge pull request
+        #20 from briandant/master\\n\\nAdd further instructions for using env vars\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Add further
+        instructions for using env vars\", \"markup\": \"markdown\", \"html\": \"<p>Add
+        further instructions for using env vars</p>\", \"type\": \"rendered\"}}, \"hash\":
+        \"6802411a35f438bf62ee8a1c1928cd36ca50d534\", \"repository\": {\"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6802411a35f438bf62ee8a1c1928cd36ca50d534\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6802411a35f438bf62ee8a1c1928cd36ca50d534/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/6802411a35f438bf62ee8a1c1928cd36ca50d534\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/6802411a35f438bf62ee8a1c1928cd36ca50d534\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/6802411a35f438bf62ee8a1c1928cd36ca50d534\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6802411a35f438bf62ee8a1c1928cd36ca50d534/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6802411a35f438bf62ee8a1c1928cd36ca50d534/statuses\"}},
+        \"author\": {\"raw\": \"Brian Dant <briandant@users.noreply.github.com>\",
+        \"type\": \"author\"}, \"summary\": {\"raw\": \"Add further instructions for
+        using env vars\", \"markup\": \"markdown\", \"html\": \"<p>Add further instructions
+        for using env vars</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"}}}],
+        \"date\": \"2017-02-02T18:37:42+00:00\", \"message\": \"Add further instructions
+        for using env vars\", \"type\": \"commit\"}, {\"rendered\": {\"message\":
+        {\"raw\": \"Circle build #355\\nhttps://circleci.com/gh/codecov/testsuite/355\\nbash
+        <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)
+        -v -u https://codecov.io\", \"markup\": \"markdown\", \"html\": \"<p>Circle
+        build #355<br />\\n<a href=\\\"https://circleci.com/gh/codecov/testsuite/355\\\"
+        rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://circleci.com/gh/codecov/testsuite/355</a><br
+        />\\nbash &lt;(curl -s <a href=\\\"https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov\\\"
+        rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov</a>)
+        -v -u <a href=\\\"https://codecov.io\\\" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://codecov.io</a></p>\",
+        \"type\": \"rendered\"}}, \"hash\": \"3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d/statuses\"}},
+        \"author\": {\"raw\": \"Codecov Test Bot <hello@codecov.io>\", \"type\": \"author\",
+        \"user\": {\"display_name\": \"Codecov Test\", \"uuid\": \"{26f58a7d-734e-434c-b59c-03a224735c63}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7B26f58a7d-734e-434c-b59c-03a224735c63%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7B26f58a7d-734e-434c-b59c-03a224735c63%7D/\"},
+        \"avatar\": {\"href\": \"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FCT-1.png\"}},
+        \"nickname\": \"Codecov Test\", \"type\": \"user\", \"account_id\": \"557058:e83c38f0-a908-4e6e-aeb1-e5cf9aef75a3\"}},
+        \"summary\": {\"raw\": \"Circle build #355\\nhttps://circleci.com/gh/codecov/testsuite/355\\nbash
+        <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)
+        -v -u https://codecov.io\", \"markup\": \"markdown\", \"html\": \"<p>Circle
+        build #355<br />\\n<a href=\\\"https://circleci.com/gh/codecov/testsuite/355\\\"
+        rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://circleci.com/gh/codecov/testsuite/355</a><br
+        />\\nbash &lt;(curl -s <a href=\\\"https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov\\\"
+        rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov</a>)
+        -v -u <a href=\\\"https://codecov.io\\\" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://codecov.io</a></p>\",
+        \"type\": \"rendered\"}, \"parents\": [{\"hash\": \"63f5740c33f2aac68fd0757f471ab741f9e20a05\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/63f5740c33f2aac68fd0757f471ab741f9e20a05\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/63f5740c33f2aac68fd0757f471ab741f9e20a05\"}}}],
+        \"date\": \"2016-09-29T10:37:07+00:00\", \"message\": \"Circle build #355\\nhttps://circleci.com/gh/codecov/testsuite/355\\nbash
+        <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)
+        -v -u https://codecov.io\", \"type\": \"commit\"}, {\"rendered\": {\"message\":
+        {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\": \"<p>Update
+        README.md</p>\", \"type\": \"rendered\"}}, \"hash\": \"63f5740c33f2aac68fd0757f471ab741f9e20a05\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/63f5740c33f2aac68fd0757f471ab741f9e20a05\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/63f5740c33f2aac68fd0757f471ab741f9e20a05/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/63f5740c33f2aac68fd0757f471ab741f9e20a05\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/63f5740c33f2aac68fd0757f471ab741f9e20a05\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/63f5740c33f2aac68fd0757f471ab741f9e20a05\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/63f5740c33f2aac68fd0757f471ab741f9e20a05/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/63f5740c33f2aac68fd0757f471ab741f9e20a05/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"d61bb41b849de7125ca17fbd37292479648e7fa7\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d61bb41b849de7125ca17fbd37292479648e7fa7\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/d61bb41b849de7125ca17fbd37292479648e7fa7\"}}}],
+        \"date\": \"2016-08-26T19:21:23+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge pull
+        request #18 from yurovant/patch-1\\n\\nUpdate README.md\", \"markup\": \"markdown\",
+        \"html\": \"<p>Merge pull request #18 from yurovant/patch-1</p>\\n<p>Update
+        README.md</p>\", \"type\": \"rendered\"}}, \"hash\": \"d61bb41b849de7125ca17fbd37292479648e7fa7\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d61bb41b849de7125ca17fbd37292479648e7fa7\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d61bb41b849de7125ca17fbd37292479648e7fa7/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/d61bb41b849de7125ca17fbd37292479648e7fa7\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/d61bb41b849de7125ca17fbd37292479648e7fa7\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d61bb41b849de7125ca17fbd37292479648e7fa7/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d61bb41b849de7125ca17fbd37292479648e7fa7/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #18 from yurovant/patch-1\\n\\nUpdate
+        README.md\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #18
+        from yurovant/patch-1</p>\\n<p>Update README.md</p>\", \"type\": \"rendered\"},
+        \"parents\": [{\"hash\": \"84ea8b9ba0f8134be0477971e72b233959f5d3b6\", \"type\":
+        \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"}}},
+        {\"hash\": \"2d1b772e138f05dbbd577ce0dcf3633577629a76\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2d1b772e138f05dbbd577ce0dcf3633577629a76\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/2d1b772e138f05dbbd577ce0dcf3633577629a76\"}}}],
+        \"date\": \"2016-08-16T15:47:11+00:00\", \"message\": \"Merge pull request
+        #18 from yurovant/patch-1\\n\\nUpdate README.md\", \"type\": \"commit\"},
+        {\"rendered\": {\"message\": {\"raw\": \"Update README.md\\n\\ntypo: priveta
+        --> private\", \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\\n<p>typo:
+        priveta --&gt; private</p>\", \"type\": \"rendered\"}}, \"hash\": \"2d1b772e138f05dbbd577ce0dcf3633577629a76\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2d1b772e138f05dbbd577ce0dcf3633577629a76\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2d1b772e138f05dbbd577ce0dcf3633577629a76/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/2d1b772e138f05dbbd577ce0dcf3633577629a76\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/2d1b772e138f05dbbd577ce0dcf3633577629a76\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/2d1b772e138f05dbbd577ce0dcf3633577629a76\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2d1b772e138f05dbbd577ce0dcf3633577629a76/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2d1b772e138f05dbbd577ce0dcf3633577629a76/statuses\"}},
+        \"author\": {\"raw\": \"Anton Yurovskykh <anton.yurovskykh@gmail.com>\", \"type\":
+        \"author\", \"user\": {\"display_name\": \"Anton Yurovskykh\", \"uuid\": \"{e9e6c8a1-10fb-4a07-a518-487c13c0ed00}\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/%7Be9e6c8a1-10fb-4a07-a518-487c13c0ed00%7D\"},
+        \"html\": {\"href\": \"https://bitbucket.org/%7Be9e6c8a1-10fb-4a07-a518-487c13c0ed00%7D/\"},
+        \"avatar\": {\"href\": \"https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/557058:79a45bae-ac2b-4c79-acd3-14eb21392cbf/ea6c406c-96c5-4eef-b058-e60e015c7407/128\"}},
+        \"nickname\": \"yurovant\", \"type\": \"user\", \"account_id\": \"557058:79a45bae-ac2b-4c79-acd3-14eb21392cbf\"}},
+        \"summary\": {\"raw\": \"Update README.md\\n\\ntypo: priveta --> private\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\\n<p>typo: priveta
+        --&gt; private</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\": \"84ea8b9ba0f8134be0477971e72b233959f5d3b6\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"}}}],
+        \"date\": \"2016-08-16T07:35:54+00:00\", \"message\": \"Update README.md\\n\\ntypo:
+        priveta --> private\", \"type\": \"commit\"}, {\"rendered\": {\"message\":
+        {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\": \"<p>Update
+        README.md</p>\", \"type\": \"rendered\"}}, \"hash\": \"84ea8b9ba0f8134be0477971e72b233959f5d3b6\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/84ea8b9ba0f8134be0477971e72b233959f5d3b6/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/84ea8b9ba0f8134be0477971e72b233959f5d3b6\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/84ea8b9ba0f8134be0477971e72b233959f5d3b6/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/84ea8b9ba0f8134be0477971e72b233959f5d3b6/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"e051e55647e0ecc27539b2dc40fb9b2839383060\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e051e55647e0ecc27539b2dc40fb9b2839383060\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/e051e55647e0ecc27539b2dc40fb9b2839383060\"}}}],
+        \"date\": \"2016-08-05T16:46:35+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"e051e55647e0ecc27539b2dc40fb9b2839383060\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e051e55647e0ecc27539b2dc40fb9b2839383060\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e051e55647e0ecc27539b2dc40fb9b2839383060/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/e051e55647e0ecc27539b2dc40fb9b2839383060\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/e051e55647e0ecc27539b2dc40fb9b2839383060\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/e051e55647e0ecc27539b2dc40fb9b2839383060\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e051e55647e0ecc27539b2dc40fb9b2839383060/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e051e55647e0ecc27539b2dc40fb9b2839383060/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"248906bd30b16b8bc131d0600ab66545f51a7085\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/248906bd30b16b8bc131d0600ab66545f51a7085\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/248906bd30b16b8bc131d0600ab66545f51a7085\"}}}],
+        \"date\": \"2016-08-05T16:44:34+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"248906bd30b16b8bc131d0600ab66545f51a7085\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/248906bd30b16b8bc131d0600ab66545f51a7085\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/248906bd30b16b8bc131d0600ab66545f51a7085/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/248906bd30b16b8bc131d0600ab66545f51a7085\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/248906bd30b16b8bc131d0600ab66545f51a7085\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/248906bd30b16b8bc131d0600ab66545f51a7085\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/248906bd30b16b8bc131d0600ab66545f51a7085/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/248906bd30b16b8bc131d0600ab66545f51a7085/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\"}}}],
+        \"date\": \"2016-08-05T16:44:04+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/8b8bd76c787dce785d0d01fd3ea9b0d8741763c4/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"ca1acdab2996eef3f7e5ddc27243efb0752606e6\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ca1acdab2996eef3f7e5ddc27243efb0752606e6\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/ca1acdab2996eef3f7e5ddc27243efb0752606e6\"}}}],
+        \"date\": \"2016-08-05T16:43:41+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"ca1acdab2996eef3f7e5ddc27243efb0752606e6\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ca1acdab2996eef3f7e5ddc27243efb0752606e6\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ca1acdab2996eef3f7e5ddc27243efb0752606e6/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/ca1acdab2996eef3f7e5ddc27243efb0752606e6\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/ca1acdab2996eef3f7e5ddc27243efb0752606e6\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/ca1acdab2996eef3f7e5ddc27243efb0752606e6\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ca1acdab2996eef3f7e5ddc27243efb0752606e6/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ca1acdab2996eef3f7e5ddc27243efb0752606e6/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\"}}}],
+        \"date\": \"2016-08-05T16:42:16+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/ef8c461aa9f2d7b7a93270328a33da5c7cb366b1/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"e02bded5e1c9bc48261788c84c34fcbcb89b4568\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e02bded5e1c9bc48261788c84c34fcbcb89b4568\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/e02bded5e1c9bc48261788c84c34fcbcb89b4568\"}}}],
+        \"date\": \"2016-06-21T15:23:48+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Add more docs
+        close #12\", \"markup\": \"markdown\", \"html\": \"<p>Add more docs close
+        #12</p>\", \"type\": \"rendered\"}}, \"hash\": \"e02bded5e1c9bc48261788c84c34fcbcb89b4568\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e02bded5e1c9bc48261788c84c34fcbcb89b4568\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e02bded5e1c9bc48261788c84c34fcbcb89b4568/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/e02bded5e1c9bc48261788c84c34fcbcb89b4568\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/e02bded5e1c9bc48261788c84c34fcbcb89b4568\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/e02bded5e1c9bc48261788c84c34fcbcb89b4568\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e02bded5e1c9bc48261788c84c34fcbcb89b4568/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/e02bded5e1c9bc48261788c84c34fcbcb89b4568/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Add more docs close #12\", \"markup\": \"markdown\",
+        \"html\": \"<p>Add more docs close #12</p>\", \"type\": \"rendered\"}, \"parents\":
+        [{\"hash\": \"810e2a539ab476977ec6e6d4b80010431be3cd99\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/810e2a539ab476977ec6e6d4b80010431be3cd99\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/810e2a539ab476977ec6e6d4b80010431be3cd99\"}}}],
+        \"date\": \"2016-01-08T00:45:34+00:00\", \"message\": \"Add more docs close
+        #12\", \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge
+        pull request #11 from ticosax/faster-travis-build\\n\\nFaster travis builds\",
+        \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #11 from ticosax/faster-travis-build</p>\\n<p>Faster
+        travis builds</p>\", \"type\": \"rendered\"}}, \"hash\": \"810e2a539ab476977ec6e6d4b80010431be3cd99\",
+        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/810e2a539ab476977ec6e6d4b80010431be3cd99\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/810e2a539ab476977ec6e6d4b80010431be3cd99/comments\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/810e2a539ab476977ec6e6d4b80010431be3cd99\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/810e2a539ab476977ec6e6d4b80010431be3cd99\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/810e2a539ab476977ec6e6d4b80010431be3cd99/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/810e2a539ab476977ec6e6d4b80010431be3cd99/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Merge pull request #11 from ticosax/faster-travis-build\\n\\nFaster
+        travis builds\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request
+        #11 from ticosax/faster-travis-build</p>\\n<p>Faster travis builds</p>\",
+        \"type\": \"rendered\"}, \"parents\": [{\"hash\": \"202ddb27233d5007be31e3a4268aeac9a54febce\",
+        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/202ddb27233d5007be31e3a4268aeac9a54febce\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/202ddb27233d5007be31e3a4268aeac9a54febce\"}}},
+        {\"hash\": \"2be550c135cc13425cb2c239b9321e78dcfb787b\", \"type\": \"commit\",
+        \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2be550c135cc13425cb2c239b9321e78dcfb787b\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/2be550c135cc13425cb2c239b9321e78dcfb787b\"}}}],
+        \"date\": \"2015-11-19T21:12:03+00:00\", \"message\": \"Merge pull request
+        #11 from ticosax/faster-travis-build\\n\\nFaster travis builds\", \"type\":
+        \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Faster travis builds\\n\",
+        \"markup\": \"markdown\", \"html\": \"<p>Faster travis builds</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"2be550c135cc13425cb2c239b9321e78dcfb787b\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2be550c135cc13425cb2c239b9321e78dcfb787b\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2be550c135cc13425cb2c239b9321e78dcfb787b/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/2be550c135cc13425cb2c239b9321e78dcfb787b\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/2be550c135cc13425cb2c239b9321e78dcfb787b\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/2be550c135cc13425cb2c239b9321e78dcfb787b\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2be550c135cc13425cb2c239b9321e78dcfb787b/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2be550c135cc13425cb2c239b9321e78dcfb787b/statuses\"}},
+        \"author\": {\"raw\": \"Nicolas Delaby <nicolas.delaby@lock8.me>\", \"type\":
+        \"author\"}, \"summary\": {\"raw\": \"Faster travis builds\\n\", \"markup\":
+        \"markdown\", \"html\": \"<p>Faster travis builds</p>\", \"type\": \"rendered\"},
+        \"parents\": [{\"hash\": \"202ddb27233d5007be31e3a4268aeac9a54febce\", \"type\":
+        \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/202ddb27233d5007be31e3a4268aeac9a54febce\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/202ddb27233d5007be31e3a4268aeac9a54febce\"}}}],
+        \"date\": \"2015-11-19T21:09:03+00:00\", \"message\": \"Faster travis builds\\n\",
+        \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Update README.md\",
+        \"markup\": \"markdown\", \"html\": \"<p>Update README.md</p>\", \"type\":
+        \"rendered\"}}, \"hash\": \"202ddb27233d5007be31e3a4268aeac9a54febce\", \"repository\":
+        {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
+        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
+        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
+        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"links\": {\"self\":
+        {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/202ddb27233d5007be31e3a4268aeac9a54febce\"},
+        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/202ddb27233d5007be31e3a4268aeac9a54febce/comments\"},
+        \"patch\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/202ddb27233d5007be31e3a4268aeac9a54febce\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/202ddb27233d5007be31e3a4268aeac9a54febce\"},
+        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/202ddb27233d5007be31e3a4268aeac9a54febce\"},
+        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/202ddb27233d5007be31e3a4268aeac9a54febce/approve\"},
+        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/202ddb27233d5007be31e3a4268aeac9a54febce/statuses\"}},
+        \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"},
+        \"summary\": {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\":
+        \"<p>Update README.md</p>\", \"type\": \"rendered\"}, \"parents\": [{\"hash\":
+        \"b1598e3d561f5f21b10150e98ad5c0bab286a6f2\", \"type\": \"commit\", \"links\":
+        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b1598e3d561f5f21b10150e98ad5c0bab286a6f2\"},
+        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/b1598e3d561f5f21b10150e98ad5c0bab286a6f2\"}}}],
+        \"date\": \"2015-10-21T07:04:33+00:00\", \"message\": \"Update README.md\",
+        \"type\": \"commit\"}], \"next\": \"https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?ctx=79edd3eec30e322dee687ae3870c45bb&page=2\"}"}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Vary
+      - ['Authorization, Accept-Encoding']
+    - !!python/tuple
+      - Cache-Control
+      - [max-age=900]
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubDomains; preload]
+    - !!python/tuple
+      - Date
+      - ['Fri, 20 Sep 2019 11:52:22 GMT']
+    - !!python/tuple
+      - X-Served-By
+      - [app-139]
+    - !!python/tuple
+      - Accept-Ranges
+      - [bytes]
+    - !!python/tuple
+      - Etag
+      - ['"gz[41a29bdd83f952edc8bb72352d43aadc]"']
+    - !!python/tuple
+      - X-Static-Version
+      - [9ed2231efb65]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - [repository]
+    - !!python/tuple
+      - X-Credential-Type
+      - [oauth1]
+    - !!python/tuple
+      - X-Render-Time
+      - ['1.80140686035']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - [default]
+    - !!python/tuple
+      - X-Request-Count
+      - ['3019']
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - Last-Modified
+      - ['Sat, 24 Aug 2019 07:24:01 GMT']
+    - !!python/tuple
+      - X-Version
+      - [9ed2231efb65]
+    - !!python/tuple
+      - X-Cache-Info
+      - [caching]
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - [gzip]
+    status: {code: 200, message: OK}
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?include=6ae5f17&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1568980339&oauth_nonce=1dcb7a2eedd544b395184b18231388a8&oauth_version=1.0&oauth_signature=XdUUtgGHNy2XcsbYlW%2Ftq3Od4qo%3D
+version: 1

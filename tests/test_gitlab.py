@@ -562,3 +562,23 @@ class TestGitlabTestCase(object):
 
         res = await valid_handler.list_top_level_files('master')
         assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])
+
+    @pytest.mark.asyncio
+    async def test_get_ancestors_tree(self, valid_handler, codecov_vcr):
+        commitid = 'c739768fcac68144a3a6d82305b9c4106934d31a'
+        res = await valid_handler.get_ancestors_tree(commitid)
+        expected_result = {
+            'commitid': u'c739768fcac68144a3a6d82305b9c4106934d31a',
+            'parents': [
+                {
+                    'commitid': 'b33e12816cc3f386dae8add4968cedeff5155021',
+                    'parents': [
+                        {
+                            'commitid': u'743b04806ea677403aa2ff26c6bdeb85005de658',
+                            'parents': []
+                        }
+                    ]
+                }
+            ]
+        }
+        assert res == expected_result

@@ -695,3 +695,13 @@ class Github(BaseHandler, OAuth2Mixin):
         elif val == 'dir':
             return 'folder'
         return 'other'
+
+    async def get_ancestors_tree(self, commitid, token=None):
+        res = await self.api(
+            'get', '/repos/%s/commits' % self.slug,
+            token=token,
+            sha=commitid
+        )
+        start = res[0]['sha']
+        commit_mapping = {val['sha']: [k['sha'] for k in val['parents']] for val in res}
+        return self.build_tree_from_commits(start, commit_mapping)
