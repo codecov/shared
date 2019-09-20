@@ -658,3 +658,13 @@ class Bitbucket(BaseHandler, OAuthMixin):
         elif val == 'commit_directory':
             return 'folder'
         return 'other'
+
+    async def get_ancestors_tree(self, commitid, token=None):
+        res = await self.api(
+            '2', 'get', '/repositories/%s/commits' % self.slug,
+            token=token,
+            include=commitid
+        )
+        start = res['values'][0]['hash']
+        commit_mapping = {val['hash']: [k['hash'] for k in val['parents']] for val in res['values']}
+        return self.build_tree_from_commits(start, commit_mapping)

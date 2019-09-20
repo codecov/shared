@@ -632,3 +632,13 @@ class Gitlab(BaseHandler):
             else:
                 res['type'] = 'other'
         return result
+
+    async def get_ancestors_tree(self, commitid, token=None):
+        res = await self.api(
+            'get', '/projects/%s/repository/commits' % self.data['repo']['service_id'],
+            token=token,
+            ref_name=commitid
+        )
+        start = res[0]['id']
+        commit_mapping = {val['id']: val['parent_ids'] for val in res}
+        return self.build_tree_from_commits(start, commit_mapping)
