@@ -1029,7 +1029,9 @@ def _ignore_to_func(ignore):
     eof = ignore.get('eof')
     lines = ignore.get('lines') or []
     if eof:
-        return lambda l: str(l) > eof or l in lines
+        if isinstance(eof, str):
+            return lambda l: str(l) > eof or l in lines
+        return lambda l: l > eof or l in lines
     else:
         return lambda l: l in lines
 

@@ -52,6 +52,29 @@ def test_set_item(r, get_val):
     assert r[1] == get_val
 
 
+def test_set_item_with_ignore_lines():
+    ignore_lines = {
+        'eof': 41, 'lines': {40, 33, 37, 38}
+    }
+    filename = 'folder/file.java'
+    r = ReportFile(filename, ignore=ignore_lines)
+    r[1] = ReportLine(0)
+    r[2] = ReportLine(1)
+    r[33] = ReportLine(0)
+    r[37] = ReportLine('1/2')
+    r[38] = ReportLine(1)
+    r[39] = ReportLine('2/3')
+    r[40] = ReportLine(0)
+    r[41] = ReportLine(1)
+    r[42] = ReportLine('1/8')
+    assert list(r.lines) == [
+        (1, ReportLine(0)),
+        (2, ReportLine(1)),
+        (39, ReportLine('2/3')),
+        (41, ReportLine(1))
+    ]
+
+
 @pytest.mark.integration
 @pytest.mark.parametrize('index, set_val, error_message', [
     ('str', 1, "expecting type int got <class 'str'>"),
