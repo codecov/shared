@@ -1026,10 +1026,29 @@ class Report(object):
 
 
 def _ignore_to_func(ignore):
+    """Returns a function to determine whether a a line should be saved to the ReportFile
+
+    This function returns a function, that is called with an int parameter: which is the line number
+
+    Args:
+        ignore: A dict, with a structure similar to
+            {
+                'eof': 41,
+                'lines': {40, 33, 37, 38}
+            }
+
+    Returns:
+        A function, which takes an int as first parameter and returns a boolean
+    """
     eof = ignore.get('eof')
     lines = ignore.get('lines') or []
     if eof:
-        return lambda l: str(l) > eof or l in lines
+        if isinstance(eof, str):
+            # Sometimes eof is 'N', not sure which cases
+            return lambda l: str(l) > eof or l in lines
+        # This means the eof as a number: the last line of the file and
+        # anything after that should be ignored
+        return lambda l: l > eof or l in lines
     else:
         return lambda l: l in lines
 
