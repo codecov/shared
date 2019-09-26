@@ -33,7 +33,9 @@ class BaseHandler(object):
     )
 
     def _oauth_consumer_token(self):
-        return self._oauth or self.get_oauth_consumer_token()
+        if not self._oauth:
+            raise Exception("Oauth consumer token not present")
+        return self._oauth
 
     def __init__(
             self,
