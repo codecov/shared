@@ -86,7 +86,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             res = await self.fetch(url, **kwargs)
         except ClientError as e:
             if e.code == 599:
-                log.info('count#%s.timeout=1\n' % self.service)
+                log.debug('count#%s.timeout=1\n' % self.service)
                 raise TorngitServerUnreachableError('Bitbucket was not able to be reached, server timed out.')
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
@@ -102,7 +102,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
             raise TorngitClientError(e.code, e.response, message)
 
         else:
-            log.info('Bitbucket HTTP %s' % res.code, url=url, endpoint=path)
+            log.info(
+                'Bitbucket HTTP %s' % res.code,
+                extra=dict(url=url, endpoint=path)
+            )
             if res.code == 204:
                 return None
 
