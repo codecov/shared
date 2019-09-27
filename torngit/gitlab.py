@@ -102,7 +102,7 @@ class Gitlab(BaseHandler):
             )
 
         else:
-            log.info('GitLab HTTP %s' % res.code, **_log)
+            log.info('GitLab HTTP %s' % res.code, extra=dict(**_log))
             return None if res.code == 204 else loads(res.body)
 
         finally:
