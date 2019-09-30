@@ -11,6 +11,13 @@ class TorngitClientError(TorngitError):
         self.message = message
 
 
+class TorngitRepoNotFoundError(TorngitClientError):
+
+    def __init__(self, response, message):
+        code = 404
+        super().__init__(code, response, message)
+
+
 class TorngitObjectNotFoundError(TorngitClientError):
 
     def __init__(self, response, message):

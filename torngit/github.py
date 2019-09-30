@@ -13,7 +13,7 @@ from torngit.status import Status
 from torngit.base import BaseHandler
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
-    TorngitClientError
+    TorngitClientError, TorngitRepoNotFoundError
 )
 
 log = logging.getLogger(__name__)
@@ -389,7 +389,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
-                raise TorngitObjectNotFoundError(ce.response, f"Cannot find webhook {hookid}")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Cannot find webhook {hookid}")
             raise
 
     async def delete_webhook(self, hookid, token=None):
@@ -399,7 +399,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 'delete', '/repos/%s/hooks/%s' % (self.slug, hookid), token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
-                raise TorngitObjectNotFoundError(ce.response, f"Cannot find webhook {hookid}")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Cannot find webhook {hookid}")
             raise
         return True
 
@@ -424,7 +424,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
-                raise TorngitObjectNotFoundError(ce.response, f"Cannot find comment {commentid} from PR {issueid}")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Cannot find comment {commentid} from PR {issueid}")
             raise
 
     async def delete_comment(self, issueid, commentid, token=None):
@@ -436,7 +436,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
-                raise TorngitObjectNotFoundError(ce.response, f"Cannot find comment {commentid} from PR {issueid}")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Cannot find comment {commentid} from PR {issueid}")
             raise
         return True
 
@@ -526,7 +526,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
-                raise TorngitObjectNotFoundError(ce.response, f"Path {path} not found at {ref}")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Path {path} not found at {ref}")
             raise
         return dict(
             content=b64decode(content['content']),
@@ -543,7 +543,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 token=token)
         except TorngitClientError as ce:
             if ce.code == 422:
-                raise TorngitObjectNotFoundError(ce.response, f"Commit with id {commit} does not exist")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Commit with id {commit} does not exist")
             raise
         return self.diff_to_json(res.decode('utf-8'))
 
@@ -598,7 +598,9 @@ class Github(BaseHandler, OAuth2Mixin):
                 'get', '/repos/%s/commits/%s' % (self.slug, commit), token=token)
         except TorngitClientError as ce:
             if ce.code == 422:
-                raise TorngitObjectNotFoundError(ce.response, f"Commit with id {commit} does not exist")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Commit with id {commit} does not exist")
+            if ce.code == 404:
+                raise TorngitRepoNotFoundError(ce.response.body.decode(), f"Repo {self.slug} cannot be found by this user")
             raise
         return dict(
             author=dict(
@@ -634,7 +636,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 'get', '/repos/%s/pulls/%s' % (self.slug, pullid), token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
-                raise TorngitObjectNotFoundError(ce.response, f"Pull Request {pullid} not found")
+                raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Pull Request {pullid} not found")
             raise
         return self._pull(res)
 
