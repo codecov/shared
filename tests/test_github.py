@@ -2,7 +2,7 @@ import pytest
 
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
-    TorngitClientError
+    TorngitClientError, TorngitRepoNotFoundError
 )
 
 from torngit.github import Github
@@ -14,6 +14,24 @@ def valid_handler():
     return Github(
         repo=dict(name='example-python'),
         owner=dict(username='ThiagoCodecov'),
+        token=dict(key='testao8tozi4d6k1rfn8chelvsq766tkycauxmja')
+    )
+
+
+@pytest.fixture
+def valid_but_no_permissions_handler():
+    return Github(
+        repo=dict(name='worker'),
+        owner=dict(username='codecov'),
+        token=dict(key='testyh3jmxkprygtinopr800pbmakt5j86ymqh33')
+    )
+
+
+@pytest.fixture
+def repo_doesnt_exist_handler():
+    return Github(
+        repo=dict(name='badrepo'),
+        owner=dict(username='codecov'),
         token=dict(key='testao8tozi4d6k1rfn8chelvsq766tkycauxmja')
     )
 
@@ -172,8 +190,24 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_not_found(self, valid_handler, codecov_vcr):
+        commitid = 'abe3e94949d11471cc4e054f822d222254a4a4f8'
         with pytest.raises(TorngitObjectNotFoundError):
-            await valid_handler.get_commit('6b7cf45238ec409064893b51f8dfa2f3ce51c888')
+            await valid_handler.get_commit(commitid)
+
+    @pytest.mark.asyncio
+    async def test_get_commit_no_permissions(self, valid_but_no_permissions_handler, codecov_vcr):
+        commitid = 'bbe3e94949d11471cc4e054f822d222254a4a4f8'
+        with pytest.raises(TorngitRepoNotFoundError):
+            await valid_but_no_permissions_handler.get_commit(commitid)
+
+    @pytest.mark.asyncio
+    async def test_get_commit_repo_doesnt_exist(self, valid_but_no_permissions_handler, codecov_vcr):
+        commitid = 'bbe3e94949d11471cc4e054f822d222254a4a4f8'
+        with pytest.raises(TorngitRepoNotFoundError) as ex:
+            await valid_but_no_permissions_handler.get_commit(commitid)
+        expected_response = '{"message":"Not Found","documentation_url":"https://developer.github.com/v3/repos/commits/#get-a-single-commit"}'
+        exc = ex.value
+        assert exc.response == expected_response
 
     @pytest.mark.asyncio
     async def test_get_commit_diff(self, valid_handler, codecov_vcr):

@@ -51,6 +51,6 @@ jobs:
           command: |
             . venv/bin/activate
             pip install codecov
-            codecov
+            codecov --required
 
           

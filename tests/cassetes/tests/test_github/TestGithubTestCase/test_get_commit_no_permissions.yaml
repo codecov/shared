@@ -5,28 +5,28 @@ interactions:
       Accept: [application/json]
       User-Agent: [Default]
     method: GET
-    uri: https://api.github.com/repos/ThiagoCodecov/example-python/commits/abe3e94949d11471cc4e054f822d222254a4a4f8
+    uri: https://api.github.com/repos/codecov/worker/commits/bbe3e94949d11471cc4e054f822d222254a4a4f8
   response:
-    body: {string: '{"message":"No commit found for SHA: abe3e94949d11471cc4e054f822d222254a4a4f8","documentation_url":"https://developer.github.com/v3/repos/commits/#get-a-single-commit"}'}
+    body: {string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3/repos/commits/#get-a-single-commit"}'}
     headers:
     - !!python/tuple
-      - Server
-      - [GitHub.com]
-    - !!python/tuple
       - Date
-      - ['Mon, 30 Sep 2019 12:26:04 GMT']
+      - ['Mon, 30 Sep 2019 12:24:39 GMT']
     - !!python/tuple
       - Content-Type
       - [application/json; charset=utf-8]
     - !!python/tuple
-      - Content-Length
-      - ['168']
+      - Transfer-Encoding
+      - [chunked]
     - !!python/tuple
       - Connection
       - [close]
     - !!python/tuple
+      - Server
+      - [GitHub.com]
+    - !!python/tuple
       - Status
-      - [422 Unprocessable Entity]
+      - [404 Not Found]
     - !!python/tuple
       - X-Ratelimit-Limit
       - ['5000']
@@ -35,10 +35,10 @@ interactions:
       - ['4999']
     - !!python/tuple
       - X-Ratelimit-Reset
-      - ['1569849964']
+      - ['1569849879']
     - !!python/tuple
       - X-Oauth-Scopes
-      - ['admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion']
+      - ['notifications, repo, user']
     - !!python/tuple
       - X-Accepted-Oauth-Scopes
       - ['']
@@ -73,7 +73,10 @@ interactions:
       - [default-src 'none']
     - !!python/tuple
       - X-Github-Request-Id
-      - ['2A2D:047C:F9A196:2040E82:5D91F45C']
-    status: {code: 422, message: Unprocessable Entity}
-    url: https://api.github.com/repos/ThiagoCodecov/example-python/commits/abe3e94949d11471cc4e054f822d222254a4a4f8
+      - ['2A18:1268:22580F:3EABC5:5D91F407']
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - [gzip]
+    status: {code: 404, message: Not Found}
+    url: https://api.github.com/repos/codecov/worker/commits/bbe3e94949d11471cc4e054f822d222254a4a4f8
 version: 1
