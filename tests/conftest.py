@@ -50,7 +50,7 @@ def codecov_vcr(request):
 
 @pytest.fixture
 def mock_storage(mocker):
-    m = mocker.patch('services.storage.MinioStorageService')
+    m = mocker.patch('covreports.storage.MinioStorageService')
     redis_server = mocker.MagicMock()
     m.return_value = redis_server
     yield redis_server
