@@ -11,3 +11,18 @@ def walk(_dict, keys, _else=None):
         return _dict
     except:
         return _else
+
+
+def default_if_true(value):
+    if value is True:
+        yield 'default', {}
+    elif type(value) is dict:
+        for key, data in value.items():
+            if data is False:
+                continue
+            elif data is True:
+                yield key, {}
+            elif type(data) is not dict or data.get('enabled') is False:
+                continue
+            else:
+                yield key, data
