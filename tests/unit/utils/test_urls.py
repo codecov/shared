@@ -2,7 +2,7 @@
 
 import pytest
 from tests.base import BaseTestCase
-from covreports.utils.urls import escape, make_url
+from covreports.utils.urls import escape, make_url, _url_concat
 
 class TestUrlsUtil(BaseTestCase):
 
@@ -12,6 +12,7 @@ class TestUrlsUtil(BaseTestCase):
         ((u'ə/fix-coverage', False), b'\xc3\x89\xc2\x99/fix-coverage'),
         ((u'ə/fix-coverage', True), '%C3%89%C2%99/fix-coverage'),
         ((1, False), 1),
+        ((1, True), '1'),
         ((None, False), None),
         ((False, False), False),
         ((True, False), True)
@@ -40,3 +41,17 @@ class TestUrlsUtil(BaseTestCase):
             }
         })
         assert make_url(None, 'path', 'to', 'here') == 'https://other.com/path/to/here'
+
+    @pytest.mark.parametrize('url, args, expected', [
+        ('http://example.com/foo', dict(c='d'), 'http://example.com/foo?c=d'),
+        ('http://example.com/foo?a=b', dict(c='d'), 'http://example.com/foo?a=b&c=d'),
+        ('http://example.com/foo?a=b', [('c', 'd'), ('c', 'd2')], 'http://example.com/foo?a=b&c=d&c=d2')
+    ])
+    def test_url_concat(self, url, args, expected):
+        res = _url_concat(url, args)
+        assert res == expected
+
+    def test_url_concat_err(self):
+        with pytest.raises(Exception, match="'args' parameter should be dict, list or tuple"):
+            url = 'http://example.com'
+            res = _url_concat(url, 'abc')

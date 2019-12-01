@@ -17,6 +17,7 @@ def test_yaml_walk(_dict, keys, _else, res):
     (True, {'default': {}}),
     (None, {}),
     (False, {}),
+    ({'a': False, 'b': True}, {'b': {}}),
     ({'custom': {'enabled': False}}, {}),
     ({'custom': {'enabled': True}}, {'custom': {'enabled': True}})
 ])
