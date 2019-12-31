@@ -13,12 +13,21 @@ from tornado.httpclient import HTTPError
 def valid_handler():
     return Gitlab(
         repo=dict(service_id='187725'),
-        owner=dict(username='stevepeak'),
+        owner=dict(username='stevepeak', service_id='109479'),
         token=dict(
             key='testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w'
         )
     )
 
+@pytest.fixture
+def admin_handler():
+    return Gitlab(
+        repo=dict(service_id='12060694'),
+        owner=dict(username='codecov-organization', service_id='4037482'),
+        token=dict(
+            key='testre918s7u09o4trx2agj1x634onz33eq89tucbz8lqvhqzibc9mh6pgtcokjk'
+        )
+    )
 
 class TestGitlabTestCase(object):
 
@@ -49,6 +58,15 @@ class TestGitlabTestCase(object):
         url = 'random_url'
         with pytest.raises(TorngitClientError):
             await valid_handler.api(method, url)
+
+    @pytest.mark.asyncio
+    async def test_get_is_admin(self, admin_handler):
+        user = dict(service_id='3108129')
+        owner = dict(username='hootener'),
+        is_admin = await admin_handler.get_is_admin(user=user,
+                                                    token=dict(key='testre918s7u09o4trx2agj1x634onz33eq89tucbz8lqvhqzibc9mh6pgtcokjk',
+                                                    username='hootener'))
+        assert is_admin
 
     @pytest.mark.asyncio
     async def test_post_comment(self, valid_handler, codecov_vcr):
@@ -410,9 +428,9 @@ class TestGitlabTestCase(object):
     @pytest.mark.asyncio
     async def test_get_repository(self, valid_handler, codecov_vcr):
         expected_result = {
-            'owner': {'service_id': 126816, 'username': 'codecov'},
+            'owner': {'service_id': 109640, 'username': 'codecov'},
             'repo': {
-                'branch': 'master',
+                'branch':b'master',
                 'language': None,
                 'name': 'ci-repo',
                 'private': False,
@@ -421,6 +439,31 @@ class TestGitlabTestCase(object):
         }
         res = await valid_handler.get_repository()
         assert res['repo'] == expected_result['repo']
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_repository_subgroup(self, valid_handler, codecov_vcr):
+        # test get_repository for repo in a subgroup
+        expected_result = {
+            'owner': {
+                'service_id': 4165905,
+                'username': 'l00p_group_1:subgroup1'
+            },
+            'repo': {
+                'branch': b'master',
+                'language': None,
+                'name': 'proj-a',
+                'private': True,
+                'service_id': 9715852
+            }
+        }
+        res = await Gitlab(
+            repo=dict(service_id='9715852'),
+            owner=dict(username='1nf1n1t3l00p'),
+            token=dict(
+                key='test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex'
+            )
+        ).get_repository()
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -453,9 +496,9 @@ class TestGitlabTestCase(object):
     async def test_list_repos(self, valid_handler, codecov_vcr):
         expected_result = [
             {
-                'owner': {'service_id': 223023, 'username': 'morerunes'},
+                'owner': {'service_id': 189208, 'username': 'morerunes'},
                 'repo': {
-                    'branch': 'master',
+                    'branch': b'master',
                     'fork': None,
                     'language': None,
                     'name': 'delectamentum-mud-server',
@@ -464,18 +507,18 @@ class TestGitlabTestCase(object):
                 }
             },
             {
-                'owner': {'service_id': 126816, 'username': 'codecov'},
+                'owner': {'service_id': 109640, 'username': 'codecov'},
                 'repo': {
-                    'branch': 'master',
+                    'branch': b'master',
                     'fork': None,
                     'language': None,
                     'name': 'example-python',
                     'private': False,
                     'service_id': 580838}},
             {
-                'owner': {'service_id': 126816, 'username': 'codecov'},
+                'owner': {'service_id': 109640, 'username': 'codecov'},
                 'repo': {
-                    'branch': 'master',
+                    'branch': b'master',
                     'fork': None,
                     'language': None,
                     'name': 'ci-private',
@@ -484,9 +527,9 @@ class TestGitlabTestCase(object):
                 }
             },
             {
-                'owner': {'service_id': 126816, 'username': 'codecov'},
+                'owner': {'service_id': 109640, 'username': 'codecov'},
                 'repo': {
-                    'branch': 'master',
+                    'branch': b'master',
                     'fork': None,
                     'language': None,
                     'name': 'ci-repo',
@@ -498,13 +541,200 @@ class TestGitlabTestCase(object):
         res = await valid_handler.list_repos()
         assert res == expected_result
 
+
+    @pytest.mark.asyncio
+    async def test_list_repos_subgroups(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                'owner': {'service_id': 4165907, 'username': 'l00p_group_1:subgroup2'},
+                'repo': {
+                    'service_id': 9715886,
+                    'name': 'flake8',
+                    'fork': {
+                        'owner': {'service_id': 61704, 'username': 'pycqa'},
+                        'repo': {'service_id': 88891, 'name': 'flake8', 'language': None, 'private': False, 'branch': b'master'}
+                    },
+                    'private': True,
+                    'language': None,
+                    'branch': b'master'
+                }
+            },
+            {
+                'owner': {'service_id': 3215137, 'username': '1nf1n1t3l00p'},
+                'repo': {
+                    'service_id': 9715862,
+                    'name': 'inf-proj',
+                    'fork': None,
+                    'private': True,
+                    'language': None,
+                    'branch': b'master'
+                }
+            },
+            {
+                'owner': {'service_id': 4165904, 'username': 'l00p_group_1'},
+                'repo': {
+                    'service_id': 9715859,
+                    'name': 'loop-proj',
+                    'fork': None,
+                    'private': True,
+                    'language': None,
+                    'branch': b'master'
+                }
+            },
+            {
+                'owner': {'service_id': 4165905, 'username': 'l00p_group_1:subgroup1'},
+                'repo': {
+                    'service_id': 9715852,
+                    'name': 'proj-a',
+                    'fork': None,
+                    'private': True,
+                    'language': None,
+                    'branch': b'master'
+                }
+            }
+        ]
+        res = await Gitlab(
+            repo=dict(service_id='9715852'),
+            owner=dict(username='1nf1n1t3l00p'),
+            token=dict(
+                key='test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex'
+            )
+        ).list_repos()
+        assert res == expected_result
+
+
+    @pytest.mark.asyncio
+    async def test_list_repos_subgroups_from_subgroups_username(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                'owner': {'service_id': 4037482, 'username': u'codecov-organization'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': u'demo-gitlab',
+                    'private': True,
+                    'service_id': 12060694
+                }
+            },
+            {
+                'owner': {'service_id': 4037482, 'username': u'codecov-organization'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': u'codecov-assume-flag-test',
+                    'private': True,
+                    'service_id': 10575601}
+            },
+            {
+                'owner': {'service_id': 4037482, 'username': u'codecov-organization'},
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': u'migration-tests',
+                    'private': True,
+                    'service_id': 9422435}
+            },
+            {
+                'owner': {
+                    'service_id': 5938764,
+                    'username': u'thiagocodecovtestgroup:test-subgroup'
+                },
+                'repo': {
+                    'branch': b'master',
+                    'fork': {
+                        'owner': {
+                            'service_id': 2351283,
+                            'username': u'gitlab-org:release'
+                        },
+                        'repo': {
+                            'branch': b'master',
+                            'language': None,
+                            'name': u'tasks',
+                            'private': False,
+                            'service_id': 5064907
+                        }
+                    },
+                    'language': None,
+                    'name': u'tasks',
+                    'private': True,
+                    'service_id': 14027433
+                }
+            },
+            {
+                'owner': {
+                    'service_id': 5938764,
+                    'username': u'thiagocodecovtestgroup:test-subgroup'
+                },
+                'repo': {
+                    'branch': b'master',
+                    'fork': None,
+                    'language': None,
+                    'name': u'grouptestprojecttrr',
+                    'private': True,
+                    'service_id': 14026543
+                }
+            }
+        ]
+        res = await Gitlab(
+            repo=dict(service_id='5938764'),
+            owner=dict(username='thiagocodecovtestgroup:test-subgroup'),
+            token=dict(
+                key='test0lqdb1uyolqgc71u'
+            )
+        ).list_repos()
+        assert res == expected_result
+
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, codecov_vcr):
         expected_result = [
-            {'id': 726800, 'name': 'delectamentum-mud', 'username': 'delectamentum-mud'}
+            {
+                'id': 726800,
+                'name': 'delectamentum-mud',
+                'username': 'delectamentum-mud',
+                'avatar_url': None,
+                'parent_id': None
+            }
         ]
         res = await valid_handler.list_teams()
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_teams_subgroups(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                'username':'l00p_group_1',
+                'avatar_url':'https://assets.gitlab-static.net/uploads/-/system/user/avatar/4165904/avatar.png',
+                'id':4165904,
+                'name':'My Awesome Group',
+                'parent_id': None
+            },
+            {
+                'username':'l00p_group_1:subgroup1',
+                'avatar_url':None,
+                'id':4165905,
+                'name':'subgroup1',
+                'parent_id': 4165904
+            },
+            {
+                'username':'l00p_group_1:subgroup2',
+                'avatar_url':None,
+                'id':4165907,
+                'name':'subgroup2',
+                'parent_id': 4165904
+            }
+        ]
+        res = await Gitlab(
+            repo=dict(service_id='9715852'),
+            owner=dict(username='1nf1n1t3l00p'),
+            token=dict(
+                key='test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex'
+            )
+        ).list_teams()
+        assert res == expected_result
+
 
     @pytest.mark.asyncio
     async def test_list_top_level_files(self, valid_handler, codecov_vcr):

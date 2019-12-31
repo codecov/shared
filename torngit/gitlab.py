@@ -183,6 +183,25 @@ class Gitlab(BaseHandler):
         else:
             return super().diff_to_json(self, diff)
 
+    async def get_owner_info_from_repo(self, repo, token=None):
+        if repo.get('owner'):
+            service_id = repo['owner']['id']
+            username = repo['owner']['username'].replace('/', ':')
+        elif repo['namespace']['kind'] == 'user':
+            # we need to get the user id (namespace id != user id)
+            username = repo['namespace']['path']
+            user_info = await self.api('get', '/users?username={}'.format(username),
+                                                token=token)
+            service_id = user_info[0].get('id') if user_info[0] else None
+        elif repo['namespace']['kind'] == 'group':
+            # we will use the namespace id as its the same as the group/subgroup id
+            service_id = repo['namespace']['id']
+            username = repo['namespace']['full_path'].replace('/', ':') # full path required for subgroup support
+        else:
+            raise
+
+        return (service_id, username)
+
     async def list_repos(self, username=None, token=None):
         """
         V4 will return ALL projects, so we need to loop groups first
@@ -221,29 +240,55 @@ class Gitlab(BaseHandler):
                             group['id'], page),
                         token=token)
                 for repo in repos:
-                    data.append(
-                        dict(
-                            owner=dict(
-                                service_id=repo['namespace']['id'],
-                                username=repo['namespace']['path']),
-                            repo=dict(
-                                service_id=repo['id'],
-                                name=repo['path'],
-                                fork=None,
-                                private=(repo['visibility'] != 'public'),
-                                language=None,
-                                branch=(repo['default_branch']
-                                        or 'master'))))
+                    owner_service_id, owner_username = await self.get_owner_info_from_repo(repo, token)
+
+                    if repo.get('forked_from_project'):
+                        parent = repo.get('forked_from_project')
+                        parent_service_id, parent_username = await self.get_owner_info_from_repo(parent, token)
+                        parent_info = await self.api('get', '/projects/{}'.format(parent['id']), token=token)
+                        if 'default_branch' not in parent:
+                            log.warning("Forked repo doesn't have default_branch, using master instead", extra=dict(repo=repo))
+                        fork = dict(owner=dict(service_id=parent_service_id,
+                                               username=parent_username),
+                                    repo=dict(service_id=parent['id'],
+                                              name=parent['name'],
+                                              language=None,
+                                              private=(parent_info['visibility'] != 'public'),
+                                              branch=parent.get('default_branch', 'master').encode('utf-8', 'replace')))
+                    else:
+                        fork = None
+
+                    # Gitlab API will return a repo with one of: no default branch key, default_branch: None, or default_branch: 'some_branch'
+                    branch = 'master'
+                    if 'default_branch' in repo and repo['default_branch'] is not None:
+                        branch = repo.get('default_branch')
+                    else:
+                        log.warning("Repo doesn't have default_branch, using master instead", extra=dict(repo=repo))
+
+                    data.append(dict(owner=dict(service_id=owner_service_id,
+                                                username=owner_username),
+                                     repo=dict(service_id=repo['id'],
+                                               name=repo['path'],
+                                               fork=fork,
+                                               private=(repo['visibility'] != 'public'),
+                                               language=None,
+                                               branch=branch.encode('utf-8', 'replace'))))
                 if len(repos) < 50:
                     break
 
+        # deduplicate, since some of them might show up twice
+        data = [i for n, i in enumerate(data) if i not in data[n + 1:]]
         return data
 
     async def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups
         groups = await self.api('get', '/groups?per_page=100', token=token)
         return [
-            dict(name=g['name'], id=g['id'], username=g['path'])
+            dict(name=g['name'],
+                id=g['id'],
+                username=(g['full_path'].replace('/', ':')),
+                avatar_url=g['avatar_url'],
+                parent_id=g['parent_id'])
             for g in groups
         ]
 
@@ -533,11 +578,16 @@ class Gitlab(BaseHandler):
         return (True, can_edit)
 
     async def get_is_admin(self, user, token=None):
-        # https://docs.gitlab.com/ce/api/members.html#get-a-member-of-a-group-or-project
+        # https://docs.gitlab.com/ce/api/members.html#get-a-member-of-a-group-or-project-including-inherited-members
+        # 10 = > Guest access
+        # 20 = > Reporter access
+        # 30 = > Developer access
+        # 40 = > Maintainer access
+        # 50 = > Owner access  # Only valid for groups
         user_id = int(user['service_id'])
         res = await self.api(
             'get',
-            '/groups/{}/members/{}'.format(self.data['owner']['service_id'],
+            '/groups/{}/members/all/{}'.format(self.data['owner']['service_id'],
                                            user_id),
             token=token)
         return bool(res['state'] == 'active' and res['access_level'] > 39)
@@ -563,16 +613,16 @@ class Gitlab(BaseHandler):
                 'get',
                 '/projects/' + self.data['repo']['service_id'],
                 token=token)
-        owner = res['namespace']
-        username, repo = tuple(res['path_with_namespace'].split('/', 1))
-        return (dict(
-            owner=dict(service_id=owner['id'], username=username),
-            repo=dict(
-                service_id=res['id'],
-                private=res['visibility'] != 'public',
-                language=None,
-                branch=(res['default_branch'] or 'master'),
-                name=repo)))
+
+        owner_service_id, owner_username = await self.get_owner_info_from_repo(res)
+        repo_name = res['path']
+        return (dict(owner=dict(service_id=owner_service_id,
+                                username=owner_username),
+                    repo=dict(service_id=res['id'],
+                            private=res['visibility'] != 'public',
+                            language=None,
+                            branch=(res['default_branch'] or 'master').encode('utf-8', 'replace'),
+                            name=repo_name)))
 
     async def get_source(self, path, ref, token=None):
         # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository

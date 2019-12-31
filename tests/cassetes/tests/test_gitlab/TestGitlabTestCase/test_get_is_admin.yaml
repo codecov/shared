@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/groups/4037482/members/all/3108129
+  response:
+    body:
+      string: !!python/unicode '{"id":3108129,"name":"Eli Hooten","username":"hootener","state":"active","avatar_url":"https://secure.gravatar.com/avatar/ab022b5adf4e3edc9ea77fe7fd561837?s=80\u0026d=identicon","web_url":"https://gitlab.com/hootener","access_level":50,"expires_at":null}'
+    headers:
+    - !!python/tuple
+      - Content-Length
+      - - '254'
+    - !!python/tuple
+      - Referrer-Policy
+      - - strict-origin-when-cross-origin
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - - '599'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000
+    - !!python/tuple
+      - Vary
+      - - Origin
+    - !!python/tuple
+      - X-Request-Id
+      - - WMZOHYN11Q1
+    - !!python/tuple
+      - Ratelimit-Reset
+      - - '1574271035'
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - Ratelimit-Limit
+      - - '600'
+    - !!python/tuple
+      - Gitlab-Sv
+      - - localhost
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Etag
+      - - W/"ce7fa4ae0ad9b560bd4bb61da4f8d66f"
+    - !!python/tuple
+      - Gitlab-Lb
+      - - fe-10-lb-gprd
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=0, private, must-revalidate
+    - !!python/tuple
+      - Date
+      - - Wed, 20 Nov 2019 17:29:35 GMT
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Runtime
+      - - '0.087430'
+    - !!python/tuple
+      - Content-Type
+      - - application/json
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - - Wed, 20 Nov 2019 17:30:35 GMT
+    - !!python/tuple
+      - Ratelimit-Observed
+      - - '1'
+    status:
+      code: 200
+      message: OK
+    url: https://gitlab.com/api/v4/groups/4037482/members/all/3108129
+version: 1
