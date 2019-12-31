@@ -2,74 +2,93 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
     method: GET
-    uri: https://bitbucket.org/api/1.0/user/privileges?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516660&oauth_nonce=f0b5b624b4854a54928d3912efd1d8f0&oauth_version=1.0&oauth_signature=XaYvo0Go7Z17jBkkIvAYWhkQbQ4%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/teams?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=edbf58916a0c401aaf62ee4f66d8ac1f&oauth_timestamp=1561677176&oauth_signature=NcEI0uUhZqaqwTy1FGcVfA2qK18%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
   response:
-    body: {string: '{"teams": {}}'}
+    body:
+      string: !!python/unicode '{"pagelen": 10, "values": [{"permission": "admin",
+        "type": "team_permission", "user": {"display_name": "Thiago Ramos", "uuid":
+        "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5bce04c759d0e84f8c7555e9/83eddf7b-6307-4b37-a193-a855cc683bc5/128"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "team": {"username": "codecov", "display_name": "Codecov", "type": "team",
+        "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}}], "page":
+        1, "size": 1}'
     headers:
     - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - [Authorization]
-    - !!python/tuple
-      - Cache-Control
-      - [max-age=900]
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Tue, 06 Nov 2018 15:04:21 GMT']
-    - !!python/tuple
-      - X-Served-By
-      - [app-159]
-    - !!python/tuple
-      - X-Static-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - Etag
-      - ['"a6e0c24c3bbc6b5a00497cb4d74e8c41"']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.021103143692']
+      - X-Consumed-Content-Encoding
+      - - gzip
     - !!python/tuple
       - X-Credential-Type
-      - [oauth1]
+      - - oauth1
     - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [account]
+      - X-Render-Time
+      - - '0.0495491027832'
     - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Version
-      - [4ea3c9800ace]
+      - Etag
+      - - '"gz[546e9bbd579aaefd6571b50222d216c3]"'
     - !!python/tuple
       - X-Request-Count
-      - ['432']
+      - - '632'
     - !!python/tuple
       - X-Frame-Options
-      - [SAMEORIGIN]
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - account
+    - !!python/tuple
+      - X-Served-By
+      - - app-146
     - !!python/tuple
       - X-Cache-Info
-      - [caching]
+      - - caching
     - !!python/tuple
-      - Content-Length
-      - ['13']
-    status: {code: 200, message: OK}
-    url: https://bitbucket.org/api/1.0/user/privileges?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516660&oauth_nonce=f0b5b624b4854a54928d3912efd1d8f0&oauth_version=1.0&oauth_signature=XaYvo0Go7Z17jBkkIvAYWhkQbQ4%3D
+      - Date
+      - - Thu, 27 Jun 2019 23:12:56 GMT
+    - !!python/tuple
+      - Accept-Ranges
+      - - bytes
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - X-Version
+      - - d664982621c0
+    - !!python/tuple
+      - X-Static-Version
+      - - d664982621c0
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - Vary
+      - - Authorization, Accept-Encoding
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=900
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    status:
+      code: 200
+      message: OK
+    url: https://bitbucket.org/api/2.0/user/permissions/teams?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=edbf58916a0c401aaf62ee4f66d8ac1f&oauth_timestamp=1561677176&oauth_signature=NcEI0uUhZqaqwTy1FGcVfA2qK18%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
 version: 1

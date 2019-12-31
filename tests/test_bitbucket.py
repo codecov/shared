@@ -1,5 +1,7 @@
 import pytest
+import json
 
+from unittest.mock import patch
 from tornado.httpclient import HTTPError
 
 from torngit.exceptions import (
@@ -14,7 +16,8 @@ from torngit.bitbucket import Bitbucket
 def valid_handler():
     return Bitbucket(
         repo=dict(name='example-python'),
-        owner=dict(username='ThiagoCodecov'),
+        owner=dict(username='ThiagoCodecov',
+                   service_id='6ef29b63-1288-4ceb-8dfc-af2c03f5cd49'),
         oauth_consumer_token=dict(
             key='test51hdmhalc053rb',
             secret='testrgj6ezg5b4zc5z8t2rspg90rw6dp'
@@ -118,7 +121,7 @@ class TestBitbucketTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_comment(self, valid_handler, codecov_vcr):
-        assert await valid_handler.delete_comment("1", "81514270") is True
+        assert await valid_handler.delete_comment("1", "107383471") is True
 
     @pytest.mark.asyncio
     async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
@@ -241,6 +244,19 @@ class TestBitbucketTestCase(object):
         assert res == 'success'
 
     @pytest.mark.asyncio
+    async def test_get_is_admin(self, valid_handler, codecov_vcr):
+        valid_handler.data = dict(owner=dict(username='codecov', service_id='6ef29b63-1288-4ceb-8dfc-af2c03f5cd49'))
+        user = dict(ownerid='1')
+        res = await valid_handler.get_is_admin(user)
+        assert res is True
+
+    @pytest.mark.asyncio
+    async def test_get_is_admin_not_admin(self, valid_handler, codecov_vcr):
+        user = dict(ownerid='2')
+        res = await valid_handler.get_is_admin(user)
+        assert res is False
+
+    @pytest.mark.asyncio
     async def test_set_commit_status(self, valid_handler, codecov_vcr):
         target_url = 'https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67'
         expected_result = {
@@ -292,13 +308,12 @@ class TestBitbucketTestCase(object):
             'aaaaaaaaaa',
             target_url
         )
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_branches(self, valid_handler, codecov_vcr):
         branches = sorted(await valid_handler.get_branches())
-        assert list(map(lambda a: a[0], branches)) == ['example', 'future', 'master', 'second-branch']
+        assert list(map(lambda a: a[0], branches)) == ['example', 'f/new-branch', 'future', 'master', 'second-branch']
 
     @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
@@ -342,7 +357,6 @@ class TestBitbucketTestCase(object):
             'id': '4742f092-8397-4677-8876-5e9a06f10f98'
         }
         res = await valid_handler.post_webhook(name, url, events, secret)
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -508,27 +522,459 @@ class TestBitbucketTestCase(object):
     async def test_list_repos(self, valid_handler, codecov_vcr):
         expected_result = [
             {
-                'owner': {
-                    'service_id': '9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645',
-                    'username': 'ThiagoCodecov'
+                "repo": {
+                "fork": None,
+                "name": "ci-repo",
+                "language": None,
+                "branch": "master",
+                "service_id": "a980e378-088f-48a8-9850-98923f497546",
+                "private": False
                 },
-                'repo': {
-                    'service_id': 'a8c50527-2c3a-480e-afe1-7700e2b00074',
-                    'name': 'example-python',
-                    'language': None,
-                    'private': True,
-                    'branch': 'master',
-                    'fork': None
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "private",
+                "language": "python",
+                "branch": "master",
+                "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
+                "private": True
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "coverage.py",
+                "language": "python",
+                "branch": "master",
+                "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
+                "private": False
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "integration-test-repo",
+                "language": "python",
+                "branch": "master",
+                "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
+                "private": True
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "test-bb-integration-public",
+                "language": None,
+                "branch": "master",
+                "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
+                "private": False
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
                 }
             }
         ]
 
-        res = await valid_handler.list_repos('ThiagoCodecov')
+        res = await valid_handler.list_repos('codecov')
+        assert sorted(res, key=lambda x: x['repo']['service_id']) == sorted(expected_result, key=lambda x: x['repo']['service_id'])
+
+    @pytest.mark.asyncio
+    async def test_list_permissions(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "codecov/ci-repo",
+                "type": "repository",
+                "name": "ci-repo",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/codecov/ci-repo"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7Ba980e378-088f-48a8-9850-98923f497546%7D?ts=default"
+                    }
+                },
+                "uuid": "{a980e378-088f-48a8-9850-98923f497546}"
+                },
+                "permission": "admin"
+            },
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "codecov/private",
+                "type": "repository",
+                "name": "private",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/codecov/private"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/codecov/private"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7B3edf54ab-cfe4-4049-aa70-5eb9f69f60d4%7D?ts=python"
+                    }
+                },
+                "uuid": "{3edf54ab-cfe4-4049-aa70-5eb9f69f60d4}"
+                },
+                "permission": "admin"
+            },
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "codecov/coverage.py",
+                "type": "repository",
+                "name": "coverage.py",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/codecov/coverage.py"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7Bd08f4587-489f-4b55-abad-3d4f396d9862%7D?ts=python"
+                    }
+                },
+                "uuid": "{d08f4587-489f-4b55-abad-3d4f396d9862}"
+                },
+                "permission": "admin"
+            },
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "ThiagoCodecov/example-python",
+                "type": "repository",
+                "name": "example-python",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/ThiagoCodecov/example-python"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"
+                    }
+                },
+                "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"
+                },
+                "permission": "admin"
+            },
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "codecov/integration-test-repo",
+                "type": "repository",
+                "name": "integration-test-repo",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/codecov/integration-test-repo"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7B4fab7a33-92dd-450b-8d12-ea1ab7816300%7D?ts=python"
+                    }
+                },
+                "uuid": "{4fab7a33-92dd-450b-8d12-ea1ab7816300}"
+                },
+                "permission": "admin"
+            },
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "codecov/test-bb-integration-public",
+                "type": "repository",
+                "name": "test-bb-integration-public",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/codecov/test-bb-integration-public"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7B2e219352-777c-4e2b-9a16-71211fbd4d93%7D?ts=markdown"
+                    }
+                },
+                "uuid": "{2e219352-777c-4e2b-9a16-71211fbd4d93}"
+                },
+                "permission": "admin"
+            },
+            {
+                "type": "repository_permission",
+                "user": {
+                "display_name": "Thiago Ramos",
+                "account_id": "5bce04c759d0e84f8c7555e9",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"
+                    },
+                    "avatar": {
+                    "href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"
+                    }
+                },
+                "type": "user",
+                "nickname": "thiago",
+                "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"
+                },
+                "repository": {
+                "full_name": "codecov/test-private-repo-2",
+                "type": "repository",
+                "name": "test-private-repo-2",
+                "links": {
+                    "self": {
+                    "href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-private-repo-2"
+                    },
+                    "html": {
+                    "href": "https://bitbucket.org/codecov/test-private-repo-2"
+                    },
+                    "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7Bd215b8f1-b862-4fae-9bc8-c2c8ea2e1a70%7D?ts=python"
+                    }
+                },
+                "uuid": "{d215b8f1-b862-4fae-9bc8-c2c8ea2e1a70}"
+                },
+                "permission": "admin"
+            }
+        ]
+        res = await valid_handler.list_permissions()
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_list_repos_no_username(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                "repo": {
+                "fork": None,
+                "name": "example-python",
+                "language": None,
+                "branch": "master",
+                "service_id": "a8c50527-2c3a-480e-afe1-7700e2b00074",
+                "private": True
+                },
+                "owner": {
+                "username": "ThiagoCodecov",
+                "service_id": "9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "ci-repo",
+                "language": None,
+                "branch": "master",
+                "service_id": "a980e378-088f-48a8-9850-98923f497546",
+                "private": False
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "private",
+                "language": "python",
+                "branch": "master",
+                "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
+                "private": True
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "coverage.py",
+                "language": "python",
+                "branch": "master",
+                "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
+                "private": False
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "integration-test-repo",
+                "language": "python",
+                "branch": "master",
+                "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
+                "private": True
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            },
+            {
+                "repo": {
+                "fork": None,
+                "name": "test-bb-integration-public",
+                "language": None,
+                "branch": "master",
+                "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
+                "private": False
+                },
+                "owner": {
+                "username": "codecov",
+                "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                }
+            }
+        ]
+        res = await valid_handler.list_repos()
+        assert sorted(res, key=lambda x: x['repo']['service_id']) == sorted(expected_result, key=lambda x: x['repo']['service_id'])
+
+    @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, codecov_vcr):
-        expected_result = []
+        expected_result = [{
+            'email': None,
+            'id': '6ef29b63-1288-4ceb-8dfc-af2c03f5cd49',
+            'name': 'Codecov',
+            'username': 'codecov'
+        }]
         res = await valid_handler.list_teams()
         assert res == expected_result
 

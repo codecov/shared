@@ -166,24 +166,43 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
     async def get_is_admin(self, user, token=None):
         # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
-        res = await self.api('1', 'get', '/user/privileges', token=token)
-        return (res['teams'].get(self.data['owner']['username']) == 'admin')
+        groups = await self.api('2', 'get', '/user/permissions/teams', token=token, q='team.uuid="{' + self.data['owner']['service_id'] + '}"')
+        if groups['values']:
+            for group in groups['values']:
+                if self.data['owner']['username'] == group['team']['username'] and group['permission'] == 'admin':
+                    return True
+
+        return False
 
     async def list_teams(self, token=None):
-        # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
-        res = await self.api('1', 'get', '/user/privileges', token=token)
-        data = []
-        for username in res['teams'].keys():
-            # https://confluence.atlassian.com/bitbucket/teams-endpoint-423626335.html#teamsEndpoint-GETtheteamprofile
-            team = await self.api(
-                '2', 'get', '/teams/%s' % username, token=token)
-            data.append(
-                dict(
-                    name=team['display_name'],
-                    id=team['uuid'][1:-1],
-                    email=None,
-                    username=username))
-        return data
+        teams, page = [], None
+        while True:
+            if page is not None:
+                kwargs = dict(
+                    page=page,
+                    token=token
+                )
+            else:
+                kwargs = dict(
+                    token=token
+                )
+            # https://confluence.atlassian.com/bitbucket/pullrequests-resource-423626332.html#pullrequestsResource-GETthecommitsforapullrequest
+            res = await self.api('2', 'get', '/user/permissions/teams', **kwargs)
+            #teams.extend([group['team']['username'] for group in res['values']])
+            for groups in res['values']:
+                team=groups['team']
+                teams.append(dict(name=team['display_name'],
+                                  id=team['uuid'][1:-1],
+                                  email=None,
+                                  username=team['username']))
+
+            if not res.get('next'):
+                break
+            url = res['next']
+            parsed = urlparse.urlparse(url)
+            page = urlparse.parse_qs(parsed.query)['page'][0]
+
+        return teams
 
     async def get_pull_request_commits(self, pullid, token=None):
         commits, page = [], None
@@ -213,35 +232,78 @@ class Bitbucket(BaseHandler, OAuthMixin):
         return commits
 
     async def list_repos(self, username=None, token=None):
+        """
+        Lists all repositories a user is part of.
+        *Note: 
+        Bitbucket API V2 does not provide a dedicated endpoint which returns all repos a user is part of.
+        It provides however, an endpoint to get all the repos a user is part of from an specific org or user.
+        Endpoint to list repos from an specific user:
+            - /repositories/{username}
+        In order to get all the repositories a user is part of, we first need to get all the orgs and repo owners
+        - Orgs/Teams can be obtained using the 'list_teams' method
+        - Usernames of repo owners is a bit tricky since Bitbucket doesnt provide an endpoint for this
+            - Solution: 
+                Use the 'list_permissions' method to get all repo permissions and exctract owner's username 
+                from the repository 'full_name' attribute
+        Once we have all orgs/teams and owner's usernames we should call "/repositories/{username}" endpoint
+        for each of the orgs/teams and owner's usernames.
+        """
         data, page = [], 0
-        assert username, 'Must include username to list repos'
+        # if username is not provided, list all repos
+        if username is None:
+            # get all teams a user is member of
+            teams = await self.list_teams(token)
+            usernames = set([team['username'] for team in teams])
+            # get permission of all repositories a user is member of
+            permissions = await self.list_permissions(token=token)
+            # get repo owners
+            for permission in permissions:
+                repo = permission['repository']
+                name = repo['full_name'].split('/')
+                usernames.add(name[0])
+            # add user's own username 
+            usernames.add(self.data['owner']['username'])
+        else:
+            usernames = [username]
+        # fetch repo information    
+        for team in usernames:
+            while True:
+                page += 1
+                # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
+                res = await self.api('2', 'get', '/repositories/%s' % (team), page=page, token=token)
+                if len(res['values']) == 0:
+                    page = 0
+                    break
+                for repo in res['values']:
+                    repo_name_arr = repo['full_name'].split('/', 1)
+                    
+                    data.append(dict(owner=dict(service_id=repo['owner']['uuid'][1:-1],
+                                                username=repo_name_arr[0]),
+                                    repo=dict(service_id=repo['uuid'][1:-1],
+                                            name=repo_name_arr[1],
+                                            language=self._validate_language(repo['language']),
+                                            private=repo['is_private'],
+                                            branch='master',
+                                            fork=None)))
+                if not res.get('next'):
+                    page = 0
+                    break
+        return data
+
+    async def list_permissions(self, token=None):
+        data, page = [], 0
         while True:
             page += 1
-            # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
-            res = await self.api(
-                '2',
-                'get',
-                '/repositories/%s' % (username or ''),
-                page=page,
-                token=token)
+            res = await self.api('2', 'get', '/user/permissions/repositories', page=page, token=token)       
             if len(res['values']) == 0:
-                break
-            for repo in res['values']:
-                data.append(
-                    dict(
-                        owner=dict(
-                            service_id=repo['owner']['uuid'][1:-1],
-                            username=repo['owner']['username']),
-                        repo=dict(
-                            service_id=repo['uuid'][1:-1],
-                            name=repo['full_name'].split('/', 1)[1],
-                            language=self._validate_language(repo['language']),
-                            private=repo['is_private'],
-                            branch='master',
-                            fork=None)))
-            if not res.get('next'):
-                break
+                    page = 0
+                    break
+            for permission in res['values']:
+                data.append(permission)
 
+            if not res.get('next'):
+                page = 0
+                break
         return data
 
     async def get_pull_request(self, pullid, token=None):
@@ -314,14 +376,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
         return res
 
     async def delete_comment(self, issueid, commentid, token=None):
-        # https://confluence.atlassian.com/bitbucket/pullrequests-resource-1-0-296095210.html#pullrequestsResource1.0-PUTanupdateonacomment
+        # https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/pullrequests/%7Bpull_request_id%7D/comments/%7Bcomment_id%7D
         try:
             await self.api(
-                '1',
-                'delete',
-                '/repositories/%s/pullrequests/%s/comments/%s' %
-                (self.slug, issueid, commentid),
-                token=token)
+                '2', 'delete', '/repositories/%s/pullrequests/%s/comments/%s' % (self.slug, issueid, commentid), token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(ce.response, f"Comment {commentid} from PR {issueid} cannot be found")
@@ -471,8 +529,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
     async def get_branches(self, token=None):
         # https://confluence.atlassian.com/display/BITBUCKET/repository+Resource+1.0#repositoryResource1.0-GETlistofbranches
         res = await self.api(
-            '1', 'get', '/repositories/%s/branches' % self.slug, token=token)
-        return [(k, b['raw_node']) for k, b in res.items()]
+            '2', 'get', '/repositories/%s/refs/branches' % self.slug, token=token, pagelen='100')
+        return [(k['name'], k['target']['hash']) for k in res['values']]
 
     async def get_pull_requests(self, state='open', token=None):
         state = {
@@ -567,10 +625,15 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 '2', 'get', '/repositories/' + self.slug, token=token)
             return (True, True)
         else:
-            # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
-            groups = await self.api(
-                '1', 'get', '/user/privileges', token=token)
-            return (True, self.data['owner']['username'] in groups['teams'])
+            # https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/teams
+            groups = await self.api('2', 'get', '/user/permissions/teams', token=token, q='team.uuid="{' + self.data['owner']['service_id'] + '}"')
+
+            if groups['values']:
+                for group in groups['values']:
+                    if self.data['owner']['username'] == group['team']['username']:
+                        return (True, True)
+
+            return (True, False)
 
     async def get_source(self, path, ref, token=None):
         # https://confluence.atlassian.com/bitbucket/src-resources-296095214.html

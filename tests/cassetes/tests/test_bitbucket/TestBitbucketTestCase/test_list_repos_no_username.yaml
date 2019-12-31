@@ -1,0 +1,593 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/teams?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=dbc10ef2e7ee4f4b9c019b89745eeccb&oauth_timestamp=1574056367&oauth_signature=wv7DlwpctSVUuqoFHt3upJGLzz0%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
+  response:
+    body:
+      string: !!python/unicode '{"pagelen": 10, "values": [{"permission": "admin",
+        "type": "team_permission", "user": {"display_name": "Thiago Ramos", "uuid":
+        "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "team": {"username": "codecov", "display_name": "Codecov", "type": "team",
+        "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}}], "page":
+        1, "size": 1}'
+    headers:
+    - !!python/tuple
+      - Content-Length
+      - - '977'
+    - !!python/tuple
+      - X-Render-Time
+      - - '0.108701944351'
+    - !!python/tuple
+      - X-Credential-Type
+      - - oauth1
+    - !!python/tuple
+      - Etag
+      - - '"02f9ab37ae01295f6571584fd65d8f7e"'
+    - !!python/tuple
+      - X-Request-Count
+      - - '1413'
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - account
+    - !!python/tuple
+      - X-Served-By
+      - - app-1142
+    - !!python/tuple
+      - X-Cache-Info
+      - - caching
+    - !!python/tuple
+      - Date
+      - - Mon, 18 Nov 2019 05:52:48 GMT
+    - !!python/tuple
+      - Accept-Ranges
+      - - bytes
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - X-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Static-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - - default
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - Vary
+      - - Authorization
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=900
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    status:
+      code: 200
+      message: OK
+    url: https://bitbucket.org/api/2.0/user/permissions/teams?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=dbc10ef2e7ee4f4b9c019b89745eeccb&oauth_timestamp=1574056367&oauth_signature=wv7DlwpctSVUuqoFHt3upJGLzz0%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?oauth_nonce=bd8e04d8c7b3472cb4fbf56aab172dff&oauth_timestamp=1574056368&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=iheZg4xmnE5HE%2FKopITGK%2FApb64%3D&page=1
+  response:
+    body:
+      string: !!python/unicode '{"pagelen": 10, "values": [{"type": "repository_permission",
+        "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+        "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo"},
+        "html": {"href": "https://bitbucket.org/codecov/ci-repo"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7Ba980e378-088f-48a8-9850-98923f497546%7D?ts=default"}},
+        "type": "repository", "name": "ci-repo", "full_name": "codecov/ci-repo", "uuid":
+        "{a980e378-088f-48a8-9850-98923f497546}"}, "permission": "admin"}, {"type":
+        "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid":
+        "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private"},
+        "html": {"href": "https://bitbucket.org/codecov/private"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7B3edf54ab-cfe4-4049-aa70-5eb9f69f60d4%7D?ts=python"}},
+        "type": "repository", "name": "private", "full_name": "codecov/private", "uuid":
+        "{3edf54ab-cfe4-4049-aa70-5eb9f69f60d4}"}, "permission": "admin"}, {"type":
+        "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid":
+        "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py"},
+        "html": {"href": "https://bitbucket.org/codecov/coverage.py"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7Bd08f4587-489f-4b55-abad-3d4f396d9862%7D?ts=python"}},
+        "type": "repository", "name": "coverage.py", "full_name": "codecov/coverage.py",
+        "uuid": "{d08f4587-489f-4b55-abad-3d4f396d9862}"}, "permission": "admin"},
+        {"type": "repository_permission", "user": {"display_name": "Thiago Ramos",
+        "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+        {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+        "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+        "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "permission": "admin"},
+        {"type": "repository_permission", "user": {"display_name": "Thiago Ramos",
+        "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo"},
+        "html": {"href": "https://bitbucket.org/codecov/integration-test-repo"}, "avatar":
+        {"href": "https://bytebucket.org/ravatar/%7B4fab7a33-92dd-450b-8d12-ea1ab7816300%7D?ts=python"}},
+        "type": "repository", "name": "integration-test-repo", "full_name": "codecov/integration-test-repo",
+        "uuid": "{4fab7a33-92dd-450b-8d12-ea1ab7816300}"}, "permission": "admin"},
+        {"type": "repository_permission", "user": {"display_name": "Thiago Ramos",
+        "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public"},
+        "html": {"href": "https://bitbucket.org/codecov/test-bb-integration-public"},
+        "avatar": {"href": "https://bytebucket.org/ravatar/%7B2e219352-777c-4e2b-9a16-71211fbd4d93%7D?ts=markdown"}},
+        "type": "repository", "name": "test-bb-integration-public", "full_name": "codecov/test-bb-integration-public",
+        "uuid": "{2e219352-777c-4e2b-9a16-71211fbd4d93}"}, "permission": "admin"}],
+        "page": 1, "size": 6}'
+    headers:
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Credential-Type
+      - - oauth1
+    - !!python/tuple
+      - X-Render-Time
+      - - '0.0613639354706'
+    - !!python/tuple
+      - Etag
+      - - '"gz[3d30fbc743dd704d64a2a14a5075edd4]"'
+    - !!python/tuple
+      - X-Request-Count
+      - - '1308'
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - account
+    - !!python/tuple
+      - X-Served-By
+      - - app-1142
+    - !!python/tuple
+      - X-Cache-Info
+      - - caching
+    - !!python/tuple
+      - Date
+      - - Mon, 18 Nov 2019 05:52:48 GMT
+    - !!python/tuple
+      - Accept-Ranges
+      - - bytes
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - X-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Static-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - - default
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - Vary
+      - - Authorization, Accept-Encoding
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=900
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    status:
+      code: 200
+      message: OK
+    url: https://bitbucket.org/api/2.0/user/permissions/repositories?oauth_nonce=bd8e04d8c7b3472cb4fbf56aab172dff&oauth_timestamp=1574056368&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=iheZg4xmnE5HE%2FKopITGK%2FApb64%3D&page=1
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: !!python/unicode 'https://bitbucket.org/api/2.0/repositories/ThiagoCodecov?oauth_nonce=d0b6631056b84f36b770d38cec526f7b&oauth_timestamp=1574056368&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=45G136GA9jmyveB2kYJnXRhat60%3D&page=1'
+  response:
+    body:
+      string: !!python/unicode '{"pagelen": 10, "values": [{"scm": "git", "website":
+        "", "has_wiki": false, "name": "example-python", "links": {"watchers": {"href":
+        "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/watchers"},
+        "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/refs/branches"},
+        "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/refs/tags"},
+        "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commits"},
+        "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/ThiagoCodecov/example-python.git",
+        "name": "https"}, {"href": "git@bitbucket.org:ThiagoCodecov/example-python.git",
+        "name": "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+        "source": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src"},
+        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+        {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"},
+        "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/hooks"},
+        "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/forks"},
+        "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/downloads"},
+        "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests"}},
+        "fork_policy": "no_public_forks", "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}",
+        "language": "", "created_on": "2018-11-06T12:53:06.587605+00:00", "mainbranch":
+        {"type": "branch", "name": "master"}, "full_name": "ThiagoCodecov/example-python",
+        "has_issues": false, "owner": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+        "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "updated_on": "2019-11-11T17:33:15.286595+00:00", "size": 550781, "type":
+        "repository", "slug": "example-python", "is_private": true, "description":
+        ""}], "page": 1, "size": 1}'
+    headers:
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Credential-Type
+      - - oauth1
+    - !!python/tuple
+      - X-Render-Time
+      - - '0.0464339256287'
+    - !!python/tuple
+      - Etag
+      - - '"gz[0c4564cacbabddaca5e3269a52edb655]"'
+    - !!python/tuple
+      - X-Request-Count
+      - - '2295'
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - repository
+    - !!python/tuple
+      - X-Served-By
+      - - app-1106
+    - !!python/tuple
+      - X-Cache-Info
+      - - caching
+    - !!python/tuple
+      - Date
+      - - Mon, 18 Nov 2019 05:52:49 GMT
+    - !!python/tuple
+      - Accept-Ranges
+      - - bytes
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - X-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Static-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - - default
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - Vary
+      - - Authorization, Accept-Encoding
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=900
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    status:
+      code: 200
+      message: OK
+    url: !!python/unicode 'https://bitbucket.org/api/2.0/repositories/ThiagoCodecov?oauth_nonce=d0b6631056b84f36b770d38cec526f7b&oauth_timestamp=1574056368&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=45G136GA9jmyveB2kYJnXRhat60%3D&page=1'
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: !!python/unicode 'https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=aaaec36781914773996cc576d36f5f11&oauth_timestamp=1574056369&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=UczuRA1bpVmQZCPc56SaCB0xdio%3D&page=1'
+  response:
+    body:
+      string: !!python/unicode '{"pagelen": 10, "values": [{"scm": "git", "website":
+        "", "has_wiki": false, "uuid": "{a980e378-088f-48a8-9850-98923f497546}", "links":
+        {"watchers": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/watchers"},
+        "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/refs/branches"},
+        "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/refs/tags"},
+        "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/commits"},
+        "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/codecov/ci-repo.git",
+        "name": "https"}, {"href": "git@bitbucket.org:codecov/ci-repo.git", "name":
+        "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo"},
+        "source": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/src"},
+        "html": {"href": "https://bitbucket.org/codecov/ci-repo"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7Ba980e378-088f-48a8-9850-98923f497546%7D?ts=default"},
+        "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/hooks"},
+        "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/forks"},
+        "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/downloads"},
+        "issues": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/issues"},
+        "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo/pullrequests"}},
+        "fork_policy": "allow_forks", "name": "ci-repo", "project": {"key": "PROJ",
+        "type": "project", "uuid": "{5bdda146-54b5-4afc-95cf-17d09df45d16}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/codecov/projects/PROJ"},
+        "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
+        "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
+        "name": "Untitled project"}, "language": "", "created_on": "2014-09-22T00:31:02.553308+00:00",
+        "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/ci-repo",
+        "has_issues": true, "owner": {"username": "codecov", "display_name": "Codecov",
+        "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
+        "2016-08-22T13:01:12.956929+00:00", "size": 161832, "type": "repository",
+        "slug": "ci-repo", "is_private": false, "description": "for ci testing"},
+        {"scm": "git", "website": "", "has_wiki": false, "uuid": "{3edf54ab-cfe4-4049-aa70-5eb9f69f60d4}",
+        "links": {"watchers": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/watchers"},
+        "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/refs/branches"},
+        "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/refs/tags"},
+        "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/commits"},
+        "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/codecov/private.git",
+        "name": "https"}, {"href": "git@bitbucket.org:codecov/private.git", "name":
+        "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private"},
+        "source": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/src"},
+        "html": {"href": "https://bitbucket.org/codecov/private"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7B3edf54ab-cfe4-4049-aa70-5eb9f69f60d4%7D?ts=python"},
+        "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/hooks"},
+        "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/forks"},
+        "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/downloads"},
+        "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/pullrequests"}},
+        "fork_policy": "no_public_forks", "name": "private", "project": {"key": "PROJ",
+        "type": "project", "uuid": "{5bdda146-54b5-4afc-95cf-17d09df45d16}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/codecov/projects/PROJ"},
+        "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
+        "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
+        "name": "Untitled project"}, "language": "python", "created_on": "2015-02-27T03:35:28.555210+00:00",
+        "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/private",
+        "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
+        "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
+        "2015-02-27T03:44:45.906783+00:00", "size": 144782, "type": "repository",
+        "slug": "private", "is_private": true, "description": ""}, {"scm": "hg", "website":
+        null, "has_wiki": false, "uuid": "{d08f4587-489f-4b55-abad-3d4f396d9862}",
+        "links": {"watchers": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/watchers"},
+        "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/refs/branches"},
+        "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/refs/tags"},
+        "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/commits"},
+        "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/codecov/coverage.py",
+        "name": "https"}, {"href": "ssh://hg@bitbucket.org/codecov/coverage.py", "name":
+        "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py"},
+        "source": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/src"},
+        "html": {"href": "https://bitbucket.org/codecov/coverage.py"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7Bd08f4587-489f-4b55-abad-3d4f396d9862%7D?ts=python"},
+        "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/hooks"},
+        "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/forks"},
+        "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/downloads"},
+        "issues": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/issues"},
+        "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py/pullrequests"}},
+        "fork_policy": "allow_forks", "name": "coverage.py", "project": {"key": "PROJ",
+        "type": "project", "uuid": "{5bdda146-54b5-4afc-95cf-17d09df45d16}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/codecov/projects/PROJ"},
+        "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
+        "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
+        "name": "Untitled project"}, "language": "python", "created_on": "2015-05-17T22:59:41.300232+00:00",
+        "parent": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ned/coveragepy"},
+        "html": {"href": "https://bitbucket.org/ned/coveragepy"}, "avatar": {"href":
+        "https://bytebucket.org/ravatar/%7B480ce285-de3f-4eff-9e9c-8eccf8f07e99%7D?ts=python"}},
+        "type": "repository", "name": "coveragepy", "full_name": "ned/coveragepy",
+        "uuid": "{480ce285-de3f-4eff-9e9c-8eccf8f07e99}"}, "mainbranch": {"type":
+        "named_branch", "name": "default"}, "full_name": "codecov/coverage.py", "has_issues":
+        true, "owner": {"username": "codecov", "display_name": "Codecov", "type":
+        "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self":
+        {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
+        "2015-05-18T14:03:10.877986+00:00", "size": 4182791, "type": "repository",
+        "slug": "coverage.py", "is_private": false, "description": ""}, {"scm": "git",
+        "website": null, "has_wiki": false, "uuid": "{4fab7a33-92dd-450b-8d12-ea1ab7816300}",
+        "links": {"watchers": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/watchers"},
+        "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/refs/branches"},
+        "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/refs/tags"},
+        "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/commits"},
+        "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/codecov/integration-test-repo.git",
+        "name": "https"}, {"href": "git@bitbucket.org:codecov/integration-test-repo.git",
+        "name": "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo"},
+        "source": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/src"},
+        "html": {"href": "https://bitbucket.org/codecov/integration-test-repo"}, "avatar":
+        {"href": "https://bytebucket.org/ravatar/%7B4fab7a33-92dd-450b-8d12-ea1ab7816300%7D?ts=python"},
+        "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/hooks"},
+        "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/forks"},
+        "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/downloads"},
+        "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo/pullrequests"}},
+        "fork_policy": "no_public_forks", "name": "integration-test-repo", "project":
+        {"key": "PROJ", "type": "project", "uuid": "{5bdda146-54b5-4afc-95cf-17d09df45d16}",
+        "links": {"self": {"href": "https://bitbucket.org/!api/2.0/teams/codecov/projects/PROJ"},
+        "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
+        "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
+        "name": "Untitled project"}, "language": "python", "created_on": "2019-10-02T02:24:47.121351+00:00",
+        "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/integration-test-repo",
+        "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
+        "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
+        "2019-10-02T02:24:47.827791+00:00", "size": 59667, "type": "repository", "slug":
+        "integration-test-repo", "is_private": true, "description": "A repo for testing
+        codecov''s bitbucket integration"}, {"scm": "git", "website": null, "has_wiki":
+        false, "uuid": "{2e219352-777c-4e2b-9a16-71211fbd4d93}", "links": {"watchers":
+        {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/watchers"},
+        "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/refs/branches"},
+        "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/refs/tags"},
+        "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/commits"},
+        "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/codecov/test-bb-integration-public.git",
+        "name": "https"}, {"href": "git@bitbucket.org:codecov/test-bb-integration-public.git",
+        "name": "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public"},
+        "source": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/src"},
+        "html": {"href": "https://bitbucket.org/codecov/test-bb-integration-public"},
+        "avatar": {"href": "https://bytebucket.org/ravatar/%7B2e219352-777c-4e2b-9a16-71211fbd4d93%7D?ts=markdown"},
+        "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/hooks"},
+        "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/forks"},
+        "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/downloads"},
+        "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public/pullrequests"}},
+        "fork_policy": "allow_forks", "name": "test-bb-integration-public", "project":
+        {"key": "PROJ", "type": "project", "uuid": "{5bdda146-54b5-4afc-95cf-17d09df45d16}",
+        "links": {"self": {"href": "https://bitbucket.org/!api/2.0/teams/codecov/projects/PROJ"},
+        "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
+        "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
+        "name": "Untitled project"}, "language": "markdown", "created_on": "2019-10-04T14:47:42.067409+00:00",
+        "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/test-bb-integration-public",
+        "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
+        "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links":
+        {"self": {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
+        "2019-10-04T14:47:43.490833+00:00", "size": 59625, "type": "repository", "slug":
+        "test-bb-integration-public", "is_private": false, "description": ""}], "page":
+        1, "size": 5}'
+    headers:
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Credential-Type
+      - - oauth1
+    - !!python/tuple
+      - X-Render-Time
+      - - '0.0645360946655'
+    - !!python/tuple
+      - Etag
+      - - '"gz[ee2bc1394df18a25d8dedeec8e7a16ca]"'
+    - !!python/tuple
+      - X-Request-Count
+      - - '2017'
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - repository
+    - !!python/tuple
+      - X-Served-By
+      - - app-1117
+    - !!python/tuple
+      - X-Cache-Info
+      - - caching
+    - !!python/tuple
+      - Date
+      - - Mon, 18 Nov 2019 05:52:49 GMT
+    - !!python/tuple
+      - Accept-Ranges
+      - - bytes
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - X-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Static-Version
+      - - c991a84b6162
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - - default
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - Vary
+      - - Authorization, Accept-Encoding
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=900
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    status:
+      code: 200
+      message: OK
+    url: !!python/unicode 'https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=aaaec36781914773996cc576d36f5f11&oauth_timestamp=1574056369&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=UczuRA1bpVmQZCPc56SaCB0xdio%3D&page=1'
+version: 1
