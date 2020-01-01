@@ -12,6 +12,7 @@ from tornado.httpclient import HTTPError
 
 from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.enums import Endpoints
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
     TorngitClientError
@@ -25,19 +26,19 @@ class Gitlab(BaseHandler):
     service_url = 'https://gitlab.com'
     api_url = 'https://gitlab.com/api/v{}'
     urls = dict(
-        owner='%(username)s',
-        user='%(username)s',
-        repo='%(username)s/%(name)s',
-        issues='%(username)s/%(name)s/issues/%(issueid)s',
-        commit='%(username)s/%(name)s/commit/%(commitid)s',
-        commits='%(username)s/%(name)s/commits',
-        compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
+        owner='{username}',
+        user='{username}',
+        repo='{username}/{name}',
+        issues='{username}/{name}/issues/%(issueid)s',
+        commit='{username}/{name}/commit/{commitid}',
+        commits='{username}/{name}/commits',
+        compare='{username}/{name}/compare/%(base)s...%(head)s',
         create_file=
-        '%(username)s/%(name)s/new/%(branch)s?file_name=%(path)s&content=%(content)s',
-        src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
-        branch='%(username)s/%(name)s/tree/%(branch)s',
-        pull='%(username)s/%(name)s/merge_requests/%(pullid)s',
-        tree='%(username)s/%(name)s/tree/%(commitid)s')
+        '{username}/{name}/new/%(branch)s?file_name=%(path)s&content=%(content)s',
+        src='{username}/{name}/blob/%(commitid)s/%(path)s',
+        branch='{username}/{name}/tree/%(branch)s',
+        pull='{username}/{name}/merge_requests/%(pullid)s',
+        tree='{username}/{name}/tree/%(commitid)s')
 
     async def api(self, method, path, body=None, token=None, version=4,
                   **args):
@@ -692,3 +693,12 @@ class Gitlab(BaseHandler):
         start = res[0]['id']
         commit_mapping = {val['id']: val['parent_ids'] for val in res}
         return self.build_tree_from_commits(start, commit_mapping)
+
+    def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
+        if endpoint == Endpoints.commit_detail:
+            return self.urls['commit'].format(
+                username=self.data['owner']['username'],
+                name=self.data['repo']['name'],
+                commitid=kwargs['commitid']
+            )
+        raise NotImplementedError()

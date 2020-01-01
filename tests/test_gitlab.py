@@ -1,6 +1,7 @@
 import pytest
 
 from torngit.gitlab import Gitlab
+from torngit.enums import Endpoints
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
     TorngitClientError
@@ -12,7 +13,7 @@ from tornado.httpclient import HTTPError
 @pytest.fixture
 def valid_handler():
     return Gitlab(
-        repo=dict(service_id='187725'),
+        repo=dict(service_id='187725', name='codecov-test'),
         owner=dict(username='stevepeak', service_id='109479'),
         token=dict(
             key='testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w'
@@ -811,4 +812,9 @@ class TestGitlabTestCase(object):
                 }
             ]
         }
+        assert res == expected_result
+
+    def test_get_href(self, valid_handler):
+        expected_result = 'https://gitlab.com/stevepeak/codecov-test/commit/743b04806ea677403aa2ff26c6bdeb85005de658'
+        res = valid_handler.get_href(Endpoints.commit_detail, commitid='743b04806ea677403aa2ff26c6bdeb85005de658')
         assert res == expected_result

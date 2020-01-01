@@ -11,6 +11,7 @@ from tornado.escape import json_decode, json_encode, url_escape
 
 from torngit.status import Status
 from torngit.base import BaseHandler
+from torngit.enums import Endpoints
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
     TorngitClientError, TorngitRepoNotFoundError
@@ -24,22 +25,22 @@ class Github(BaseHandler, OAuth2Mixin):
     service_url = 'https://github.com'
     api_url = 'https://api.github.com'
     urls = dict(
-        repo='%(username)s/%(name)s',
-        owner='%(username)s',
-        user='%(username)s',
-        issues='%(username)s/%(name)s/issues/%(issueid)s',
-        commit='%(username)s/%(name)s/commit/%(commitid)s',
-        commits='%(username)s/%(name)s/commits',
-        compare='%(username)s/%(name)s/compare/%(base)s...%(head)s',
+        repo='{username}/{name}',
+        owner='{username}',
+        user='{username}',
+        issues='{username}/{name}/issues/%(issueid)s',
+        commit='{username}/{name}/commit/{commitid}',
+        commits='{username}/{name}/commits',
+        compare='{username}/{name}/compare/%(base)s...%(head)s',
         comment=
-        '%(username)s/%(name)s/issues/%(pullid)s#issuecomment-%(commentid)s',
+        '{username}/{name}/issues/%(pullid)s#issuecomment-%(commentid)s',
         create_file=
-        '%(username)s/%(name)s/new/%(branch)s?filename=%(path)s&value=%(content)s',
-        pull='%(username)s/%(name)s/pull/%(pullid)s',
-        branch='%(username)s/%(name)s/tree/%(branch)s',
-        tree='%(username)s/%(name)s/tree/%(commitid)s',
-        src='%(username)s/%(name)s/blob/%(commitid)s/%(path)s',
-        author='%(username)s/%(name)s/commits?author=%(author)s',
+        '{username}/{name}/new/%(branch)s?filename=%(path)s&value=%(content)s',
+        pull='{username}/{name}/pull/%(pullid)s',
+        branch='{username}/{name}/tree/%(branch)s',
+        tree='{username}/{name}/tree/%(commitid)s',
+        src='{username}/{name}/blob/%(commitid)s/%(path)s',
+        author='{username}/{name}/commits?author=%(author)s',
     )
 
     async def api(self,
@@ -707,3 +708,12 @@ class Github(BaseHandler, OAuth2Mixin):
         start = res[0]['sha']
         commit_mapping = {val['sha']: [k['sha'] for k in val['parents']] for val in res}
         return self.build_tree_from_commits(start, commit_mapping)
+
+    def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
+        if endpoint == Endpoints.commit_detail:
+            return self.urls['commit'].format(
+                username=self.data['owner']['username'],
+                name=self.data['repo']['name'],
+                commitid=kwargs['commitid']
+            )
+        raise NotImplementedError()

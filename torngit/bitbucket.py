@@ -5,12 +5,12 @@ import os
 import urllib.parse as urllib_parse
 import logging
 
-from requests_oauthlib import OAuth1Session
 from tornado.auth import OAuthMixin
 from tornado.httpclient import HTTPError as ClientError
 from tornado.httputil import url_concat
 
 from torngit.base import BaseHandler
+from torngit.enums import Endpoints
 from torngit.status import Status
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
@@ -734,3 +734,12 @@ class Bitbucket(BaseHandler, OAuthMixin):
         start = res['values'][0]['hash']
         commit_mapping = {val['hash']: [k['hash'] for k in val['parents']] for val in res['values']}
         return self.build_tree_from_commits(start, commit_mapping)
+
+    def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
+        if endpoint == Endpoints.commit_detail:
+            return self.urls['commit'].format(
+                username=self.data['owner']['username'],
+                name=self.data['repo']['name'],
+                commitid=kwargs['commitid']
+            )
+        raise NotImplementedError()

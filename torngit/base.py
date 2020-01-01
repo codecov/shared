@@ -4,6 +4,8 @@ from typing import Tuple
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
+from torngit.enums import Endpoints
+
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
@@ -289,6 +291,13 @@ class BaseHandler(object):
 
     async def list_teams(self, token=None):
         raise NotImplementedError()
+
+    def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
+        raise NotImplementedError()
+
+    def get_href(self, endpoint: Endpoints, **kwargs):
+        path = self.get_external_endpoint(endpoint, **kwargs)
+        return f"{self.service_url}/{path}"
 
     async def list_top_level_files(self, ref, token=None):
         """List the files on the top level of the repository

@@ -1,5 +1,6 @@
 import pytest
 
+from torngit.enums import Endpoints
 from torngit.exceptions import (
     TorngitObjectNotFoundError, TorngitServerUnreachableError, TorngitServer5xxCodeError,
     TorngitClientError, TorngitRepoNotFoundError
@@ -639,3 +640,8 @@ class TestGithubTestCase(object):
         res = await valid_handler.get_ancestors_tree(commitid)
         assert res['commitid'] == '6ae5f1795a441884ed2847bb31154814ac01ef38'
         assert sorted([x['commitid'] for x in res['parents']]) == ['8631ea09b9b689de0a348d5abf70bdd7273d2ae3']
+
+    def test_get_href(self, valid_handler):
+        expected_result = 'https://github.com/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3'
+        res = valid_handler.get_href(Endpoints.commit_detail, commitid='8631ea09b9b689de0a348d5abf70bdd7273d2ae3')
+        assert res == expected_result
