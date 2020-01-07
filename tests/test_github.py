@@ -15,7 +15,7 @@ def valid_handler():
     return Github(
         repo=dict(name='example-python'),
         owner=dict(username='ThiagoCodecov'),
-        token=dict(key='testao8tozi4d6k1rfn8chelvsq766tkycauxmja')
+        token=dict(key='testbj4c6k6bdd8gj7x0hrbvq1b1kdjrn3aea9sd')
     )
 
 
@@ -110,15 +110,15 @@ class TestGithubTestCase(object):
             {
                 'base': {
                     'branch': 'master',
-                    'commitid': 'b92edba44fdd29fcc506317cc3ddeae1a723dd08'
+                    'commitid': '68946ef98daec68c7798459150982fc799c87d85'
                 },
                 'head': {
                     'branch': 'reason/some-testing',
-                    'commitid': 'a06aef4356ca35b34c5486269585288489e578db'
+                    'commitid': '119c1907fb266f374b8440bbd70dccbea54daf8f'
                 },
                 'number': '1',
                 'id': '1',
-                'state': 'open',
+                'state': 'merged',
                 'title': 'Creating new code for reasons no one knows',
             }
         ),
@@ -644,4 +644,24 @@ class TestGithubTestCase(object):
     def test_get_href(self, valid_handler):
         expected_result = 'https://github.com/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3'
         res = valid_handler.get_href(Endpoints.commit_detail, commitid='8631ea09b9b689de0a348d5abf70bdd7273d2ae3')
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_base_doesnt_match(self, valid_handler, codecov_vcr):
+        pull_id = '15'
+        expected_result = {
+            'base': {
+                'branch': 'master',
+                'commitid': '30cc1ed751a59fa9e7ad8e79fff41a6fe11ef5dd'
+            },
+            'head': {
+                'branch': 'thiago/test-1',
+                'commitid': '2e2600aa09525e2e1e1d98b09de61454d29c94bb'
+            },
+            'number': '15',
+            'id': '15',
+            'state': 'open',
+            'title': 'Thiago/test 1',
+        }
+        res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result

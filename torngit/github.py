@@ -639,7 +639,27 @@ class Github(BaseHandler, OAuth2Mixin):
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(ce.response.body.decode(), f"Pull Request {pullid} not found")
             raise
-        return self._pull(res)
+        commits = await self.api('get', '/repos/%s/pulls/%s/commits' % (self.slug, pullid), token=token)
+        commit_mapping = {val['sha']: [k['sha'] for k in val['parents']] for val in commits}
+        all_commits_in_pr = set([val['sha'] for val in commits])
+        current_level = [res['head']['sha']]
+        while current_level and all(x in all_commits_in_pr for x in current_level):
+            new_level = []
+            for x in current_level:
+                new_level.extend(commit_mapping[x])
+            current_level = new_level
+        result = self._pull(res)
+        if current_level and result['base']['commitid'] not in current_level:
+            log.info(
+                'Github base differs from original base',
+                extra=dict(
+                    current_level=current_level,
+                    github_base=result['base']['commitid'],
+                    pullid=pullid
+                )
+            )
+            result['base']['commitid'] = current_level[0]
+        return result
 
     async def get_pull_requests(self, state='open', token=None):
         # https://developer.github.com/v3/pulls/#list-pull-requests
