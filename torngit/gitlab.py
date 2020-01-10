@@ -334,7 +334,8 @@ class Gitlab(BaseHandler):
 
             return dict(
                 base=dict(
-                    branch=pull['target_branch'] or ''
+                    branch=pull['target_branch'] or '',
+                    commitid=parent
                 ),
                 head=dict(
                     branch=pull['source_branch'] or '',

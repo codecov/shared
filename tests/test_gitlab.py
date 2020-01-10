@@ -144,6 +144,7 @@ class TestGitlabTestCase(object):
             {
                 'base': {
                     'branch': u'master',
+                    'commitid': '5716de23b27020419d1a40dd93b469c041a1eeef'
                 },
                 'head': {
                     'branch': u'other-branch',
