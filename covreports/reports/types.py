@@ -1,6 +1,6 @@
 from decimal import Decimal
 from dataclasses import dataclass, astuple
-from typing import Union, Tuple, Sequence
+from typing import Union, Tuple, Sequence, Any
 
 
 @dataclass
@@ -48,7 +48,7 @@ class LineSession(object):
 class ReportLine(object):
     coverage: Decimal = None
     type: str = None
-    sessions: LineSession = None
+    sessions: Sequence[LineSession] = None
     messages: int = None
     complexity: Union[int, Tuple[int, int]] = None
 
@@ -57,6 +57,14 @@ class ReportLine(object):
             for i, sess in enumerate(self.sessions):
                 if not isinstance(sess, LineSession) and sess is not None:
                     self.sessions[i] = LineSession(*sess)
+
+
+@dataclass
+class ReportFileSummary(object):
+    file_index: int
+    file_totals: ReportTotals = None
+    session_totals: Sequence[ReportTotals] = None
+    diff_totals: Any = None
 
 
 EMPTY = ""

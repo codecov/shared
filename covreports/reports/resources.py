@@ -3,6 +3,7 @@ from itertools import zip_longest, filterfalse
 import logging
 from json import loads, dumps, JSONEncoder
 import dataclasses
+from typing import Sequence, Any
 
 from covreports.helpers.yaml import walk
 from covreports.helpers.flag import Flag
@@ -27,6 +28,7 @@ from covreports.reports.types import (
     LineSession,
     EMPTY,
     TOTALS_MAP,
+    ReportFileSummary,
 )
 
 log = logging.getLogger(__name__)
@@ -340,9 +342,13 @@ class ReportFile(object):
         self._totals = None
         return True
 
+    @property
+    def details(self):
+        return self._details
+
     def _encode(self):
         return "%s\n%s" % (
-            dumps(self._details, separators=(",", ":")),
+            dumps(self.details, separators=(",", ":")),
             "\n".join(map(_dumps_not_none, self._lines)),
         )
 
@@ -459,10 +465,13 @@ class Report(object):
     ):
         # {"filename": [<line index in chunks :int>, <ReportTotals>]}
         self._files = files or {}
+        for filename, file_summary in self._files.items():
+            if not isinstance(file_summary, ReportFileSummary):
+                self._files[filename] = ReportFileSummary(*file_summary)
 
         # {1: {...}}
         self.sessions = (
-            dict((sid, Session(**session)) for sid, session in sessions.items())
+            dict((int(sid), Session.parse_session(**session)) for sid, session in sessions.items())
             if sessions
             else {}
         )
@@ -498,7 +507,7 @@ class Report(object):
                     yield fname, make_network_file(file.totals)
         else:
             for fname, data in self._files.items():
-                yield fname, make_network_file(*data[1:])
+                yield fname, make_network_file(data.file_totals, data.session_totals, data.diff_totals)
 
     def __repr__(self):
         try:
@@ -558,19 +567,15 @@ class Report(object):
         if index:
             # existing file
             # =============
-            # add session totals
-            if len(index) < 3:
-                # [TEMP] this may be temporary, as old report dont have sessoin totals yet
-                index.append([])
-            index[2].append(copy(_file.totals))
+            index.session_totals.append(copy(_file.totals))
             #  merge old report chunk
             cur_file = self[_file.name]
             # merge it
             cur_file.merge(_file, joined)
             # set totals
-            index[1] = cur_file.totals
+            index.file_totals = cur_file.totals
             # update chunk in report
-            self._chunks[index[0]] = cur_file
+            self._chunks[index.file_index] = cur_file
         else:
             # new file
             # ========
@@ -581,12 +586,12 @@ class Report(object):
                 _file._totals = ReportTotals(0, _file.totals.lines)
 
             # add to network
-            self._files[_file.name] = [
+            self._files[_file.name] = ReportFileSummary(
                 len(self._chunks),  # chunk location
                 _file.totals,  # Totals
                 session_totals,  # Session Totals
                 None,  # Diff Totals
-            ]
+            )
 
             # add file in chunks
             self._chunks.append(_file)
@@ -610,10 +615,16 @@ class Report(object):
         if _file is not None:
             if self._chunks:
                 try:
-                    lines = self._chunks[_file[0]]
-                except:
+                    lines = self._chunks[_file.file_index]
+                except Exception:
+                    log.warning(
+                        "File not found in chunk",
+                        extra=dict(
+                            file_index=_file.file_index
+                        ),
+                        exc_info=True
+                    )
                     lines = None
-                    print("[DEBUG] file not found in chunk", _file[0])
             else:
                 # may be tree_only request
                 lines = None
@@ -622,7 +633,7 @@ class Report(object):
                 return lines
             report_file = self.file_class(
                 name=filename,
-                totals=_file[1],
+                totals=_file.file_totals,
                 lines=lines,
                 line_modifier=self._line_modifier,
             )
@@ -669,7 +680,7 @@ class Report(object):
         # add back with new name
         self._files[new] = _file
         # update name if it was a ReportFile
-        chunk = self._chunks[_file[0]]
+        chunk = self._chunks[_file.file_index]
         if isinstance(chunk, ReportFile):
             chunk.name = new
         return True
@@ -684,7 +695,7 @@ class Report(object):
         # remove from report
         _file = self._files.pop(filename)
         # remove chunks
-        self._chunks[_file[0]] = None
+        self._chunks[_file.file_index] = None
         return True
 
     def get_folder_totals(self, path):
@@ -718,11 +729,11 @@ class Report(object):
             for filename, data in self._files.items():
                 if not _path_filter(filename):
                     continue
-                elif _line_modifier or data[1] is None:
+                elif _line_modifier or data.file_totals is None:
                     # need to rebuild the file because there are line filters
                     yield self.get(filename).totals
                 else:
-                    yield data[1]
+                    yield data.file_totals
 
         totals = agg_totals(_iter_totals())
         if self._filter_cache and self._filter_cache[1]:
@@ -749,8 +760,14 @@ class Report(object):
         else:
             return list(self._files)
 
+    def next_session_number(self):
+        start_number = len(self.sessions)
+        while start_number in self.sessions or str(start_number) in self.sessions:
+            start_number += 1
+        return start_number
+
     def add_session(self, session):
-        sessionid = len(self.sessions)
+        sessionid = self.next_session_number()
         self.sessions[sessionid] = session
         if self._totals:
             # add session to totals
@@ -766,7 +783,7 @@ class Report(object):
                 # filtered out
                 continue
             if self._chunks:
-                report = self._chunks[_file[0]]
+                report = self._chunks[_file.file_index]
             else:
                 report = None
             if isinstance(report, ReportFile):
@@ -774,8 +791,8 @@ class Report(object):
             else:
                 yield self.file_class(
                     name=filename,
-                    totals=_file[1],
-                    session_totals=_file[2] if len(_file) > 2 else None,
+                    totals=_file.file_totals,
+                    session_totals=_file.session_totals if _file.session_totals else None,
                     lines=report,
                     line_modifier=self._line_modifier,
                 )
@@ -1093,7 +1110,7 @@ class Report(object):
                                     complexity=None,
                                     complexity_total=None,
                                 )
-                            self._files[path] = zfill(network_file, 3, file_totals)
+                            network_file.diff_totals = file_totals
 
             totals = sum_totals(totals)
 
