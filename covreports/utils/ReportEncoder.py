@@ -1,13 +1,16 @@
 from json import JSONEncoder
 from types import GeneratorType
 from fractions import Fraction
-from covreports.utils.tuples import ReportTotals
+from covreports.reports.types import ReportTotals
+import dataclasses
 
 
 class ReportEncoder(JSONEncoder):
     separators = (',', ':')
 
     def default(self, obj):
+        if dataclasses.is_dataclass(obj):
+            return dataclasses.astuple(obj)
         if isinstance(obj, Fraction):
             return str(obj)
         if isinstance(obj, ReportTotals):

@@ -1,7 +1,7 @@
-from covreports.utils.tuples import ReportTotals
+from covreports.reports.types import ReportTotals
 from covreports.helpers.numeric import ratio
 
-from operator import itemgetter
+from operator import attrgetter
 
 
 def agg_totals(totals):
@@ -9,9 +9,10 @@ def agg_totals(totals):
     n_files = len(totals)
     totals = list(map(_sum, zip(*totals)))
     if not totals:
-        return list(ReportTotals.__new__.__defaults__)
-    totals[0] = n_files
-    totals[5] = ratio(totals[2], totals[1])
+        return ReportTotals.default_totals()
+    totals = ReportTotals(*totals)
+    totals.files = n_files
+    totals.coverage = ratio(totals.hits, totals.lines)
     return totals
 
 
@@ -20,21 +21,24 @@ def sum_totals(totals):
     if not totals:
         return ReportTotals()
 
-    sessions = totals[0][9]
-    lines = sum(map(itemgetter(1), totals))
-    hits = sum(map(itemgetter(2), totals))
-    return ReportTotals(files=len(totals),
-                        lines=lines,
-                        hits=hits,
-                        misses=sum(map(itemgetter(3), totals)),
-                        partials=sum(map(itemgetter(4), totals)),
-                        branches=sum(map(itemgetter(6), totals)),
-                        methods=sum(map(itemgetter(7), totals)),
-                        messages=sum(map(itemgetter(8), totals)),
-                        coverage=ratio(hits, lines),
-                        sessions=sessions,
-                        complexity=sum(map(itemgetter(10), totals)),
-                        complexity_total=sum(map(itemgetter(11), totals)))
+    sessions = totals[0].sessions
+    lines = sum(map(attrgetter('lines'), totals))
+    hits = sum(map(attrgetter('hits'), totals))
+    return ReportTotals(
+        files=len(totals),
+        lines=lines,
+        hits=hits,
+        misses=sum(map(attrgetter('misses'), totals)),
+        partials=sum(map(attrgetter('partials'), totals)),
+        branches=sum(map(attrgetter('branches'), totals)),
+        methods=sum(map(attrgetter('methods'), totals)),
+        messages=sum(map(attrgetter('messages'), totals)),
+        coverage=ratio(hits, lines),
+        sessions=sessions,
+        complexity=sum(map(attrgetter('complexity'), totals)),
+        complexity_total=sum(map(attrgetter('complexity_total'), totals))
+    )
+
 
 def _sum(array):
     if array:
@@ -45,4 +49,3 @@ def _sum(array):
                 # https://sentry.io/codecov/v4/issues/159966549/
                 return sum([a if type(a) is int else 0 for a in array])
     return None
-
