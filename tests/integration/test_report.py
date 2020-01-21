@@ -50,6 +50,16 @@ def test_resolve_paths():
 
 
 @pytest.mark.integration
+def test_resolve_paths_duplicate_paths():
+    r = Report(files={
+        'py.py': [0, ReportTotals(1)]
+    }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]')
+    assert r.files == ['py.py']
+    r.resolve_paths([('py.py', 'py.py'), ('py.py', 'py.py')])
+    assert r.files == ['py.py']
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize('r, _file, joined, boolean, lines, hits', [
     (Report(), ReportFile('a', totals=ReportTotals(1, 50, 10), lines=[ReportLine(1)]), False, True, 50, 0),
     (Report(), None, True, False, 0, 0),
