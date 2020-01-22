@@ -1,8 +1,7 @@
 from copy import copy
-from itertools import chain
-from itertools import zip_longest
+from itertools import zip_longest, filterfalse
 from json import loads, dumps
-from collections import OrderedDict
+import logging
 
 from covreports.helpers.yaml import walk
 from covreports.helpers.flag import Flag
@@ -20,6 +19,18 @@ from covreports.utils.tuples import *
 
 END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'
 
+log = logging.getLogger(__name__)
+
+
+def unique_everseen(iterable):
+    "List unique elements, preserving order. Remember all elements ever seen."
+    # unique_everseen('AAAABBBCCDAABBB') --> A B C D
+    # unique_everseen('ABBCcAD', str.lower) --> A B C D
+    seen = set()
+    seen_add = seen.add
+    for element in filterfalse(seen.__contains__, iterable):
+        seen_add(element)
+        yield element
 
 
 class ReportFile(object):
@@ -590,7 +601,10 @@ class Report(object):
         :paths [(old_path, new_path), ...]
         """
         already_added_to_file = []
-        for old_path, new_path in paths:
+        paths_to_use = list(unique_everseen(paths))
+        if len(paths_to_use) < len(paths):
+            log.info("Paths being resolved were duplicated. Deduplicating")
+        for old_path, new_path in paths_to_use:
             if old_path in self:
                 if new_path in already_added_to_file:
                     del self[old_path]
