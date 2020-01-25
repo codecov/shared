@@ -487,8 +487,9 @@ class Report(object):
         """
         flags_dict = {}
         for sid, session in self.sessions.items():
-            for flag in session.flags:
-                flags_dict[flag] = Flag(self, flag)
+            if session.flags:
+                for flag in session.flags:
+                    flags_dict[flag] = Flag(self, flag)
         return flags_dict
 
     def append(self, _file, joined=True):
