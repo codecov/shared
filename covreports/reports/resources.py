@@ -942,7 +942,7 @@ class Report(object):
                     new_sessions = [
                         LineSession(*s)
                         for s in (line.sessions or [])
-                        if int(s[0]) in sessions
+                        if int(s.id) in sessions
                     ]
                     # check if line is applicable
                     if not new_sessions:
