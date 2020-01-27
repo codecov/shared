@@ -940,7 +940,7 @@ class Report(object):
                 # the line has data from this session
                 def adjust_line(line):
                     new_sessions = [
-                        LineSession(*s)
+                        LineSession(*s) if not isinstance(s, LineSession) else s
                         for s in (line.sessions or [])
                         if int(s.id) in sessions
                     ]
