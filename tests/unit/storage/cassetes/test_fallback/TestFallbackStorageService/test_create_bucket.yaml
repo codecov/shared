@@ -1,0 +1,187 @@
+interactions:
+- request:
+    body: assertion=eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiIsICJraWQiOiAiZTAwOTg4NzVhNmJlN2ZkMGZiOGQ1YjVlZmQ2YjZmNjYyZWZmNzI5NSJ9.eyJpYXQiOiAxNTgwNTI4OTgxLCAiZXhwIjogMTU4MDUzMjU4MSwgImlzcyI6ICJjb2RlY292LW1hcmtldGluZy1kZXBsb3ltZW50QGdlbnVpbmUtcG9seW1lci0xNjU3MTIuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCAiYXVkIjogImh0dHBzOi8vb2F1dGgyLmdvb2dsZWFwaXMuY29tL3Rva2VuIiwgInNjb3BlIjogImh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvZGV2c3RvcmFnZS5mdWxsX2NvbnRyb2wgaHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vYXV0aC9kZXZzdG9yYWdlLnJlYWRfb25seSBodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2RldnN0b3JhZ2UucmVhZF93cml0ZSJ9.DWegJxJo2RsqQmesnLrQ8Lr8FD_PvSWd5lYMX7By323_S_DuGvg5brzYhqbB_OIyyjUKyXtThA9iqX9vMBaky4KZdPEBpTxKMGG3Nto8HiQDn5knMeL8XzCoWQzmno1tL-C__ZHlCjCSMcFh8QWCJ6jgh7ny9t4KTagB2zGbAySFtXLPMCwMKRdWMHFoRWoVt0Ri6mhE46zNPZJ2dULP4JKQZBshcuftHWkl5dsefOcBtKGYuj9EFOzvyYtQE1Th_hAFq0MmlRhQ-modx6A4m-ku0LBHTBWM7o9e0Fagjn6WPVFzUJNNG4iideaXu59nA9Gk_XDH0CvFcnoasXPLyA&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '987'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - application/x-www-form-urlencoded
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x3PS3KCMAAA0LtkLQ6CoOmO/0eoLZ8U3DAhxBaLgAQQ6PTuZbp4B3g/ABNCGcv6
+        5pvW4AXMWIBbsj21vjoqV+ugoeu7mtbuQ1WmBMvN8VJ3dh5LSXNG/Mjb9Z3TJOPZ48zxqumTJ6Jv
+        2t5eRLyyQMtD7iHUsfV2jj9wxplNkfCjFoXDMpq7QNzr3m2pSPCwB0lqrVdxuqXsnjBCSiLKTDka
+        udM6Q10IY3mJClT5HfO+XB/niEtdA7pwQp4RC9kpVIkczdFupeuWvxQ4pbwVJGAD6NSWHWVZufZE
+        CcIN+L9m/dzSNaxS3NEO/P4BOV0RnAoBAAA=
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:49:42 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "testingarchive20190201"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '34'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: POST
+    uri: https://www.googleapis.com/storage/v1/b?project=genuine-polymer-165712
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#bucket\",\n \"id\": \"testingarchive20190201\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n \"projectNumber\": \"582817289294\",\n \"name\": \"testingarchive20190201\"\
+        ,\n \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n \"updated\": \"2020-02-01T03:49:43.428Z\"\
+        ,\n \"metageneration\": \"1\",\n \"iamConfiguration\": {\n  \"bucketPolicyOnly\"\
+        : {\n   \"enabled\": false\n  },\n  \"uniformBucketLevelAccess\": {\n   \"\
+        enabled\": false\n  }\n },\n \"location\": \"US\",\n \"locationType\": \"\
+        multi-region\",\n \"storageClass\": \"STANDARD\",\n \"etag\": \"CAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '549'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:49:43 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UpvAFar34JhZ0v0a_Q8yQTfDEJJqKEpGojRLzeNSVaSoGWl3A1Av4x8vtCsG2sMC8y84VPao9t8x_b21fOxl1RZXcsLpw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS45LjIxOCBQeXRob24vMy43LjYgRGFyd2luLzE4LjcuMCBCb3RvY29yZS8xLjEyLjI1
+        Mw==
+      X-Amz-Content-SHA256:
+      - !!binary |
+        ZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3
+        ODUyYjg1NQ==
+      X-Amz-Date:
+      - !!binary |
+        MjAyMDAyMDFUMDM0OTQzWg==
+    method: HEAD
+    uri: https://testingarchive20190201.s3.amazonaws.com/
+  response:
+    body:
+      string: ''
+    headers:
+      Content-Type:
+      - application/xml
+      Date:
+      - Sat, 01 Feb 2020 03:49:44 GMT
+      Server:
+      - AmazonS3
+      Transfer-Encoding:
+      - chunked
+      x-amz-id-2:
+      - RIW4jxfRlWioE26xFH04OZmWVcskgiXWmgZSJcnYlEwLt2rC4z4WWTB2VXGq3W+Z/oEb05D/p20=
+      x-amz-request-id:
+      - 0AF76FCA951370A3
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Content-Length:
+      - '0'
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS45LjIxOCBQeXRob24vMy43LjYgRGFyd2luLzE4LjcuMCBCb3RvY29yZS8xLjEyLjI1
+        Mw==
+      X-Amz-Content-SHA256:
+      - !!binary |
+        ZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3
+        ODUyYjg1NQ==
+      X-Amz-Date:
+      - !!binary |
+        MjAyMDAyMDFUMDM0OTQ0Wg==
+    method: PUT
+    uri: https://testingarchive20190201.s3.amazonaws.com/
+  response:
+    body:
+      string: ''
+    headers:
+      Content-Length:
+      - '0'
+      Date:
+      - Sat, 01 Feb 2020 03:49:45 GMT
+      Location:
+      - /testingarchive20190201
+      Server:
+      - AmazonS3
+      x-amz-id-2:
+      - /3m2iEc3uSGDp39kDgec7xSraMf+8MGRXUBopHd33sDIRce76xG6sNPaOp5t+oljONbkLi5C48Q=
+      x-amz-request-id:
+      - 7C8576D3D909DA0F
+    status:
+      code: 200
+      message: OK
+version: 1

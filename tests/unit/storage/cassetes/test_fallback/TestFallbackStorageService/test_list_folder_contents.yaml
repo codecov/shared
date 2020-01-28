@@ -1,0 +1,1050 @@
+interactions:
+- request:
+    body: assertion=eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiIsICJraWQiOiAiZTAwOTg4NzVhNmJlN2ZkMGZiOGQ1YjVlZmQ2YjZmNjYyZWZmNzI5NSJ9.eyJpYXQiOiAxNTgwNTI5MDI0LCAiZXhwIjogMTU4MDUzMjYyNCwgImlzcyI6ICJjb2RlY292LW1hcmtldGluZy1kZXBsb3ltZW50QGdlbnVpbmUtcG9seW1lci0xNjU3MTIuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCAiYXVkIjogImh0dHBzOi8vb2F1dGgyLmdvb2dsZWFwaXMuY29tL3Rva2VuIiwgInNjb3BlIjogImh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvZGV2c3RvcmFnZS5mdWxsX2NvbnRyb2wgaHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vYXV0aC9kZXZzdG9yYWdlLnJlYWRfb25seSBodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2RldnN0b3JhZ2UucmVhZF93cml0ZSJ9.biKV_Y82VuCcYpBX3P3ploo6-gNSL-u2s6RVgw_1mtUbA7N4oO9kRU8JGQWNNEtUUbNsNFG50U-KG7joyuZxeMwh704iqsdj8tmMVRRwhrZlU6U-SZvtVEsOet5kdTOWeCnIhSMNtjkfFmBO69sN2wq1ceZYD49vh7-e8EnRsIT8WhnVTZ1m41-67wM4ntBoNfyreoMyFI_9xXbHvsOZJp7-vAOdbElSt2Plr9o8CQdskpxHSV9uBlGPK2l1PGPGJEwcSUN5ZPhIz80qv4xm_eYujpSupSSanRrUIQqeTTmrQ8-UJvWIhMLB1sSAJx1HLfDKFq6Axwf-x05icztAAQ&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '987'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - application/x-www-form-urlencoded
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x3PyXKCMAAA0H/JWRxRUOiNRUSQVSvChUkxrQkaExYD7fTfy/T4ju8HwKpCbVt2
+        zxpR8AZGuNTn1dxngfkykMXJOoQcYQm5eXeDZLc/cVsilO2twtjeosYVy9Qi6yqJMjrZ48I/Jffm
+        aOGY2Abh9fCu1d+XZyq2Ze9x/GVrn/5CDhWnp2oWHpJjBLWP0Be6mhZWYW+yfnQekjKgeCNhzY7H
+        cy3sa2+uAsFJ3conie6YnsvagT/YQsuRKM/Rq1aCe94PVCYOxMxz95ckyK6UgRlAA8MNaks89Vaq
+        rs/A/7XsRoamsIlggxrw+wcYVl6HCgEAAA==
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:24 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:24 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:24 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UpWMdr-2uGTmn68Ep0pN2qCI-Go9gjOlr4EyoTWmKGy49S1o7i2yvFCA5icraiF0guCE8VgKe0A7WfJVjsdw2pPCXFIIw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--===============4245120970011507853==\r\ncontent-type: application/json;\
+      \ charset=UTF-8\r\n\r\n{\"name\": \"thiago/test_list_folder_contents/result_1.txt\"\
+      }\r\n--===============4245120970011507853==\r\ncontent-type: text/plain\r\n\r\
+      \nLorem ipsum on file thiago/test_list_folder_contents/result_1.txt for \r\n\
+      --===============4245120970011507853==--"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '328'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT00MjQ1MTIwOTcwMDEx
+        NTA3ODUzPT0i
+    method: POST
+    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190201/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/result_1.txt/1580529025002735\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\"\
+        ,\n \"name\": \"thiago/test_list_folder_contents/result_1.txt\",\n \"bucket\"\
+        : \"testingarchive20190201\",\n \"generation\": \"1580529025002735\",\n \"\
+        metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
+        : \"2020-02-01T03:50:25.002Z\",\n \"updated\": \"2020-02-01T03:50:25.002Z\"\
+        ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-01T03:50:25.002Z\"\
+        ,\n \"size\": \"70\",\n \"md5Hash\": \"+oc+ZMF8EfvX6IEFIKTGMQ==\",\n \"mediaLink\"\
+        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1580529025002735&alt=media\"\
+        ,\n \"crc32c\": \"EYy6eg==\",\n \"etag\": \"CO/Z3ri5r+cCEAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '896'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:25 GMT
+      ETag:
+      - CO/Z3ri5r+cCEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Uo1fLFcyAcURMrxSa_uoxgdLzzZMm8wJgr2M644tNlJWrYkLaQO2DSPi4SUFWhlR80hVeRUp16jglEIDM4s5uCfxmfcwA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:25 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:25 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Uriw5HUlBbXiEDhRB6rCsD4YC9PWdsMSdkh63uWzKMOUiy1s3T39WMFGsmdctynM-PsaO92BTviPJdE6ECudiFzmM9KvQ
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--===============6933061254577953349==\r\ncontent-type: application/json;\
+      \ charset=UTF-8\r\n\r\n{\"name\": \"thiago/test_list_folder_contents/result_2.txt\"\
+      }\r\n--===============6933061254577953349==\r\ncontent-type: text/plain\r\n\r\
+      \nLorem ipsum on file thiago/test_list_folder_contents/result_2.txt for po\r\
+      \n--===============6933061254577953349==--"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '330'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT02OTMzMDYxMjU0NTc3
+        OTUzMzQ5PT0i
+    method: POST
+    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190201/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/result_2.txt/1580529025460427\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\"\
+        ,\n \"name\": \"thiago/test_list_folder_contents/result_2.txt\",\n \"bucket\"\
+        : \"testingarchive20190201\",\n \"generation\": \"1580529025460427\",\n \"\
+        metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
+        : \"2020-02-01T03:50:25.460Z\",\n \"updated\": \"2020-02-01T03:50:25.460Z\"\
+        ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-01T03:50:25.460Z\"\
+        ,\n \"size\": \"72\",\n \"md5Hash\": \"X50KTg0h5WFDz++++xlHVQ==\",\n \"mediaLink\"\
+        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1580529025460427&alt=media\"\
+        ,\n \"crc32c\": \"/oAc7w==\",\n \"etag\": \"CMvR+ri5r+cCEAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '896'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:25 GMT
+      ETag:
+      - CMvR+ri5r+cCEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UoSKdyxEvGvnrivrdak1yRantabY1DvM4wJRRz3czT9b1ewxAOXyqybj6G4Q2rwbfSC1vDWKRO6lD8qiSqDFhk2ktq1Bw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:25 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:25 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UoP2NraZec9ukof-Avr_D7mBasi62Kkv66qMbLjgDV7tQXAaVEaB0-HV4bQJXEY7Ac6mpts6KA5wj2gLzQVRp1H66PN1Q
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--===============3136841713873178673==\r\ncontent-type: application/json;\
+      \ charset=UTF-8\r\n\r\n{\"name\": \"thiago/test_list_folder_contents/result_3.txt\"\
+      }\r\n--===============3136841713873178673==\r\ncontent-type: text/plain\r\n\r\
+      \nLorem ipsum on file thiago/test_list_folder_contents/result_3.txt for popo\r\
+      \n--===============3136841713873178673==--"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '332'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0zMTM2ODQxNzEzODcz
+        MTc4NjczPT0i
+    method: POST
+    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190201/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/result_3.txt/1580529025939407\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\"\
+        ,\n \"name\": \"thiago/test_list_folder_contents/result_3.txt\",\n \"bucket\"\
+        : \"testingarchive20190201\",\n \"generation\": \"1580529025939407\",\n \"\
+        metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
+        : \"2020-02-01T03:50:25.939Z\",\n \"updated\": \"2020-02-01T03:50:25.939Z\"\
+        ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-01T03:50:25.939Z\"\
+        ,\n \"size\": \"74\",\n \"md5Hash\": \"V1d54/o8qfT4IzUII/xlHQ==\",\n \"mediaLink\"\
+        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1580529025939407&alt=media\"\
+        ,\n \"crc32c\": \"5NF6aA==\",\n \"etag\": \"CM/vl7m5r+cCEAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '896'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      ETag:
+      - CM/vl7m5r+cCEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UpXvQOvepi89SZj-HBlTi9dAy18-ECE07iCd7CNQVJ6jiFv1y2Ar4cSFi8Gny4GZXoYw-ZN5w_hYM9QMOlURWbPmLL2ug
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Upp2GQZdlFVCJzGvykKJPdJ9v3_iwOPJKj45L-jrBPRVi9qz8sDIt-7YswKBmHPCGYrPSg6Ph_zFyRyT_i1QADw7NJpWw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--===============5621483019902823156==\r\ncontent-type: application/json;\
+      \ charset=UTF-8\r\n\r\n{\"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\"\
+      }\r\n--===============5621483019902823156==\r\ncontent-type: text/plain\r\n\r\
+      \nLorem ipsum on file thiago/test_list_folder_contents/f1/result_1.txt for popopo\r\
+      \n--===============5621483019902823156==--"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '340'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT01NjIxNDgzMDE5OTAy
+        ODIzMTU2PT0i
+    method: POST
+    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190201/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_1.txt/1580529026397710\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
+        ,\n \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n \"bucket\"\
+        : \"testingarchive20190201\",\n \"generation\": \"1580529026397710\",\n \"\
+        metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
+        : \"2020-02-01T03:50:26.397Z\",\n \"updated\": \"2020-02-01T03:50:26.397Z\"\
+        ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-01T03:50:26.397Z\"\
+        ,\n \"size\": \"79\",\n \"md5Hash\": \"uH/WEvd9AEhJiwNDJ9BViw==\",\n \"mediaLink\"\
+        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1580529026397710&alt=media\"\
+        ,\n \"crc32c\": \"VZRjgw==\",\n \"etag\": \"CI7ss7m5r+cCEAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '912'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      ETag:
+      - CI7ss7m5r+cCEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Upm-9P459fY2uHnNMutyB97Xay3W85wT6c4sk5C-tcP3haju7OEDqRKd9Q-BKM-ZrJVg1LuD2iXg_niFaarqIlRMcI2Sw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Uo93SYyMwV9iU9JrtkjHnvBEB80W1zvQo4nB6Kxa-75QIzW7MrqkoH8tS4nDijTRwAJQ8Mfr73uFnmQvkcYjGNZM37tzQ
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--===============7869787527226082007==\r\ncontent-type: application/json;\
+      \ charset=UTF-8\r\n\r\n{\"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\"\
+      }\r\n--===============7869787527226082007==\r\ncontent-type: text/plain\r\n\r\
+      \nLorem ipsum on file thiago/test_list_folder_contents/f1/result_2.txt for popopopo\r\
+      \n--===============7869787527226082007==--"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '342'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT03ODY5Nzg3NTI3MjI2
+        MDgyMDA3PT0i
+    method: POST
+    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190201/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_2.txt/1580529026859590\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
+        ,\n \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n \"bucket\"\
+        : \"testingarchive20190201\",\n \"generation\": \"1580529026859590\",\n \"\
+        metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
+        : \"2020-02-01T03:50:26.859Z\",\n \"updated\": \"2020-02-01T03:50:26.859Z\"\
+        ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-01T03:50:26.859Z\"\
+        ,\n \"size\": \"81\",\n \"md5Hash\": \"Jr8OUyCi116ViSldYgsEcg==\",\n \"mediaLink\"\
+        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1580529026859590&alt=media\"\
+        ,\n \"crc32c\": \"3eRtDA==\",\n \"etag\": \"CMaE0Lm5r+cCEAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '912'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:26 GMT
+      ETag:
+      - CMaE0Lm5r+cCEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UolOsmj1njU4Fn7P0ebg3PZd0cnpMVlbMKg1PG0vlGNFbTRd5zwpcLVMEqC2YOWCRxfUkLzGSYAq2tpvuVHNXK-RfsaBA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UoGU_WNlkAdnJU_YhOGf318ytXdZqFfAKpAmHZkHmjpUin7Tdw1DPYn5gqdu6CN20aLVz7gMi8qk7AQT5sP8JWm7NMb0w
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "--===============8216157775754492371==\r\ncontent-type: application/json;\
+      \ charset=UTF-8\r\n\r\n{\"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\"\
+      }\r\n--===============8216157775754492371==\r\ncontent-type: text/plain\r\n\r\
+      \nLorem ipsum on file thiago/test_list_folder_contents/f1/result_3.txt for popopopopo\r\
+      \n--===============8216157775754492371==--"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '344'
+      User-Agent:
+      - python-requests/2.22.0
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT04MjE2MTU3Nzc1NzU0
+        NDkyMzcxPT0i
+    method: POST
+    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190201/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_3.txt/1580529027317828\"\
+        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
+        ,\n \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n \"bucket\"\
+        : \"testingarchive20190201\",\n \"generation\": \"1580529027317828\",\n \"\
+        metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
+        : \"2020-02-01T03:50:27.317Z\",\n \"updated\": \"2020-02-01T03:50:27.317Z\"\
+        ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-01T03:50:27.317Z\"\
+        ,\n \"size\": \"83\",\n \"md5Hash\": \"bc1LtFH2tfPxtmrDZ++bpg==\",\n \"mediaLink\"\
+        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1580529027317828&alt=media\"\
+        ,\n \"crc32c\": \"S95bnw==\",\n \"etag\": \"CMSA7Lm5r+cCEAE=\"\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '912'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      ETag:
+      - CMSA7Lm5r+cCEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Ur73LuxfU6dluUCoAFNvrSqnCceUAcJDwX15z4Wz7je7ls-WhOem5wzAGRnYACniMUOEmEmHRNpONyjPV6omIXsRNqnTA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Uq5tsyLk8cAxLEiyNM5j2S3JYVCO0sOnC0MlS-_FTc-j8RyhVHJPGGBKGgNrRuNfWk8RIaRB6Hg6QeoMch_eLnOjawQeg
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201/o?projection=noAcl&prefix=thiago%2Ftest_list_folder_contents
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#objects\",\n  \"items\": [\n    {\n      \"\
+        kind\": \"storage#object\",\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_1.txt/1580529026397710\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1580529026397710&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n\
+        \      \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529026397710\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"79\",\n      \"\
+        md5Hash\": \"uH/WEvd9AEhJiwNDJ9BViw==\",\n      \"crc32c\": \"VZRjgw==\",\n\
+        \      \"etag\": \"CI7ss7m5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:26.397Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:26.397Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:26.397Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_2.txt/1580529026859590\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1580529026859590&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n\
+        \      \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529026859590\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"81\",\n      \"\
+        md5Hash\": \"Jr8OUyCi116ViSldYgsEcg==\",\n      \"crc32c\": \"3eRtDA==\",\n\
+        \      \"etag\": \"CMaE0Lm5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:26.859Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:26.859Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:26.859Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_3.txt/1580529027317828\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1580529027317828&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n\
+        \      \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529027317828\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"83\",\n      \"\
+        md5Hash\": \"bc1LtFH2tfPxtmrDZ++bpg==\",\n      \"crc32c\": \"S95bnw==\",\n\
+        \      \"etag\": \"CMSA7Lm5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:27.317Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:27.317Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:27.317Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/result_1.txt/1580529025002735\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1580529025002735&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/result_1.txt\",\n  \
+        \    \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529025002735\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"70\",\n      \"\
+        md5Hash\": \"+oc+ZMF8EfvX6IEFIKTGMQ==\",\n      \"crc32c\": \"EYy6eg==\",\n\
+        \      \"etag\": \"CO/Z3ri5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:25.002Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:25.002Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:25.002Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/result_2.txt/1580529025460427\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1580529025460427&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/result_2.txt\",\n  \
+        \    \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529025460427\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"72\",\n      \"\
+        md5Hash\": \"X50KTg0h5WFDz++++xlHVQ==\",\n      \"crc32c\": \"/oAc7w==\",\n\
+        \      \"etag\": \"CMvR+ri5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:25.460Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:25.460Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:25.460Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/result_3.txt/1580529025939407\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1580529025939407&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/result_3.txt\",\n  \
+        \    \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529025939407\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"74\",\n      \"\
+        md5Hash\": \"V1d54/o8qfT4IzUII/xlHQ==\",\n      \"crc32c\": \"5NF6aA==\",\n\
+        \      \"etag\": \"CM/vl7m5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:25.939Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:25.939Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:25.939Z\"\n    }\n  ]\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '6037'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      Expires:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UrWE7W54ZbfIH5ThnIh9uO20AwZjUGFVEJRKqBjBNkRRF5neXQ8OWxaX7MBIQRd-ln-B2aypZk87DlpPFgFldmB1ma8jw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201?projection=noAcl
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201\"\
+        ,\n  \"id\": \"testingarchive20190201\",\n  \"name\": \"testingarchive20190201\"\
+        ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
+        \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
+        CAE=\",\n  \"timeCreated\": \"2020-02-01T03:49:43.428Z\",\n  \"updated\":\
+        \ \"2020-02-01T03:49:43.428Z\",\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\"\
+        : {\n      \"enabled\": false\n    },\n    \"uniformBucketLevelAccess\": {\n\
+        \      \"enabled\": false\n    }\n  },\n  \"locationType\": \"multi-region\"\
+        \n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '577'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Sat, 01 Feb 2020 03:50:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2Urn8ds9EhIhiuKbpBebMIF52_n8VjPFtKyORHHNikMbDApU-QO3_JhdCVY8uHTOL84CezMbIqzdv7QG3EXDtpMbj3DrQg
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      X-Goog-API-Client:
+      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+    method: GET
+    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190201/o?projection=noAcl&prefix=thiago%2Ftest_list_folder_contents%2Ff1
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#objects\",\n  \"items\": [\n    {\n      \"\
+        kind\": \"storage#object\",\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_1.txt/1580529026397710\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1580529026397710&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n\
+        \      \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529026397710\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"79\",\n      \"\
+        md5Hash\": \"uH/WEvd9AEhJiwNDJ9BViw==\",\n      \"crc32c\": \"VZRjgw==\",\n\
+        \      \"etag\": \"CI7ss7m5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:26.397Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:26.397Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:26.397Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_2.txt/1580529026859590\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1580529026859590&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n\
+        \      \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529026859590\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"81\",\n      \"\
+        md5Hash\": \"Jr8OUyCi116ViSldYgsEcg==\",\n      \"crc32c\": \"3eRtDA==\",\n\
+        \      \"etag\": \"CMaE0Lm5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:26.859Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:26.859Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:26.859Z\"\n    },\n    {\n      \"kind\": \"storage#object\"\
+        ,\n      \"id\": \"testingarchive20190201/thiago/test_list_folder_contents/f1/result_3.txt/1580529027317828\"\
+        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
+        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190201/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1580529027317828&alt=media\"\
+        ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n\
+        \      \"bucket\": \"testingarchive20190201\",\n      \"generation\": \"1580529027317828\"\
+        ,\n      \"metageneration\": \"1\",\n      \"contentType\": \"text/plain\"\
+        ,\n      \"storageClass\": \"STANDARD\",\n      \"size\": \"83\",\n      \"\
+        md5Hash\": \"bc1LtFH2tfPxtmrDZ++bpg==\",\n      \"crc32c\": \"S95bnw==\",\n\
+        \      \"etag\": \"CMSA7Lm5r+cCEAE=\",\n      \"timeCreated\": \"2020-02-01T03:50:27.317Z\"\
+        ,\n      \"updated\": \"2020-02-01T03:50:27.317Z\",\n      \"timeStorageClassUpdated\"\
+        : \"2020-02-01T03:50:27.317Z\"\n    }\n  ]\n}\n"
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '3067'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 01 Feb 2020 03:50:28 GMT
+      Expires:
+      - Sat, 01 Feb 2020 03:50:28 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AEnB2UooTRG7sXtCLKAVFCKRLa2bxR-kH4IumV3x901xisDohot_DSfCtrTgHkrLD-FpX24ea8igH3UWtRrydWmmlg58boA1RA
+    status:
+      code: 200
+      message: OK
+version: 1
