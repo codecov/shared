@@ -1,5 +1,5 @@
 from covreports.storage import get_appropriate_storage_service
-from covreports.storage.fallback import GCPWithAWSFallbackService
+from covreports.storage.fallback import StorageWithFallbackService
 from covreports.storage.aws import AWSStorageService
 from covreports.storage.gcp import GCPStorageService
 from covreports.storage.minio import MinioStorageService
@@ -73,7 +73,7 @@ class TestStorageInitialization(object):
             'aws': aws_config,
         }
         res = get_appropriate_storage_service()
-        assert isinstance(res, GCPWithAWSFallbackService)
+        assert isinstance(res, StorageWithFallbackService)
         assert isinstance(res.first_service, GCPStorageService)
         assert res.first_service.config == gcp_config
         assert isinstance(res.second_service, AWSStorageService)

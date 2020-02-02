@@ -6,7 +6,7 @@ from covreports.storage.exceptions import FileNotInStorageError
 log = logging.getLogger(__name__)
 
 
-class GCPWithAWSFallbackService(BaseStorageService):
+class StorageWithFallbackService(BaseStorageService):
 
     def __init__(self, first_service, second_service):
         self.first_service = first_service
@@ -20,8 +20,6 @@ class GCPWithAWSFallbackService(BaseStorageService):
     def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
         """
             Writes a new file with the contents of `data`
-            (What happens if the file already exists?)
-
 
         Args:
             bucket_name (str): The name of the bucket for the file to be created on
@@ -36,7 +34,6 @@ class GCPWithAWSFallbackService(BaseStorageService):
     def append_to_file(self, bucket_name, path, data):
         """
             Appends more content to the file `path`
-            (What happens if the file doesn't exist?)
 
         Args:
             bucket_name (str): The name of the bucket for the file lives

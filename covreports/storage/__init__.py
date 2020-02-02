@@ -1,7 +1,7 @@
 from covreports.storage.minio import MinioStorageService
 from covreports.storage.gcp import GCPStorageService
 from covreports.storage.aws import AWSStorageService
-from covreports.storage.fallback import GCPWithAWSFallbackService
+from covreports.storage.fallback import StorageWithFallbackService
 from covreports.config import get_config
 
 
@@ -22,7 +22,7 @@ def _get_appropriate_storage_service_given_storage(chosen_storage):
         gcp_service = GCPStorageService(gcp_config)
         aws_config = get_config('services', 'aws', default={})
         aws_service = AWSStorageService(aws_config)
-        return GCPWithAWSFallbackService(gcp_service, aws_service)
+        return StorageWithFallbackService(gcp_service, aws_service)
     else:
         minio_config = get_config('services', 'minio', default={})
         return MinioStorageService(minio_config)

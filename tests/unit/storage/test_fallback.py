@@ -3,7 +3,7 @@ import pytest
 from tests.base import BaseTestCase
 from covreports.storage.gcp import GCPStorageService
 from covreports.storage.aws import AWSStorageService
-from covreports.storage.fallback import GCPWithAWSFallbackService
+from covreports.storage.fallback import StorageWithFallbackService
 from covreports.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 # DONT WORRY, this is generated for the purposes of validation, and is not the real
@@ -68,7 +68,7 @@ def storage_service():
     aws_storage = AWSStorageService(
         aws_config
     )
-    return GCPWithAWSFallbackService(gcp_storage, aws_storage)
+    return StorageWithFallbackService(gcp_storage, aws_storage)
 
 
 class TestFallbackStorageService(BaseTestCase):
