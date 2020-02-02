@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.tuples import ReportTotals
+from covreports.reports.types import ReportTotals
 from covreports.utils.totals import sum_totals
 
 

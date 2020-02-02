@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.tuples import ReportTotals, NetworkFile
+from covreports.reports.types import ReportTotals, NetworkFile
 from covreports.utils.make_network_file import make_network_file
 
 

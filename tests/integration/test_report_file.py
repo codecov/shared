@@ -1,7 +1,7 @@
 import pytest
 
-from covreports.resources import ReportFile
-from covreports.utils.tuples import ReportTotals, ReportLine
+from covreports.reports.resources import ReportFile
+from covreports.reports.types import ReportTotals, ReportLine
 
 
 @pytest.mark.integration

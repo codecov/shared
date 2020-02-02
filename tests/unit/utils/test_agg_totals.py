@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.tuples import ReportTotals
+from covreports.reports.types import ReportTotals
 from covreports.utils.totals import agg_totals
 
 
@@ -12,4 +12,4 @@ from covreports.utils.totals import agg_totals
 
 ])
 def test_agg_totals(totals, res):
-    assert agg_totals(totals) == res
+    assert agg_totals(totals) == ReportTotals(*res)

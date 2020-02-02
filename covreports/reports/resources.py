@@ -1,7 +1,8 @@
 from copy import copy
 from itertools import zip_longest, filterfalse
-from json import loads, dumps
 import logging
+from json import loads, dumps, JSONEncoder
+import dataclasses
 
 from covreports.helpers.yaml import walk
 from covreports.helpers.flag import Flag
@@ -12,12 +13,21 @@ from covreports.utils.totals import agg_totals, sum_totals
 from covreports.utils.flare import report_to_flare
 from covreports.utils.make_network_file import make_network_file
 from covreports.utils.match import match, match_any
-from covreports.utils.merge import *
+from covreports.utils.merge import (
+    merge_line,
+    line_type,
+    get_coverage_from_sessions,
+    get_complexity_from_sessions,
+)
 from covreports.utils.migrate import migrate_totals
 from covreports.utils.sessions import Session
-from covreports.utils.tuples import *
-
-END_OF_CHUNK = '\n<<<<< end_of_chunk >>>>>\n'
+from covreports.reports.types import (
+    ReportTotals,
+    ReportLine,
+    LineSession,
+    EMPTY,
+    TOTALS_MAP,
+)
 
 log = logging.getLogger(__name__)
 
@@ -33,15 +43,29 @@ def unique_everseen(iterable):
         yield element
 
 
-class ReportFile(object):
-    __slot__ = ('name', '_details', '_lines',
-                '_line_modifier', '_ignore',
-                '_totals', '_session_totals')
+END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
 
-    def __init__(self, name, totals=None,
-                 session_totals=None,
-                 lines=None, line_modifier=None,
-                 ignore=None):
+
+class ReportFile(object):
+    __slot__ = (
+        "name",
+        "_details",
+        "_lines",
+        "_line_modifier",
+        "_ignore",
+        "_totals",
+        "_session_totals",
+    )
+
+    def __init__(
+        self,
+        name,
+        totals=None,
+        session_totals=None,
+        lines=None,
+        line_modifier=None,
+        ignore=None,
+    ):
         """
         name = string, filename. "folder/name.py"
         totals = [0,1,0,...] (map out to one ReportTotals)
@@ -63,7 +87,7 @@ class ReportFile(object):
 
             else:
                 lines = lines.splitlines()
-                self._details = loads(lines.pop(0) or 'null')
+                self._details = loads(lines.pop(0) or "null")
                 self._lines = lines
         else:
             self._details = {}
@@ -77,15 +101,22 @@ class ReportFile(object):
             self._totals = None  # need to reprocess these
         else:
             # totals = <ReportTotals []>
-            self._totals = ReportTotals(*totals) if totals else None
+            if isinstance(totals, ReportTotals):
+                self._totals = totals
+            else:
+                self._totals = ReportTotals(*totals) if totals else None
 
         self._session_totals = session_totals
 
     def __repr__(self):
         try:
-            return '<%s name=%s lines=%s>' % (self.__class__.__name__, self.name, len(self))
+            return "<%s name=%s lines=%s>" % (
+                self.__class__.__name__,
+                self.name,
+                len(self),
+            )
         except:
-            return '<%s name=%s lines=n/a>' % (self.__class__.__name__, self.name)
+            return "<%s name=%s lines=n/a>" % (self.__class__.__name__, self.name)
 
     def _line(self, line):
         if isinstance(line, ReportLine):
@@ -99,7 +130,9 @@ class ReportFile(object):
             # these are old versions
             line = loads(line)
             if len(line) > 2 and line[2]:
-                line[2] = [LineSession(*tuple(session)) for session in line[2] if session]
+                line[2] = [
+                    LineSession(*tuple(session)) for session in line[2] if session
+                ]
             return ReportLine(*line)
 
     @property
@@ -140,7 +173,7 @@ class ReportFile(object):
             _len = len(self._lines)
             for ln in lines:
                 if ln <= _len:
-                    self._lines[ln-1] = None
+                    self._lines[ln - 1] = None
         if eof:
             self._lines = self._lines[:eof]
         self._totals = None
@@ -148,28 +181,28 @@ class ReportFile(object):
     def __getitem__(self, ln):
         """Return a single line or None
         """
-        if ln == 'totals':
+        if ln == "totals":
             return self.totals
         if type(ln) is slice:
             return self._getslice(ln.start, ln.stop)
         if not type(ln) is int:
-            raise TypeError('expecting type int got %s' % type(ln))
+            raise TypeError("expecting type int got %s" % type(ln))
         elif ln < 1:
-            raise ValueError('Line number must be greater then 0. Got %s' % ln)
+            raise ValueError("Line number must be greater then 0. Got %s" % ln)
         _line = self.get(ln)
         if not _line:
-            raise IndexError('Line #%s not found in report' % ln)
+            raise IndexError("Line #%s not found in report" % ln)
         return _line
 
     def __setitem__(self, ln, line):
         """Append line to file, without merging if previously set
         """
         if not type(ln) is int:
-            raise TypeError('expecting type int got %s' % type(ln))
+            raise TypeError("expecting type int got %s" % type(ln))
         elif not isinstance(line, ReportLine):
-            raise TypeError('expecting type ReportLine got %s' % type(line))
+            raise TypeError("expecting type ReportLine got %s" % type(line))
         elif ln < 1:
-            raise ValueError('Line number must be greater then 0. Got %s' % ln)
+            raise ValueError("Line number must be greater then 0. Got %s" % ln)
         elif self._ignore and self._ignore(ln):
             return
 
@@ -177,7 +210,7 @@ class ReportFile(object):
         if length <= ln:
             self._lines.extend([EMPTY] * (ln - length))
 
-        self._lines[ln-1] = line
+        self._lines[ln - 1] = line
         return
 
     def __len__(self):
@@ -207,7 +240,7 @@ class ReportFile(object):
         NOTE: not be confused with the builtin function __getslice__ that was deprecated in python 3.x
         """
         func = self._line_modifier
-        for ln, line in enumerate(self._lines[start-1:stop-1], start=start):
+        for ln, line in enumerate(self._lines[start - 1 : stop - 1], start=start):
             if line:
                 line = self._line(line)
                 if func:
@@ -218,7 +251,7 @@ class ReportFile(object):
 
     def __contains__(self, ln):
         if not type(ln) is int:
-            raise TypeError('expecting type int got %s' % type(ln))
+            raise TypeError("expecting type int got %s" % type(ln))
         try:
             return self.get(ln) is not None
         except IndexError:
@@ -229,12 +262,12 @@ class ReportFile(object):
 
     def get(self, ln):
         if not type(ln) is int:
-            raise TypeError('expecting type int got %s' % type(ln))
+            raise TypeError("expecting type int got %s" % type(ln))
         elif ln < 1:
-            raise ValueError('Line number must be greater then 0. Got %s' % ln)
+            raise ValueError("Line number must be greater then 0. Got %s" % ln)
 
         try:
-            line = self._lines[ln-1]
+            line = self._lines[ln - 1]
 
         except IndexError:
             return None
@@ -255,11 +288,11 @@ class ReportFile(object):
         if the line exists it will merge it
         """
         if not type(ln) is int:
-            raise TypeError('expecting type int got %s' % type(ln))
+            raise TypeError("expecting type int got %s" % type(ln))
         elif not isinstance(line, ReportLine):
-            raise TypeError('expecting type ReportLine got %s' % type(line))
+            raise TypeError("expecting type ReportLine got %s" % type(line))
         elif ln < 1:
-            raise ValueError('Line number must be greater then 0. Got %s' % ln)
+            raise ValueError("Line number must be greater then 0. Got %s" % ln)
         elif self._ignore and self._ignore(ln):
             return False
 
@@ -268,9 +301,9 @@ class ReportFile(object):
             self._lines.extend([EMPTY] * (ln - length))
         _line = self.get(ln)
         if _line:
-            self._lines[ln-1] = merge_line(_line, line)
+            self._lines[ln - 1] = merge_line(_line, line)
         else:
-            self._lines[ln-1] = line
+            self._lines[ln - 1] = line
         return True
 
     def merge(self, other_file, joined=True):
@@ -282,19 +315,16 @@ class ReportFile(object):
             return
 
         elif not isinstance(other_file, ReportFile):
-            raise TypeError('expecting type ReportFile got %s' % type(other_file))
+            raise TypeError("expecting type ReportFile got %s" % type(other_file))
 
-        if (
-                self.name.endswith('.rb') and
-                self.totals.lines == self.totals.misses
-        ):
+        if self.name.endswith(".rb") and self.totals.lines == self.totals.misses:
             # previous file was boil-the-ocean
             # OR previous file had END issue
             self._lines = other_file._lines
 
         elif (
-                self.name.endswith('.rb') and
-                other_file.totals.lines == other_file.totals.misses
+            self.name.endswith(".rb")
+            and other_file.totals.lines == other_file.totals.misses
         ):
             # skip boil-the-ocean files
             # OR skip 0% coverage files because END issue
@@ -302,16 +332,19 @@ class ReportFile(object):
 
         else:
             # set new lines object
-            self._lines = [merge_line(before, after, joined)
-                           for before, after
-                           in zip_longest(self, other_file)]
+            self._lines = [
+                merge_line(before, after, joined)
+                for before, after in zip_longest(self, other_file)
+            ]
 
         self._totals = None
         return True
 
     def _encode(self):
-        return '%s\n%s' % (dumps(self._details, separators=(',', ':')),
-                           '\n'.join(map(_dumps_not_none, self._lines)))
+        return "%s\n%s" % (
+            dumps(self._details, separators=(",", ":")),
+            "\n".join(map(_dumps_not_none, self._lines)),
+        )
 
     @property
     def totals(self):
@@ -336,7 +369,7 @@ class ReportFile(object):
 
         def sum_of_complexity(l):
             # (hit, total)
-            c = l[1][4]
+            c = l[1].complexity
             if not c:
                 # no coverage data provided
                 return (0, 0)
@@ -347,22 +380,22 @@ class ReportFile(object):
                 # coverage is ratio
                 return c
 
-        complexity = tuple(map(sum,
-                               zip(*map(sum_of_complexity,
-                                        self.lines)))) or (0, 0)
+        complexity = tuple(map(sum, zip(*map(sum_of_complexity, self.lines)))) or (0, 0)
 
-        return ReportTotals(files=0,
-                            lines=lines,
-                            hits=hits,
-                            misses=misses,
-                            partials=partials,
-                            coverage=ratio(hits, lines) if lines else None,
-                            branches=types.count('b'),
-                            methods=types.count('m'),
-                            messages=sum(messages),
-                            sessions=0,
-                            complexity=complexity[0],
-                            complexity_total=complexity[1])
+        return ReportTotals(
+            files=0,
+            lines=lines,
+            hits=hits,
+            misses=misses,
+            partials=partials,
+            coverage=ratio(hits, lines) if lines else None,
+            branches=types.count("b"),
+            methods=types.count("m"),
+            messages=sum(messages),
+            sessions=0,
+            complexity=complexity[0],
+            complexity_total=complexity[1],
+        )
 
     def apply_line_modifier(self, line_modifier):
         if line_modifier is None and self._line_modifier is None:
@@ -371,16 +404,16 @@ class ReportFile(object):
         self._totals = None
 
     def does_diff_adjust_tracked_lines(self, diff, future_file):
-        for segment in diff['segments']:
+        for segment in diff["segments"]:
             # loop through each line
-            pos = (int(segment['header'][2]) or 1)
-            for line in segment['lines']:
-                if line[0] == '-':
+            pos = int(segment["header"][2]) or 1
+            for line in segment["lines"]:
+                if line[0] == "-":
                     if pos in self:
                         # tracked line removed
                         return True
 
-                elif line[0] == '+':
+                elif line[0] == "+":
                     if pos in future_file:
                         # tracked line added
                         return True
@@ -391,13 +424,13 @@ class ReportFile(object):
 
     def shift_lines_by_diff(self, diff, forward=True):
         try:
-            remove = '-' if forward else '+'
-            add = '+' if forward else '-'
+            remove = "-" if forward else "+"
+            add = "+" if forward else "-"
             # loop through each segment
-            for segment in diff['segments']:
+            for segment in diff["segments"]:
                 # loop through each line
-                pos = (int(segment['header'][2]) or 1) - 1
-                for line in segment['lines']:
+                pos = (int(segment["header"][2]) or 1) - 1
+                for line in segment["lines"]:
                     if line[0] == remove:  # removed
                         self._lines.pop(pos)
                     elif line[0] == add:
@@ -413,16 +446,26 @@ class ReportFile(object):
 class Report(object):
     file_class = ReportFile
 
-    def __init__(self, files=None, sessions=None,
-                 totals=None, chunks=None, diff_totals=None,
-                 yaml=None, flags=None, **kwargs):
+    def __init__(
+        self,
+        files=None,
+        sessions=None,
+        totals=None,
+        chunks=None,
+        diff_totals=None,
+        yaml=None,
+        flags=None,
+        **kwargs
+    ):
         # {"filename": [<line index in chunks :int>, <ReportTotals>]}
         self._files = files or {}
 
         # {1: {...}}
-        self.sessions = dict((sid, Session(**session))
-                             for sid, session
-                             in sessions.items()) if sessions else {}
+        self.sessions = (
+            dict((sid, Session(**session)) for sid, session in sessions.items())
+            if sessions
+            else {}
+        )
 
         # ["<json>", ...]
         if isinstance(chunks, str):
@@ -452,20 +495,19 @@ class Report(object):
             for fname, data in self._files.items():
                 file = self.get(fname)
                 if file:
-                    yield fname, make_network_file(
-                        file.totals
-                    )
+                    yield fname, make_network_file(file.totals)
         else:
             for fname, data in self._files.items():
                 yield fname, make_network_file(*data[1:])
 
     def __repr__(self):
         try:
-            return '<%s files=%s>' % (
+            return "<%s files=%s>" % (
                 self.__class__.__name__,
-                len(getattr(self, '_files', [])))
+                len(getattr(self, "_files", [])),
+            )
         except:
-            return '<%s files=n/a>' % self.__class__.__name__
+            return "<%s files=n/a>" % self.__class__.__name__
 
     @property
     def files(self):
@@ -474,9 +516,11 @@ class Report(object):
         path_filter = self._path_filter
         if path_filter:
             # return filtered list of filenames
-            return [filename
-                    for filename, _ in self._files.items()
-                    if self._path_filter(filename)]
+            return [
+                filename
+                for filename, _ in self._files.items()
+                if self._path_filter(filename)
+            ]
         else:
             # return the fill list of filenames
             return list(self._files.keys())
@@ -500,13 +544,13 @@ class Report(object):
             return False
 
         elif not isinstance(_file, ReportFile):
-            raise TypeError('expecting ReportFile got %s' % type(_file))
+            raise TypeError("expecting ReportFile got %s" % type(_file))
 
         elif len(_file) == 0:
             # dont append empty files
             return False
 
-        assert _file.name, 'file must have a name'
+        assert _file.name, "file must have a name"
         session_n = len(self.sessions) - 1
 
         # check if file already exists
@@ -538,10 +582,10 @@ class Report(object):
 
             # add to network
             self._files[_file.name] = [
-                len(self._chunks),       # chunk location
-                _file.totals,            # Totals
-                session_totals,          # Session Totals
-                None                     # Diff Totals
+                len(self._chunks),  # chunk location
+                _file.totals,  # Totals
+                session_totals,  # Session Totals
+                None,  # Diff Totals
             ]
 
             # add file in chunks
@@ -569,17 +613,19 @@ class Report(object):
                     lines = self._chunks[_file[0]]
                 except:
                     lines = None
-                    print('[DEBUG] file not found in chunk', _file[0])
+                    print("[DEBUG] file not found in chunk", _file[0])
             else:
                 # may be tree_only request
                 lines = None
             if isinstance(lines, ReportFile):
                 lines.apply_line_modifier(self._line_modifier)
                 return lines
-            report_file = self.file_class(name=filename,
-                                          totals=_file[1],
-                                          lines=lines,
-                                          line_modifier=self._line_modifier)
+            report_file = self.file_class(
+                name=filename,
+                totals=_file[1],
+                lines=lines,
+                line_modifier=self._line_modifier,
+            )
             if bind:
                 self._chunks[_file[0]] = report_file
 
@@ -631,7 +677,7 @@ class Report(object):
     def __getitem__(self, filename):
         _file = self.get(filename)
         if _file is None:
-            raise IndexError('File at path %s not found in report' % filename)
+            raise IndexError("File at path %s not found in report" % filename)
         return _file
 
     def __delitem__(self, filename):
@@ -645,10 +691,14 @@ class Report(object):
         """
         returns <ReportTotals> for files contained in a folder
         """
-        path = path.strip('/') + '/'
-        return sum_totals((self[filename].totals
-                           for filename, _ in self._files.items()
-                           if filename.startswith(path)))
+        path = path.strip("/") + "/"
+        return sum_totals(
+            (
+                self[filename].totals
+                for filename, _ in self._files.items()
+                if filename.startswith(path)
+            )
+        )
 
     @property
     def totals(self):
@@ -677,11 +727,15 @@ class Report(object):
         totals = agg_totals(_iter_totals())
         if self._filter_cache and self._filter_cache[1]:
             flags = set(self._filter_cache[1])
-            totals[9] = len([1
-                             for _, session in self.sessions.items()
-                             if set(session.flags or []) & flags])
+            totals.sessions = len(
+                [
+                    1
+                    for _, session in self.sessions.items()
+                    if set(session.flags or []) & flags
+                ]
+            )
         else:
-            totals[9] = len(self.sessions)
+            totals.sessions = len(self.sessions)
 
         return ReportTotals(*tuple(totals))
 
@@ -700,7 +754,7 @@ class Report(object):
         self.sessions[sessionid] = session
         if self._totals:
             # add session to totals
-            self._totals = self._totals._replace(sessions=sessionid+1)
+            self._totals = dataclasses.replace(self._totals, sessions=sessionid + 1)
         return sessionid, session
 
     def __iter__(self):
@@ -718,11 +772,13 @@ class Report(object):
             if isinstance(report, ReportFile):
                 yield report
             else:
-                yield self.file_class(name=filename,
-                                      totals=_file[1],
-                                      session_totals=_file[2] if len(_file) > 2 else None,
-                                      lines=report,
-                                      line_modifier=self._line_modifier)
+                yield self.file_class(
+                    name=filename,
+                    totals=_file[1],
+                    session_totals=_file[2] if len(_file) > 2 else None,
+                    lines=report,
+                    line_modifier=self._line_modifier,
+                )
 
     def __contains__(self, filename):
         return filename in self._files
@@ -734,7 +790,7 @@ class Report(object):
             return
 
         elif not isinstance(new_report, Report):
-            raise TypeError('expecting type Report got %s' % type(new_report))
+            raise TypeError("expecting type Report got %s" % type(new_report))
 
         elif new_report.is_empty():
             return
@@ -764,12 +820,12 @@ class Report(object):
     def to_database(self):
         """returns (totals, report) to be stored in database
         """
-        totals = dict(zip(TOTALS_MAP, self.totals)) 
-        totals['diff'] = self.diff_totals
-        return (totals,
-                dumps({'files': self._files,
-                       'sessions': self.sessions},
-                      cls=ReportEncoder))
+        totals = dict(zip(TOTALS_MAP, self.totals))
+        totals["diff"] = self.diff_totals
+        return (
+            totals,
+            dumps({"files": self._files, "sessions": self.sessions}, cls=ReportEncoder),
+        )
 
     def update_sessions(self, **data):
         pass
@@ -782,42 +838,55 @@ class Report(object):
             """
             # <dict path: totals if not new else None>
             changed_coverages = dict(
-                ((_Change[0], _Change[5][5] if not _Change[1] and _Change[5] else None)
-                 for _Change in changes)
+                (
+                    (
+                        _Change[0],
+                        _Change[5][5] if not _Change[1] and _Change[5] else None,
+                    )
+                    for _Change in changes
+                )
             )
             # <dict path: stripeed if not in_diff>
-            classes = dict(((_Change[0], 's') for _Change in changes if not _Change[3]))
+            classes = dict(((_Change[0], "s") for _Change in changes if not _Change[3]))
 
             def _network():
                 for name, _NetworkFile in self.network:
                     changed_coverage = changed_coverages.get(name)
                     if changed_coverage:
                         # changed file
-                        yield name, ReportTotals(lines=_NetworkFile[0][1],
-                                                 coverage=float(changed_coverage))
+                        yield name, ReportTotals(
+                            lines=_NetworkFile.totals.lines, coverage=float(changed_coverage)
+                        )
                     else:
                         diff = _NetworkFile.diff_totals
                         if diff and diff[1] > 0:  # lines > 0
                             # diff file
-                            yield name, ReportTotals(lines=_NetworkFile[0][1],
-                                                     coverage=-1 if float(diff[5]) < float(_NetworkFile[0][5]) else 1)
+                            yield name, ReportTotals(
+                                lines=_NetworkFile.totals.lines,
+                                coverage=-1
+                                if float(diff[5]) < float(_NetworkFile.totals.coverage)
+                                else 1,
+                            )
 
                         else:
                             # unchanged file
-                            yield name, ReportTotals(lines=_NetworkFile[0][1])
+                            yield name, ReportTotals(lines=_NetworkFile.totals.lines)
 
             network = _network()
 
             def color(cov):
-                return 'purple' if cov is None else \
-                    '#e1e1e1' if cov == 0 else \
-                        'green' if cov > 0 else \
-                            'red'
+                return (
+                    "purple"
+                    if cov is None
+                    else "#e1e1e1"
+                    if cov == 0
+                    else "green"
+                    if cov > 0
+                    else "red"
+                )
 
         else:
-            network = ((path, _NetworkFile[0])
-                       for path, _NetworkFile
-                       in self.network)
+            network = ((path, _NetworkFile.totals) for path, _NetworkFile in self.network)
             classes = {}
             # [TODO] [v4.4.0] remove yaml from args, use below
             # color = self.yaml.get(('coverage', 'range'))
@@ -845,7 +914,9 @@ class Report(object):
             # reset all totals
             if paths:
                 if not isinstance(paths, (list, set, tuple)):
-                    raise TypeError('expecting list for argument paths got %s' % type(paths))
+                    raise TypeError(
+                        "expecting list for argument paths got %s" % type(paths)
+                    )
 
                 def _pf(filename):
                     return match(paths, filename)
@@ -858,24 +929,31 @@ class Report(object):
                     flags = [flags]
 
                 # get all session ids that have this falg
-                sessions = set([int(sid)
-                                for sid, session
-                                in self.sessions.items()
-                                if match_any(flags, session.flags)])
+                sessions = set(
+                    [
+                        int(sid)
+                        for sid, session in self.sessions.items()
+                        if match_any(flags, session.flags)
+                    ]
+                )
 
                 # the line has data from this session
                 def adjust_line(line):
-                    new_sessions = [LineSession(*s)
-                                    for s in (line.sessions or [])
-                                    if int(s[0]) in sessions]
+                    new_sessions = [
+                        LineSession(*s) if not isinstance(s, LineSession) else s
+                        for s in (line.sessions or [])
+                        if int(s.id) in sessions
+                    ]
                     # check if line is applicable
                     if not new_sessions:
                         return False
-                    return ReportLine(coverage=get_coverage_from_sessions(new_sessions),
-                                      complexity=get_complexity_from_sessions(new_sessions),
-                                      type=line.type,
-                                      sessions=new_sessions,
-                                      messages=line.messages)
+                    return ReportLine(
+                        coverage=get_coverage_from_sessions(new_sessions),
+                        complexity=get_complexity_from_sessions(new_sessions),
+                        type=line.type,
+                        sessions=new_sessions,
+                        messages=line.messages,
+                    )
 
                 self._line_modifier = adjust_line
 
@@ -907,38 +985,39 @@ class Report(object):
         future_report is necessary because it is used to determin if
         lines added in the diff are tracked by codecov
         """
-        if diff and diff.get('files'):
-            for path, data in diff['files'].items():
-                future_state = walk(future_diff, ('files', path, 'type'))
-                if (
-                        data['type'] == 'deleted' and  # deleted
-                        path in self                   # and tracked
-                ):
+        if diff and diff.get("files"):
+            for path, data in diff["files"].items():
+                future_state = walk(future_diff, ("files", path, "type"))
+                if data["type"] == "deleted" and path in self:  # deleted  # and tracked
                     # found a file that was tracked and deleted
                     return True
 
                 elif (
-                        data['type'] == 'new' and      # newly tracked
-                        future_state != 'deleted' and  # not deleted in future
-                        path in future_report          # found in future
+                    data["type"] == "new"
+                    and future_state != "deleted"  # newly tracked
+                    and path  # not deleted in future
+                    in future_report  # found in future
                 ):
                     # newly tracked file
                     return True
 
-                elif data['type'] == 'modified':
+                elif data["type"] == "modified":
                     in_past = path in self
-                    in_future = future_state != 'deleted' and path in future_report
+                    in_future = future_state != "deleted" and path in future_report
                     if in_past and in_future:
 
                         # get the future version
                         future_file = future_report.get(path, bind=False)
                         # if modified
-                        if future_state == 'modified':
+                        if future_state == "modified":
                             # shift the lines to "guess" what C was
-                            future_file.shift_lines_by_diff(future_diff['files'][path],
-                                                            forward=False)
+                            future_file.shift_lines_by_diff(
+                                future_diff["files"][path], forward=False
+                            )
 
-                        if self.get(path).does_diff_adjust_tracked_lines(data, future_file):
+                        if self.get(path).does_diff_adjust_tracked_lines(
+                            data, future_file
+                        ):
                             # lines changed
                             return True
 
@@ -958,12 +1037,9 @@ class Report(object):
 
         Takes a <diff> and offsets the line based on additions and removals
         """
-        if diff and diff.get('files'):
-            for path, data in diff['files'].items():
-                if (
-                        data['type'] == 'modified' and
-                        path in self
-                ):
+        if diff and diff.get("files"):
+            for path, data in diff["files"].items():
+                if data["type"] == "modified" and path in self:
                     _file = self.get(path)
                     _file.shift_lines_by_diff(data, forward=forward)
                     chunk_loc = self._files[path][0]
@@ -977,44 +1053,57 @@ class Report(object):
         Add coverage details to the diff at ['coverage'] = <ReportTotals>
         returns <ReportTotals>
         """
-        if diff and diff.get('files'):
+        if diff and diff.get("files"):
             totals = []
-            for path, data in diff['files'].items():
-                if data['type'] in ('modified', 'new'):
+            for path, data in diff["files"].items():
+                if data["type"] in ("modified", "new"):
                     _file = self.get(path)
                     if _file:
                         fg = _file.get
                         lines = []
                         le = lines.extend
                         # add all new lines data to a new file to get totals
-                        [le([fg(i)
-                             for i, line in enumerate([l for l in segment['lines'] if l[0] != '-'],
-                                                      start=int(segment['header'][2]) or 1)
-                             if line[0] == '+'])
-                         for segment in data['segments']]
+                        [
+                            le(
+                                [
+                                    fg(i)
+                                    for i, line in enumerate(
+                                        [l for l in segment["lines"] if l[0] != "-"],
+                                        start=int(segment["header"][2]) or 1,
+                                    )
+                                    if line[0] == "+"
+                                ]
+                            )
+                            for segment in data["segments"]
+                        ]
 
-                        file_totals = ReportFile(name=None, totals=None, lines=lines).totals
+                        file_totals = ReportFile(
+                            name=None, totals=None, lines=lines
+                        ).totals
                         totals.append(file_totals)
                         if _save:
-                            data['totals'] = file_totals
+                            data["totals"] = file_totals
                             # store in network
                             network_file = self._files[path]
                             if file_totals.lines == 0:
                                 # no lines touched
-                                file_totals = file_totals._replace(coverage=None,
-                                                                   complexity=None,
-                                                                   complexity_total=None)
+                                file_totals = dataclasses.replace(
+                                    file_totals,
+                                    coverage=None,
+                                    complexity=None,
+                                    complexity_total=None,
+                                )
                             self._files[path] = zfill(network_file, 3, file_totals)
 
             totals = sum_totals(totals)
 
             if totals.lines == 0:
-                totals = totals._replace(coverage=None,
-                                         complexity=None,
-                                         complexity_total=None)
+                totals = dataclasses.replace(
+                    totals, coverage=None, complexity=None, complexity_total=None
+                )
 
             if _save and totals.files:
-                diff['totals'] = totals
+                diff["totals"] = totals
                 self.diff_totals = totals
 
             return totals
@@ -1031,11 +1120,9 @@ class Report(object):
     def assume_flags(self, flags, prev_report, name=None):
         with prev_report.filter(flags=flags) as filtered:
             # add the "assumed session"
-            self.add_session(Session(
-                flags=flags,
-                totals=filtered.totals,
-                name=name or 'Assumed'
-            ))
+            self.add_session(
+                Session(flags=flags, totals=filtered.totals, name=name or "Assumed")
+            )
             # merge the results
             self.merge(filtered)
 
@@ -1055,8 +1142,8 @@ def _ignore_to_func(ignore):
     Returns:
         A function, which takes an int as first parameter and returns a boolean
     """
-    eof = ignore.get('eof')
-    lines = ignore.get('lines') or []
+    eof = ignore.get("eof")
+    lines = ignore.get("lines") or []
     if eof:
         if isinstance(eof, str):
             # Sometimes eof is 'N', not sure which cases
@@ -1069,10 +1156,11 @@ def _ignore_to_func(ignore):
 
 
 def _dumps_not_none(value):
-    if isinstance(value, (list, ReportLine)):
-        return dumps(_rstrip_none(list(value)),
-                     cls=ReportEncoder)
-    return value if value and value != 'null' else ''
+    if isinstance(value, list):
+        return dumps(_rstrip_none(list(value)), cls=ReportEncoder)
+    if isinstance(value, ReportLine):
+        return dumps(_rstrip_none(list(dataclasses.astuple(value))), cls=ReportEncoder)
+    return value if value and value != "null" else ""
 
 
 def _rstrip_none(lst):
@@ -1080,12 +1168,20 @@ def _rstrip_none(lst):
         lst.pop(-1)
     return lst
 
+
+class EnhancedJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if dataclasses.is_dataclass(o):
+            return dataclasses.astuple(o)
+        return super().default(o)
+
+
 def _encode_chunk(chunk):
     if chunk is None:
-        return 'null'
+        return "null"
     elif isinstance(chunk, ReportFile):
         return chunk._encode()
     elif isinstance(chunk, (list, dict)):
-        return dumps(chunk, separators=(',', ':'))
+        return dumps(chunk, separators=(",", ":"), cls=EnhancedJSONEncoder)
     else:
         return chunk

@@ -59,7 +59,7 @@ def report_to_flare(files, color, classes=None):
     fa = flare.add_child
     for name, totals in files:
         # fa(('path', 'to', 'file'), (lines, hits, coverage))
-        fa(name.split('/'), (totals[1], totals[2], totals[5]))
+        fa(name.split('/'), (totals.lines, totals.hits, totals.coverage))
 
     return [_dict_to_children('',
                               flare,

@@ -1,13 +1,13 @@
 import pytest
-from covreports.utils.tuples import ReportTotals
+from covreports.reports.types import ReportTotals
 from covreports.utils.sessions import Session
 from covreports.utils.ReportEncoder import ReportEncoder
 
 
 @pytest.mark.unit
 @pytest.mark.parametrize('obj, res', [
-    (ReportTotals(), []),
-    (ReportTotals('files', 'lines'), ['files', 'lines']),
+    (ReportTotals(), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+    (ReportTotals('files', 'lines'), ('files', 'lines', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
     (Session('id', 'totals'), {
         'N': None,
         'a': None,

@@ -1,4 +1,4 @@
-from covreports.utils.tuples import NetworkFile, ReportTotals
+from covreports.reports.types import NetworkFile, ReportTotals
 
 
 def make_network_file(totals, sessions=None, diff=None):

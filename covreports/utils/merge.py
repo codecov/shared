@@ -1,7 +1,10 @@
 from collections import defaultdict
 from itertools import groupby, starmap
-from covreports.utils.tuples import ReportLine
-from covreports.utils.tuples import LineSession
+from typing import Sequence
+from enum import IntEnum
+
+from covreports.reports.types import ReportLine
+from covreports.reports.types import LineSession
 
 
 def merge_all(coverages, missing_branches=None):
@@ -31,15 +34,17 @@ def merge_branch(b1, b2):
         return b1
     elif type(b2) is list:
         return b2
-    br1, br2 = tuple(b1.split('/', 1))
+    br1, br2 = tuple(b1.split("/", 1))
     if br1 == br2:  # equal 1/1
         return b1
-    br3, br4 = tuple(b2.split('/', 1))
+    br3, br4 = tuple(b2.split("/", 1))
     if br3 == br4:  # equal 1/1
         return b2
     # return the greatest found
-    return "%s/%s" % (br1 if int(br1) > int(br3) else br3,
-                      br2 if int(br2) > int(br3) else br4)
+    return "%s/%s" % (
+        br1 if int(br1) > int(br3) else br3,
+        br2 if int(br2) > int(br3) else br4,
+    )
 
 
 def merge_partial_line(p1, p2):
@@ -52,16 +57,22 @@ def merge_partial_line(p1, p2):
         return np
 
     fl = defaultdict(list)
-    [[fl[x].append(_c) for x in range(_s or 0, _e + 1)] for _s, _e, _c in np if _e is not None]
+    [
+        [fl[x].append(_c) for x in range(_s or 0, _e + 1)]
+        for _s, _e, _c in np
+        if _e is not None
+    ]
     ks = list(fl.keys())
-    mx = max(ks)+1 if ks else 0
+    mx = max(ks) + 1 if ks else 0
     # appends coverage on each column when [X, None, C]
     [[fl[x].append(_c) for x in range(_s or 0, mx)] for _s, _e, _c in np if _e is None]
     ks = list(fl.keys())
     # fl = {1: [1], 2: [1], 4: [0], 3: [1], 5: [0], 7: [0], 8: [0]}
     pp = []
     append = pp.append
-    for cov, group in groupby(sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]):
+    for cov, group in groupby(
+        sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]
+    ):
         group = list(group)
         append(_ifg(group[0][0], group[-1][0], cov))
 
@@ -98,14 +109,14 @@ def merge_coverage(l1, l2, branches_missing=True):
 
         if branches_missing == []:
             # all branches were hit, no need to merge them
-            l1 = l1.split('/')[-1]
-            return '%s/%s' % (l1, l1)
+            l1 = l1.split("/")[-1]
+            return "%s/%s" % (l1, l1)
 
         elif isinstance(branches_missing, list):
             # we know how many are missing
-            target = int(l1.split('/')[-1])
-            bf = (target - len(branches_missing))
-            return '%s/%s' % (bf if bf > 0 else 0, target)
+            target = int(l1.split("/")[-1])
+            bf = target - len(branches_missing)
+            return "%s/%s" % (bf if bf > 0 else 0, target)
 
         return merge_branch(l1, l2)
 
@@ -115,8 +126,10 @@ def merge_coverage(l1, l2, branches_missing=True):
     elif isinstance(l1t, bool) or isinstance(l2t, bool):
         return (l2 or l1) if isinstance(l1t, bool) else (l1 or l2)
 
-    return merge_coverage(partials_to_line(l1) if isinstance(l1t, list) else l1,
-                          partials_to_line(l2) if isinstance(l2t, list) else l2)
+    return merge_coverage(
+        partials_to_line(l1) if isinstance(l1t, list) else l1,
+        partials_to_line(l2) if isinstance(l2t, list) else l2,
+    )
 
 
 def merge_missed_branches(sessions):
@@ -130,9 +143,13 @@ def merge_missed_branches(sessions):
             return None
 
         # missing branches or fulfilled if type=hit else not applicable
-        mb = [s.branches if s.branches is not None else ([] if line_type(s.coverage) == 0 else None)
-              for s in sessions
-              if s]
+        mb = [
+            s.branches
+            if s.branches is not None
+            else ([] if line_type(s.coverage) == 0 else None)
+            for s in sessions
+            if s
+        ]
 
         # one of the sessions collected all the branches
         if [] in mb:
@@ -165,11 +182,13 @@ def merge_line(l1, l2, joined=True):
     # merge sessions
     sessions = _merge_sessions(list(l1.sessions or []), list(l2.sessions or []))
 
-    return ReportLine(type=l1.type or l2.type,
-                      coverage=get_coverage_from_sessions(sessions) if joined else l1.coverage,
-                      complexity=get_complexity_from_sessions(sessions) if joined else l1.complexity,
-                      sessions=sessions,
-                      messages=merge_messages(l1.messages, l2.messages))
+    return ReportLine(
+        type=l1.type or l2.type,
+        coverage=get_coverage_from_sessions(sessions) if joined else l1.coverage,
+        complexity=get_complexity_from_sessions(sessions) if joined else l1.complexity,
+        sessions=sessions,
+        messages=merge_messages(l1.messages, l2.messages),
+    )
 
 
 def merge_messages(m1, m2):
@@ -207,34 +226,34 @@ def merge_line_session(s1, s2):
             # list + list
             partials = sorted(s1p + s2p, key=lambda p: p[0])
 
-    return LineSession(s1.id, merge_coverage(s1.coverage, s2.coverage, mb), mb, partials)
+    return LineSession(
+        s1.id, merge_coverage(s1.coverage, s2.coverage, mb), mb, partials
+    )
 
 
-def _merge_sessions(s1, s2):
+def _merge_sessions(s1: Sequence[LineSession], s2: Sequence[LineSession]):
     """Merges two lists of different sessions into one
     """
     if not s1 or not s2:
         return s1 or s2
 
-    s1k = set([s[0] for s in s1])
-    s2k = set([s[0] for s in s2])
+    s1k = set([s.id for s in s1])
+    s2k = set([s.id for s in s2])
     same = s1k & s2k
     if same:
-        s1 = dict([(s[0], s) for s in s1])
-        s2 = dict([(s[0], s) for s in s2])
+        s1 = dict([(s.id, s) for s in s1])
+        s2 = dict([(s.id, s) for s in s2])
 
         # merge existing
         for s in same:
-            s1[s] = merge_line_session(LineSession(*s1[s]),
-                                       LineSession(*s2.pop(s)))
+            s1[s] = merge_line_session(s1[s], s2.pop(s))
 
         # add remaining new sessions
-        s1 = list(s1.values()) + list(s2.values())
+        return list(s1.values()) + list(s2.values())
 
     else:
         s1.extend(s2)
-
-    return list(starmap(LineSession, s1))
+        return s1
 
 
 def _ifg(s, e, c):
@@ -242,7 +261,8 @@ def _ifg(s, e, c):
     s=start, e=end, c=coverage
     Insures the end is larger then the start.
     """
-    return [s, e if e > s else s+1, c]
+    return [s, e if e > s else s + 1, c]
+
 
 def cast_ints_float(value):
     """
@@ -250,6 +270,14 @@ def cast_ints_float(value):
     converts it to flaot if type(value) is int
     """
     return value if type(value) is not int else float(value)
+
+
+class LineType(IntEnum):
+    skipped = -1
+    hit = 0
+    miss = 1
+    partial = 2
+
 
 def line_type(line):
     """
@@ -259,12 +287,19 @@ def line_type(line):
     2 = partial
     None = ignore (because it has messages or something)
     """
-    return 2 if line is True else \
-        branch_type(line) if type(line) is str else \
-            -1 if line == -1 else \
-                None if line is False else \
-                    0 if line else \
-                        1 if line is not None else None
+    if line is True:
+        return LineType.partial
+    if isinstance(line, str):
+        return branch_type(line)
+    if line == -1:
+        return LineType.skipped
+    if line is False:
+        return None
+    if line:
+        return LineType.hit
+    if line is not None:
+        return LineType.miss
+    return None
 
 
 def branch_type(b):
@@ -273,8 +308,10 @@ def branch_type(b):
     1 = miss
     2 = partial
     """
-    b1, b2 = tuple(b.split('/', 1))
-    return 0 if b1 == b2 else 1 if b1 == '0' else 2
+    b1, b2 = tuple(b.split("/", 1))
+    return (
+        LineType.hit if b1 == b2 else LineType.miss if b1 == "0" else LineType.partial
+    )
 
 
 def partials_to_line(partials):
@@ -290,17 +327,19 @@ def partials_to_line(partials):
     if ln == 1:
         return partials[0][2]
     v = sum([1 for (sc, ec, hits) in partials if hits > 0])
-    return f'{v}/{ln}'
+    return f"{v}/{ln}"
 
 
 def get_complexity_from_sessions(sessions):
-    _type = type(sessions[0][4])
+    _type = type(sessions[0].complexity)
     if _type is int:
-        return max([(s[4] or 0) for s in sessions])
+        return max([(s.complexity or 0) for s in sessions])
     elif _type in (tuple, list):
-        return (max([(s[4] or (0, 0))[0] for s in sessions]),
-                max([(s[4] or (0, 0))[1] for s in sessions]))
+        return (
+            max([(s.complexity or (0, 0))[0] for s in sessions]),
+            max([(s.complexity or (0, 0))[1] for s in sessions]),
+        )
 
 
 def get_coverage_from_sessions(sessions):
-    return merge_all([s[1] for s in sessions], merge_missed_branches(sessions))
+    return merge_all([s.coverage for s in sessions], merge_missed_branches(sessions))
