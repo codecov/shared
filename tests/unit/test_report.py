@@ -55,8 +55,7 @@ def test_report_repr(patch):
     ],
 )
 def test_network(files, mocker, chunks, path_filter, network, patch):
-    r = Report()
-    r._files = files
+    r = Report(files=files)
     r._chunks = chunks
     r._path_filter = path_filter
     r._line_modifier = None
@@ -72,19 +71,15 @@ def test_network(files, mocker, chunks, path_filter, network, patch):
     ],
 )
 def test_files(files, path_filter, patch):
-    patch.init(Report)
-    r = Report()
-    r._files = files
+    r = Report(files=files)
     r._path_filter = path_filter
     assert r.files == ["py.py"]
 
 
 @pytest.mark.unit
 def test_resolve_paths(patch):
-    patch.init(Report)
-    r = Report()
+    r = Report(files={"py.py": [0, ReportTotals(1)]})
     r._path_filter = None
-    r._files = {"py.py": [0, ReportTotals(1)]}
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
         END_OF_CHUNK
     )
@@ -169,9 +164,7 @@ def test_append_error(patch):
     ],
 )
 def test_get(files, chunks, path_filter, file_repr, lines, patch):
-    patch.init(Report)
-    r = Report()
-    r._files = files
+    r = Report(files=files)
     r._chunks = chunks
     r._path_filter = path_filter
     r._line_modifier = None
@@ -183,9 +176,7 @@ def test_get(files, chunks, path_filter, file_repr, lines, patch):
 
 @pytest.mark.unit
 def test_rename(patch):
-    patch.init(Report)
-    r = Report()
-    r._files = {"file.py": [0, ReportTotals(1)]}
+    r = Report(files={"file.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._line_modifier = None
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
@@ -224,11 +215,9 @@ def test_get_item_exception(patch):
 
 @pytest.mark.unit
 def test_del_item(patch):
-    patch.init(Report)
-    r = Report()
+    r = Report(files={"file.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._line_modifier = None
-    r._files = {"file.py": [0, ReportTotals(1)]}
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
         END_OF_CHUNK
     )
@@ -265,13 +254,13 @@ def test_manifest(files, path_filter, manifest, patch):
 
 @pytest.mark.unit
 def test_get_folder_totals(patch):
-    patch.init(Report)
-    r = Report()
-    r._files = {
-        "path/file1.py": [0, ReportTotals(1)],
-        "path/file2.py": [0, ReportTotals(1)],
-        "wrong/path/file2.py": [0, ReportTotals(1)],
-    }
+    r = Report(
+        files={
+            "path/file1.py": [0, ReportTotals(1)],
+            "path/file2.py": [0, ReportTotals(1)],
+            "wrong/path/file2.py": [0, ReportTotals(1)],
+        }
+    )
     r._chunks = [
         ReportFile(name="path/file1.py", totals=[1, 2, 1]),
         ReportFile(name="path/file2.py", totals=[1, 2, 1]),
@@ -297,12 +286,9 @@ def test_flags(patch):
 
 @pytest.mark.unit
 def test_iter(patch):
-    patch.init(Report)
-    r = Report()
-    r._files = {
-        "file1.py": [0, ReportTotals(1)],
-        "file2.py": [1, ReportTotals(1)],
-    }
+    r = Report(
+        files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)],}
+    )
     r._chunks = None
     r._path_filter = None
     r._line_modifier = None
@@ -344,9 +330,7 @@ def test_contains(patch):
     ],
 )
 def test_merge(files, chunks, new_report, manifest, patch):
-    patch.init(Report)
-    r = Report()
-    r._files = files
+    r = Report(files=files)
     r._chunks = chunks
     r._path_filter = None
     r._line_modifier = None
@@ -408,9 +392,7 @@ def test_to_archive(patch):
 
 @pytest.mark.unit
 def test_to_database(patch):
-    patch.init(Report)
-    r = Report()
-    r._files = {"file.py": [0, ReportTotals()]}
+    r = Report(files={"file.py": [0, ReportTotals()]})
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
         END_OF_CHUNK
     )
@@ -436,7 +418,7 @@ def test_to_database(patch):
             "diff": None,
             "N": 0,
         },
-        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]}, "sessions": {}}',
+        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], null, null]}, "sessions": {}}',
     )
 
 
@@ -528,10 +510,8 @@ def test_to_database(patch):
     ],
 )
 def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res, patch):
-    patch.init(Report)
-    r = Report()
     v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 1}}}}})
-    r._files = v3["files"]
+    r = Report(files=v3["files"])
     r.sessions = v3["sessions"]
     r._totals = v3["totals"]
     r._chunks = v3["chunks"]
@@ -542,8 +522,7 @@ def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res, patch):
     else:
         futuree = v2_to_v3({"files": {"z": {}}})
 
-    future_r = Report()
-    future_r._files = futuree["files"]
+    future_r = Report(files=futuree["files"])
     future_r.sessions = futuree["sessions"]
     future_r._totals = futuree["totals"]
     future_r._chunks = futuree["chunks"]
@@ -555,10 +534,8 @@ def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res, patch):
 
 @pytest.mark.unit
 def test_apply_diff(patch):
-    patch.init(Report)
-    r = Report()
     v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}})
-    r._files = v3["files"]
+    r = Report(files=v3["files"])
     r.sessions = v3["sessions"]
     r._totals = v3["totals"]
     r._chunks = v3["chunks"]
@@ -583,10 +560,8 @@ def test_apply_diff(patch):
 
 @pytest.mark.unit
 def test_apply_diff_no_append(patch):
-    patch.init(Report)
-    r = Report()
     v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}})
-    r._files = v3["files"]
+    r = Report(files=v3["files"])
     r.sessions = v3["sessions"]
     r._totals = v3["totals"]
     r._chunks = v3["chunks"]
@@ -697,9 +672,7 @@ def test_add_session(patch):
     ],
 )
 def test_flare(files, chunks, params, flare, patch):
-    patch.init(Report)
-    r = Report()
-    r._files = files
+    r = Report(files=files)
     r._chunks = chunks
     r._path_filter = None
     r._line_modifier = None
@@ -719,10 +692,8 @@ def test_flare(files, chunks, params, flare, patch):
 
 def test_test(patch):
     patch.init(ReportFile)
-    patch.init(Report)
     patch.object(ReportFile, "ignore_lines", return_value=None)
-    r = Report()
-    r._files = {"py.py": [0, ReportTotals(1)]}
+    r = Report(files={"py.py": [0, ReportTotals(1)]})
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
         END_OF_CHUNK
     )

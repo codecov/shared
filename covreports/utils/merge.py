@@ -1,5 +1,6 @@
 from collections import defaultdict
 from itertools import groupby, starmap
+from fractions import Fraction
 from typing import Sequence
 from enum import IntEnum
 
@@ -94,7 +95,7 @@ def merge_coverage(l1, l2, branches_missing=True):
     l1t = cast_ints_float(l1)
     l2t = cast_ints_float(l2)
 
-    if isinstance(l1t, float) and isinstance(l2t, float):
+    if isinstance(l1t, (float, Fraction)) and isinstance(l2t, (float, Fraction)):
         return l1 if l1 >= l2 else l2
 
     elif isinstance(l1t, str) or isinstance(l2t, str):
@@ -308,6 +309,10 @@ def branch_type(b):
     1 = miss
     2 = partial
     """
+    if "/" not in b:
+        if int(b) == 0:
+            return LineType.miss
+        return LineType.hit
     b1, b2 = tuple(b.split("/", 1))
     return (
         LineType.hit if b1 == b2 else LineType.miss if b1 == "0" else LineType.partial
@@ -342,4 +347,5 @@ def get_complexity_from_sessions(sessions):
 
 
 def get_coverage_from_sessions(sessions):
-    return merge_all([s.coverage for s in sessions], merge_missed_branches(sessions))
+    new_coverages = [s.coverage for s in sessions]
+    return merge_all(new_coverages, merge_missed_branches(sessions))
