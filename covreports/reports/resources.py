@@ -616,7 +616,7 @@ class Report(object):
             if self._chunks:
                 try:
                     lines = self._chunks[_file.file_index]
-                except Exception:
+                except IndexError:
                     log.warning(
                         "File not found in chunk",
                         extra=dict(

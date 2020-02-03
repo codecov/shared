@@ -9,22 +9,22 @@ from covreports.utils.sessions import Session, SessionType
 log = logging.getLogger(__name__)
 
 
-def line_without_session(line: ReportLine, sessionid: int):
-    new_sessions = [
-        s for s in line.sessions if s.id != sessionid
-    ]
-    remaining_coverages = [s.coverage for s in new_sessions]
-    if len(new_sessions) == 0:
-        return EMPTY
-    new_coverage = merge_all(remaining_coverages)
-    return dataclasses.replace(
-        line,
-        sessions=new_sessions,
-        coverage=new_coverage
-    )
-
-
 class EditableReportFile(ReportFile):
+
+    @classmethod
+    def line_without_session(cls, line: ReportLine, sessionid: int):
+        new_sessions = [
+            s for s in line.sessions if s.id != sessionid
+        ]
+        remaining_coverages = [s.coverage for s in new_sessions]
+        if len(new_sessions) == 0:
+            return EMPTY
+        new_coverage = merge_all(remaining_coverages)
+        return dataclasses.replace(
+            line,
+            sessions=new_sessions,
+            coverage=new_coverage
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,7 +40,7 @@ class EditableReportFile(ReportFile):
         for index, line in enumerate(self._lines):
             if line:
                 if any(s.id == sessionid for s in line.sessions):
-                    self._lines[index] = line_without_session(line, sessionid)
+                    self._lines[index] = self.line_without_session(line, sessionid)
 
 
 class EditableReport(Report):

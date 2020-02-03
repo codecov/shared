@@ -10,7 +10,6 @@ from covreports.reports.resources import ReportFileSummary, Session
 from covreports.utils.merge import merge_coverage
 from covreports.utils.sessions import SessionType
 from covreports.reports.editable import (
-    line_without_session,
     EditableReportFile,
     EditableReport,
 )
@@ -26,9 +25,18 @@ def test_merge_coverage():
 class TestEditableReportHelpers(object):
     def test_line_without_session(self):
         line = ReportLine(1, None, [LineSession(1, 0), LineSession(0, 1)])
-        assert line_without_session(line, 1) == ReportLine(1, None, [LineSession(0, 1)])
-        assert line_without_session(line, 0) == ReportLine(0, None, [LineSession(1, 0)])
-        assert line_without_session(line_without_session(line, 0), 1) == ""
+        assert EditableReportFile.line_without_session(line, 1) == ReportLine(
+            1, None, [LineSession(0, 1)]
+        )
+        assert EditableReportFile.line_without_session(line, 0) == ReportLine(
+            0, None, [LineSession(1, 0)]
+        )
+        assert (
+            EditableReportFile.line_without_session(
+                EditableReportFile.line_without_session(line, 0), 1
+            )
+            == ""
+        )
 
 
 class TestEditableReportFile(object):
@@ -256,7 +264,9 @@ def sample_report():
     report.append(first_file)
     report.append(second_file)
     report.add_session(Session(id=0, flags=["unit"]))
-    report.add_session(Session(id=1, flags=["integration"], session_type=SessionType.carryforwarded))
+    report.add_session(
+        Session(id=1, flags=["integration"], session_type=SessionType.carryforwarded)
+    )
     report.add_session(Session(id=2, flags=None))
     return report
 
@@ -777,7 +787,11 @@ class TestEditableReport(object):
                 "s": 3,
             },
         }
-        report.add_session(Session(sessionid=3, session_type=SessionType.uploaded, flags=['integration']))
+        report.add_session(
+            Session(
+                sessionid=3, session_type=SessionType.uploaded, flags=["integration"]
+            )
+        )
         pprint.pprint(self.convert_report_to_better_readable(report))
         expected_result = {
             "archive": {
