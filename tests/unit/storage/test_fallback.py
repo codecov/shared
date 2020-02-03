@@ -129,7 +129,7 @@ class TestFallbackStorageService(BaseTestCase):
         storage = storage_service
         path = f'{request.node.name}/does_not_exist_on_first_but_exists_on_second.txt'
         bucket_name = 'testingarchive20190201'
-        storage_service.second_service.write_file(bucket_name, path, 'some_data_over_there')
+        storage_service.fallback_service.write_file(bucket_name, path, 'some_data_over_there')
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == 'some_data_over_there'
 
@@ -137,7 +137,7 @@ class TestFallbackStorageService(BaseTestCase):
         storage = storage_service
         path = f'{request.node.name}/does_exist_on_first_but_not_exists_on_second.txt'
         bucket_name = 'testingarchive20190201'
-        storage_service.first_service.write_file(bucket_name, path, 'some_different_data')
+        storage_service.main_service.write_file(bucket_name, path, 'some_different_data')
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == 'some_different_data'
 

@@ -74,10 +74,10 @@ class TestStorageInitialization(object):
         }
         res = get_appropriate_storage_service()
         assert isinstance(res, StorageWithFallbackService)
-        assert isinstance(res.first_service, GCPStorageService)
-        assert res.first_service.config == gcp_config
-        assert isinstance(res.second_service, AWSStorageService)
-        assert res.second_service.config == aws_config
+        assert isinstance(res.main_service, GCPStorageService)
+        assert res.main_service.config == gcp_config
+        assert isinstance(res.fallback_service, AWSStorageService)
+        assert res.fallback_service.config == aws_config
 
     def test_get_appropriate_storage_service_aws(self, mock_configuration):
         mock_configuration.params['services'] = {

@@ -8,13 +8,13 @@ log = logging.getLogger(__name__)
 
 class StorageWithFallbackService(BaseStorageService):
 
-    def __init__(self, first_service, second_service):
-        self.first_service = first_service
-        self.second_service = second_service
+    def __init__(self, main_service, fallback_service):
+        self.main_service = main_service
+        self.fallback_service = fallback_service
 
     def create_root_storage(self, bucket_name='archive', region='us-east-1'):
-        res = self.first_service.create_root_storage(bucket_name, region)
-        self.second_service.create_root_storage(bucket_name, region)
+        res = self.main_service.create_root_storage(bucket_name, region)
+        self.fallback_service.create_root_storage(bucket_name, region)
         return res
 
     def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
@@ -29,7 +29,7 @@ class StorageWithFallbackService(BaseStorageService):
             gzipped (bool): Whether the file should be gzipped on write (default: {False})
 
         """
-        return self.first_service.write_file(bucket_name, path, data, reduced_redundancy, gzipped)
+        return self.main_service.write_file(bucket_name, path, data, reduced_redundancy, gzipped)
 
     def append_to_file(self, bucket_name, path, data):
         """
@@ -43,7 +43,7 @@ class StorageWithFallbackService(BaseStorageService):
         Raises:
             NotImplementedError: If the current instance did not implement this method
         """
-        return self.first_service.append_to_file(bucket_name, path, data)
+        return self.main_service.append_to_file(bucket_name, path, data)
 
     def read_file(self, bucket_name, path):
         """Reads the content of a file
@@ -60,10 +60,10 @@ class StorageWithFallbackService(BaseStorageService):
             bytes : The contents of that file, still encoded as bytes
         """
         try:
-            return self.first_service.read_file(bucket_name, path)
+            return self.main_service.read_file(bucket_name, path)
         except FileNotInStorageError:
             log.info("File not in first storage, looking into second one")
-            return self.second_service.read_file(bucket_name, path)
+            return self.fallback_service.read_file(bucket_name, path)
 
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage
@@ -86,8 +86,8 @@ class StorageWithFallbackService(BaseStorageService):
         Returns:
             bool: True if the deletion was succesful
         """
-        first_deletion = self.first_service.delete_file(bucket_name, path)
-        second_deletion = self.second_service.delete_file(bucket_name, path)
+        first_deletion = self.main_service.delete_file(bucket_name, path)
+        second_deletion = self.fallback_service.delete_file(bucket_name, path)
         return first_deletion and second_deletion
 
     def delete_files(self, bucket_name, paths=[]):
@@ -105,8 +105,8 @@ class StorageWithFallbackService(BaseStorageService):
             list: A list of booleans, where each result indicates whether that file was deleted
                 successfully
         """
-        first_results = self.first_service.delete_files(bucket_name, paths)
-        second_results = self.second_service.delete_files(bucket_name, paths)
+        first_results = self.main_service.delete_files(bucket_name, paths)
+        second_results = self.fallback_service.delete_files(bucket_name, paths)
         return [f and s for f, s in zip(first_results, second_results)]
 
     def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
@@ -120,4 +120,4 @@ class StorageWithFallbackService(BaseStorageService):
         Raises:
             NotImplementedError: If the current instance did not implement this method
         """
-        return self.first_service.list_folder_contents(bucket_name, prefix, recursive)
+        return self.main_service.list_folder_contents(bucket_name, prefix, recursive)
