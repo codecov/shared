@@ -8,13 +8,13 @@ from covreports.storage.exceptions import BucketAlreadyExistsError, FileNotInSto
 aws_config = {
     "resource": "s3",
     "aws_access_key_id": "testjbuy2ljmuwc14v63",
-    "aws_secret_access_key": "test0eub7n9rfk41ax2wpqpws7l00h9xkoivute9",
+    "aws_secret_access_key": "a8ahavaFaaaaSP5aMx9aaaaaaataaaaaLGamEaaa",
     "region_name": "us-east-1"
 }
 
 
 class TestAWSStorageService(BaseTestCase):
-    
+
     def test_create_bucket(self, codecov_vcr):
         storage = AWSStorageService(
             aws_config
@@ -22,7 +22,7 @@ class TestAWSStorageService(BaseTestCase):
         bucket_name = 'felipearchivetest'
         res = storage.create_root_storage(bucket_name=bucket_name)
         assert res['name'] == 'felipearchivetest'
-    
+
     def test_create_bucket_at_region(self, codecov_vcr):
         storage = AWSStorageService(
             aws_config
@@ -97,7 +97,7 @@ class TestAWSStorageService(BaseTestCase):
         assert writing_result
         delete_result = storage.delete_file(bucket_name=bucket_name, path=path)
         assert delete_result
-        with pytest.raises(FileNotFoundError):
+        with pytest.raises(FileNotInStorageError):
             reading_result = storage.read_file(bucket_name=bucket_name, path=path)
 
     def test_batch_delete_files(self, codecov_vcr):
@@ -117,7 +117,7 @@ class TestAWSStorageService(BaseTestCase):
         delete_result = storage.delete_files(bucket_name=bucket_name, paths=paths)
         assert delete_result == [True, True, True]
         for p in paths:
-            with pytest.raises(FileNotFoundError):
+            with pytest.raises(FileNotInStorageError):
                 storage.read_file(bucket_name=bucket_name, path=p)
 
     def test_list_folder_contents(self, codecov_vcr):

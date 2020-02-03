@@ -124,7 +124,7 @@ class AWSStorageService(BaseStorageService):
             obj = self.storage_client.get_object(Bucket=bucket_name, Key=path)
         except ClientError as e:
             if e.response['Error']['Code'] == 'NoSuchKey':
-                raise FileNotFoundError(f"File {path} does not exist in {bucket_name}")
+                raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
             else:
                 raise
         data = BytesIO(obj['Body'].read())
