@@ -269,7 +269,16 @@ def test_line_type(line, _line_type):
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("x, y", [("0/2", 1), ("1/2", 2), ("2/2", 0),])
+@pytest.mark.parametrize(
+    "x, y",
+    [
+        ("0/2", 1),
+        ("1/2", 2),
+        ("2/2", 0),
+        ("0", 1),
+        ("1", 0),
+    ]
+)
 def test_branch_type(x, y):
     assert branch_type(x) == y
     assert branch_type(str(x)) == y
