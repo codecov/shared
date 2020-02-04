@@ -5,6 +5,13 @@ class SessionType(Enum):
     uploaded = 'uploaded'
     carryforwarded = 'carryforwarded'
 
+    @classmethod
+    def get_from_string(cls, val):
+        for member in cls:
+            if member.value == val:
+                return member
+        return None
+
 
 class Session(object):
     def __init__(
@@ -73,7 +80,7 @@ class Session(object):
             state=p or kwargs.get("state"),
             env=e or kwargs.get("env"),
             name=N or kwargs.get("name"),
-            session_type=st
+            session_type=SessionType.get_from_string(st)
         )
 
     def _encode(self):
