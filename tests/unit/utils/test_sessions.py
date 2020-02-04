@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.sessions import Session
+from covreports.utils.sessions import Session, SessionType
 
 
 @pytest.mark.unit
@@ -32,3 +32,52 @@ def test_sessions():
         "e": "env",
         "st": "uploaded",
     }
+
+
+def test_parse_session():
+    encoded_session = {
+        "t": "totals",
+        "d": "time",
+        "a": "archive",
+        "f": "flags",
+        "c": "provider",
+        "n": "build",
+        "N": "name",
+        "j": "job",
+        "u": "url",
+        "p": "state",
+        "e": "env",
+        "st": "uploaded",
+    }
+    sess = Session.parse_session(**encoded_session)
+    assert sess.totals == "totals"
+    assert sess.time == "time"
+    assert sess.archive == "archive"
+    assert sess.flags == "flags"
+    assert sess.provider == "provider"
+    assert sess.build == "build"
+    assert sess.job == "job"
+    assert sess.url == "url"
+    assert sess.state == "state"
+    assert sess.env == "env"
+    assert sess.name == "name"
+    assert sess.session_type == SessionType.uploaded
+
+
+def test_parse_session_then_encode():
+    encoded_session = {
+        "t": "totals",
+        "d": "time",
+        "a": "archive",
+        "f": "flags",
+        "c": "provider",
+        "n": "build",
+        "N": "name",
+        "j": "job",
+        "u": "url",
+        "p": "state",
+        "e": "env",
+        "st": "uploaded",
+    }
+    sess = Session.parse_session(**encoded_session)
+    assert sess._encode() == encoded_session
