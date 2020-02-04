@@ -8,28 +8,52 @@ from covreports.utils.merge import (
     get_complexity_from_sessions,
     get_coverage_from_sessions,
 )
-from covreports.utils.match import match_any
+from covreports.utils.match import match_any, match
 from covreports.utils.sessions import Session, SessionType
 
 
+def generate_carryforward_report_file(existing_file_report, old_to_new_session_mapping):
+    new_file_report = EditableReportFile(existing_file_report.name)
+    for line_number, report_line in existing_file_report.lines:
+        new_sessions = [
+            dataclasses.replace(s, id=old_to_new_session_mapping[s.id])
+            for s in (report_line.sessions or [])
+            if int(s.id) in old_to_new_session_mapping.keys()
+        ]
+        if new_sessions:
+            new_file_report.append(
+                line_number,
+                ReportLine(
+                    coverage=get_coverage_from_sessions(new_sessions),
+                    complexity=get_complexity_from_sessions(new_sessions),
+                    type=report_line.type,
+                    sessions=new_sessions,
+                    messages=report_line.messages,
+                ),
+            )
+    return new_file_report
+
+
 def generate_carryforward_report(
-    report: Report, flags: Sequence[str]
+    report: Report, flags: Sequence[str], paths: Sequence[str]
 ) -> EditableReport:
     """
-        Generates a carryforwarded report starting from report `report` and flags `flags`.
+        Generates a carryforwarded report starting from report `report`, flags `flags`
+            and paths `paths`
 
     What this function does it basically take a report `report` and creates a new report
         from it (so no changes are done in-place). On this new report, it adds all the information
-        from the report `report` that relates to sessions that have any of the flags `f`.
+        from `report` that relates to sessions that have any of the flags `f`
 
     This way, for example, if none of the sessions in `report` have a flag in `flags`,
         it will just produce an empty report
 
     If there are sessions with any of the flags in `flags`, let's call them `relevant_sessions`,
-        this function will go through all files in `report` and build a new 'carryforwarded'
-        ReportFile from it, with only the ReportLines that had at least one LineSession
-        among the `relevant_sessions` (and proper filter out all the the other sessions from
-        that line). Then all the new EditableReportFile will be added to the report.
+        this function will go through all files in `report` that match any of the paths `paths
+        and build a new 'carryforwarded' ReportFile from it, with only the ReportLines
+        that had at least one LineSession among the `relevant_sessions` (and proper filter out
+        all the the other sessions from that line). Then all the new EditableReportFile will
+        be added to the report.
 
     Also, the old sessions are copied over to the new report, with their numbering changed to match
         the new session order they are in now (they could be the fifth session before,
@@ -61,29 +85,15 @@ def generate_carryforward_report(
             archive=sess.archive,
             url=sess.url,
             session_type=SessionType.carryforwarded,
-            totals=sess.totals
+            totals=sess.totals,
         )
         new_report.sessions[new_session.id] = new_session
         old_to_new_session_mapping[old_sess_id] = new_session.id
     for filename in report.files:
-        existing_file_report = report.get(filename)
-        new_file_report = EditableReportFile(existing_file_report.name)
-        for line_number, report_line in existing_file_report.lines:
-            new_sessions = [
-                dataclasses.replace(s, id=old_to_new_session_mapping[s.id])
-                for s in (report_line.sessions or [])
-                if int(s.id) in relevant_sessions_items.keys()
-            ]
-            if new_sessions:
-                new_file_report.append(
-                    line_number,
-                    ReportLine(
-                        coverage=get_coverage_from_sessions(new_sessions),
-                        complexity=get_complexity_from_sessions(new_sessions),
-                        type=report_line.type,
-                        sessions=new_sessions,
-                        messages=report_line.messages,
-                    ),
-                )
-        new_report.append(new_file_report)
+        if not paths or match(paths, filename):
+            existing_file_report = report.get(filename)
+            new_file_report = generate_carryforward_report_file(
+                existing_file_report, old_to_new_session_mapping
+            )
+            new_report.append(new_file_report)
     return new_report
