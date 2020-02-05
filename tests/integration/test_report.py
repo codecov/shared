@@ -2,7 +2,7 @@ import pytest
 
 from covreports.reports.resources import Report, ReportFile, _encode_chunk
 from covreports.utils.sessions import Session
-from covreports.reports.types import ReportTotals, ReportLine, NetworkFile, LineSession
+from covreports.reports.types import ReportTotals, ReportLine, NetworkFile, LineSession, Change
 from tests.helper import v2_to_v3
 
 
@@ -686,6 +686,105 @@ def test_add_session():
 )
 def test_flare(r, params, flare):
     assert r.flare(**params) == flare
+
+
+def test_flare_with_changes():
+    report = Report(files={"py.py": [0, ReportTotals(1), [], ReportTotals(lines=5)]})
+    flare = [
+        {
+            "name": "",
+            "coverage": 100,
+            "color": "green",
+            "_class": None,
+            "lines": 0,
+            "children": [
+                {
+                    "color": "green",
+                    "_class": None,
+                    "lines": 0,
+                    "name": "py.py",
+                    "coverage": 1,
+                }
+            ],
+        }
+    ]
+    modified_change = Change(
+        path='modified.py',
+        in_diff=True,
+        totals=ReportTotals(
+            files=0,
+            lines=0,
+            hits=-2,
+            misses=1,
+            partials=0,
+            coverage=-23.333330000000004,
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0
+        )
+    )
+    renamed_with_changes_change = Change(
+        path='renamed_with_changes.py',
+        in_diff=True,
+        old_path='old_renamed_with_changes.py',
+        totals=ReportTotals(
+            files=0,
+            lines=0,
+            hits=-1,
+            misses=1,
+            partials=0,
+            coverage=-20.0,
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0
+        )
+    )
+    unrelated_change = Change(
+        path='unrelated.py',
+        in_diff=False,
+        totals=ReportTotals(
+            files=0,
+            lines=5,
+            hits=-3,
+            misses=2,
+            partials=0,
+            coverage=-43.333330000000004,
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0
+        )
+    )
+    added_change = Change(
+        path='added.py',
+        new=True,
+        in_diff=None,
+        old_path=None,
+        totals=None
+    )
+    deleted_change = Change(
+        path='deleted.py',
+        deleted=True
+    )
+    changes = [
+        modified_change,
+        renamed_with_changes_change,
+        unrelated_change,
+        added_change,
+        deleted_change
+    ]
+    assert report.flare(changes=changes) == flare
 
 
 # TODO see filter method on Report(), method does nothing because self.reset() is called after _filter_cache is set

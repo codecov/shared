@@ -67,6 +67,21 @@ class ReportFileSummary(object):
     diff_totals: Any = None
 
 
+@dataclass
+class Change(object):
+    path: str = None
+    new: bool = False
+    deleted: bool = False
+    in_diff: bool = None
+    old_path: str = None
+    totals: ReportTotals = None
+
+    def __post_init__(self):
+        if self.totals is not None:
+            if not isinstance(self.totals, ReportTotals):
+                self.totals = ReportTotals(*self.totals)
+
+
 EMPTY = ""
 
 TOTALS_MAP = tuple("fnhmpcbdMsCN")

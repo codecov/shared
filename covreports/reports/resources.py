@@ -857,14 +857,14 @@ class Report(object):
             changed_coverages = dict(
                 (
                     (
-                        _Change[0],
-                        _Change[5][5] if not _Change[1] and _Change[5] else None,
+                        individual_change.path,
+                        individual_change.totals.coverage if not individual_change.new and individual_change.totals else None,
                     )
-                    for _Change in changes
+                    for individual_change in changes
                 )
             )
             # <dict path: stripeed if not in_diff>
-            classes = dict(((_Change[0], "s") for _Change in changes if not _Change[3]))
+            classes = dict(((_Change.path, "s") for _Change in changes if not _Change.in_diff))
 
             def _network():
                 for name, _NetworkFile in self.network:
@@ -876,12 +876,12 @@ class Report(object):
                         )
                     else:
                         diff = _NetworkFile.diff_totals
-                        if diff and diff[1] > 0:  # lines > 0
+                        if diff and diff.lines > 0:  # lines > 0
                             # diff file
                             yield name, ReportTotals(
                                 lines=_NetworkFile.totals.lines,
                                 coverage=-1
-                                if float(diff[5]) < float(_NetworkFile.totals.coverage)
+                                if float(diff.coverage) < float(_NetworkFile.totals.coverage)
                                 else 1,
                             )
 
