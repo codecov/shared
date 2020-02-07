@@ -1,5 +1,6 @@
 import logging
 import boto3
+import gzip
 
 from botocore.exceptions import ClientError
 
@@ -105,7 +106,7 @@ class AWSStorageService(BaseStorageService):
                 raise
 
         return self.write_file(bucket_name=bucket_name, path=path, data=file_contents)
-   
+
     def read_file(self, bucket_name, path):
         """Reads the content of a file
 
@@ -123,13 +124,18 @@ class AWSStorageService(BaseStorageService):
         try:
             obj = self.storage_client.get_object(Bucket=bucket_name, Key=path)
         except ClientError as e:
-            if e.response['Error']['Code'] == 'NoSuchKey':
-                raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                raise FileNotInStorageError(
+                    f"File {path} does not exist in {bucket_name}"
+                )
             else:
                 raise
-        data = BytesIO(obj['Body'].read())
-        data.seek(0)
-        return data.getvalue()
+        content = obj["Body"].read()
+        try:
+            decompressed_content = gzip.decompress(content)
+            return decompressed_content
+        except OSError:
+            return content
 
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage

@@ -1,5 +1,7 @@
 import pytest
-import vcr
+import gzip
+
+from io import BytesIO
 
 from tests.base import BaseTestCase
 from covreports.storage.aws import AWSStorageService
@@ -7,8 +9,8 @@ from covreports.storage.exceptions import BucketAlreadyExistsError, FileNotInSto
 
 aws_config = {
     "resource": "s3",
-    "aws_access_key_id": "testjbuy2ljmuwc14v63",
-    "aws_secret_access_key": "a8ahavaFaaaaSP5aMx9aaaaaaataaaaaLGamEaaa",
+    "aws_access_key_id": "testv5u6c7xxo7pom09w",
+    "aws_secret_access_key": "aaaaaaibbbaaaaaaaaa1aaaEHaaaQbbboc7mpaaa",
     "region_name": "us-east-1"
 }
 
@@ -55,6 +57,23 @@ class TestAWSStorageService(BaseTestCase):
         data = 'lorem ipsum dolor test_write_then_read_file á'
         bucket_name = 'felipearchivetest'
         writing_result = storage.write_file(bucket_name=bucket_name, path=path, data=data)
+        assert writing_result
+        reading_result = storage.read_file(bucket_name=bucket_name, path=path)
+        assert reading_result.decode() == data
+
+    def test_write_then_read_gzipped_file(self, codecov_vcr):
+        storage = AWSStorageService(
+            aws_config
+        )
+        path = 'test_write_then_read_gzipped_file/result'
+        data = 'lorem ipsum dolor test_write_then_read_gzipped_file á'
+        bucket_name = 'felipearchivetest'
+        out = BytesIO()
+        with gzip.GzipFile(fileobj=out, mode='w', compresslevel=9) as gz:
+            encoded_data = data.encode()
+            gz.write(encoded_data)
+        data_to_write = out.getvalue()
+        writing_result = storage.write_file(bucket_name=bucket_name, path=path, data=data_to_write)
         assert writing_result
         reading_result = storage.read_file(bucket_name=bucket_name, path=path)
         assert reading_result.decode() == data
