@@ -1,4 +1,7 @@
 import pytest
+import io
+import gzip
+from google.cloud import storage as google_storage
 
 from tests.base import BaseTestCase
 from covreports.storage.gcp import GCPStorageService
@@ -42,15 +45,15 @@ class TestGCPStorateService(BaseTestCase):
         storage = GCPStorageService(
             gcp_config
         )
-        bucket_name = 'thiagoarchivetest'
+        bucket_name = 'testingarchive004'
         res = storage.create_root_storage(bucket_name)
-        assert res['name'] == 'thiagoarchivetest'
+        assert res['name'] == 'testingarchive004'
 
     def test_create_bucket_already_exists(self, codecov_vcr):
         storage = GCPStorageService(
             gcp_config
         )
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         with pytest.raises(BucketAlreadyExistsError):
             storage.create_root_storage(bucket_name)
 
@@ -60,7 +63,7 @@ class TestGCPStorateService(BaseTestCase):
         )
         path = 'test_write_then_read_file/result'
         data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -73,7 +76,7 @@ class TestGCPStorateService(BaseTestCase):
         path = 'test_write_then_append_then_read_file/result'
         data = 'lorem ipsum dolor test_write_then_read_file á'
         second_data = 'mom, look at me, appending data'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         writing_result = storage.write_file(bucket_name, path, data)
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert writing_result
@@ -87,7 +90,7 @@ class TestGCPStorateService(BaseTestCase):
         )
         path = f'{request.node.name}/result.txt'
         second_data = 'mom, look at me, appending data'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert second_writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -98,9 +101,27 @@ class TestGCPStorateService(BaseTestCase):
             gcp_config
         )
         path = f'{request.node.name}/does_not_exist.txt'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         with pytest.raises(FileNotInStorageError):
             storage.read_file(bucket_name, path)
+
+    def test_read_file_application_gzip(self, request, codecov_vcr):
+        storage = GCPStorageService(
+            gcp_config
+        )
+        path = f'gzipped_file/test_006.txt'
+        bucket_name = 'testingarchive004'
+        content_to_upload = "content to write\nThis is crazy\nWhy does this work"
+        bucket = storage.storage_client.get_bucket(bucket_name)
+        blob = google_storage.Blob(path, bucket)
+        with io.BytesIO() as f:
+            with gzip.GzipFile(fileobj=f, mode='wb', compresslevel=9) as fgz:
+                fgz.write(content_to_upload.encode())
+            blob.content_encoding = 'gzip'
+            blob.upload_from_file(f, size=f.tell(), rewind=True, content_type='application/x-gzip')
+        content = storage.read_file(bucket_name, path)
+        print(content)
+        assert content.decode() == content_to_upload
 
     def test_write_then_delete_file(self, request, codecov_vcr):
         storage = GCPStorageService(
@@ -108,7 +129,7 @@ class TestGCPStorateService(BaseTestCase):
         )
         path = f'{request.node.name}/result.txt'
         data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         deletion_result = storage.delete_file(bucket_name, path)
@@ -121,7 +142,7 @@ class TestGCPStorateService(BaseTestCase):
             gcp_config
         )
         path = f'{request.node.name}/result.txt'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         with pytest.raises(FileNotInStorageError):
             storage.delete_file(bucket_name, path)
 
@@ -134,7 +155,7 @@ class TestGCPStorateService(BaseTestCase):
         path_3 = f'{request.node.name}/result_3.txt'
         paths = [path_1, path_2, path_3]
         data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         storage.write_file(bucket_name, path_1, data)
         storage.write_file(bucket_name, path_3, data)
         deletion_result = storage.delete_files(bucket_name, paths)
@@ -154,7 +175,7 @@ class TestGCPStorateService(BaseTestCase):
         path_5 = f'thiago/{request.node.name}/f1/result_2.txt'
         path_6 = f'thiago/{request.node.name}/f1/result_3.txt'
         all_paths = [path_1, path_2, path_3, path_4, path_5, path_6]
-        bucket_name = 'testingarchive'
+        bucket_name = 'testingarchive004'
         for i, p in enumerate(all_paths):
             data = f"Lorem ipsum on file {p} for {i * 'po'}"
             storage.write_file(bucket_name, p, data)
