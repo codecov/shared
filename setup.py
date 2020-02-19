@@ -30,6 +30,7 @@ setup(
         "pytest-mock==1.10.1",
         "pytest==4.5.0",
         "six==1.11.0",
-        "vcrpy==2.1.0"
+        "vcrpy==2.1.0",
+        "schema==0.7.0"
     ]
 )
