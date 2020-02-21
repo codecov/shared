@@ -4,6 +4,7 @@ class Session(object):
                  N=None, storage_path=None, session_type=None,
                  **kwargs):
         # the kwargs are for old reports
+        print('inside session object', id, t, session_type)
         self.id = id
         self.totals = t or kwargs.get('totals')
         self.time = d or kwargs.get('time')
@@ -17,7 +18,7 @@ class Session(object):
         self.env = e or kwargs.get('env')
         self.name = N or kwargs.get('name')
         self.storage_path = storage_path or ('v4/raw' + self.archive.split('v4/raw')[1]) if self.archive and 'v4/raw' in self.archive else None
-        self.session_type = session_type or 'uploaded'
+        self.session_type = session_type or kwargs.get('st') or kwargs.get('session_type') or 'uploaded'
 
     def _encode(self):
         return {
