@@ -1,5 +1,4 @@
 import logging
-from io import BytesIO
 
 from google.cloud import storage
 from google.oauth2.service_account import Credentials
@@ -108,13 +107,15 @@ class GCPStorageService(BaseStorageService):
             bytes : The contents of that file, still encoded as bytes
         """
         blob = self.get_blob(bucket_name, path)
-        data = BytesIO()
         try:
-            blob.download_to_file(data)
+            blob.reload()
+            if blob.content_type == 'application/x-gzip' and blob.content_encoding == 'gzip':
+                blob.content_type = 'text/plain'
+                blob.content_encoding = 'gzip'
+                blob.patch()
+            return blob.download_as_string()
         except google.cloud.exceptions.NotFound:
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
-        data.seek(0)
-        return data.getvalue()
 
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage (what happens if the file doesnt exist?)
