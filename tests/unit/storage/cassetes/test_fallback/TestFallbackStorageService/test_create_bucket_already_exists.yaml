@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: assertion=eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiIsICJraWQiOiAiZTAwOTg4NzVhNmJlN2ZkMGZiOGQ1YjVlZmQ2YjZmNjYyZWZmNzI5NSJ9.eyJpYXQiOiAxNTgwNTI5MDAwLCAiZXhwIjogMTU4MDUzMjYwMCwgImlzcyI6ICJjb2RlY292LW1hcmtldGluZy1kZXBsb3ltZW50QGdlbnVpbmUtcG9seW1lci0xNjU3MTIuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCAiYXVkIjogImh0dHBzOi8vb2F1dGgyLmdvb2dsZWFwaXMuY29tL3Rva2VuIiwgInNjb3BlIjogImh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvZGV2c3RvcmFnZS5mdWxsX2NvbnRyb2wgaHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vYXV0aC9kZXZzdG9yYWdlLnJlYWRfb25seSBodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2RldnN0b3JhZ2UucmVhZF93cml0ZSJ9.cIb4CCaqtiQADxxJTfQ1IIdNGYMKbCGJRSQ6KfBo0QffZBi3IzvZzS-fdzwieVD54jU2gXCR24mMPJdsJlvnmwS3FcuN8beMaaUVfHNCWLyTODd8k-ocgH0aKpb_yODzqFwf-aKRLcP5OxjSguJFfjTKx1l1u7knejesHMnQkpvu8vl-ymiv-CvBU4yQ-xs5wIYYjdl-Z_vlzGzZjf63xFPFkSjPUFPpU-7zVABuA6hyq5p_Y1ArrQPWxcJ5P08ZBAf1Nwe8GmDfabtBlP1pzXkHVWSpuo-hEasLK2izhFeinvmL4eZWc8uBhuuu9gKin9l7y7giDKkyMOFXh43UAw&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+    body: assertion=eyJ0eXAiOiAiSldUIiwgImFsZyI6ICJSUzI1NiIsICJraWQiOiAiZTAwOTg4NzVhNmJlN2ZkMGZiOGQ1YjVlZmQ2YjZmNjYyZWZmNzI5NSJ9.eyJpYXQiOiAxNTgxMzM3MDY2LCAiZXhwIjogMTU4MTM0MDY2NiwgImlzcyI6ICJjb2RlY292LW1hcmtldGluZy1kZXBsb3ltZW50QGdlbnVpbmUtcG9seW1lci0xNjU3MTIuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCAiYXVkIjogImh0dHBzOi8vb2F1dGgyLmdvb2dsZWFwaXMuY29tL3Rva2VuIiwgInNjb3BlIjogImh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL2F1dGgvZGV2c3RvcmFnZS5mdWxsX2NvbnRyb2wgaHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vYXV0aC9kZXZzdG9yYWdlLnJlYWRfb25seSBodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2RldnN0b3JhZ2UucmVhZF93cml0ZSJ9.i2encXwHj99yyW_WdWPylP00-jn6keyikCsLY6EjDITIDr1goFeE6we6yPrVbIx13lWi_e8dv0adrBE_JDhIoPrNI0WAk4hCYyKdYNAkSCWS_FOR3LKlx2mUswLV9exJrh85goMGeWFwQhE13fzVB9ZzSW3VTifT1QtB-4dxSWtntwjzebF0tDN38E0dBTgnPdyjP4gJ1WumtNAuXeoLjekddu1hdAxSjIU50_cgAXtE8V99SwsEAe5-mvhLriWNHP0YZDm2R3CSbNsCY6K0moXOHd3kYNv9y_HfDsdIjKxtrEvrFn_JWmbeKRMqkFdS5N0bDqykcSxenCCCS8xAqg&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
     headers:
       Accept:
       - '*/*'
@@ -19,11 +19,11 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/x3P23JDQAAA0H/Z50zGCkrfGJG6xH0QL2bZLUGFpVvbTv+9mZ4/OD8ANQ1Z12p7
-        DGQCr4AjUTs2R3e+GkwnpsLfW74U7gabfk34rLaySCWW3lD21kmV3QezEOjKuRscS4UXcm0lWgYc
-        T7iH+56UlxIF1PaoldbRhgOH+jXGMr1B1XDUabRcDj+LWvFGDGtL5wtP1Tb3RqfrKOu+jLMZ5uIL
-        O/kxjZhcmHboDnlWJANkLMxhGDy0SQszZY6LUVjEb9MRVMXyxMinXjZ8xAgcANnnOyVrdX/2TrKm
-        HcD/tdr4TJ5hgyBKKPj9AyXOoyYKAQAA
+        H4sIAAAAAAAC/x3P226CMAAA0H/pszMy0kH3BijIKPfBmC8NIeWq0FEuUrN/n9n5g/MAeVFQzsk0
+        dLQH72DLX9G+2DvM1Zew6G1+Eq5A8tqoLdsoYlmCcaSgACvzcCBaan30ixOWZz+Ybf/Gb1UVIM94
+        kaS104X+eRVTZSncdUU3+PDiG02SzWwJ40C5ev1Q+rZmpLzJMM4KSf0mh0Xz+sCM2VsSFpXu8KPl
+        zvaEraM99AGEqplDQ+RqK7mmF68k9RwcNV+1XZK4vQhpPdVenZ0rH/7coRwRsAP0zpqRctI8ezJE
+        aAf+r2TaGH2GdZqPdAS/f1CfLbYKAQAA
     headers:
       Alt-Svc:
       - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
@@ -36,7 +36,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Sat, 01 Feb 2020 03:50:01 GMT
+      - Mon, 10 Feb 2020 12:17:46 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -55,7 +55,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"name": "testingarchive20190201"}'
+    body: '{"name": "testingarchive20190210001"}'
     headers:
       Accept:
       - '*/*'
@@ -64,13 +64,13 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '34'
+      - '37'
       Content-Type:
       - application/json
       User-Agent:
-      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
       X-Goog-API-Client:
-      - gl-python/3.7.6 gax/1.14.3 gapic/1.18.0 gccl/1.18.0
+      - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: POST
     uri: https://www.googleapis.com/storage/v1/b?project=genuine-polymer-165712
   response:
@@ -90,14 +90,14 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Sat, 01 Feb 2020 03:50:02 GMT
+      - Mon, 10 Feb 2020 12:17:48 GMT
       Server:
       - UploadServer
       Vary:
       - Origin
       - X-Origin
       X-GUploader-UploadID:
-      - AEnB2UrMtVFhMirqHpYsGBVTXUkmo8SHIcAmIM8fgOflCBCUrZsqyXoMkWgvQ9pxIStb6VPCGK39ImyDKjtzN6fgW0UBmKNKIQ
+      - AEnB2UpSiw1hOEezjiqOT3zI7H-E5nqOw1ZAF2JDz0FXfQ8g8NSMNOoK14v-hFr3mHCeJYJ3Fp-dtgRCoDOVocIpcR0l_nxrgg
     status:
       code: 409
       message: Conflict

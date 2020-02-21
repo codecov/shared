@@ -55,7 +55,7 @@ gcp_config = {
 aws_config = {
     "resource": "s3",
     "aws_access_key_id": "testrobl3cz4i1to1noa",
-    "aws_secret_access_key": "Rb5ky+vMTpbJX/dFVQA4r7m84zGrL44KpeoPxtD0",
+    "aws_secret_access_key": "vMTpbJX/vMTpbJX",
     "region_name": "us-east-1"
 }
 
@@ -75,13 +75,13 @@ class TestFallbackStorageService(BaseTestCase):
 
     def test_create_bucket(self, codecov_vcr, storage_service):
         storage = storage_service
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         res = storage.create_root_storage(bucket_name)
-        assert res['name'] == 'testingarchive20190201'
+        assert res['name'] == 'testingarchive20190210001'
 
     def test_create_bucket_already_exists(self, codecov_vcr, storage_service):
         storage = storage_service
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         with pytest.raises(BucketAlreadyExistsError):
             storage.create_root_storage(bucket_name)
 
@@ -89,7 +89,7 @@ class TestFallbackStorageService(BaseTestCase):
         storage = storage_service
         path = 'test_write_then_read_file/result'
         data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -100,7 +100,7 @@ class TestFallbackStorageService(BaseTestCase):
         path = 'test_write_then_append_then_read_file/result'
         data = 'lorem ipsum dolor test_write_then_read_file á'
         second_data = 'mom, look at me, appending data'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         writing_result = storage.write_file(bucket_name, path, data)
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert writing_result
@@ -112,7 +112,7 @@ class TestFallbackStorageService(BaseTestCase):
         storage = storage_service
         path = f'{request.node.name}/result.txt'
         second_data = 'mom, look at me, appending data'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert second_writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -121,14 +121,14 @@ class TestFallbackStorageService(BaseTestCase):
     def test_read_file_does_not_exist(self, request, codecov_vcr, storage_service):
         storage = storage_service
         path = f'{request.node.name}/does_not_exist.txt'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         with pytest.raises(FileNotInStorageError):
             storage.read_file(bucket_name, path)
 
     def test_read_file_does_not_exist_on_first_but_exists_on_second(self, request, codecov_vcr, storage_service):
         storage = storage_service
         path = f'{request.node.name}/does_not_exist_on_first_but_exists_on_second.txt'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         storage_service.fallback_service.write_file(bucket_name, path, 'some_data_over_there')
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == 'some_data_over_there'
@@ -136,7 +136,7 @@ class TestFallbackStorageService(BaseTestCase):
     def test_read_file_does_exist_on_first_but_not_exists_on_second(self, request, codecov_vcr, storage_service):
         storage = storage_service
         path = f'{request.node.name}/does_exist_on_first_but_not_exists_on_second.txt'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         storage_service.main_service.write_file(bucket_name, path, 'some_different_data')
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == 'some_different_data'
@@ -145,7 +145,7 @@ class TestFallbackStorageService(BaseTestCase):
         storage = storage_service
         path = f'{request.node.name}/result.txt'
         data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         deletion_result = storage.delete_file(bucket_name, path)
@@ -156,7 +156,7 @@ class TestFallbackStorageService(BaseTestCase):
     def test_delete_file_doesnt_exist(self, request, codecov_vcr, storage_service):
         storage = storage_service
         path = f'{request.node.name}/result.txt'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         with pytest.raises(FileNotInStorageError):
             storage.delete_file(bucket_name, path)
 
@@ -167,7 +167,7 @@ class TestFallbackStorageService(BaseTestCase):
         path_3 = f'{request.node.name}/result_3.txt'
         paths = [path_1, path_2, path_3]
         data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         storage.write_file(bucket_name, path_1, data)
         storage.write_file(bucket_name, path_3, data)
         deletion_result = storage.delete_files(bucket_name, paths)
@@ -185,7 +185,7 @@ class TestFallbackStorageService(BaseTestCase):
         path_5 = f'thiago/{request.node.name}/f1/result_2.txt'
         path_6 = f'thiago/{request.node.name}/f1/result_3.txt'
         all_paths = [path_1, path_2, path_3, path_4, path_5, path_6]
-        bucket_name = 'testingarchive20190201'
+        bucket_name = 'testingarchive20190210001'
         for i, p in enumerate(all_paths):
             data = f"Lorem ipsum on file {p} for {i * 'po'}"
             storage.write_file(bucket_name, p, data)
