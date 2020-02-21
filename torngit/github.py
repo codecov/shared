@@ -649,16 +649,18 @@ class Github(BaseHandler, OAuth2Mixin):
                 new_level.extend(commit_mapping[x])
             current_level = new_level
         result = self._pull(res)
-        if current_level and result['base']['commitid'] not in current_level:
+        possible_bases = [x for x in current_level if x not in all_commits_in_pr]
+        if possible_bases and result['base']['commitid'] not in possible_bases:
             log.info(
                 'Github base differs from original base',
                 extra=dict(
                     current_level=current_level,
                     github_base=result['base']['commitid'],
+                    possible_bases=possible_bases,
                     pullid=pullid
                 )
             )
-            result['base']['commitid'] = current_level[0]
+            result['base']['commitid'] = possible_bases[0]
         return result
 
     async def get_pull_requests(self, state='open', token=None):

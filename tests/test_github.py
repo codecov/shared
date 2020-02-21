@@ -665,3 +665,28 @@ class TestGithubTestCase(object):
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_base_partially_differs(self, codecov_vcr):
+        handler = Github(
+            repo=dict(name='codecov-api'),
+            owner=dict(username='codecov'),
+            token=dict(key='testdp7skub8zsbdcdyem0z9wt00zhbnibu2uyjb')
+        )
+        pull_id = '110'
+        expected_result = {
+            'base': {
+                'branch': 'master',
+                'commitid': '77141afbd13a1273f87cf02f7f32265ea19a3b77'
+            },
+            'head': {
+                'branch': 'ce-1314/gh-status-handler',
+                'commitid': 'b68cdcbf6cc1b270a16d8a82b67027bdbc087452'
+            },
+            'number': '110',
+            'id': '110',
+            'state': 'open',
+            'title': 'CE-1314 GitHub Status Event Handler',
+        }
+        res = await handler.get_pull_request(pull_id)
+        assert res == expected_result
