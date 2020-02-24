@@ -5,11 +5,9 @@ import pytest
 from schema import SchemaError
 
 from tests.base import BaseTestCase
-# from services.path_fixer.user_path_fixes import UserPathFixes
 from covreports.validation.yaml import (
     LayoutStructure, validate_yaml, PathPatternSchemaField, CoverageRangeSchemaField,
-    PercentSchemaField, pre_process_yaml, UserGivenSecret
-    # PercentSchemaField, CustomFixPathSchemaField, pre_process_yaml, UserGivenSecret
+    PercentSchemaField, CustomFixPathSchemaField, pre_process_yaml, UserGivenSecret
 )
 from covreports.validation.exceptions import InvalidYamlException
 from covreports.validation.helpers import (
@@ -340,62 +338,43 @@ class TestGlobToRegexTranslation(BaseTestCase):
         assert re.compile(translate_glob_to_regex('[a-c]')).match('b') is not None
 
 
-# TODO
-"""
 class TestCustomFixPathSchemaField(BaseTestCase):
 
     def test_custom_fixpath(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate('a::b')
-        processing_func = UserPathFixes([res])
-        assert processing_func('a/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('b/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('b/a/this_love/has/taken.py') == 'b/a/this_love/has/taken.py'
+        assert res == '^a::b'
 
     def test_custom_fixpath_removal(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate('a/::')
-        processing_func = UserPathFixes([res])
-        assert processing_func('a/this_love/has/taken.py') == 'this_love/has/taken.py'
-        assert processing_func('b/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('b/a/this_love/has/taken.py') == 'b/a/this_love/has/taken.py'
+        assert res == 'a/::'
 
     def test_custom_fixpath_removal_no_slashes(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate('a::')
-        processing_func = UserPathFixes([res])
-        assert processing_func('a/this_love/has/taken.py') == 'this_love/has/taken.py'
-        assert processing_func('b/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('b/a/this_love/has/taken.py') == 'b/a/this_love/has/taken.py'
+        assert res == 'a::'
 
     def test_custom_fixpath_addition(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate('::b')
-        processing_func = UserPathFixes([res])
-        assert processing_func('a/this_love/has/taken.py') == 'b/a/this_love/has/taken.py'
-        assert processing_func('b/this_love/has/taken.py') == 'b/b/this_love/has/taken.py'
-        assert processing_func('b/a/this_love/has/taken.py') == 'b/b/a/this_love/has/taken.py'
+        assert res == '::b'
 
     def test_custom_fixpath_regex(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate('path-*::b')
-        print(res)
-        processing_func = UserPathFixes([res])
-        assert processing_func('path/this_love/has/taken.py') == 'path/this_love/has/taken.py'
-        assert processing_func('path-puppy/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('path-monster/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('b/this_love/has/taken.py') == 'b/this_love/has/taken.py'
-        assert processing_func('b/a/this_love/has/taken.py') == 'b/a/this_love/has/taken.py'
+        assert res == r'(?s:path\-[^\/]+)::b'
 
     def test_custom_fixpath_docs_example(self):
         cfpsf = CustomFixPathSchemaField()
-        res = cfpsf.validate("before/tests-*::after/")
-        processing_func = UserPathFixes([res])
-        assert processing_func('before/tests-apples/test.js') == 'after/test.js'
-        assert processing_func('before/tests-oranges/test.js') == 'after/test.js'
-        assert processing_func('before/app-apples/app.js') == 'before/app-apples/app.js'
-        assert processing_func('unrelated/path/taken.py') == 'unrelated/path/taken.py'
-"""
+        res = cfpsf.validate('before/tests-*::after/')
+        assert res == r'(?s:before/tests\-[^\/]+)::after/'
+
+    def test_custom_fixpath_invalid_input(self):
+        cfpsf = CustomFixPathSchemaField()
+        # No "::" separator
+        with pytest.raises(SchemaError):
+            cfpsf.validate('beforeafter')
 
 
 class TestUserGivenSecret(BaseTestCase):
