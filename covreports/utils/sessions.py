@@ -4,7 +4,6 @@ class Session(object):
                  N=None, storage_path=None, session_type=None,
                  **kwargs):
         # the kwargs are for old reports
-        print('inside session object', id, t, session_type)
         self.id = id
         self.totals = t or kwargs.get('totals')
         self.time = d or kwargs.get('time')
