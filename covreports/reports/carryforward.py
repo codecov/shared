@@ -38,7 +38,7 @@ def generate_carryforward_report(
     report: Report, flags: Sequence[str], paths: Sequence[str]
 ) -> EditableReport:
     """
-        Generates a carryforwarded report starting from report `report`, flags `flags`
+        Generates a carriedforward report starting from report `report`, flags `flags`
             and paths `paths`
 
     What this function does it basically take a report `report` and creates a new report
@@ -50,7 +50,7 @@ def generate_carryforward_report(
 
     If there are sessions with any of the flags in `flags`, let's call them `relevant_sessions`,
         this function will go through all files in `report` that match any of the paths `paths
-        and build a new 'carryforwarded' ReportFile from it, with only the ReportLines
+        and build a new 'carriedforward' ReportFile from it, with only the ReportLines
         that had at least one LineSession among the `relevant_sessions` (and proper filter out
         all the the other sessions from that line). Then all the new EditableReportFile will
         be added to the report.
@@ -78,13 +78,13 @@ def generate_carryforward_report(
             provider=sess.provider,
             build=sess.build,
             job=sess.job,
-            name=f"CF {sess.name}" if sess.name else f"Carryforwarded",
+            name=f"CF {sess.name}" if sess.name else f"Carriedforward",
             time=int(time()),
             id=new_report.next_session_number(),
             flags=sess.flags,
             archive=sess.archive,
             url=sess.url,
-            session_type=SessionType.carryforwarded,
+            session_type=SessionType.carriedforward,
             totals=sess.totals,
         )
         new_report.sessions[new_session.id] = new_session
