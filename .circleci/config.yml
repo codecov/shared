@@ -30,9 +30,10 @@ jobs:
       - run:
           name: install dependencies
           command: |
+            pip install --user virtualenv
             virtualenv venv
             . venv/bin/activate
-            pip --user install -r requirements.txt
+            pip install --user -r requirements.txt
       - save_cache:
           paths:
             - ./venv
@@ -47,5 +48,5 @@ jobs:
           name: codecov
           command: |
             . venv/bin/activate
-            pip --user install codecov
+            pip install --user codecov
             codecov
