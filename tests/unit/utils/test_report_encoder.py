@@ -19,7 +19,9 @@ from covreports.utils.ReportEncoder import ReportEncoder
         'n': None,
         'p': None,
         'u': None,
-        't': 'totals'
+        't': 'totals',
+        'st': 'uploaded',
+        'storage_path':None
     }),
 ])
 def test_report_encoder(obj, res):
