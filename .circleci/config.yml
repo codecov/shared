@@ -31,7 +31,7 @@ jobs:
           name: install dependencies
           command: |
             pip install --user virtualenv
-            virtualenv venv
+            python -m virtualenv venv
             . venv/bin/activate
             pip install --user -r requirements.txt
       - save_cache:
