@@ -17,7 +17,7 @@ class Session(object):
         self.env = e or kwargs.get('env')
         self.name = N or kwargs.get('name')
         self.storage_path = storage_path or ('v4/raw' + self.archive.split('v4/raw')[1]) if self.archive and 'v4/raw' in self.archive else None
-        self.session_type = session_type or kwargs.get('session_type') or 'uploaded'
+        self.session_type = session_type or kwargs.get('st') or 'uploaded'
 
     def _encode(self):
         return {
