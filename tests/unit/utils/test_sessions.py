@@ -17,5 +17,6 @@ def test_sessions():
             'u': 'url',
             'p': 'state',
             'e': 'env',
-            'storage_path': 'path'
+            'storage_path': None,
+            'st': 'uploaded'
         }
