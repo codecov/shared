@@ -265,7 +265,7 @@ def sample_report():
     report.append(second_file)
     report.add_session(Session(id=0, flags=["unit"]))
     report.add_session(
-        Session(id=1, flags=["integration"], session_type=SessionType.carryforwarded)
+        Session(id=1, flags=["integration"], session_type=SessionType.carriedforward)
     )
     report.add_session(Session(id=2, flags=None))
     return report
@@ -478,7 +478,7 @@ class TestEditableReport(object):
                         "j": None,
                         "n": None,
                         "p": None,
-                        "st": "carryforwarded",
+                        "st": "carriedforward",
                         "t": None,
                         "u": None,
                     },
@@ -751,7 +751,7 @@ class TestEditableReport(object):
                         "j": None,
                         "n": None,
                         "p": None,
-                        "st": "carryforwarded",
+                        "st": "carriedforward",
                         "t": None,
                         "u": None,
                     },

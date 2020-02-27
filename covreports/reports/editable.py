@@ -81,11 +81,11 @@ class EditableReport(Report):
     def add_session(self, session: Session):
         sessions_to_delete = []
         for sess_id, curr_sess in self.sessions.items():
-            if curr_sess.session_type == SessionType.carryforwarded:
+            if curr_sess.session_type == SessionType.carriedforward:
                 if curr_sess.flags and session.flags:
                     if any(f in session.flags for f in curr_sess.flags):
                         sessions_to_delete.append(sess_id)
         for sess_id_to_delete in sessions_to_delete:
-            log.info("Deleted session due to carryforwarded overwrite")
+            log.info("Deleted session due to carriedforward overwrite")
             self.delete_session(sess_id_to_delete)
         return super().add_session(session)

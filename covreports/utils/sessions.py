@@ -3,7 +3,7 @@ from enum import Enum
 
 class SessionType(Enum):
     uploaded = 'uploaded'
-    carryforwarded = 'carryforwarded'
+    carriedforward = 'carriedforward'
 
     @classmethod
     def get_from_string(cls, val):
