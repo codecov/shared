@@ -739,3 +739,33 @@ class Github(BaseHandler, OAuth2Mixin):
                 commitid=kwargs['commitid']
             )
         raise NotImplementedError()
+    
+    # Get information for a GitHub Actions build/workflow run
+    # -------------
+    def actions_run_info(self, run):
+        """ 
+        This method formats the API response from GitHub Actions 
+        for any particular build/workflow run. All fields are relevant to 
+        validating a tokenless response. 
+        """
+        public = True
+        if (run['repository']['private']):
+            public = False
+        return dict(
+            start_time=run['created_at'],
+            finish_time=run['updated_at'],
+            status=run['status'],
+            public=public,
+            slug=run['repository']['full_name'],
+            commit_sha=run['head_sha']
+        )
+    
+    async def get_workflow_run(self, run_id, token=None):
+        """ 
+        GitHub defines a workflow and a run as the following properties: 
+        Workflow = yaml with build configuration options
+        Run = one instance when the workflow was triggered
+        """
+        res = await self.api('get', '/repos/%s/actions/runs/%s' % (self.slug, run_id), token=token)
+        return self.actions_run_info(res)
+    

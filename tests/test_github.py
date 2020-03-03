@@ -690,3 +690,22 @@ class TestGithubTestCase(object):
         }
         res = await handler.get_pull_request(pull_id)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_workflow_run(self):
+        handler = Github(
+            repo=dict(name='codecov-test'),
+            owner=dict(username='ibrahim0814'),
+            token=dict(key='test9zwlbanm8k3m3394ihpwyqk08okirro3l3n0')
+        )
+        expected_result = {
+            'start_time': '2020-02-07T03:23:26Z',
+            'finish_time': '2020-02-07T03:24:03Z',
+            'status': 'completed',
+            'public': True,
+            'slug': 'ibrahim0814/codecov-test',
+            'commit_sha': 'c955f27de13dbbd6b113e069ed836b4d85903c6c'
+        }
+        run_id = '35734337'
+        res = await handler.get_workflow_run(run_id)
+        assert res == expected_result

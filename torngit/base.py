@@ -312,3 +312,6 @@ class BaseHandler(object):
                 - `type` - The type: can be "folder" or "file" or "other"
         """
         raise NotImplementedError()
+
+    async def get_workflow_run(self, run_id, token=None):
+        raise NotImplementedError()
