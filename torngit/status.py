@@ -14,6 +14,15 @@ def matches(string, pattern):
 
 class Status(object):
     def __init__(self, statuses):
+        self._statuses = self._fetch_most_relevant_status_per_context(statuses)
+        states = set(map(lambda s: s['state'], self._statuses))
+        self._state = 'failure' if 'failure' in states \
+                      else 'pending' if 'pending' in states \
+                      else 'failure' if 'error' in states \
+                      else 'success'
+
+    @classmethod
+    def _fetch_most_relevant_status_per_context(cls, statuses):
         # reduce based on time
         contexts = defaultdict(list)
         # group by context(time, !pending, <status>)
@@ -21,16 +30,10 @@ class Status(object):
             contexts[status['context']].append(
                 (status['time'], status['state'] != 'pending', status))
         # extract most recent sorted(time, !pending)
-        contexts = [
-            sorted(context, key=lambda t: (t[0], t[1]))[-1][2]
+        return [
+            sorted(context, key=lambda t: (t[0] if t[0] is not None else '', t[1]))[-1][2]
             for context in contexts.values()
         ]
-        self._statuses = contexts
-        states = set(map(lambda s: s['state'], contexts))
-        self._state = 'failure' if 'failure' in states \
-                      else 'pending' if 'pending' in states \
-                      else 'failure' if 'error' in states \
-                      else 'success'
 
     def __sub__(self, context):
         """Remove ci status from list, return new object"""
