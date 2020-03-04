@@ -68,14 +68,15 @@ class EditableReport(Report):
         session_to_delete = self.sessions.pop(sessionid)
         sessionid = int(sessionid)
         for file in self._chunks:
-            file.delete_session(sessionid)
-            if file:
-                self._files[file.name] = dataclasses.replace(
-                    self._files.get(file.name),
-                    file_totals=file.totals
-                )
-            else:
-                del self[file.name]
+            if file is not None:
+                file.delete_session(sessionid)
+                if file:
+                    self._files[file.name] = dataclasses.replace(
+                        self._files.get(file.name),
+                        file_totals=file.totals
+                    )
+                else:
+                    del self[file.name]
         return session_to_delete
 
     def add_session(self, session: Session):

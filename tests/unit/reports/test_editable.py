@@ -2,6 +2,7 @@ from pathlib import Path
 from json import loads
 import dataclasses
 from fractions import Fraction
+import pprint
 
 import pytest
 
@@ -261,8 +262,19 @@ def sample_report():
             sessions=[LineSession(0, "1/3"), LineSession(1, "1/2")],
         ),
     )
+    single_session_file = EditableReportFile("single_session_file.c")
+    single_session_file.append(
+        101, ReportLine(coverage="1/2", sessions=[LineSession(1, "1/2")],),
+    )
+    single_session_file.append(
+        110, ReportLine(coverage=1, sessions=[LineSession(1, 1)],),
+    )
+    single_session_file.append(
+        111, ReportLine(coverage=0, sessions=[LineSession(1, 0)],),
+    )
     report.append(first_file)
     report.append(second_file)
+    report.append(single_session_file)
     report.add_session(Session(id=0, flags=["unit"]))
     report.add_session(
         Session(id=1, flags=["integration"], session_type=SessionType.carriedforward)
@@ -357,9 +369,8 @@ class TestEditableReport(object):
 
     def test_delete_session(self, sample_report):
         report = sample_report
-        import pprint
 
-        # pprint.pprint(self.convert_report_to_better_readable(report))
+        pprint.pprint(self.convert_report_to_better_readable(report))
         assert self.convert_report_to_better_readable(report) == {
             "archive": {
                 "file_1.go": [
@@ -437,6 +448,11 @@ class TestEditableReport(object):
                         None,
                     ),
                 ],
+                "single_session_file.c": [
+                    (101, "1/2", None, [[1, "1/2", None, None, None]], None, None),
+                    (110, 1, None, [[1, 1, None, None, None]], None, None),
+                    (111, 0, None, [[1, 0, None, None, None]], None, None),
+                ],
             },
             "report": {
                 "files": {
@@ -450,6 +466,12 @@ class TestEditableReport(object):
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
                         [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
+                        None,
+                    ],
+                    "single_session_file.c": [
+                        2,
+                        [0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0],
+                        [[0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0]],
                         None,
                     ],
                 },
@@ -503,19 +525,18 @@ class TestEditableReport(object):
                 "M": 0,
                 "N": 16,
                 "b": 1,
-                "c": "90.00000",
+                "c": "76.92308",
                 "d": 0,
                 "diff": None,
-                "f": 2,
-                "h": 9,
-                "m": 0,
-                "n": 10,
-                "p": 1,
+                "f": 3,
+                "h": 10,
+                "m": 1,
+                "n": 13,
+                "p": 2,
                 "s": 3,
             },
         }
         report.delete_session(1)
-        pprint.pprint(self.convert_report_to_better_readable(report))
         expected_result = {
             "archive": {
                 "file_1.go": [
@@ -627,6 +648,27 @@ class TestEditableReport(object):
         assert res["report"] == expected_result["report"]
         assert res["totals"] == expected_result["totals"]
         assert res == expected_result
+        report.delete_session(0)
+        report.delete_session(2)
+        assert self.convert_report_to_better_readable(report) == {
+            "archive": {},
+            "report": {"files": {}, "sessions": {}},
+            "totals": {
+                "C": 0,
+                "M": 0,
+                "N": 0,
+                "b": 0,
+                "c": 0,
+                "d": 0,
+                "diff": None,
+                "f": 0,
+                "h": 0,
+                "m": 0,
+                "n": 0,
+                "p": 0,
+                "s": 0,
+            },
+        }
 
     def test_add_conflicting_session(self, sample_report):
         report = sample_report
@@ -710,6 +752,11 @@ class TestEditableReport(object):
                         None,
                     ),
                 ],
+                "single_session_file.c": [
+                    (101, "1/2", None, [[1, "1/2", None, None, None]], None, None),
+                    (110, 1, None, [[1, 1, None, None, None]], None, None),
+                    (111, 0, None, [[1, 0, None, None, None]], None, None),
+                ],
             },
             "report": {
                 "files": {
@@ -723,6 +770,12 @@ class TestEditableReport(object):
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
                         [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
+                        None,
+                    ],
+                    "single_session_file.c": [
+                        2,
+                        [0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0],
+                        [[0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0]],
                         None,
                     ],
                 },
@@ -776,14 +829,14 @@ class TestEditableReport(object):
                 "M": 0,
                 "N": 16,
                 "b": 1,
-                "c": "90.00000",
+                "c": "76.92308",
                 "d": 0,
                 "diff": None,
-                "f": 2,
-                "h": 9,
-                "m": 0,
-                "n": 10,
-                "p": 1,
+                "f": 3,
+                "h": 10,
+                "m": 1,
+                "n": 13,
+                "p": 2,
                 "s": 3,
             },
         }
