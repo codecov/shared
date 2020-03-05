@@ -137,7 +137,7 @@ user_yaml_schema = Schema(
                 Optional('uploads'): bool
             },
             Optional('notify'): {
-                Optional('after_n_builds'): int,
+                Optional('after_n_builds'): And(int, lambda x: x >= 0),
                 Optional('countdown'): int,
                 Optional('delay'): int,
                 Optional('wait_for_ci'): bool,
@@ -276,6 +276,7 @@ user_yaml_schema = Schema(
                 Optional('require_head'): bool,
                 Optional('branches'): Or(None, [user_given_regex]),
                 Optional('behavior'): Or('default', 'once', 'new', 'spammy'),
+                Optional('after_n_builds'): And(int, lambda x: x >= 0),
                 Optional('flags'): Or(None, [flag_name]),  # DEPRECATED
                 Optional('paths'): Or(None, [path_structure])  # DEPRECATED
             }

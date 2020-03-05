@@ -268,6 +268,25 @@ class TestUserYamlValidation(BaseTestCase):
         }
         assert validate_yaml(user_input) == expected_result
 
+    def test_negative_notify_after_n_builds(self):
+        user_input = {'codecov': {'notify': {'after_n_builds': -1}}}
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+        exception = exc.value
+        assert exception.error_location == 'Path: codecov->notify->after_n_builds'
+
+    def test_positive_notify_after_n_builds(self):
+        user_input = {'codecov': {'notify': {'after_n_builds': 1}}}
+        res = validate_yaml(user_input)
+        assert res == {'codecov': {'notify': {'after_n_builds': 1}}}
+
+    def test_negative_comments_after_n_builds(self):
+        user_input = {'comment': {'after_n_builds': -1}}
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+        exception = exc.value
+        assert exception.error_location == 'Path: comment->after_n_builds'
+
     def test_invalid_yaml_case(self):
         user_input = {
             "coverage": {
