@@ -30,6 +30,7 @@ def admin_handler():
         )
     )
 
+
 class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
@@ -794,6 +795,23 @@ class TestGitlabTestCase(object):
 
         res = await valid_handler.list_top_level_files('master')
         assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])
+
+    @pytest.mark.asyncio
+    async def test_list_files(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                "id": "3b18e512dba79e4c8300dd08aeb37f8e728b8dad",
+                "name": "hello-world.txt",
+                "type": "file",
+                "path": "folder/hello-world.txt",
+                "mode": "100644",
+            },
+        ]
+
+        res = await valid_handler.list_files("master", "folder")
+        assert sorted(res, key=lambda x: x["path"]) == sorted(
+            expected_result, key=lambda x: x["path"]
+        )
 
     @pytest.mark.asyncio
     async def test_get_ancestors_tree(self, valid_handler, codecov_vcr):

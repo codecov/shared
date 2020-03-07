@@ -295,6 +295,9 @@ class BaseHandler(object):
     def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
         raise NotImplementedError()
 
+    async def list_files(self, ref: str, dir_path: str, token=None):
+        raise NotImplementedError()
+
     def get_href(self, endpoint: Endpoints, **kwargs):
         path = self.get_external_endpoint(endpoint, **kwargs)
         return f"{self.service_url}/{path}"

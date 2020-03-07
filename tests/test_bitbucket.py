@@ -1010,6 +1010,18 @@ class TestBitbucketTestCase(object):
         assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])
 
     @pytest.mark.asyncio
+    async def test_list_files(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {'path': 'tests/__pycache__', 'type': 'folder'},
+            {'path': 'tests/__init__.py', 'type': 'file'},
+            {'path': 'tests/test_k.py', 'type': 'file'}
+        ]
+        res = await valid_handler.list_files("second-branch", "tests")
+        assert sorted(res, key=lambda x: x["path"]) == sorted(
+            expected_result, key=lambda x: x["path"]
+        )
+
+    @pytest.mark.asyncio
     async def test_get_ancestors_tree(self, valid_handler, codecov_vcr):
         commitid = '6ae5f17'
         res = await valid_handler.get_ancestors_tree(commitid)

@@ -15,7 +15,7 @@ def valid_handler():
     return Github(
         repo=dict(name='example-python'),
         owner=dict(username='ThiagoCodecov'),
-        token=dict(key='testbj4c6k6bdd8gj7x0hrbvq1b1kdjrn3aea9sd')
+        token=dict(key='testnvebxku3hfiwi16ka7hff42y0jtf5fithlij')
     )
 
 
@@ -633,6 +633,17 @@ class TestGithubTestCase(object):
         ]
         res = await valid_handler.list_top_level_files('master')
         assert sorted(res, key=lambda x: x['path']) == sorted(expected_result, key=lambda x: x['path'])
+
+    @pytest.mark.asyncio
+    async def test_list_files(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {"name": "__init__.py", "path": "awesome/__init__.py", "type": "file"},
+            {"name": "code_fib.py", "path": "awesome/code_fib.py", "type": "file"},
+        ]
+        res = await valid_handler.list_files("master", "awesome")
+        assert sorted(res, key=lambda x: x["path"]) == sorted(
+            expected_result, key=lambda x: x["path"]
+        )
 
     @pytest.mark.asyncio
     async def test_get_ancestors_tree(self, valid_handler, codecov_vcr):

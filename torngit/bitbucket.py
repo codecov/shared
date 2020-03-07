@@ -684,6 +684,9 @@ class Bitbucket(BaseHandler, OAuthMixin):
         return self.diff_to_json(diff.decode('utf8'))
 
     async def list_top_level_files(self, ref, token=None):
+        return await self.list_files(ref, dir_path='', token=None)
+
+    async def list_files(self, ref, dir_path, token=None):
         page = None
         has_more = True
         files = []
@@ -701,7 +704,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
             results = await self.api(
                 '2',
                 'get',
-                f'/repositories/{self.slug}/src/{ref}/',
+                f'/repositories/{self.slug}/src/{ref}/{dir_path}',
                 **kwargs
             )
             files.extend(results['values'])

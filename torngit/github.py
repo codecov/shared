@@ -700,10 +700,17 @@ class Github(BaseHandler, OAuth2Mixin):
             return res['items'][0]['number']
 
     async def list_top_level_files(self, ref, token=None):
+        return await self.list_files(ref, dir_path='', token=None)
+
+    async def list_files(self, ref, dir_path, token=None):
         # https://developer.github.com/v3/repos/contents/#get-contents
+        if dir_path:
+            url = f'/repos/{self.slug}/contents/{dir_path}'
+        else:
+            url = f'/repos/{self.slug}/contents'
         content = await self.api(
             'get',
-            f'/repos/{self.slug}/contents',
+            url,
             ref=ref,
             token=token)
         return [

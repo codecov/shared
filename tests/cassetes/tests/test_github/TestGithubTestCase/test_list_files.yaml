@@ -1,0 +1,100 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome?ref=master
+  response:
+    body:
+      string: '[{"name":"__init__.py","path":"awesome/__init__.py","sha":"671066bdcc3116406b3b64244f8bbcf8580e03d9","size":336,"url":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/__init__.py?ref=master","html_url":"https://github.com/ThiagoCodecov/example-python/blob/master/awesome/__init__.py","git_url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs/671066bdcc3116406b3b64244f8bbcf8580e03d9","download_url":"https://raw.githubusercontent.com/ThiagoCodecov/example-python/master/awesome/__init__.py","type":"file","_links":{"self":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/__init__.py?ref=master","git":"https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs/671066bdcc3116406b3b64244f8bbcf8580e03d9","html":"https://github.com/ThiagoCodecov/example-python/blob/master/awesome/__init__.py"}},{"name":"code_fib.py","path":"awesome/code_fib.py","sha":"db1d30faae577112d552b3b0edc5bb36c836cbae","size":125,"url":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/code_fib.py?ref=master","html_url":"https://github.com/ThiagoCodecov/example-python/blob/master/awesome/code_fib.py","git_url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs/db1d30faae577112d552b3b0edc5bb36c836cbae","download_url":"https://raw.githubusercontent.com/ThiagoCodecov/example-python/master/awesome/code_fib.py","type":"file","_links":{"self":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/code_fib.py?ref=master","git":"https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs/db1d30faae577112d552b3b0edc5bb36c836cbae","html":"https://github.com/ThiagoCodecov/example-python/blob/master/awesome/code_fib.py"}}]'
+    headers:
+    - !!python/tuple
+      - Date
+      - - Fri, 06 Mar 2020 22:10:34 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Server
+      - - GitHub.com
+    - !!python/tuple
+      - Status
+      - - 200 OK
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - - '5000'
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - - '4998'
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - - '1583535993'
+    - !!python/tuple
+      - Cache-Control
+      - - private, max-age=60, s-maxage=60
+    - !!python/tuple
+      - Vary
+      - - Accept, Authorization, Cookie, X-GitHub-OTP
+        - Accept-Encoding, Accept, X-Requested-With
+    - !!python/tuple
+      - Etag
+      - - W/"e6af1eb1d589c63cf9cc5caf7b80024a30c2e892"
+    - !!python/tuple
+      - Last-Modified
+      - - Wed, 04 Mar 2020 05:30:35 GMT
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - ''
+    - !!python/tuple
+      - X-Github-Media-Type
+      - - github.v3
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type, Deprecation, Sunset
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - - '*'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubdomains; preload
+    - !!python/tuple
+      - X-Frame-Options
+      - - deny
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Xss-Protection
+      - - 1; mode=block
+    - !!python/tuple
+      - Referrer-Policy
+      - - origin-when-cross-origin, strict-origin-when-cross-origin
+    - !!python/tuple
+      - Content-Security-Policy
+      - - default-src 'none'
+    - !!python/tuple
+      - X-Github-Request-Id
+      - - 13C5:1FB4:47F8C7:65B6D1:5E62CA5A
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - - gzip
+    status:
+      code: 200
+      message: OK
+    url: https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome?ref=master
+version: 1

@@ -40,20 +40,20 @@ class Gitlab(BaseHandler):
         pull='{username}/{name}/merge_requests/%(pullid)s',
         tree='{username}/{name}/tree/%(commitid)s')
 
-    async def api(self, method, path, body=None, token=None, version=4,
+    async def api(self, method, url_path, *, body=None, token=None, version=4,
                   **args):
         # http://doc.gitlab.com/ce/api
-        if path[0] == '/':
+        if url_path[0] == '/':
             _log = dict(
                 event='api',
-                endpoint=path,
+                endpoint=url_path,
                 method=method,
                 bot=(token or self.token).get('username'))
         else:
             _log = {}
 
-        path = (
-            self.api_url.format(version) + path) if path[0] == '/' else path
+        url_path = (
+            self.api_url.format(version) + url_path) if url_path[0] == '/' else url_path
         headers = {
             'Accept': 'application/json',
             'User-Agent': os.getenv('USER_AGENT', 'Default')
@@ -66,7 +66,7 @@ class Gitlab(BaseHandler):
             headers['Authorization'] = 'Bearer %s' % (token
                                                       or self.token)['key']
 
-        url = url_concat(path, args).replace(' ', '%20')
+        url = url_concat(url_path, args).replace(' ', '%20')
         kwargs = dict(
             method=method.upper(),
             body=dumps(body) if type(body) is dict else body,
@@ -669,11 +669,15 @@ class Gitlab(BaseHandler):
             ][::-1])
 
     async def list_top_level_files(self, ref, token=None):
+        return await self.list_files(ref, dir_path='', token=None)
+
+    async def list_files(self, ref, dir_path, token=None):
         # https://docs.gitlab.com/ee/api/repositories.html#list-repository-tree
         result = await self.api(
             'get',
             f"/projects/{self.data['repo']['service_id']}/repository/tree",
             ref=ref,
+            path=dir_path,
             token=token
         )
         for res in result:
