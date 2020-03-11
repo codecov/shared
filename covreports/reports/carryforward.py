@@ -1,4 +1,5 @@
 from typing import Sequence
+import re
 import dataclasses
 from time import time
 
@@ -32,6 +33,25 @@ def generate_carryforward_report_file(existing_file_report, old_to_new_session_m
                 ),
             )
     return new_file_report
+
+
+def carriedforward_session_name(original_session_name: str) -> str:
+    if not original_session_name:
+        return "Carriedforward"
+    elif original_session_name.startswith("CF "):
+        count = 0
+        current_name = original_session_name
+        while current_name.startswith("CF "):
+            current_name = current_name.replace("CF ", "", 1)
+            count += 1
+        return f"CF[{count + 1}] - {current_name}"
+    elif original_session_name.startswith("CF"):
+        regex = r"CF\[(\d*)\]"
+        res = re.match(regex, original_session_name)
+        if res:
+            number_so_far = int(res.group(1))
+            return re.sub(regex, f"CF[{number_so_far + 1}]", original_session_name, count=1)
+    return f"CF[1] - {original_session_name}"
 
 
 def generate_carryforward_report(
@@ -78,7 +98,7 @@ def generate_carryforward_report(
             provider=sess.provider,
             build=sess.build,
             job=sess.job,
-            name=f"CF {sess.name}" if sess.name else f"Carriedforward",
+            name=carriedforward_session_name(sess.name),
             time=int(time()),
             id=new_report.next_session_number(),
             flags=sess.flags,

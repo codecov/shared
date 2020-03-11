@@ -10,7 +10,9 @@ from covreports.reports.resources import (
     LineSession,
     Session,
 )
-from covreports.reports.carryforward import generate_carryforward_report
+from covreports.reports.carryforward import (
+    generate_carryforward_report, carriedforward_session_name
+)
 
 
 @pytest.fixture
@@ -44,6 +46,20 @@ def sample_report():
 
 
 class TestCarryfowardFlag(object):
+
+    def test_carriedforward_session_name(self):
+        assert carriedforward_session_name(None) == "Carriedforward"
+        assert carriedforward_session_name("") == "Carriedforward"
+        assert carriedforward_session_name("Carriedforward") == "CF[1] - Carriedforward"
+        assert carriedforward_session_name("Dude") == "CF[1] - Dude"
+        assert carriedforward_session_name("CF[1] - Dude") == "CF[2] - Dude"
+        assert carriedforward_session_name("CF[2] - Dude") == "CF[3] - Dude"
+        assert carriedforward_session_name("CF[9] - Dude") == "CF[10] - Dude"
+        assert carriedforward_session_name("CF[10] - Dude") == "CF[11] - Dude"
+        assert carriedforward_session_name("CF CF Dude") == "CF[3] - Dude"
+        assert carriedforward_session_name("CFCD") == "CF[1] - CFCD"
+        assert carriedforward_session_name("CF CF CF CF CF CF CF Dude") == "CF[8] - Dude"
+
     def convert_report_to_better_readable(self, report):
         totals_dict, report_dict = report.to_database()
         report_dict = loads(report_dict)
