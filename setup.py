@@ -23,7 +23,7 @@ setup(
         "coverage==4.5",
         "cryptography==2.7",
         "google-cloud-storage==1.18.0",
-        "minio==4.0.19",
+        "minio==5.0.8",
         "mock==2.0.0",
         "pycrypto==2.6.1",
         "pytest-cov==2.5.1",
