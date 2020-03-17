@@ -25,7 +25,6 @@ setup(
         "google-cloud-storage==1.18.0",
         "minio==5.0.8",
         "mock==2.0.0",
-        "pycrypto==2.6.1",
         "pytest-cov==2.5.1",
         "pytest-mock==1.10.1",
         "pytest==4.5.0",
