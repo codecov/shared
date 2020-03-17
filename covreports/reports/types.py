@@ -1,5 +1,5 @@
 from decimal import Decimal
-from dataclasses import dataclass, astuple
+from dataclasses import dataclass
 from typing import Union, Tuple, Sequence, Any
 
 
@@ -20,7 +20,24 @@ class ReportTotals(object):
     diff: int = 0
 
     def __iter__(self):
-        return iter(astuple(self))
+        return iter(self.astuple())
+
+    def astuple(self):
+        return (
+            self.files,
+            self.lines,
+            self.hits,
+            self.misses,
+            self.partials,
+            self.coverage,
+            self.branches,
+            self.methods,
+            self.messages,
+            self.sessions,
+            self.complexity,
+            self.complexity_total,
+            self.diff,
+        )
 
     @classmethod
     def default_totals(cls):
@@ -34,6 +51,13 @@ class NetworkFile(object):
     session_totals: ReportTotals
     diff_totals: ReportTotals
 
+    def astuple(self):
+        return (
+            self.totals.astuple(),
+            [s.astuple() for s in self.session_totals] if self.session_totals else None,
+            self.diff_totals.astuple() if self.diff_totals else None,
+        )
+
 
 @dataclass
 class LineSession(object):
@@ -43,6 +67,15 @@ class LineSession(object):
     partials: Sequence[int] = None
     complexity: int = None
 
+    def astuple(self):
+        return (
+            self.id,
+            self.coverage,
+            self.branches,
+            self.partials,
+            self.complexity
+        )
+
 
 @dataclass
 class ReportLine(object):
@@ -51,6 +84,15 @@ class ReportLine(object):
     sessions: Sequence[LineSession] = None
     messages: int = None
     complexity: Union[int, Tuple[int, int]] = None
+
+    def astuple(self):
+        return (
+            self.coverage,
+            self.type,
+            [s.astuple() for s in self.sessions] if self.sessions else None,
+            self.messages,
+            self.complexity
+        )
 
     def __post_init__(self):
         if self.sessions is not None:
@@ -65,6 +107,14 @@ class ReportFileSummary(object):
     file_totals: ReportTotals = None
     session_totals: Sequence[ReportTotals] = None
     diff_totals: Any = None
+
+    def astuple(self):
+        return (
+            self.file_index,
+            self.file_totals,
+            self.session_totals,
+            self.diff_totals,
+        )
 
 
 @dataclass

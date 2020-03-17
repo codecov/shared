@@ -1176,7 +1176,7 @@ def _dumps_not_none(value):
     if isinstance(value, list):
         return dumps(_rstrip_none(list(value)), cls=ReportEncoder)
     if isinstance(value, ReportLine):
-        return dumps(_rstrip_none(list(dataclasses.astuple(value))), cls=ReportEncoder)
+        return dumps(_rstrip_none(list(value.astuple())), cls=ReportEncoder)
     return value if value and value != "null" else ""
 
 
@@ -1189,7 +1189,7 @@ def _rstrip_none(lst):
 class EnhancedJSONEncoder(JSONEncoder):
     def default(self, o):
         if dataclasses.is_dataclass(o):
-            return dataclasses.astuple(o)
+            return o.astuple()
         return super().default(o)
 
 

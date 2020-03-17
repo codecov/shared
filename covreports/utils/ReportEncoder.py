@@ -10,7 +10,7 @@ class ReportEncoder(JSONEncoder):
 
     def default(self, obj):
         if dataclasses.is_dataclass(obj):
-            return dataclasses.astuple(obj)
+            return obj.astuple()
         if isinstance(obj, Fraction):
             return str(obj)
         if isinstance(obj, ReportTotals):
