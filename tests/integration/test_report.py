@@ -2,7 +2,13 @@ import pytest
 
 from covreports.reports.resources import Report, ReportFile, _encode_chunk
 from covreports.utils.sessions import Session
-from covreports.reports.types import ReportTotals, ReportLine, NetworkFile, LineSession, Change
+from covreports.reports.types import (
+    ReportTotals,
+    ReportLine,
+    NetworkFile,
+    LineSession,
+    Change,
+)
 from tests.helper import v2_to_v3
 
 
@@ -127,7 +133,7 @@ def test_append_already_exists():
         hits=2,
         misses=2,
         partials=2,
-        coverage='33.33333',
+        coverage="33.33333",
         branches=0,
         methods=0,
         messages=0,
@@ -136,13 +142,13 @@ def test_append_already_exists():
         complexity_total=0,
         diff=0,
     )
-    assert report.get('path.py').totals == ReportTotals(
+    assert report.get("path.py").totals == ReportTotals(
         files=0,
         lines=6,
         hits=2,
         misses=2,
         partials=2,
-        coverage='33.33333',
+        coverage="33.33333",
         branches=0,
         methods=0,
         messages=0,
@@ -158,7 +164,7 @@ def test_append_already_exists():
         hits=4,
         misses=0,
         partials=3,
-        coverage='57.14286',
+        coverage="57.14286",
         branches=0,
         methods=0,
         messages=0,
@@ -167,13 +173,13 @@ def test_append_already_exists():
         complexity_total=0,
         diff=0,
     )
-    assert report.get('path.py').totals == ReportTotals(
+    assert report.get("path.py").totals == ReportTotals(
         files=0,
         lines=7,
         hits=4,
         misses=0,
         partials=3,
-        coverage='57.14286',
+        coverage="57.14286",
         branches=0,
         methods=0,
         messages=0,
@@ -709,7 +715,7 @@ def test_flare_with_changes():
         }
     ]
     modified_change = Change(
-        path='modified.py',
+        path="modified.py",
         in_diff=True,
         totals=ReportTotals(
             files=0,
@@ -724,13 +730,13 @@ def test_flare_with_changes():
             sessions=0,
             complexity=0,
             complexity_total=0,
-            diff=0
-        )
+            diff=0,
+        ),
     )
     renamed_with_changes_change = Change(
-        path='renamed_with_changes.py',
+        path="renamed_with_changes.py",
         in_diff=True,
-        old_path='old_renamed_with_changes.py',
+        old_path="old_renamed_with_changes.py",
         totals=ReportTotals(
             files=0,
             lines=0,
@@ -744,11 +750,11 @@ def test_flare_with_changes():
             sessions=0,
             complexity=0,
             complexity_total=0,
-            diff=0
-        )
+            diff=0,
+        ),
     )
     unrelated_change = Change(
-        path='unrelated.py',
+        path="unrelated.py",
         in_diff=False,
         totals=ReportTotals(
             files=0,
@@ -763,26 +769,19 @@ def test_flare_with_changes():
             sessions=0,
             complexity=0,
             complexity_total=0,
-            diff=0
-        )
+            diff=0,
+        ),
     )
     added_change = Change(
-        path='added.py',
-        new=True,
-        in_diff=None,
-        old_path=None,
-        totals=None
+        path="added.py", new=True, in_diff=None, old_path=None, totals=None
     )
-    deleted_change = Change(
-        path='deleted.py',
-        deleted=True
-    )
+    deleted_change = Change(path="deleted.py", deleted=True)
     changes = [
         modified_change,
         renamed_with_changes_change,
         unrelated_change,
         added_change,
-        deleted_change
+        deleted_change,
     ]
     assert report.flare(changes=changes) == flare
 

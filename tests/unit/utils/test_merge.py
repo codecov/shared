@@ -270,14 +270,7 @@ def test_line_type(line, _line_type):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "x, y",
-    [
-        ("0/2", 1),
-        ("1/2", 2),
-        ("2/2", 0),
-        ("0", 1),
-        ("1", 0),
-    ]
+    "x, y", [("0/2", 1), ("1/2", 2), ("2/2", 0), ("0", 1), ("1", 0),]
 )
 def test_branch_type(x, y):
     assert branch_type(x) == y
@@ -305,10 +298,7 @@ def test_partials_to_line(partials, res):
 @pytest.mark.unir
 @pytest.mark.parametrize(
     "sessions, complexity",
-    [
-        ([[1, 2, 3, 4, 5]], 5),
-        ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]], (5, 6)),
-    ],
+    [([[1, 2, 3, 4, 5]], 5), ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]], (5, 6)),],
 )
 def test_get_complexity_from_sessions(sessions, complexity):
     sessions = [LineSession(*sess) for sess in sessions]

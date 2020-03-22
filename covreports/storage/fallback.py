@@ -7,17 +7,18 @@ log = logging.getLogger(__name__)
 
 
 class StorageWithFallbackService(BaseStorageService):
-
     def __init__(self, main_service, fallback_service):
         self.main_service = main_service
         self.fallback_service = fallback_service
 
-    def create_root_storage(self, bucket_name='archive', region='us-east-1'):
+    def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         res = self.main_service.create_root_storage(bucket_name, region)
         self.fallback_service.create_root_storage(bucket_name, region)
         return res
 
-    def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
+    def write_file(
+        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+    ):
         """
             Writes a new file with the contents of `data`
 
@@ -29,7 +30,9 @@ class StorageWithFallbackService(BaseStorageService):
             gzipped (bool): Whether the file should be gzipped on write (default: {False})
 
         """
-        return self.main_service.write_file(bucket_name, path, data, reduced_redundancy, gzipped)
+        return self.main_service.write_file(
+            bucket_name, path, data, reduced_redundancy, gzipped
+        )
 
     def append_to_file(self, bucket_name, path, data):
         """

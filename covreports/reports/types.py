@@ -68,13 +68,7 @@ class LineSession(object):
     complexity: int = None
 
     def astuple(self):
-        return (
-            self.id,
-            self.coverage,
-            self.branches,
-            self.partials,
-            self.complexity
-        )
+        return (self.id, self.coverage, self.branches, self.partials, self.complexity)
 
 
 @dataclass
@@ -91,7 +85,7 @@ class ReportLine(object):
             self.type,
             [s.astuple() for s in self.sessions] if self.sessions else None,
             self.messages,
-            self.complexity
+            self.complexity,
         )
 
     def __post_init__(self):

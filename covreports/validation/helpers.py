@@ -24,7 +24,9 @@ class CoverageRangeSchemaField(object):
         if not 0 <= upper_bound <= 100:
             raise SchemaError(f"Upper bound {upper_bound} should be between 0 and 100")
         if lower_bound > upper_bound:
-            raise SchemaError(f"Upper bound {upper_bound} should be bigger than {lower_bound}")
+            raise SchemaError(
+                f"Upper bound {upper_bound} should be bigger than {lower_bound}"
+            )
         return [lower_bound, upper_bound]
 
     def validate(self, data):
@@ -36,12 +38,12 @@ class CoverageRangeSchemaField(object):
                 return self.validate_bounds(lower_bound, upper_bound)
             except ValueError:
                 raise SchemaError(f"{data} should have numbers as the range limits")
-        if '....' in data:
+        if "...." in data:
             raise SchemaError(f"{data} should have two or three dots, not four")
-        elif '...' in data:
-            splitter = '...'
-        elif '..' in data:
-            splitter = '..'
+        elif "..." in data:
+            splitter = "..."
+        elif ".." in data:
+            splitter = ".."
         else:
             raise SchemaError(f"{data} does not have the correct format")
         split_value = data.split(splitter)
@@ -62,15 +64,16 @@ class PercentSchemaField(object):
 
         PercentSchemaField().validate('60%') == 60.0
     """
-    field_regex = re.compile(r'(\d+)(\.\d+)?%?')
+
+    field_regex = re.compile(r"(\d+)(\.\d+)?%?")
 
     def validate(self, value):
         if isinstance(value, numbers.Number):
             return float(value)
         if not self.field_regex.match(value):
             raise SchemaError(f"{value} should be a number")
-        if value.endswith('%'):
-            value = value.rstrip('%')
+        if value.endswith("%"):
+            value = value.rstrip("%")
         try:
             return float(value)
         except ValueError:
@@ -93,19 +96,21 @@ def determine_path_pattern_type(filepath_pattern):
     Returns:
         str: The probable type of that inputted pattern
     """
-    reserved_chars = ['*', '$', ']', '[']
+    reserved_chars = ["*", "$", "]", "["]
     if not any(x in filepath_pattern for x in reserved_chars):
-        return 'path_prefix'
-    if '**' in filepath_pattern or '/*' in filepath_pattern:
-        return 'glob'
-    expected_regex_star_cases = [']*', '.*']
-    if '*' in filepath_pattern and not any(x in filepath_pattern for x in expected_regex_star_cases):
-        return 'glob'
+        return "path_prefix"
+    if "**" in filepath_pattern or "/*" in filepath_pattern:
+        return "glob"
+    expected_regex_star_cases = ["]*", ".*"]
+    if "*" in filepath_pattern and not any(
+        x in filepath_pattern for x in expected_regex_star_cases
+    ):
+        return "glob"
     try:
         re.compile(filepath_pattern)
-        return 'regex'
+        return "regex"
     except re.error:
-        return 'glob'
+        return "glob"
 
 
 def translate_glob_to_regex(pat, end_of_string=True):
@@ -123,60 +128,61 @@ def translate_glob_to_regex(pat, end_of_string=True):
     """
 
     i, n = 0, len(pat)
-    res = ''
+    res = ""
     while i < n:
         c = pat[i]
-        i = i+1
-        if c == '*':
-            if i < n and pat[i] == '*':
-                res = res + '.*'
+        i = i + 1
+        if c == "*":
+            if i < n and pat[i] == "*":
+                res = res + ".*"
                 i = i + 1
             else:
-                res = res + r'[^\/]+'
-        elif c == '?':
-            res = res + '.'
-        elif c == '[':
+                res = res + r"[^\/]+"
+        elif c == "?":
+            res = res + "."
+        elif c == "[":
             j = i
-            if j < n and pat[j] == '!':
-                j = j+1
-            if j < n and pat[j] == ']':
-                j = j+1
-            while j < n and pat[j] != ']':
-                j = j+1
+            if j < n and pat[j] == "!":
+                j = j + 1
+            if j < n and pat[j] == "]":
+                j = j + 1
+            while j < n and pat[j] != "]":
+                j = j + 1
             if j >= n:
-                res = res + '\\['
+                res = res + "\\["
             else:
                 stuff = pat[i:j]
-                if '--' not in stuff:
-                    stuff = stuff.replace('\\', r'\\')
+                if "--" not in stuff:
+                    stuff = stuff.replace("\\", r"\\")
                 else:
                     chunks = []
-                    k = i+2 if pat[i] == '!' else i+1
+                    k = i + 2 if pat[i] == "!" else i + 1
                     while True:
-                        k = pat.find('-', k, j)
+                        k = pat.find("-", k, j)
                         if k < 0:
                             break
                         chunks.append(pat[i:k])
-                        i = k+1
-                        k = k+3
+                        i = k + 1
+                        k = k + 3
                     chunks.append(pat[i:j])
                     # Escape backslashes and hyphens for set difference (--).
                     # Hyphens that create ranges shouldn't be escaped.
-                    stuff = '-'.join(s.replace('\\', r'\\').replace('-', r'\-')
-                                     for s in chunks)
+                    stuff = "-".join(
+                        s.replace("\\", r"\\").replace("-", r"\-") for s in chunks
+                    )
                 # Escape set operations (&&, ~~ and ||).
-                stuff = re.sub(r'([&~|])', r'\\\1', stuff)
-                i = j+1
-                if stuff[0] == '!':
-                    stuff = '^' + stuff[1:]
-                elif stuff[0] in ('^', '['):
-                    stuff = '\\' + stuff
-                res = '%s[%s]' % (res, stuff)
+                stuff = re.sub(r"([&~|])", r"\\\1", stuff)
+                i = j + 1
+                if stuff[0] == "!":
+                    stuff = "^" + stuff[1:]
+                elif stuff[0] in ("^", "["):
+                    stuff = "\\" + stuff
+                res = "%s[%s]" % (res, stuff)
         else:
             res = res + re.escape(c)
     if end_of_string:
-        return r'(?s:%s)\Z' % res
-    return r'(?s:%s)' % res
+        return r"(?s:%s)\Z" % res
+    return r"(?s:%s)" % res
 
 
 class PathPatternSchemaField(object):
@@ -218,22 +224,22 @@ class PathPatternSchemaField(object):
         return determine_path_pattern_type(value)
 
     def validate_glob(self, value):
-        if not value.endswith('$') and not value.endswith('*'):
+        if not value.endswith("$") and not value.endswith("*"):
             # Adding support for a prefix-based list of paths
-            value = value + '**'
+            value = value + "**"
         return translate_glob_to_regex(value)
 
     def validate_path_prefix(self, value):
         return f"^{value}.*"
 
     def validate(self, value):
-        if value.startswith('!'):
+        if value.startswith("!"):
             is_negative = True
-            value = value.lstrip('!')
+            value = value.lstrip("!")
         else:
             is_negative = False
 
-        if value.startswith('./'):
+        if value.startswith("./"):
             value = value[2:]
 
         input_type = self.input_type(value)
@@ -243,45 +249,44 @@ class PathPatternSchemaField(object):
         return result
 
     def validate_according_to_type(self, input_type, value):
-        if input_type == 'regex':
+        if input_type == "regex":
             try:
                 re.compile(value)
                 return value
             except re.error:
                 raise SchemaError(f"{value} does not work as a regex")
-        elif input_type == 'glob':
+        elif input_type == "glob":
             return self.validate_glob(value)
-        elif input_type == 'path_prefix':
+        elif input_type == "path_prefix":
             return self.validate_path_prefix(value)
         else:
             raise SchemaError(f"We did not detect what {value} is")
 
 
 class CustomFixPathSchemaField(object):
-
     def input_type(self, value):
         return determine_path_pattern_type(value)
 
     def validate(self, value):
-        if '::' not in value:
+        if "::" not in value:
             raise SchemaError("Pathfix must split before and after with a ::")
         before, after = value.split("::", 1)
-        if before == '' or after == '':
+        if before == "" or after == "":
             return value
         before_input_type = self.input_type(before)
         before = self.validate_according_to_type(before_input_type, before)
         return f"{before}::{after}"
 
     def validate_according_to_type(self, input_type, value):
-        if input_type == 'regex':
+        if input_type == "regex":
             try:
                 re.compile(value)
                 return value
             except re.error:
                 raise SchemaError(f"{value} does not work as a regex")
-        elif input_type == 'glob':
+        elif input_type == "glob":
             return translate_glob_to_regex(value, end_of_string=False)
-        elif input_type == 'path_prefix':
+        elif input_type == "path_prefix":
             return f"^{value}"
         else:
             raise SchemaError(f"We did not detect what {value} is")
@@ -289,77 +294,77 @@ class CustomFixPathSchemaField(object):
 
 class UserGivenBranchRegex(object):
 
-    asterisk_to_regexp = re.compile(r'(?<!\.)\*')
+    asterisk_to_regexp = re.compile(r"(?<!\.)\*")
 
     def validate(self, value):
-        if value in ('*', '', None, '.*'):
-            return '.*'
+        if value in ("*", "", None, ".*"):
+            return ".*"
         else:
             # apple* => apple.*
-            nv = self.asterisk_to_regexp.sub('.*', value.strip())
-            if not nv.startswith(('.*', '^')):
-                nv = '^%s' % nv
-            if not nv.endswith(('.*', '$')):
-                nv = '%s$' % nv
+            nv = self.asterisk_to_regexp.sub(".*", value.strip())
+            if not nv.startswith((".*", "^")):
+                nv = "^%s" % nv
+            if not nv.endswith((".*", "$")):
+                nv = "%s$" % nv
             re.compile(nv)
             return nv
 
 
 class LayoutStructure(object):
 
-    acceptable_objects = set([
-        'changes',
-        'diff',
-        'file',
-        'files',
-        'flag',
-        'flags',
-        'footer',
-        'header',
-        'header',
-        'reach',
-        'suggestions',
-        'sunburst',
-        'tree',
-        'uncovered'
-    ])
+    acceptable_objects = set(
+        [
+            "changes",
+            "diff",
+            "file",
+            "files",
+            "flag",
+            "flags",
+            "footer",
+            "header",
+            "header",
+            "reach",
+            "suggestions",
+            "sunburst",
+            "tree",
+            "uncovered",
+        ]
+    )
 
     def validate(self, value):
         values = value.split(",")
         actual_values = [x.strip() for x in values]
         if not set(actual_values) <= self.acceptable_objects:
             extra_objects = set(actual_values) - self.acceptable_objects
-            extra_objects = ','.join(extra_objects)
+            extra_objects = ",".join(extra_objects)
             raise SchemaError(f"Unexpected values on layout: {extra_objects}")
         return value
 
 
 class BranchSchemaField(object):
-
     def validate(self, value):
         if not isinstance(value, str):
             raise SchemaError(f"Branch must be {str}, was {type(value)} ({value})")
-        if value[:7] == 'origin/':
+        if value[:7] == "origin/":
             return value[7:]
-        elif value[:11] == 'refs/heads/':
+        elif value[:11] == "refs/heads/":
             return value[11:]
         return value
 
 
 class UserGivenSecret(object):
-
     class InvalidSecret(Exception):
         pass
 
     encryptor = EncryptorWithAlreadyGeneratedKey(
-        b']\xbb\x13\xf9}\xb3\xb7\x03)*0Kv\xb2\xcet'  # Same secret as in the main app
+        b"]\xbb\x13\xf9}\xb3\xb7\x03)*0Kv\xb2\xcet"  # Same secret as in the main app
     )
 
     def __init__(self, show_secret):
         self.show_secret = show_secret
 
     def validate(self, value):
-        if value is not None and value.startswith('secret:'):
+        if value is not None and value.startswith("secret:"):
             try:
                 secret_value = self.decode(value)
             except UserGivenSecret.InvalidSecret:
@@ -371,7 +376,7 @@ class UserGivenSecret(object):
 
     @classmethod
     def encode(cls, value):
-        return 'secret:%s' % cls.encryptor.encode(value).decode()
+        return "secret:%s" % cls.encryptor.encode(value).decode()
 
     @classmethod
     def decode(cls, value):

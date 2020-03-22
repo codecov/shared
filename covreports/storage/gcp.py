@@ -6,23 +6,24 @@ from google.oauth2.service_account import Credentials
 import google.cloud.exceptions
 
 from covreports.storage.base import BaseStorageService
-from covreports.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
+from covreports.storage.exceptions import (
+    BucketAlreadyExistsError,
+    FileNotInStorageError,
+)
 
 log = logging.getLogger(__name__)
 
 
 class GCPStorageService(BaseStorageService):
-
     def __init__(self, gcp_config):
         self.config = gcp_config
         self.credentials = self.load_credentials(gcp_config)
         self.storage_client = storage.Client(
-            project=self.credentials.project_id,
-            credentials=self.credentials
+            project=self.credentials.project_id, credentials=self.credentials
         )
 
     def load_credentials(self, gcp_config):
-        location = gcp_config.get('google_credentials_location')
+        location = gcp_config.get("google_credentials_location")
         if location:
             return Credentials.from_service_account_file(filename=location)
         return Credentials.from_service_account_info(gcp_config)
@@ -31,7 +32,7 @@ class GCPStorageService(BaseStorageService):
         bucket = self.storage_client.get_bucket(bucket_name)
         return storage.Blob(path, bucket)
 
-    def create_root_storage(self, bucket_name='archive', region='us-east-1'):
+    def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         """
             Creates root storage (or bucket_name, as in some terminologies)
 
@@ -44,13 +45,13 @@ class GCPStorageService(BaseStorageService):
         """
         try:
             bucket = self.storage_client.create_bucket(bucket_name)
-            return {
-                'name': bucket.name
-            }
+            return {"name": bucket.name}
         except google.cloud.exceptions.Conflict:
             raise BucketAlreadyExistsError(f"Bucket {bucket_name} already exists")
 
-    def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
+    def write_file(
+        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+    ):
         """
             Writes a new file with the contents of `data`
             (What happens if the file already exists?)
@@ -87,7 +88,9 @@ class GCPStorageService(BaseStorageService):
             NotImplementedError: If the current instance did not implement this method
         """
         try:
-            file_contents = '\n'.join((self.read_file(bucket_name, path).decode(), data))
+            file_contents = "\n".join(
+                (self.read_file(bucket_name, path).decode(), data)
+            )
         except FileNotInStorageError:
             file_contents = data
         return self.write_file(bucket_name, path, file_contents)
@@ -109,9 +112,12 @@ class GCPStorageService(BaseStorageService):
         blob = self.get_blob(bucket_name, path)
         try:
             blob.reload()
-            if blob.content_type == 'application/x-gzip' and blob.content_encoding == 'gzip':
-                blob.content_type = 'text/plain'
-                blob.content_encoding = 'gzip'
+            if (
+                blob.content_type == "application/x-gzip"
+                and blob.content_encoding == "gzip"
+            ):
+                blob.content_type = "text/plain"
+                blob.content_encoding = "gzip"
                 blob.patch()
             return blob.download_as_string()
         except google.cloud.exceptions.NotFound:
@@ -177,7 +183,4 @@ class GCPStorageService(BaseStorageService):
         return (self._blob_to_dict(b) for b in bucket.list_blobs(prefix=prefix))
 
     def _blob_to_dict(self, blob):
-        return {
-            'name': blob.name,
-            'size': blob.size
-        }
+        return {"name": blob.name, "size": blob.size}

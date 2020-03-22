@@ -8,7 +8,6 @@ from base64 import b64encode, b64decode
 
 
 class StandardEncryptor(object):
-
     def __init__(self, *keys, iv=None):
         self.backend = default_backend()
         self.key = self.generate_key(*keys)
@@ -16,10 +15,8 @@ class StandardEncryptor(object):
         self.iv = iv
 
     def generate_key(self, *keys):
-        joined = ''.join(keys)
-        return hashlib.sha256(
-            joined.encode()
-        ).digest()
+        joined = "".join(keys)
+        return hashlib.sha256(joined.encode()).digest()
 
     def decode(self, string):
         string = b64decode(string)
@@ -39,7 +36,7 @@ class StandardEncryptor(object):
         return b64encode(iv + result)
 
     def unpad(self, s):
-        return s[:-ord(s[len(s)-1:])]
+        return s[: -ord(s[len(s) - 1 :])]
 
     def pad(self, s):
         return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
@@ -47,15 +44,14 @@ class StandardEncryptor(object):
     def decrypt_token(self, oauth_token):
         _oauth = self.decode(oauth_token)
         token = {}
-        if ':' in _oauth:
-            token['key'], token['secret'] = _oauth.split(':', 1)
+        if ":" in _oauth:
+            token["key"], token["secret"] = _oauth.split(":", 1)
         else:
-            token['key'] = _oauth
-            token['secret'] = None
+            token["key"] = _oauth
+            token["secret"] = None
         return token
 
 
 class EncryptorWithAlreadyGeneratedKey(StandardEncryptor):
-
     def generate_key(self, *keys):
         return keys[0]

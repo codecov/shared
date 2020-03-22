@@ -2,38 +2,52 @@ from urllib.parse import urlencode, urlparse, urlunparse, parse_qsl, quote_plus
 from covreports.config import get_config
 from typing import Union, Dict, List, Tuple
 
-services_short = dict(github='gh',
-                      github_enterprise='ghe',
-                      bitbucket='bb',
-                      bitbucket_server='bbs',
-                      gitlab='gl',
-                      gitlab_enterprise='gle')
+services_short = dict(
+    github="gh",
+    github_enterprise="ghe",
+    bitbucket="bb",
+    bitbucket_server="bbs",
+    gitlab="gl",
+    gitlab_enterprise="gle",
+)
+
 
 def escape(string, escape=False):
     if isinstance(string, str):
         if escape:
-            return _url_escape(string).replace('%2F', '/')
-        return string.encode('utf-8', 'replace')
+            return _url_escape(string).replace("%2F", "/")
+        return string.encode("utf-8", "replace")
     elif escape:
         return str(string)
     else:
         return string
 
+
 def make_url(repository, *args, **kwargs):
     args = list(map(lambda a: escape(a, True), list(args)))
     kwargs = dict([(k, escape(v)) for k, v in kwargs.items() if v is not None])
     if repository:
-        return _url_concat('/'.join([get_config('setup', 'codecov_url'),
-                                    services_short[repository.service],
-                                    repository.slug] + args),
-                          kwargs)
+        return _url_concat(
+            "/".join(
+                [
+                    get_config("setup", "codecov_url"),
+                    services_short[repository.service],
+                    repository.slug,
+                ]
+                + args
+            ),
+            kwargs,
+        )
     else:
-        return _url_concat('/'.join([get_config('setup', 'codecov_url')] + args),
-                          kwargs)
+        return _url_concat(
+            "/".join([get_config("setup", "codecov_url")] + args), kwargs
+        )
+
 
 def _url_escape(value):
     """Returns a valid URL-encoded version of the given value."""
     return quote_plus(utf8(value))
+
 
 def _url_concat(
     url: str,
@@ -81,7 +95,10 @@ def _url_concat(
     )
     return url
 
+
 _UTF8_TYPES = (bytes, type(None))
+
+
 def utf8(value):
     """Converts a string argument to a byte string.
 

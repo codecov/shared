@@ -1,7 +1,10 @@
 from collections import defaultdict
 
 from covreports.storage.base import BaseStorageService
-from covreports.storage.exceptions import FileNotInStorageError, BucketAlreadyExistsError
+from covreports.storage.exceptions import (
+    FileNotInStorageError,
+    BucketAlreadyExistsError,
+)
 
 
 class MemoryStorageService(BaseStorageService):
@@ -18,7 +21,7 @@ class MemoryStorageService(BaseStorageService):
         self.root_storage_created = False
         self.storage = defaultdict(dict)
 
-    def create_root_storage(self, bucket_name='archive', region='us-east-1'):
+    def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         """
             Creates root storage (or bucket, as in some terminologies)
 
@@ -33,9 +36,11 @@ class MemoryStorageService(BaseStorageService):
         if self.root_storage_created:
             raise BucketAlreadyExistsError()
         self.root_storage_created = True
-        return {'name': bucket_name}
+        return {"name": bucket_name}
 
-    def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
+    def write_file(
+        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+    ):
         """
             Writes a new file with the contents of `data`
             (What happens if the file already exists?)
@@ -74,7 +79,7 @@ class MemoryStorageService(BaseStorageService):
         if path not in self.storage[bucket_name]:
             return self.write_file(bucket_name, path, data)
         else:
-            new_content = b'\n'.join([self.storage[bucket_name].get(path, b''), data])
+            new_content = b"\n".join([self.storage[bucket_name].get(path, b""), data])
             return self.write_file(bucket_name, path, new_content)
 
     def read_file(self, bucket_name, path):
@@ -160,5 +165,7 @@ class MemoryStorageService(BaseStorageService):
         res = []
         for key in self.storage[bucket_name]:
             if prefix is None or key.startswith(prefix):
-                res.append({'name': key, 'size': len(self.storage[bucket_name][key].decode())})
+                res.append(
+                    {"name": key, "size": len(self.storage[bucket_name][key].decode())}
+                )
         return res

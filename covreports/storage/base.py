@@ -1,12 +1,9 @@
-
-
 # Interface class for interfacing with codecov's underlying storage layer
 class BaseStorageService(object):
-
     def client(self):
         return self.minio_client if self.minio_client else None
 
-    def create_root_storage(self, bucket_name='archive', region='us-east-1'):
+    def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         """
             Creates root storage (or bucket, as in some terminologies)
 
@@ -20,7 +17,9 @@ class BaseStorageService(object):
         """
         raise NotImplementedError()
 
-    def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
+    def write_file(
+        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+    ):
         """
             Writes a new file with the contents of `data`
             (What happens if the file already exists?)

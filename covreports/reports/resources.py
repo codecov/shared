@@ -471,7 +471,10 @@ class Report(object):
 
         # {1: {...}}
         self.sessions = (
-            dict((int(sid), Session.parse_session(**session)) for sid, session in sessions.items())
+            dict(
+                (int(sid), Session.parse_session(**session))
+                for sid, session in sessions.items()
+            )
             if sessions
             else {}
         )
@@ -507,7 +510,9 @@ class Report(object):
                     yield fname, make_network_file(file.totals)
         else:
             for fname, data in self._files.items():
-                yield fname, make_network_file(data.file_totals, data.session_totals, data.diff_totals)
+                yield fname, make_network_file(
+                    data.file_totals, data.session_totals, data.diff_totals
+                )
 
     def __repr__(self):
         try:
@@ -619,10 +624,8 @@ class Report(object):
                 except IndexError:
                     log.warning(
                         "File not found in chunk",
-                        extra=dict(
-                            file_index=_file.file_index
-                        ),
-                        exc_info=True
+                        extra=dict(file_index=_file.file_index),
+                        exc_info=True,
                     )
                     lines = None
             else:
@@ -792,7 +795,9 @@ class Report(object):
                 yield self.file_class(
                     name=filename,
                     totals=_file.file_totals,
-                    session_totals=_file.session_totals if _file.session_totals else None,
+                    session_totals=_file.session_totals
+                    if _file.session_totals
+                    else None,
                     lines=report,
                     line_modifier=self._line_modifier,
                 )
@@ -858,13 +863,17 @@ class Report(object):
                 (
                     (
                         individual_change.path,
-                        individual_change.totals.coverage if not individual_change.new and individual_change.totals else None,
+                        individual_change.totals.coverage
+                        if not individual_change.new and individual_change.totals
+                        else None,
                     )
                     for individual_change in changes
                 )
             )
             # <dict path: stripeed if not in_diff>
-            classes = dict(((_Change.path, "s") for _Change in changes if not _Change.in_diff))
+            classes = dict(
+                ((_Change.path, "s") for _Change in changes if not _Change.in_diff)
+            )
 
             def _network():
                 for name, _NetworkFile in self.network:
@@ -872,7 +881,8 @@ class Report(object):
                     if changed_coverage:
                         # changed file
                         yield name, ReportTotals(
-                            lines=_NetworkFile.totals.lines, coverage=float(changed_coverage)
+                            lines=_NetworkFile.totals.lines,
+                            coverage=float(changed_coverage),
                         )
                     else:
                         diff = _NetworkFile.diff_totals
@@ -881,7 +891,8 @@ class Report(object):
                             yield name, ReportTotals(
                                 lines=_NetworkFile.totals.lines,
                                 coverage=-1
-                                if float(diff.coverage) < float(_NetworkFile.totals.coverage)
+                                if float(diff.coverage)
+                                < float(_NetworkFile.totals.coverage)
                                 else 1,
                             )
 
@@ -903,7 +914,9 @@ class Report(object):
                 )
 
         else:
-            network = ((path, _NetworkFile.totals) for path, _NetworkFile in self.network)
+            network = (
+                (path, _NetworkFile.totals) for path, _NetworkFile in self.network
+            )
             classes = {}
             # [TODO] [v4.4.0] remove yaml from args, use below
             # color = self.yaml.get(('coverage', 'range'))
