@@ -21,6 +21,16 @@ def valid_handler():
     )
 
 @pytest.fixture
+def subgroup_handler():
+    return Gitlab(
+        repo=dict(service_id='187725', name='codecov-test'),
+        owner=dict(username='group:subgroup1:subgroup2', service_id='7983213'),
+        token=dict(
+            key='testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w'
+        )
+    )
+
+@pytest.fixture
 def admin_handler():
     return Gitlab(
         repo=dict(service_id='12060694'),
@@ -836,4 +846,10 @@ class TestGitlabTestCase(object):
     def test_get_href(self, valid_handler):
         expected_result = 'https://gitlab.com/stevepeak/codecov-test/commit/743b04806ea677403aa2ff26c6bdeb85005de658'
         res = valid_handler.get_href(Endpoints.commit_detail, commitid='743b04806ea677403aa2ff26c6bdeb85005de658')
+        assert res == expected_result
+
+    def test_get_href_subgroup(self, subgroup_handler):
+        commitid='743b04806ea677403aa2ff26c6bdeb85005de658'
+        expected_result = f'https://gitlab.com/group/subgroup1/subgroup2/codecov-test/commit/{commitid}'
+        res = subgroup_handler.get_href(Endpoints.commit_detail, commitid=commitid)
         assert res == expected_result

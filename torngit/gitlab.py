@@ -702,7 +702,7 @@ class Gitlab(BaseHandler):
     def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
         if endpoint == Endpoints.commit_detail:
             return self.urls['commit'].format(
-                username=self.data['owner']['username'],
+                username=self.data['owner']['username'].replace(':', '/'),
                 name=self.data['repo']['name'],
                 commitid=kwargs['commitid']
             )
