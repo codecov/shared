@@ -50,7 +50,9 @@ def carriedforward_session_name(original_session_name: str) -> str:
         res = re.match(regex, original_session_name)
         if res:
             number_so_far = int(res.group(1))
-            return re.sub(regex, f"CF[{number_so_far + 1}]", original_session_name, count=1)
+            return re.sub(
+                regex, f"CF[{number_so_far + 1}]", original_session_name, count=1
+            )
     return f"CF[1] - {original_session_name}"
 
 

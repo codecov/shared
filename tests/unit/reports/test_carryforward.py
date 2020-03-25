@@ -11,7 +11,8 @@ from covreports.reports.resources import (
     Session,
 )
 from covreports.reports.carryforward import (
-    generate_carryforward_report, carriedforward_session_name
+    generate_carryforward_report,
+    carriedforward_session_name,
 )
 
 
@@ -46,7 +47,6 @@ def sample_report():
 
 
 class TestCarryfowardFlag(object):
-
     def test_carriedforward_session_name(self):
         assert carriedforward_session_name(None) == "Carriedforward"
         assert carriedforward_session_name("") == "Carriedforward"
@@ -58,7 +58,9 @@ class TestCarryfowardFlag(object):
         assert carriedforward_session_name("CF[10] - Dude") == "CF[11] - Dude"
         assert carriedforward_session_name("CF CF Dude") == "CF[3] - Dude"
         assert carriedforward_session_name("CFCD") == "CF[1] - CFCD"
-        assert carriedforward_session_name("CF CF CF CF CF CF CF Dude") == "CF[8] - Dude"
+        assert (
+            carriedforward_session_name("CF CF CF CF CF CF CF Dude") == "CF[8] - Dude"
+        )
 
     def convert_report_to_better_readable(self, report):
         totals_dict, report_dict = report.to_database()

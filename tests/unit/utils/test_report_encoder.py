@@ -5,24 +5,33 @@ from covreports.utils.ReportEncoder import ReportEncoder
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize('obj, res', [
-    (ReportTotals(), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-    (ReportTotals('files', 'lines'), ('files', 'lines', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-    (Session('id', 'totals'), {
-        'N': None,
-        'a': None,
-        'c': None,
-        'e': None,
-        'd': None,
-        'f': None,
-        'j': None,
-        'n': None,
-        'p': None,
-        'u': None,
-        't': 'totals',
-        'st': 'uploaded'
-    }),
-])
+@pytest.mark.parametrize(
+    "obj, res",
+    [
+        (ReportTotals(), (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+        (
+            ReportTotals("files", "lines"),
+            ("files", "lines", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        ),
+        (
+            Session("id", "totals"),
+            {
+                "N": None,
+                "a": None,
+                "c": None,
+                "e": None,
+                "d": None,
+                "f": None,
+                "j": None,
+                "n": None,
+                "p": None,
+                "u": None,
+                "t": "totals",
+                "st": "uploaded",
+            },
+        ),
+    ],
+)
 def test_report_encoder(obj, res):
     assert ReportEncoder().default(obj) == res
 

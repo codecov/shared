@@ -22,21 +22,21 @@ def sum_totals(totals):
         return ReportTotals()
 
     sessions = totals[0].sessions
-    lines = sum(map(attrgetter('lines'), totals))
-    hits = sum(map(attrgetter('hits'), totals))
+    lines = sum(map(attrgetter("lines"), totals))
+    hits = sum(map(attrgetter("hits"), totals))
     return ReportTotals(
         files=len(totals),
         lines=lines,
         hits=hits,
-        misses=sum(map(attrgetter('misses'), totals)),
-        partials=sum(map(attrgetter('partials'), totals)),
-        branches=sum(map(attrgetter('branches'), totals)),
-        methods=sum(map(attrgetter('methods'), totals)),
-        messages=sum(map(attrgetter('messages'), totals)),
+        misses=sum(map(attrgetter("misses"), totals)),
+        partials=sum(map(attrgetter("partials"), totals)),
+        branches=sum(map(attrgetter("branches"), totals)),
+        methods=sum(map(attrgetter("methods"), totals)),
+        messages=sum(map(attrgetter("messages"), totals)),
         coverage=ratio(hits, lines),
         sessions=sessions,
-        complexity=sum(map(attrgetter('complexity'), totals)),
-        complexity_total=sum(map(attrgetter('complexity_total'), totals))
+        complexity=sum(map(attrgetter("complexity"), totals)),
+        complexity_total=sum(map(attrgetter("complexity_total"), totals)),
     )
 
 

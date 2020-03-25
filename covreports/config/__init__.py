@@ -13,13 +13,13 @@ class MissingConfigException(Exception):
 log = logging.getLogger(__name__)
 
 default_config = {
-    'services': {
-        'minio': {
-            'port': '9000',
-            'host': 'minio',
-            'access_key_id': 'codecov-default-key',
-            'secret_access_key': 'codecov-default-secret',
-            'verify_ssl': False
+    "services": {
+        "minio": {
+            "port": "9000",
+            "host": "minio",
+            "access_key_id": "codecov-default-key",
+            "secret_access_key": "codecov-default-secret",
+            "verify_ssl": False,
         }
     }
 }
@@ -36,7 +36,6 @@ def update(d, u):
 
 
 class ConfigHelper(object):
-
     def __init__(self):
         self._params = None
         self.loaded_files = {}
@@ -44,7 +43,7 @@ class ConfigHelper(object):
     def load_env_var(self):
         val = {}
         for env_var in os.environ:
-            multiple_level_vars = env_var.split('__')
+            multiple_level_vars = env_var.split("__")
             if len(multiple_level_vars) > 1:
                 current = val
                 for c in multiple_level_vars[:-1]:
@@ -75,16 +74,16 @@ class ConfigHelper(object):
         return current_p
 
     def yaml_content(self):
-        yaml_path = os.getenv('CODECOV_YML', '/config/codecov.yml')
+        yaml_path = os.getenv("CODECOV_YML", "/config/codecov.yml")
         try:
-            with open(yaml_path, 'r') as c:
+            with open(yaml_path, "r") as c:
                 return yaml_load(c.read())
         except FileNotFoundError:
             return {}
 
     def load_filename_from_path(self, *args):
         if args not in self.loaded_files:
-            with open(self.get(*args), 'r') as _file:
+            with open(self.get(*args), "r") as _file:
                 self.loaded_files[args] = _file.read()
         return self.loaded_files[args]
 
@@ -110,7 +109,7 @@ def load_file_from_path_at_config(*args):
 
 
 def get_verify_ssl(service):
-    verify = get_config(service, 'verify_ssl')
+    verify = get_config(service, "verify_ssl")
     if verify is False:
         return False
-    return get_config(service, 'ssl_pem') or os.getenv('REQUESTS_CA_BUNDLE')
+    return get_config(service, "ssl_pem") or os.getenv("REQUESTS_CA_BUNDLE")

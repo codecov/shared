@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class SessionType(Enum):
-    uploaded = 'uploaded'
-    carriedforward = 'carriedforward'
+    uploaded = "uploaded"
+    carriedforward = "carriedforward"
 
     @classmethod
     def get_from_string(cls, val):
@@ -29,7 +29,7 @@ class Session(object):
         env=None,
         name=None,
         session_type=None,
-        **kwargs
+        **kwargs,
     ):
         # the kwargs are for old reports
         self.id = id
@@ -65,7 +65,7 @@ class Session(object):
         e=None,
         N=None,
         st=None,
-        **kwargs
+        **kwargs,
     ):
         return cls(
             id=id,
@@ -80,7 +80,7 @@ class Session(object):
             state=p or kwargs.get("state"),
             env=e or kwargs.get("env"),
             name=N or kwargs.get("name"),
-            session_type=SessionType.get_from_string(st)
+            session_type=SessionType.get_from_string(st),
         )
 
     def _encode(self):
@@ -96,5 +96,5 @@ class Session(object):
             "u": self.url,
             "p": self.state,
             "e": self.env,
-            "st": self.session_type.value
+            "st": self.session_type.value,
         }

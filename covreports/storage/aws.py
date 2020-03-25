@@ -7,23 +7,25 @@ from botocore.exceptions import ClientError
 from io import BytesIO
 
 from covreports.storage.base import BaseStorageService
-from covreports.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
+from covreports.storage.exceptions import (
+    BucketAlreadyExistsError,
+    FileNotInStorageError,
+)
 
 log = logging.getLogger(__name__)
 
 
 class AWSStorageService(BaseStorageService):
-
     def __init__(self, aws_config):
         self.config = aws_config
         self.storage_client = boto3.client(
-            aws_config.get('resource'),
-            aws_access_key_id=aws_config.get('aws_access_key_id'),
-            aws_secret_access_key=aws_config.get('aws_secret_access_key'),
-            region_name=aws_config.get('region_name')
+            aws_config.get("resource"),
+            aws_access_key_id=aws_config.get("aws_access_key_id"),
+            aws_secret_access_key=aws_config.get("aws_secret_access_key"),
+            region_name=aws_config.get("region_name"),
         )
 
-    def create_root_storage(self, bucket_name='archive', region='us-east-1'):
+    def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         """
             Creates root storage (or bucket, as in some terminologies)
 
@@ -39,31 +41,32 @@ class AWSStorageService(BaseStorageService):
         Raises:
             BucketAlreadyExistsError: If the bucket already exists
         """
-        
-        if region == 'us-east-1':
+
+        if region == "us-east-1":
             try:
                 self.storage_client.head_bucket(Bucket=bucket_name)
                 raise BucketAlreadyExistsError(f"Bucket {bucket_name} already exists")
             except ClientError as e:
-                if e.response['Error']['Code'] == '404':
+                if e.response["Error"]["Code"] == "404":
                     self.storage_client.create_bucket(Bucket=bucket_name)
         else:
             try:
-                location = {'LocationConstraint': region}
+                location = {"LocationConstraint": region}
                 self.storage_client.create_bucket(
-                    Bucket=bucket_name,
-                    CreateBucketConfiguration=location
+                    Bucket=bucket_name, CreateBucketConfiguration=location
                 )
             except ClientError as e:
-                if e.response['Error']['Code'] == 'BucketAlreadyOwnedByYou':
-                    raise BucketAlreadyExistsError(f"Bucket {bucket_name} already exists")     
+                if e.response["Error"]["Code"] == "BucketAlreadyOwnedByYou":
+                    raise BucketAlreadyExistsError(
+                        f"Bucket {bucket_name} already exists"
+                    )
                 else:
                     raise
-        return {
-                    'name': bucket_name
-                }
+        return {"name": bucket_name}
 
-    def write_file(self, bucket_name, path, data, reduced_redundancy=False, gzipped=False):
+    def write_file(
+        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+    ):
         """
             Writes a new file with the contents of `data`
             (What happens if the file already exists?)
@@ -76,12 +79,9 @@ class AWSStorageService(BaseStorageService):
             gzipped (bool): Whether the file should be gzipped on write (default: {False})
         
         """
-        storage_class = 'REDUCED_REDUNDANCY' if reduced_redundancy else 'STANDARD'
+        storage_class = "REDUCED_REDUNDANCY" if reduced_redundancy else "STANDARD"
         self.storage_client.put_object(
-            Bucket=bucket_name, 
-            Key=path, 
-            Body=data,
-            StorageClass=storage_class
+            Bucket=bucket_name, Key=path, Body=data, StorageClass=storage_class
         )
         return True
 
@@ -98,9 +98,11 @@ class AWSStorageService(BaseStorageService):
             NotImplementedError: If the current instance did not implement this method
         """
         try:
-            file_contents = '\n'.join((self.read_file(bucket_name, path).decode(), data))
+            file_contents = "\n".join(
+                (self.read_file(bucket_name, path).decode(), data)
+            )
         except ClientError as e:
-            if e.response['Error']['Code'] == 'NoSuchKey':
+            if e.response["Error"]["Code"] == "NoSuchKey":
                 file_contents = data
             else:
                 raise
@@ -159,7 +161,7 @@ class AWSStorageService(BaseStorageService):
             response = self.storage_client.delete_object(Bucket=bucket_name, Key=path)
             return True
         except ClientError as e:
-            raise 
+            raise
 
     def delete_files(self, bucket_name, paths=[]):
         """Batch deletes a list of files from a given bucket
@@ -179,17 +181,14 @@ class AWSStorageService(BaseStorageService):
             list: A list of booleans, where each result indicates whether that file was deleted
                 successfully
         """
-        objects_to_delete = {
-            'Objects': [{'Key': key} for key in paths]
-        }
+        objects_to_delete = {"Objects": [{"Key": key} for key in paths]}
         try:
             response = self.storage_client.delete_objects(
-                Bucket=bucket_name,
-                Delete=objects_to_delete
+                Bucket=bucket_name, Delete=objects_to_delete
             )
         except ClientError as e:
             raise
-        deletes = [error.get('Key') for error in response.get('Deleted')]
+        deletes = [error.get("Key") for error in response.get("Deleted")]
         return [key in deletes for key in paths]
 
     def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
@@ -205,10 +204,12 @@ class AWSStorageService(BaseStorageService):
         """
         try:
             response = self.storage_client.list_objects(
-                Bucket=bucket_name,
-                Prefix=prefix
+                Bucket=bucket_name, Prefix=prefix
             )
         except ClientError as e:
             raise
-        contents = response.get('Contents')
-        return [{'name': content.get('Key'), 'size': content.get('Size')} for content in contents]
+        contents = response.get("Contents")
+        return [
+            {"name": content.get("Key"), "size": content.get("Size")}
+            for content in contents
+        ]

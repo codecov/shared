@@ -6,7 +6,7 @@ import dataclasses
 
 
 class ReportEncoder(JSONEncoder):
-    separators = (',', ':')
+    separators = (",", ":")
 
     def default(self, obj):
         if dataclasses.is_dataclass(obj):
@@ -16,10 +16,10 @@ class ReportEncoder(JSONEncoder):
         if isinstance(obj, ReportTotals):
             # reduce totals
             obj = list(obj)
-            while obj and obj[-1] in ('0', 0):
+            while obj and obj[-1] in ("0", 0):
                 obj.pop()
             return obj
-        elif hasattr(obj, '_encode'):
+        elif hasattr(obj, "_encode"):
             return obj._encode()
         elif isinstance(obj, GeneratorType):
             obj = list(obj)

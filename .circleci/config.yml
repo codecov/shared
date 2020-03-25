@@ -4,6 +4,15 @@
 #
 version: 2
 jobs:
+  linter:
+    docker:
+      - image: circleci/python:3.7.6
+    steps:
+      - run:
+          name: Running linter
+          command: |
+            pip3 install black
+            black --check .
   build:
     docker:
       # specify the version you desire here
@@ -52,3 +61,17 @@ jobs:
             pip install codecov
             codecov
           
+workflows:
+  version: 2
+  lint-test:
+    jobs:
+      - linter:
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - linter
+          filters:
+            tags:
+              only: /.*/

@@ -10,30 +10,21 @@ log = logging.getLogger(__name__)
 
 
 class EditableReportFile(ReportFile):
-
     @classmethod
     def line_without_session(cls, line: ReportLine, sessionid: int):
-        new_sessions = [
-            s for s in line.sessions if s.id != sessionid
-        ]
+        new_sessions = [s for s in line.sessions if s.id != sessionid]
         remaining_coverages = [s.coverage for s in new_sessions]
         if len(new_sessions) == 0:
             return EMPTY
         new_coverage = merge_all(remaining_coverages)
-        return dataclasses.replace(
-            line,
-            sessions=new_sessions,
-            coverage=new_coverage
-        )
+        return dataclasses.replace(line, sessions=new_sessions, coverage=new_coverage)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.turn_lines_into_report_lines()
 
     def turn_lines_into_report_lines(self):
-        self._lines = [
-            self._line(l) if l else EMPTY for l in self._lines
-        ]
+        self._lines = [self._line(l) if l else EMPTY for l in self._lines]
 
     def delete_session(self, sessionid: int):
         self._totals = None
@@ -72,8 +63,7 @@ class EditableReport(Report):
                 file.delete_session(sessionid)
                 if file:
                     self._files[file.name] = dataclasses.replace(
-                        self._files.get(file.name),
-                        file_totals=file.totals
+                        self._files.get(file.name), file_totals=file.totals
                     )
                 else:
                     del self[file.name]

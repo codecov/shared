@@ -1,13 +1,15 @@
 from colour import Color
 from itertools import chain
 
-colors = list(chain(
-    Color('#e05d44').range_to('#fe7d37', 20),
-    Color('#fe7d37').range_to('#dfb317', 20),
-    Color('#dfb317').range_to('#a4a61d', 20),
-    Color('#a4a61d').range_to('#97CA00', 20),
-    Color('#97CA00').range_to('#4c1', 21)
-))
+colors = list(
+    chain(
+        Color("#e05d44").range_to("#fe7d37", 20),
+        Color("#fe7d37").range_to("#dfb317", 20),
+        Color("#dfb317").range_to("#a4a61d", 20),
+        Color("#a4a61d").range_to("#97CA00", 20),
+        Color("#97CA00").range_to("#4c1", 21),
+    )
+)
 
 
 def coverage_to_color(range_low, range_high):

@@ -4,7 +4,10 @@ from tests.base import BaseTestCase
 from covreports.storage.gcp import GCPStorageService
 from covreports.storage.aws import AWSStorageService
 from covreports.storage.fallback import StorageWithFallbackService
-from covreports.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
+from covreports.storage.exceptions import (
+    BucketAlreadyExistsError,
+    FileNotInStorageError,
+)
 
 # DONT WORRY, this is generated for the purposes of validation, and is not the real
 # one on which the code ran
@@ -39,16 +42,16 @@ hUVr40ZOOnf1HpBc2um+6DAj
 """
 
 gcp_config = {
-  "type": "service_account",
-  "project_id": "genuine-polymer-165712",
-  "private_key_id": "e0098875a6be7fd0fb8d5b5efd6b6f662eff7295",
-  "private_key": fake_private_key,
-  "client_email": "codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com",
-  "client_id": "109377049763026714378",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/codecov-marketing-deployment%40genuine-polymer-165712.iam.gserviceaccount.com"
+    "type": "service_account",
+    "project_id": "genuine-polymer-165712",
+    "private_key_id": "e0098875a6be7fd0fb8d5b5efd6b6f662eff7295",
+    "private_key": fake_private_key,
+    "client_email": "codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com",
+    "client_id": "109377049763026714378",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/codecov-marketing-deployment%40genuine-polymer-165712.iam.gserviceaccount.com",
 }
 
 
@@ -56,40 +59,35 @@ aws_config = {
     "resource": "s3",
     "aws_access_key_id": "testrobl3cz4i1to1noa",
     "aws_secret_access_key": "vMTpbJX/vMTpbJX",
-    "region_name": "us-east-1"
+    "region_name": "us-east-1",
 }
 
 
 @pytest.fixture()
 def storage_service():
-    gcp_storage = GCPStorageService(
-        gcp_config
-    )
-    aws_storage = AWSStorageService(
-        aws_config
-    )
+    gcp_storage = GCPStorageService(gcp_config)
+    aws_storage = AWSStorageService(aws_config)
     return StorageWithFallbackService(gcp_storage, aws_storage)
 
 
 class TestFallbackStorageService(BaseTestCase):
-
     def test_create_bucket(self, codecov_vcr, storage_service):
         storage = storage_service
-        bucket_name = 'testingarchive20190210001'
+        bucket_name = "testingarchive20190210001"
         res = storage.create_root_storage(bucket_name)
-        assert res['name'] == 'testingarchive20190210001'
+        assert res["name"] == "testingarchive20190210001"
 
     def test_create_bucket_already_exists(self, codecov_vcr, storage_service):
         storage = storage_service
-        bucket_name = 'testingarchive20190210001'
+        bucket_name = "testingarchive20190210001"
         with pytest.raises(BucketAlreadyExistsError):
             storage.create_root_storage(bucket_name)
 
     def test_write_then_read_file(self, codecov_vcr, storage_service):
         storage = storage_service
-        path = 'test_write_then_read_file/result'
-        data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive20190210001'
+        path = "test_write_then_read_file/result"
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        bucket_name = "testingarchive20190210001"
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -97,22 +95,22 @@ class TestFallbackStorageService(BaseTestCase):
 
     def test_write_then_append_then_read_file(self, codecov_vcr, storage_service):
         storage = storage_service
-        path = 'test_write_then_append_then_read_file/result'
-        data = 'lorem ipsum dolor test_write_then_read_file á'
-        second_data = 'mom, look at me, appending data'
-        bucket_name = 'testingarchive20190210001'
+        path = "test_write_then_append_then_read_file/result"
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        second_data = "mom, look at me, appending data"
+        bucket_name = "testingarchive20190210001"
         writing_result = storage.write_file(bucket_name, path, data)
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert writing_result
         assert second_writing_result
         reading_result = storage.read_file(bucket_name, path)
-        assert reading_result.decode() == '\n'.join([data, second_data])
+        assert reading_result.decode() == "\n".join([data, second_data])
 
     def test_append_to_non_existing_file(self, request, codecov_vcr, storage_service):
         storage = storage_service
-        path = f'{request.node.name}/result.txt'
-        second_data = 'mom, look at me, appending data'
-        bucket_name = 'testingarchive20190210001'
+        path = f"{request.node.name}/result.txt"
+        second_data = "mom, look at me, appending data"
+        bucket_name = "testingarchive20190210001"
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert second_writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -120,32 +118,40 @@ class TestFallbackStorageService(BaseTestCase):
 
     def test_read_file_does_not_exist(self, request, codecov_vcr, storage_service):
         storage = storage_service
-        path = f'{request.node.name}/does_not_exist.txt'
-        bucket_name = 'testingarchive20190210001'
+        path = f"{request.node.name}/does_not_exist.txt"
+        bucket_name = "testingarchive20190210001"
         with pytest.raises(FileNotInStorageError):
             storage.read_file(bucket_name, path)
 
-    def test_read_file_does_not_exist_on_first_but_exists_on_second(self, request, codecov_vcr, storage_service):
+    def test_read_file_does_not_exist_on_first_but_exists_on_second(
+        self, request, codecov_vcr, storage_service
+    ):
         storage = storage_service
-        path = f'{request.node.name}/does_not_exist_on_first_but_exists_on_second.txt'
-        bucket_name = 'testingarchive20190210001'
-        storage_service.fallback_service.write_file(bucket_name, path, 'some_data_over_there')
+        path = f"{request.node.name}/does_not_exist_on_first_but_exists_on_second.txt"
+        bucket_name = "testingarchive20190210001"
+        storage_service.fallback_service.write_file(
+            bucket_name, path, "some_data_over_there"
+        )
         reading_result = storage.read_file(bucket_name, path)
-        assert reading_result.decode() == 'some_data_over_there'
+        assert reading_result.decode() == "some_data_over_there"
 
-    def test_read_file_does_exist_on_first_but_not_exists_on_second(self, request, codecov_vcr, storage_service):
+    def test_read_file_does_exist_on_first_but_not_exists_on_second(
+        self, request, codecov_vcr, storage_service
+    ):
         storage = storage_service
-        path = f'{request.node.name}/does_exist_on_first_but_not_exists_on_second.txt'
-        bucket_name = 'testingarchive20190210001'
-        storage_service.main_service.write_file(bucket_name, path, 'some_different_data')
+        path = f"{request.node.name}/does_exist_on_first_but_not_exists_on_second.txt"
+        bucket_name = "testingarchive20190210001"
+        storage_service.main_service.write_file(
+            bucket_name, path, "some_different_data"
+        )
         reading_result = storage.read_file(bucket_name, path)
-        assert reading_result.decode() == 'some_different_data'
+        assert reading_result.decode() == "some_different_data"
 
     def test_write_then_delete_file(self, request, codecov_vcr, storage_service):
         storage = storage_service
-        path = f'{request.node.name}/result.txt'
-        data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive20190210001'
+        path = f"{request.node.name}/result.txt"
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        bucket_name = "testingarchive20190210001"
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         deletion_result = storage.delete_file(bucket_name, path)
@@ -155,19 +161,19 @@ class TestFallbackStorageService(BaseTestCase):
 
     def test_delete_file_doesnt_exist(self, request, codecov_vcr, storage_service):
         storage = storage_service
-        path = f'{request.node.name}/result.txt'
-        bucket_name = 'testingarchive20190210001'
+        path = f"{request.node.name}/result.txt"
+        bucket_name = "testingarchive20190210001"
         with pytest.raises(FileNotInStorageError):
             storage.delete_file(bucket_name, path)
 
     def test_batch_delete_files(self, request, codecov_vcr, storage_service):
         storage = storage_service
-        path_1 = f'{request.node.name}/result_1.txt'
-        path_2 = f'{request.node.name}/result_2.txt'
-        path_3 = f'{request.node.name}/result_3.txt'
+        path_1 = f"{request.node.name}/result_1.txt"
+        path_2 = f"{request.node.name}/result_2.txt"
+        path_3 = f"{request.node.name}/result_3.txt"
         paths = [path_1, path_2, path_3]
-        data = 'lorem ipsum dolor test_write_then_read_file á'
-        bucket_name = 'testingarchive20190210001'
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        bucket_name = "testingarchive20190210001"
         storage.write_file(bucket_name, path_1, data)
         storage.write_file(bucket_name, path_3, data)
         deletion_result = storage.delete_files(bucket_name, paths)
@@ -178,31 +184,39 @@ class TestFallbackStorageService(BaseTestCase):
 
     def test_list_folder_contents(self, request, codecov_vcr, storage_service):
         storage = storage_service
-        path_1 = f'thiago/{request.node.name}/result_1.txt'
-        path_2 = f'thiago/{request.node.name}/result_2.txt'
-        path_3 = f'thiago/{request.node.name}/result_3.txt'
-        path_4 = f'thiago/{request.node.name}/f1/result_1.txt'
-        path_5 = f'thiago/{request.node.name}/f1/result_2.txt'
-        path_6 = f'thiago/{request.node.name}/f1/result_3.txt'
+        path_1 = f"thiago/{request.node.name}/result_1.txt"
+        path_2 = f"thiago/{request.node.name}/result_2.txt"
+        path_3 = f"thiago/{request.node.name}/result_3.txt"
+        path_4 = f"thiago/{request.node.name}/f1/result_1.txt"
+        path_5 = f"thiago/{request.node.name}/f1/result_2.txt"
+        path_6 = f"thiago/{request.node.name}/f1/result_3.txt"
         all_paths = [path_1, path_2, path_3, path_4, path_5, path_6]
-        bucket_name = 'testingarchive20190210001'
+        bucket_name = "testingarchive20190210001"
         for i, p in enumerate(all_paths):
             data = f"Lorem ipsum on file {p} for {i * 'po'}"
             storage.write_file(bucket_name, p, data)
-        results_1 = list(storage.list_folder_contents(bucket_name, f'thiago/{request.node.name}'))
+        results_1 = list(
+            storage.list_folder_contents(bucket_name, f"thiago/{request.node.name}")
+        )
         expected_result_1 = [
-            {'name': path_1, 'size': 70},
-            {'name': path_2, 'size': 72},
-            {'name': path_3, 'size': 74},
-            {'name': path_4, 'size': 79},
-            {'name': path_5, 'size': 81},
-            {'name': path_6, 'size': 83},
+            {"name": path_1, "size": 70},
+            {"name": path_2, "size": 72},
+            {"name": path_3, "size": 74},
+            {"name": path_4, "size": 79},
+            {"name": path_5, "size": 81},
+            {"name": path_6, "size": 83},
         ]
-        assert sorted(expected_result_1, key=lambda x: x['size']) == sorted(results_1, key=lambda x: x['size'])
-        results_2 = list(storage.list_folder_contents(bucket_name, f'thiago/{request.node.name}/f1'))
+        assert sorted(expected_result_1, key=lambda x: x["size"]) == sorted(
+            results_1, key=lambda x: x["size"]
+        )
+        results_2 = list(
+            storage.list_folder_contents(bucket_name, f"thiago/{request.node.name}/f1")
+        )
         expected_result_2 = [
-            {'name': path_4, 'size': 79},
-            {'name': path_5, 'size': 81},
-            {'name': path_6, 'size': 83},
+            {"name": path_4, "size": 79},
+            {"name": path_5, "size": 81},
+            {"name": path_6, "size": 83},
         ]
-        assert sorted(expected_result_2, key=lambda x: x['size']) == sorted(results_2, key=lambda x: x['size'])
+        assert sorted(expected_result_2, key=lambda x: x["size"]) == sorted(
+            results_2, key=lambda x: x["size"]
+        )

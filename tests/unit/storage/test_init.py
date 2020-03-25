@@ -35,16 +35,16 @@ hUVr40ZOOnf1HpBc2um+6DAj
 """
 
 gcp_config = {
-  "type": "service_account",
-  "project_id": "genuine-polymer-165712",
-  "private_key_id": "e0098875a6be7fd0fb8d5b5efd6b6f662eff7295",
-  "private_key": fake_private_key,
-  "client_email": "codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com",
-  "client_id": "109377049763026714378",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/codecov-marketing-deployment%40genuine-polymer-165712.iam.gserviceaccount.com"
+    "type": "service_account",
+    "project_id": "genuine-polymer-165712",
+    "private_key_id": "e0098875a6be7fd0fb8d5b5efd6b6f662eff7295",
+    "private_key": fake_private_key,
+    "client_email": "codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com",
+    "client_id": "109377049763026714378",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/codecov-marketing-deployment%40genuine-polymer-165712.iam.gserviceaccount.com",
 }
 
 
@@ -52,25 +52,24 @@ aws_config = {
     "resource": "s3",
     "aws_access_key_id": "testrobl3cz4i1to1noa",
     "aws_secret_access_key": "Rb5ky+vMTpbJX/dFVQA4r7m84zGrL44KpeoPxtD0",
-    "region_name": "us-east-1"
+    "region_name": "us-east-1",
 }
 
 minio_config = {
-    'access_key_id': 'codecov-default-key',
-    'secret_access_key': 'codecov-default-secret',
-    'verify_ssl': False,
-    'host': 'minio',
-    'port': '9000'
+    "access_key_id": "codecov-default-key",
+    "secret_access_key": "codecov-default-secret",
+    "verify_ssl": False,
+    "host": "minio",
+    "port": "9000",
 }
 
 
 class TestStorageInitialization(object):
-
     def test_get_appropriate_storage_service_fallback(self, mock_configuration):
-        mock_configuration.params['services'] = {
-            'chosen_storage': 'gcp_with_fallback',
-            'gcp': gcp_config,
-            'aws': aws_config,
+        mock_configuration.params["services"] = {
+            "chosen_storage": "gcp_with_fallback",
+            "gcp": gcp_config,
+            "aws": aws_config,
         }
         res = get_appropriate_storage_service()
         assert isinstance(res, StorageWithFallbackService)
@@ -80,31 +79,31 @@ class TestStorageInitialization(object):
         assert res.fallback_service.config == aws_config
 
     def test_get_appropriate_storage_service_aws(self, mock_configuration):
-        mock_configuration.params['services'] = {
-            'chosen_storage': 'aws',
-            'gcp': gcp_config,
-            'aws': aws_config,
+        mock_configuration.params["services"] = {
+            "chosen_storage": "aws",
+            "gcp": gcp_config,
+            "aws": aws_config,
         }
         res = get_appropriate_storage_service()
         assert isinstance(res, AWSStorageService)
         assert res.config == aws_config
 
     def test_get_appropriate_storage_service_gcp(self, mock_configuration):
-        mock_configuration.params['services'] = {
-            'chosen_storage': 'gcp',
-            'gcp': gcp_config,
-            'aws': aws_config,
+        mock_configuration.params["services"] = {
+            "chosen_storage": "gcp",
+            "gcp": gcp_config,
+            "aws": aws_config,
         }
         res = get_appropriate_storage_service()
         assert isinstance(res, GCPStorageService)
         assert res.config == gcp_config
 
     def test_get_appropriate_storage_service_minio(self, mock_configuration):
-        mock_configuration.params['services'] = {
-            'chosen_storage': 'minio',
-            'gcp': gcp_config,
-            'aws': aws_config,
-            'minio': minio_config
+        mock_configuration.params["services"] = {
+            "chosen_storage": "minio",
+            "gcp": gcp_config,
+            "aws": aws_config,
+            "minio": minio_config,
         }
         res = get_appropriate_storage_service()
         assert isinstance(res, MinioStorageService)
