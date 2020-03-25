@@ -31,6 +31,7 @@ def test_sessions():
         "p": "state",
         "e": "env",
         "st": "uploaded",
+        "se": {},
     }
 
 
@@ -48,6 +49,7 @@ def test_parse_session():
         "p": "state",
         "e": "env",
         "st": "uploaded",
+        "se": {},
     }
     sess = Session.parse_session(**encoded_session)
     assert sess.totals == "totals"
@@ -62,6 +64,7 @@ def test_parse_session():
     assert sess.env == "env"
     assert sess.name == "name"
     assert sess.session_type == SessionType.uploaded
+    assert sess.session_extras == {}
 
 
 def test_parse_session_then_encode():
@@ -78,6 +81,7 @@ def test_parse_session_then_encode():
         "p": "state",
         "e": "env",
         "st": "uploaded",
+        "se": {},
     }
     sess = Session.parse_session(**encoded_session)
     assert sess._encode() == encoded_session
