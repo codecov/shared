@@ -129,6 +129,7 @@ class TestCarryfowardFlag(object):
                         "n": None,
                         "p": None,
                         "st": "carriedforward",
+                        "se": {},
                         "t": None,
                         "u": None,
                     }
@@ -196,6 +197,7 @@ class TestCarryfowardFlag(object):
                         "n": None,
                         "p": None,
                         "st": "carriedforward",
+                        "se": {},
                         "t": None,
                         "u": None,
                     }
@@ -248,6 +250,7 @@ class TestCarryfowardFlag(object):
                         "n": None,
                         "p": None,
                         "st": "carriedforward",
+                        "se": {},
                         "t": None,
                         "u": None,
                     }
@@ -312,6 +315,7 @@ class TestCarryfowardFlag(object):
                         "n": None,
                         "p": None,
                         "st": "carriedforward",
+                        "se": {},
                         "t": None,
                         "u": None,
                     }
@@ -380,6 +384,78 @@ class TestCarryfowardFlag(object):
                         "n": None,
                         "p": None,
                         "st": "carriedforward",
+                        "se": {},
+                        "t": None,
+                        "u": None,
+                    }
+                },
+            },
+            "totals": {
+                "C": 0,
+                "M": 0,
+                "N": 0,
+                "b": 0,
+                "c": "40.00000",
+                "d": 0,
+                "diff": None,
+                "f": 1,
+                "h": 2,
+                "m": 3,
+                "n": 5,
+                "p": 0,
+                "s": 1,
+            },
+        }
+        assert readable_report["archive"] == expected_result["archive"]
+        assert readable_report["report"] == expected_result["report"]
+        assert readable_report["totals"] == expected_result["totals"]
+        assert readable_report == expected_result
+
+    def test_generate_carryforward_report_session_extras(self, sample_report):
+        res = generate_carryforward_report(
+            sample_report,
+            flags=["complex"],
+            paths=None,
+            session_extras={"cfed_parent": "0f9ab1fe6c879bc49a9e559b23f49fd033daadb0"},
+        )
+        assert res.files == ["file_1.go"]
+        readable_report = self.convert_report_to_better_readable(res)
+
+        pprint.pprint(readable_report)
+        expected_result = {
+            "archive": {
+                "file_1.go": [
+                    (1, 1, None, [[0, 1, None, None, None]], None, None),
+                    (2, 1, None, [[0, 1, None, None, None]], None, None),
+                    (3, 0, None, [[0, 0, None, None, None]], None, None),
+                    (5, 0, None, [[0, 0, None, None, None]], None, None),
+                    (6, 0, None, [[0, 0, None, None, None]], None, None),
+                ],
+            },
+            "report": {
+                "files": {
+                    "file_1.go": [
+                        0,
+                        [0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0],
+                        [[0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0]],
+                        None,
+                    ],
+                },
+                "sessions": {
+                    "0": {
+                        "a": None,
+                        "c": None,
+                        "d": readable_report["report"]["sessions"]["0"]["d"],
+                        "e": None,
+                        "f": ["complex"],
+                        "N": "Carriedforward",
+                        "j": None,
+                        "n": None,
+                        "p": None,
+                        "st": "carriedforward",
+                        "se": {
+                            "cfed_parent": "0f9ab1fe6c879bc49a9e559b23f49fd033daadb0"
+                        },
                         "t": None,
                         "u": None,
                     }

@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Mapping
 import re
 import dataclasses
 from time import time
@@ -57,7 +57,10 @@ def carriedforward_session_name(original_session_name: str) -> str:
 
 
 def generate_carryforward_report(
-    report: Report, flags: Sequence[str], paths: Sequence[str]
+    report: Report,
+    flags: Sequence[str],
+    paths: Sequence[str],
+    session_extras: Mapping[str, str] = None,
 ) -> EditableReport:
     """
         Generates a carriedforward report starting from report `report`, flags `flags`
@@ -108,6 +111,7 @@ def generate_carryforward_report(
             url=sess.url,
             session_type=SessionType.carriedforward,
             totals=sess.totals,
+            session_extras=session_extras or {},
         )
         new_report.sessions[new_session.id] = new_session
         old_to_new_session_mapping[old_sess_id] = new_session.id

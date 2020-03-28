@@ -29,6 +29,7 @@ class Session(object):
         env=None,
         name=None,
         session_type=None,
+        session_extras=None,
         **kwargs,
     ):
         # the kwargs are for old reports
@@ -45,6 +46,7 @@ class Session(object):
         self.env = env
         self.name = name
         self.session_type = session_type or SessionType.uploaded
+        self.session_extras = session_extras or {}
 
     def __repr__(self):
         return f"Session<{self._encode()}>"
@@ -65,6 +67,7 @@ class Session(object):
         e=None,
         N=None,
         st=None,
+        se=None,
         **kwargs,
     ):
         return cls(
@@ -81,6 +84,7 @@ class Session(object):
             env=e or kwargs.get("env"),
             name=N or kwargs.get("name"),
             session_type=SessionType.get_from_string(st),
+            session_extras=se,
         )
 
     def _encode(self):
@@ -97,4 +101,5 @@ class Session(object):
             "p": self.state,
             "e": self.env,
             "st": self.session_type.value,
+            "se": self.session_extras,
         }

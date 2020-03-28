@@ -28,6 +28,7 @@ from covreports.utils.ReportEncoder import ReportEncoder
                 "u": None,
                 "t": "totals",
                 "st": "uploaded",
+                "se": {},
             },
         ),
     ],
