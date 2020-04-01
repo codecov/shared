@@ -69,7 +69,7 @@ class ConfigHelper(object):
         for el in args:
             try:
                 current_p = current_p[el]
-            except KeyError:
+            except (KeyError, TypeError):
                 raise MissingConfigException(args)
         return current_p
 
