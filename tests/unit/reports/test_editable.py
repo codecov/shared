@@ -365,12 +365,250 @@ class TestEditableReport(object):
                 None,
             ),
         }
-        assert all(isinstance(x, EditableReportFile) for x in report._chunks)
+        assert all(
+            (isinstance(x, EditableReportFile) or x is None) for x in report._chunks
+        )
+
+    def test_init_deleted_chunks(self):
+        with open(current_file.parent / "samples" / "chunks_02.txt", "r") as f:
+            chunks = f.read()
+        files_dict = {
+            "awesome/__init__.py": [
+                2,
+                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
+                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
+            ],
+            "tests/__init__.py": [
+                0,
+                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
+                None,
+            ],
+        }
+        sessions_dict = {
+            "0": {
+                "N": None,
+                "a": "v4/raw/2019-01-10/4434BC2A2EC4FCA57F77B473D83F928C/abf6d4df662c47e32460020ab14abf9303581429/9ccc55a1-8b41-4bb1-a946-ee7a33a7fb56.txt",
+                "c": None,
+                "d": 1547084427,
+                "e": None,
+                "f": ["unit"],
+                "j": None,
+                "n": None,
+                "p": None,
+                "t": [3, 20, 17, 3, 0, "85.00000", 0, 0, 0, 0, 0, 0, 0],
+                "": None,
+            }
+        }
+        report = EditableReport(chunks=chunks, files=files_dict, sessions=sessions_dict)
+        assert report._files == {
+            "awesome/__init__.py": ReportFileSummary(
+                2,
+                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
+                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
+            ),
+            "tests/__init__.py": ReportFileSummary(
+                0,
+                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
+                None,
+            ),
+        }
+        assert all(
+            (isinstance(x, EditableReportFile) or x is None) for x in report._chunks
+        )
+        assert report._chunks[1] is None
+        assert list(report._chunks[0].lines) == [
+            (
+                1,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                3,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=1,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                5,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                6,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=1,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                8,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                10,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=1,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                12,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+        ]
+        assert list(report._chunks[2].lines) == [
+            (
+                1,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                2,
+                ReportLine(
+                    coverage=1,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=1,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+            (
+                5,
+                ReportLine(
+                    coverage=0,
+                    type=None,
+                    sessions=[
+                        LineSession(
+                            id=0,
+                            coverage=0,
+                            branches=None,
+                            partials=None,
+                            complexity=None,
+                        )
+                    ],
+                    messages=None,
+                    complexity=None,
+                ),
+            ),
+        ]
+        report.delete_session(0)
 
     def test_delete_session(self, sample_report):
         report = sample_report
 
-        pprint.pprint(self.convert_report_to_better_readable(report))
         assert self.convert_report_to_better_readable(report) == {
             "archive": {
                 "file_1.go": [
