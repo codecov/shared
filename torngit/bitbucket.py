@@ -332,6 +332,10 @@ class Bitbucket(BaseHandler, OAuthMixin):
                 self.slug, res['source']['commit']['hash']),
             token=token)
         return dict(
+            author=dict(
+                id=str(res['author']['uuid'][1:-1]) if res['author'] else None,
+                username=res['author']['username'] if res['author'] else None,
+            ),
             base=dict(
                 branch=res['destination']['branch']['name'],
                 commitid=base['hash']

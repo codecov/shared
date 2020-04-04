@@ -333,6 +333,10 @@ class Gitlab(BaseHandler):
                 pull['state'] = 'closed'
 
             return dict(
+                author=dict(
+                    id=str(pull['author']['id']) if pull['author'] else None,
+                    username=pull['author']['username'] if pull['author'] else None,
+                ),
                 base=dict(
                     branch=pull['target_branch'] or '',
                     commitid=parent

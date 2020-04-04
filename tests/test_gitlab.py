@@ -164,7 +164,11 @@ class TestGitlabTestCase(object):
                 'number': '1',
                 'id': '1',
                 'state': 'open',
-                'title': 'Other branch'
+                'title': 'Other branch',
+                'author': {
+                    'id': '109640',
+                    'username': 'codecov'
+                }
             }
         ),
     ]

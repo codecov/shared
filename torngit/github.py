@@ -619,6 +619,10 @@ class Github(BaseHandler, OAuth2Mixin):
     # -------------
     def _pull(self, pull):
         return dict(
+            author=dict(
+                id=str(pull['user']['id']) if pull['user'] else None,
+                username=pull['user']['login'] if pull['user'] else None,
+            ),
             base=dict(
                 branch=pull['base']['ref'],
                 commitid=pull['base']['sha']),
@@ -628,7 +632,8 @@ class Github(BaseHandler, OAuth2Mixin):
             state='merged' if pull['merged'] else pull['state'],
             title=pull['title'],
             id=str(pull['number']),
-            number=str(pull['number']))
+            number=str(pull['number'])
+        )
 
     async def get_pull_request(self, pullid, token=None):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request

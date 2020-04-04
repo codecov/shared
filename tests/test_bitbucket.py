@@ -154,6 +154,10 @@ class TestBitbucketTestCase(object):
                 'id': '1',
                 'state': 'open',
                 'title': 'Hahaa That is a PR',
+                'author': {
+                    'id': '9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645',
+                    'username': 'ThiagoCodecov'
+                }
             }
         ),
     ]
