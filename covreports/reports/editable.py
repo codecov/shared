@@ -42,17 +42,24 @@ class EditableReport(Report):
         self.turn_chunks_into_reports()
 
     def turn_chunks_into_reports(self):
-        for filename, file_summary in self._files.items():
-            index = file_summary.file_index
-            chunk = self._chunks[index]
-            if isinstance(chunk, str):
+        filename_mapping = {
+            file_summary.file_index: filename
+            for filename, file_summary in self._files.items()
+        }
+        for chunk_index in range(len(self._chunks)):
+            filename = filename_mapping.get(chunk_index)
+            file_summary = self._files.get(filename)
+            chunk = self._chunks[chunk_index]
+            if chunk is not None and file_summary is not None:
                 report_file = self.file_class(
                     name=filename,
                     totals=file_summary.file_totals,
                     lines=chunk,
                     line_modifier=None,
                 )
-                self._chunks[index] = report_file
+                self._chunks[chunk_index] = report_file
+            else:
+                self._chunks[chunk_index] = None
 
     def delete_session(self, sessionid: int):
         self.reset()
