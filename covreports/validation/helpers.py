@@ -371,7 +371,7 @@ class UserGivenSecret(object):
                 return value
             if self.show_secret:
                 return secret_value
-            return "<secret>"
+            return value
         return value
 
     @classmethod

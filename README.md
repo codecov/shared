@@ -3,3 +3,8 @@
 # Report
 
 Package containing logic for `Report`s and `ReportFile`s to be used by `codecov`.
+
+
+To run tests:
+
+    `make test`

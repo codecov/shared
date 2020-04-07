@@ -17,7 +17,7 @@ from covreports.validation.helpers import (
 log = logging.getLogger(__name__)
 
 
-def validate_yaml(inputted_yaml_dict):
+def validate_yaml(inputted_yaml_dict, show_secrets=False):
     """Receives a user-given yaml dict, validates and normalizes the fields for
         usage by other code
 
@@ -31,6 +31,7 @@ def validate_yaml(inputted_yaml_dict):
         InvalidYamlException: If the yaml inputted by the user is not valid
     """
     pre_process_yaml(inputted_yaml_dict)
+    user_yaml_schema = get_schema(show_secrets)
     try:
         result = user_yaml_schema.validate(inputted_yaml_dict)
         return post_process(result)
@@ -50,88 +51,51 @@ def validate_yaml(inputted_yaml_dict):
         raise InvalidYamlException(f"Path: {readable_messages}", e)
 
 
-def post_process(validated_yaml_dict):
-    """Does any needed post-processings
+def get_schema(show_secrets):
+    user_given_title = Regex(r"^[\w\-\.]+$")
+    flag_name = Regex(r"^[\w\.\-]{1,45}$")
+    percent_type = PercentSchemaField()
+    branch_structure = BranchSchemaField()
+    branches_regexp = Regex(r"")
+    user_given_regex = UserGivenBranchRegex()
+    layout_structure = LayoutStructure()
+    path_structure = PathPatternSchemaField()
+    base_structure = Or("parent", "pr", "auto")
+    branch = BranchSchemaField()
+    url = Regex(
+        r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+    )
 
-    Args:
-        validated_yaml_dict (dict): The dict after validated
+    notification_standard_attributes = {
+        Optional("url"): Or(None, UserGivenSecret(show_secret=show_secrets)),
+        Optional("branches"): Or(None, [branches_regexp]),
+        Optional("threshold"): Or(None, percent_type),
+        Optional("message"): str,  # TODO (Thiago): Convert this to deal with handlebars
+        Optional("flags"): Or(None, [flag_name]),
+        Optional("base"): base_structure,
+        Optional("only_pulls"): bool,
+        Optional("paths"): Or(None, [path_structure]),
+    }
 
-    Returns:
-        (dict): The post-processed dict to be used
+    status_standard_attributes = {
+        Optional("base"): base_structure,
+        Optional("branches"): Or(None, [user_given_regex]),
+        Optional("disable_approx"): bool,
+        Optional("enabled"): bool,
+        Optional("flags"): Or(None, [flag_name]),
+        Optional("if_ci_failed"): Or("success", "failure", "error", "ignore"),
+        Optional("if_no_uploads"): Or("success", "failure", "error", "ignore"),
+        Optional("if_not_found"): Or("success", "failure", "error", "ignore"),
+        Optional("informational"): bool,
+        Optional("measurement"): Or(
+            None, "line", "statement", "branch", "method", "complexity"
+        ),
+        Optional("only_pulls"): bool,
+        Optional("paths"): Or(None, [path_structure]),
+        Optional("skip_if_assumes"): bool,
+    }
 
-    """
-    return validated_yaml_dict
-
-
-def pre_process_yaml(inputted_yaml_dict):
-    """
-        Changes the inputted_yaml_dict in-place with compatibility changes that need to be done
-
-    Args:
-        inputted_yaml_dict (dict): The yaml dict inputted by the user
-    """
-    coverage = inputted_yaml_dict.get("coverage", {})
-    if "flags" in coverage:
-        inputted_yaml_dict["flags"] = coverage.pop("flags")
-    if "parsers" in coverage:
-        inputted_yaml_dict["parsers"] = coverage.pop("parsers")
-    if "ignore" in coverage:
-        inputted_yaml_dict["ignore"] = coverage.pop("ignore")
-    if "fixes" in coverage:
-        inputted_yaml_dict["fixes"] = coverage.pop("fixes")
-    if inputted_yaml_dict.get("codecov") and inputted_yaml_dict["codecov"].get(
-        "notify"
-    ):
-        if "require_ci_to_pass" in inputted_yaml_dict["codecov"]["notify"]:
-            val = inputted_yaml_dict["codecov"]["notify"].pop("require_ci_to_pass")
-            inputted_yaml_dict["codecov"]["require_ci_to_pass"] = val
-
-
-user_given_title = Regex(r"^[\w\-\.]+$")
-flag_name = Regex(r"^[\w\.\-]{1,45}$")
-percent_type = PercentSchemaField()
-branch_structure = BranchSchemaField()
-branches_regexp = Regex(r"")
-user_given_regex = UserGivenBranchRegex()
-layout_structure = LayoutStructure()
-path_structure = PathPatternSchemaField()
-base_structure = Or("parent", "pr", "auto")
-branch = BranchSchemaField()
-url = Regex(
-    r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
-)
-
-notification_standard_attributes = {
-    Optional("url"): Or(None, UserGivenSecret(show_secret=True)),
-    Optional("branches"): Or(None, [branches_regexp]),
-    Optional("threshold"): Or(None, percent_type),
-    Optional("message"): str,  # TODO (Thiago): Convert this to deal with handlebars
-    Optional("flags"): Or(None, [flag_name]),
-    Optional("base"): base_structure,
-    Optional("only_pulls"): bool,
-    Optional("paths"): Or(None, [path_structure]),
-}
-
-status_standard_attributes = {
-    Optional("base"): base_structure,
-    Optional("branches"): Or(None, [user_given_regex]),
-    Optional("disable_approx"): bool,
-    Optional("enabled"): bool,
-    Optional("flags"): Or(None, [flag_name]),
-    Optional("if_ci_failed"): Or("success", "failure", "error", "ignore"),
-    Optional("if_no_uploads"): Or("success", "failure", "error", "ignore"),
-    Optional("if_not_found"): Or("success", "failure", "error", "ignore"),
-    Optional("informational"): bool,
-    Optional("measurement"): Or(
-        None, "line", "statement", "branch", "method", "complexity"
-    ),
-    Optional("only_pulls"): bool,
-    Optional("paths"): Or(None, [path_structure]),
-    Optional("skip_if_assumes"): bool,
-}
-
-user_yaml_schema = Schema(
-    {
+    return Schema({
         Optional("codecov"): {
             Optional("url"): url,
             Optional("token"): str,
@@ -171,9 +135,9 @@ user_yaml_schema = Schema(
                     user_given_title: {
                         Optional("channel"): str,
                         Optional("server"): str,
-                        Optional("password"): UserGivenSecret(show_secret=True),
+                        Optional("password"): UserGivenSecret(show_secret=show_secrets),
                         Optional("nickserv_password"): UserGivenSecret(
-                            show_secret=True
+                            show_secret=show_secrets
                         ),
                         Optional("notice"): bool,
                         **notification_standard_attributes,
@@ -201,7 +165,7 @@ user_yaml_schema = Schema(
                 Optional("email"): {
                     user_given_title: {
                         Optional("layout"): layout_structure,
-                        "to": [And(str, UserGivenSecret(show_secret=True))],
+                        "to": [And(str, UserGivenSecret(show_secret=show_secrets))],
                         **notification_standard_attributes,
                     }
                 },
@@ -290,5 +254,41 @@ user_yaml_schema = Schema(
                 Optional("paths"): Or(None, [path_structure]),  # DEPRECATED
             },
         ),
-    }
-)
+    })
+
+
+def post_process(validated_yaml_dict):
+    """Does any needed post-processings
+
+    Args:
+        validated_yaml_dict (dict): The dict after validated
+
+    Returns:
+        (dict): The post-processed dict to be used
+
+    """
+    return validated_yaml_dict
+
+
+def pre_process_yaml(inputted_yaml_dict):
+    """
+        Changes the inputted_yaml_dict in-place with compatibility changes that need to be done
+
+    Args:
+        inputted_yaml_dict (dict): The yaml dict inputted by the user
+    """
+    coverage = inputted_yaml_dict.get("coverage", {})
+    if "flags" in coverage:
+        inputted_yaml_dict["flags"] = coverage.pop("flags")
+    if "parsers" in coverage:
+        inputted_yaml_dict["parsers"] = coverage.pop("parsers")
+    if "ignore" in coverage:
+        inputted_yaml_dict["ignore"] = coverage.pop("ignore")
+    if "fixes" in coverage:
+        inputted_yaml_dict["fixes"] = coverage.pop("fixes")
+    if inputted_yaml_dict.get("codecov") and inputted_yaml_dict["codecov"].get(
+        "notify"
+    ):
+        if "require_ci_to_pass" in inputted_yaml_dict["codecov"]["notify"]:
+            val = inputted_yaml_dict["codecov"]["notify"].pop("require_ci_to_pass")
+            inputted_yaml_dict["codecov"]["require_ci_to_pass"] = val
