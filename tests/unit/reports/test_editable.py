@@ -604,7 +604,6 @@ class TestEditableReport(object):
                 ),
             ),
         ]
-        report.delete_session(0)
 
     def test_delete_session(self, sample_report):
         report = sample_report
