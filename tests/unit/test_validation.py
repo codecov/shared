@@ -203,12 +203,21 @@ class TestUserYamlValidation(BaseTestCase):
         assert validate_yaml(user_input) == expected_result
 
     def test_simple_case(self):
+        value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
+        encoded_value = UserGivenSecret.encode(value)
         user_input = {
             "coverage": {
                 "precision": 2,
                 "round": "down",
                 "range": "70...100",
-                "status": {"project": True, "patch": True, "changes": False,},
+                "status": {"project": True, "patch": True, "changes": False},
+                "notify": {
+                    "irc": {
+                        "user_given_title": {
+                            "password": encoded_value
+                        }
+                    }
+                }
             },
             "codecov": {"notify": {"require_ci_to_pass": True}},
             "comment": {
@@ -232,7 +241,14 @@ class TestUserYamlValidation(BaseTestCase):
                 "precision": 2,
                 "round": "down",
                 "range": [70, 100],
-                "status": {"project": True, "patch": True, "changes": False,},
+                "status": {"project": True, "patch": True, "changes": False},
+                "notify": {
+                    "irc": {
+                        "user_given_title": {
+                            "password": encoded_value
+                        }
+                    }
+                }
             },
             "codecov": {"notify": {}, "require_ci_to_pass": True},
             "comment": {
@@ -306,6 +322,44 @@ class TestUserYamlValidation(BaseTestCase):
             "ignore": ["Pods/.*",],
         }
         result = validate_yaml(user_input)
+        assert result == expected_result
+
+    def test_show_secret_case(self):
+        value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
+        encoded_value = UserGivenSecret.encode(value)
+        user_input = {
+            "coverage": {
+                "round": "down",
+                "precision": 2,
+                "range": [70.0, 100.0],
+                "status": {"project": {"default": {"base": "auto",}}},
+                "notify": {
+                    "irc": {
+                        "user_given_title": {
+                            "password": encoded_value
+                        }
+                    }
+                }
+            },
+            "ignore": ["Pods/.*",],
+        }
+        expected_result = {
+            "coverage": {
+                "round": "down",
+                "precision": 2,
+                "range": [70.0, 100.0],
+                "status": {"project": {"default": {"base": "auto",}}},
+                "notify": {
+                    "irc": {
+                        "user_given_title": {
+                            "password": "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
+                        }
+                    }
+                }
+            },
+            "ignore": ["Pods/.*",],
+        }
+        result = validate_yaml(user_input, show_secrets=True)
         assert result == expected_result
 
 
@@ -384,4 +438,4 @@ class TestUserGivenSecret(BaseTestCase):
         encoded_value = UserGivenSecret.encode(value)
         ugs = UserGivenSecret(show_secret=False)
         assert ugs.validate(value) == value
-        assert ugs.validate(encoded_value) == "<secret>"
+        assert ugs.validate(encoded_value) == encoded_value
