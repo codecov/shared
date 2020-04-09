@@ -37,6 +37,15 @@ def repo_doesnt_exist_handler():
     )
 
 
+@pytest.fixture
+def more_complex_handler():
+    return Github(
+        repo=dict(name="worker"),
+        owner=dict(username="codecov"),
+        token=dict(key="testnvebxku3hfiwi16ka7hff42y0jtf5fithlij"),
+    )
+
+
 class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
@@ -240,9 +249,103 @@ class TestGithubTestCase(object):
             await valid_handler.get_commit_diff('3be850c135ccaa425cb2c239b9321e78dcfb78ff')
 
     @pytest.mark.asyncio
-    async def test_get_commit_statuses(self, valid_handler, codecov_vcr):
-        res = await valid_handler.get_commit_statuses('2be550c135cc13425cb2c239b9321e78dcfb787b')
-        assert res == 'success'
+    async def test_get_commit_statuses(self, more_complex_handler, codecov_vcr):
+        res = await more_complex_handler.get_commit_statuses(
+            "3fb5f4700da7818e561054ec26f5657de720717f"
+        )
+        assert res._statuses == [
+            {
+                "time": "2020-04-08T05:44:02Z",
+                "state": "success",
+                "description": "94.21% (+0.18%) compared to 48775c6",
+                "url": "https://codecov.io/gh/codecov/worker/compare/48775c672437630c9c6f582ecfae5854a3617be2...3fb5f4700da7818e561054ec26f5657de720717f",
+                "context": "codecov/project",
+            },
+            {
+                "time": "2020-04-08T05:44:02Z",
+                "state": "success",
+                "description": "100.00% of diff hit (target 94.02%)",
+                "url": "https://codecov.io/gh/codecov/worker/compare/48775c672437630c9c6f582ecfae5854a3617be2...3fb5f4700da7818e561054ec26f5657de720717f",
+                "context": "codecov/patch",
+            },
+            {
+                "time": "2020-04-08T20:39:33Z",
+                "state": "success",
+                "description": "Your tests passed on CircleCI!",
+                "url": "https://circleci.com/gh/codecov/worker/2619?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link",
+                "context": "ci/circleci: build",
+            },
+            {
+                "time": "2020-04-08T20:40:32Z",
+                "state": "success",
+                "description": "Your tests passed on CircleCI!",
+                "url": "https://circleci.com/gh/codecov/worker/2620?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link",
+                "context": "ci/circleci: test",
+            },
+        ]
+        assert res == "success"
+
+    @pytest.mark.asyncio
+    async def test_set_commit_statuses_then_get(self, valid_handler, codecov_vcr):
+        commit_sha = "e999aac5b33acbca52601d2a655ab0ac46a1ffdf"
+        target_url = "https://localhost:50036/github/codecov"
+        statuses_to_set = [
+            ("turtle", "success"),
+            ("bird", "pending"),
+            ("pig", "failure"),
+            ("giant", "error"),
+            ("turtle", "pending"),
+            ("bird", "failure"),
+            ("pig", "error"),
+            ("giant", "success"),
+            ("giant", "error"),
+            ("giant", "success"),
+            ("capybara", "success"),
+        ]
+        for i, val in enumerate(statuses_to_set):
+            context, status = val
+            res = await valid_handler.set_commit_status(
+                commit_sha, status, context, f"{status} - {i} - {context}", target_url,
+            )
+        res = await valid_handler.get_commit_statuses(commit_sha)
+        assert res._statuses == [
+            {
+                "time": "2020-04-08T20:51:26Z",
+                "state": "pending",
+                "description": "pending - 4 - turtle",
+                "url": "https://localhost:50036/github/codecov",
+                "context": "turtle",
+            },
+            {
+                "time": "2020-04-08T20:51:27Z",
+                "state": "failure",
+                "description": "failure - 5 - bird",
+                "url": "https://localhost:50036/github/codecov",
+                "context": "bird",
+            },
+            {
+                "time": "2020-04-08T20:51:27Z",
+                "state": "error",
+                "description": "error - 6 - pig",
+                "url": "https://localhost:50036/github/codecov",
+                "context": "pig",
+            },
+            {
+                "time": "2020-04-08T20:51:29Z",
+                "state": "success",
+                "description": "success - 9 - giant",
+                "url": "https://localhost:50036/github/codecov",
+                "context": "giant",
+            },
+            {
+                "time": "2020-04-08T20:51:29Z",
+                "state": "success",
+                "description": "success - 10 - capybara",
+                "url": "https://localhost:50036/github/codecov",
+                "context": "capybara",
+            },
+        ]
+        assert res == "failure"
 
     @pytest.mark.asyncio
     async def test_set_commit_status(self, valid_handler, codecov_vcr):

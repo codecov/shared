@@ -487,21 +487,19 @@ class Github(BaseHandler, OAuth2Mixin):
             # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
             res = await self.api(
                 'get',
-                '/repos/%s/commits/%s/statuses' % (self.slug, commit),
+                '/repos/%s/commits/%s/status' % (self.slug, commit),
                 page=page,
                 per_page=100,
                 token=token)
-            if len(res) == 0:
-                break
-
+            provided_statuses = res.get("statuses", [])
             statuses.extend([{
                 'time': s['updated_at'],
                 'state': s['state'],
                 'description': s['description'],
                 'url': s['target_url'],
                 'context': s['context']
-            } for s in res])
-            if len(res) < 100:
+            } for s in provided_statuses])
+            if len(provided_statuses) < 100:
                 break
 
         return Status(statuses)
