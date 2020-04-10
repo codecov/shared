@@ -8,9 +8,9 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="covreports",
+    name="shared",
     version="0.1.0",
-    description="Reporting for Codecov",
+    description="Shared Codecov",
     long_description=long_description,
     url="https://github.com/codecov/report",
     author="Codecov",
@@ -31,5 +31,12 @@ setup(
         "six==1.11.0",
         "vcrpy==2.1.0",
         "schema==0.7.0",
+        "requests>=2.0.0",
+        "tornado",
+        "requests_oauthlib",
+        "oauth2",
+        "tlslite-ng",
+        "htmldom",
+        "pytest-mock==1.10.1"
     ],
 )

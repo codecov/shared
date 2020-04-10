@@ -1,0 +1,97 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/teams?q=team.uuid%3D%22%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D%22&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574544068&oauth_nonce=017c06027726413a9cebb4cfddf45ac0&oauth_version=1.0&oauth_signature=gTsf6R6W3PZzj2VcIrJD0%2Bx4s%2Bc%3D
+  response:
+    body:
+      string: '{"pagelen": 10, "values": [{"permission": "admin", "type": "team_permission",
+        "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+        "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+        "team": {"username": "codecov", "display_name": "Codecov", "type": "team",
+        "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self": {"href":
+        "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
+        "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+        "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}}], "page":
+        1}'
+    headers:
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - Vary
+      - - Authorization
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=900
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Date
+      - - Sat, 23 Nov 2019 21:21:08 GMT
+    - !!python/tuple
+      - X-Served-By
+      - - app-1119
+    - !!python/tuple
+      - Accept-Ranges
+      - - bytes
+    - !!python/tuple
+      - X-Static-Version
+      - - f93a4a92e0ef
+    - !!python/tuple
+      - Etag
+      - - '"a35418a7452be4f096a27debc3b5241e"'
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Credential-Type
+      - - oauth1
+    - !!python/tuple
+      - X-Render-Time
+      - - '0.038535118103'
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - account
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - X-Version
+      - - f93a4a92e0ef
+    - !!python/tuple
+      - X-Reads-Before-Write-From
+      - - default
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Request-Count
+      - - '3657'
+    - !!python/tuple
+      - X-Cache-Info
+      - - caching
+    - !!python/tuple
+      - Content-Length
+      - - '966'
+    status:
+      code: 200
+      message: OK
+    url: https://bitbucket.org/api/2.0/user/permissions/teams?q=team.uuid%3D%22%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D%22&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574544068&oauth_nonce=017c06027726413a9cebb4cfddf45ac0&oauth_version=1.0&oauth_signature=gTsf6R6W3PZzj2VcIrJD0%2Bx4s%2Bc%3D
+version: 1

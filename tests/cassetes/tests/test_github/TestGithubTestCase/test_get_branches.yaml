@@ -1,0 +1,94 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/branches?per_page=100&page=1
+  response:
+    body: {string: '[{"name":"example","commit":{"sha":"204d5bdef94d5aa07db499096d7f5ae93ed769a4","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/204d5bdef94d5aa07db499096d7f5ae93ed769a4"}},{"name":"future","commit":{"sha":"e451bd2ad777a858a665c05a2bfe484a2250cd15","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/e451bd2ad777a858a665c05a2bfe484a2250cd15"}},{"name":"master","commit":{"sha":"b92edba44fdd29fcc506317cc3ddeae1a723dd08","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"}},{"name":"reason/some-testing","commit":{"sha":"a06aef4356ca35b34c5486269585288489e578db","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/a06aef4356ca35b34c5486269585288489e578db"}}]'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [GitHub.com]
+    - !!python/tuple
+      - Date
+      - ['Wed, 07 Nov 2018 23:01:19 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json; charset=utf-8]
+    - !!python/tuple
+      - Transfer-Encoding
+      - [chunked]
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Status
+      - [200 OK]
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - ['5000']
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - ['4974']
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - ['1541633471']
+    - !!python/tuple
+      - Cache-Control
+      - ['private, max-age=60, s-maxage=60']
+    - !!python/tuple
+      - Vary
+      - ['Accept, Authorization, Cookie, X-GitHub-OTP']
+    - !!python/tuple
+      - Etag
+      - [W/"dfad4d27a9327dab697ccb0de675c9a0"]
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - ['admin:repo_hook, read:user, repo, write:discussion']
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - ['']
+    - !!python/tuple
+      - X-Oauth-Client-Id
+      - [999247146557c3ba045c]
+    - !!python/tuple
+      - X-Github-Media-Type
+      - [github.v3]
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - ['ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type']
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - ['*']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000; includeSubdomains; preload]
+    - !!python/tuple
+      - X-Frame-Options
+      - [deny]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Xss-Protection
+      - [1; mode=block]
+    - !!python/tuple
+      - Referrer-Policy
+      - ['origin-when-cross-origin, strict-origin-when-cross-origin']
+    - !!python/tuple
+      - Content-Security-Policy
+      - [default-src 'none']
+    - !!python/tuple
+      - X-Github-Request-Id
+      - ['28C7:26DE:E87988:1F04FE7:5BE36EBF']
+    - !!python/tuple
+      - X-Consumed-Content-Encoding
+      - [gzip]
+    status: {code: 200, message: OK}
+    url: https://api.github.com/repos/ThiagoCodecov/example-python/branches?per_page=100&page=1
+version: 1

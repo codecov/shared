@@ -1,0 +1,216 @@
+diff --git a/docs/topics/feed-exports.rst b/docs/topics/feed-exports.rst
+index d9444e3..93ccded 100644
+--- a/docs/topics/feed-exports.rst
++++ b/docs/topics/feed-exports.rst
+@@ -208,6 +208,7 @@ These are the settings used for configuring the feed exports:
+  * :setting:`FEED_EXPORTERS`
+  * :setting:`FEED_STORE_EMPTY`
+  * :setting:`FEED_EXPORT_FIELDS`
++ * :setting:`FEED_BATCH_SIZE`
+ 
+ .. currentmodule:: scrapy.extensions.feedexport
+ 
+@@ -319,3 +320,35 @@ A dict containing the built-in feed exporters supported by Scrapy.
+ .. _URI: http://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+ .. _Amazon S3: http://aws.amazon.com/s3/
+ .. _boto: http://code.google.com/p/boto/
++
++FEED_BATCH_SIZE
++---------------
++
++Default: ``None``. (a single file is created)
++
++Allows to control the number of item exported in one file.
++
++The storage URI should define parameters to create a new file that get replaced when the feed is
++being created. These parameters are:
++
++ * ``%(start)s`` - gets replaced by a timestamp when the spider is being started
++ * ``%(time)s`` - gets replaced by a timestamp when the batch feed is being created
++ * ``%(index)s`` - gets replaced by an index when the batch feed is being created
++
++Here's an example using the ```time``` to batch feed ::
++
++    Storage URI : /tmp/%(start)s/%(time)s.json
++
++    /tmp
++      |_ 2015-07-03T20-29-01 (start)
++         |_ 2015-07-03T20-29-04.json (time)
++         |_ 2015-07-03T20-52-06.json (time)
++
++Here's an example using the ```index``` to batch feed ::
++
++    Storage URI : /tmp/%(start)s/feed-%(index)s.json
++
++    /tmp
++      |_ 2015-07-03T20-29-01 (start)
++         |_ feed-00001.json (index)
++         |_ feed-00002.json (index)
+diff --git a/scrapy/extensions/feedexport.py b/scrapy/extensions/feedexport.py
+index 7560e89..d6581c4 100644
+--- a/scrapy/extensions/feedexport.py
++++ b/scrapy/extensions/feedexport.py
+@@ -140,6 +140,8 @@ class FeedExporter(object):
+ 
+     def __init__(self, settings):
+         self.settings = settings
++        self.indexfmt = '{:05d}'
++        self.index = 1
+         self.urifmt = settings['FEED_URI']
+         if not self.urifmt:
+             raise NotConfigured
+@@ -154,6 +156,8 @@ def __init__(self, settings):
+         self.export_fields = settings.getlist('FEED_EXPORT_FIELDS') or None
+         uripar = settings['FEED_URI_PARAMS']
+         self._uripar = load_object(uripar) if uripar else lambda x, y: None
++        self.batch_size = settings['FEED_BATCH_SIZE']
++        self.start = datetime.utcnow().replace(microsecond=0).isoformat().replace(':', '-')
+ 
+     @classmethod
+     def from_crawler(cls, crawler):
+@@ -164,34 +168,21 @@ def from_crawler(cls, crawler):
+         return o
+ 
+     def open_spider(self, spider):
+-        uri = self.urifmt % self._get_uri_params(spider)
+-        storage = self._get_storage(uri)
+-        file = storage.open(spider)
+-        exporter = self._get_exporter(file, fields_to_export=self.export_fields)
+-        exporter.start_exporting()
+-        self.slot = SpiderSlot(file, exporter, storage, uri)
++        self._start_export(spider)
+ 
+     def close_spider(self, spider):
+-        slot = self.slot
+-        if not slot.itemcount and not self.store_empty:
+-            return
+-        slot.exporter.finish_exporting()
+-        logfmt = "%s %%(format)s feed (%%(itemcount)d items) in: %%(uri)s"
+-        log_args = {'format': self.format,
+-                    'itemcount': slot.itemcount,
+-                    'uri': slot.uri}
+-        d = defer.maybeDeferred(slot.storage.store, slot.file)
+-        d.addCallback(lambda _: logger.info(logfmt % "Stored", log_args,
+-                                            extra={'spider': spider}))
+-        d.addErrback(lambda f: logger.error(logfmt % "Error storing", log_args,
+-                                            exc_info=failure_to_exc_info(f),
+-                                            extra={'spider': spider}))
+-        return d
++        self._export(spider)
+ 
+     def item_scraped(self, item, spider):
+         slot = self.slot
+         slot.exporter.export_item(item)
+         slot.itemcount += 1
++        # Export batch feed
++        if self.batch_size and slot.itemcount == self.batch_size:
++            # Export
++            self._export(spider)
++            # Next export
++            self._start_export(spider)
+         return item
+ 
+     def _load_components(self, setting_prefix):
+@@ -235,5 +226,35 @@ def _get_uri_params(self, spider):
+             params[k] = getattr(spider, k)
+         ts = datetime.utcnow().replace(microsecond=0).isoformat().replace(':', '-')
+         params['time'] = ts
++        params['start'] = self.start
++        params['index'] = self.indexfmt.format(self.index)
++        self.index += 1
+         self._uripar(params, spider)
+         return params
++
++    def _start_export(self, spider):
++        uri = self.urifmt % self._get_uri_params(spider)
++        storage = self._get_storage(uri)
++        file = storage.open(spider)
++        exporter = self._get_exporter(file, fields_to_export=self.export_fields)
++        exporter.start_exporting()
++        self.slot = SpiderSlot(file, exporter, storage, uri)
++
++    def _export(self, spider):
++        slot = self.slot
++        if not slot.itemcount and not self.store_empty:
++            return
++
++        # Export batch feed
++        slot.exporter.finish_exporting()
++        logfmt = "%s %%(format)s feed (%%(itemcount)d items) in: %%(uri)s"
++        log_args = {'format': self.format,
++                    'itemcount': slot.itemcount,
++                    'uri': slot.uri}
++        d = defer.maybeDeferred(slot.storage.store, slot.file)
++        d.addCallback(lambda _: logger.info(logfmt % "Stored", log_args,
++                                            extra={'spider': spider}))
++        d.addErrback(lambda f: logger.error(logfmt % "Error storing", log_args,
++                                            exc_info=failure_to_exc_info(f),
++                                            extra={'spider': spider}))
++        return d
+\ No newline at end of file
+diff --git a/tests/test_feedexport.py b/tests/test_feedexport.py
+index d6c96ca..b404e61 100644
+--- a/tests/test_feedexport.py
++++ b/tests/test_feedexport.py
+@@ -7,6 +7,7 @@
+ import shutil
+ import six
+ from six.moves.urllib.parse import urlparse
++import time
+ 
+ from zope.interface.verify import verifyObject
+ from twisted.trial import unittest
+@@ -165,6 +166,36 @@ def parse(self, response):
+         defer.returnValue(data)
+ 
+     @defer.inlineCallbacks
++    def assertFileCount(self, items, file_count=1, settings=None):
++        settings = settings or {}
++        class BatchTestSpider(scrapy.Spider):
++            name = 'batchtestspider'
++            start_urls = ['http://localhost:8998/']
++
++            def parse(self, response):
++                for item in items:
++                    time.sleep(1)
++                    yield item
++
++        tmpdir = tempfile.mkdtemp() + '/res/'
++        res_name = tmpdir + '%(time)s'
++        defaults = {
++            'FEED_URI': 'file://' + res_name,
++            'FEED_FORMAT': 'csv',
++        }
++        defaults.update(settings or {})
++        try:
++            with MockServer() as s:
++                runner = CrawlerRunner(Settings(defaults))
++                yield runner.crawl(BatchTestSpider)
++
++            paths = os.listdir(tmpdir)
++            assert file_count == len(paths)
++
++        finally:
++            shutil.rmtree(tmpdir)
++
++    @defer.inlineCallbacks
+     def assertExportedCsv(self, items, header, rows, settings=None, ordered=True):
+         settings = settings or {}
+         settings.update({'FEED_FORMAT': 'csv'})
+@@ -295,3 +326,16 @@ def test_export_feed_export_fields(self):
+             ]
+             yield self.assertExported(items, ['egg', 'baz'], rows,
+                                       settings=settings, ordered=True)
++
++    @defer.inlineCallbacks
++    def test_export_batch_items(self):
++        # feed exporters use field names from Item
++        items = [
++            self.MyItem({'foo': 'bar1', 'egg': 'spam1'}),
++            self.MyItem({'foo': 'bar2', 'egg': 'spam2', 'baz': 'quux2'}),
++            self.MyItem({'foo': 'bar3', 'egg': 'spam2', 'baz': 'quux2'}),
++            self.MyItem({'foo': 'bar4', 'egg': 'spam2', 'baz': 'quux2'}),
++            self.MyItem({'foo': 'bar5', 'egg': 'spam2', 'baz': 'quux2'})
++        ]
++        settings = {'FEED_BATCH_SIZE': 2, 'FEED_FORMAT': 'jl'}
++        yield self.assertFileCount(items, 3, settings)

@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: DELETE
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/107383471?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=0441f5ae229a4884801e97004003b6a8&oauth_timestamp=1561670312&oauth_signature=bRwiaWHiDGhoJQQuFG9%2BNwbERAg%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
+  response:
+    body:
+      string: !!python/unicode
+    headers:
+    - !!python/tuple
+      - Content-Length
+      - - '0'
+    - !!python/tuple
+      - X-Credential-Type
+      - - oauth1
+    - !!python/tuple
+      - X-Served-By
+      - - app-139
+    - !!python/tuple
+      - X-Render-Time
+      - - '0.180292129517'
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Static-Version
+      - - d664982621c0
+    - !!python/tuple
+      - X-Cache-Info
+      - - not cacheable; request wasn't a GET or HEAD
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubDomains; preload
+    - !!python/tuple
+      - Vary
+      - - Authorization
+    - !!python/tuple
+      - X-Version
+      - - d664982621c0
+    - !!python/tuple
+      - Server
+      - - nginx
+    - !!python/tuple
+      - Connection
+      - - close
+    - !!python/tuple
+      - Etag
+      - - '"d41d8cd98f00b204e9800998ecf8427e"'
+    - !!python/tuple
+      - X-Request-Count
+      - - '78'
+    - !!python/tuple
+      - Date
+      - - Thu, 27 Jun 2019 21:18:34 GMT
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+          repository:delete, repository:admin, project:write, team:write, account:write
+    - !!python/tuple
+      - Content-Type
+      - - text/html; charset=utf-8
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - pullrequest
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    status:
+      code: 204
+      message: No Content
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/107383471?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=0441f5ae229a4884801e97004003b6a8&oauth_timestamp=1561670312&oauth_signature=bRwiaWHiDGhoJQQuFG9%2BNwbERAg%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
+version: 1

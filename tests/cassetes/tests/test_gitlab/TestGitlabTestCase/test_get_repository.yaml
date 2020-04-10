@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: [application/json]
+      User-Agent: [Default]
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725
+  response:
+    body: {string: '{"id":187725,"description":"","name":"ci-repo","name_with_namespace":"Codecov
+        / ci-repo","path":"ci-repo","path_with_namespace":"codecov/ci-repo","created_at":"2015-03-10T10:25:37.701Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:codecov/ci-repo.git","http_url_to_repo":"https://gitlab.com/codecov/ci-repo.git","web_url":"https://gitlab.com/codecov/ci-repo","readme_url":"https://gitlab.com/codecov/ci-repo/blob/master/README.md","avatar_url":null,"star_count":2,"forks_count":2,"last_activity_at":"2018-11-02T04:52:20.582Z","namespace":{"id":126816,"name":"codecov","path":"codecov","kind":"user","full_path":"codecov","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/187725","issues":"https://gitlab.com/api/v4/projects/187725/issues","merge_requests":"https://gitlab.com/api/v4/projects/187725/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/187725/repository/branches","labels":"https://gitlab.com/api/v4/projects/187725/labels","events":"https://gitlab.com/api/v4/projects/187725/events","members":"https://gitlab.com/api/v4/projects/187725/members"},"archived":false,"visibility":"public","owner":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80\u0026d=identicon","web_url":"https://gitlab.com/codecov"},"resolve_outdated_diff_discussions":null,"container_registry_enabled":null,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":false,"shared_runners_enabled":false,"lfs_enabled":true,"creator_id":109640,"import_status":"finished","import_error":null,"open_issues_count":11,"runners_token":"77a755cac8b3463203b771118334c1","public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":true,"only_allow_merge_if_all_discussions_are_resolved":null,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":{"access_level":40,"notification_level":3},"group_access":null},"approvals_before_merge":0,"mirror":false}'}
+    headers:
+    - !!python/tuple
+      - Server
+      - [nginx]
+    - !!python/tuple
+      - Date
+      - ['Tue, 06 Nov 2018 05:17:03 GMT']
+    - !!python/tuple
+      - Content-Type
+      - [application/json]
+    - !!python/tuple
+      - Content-Length
+      - ['2170']
+    - !!python/tuple
+      - Connection
+      - [close]
+    - !!python/tuple
+      - Cache-Control
+      - ['max-age=0, private, must-revalidate']
+    - !!python/tuple
+      - Etag
+      - [W/"d9b8864573cc404e2b24b2b84acd1fb3"]
+    - !!python/tuple
+      - Vary
+      - [Origin]
+    - !!python/tuple
+      - X-Content-Type-Options
+      - [nosniff]
+    - !!python/tuple
+      - X-Frame-Options
+      - [SAMEORIGIN]
+    - !!python/tuple
+      - X-Request-Id
+      - [63f148f5-b925-415a-bea9-3153e936a012]
+    - !!python/tuple
+      - X-Runtime
+      - ['0.097648']
+    - !!python/tuple
+      - Strict-Transport-Security
+      - [max-age=31536000]
+    - !!python/tuple
+      - Ratelimit-Limit
+      - ['600']
+    - !!python/tuple
+      - Ratelimit-Observed
+      - ['5']
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - ['595']
+    - !!python/tuple
+      - Ratelimit-Reset
+      - ['1541481483']
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - ['Wed, 06 Nov 2018 05:18:03 GMT']
+    status: {code: 200, message: OK}
+    url: https://gitlab.com/api/v4/projects/187725
+version: 1
