@@ -1,8 +1,8 @@
 import pytest
 
-from covreports.reports.resources import Report, ReportFile, _encode_chunk
-from covreports.utils.sessions import Session
-from covreports.reports.types import (
+from shared.reports.resources import Report, ReportFile, _encode_chunk
+from shared.utils.sessions import Session
+from shared.reports.types import (
     ReportTotals,
     ReportLine,
     NetworkFile,

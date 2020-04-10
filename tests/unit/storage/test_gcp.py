@@ -4,8 +4,8 @@ import gzip
 from google.cloud import storage as google_storage
 
 from tests.base import BaseTestCase
-from covreports.storage.gcp import GCPStorageService
-from covreports.storage.exceptions import (
+from shared.storage.gcp import GCPStorageService
+from shared.storage.exceptions import (
     BucketAlreadyExistsError,
     FileNotInStorageError,
 )

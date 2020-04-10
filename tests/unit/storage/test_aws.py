@@ -4,8 +4,8 @@ import gzip
 from io import BytesIO
 
 from tests.base import BaseTestCase
-from covreports.storage.aws import AWSStorageService
-from covreports.storage.exceptions import (
+from shared.storage.aws import AWSStorageService
+from shared.storage.exceptions import (
     BucketAlreadyExistsError,
     FileNotInStorageError,
 )

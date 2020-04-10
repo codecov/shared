@@ -1,8 +1,8 @@
 import pytest
 
 from tests.base import BaseTestCase
-from covreports.storage.memory import MemoryStorageService
-from covreports.storage.exceptions import (
+from shared.storage.memory import MemoryStorageService
+from shared.storage.exceptions import (
     BucketAlreadyExistsError,
     FileNotInStorageError,
 )

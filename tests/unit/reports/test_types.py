@@ -2,7 +2,7 @@ from dataclasses import astuple
 
 from decimal import Decimal
 
-from covreports.reports.types import (
+from shared.reports.types import (
     Change,
     ReportTotals,
     ReportLine,

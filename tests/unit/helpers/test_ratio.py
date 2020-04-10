@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.numeric import ratio
+from shared.helpers.numeric import ratio
 
 
 @pytest.mark.parametrize(

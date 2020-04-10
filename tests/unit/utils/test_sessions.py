@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.sessions import Session, SessionType
+from shared.utils.sessions import Session, SessionType
 
 
 @pytest.mark.unit

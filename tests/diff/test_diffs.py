@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup as bs
 
 from tests.base import BaseTestCase
 
-from torngit.base import get_start_of_line
-from torngit.github import Github
+from shared.torngit.base import get_start_of_line
+from shared.torngit.github import Github
 
 
 @ddt

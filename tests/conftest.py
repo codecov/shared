@@ -3,12 +3,12 @@ from pathlib import Path
 import pytest
 import vcr
 
-from covreports.config import ConfigHelper
+from shared.config import ConfigHelper
 
 
 @pytest.fixture
 def mock_configuration(mocker):
-    m = mocker.patch("covreports.config._get_config_instance")
+    m = mocker.patch("shared.config._get_config_instance")
     mock_config = ConfigHelper()
     m.return_value = mock_config
     our_config = {

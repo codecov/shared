@@ -1,4 +1,4 @@
-from covreports.encryption import StandardEncryptor
+from shared.encryption import StandardEncryptor
 
 
 def test_standard_encryptor():

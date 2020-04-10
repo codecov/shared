@@ -6,11 +6,11 @@ import pprint
 
 import pytest
 
-from covreports.reports.types import ReportLine, LineSession, ReportTotals
-from covreports.reports.resources import ReportFileSummary, Session
-from covreports.utils.merge import merge_coverage
-from covreports.utils.sessions import SessionType
-from covreports.reports.editable import (
+from shared.reports.types import ReportLine, LineSession, ReportTotals
+from shared.reports.resources import ReportFileSummary, Session
+from shared.utils.merge import merge_coverage
+from shared.utils.sessions import SessionType
+from shared.reports.editable import (
     EditableReportFile,
     EditableReport,
 )

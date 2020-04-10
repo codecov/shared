@@ -1,7 +1,7 @@
 import pytest
-from covreports.reports.types import ReportTotals
-from covreports.utils.sessions import Session
-from covreports.utils.ReportEncoder import ReportEncoder
+from shared.reports.types import ReportTotals
+from shared.utils.sessions import Session
+from shared.utils.ReportEncoder import ReportEncoder
 
 
 @pytest.mark.unit

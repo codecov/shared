@@ -1,8 +1,8 @@
 import pytest
 
 from tests.base import BaseTestCase
-from covreports.storage.minio import MinioStorageService
-from covreports.storage.exceptions import (
+from shared.storage.minio import MinioStorageService
+from shared.storage.exceptions import (
     BucketAlreadyExistsError,
     FileNotInStorageError,
 )

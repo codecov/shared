@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.numeric import maxint
+from shared.helpers.numeric import maxint
 
 
 @pytest.mark.parametrize("string, number", [("7", 7), ("1231412412", 99999),])

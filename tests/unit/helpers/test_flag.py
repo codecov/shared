@@ -1,5 +1,5 @@
 from mock import Mock
-from covreports.helpers.flag import Flag
+from shared.helpers.flag import Flag
 
 
 def test_report():

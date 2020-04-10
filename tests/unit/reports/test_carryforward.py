@@ -3,14 +3,14 @@ from json import loads
 import dataclasses
 import pprint
 
-from covreports.reports.resources import (
+from shared.reports.resources import (
     Report,
     ReportFile,
     ReportLine,
     LineSession,
     Session,
 )
-from covreports.reports.carryforward import (
+from shared.reports.carryforward import (
     generate_carryforward_report,
     carriedforward_session_name,
 )

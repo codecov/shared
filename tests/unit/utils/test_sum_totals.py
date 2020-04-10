@@ -1,6 +1,6 @@
 import pytest
-from covreports.reports.types import ReportTotals
-from covreports.utils.totals import sum_totals
+from shared.reports.types import ReportTotals
+from shared.utils.totals import sum_totals
 
 
 @pytest.mark.unit

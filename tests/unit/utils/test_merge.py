@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.merge import (
+from shared.utils.merge import (
     branch_type,
     get_complexity_from_sessions,
     get_coverage_from_sessions,

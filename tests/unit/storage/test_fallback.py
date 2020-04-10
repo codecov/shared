@@ -1,10 +1,10 @@
 import pytest
 
 from tests.base import BaseTestCase
-from covreports.storage.gcp import GCPStorageService
-from covreports.storage.aws import AWSStorageService
-from covreports.storage.fallback import StorageWithFallbackService
-from covreports.storage.exceptions import (
+from shared.storage.gcp import GCPStorageService
+from shared.storage.aws import AWSStorageService
+from shared.storage.fallback import StorageWithFallbackService
+from shared.storage.exceptions import (
     BucketAlreadyExistsError,
     FileNotInStorageError,
 )

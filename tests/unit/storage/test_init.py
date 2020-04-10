@@ -1,8 +1,8 @@
-from covreports.storage import get_appropriate_storage_service
-from covreports.storage.fallback import StorageWithFallbackService
-from covreports.storage.aws import AWSStorageService
-from covreports.storage.gcp import GCPStorageService
-from covreports.storage.minio import MinioStorageService
+from shared.storage import get_appropriate_storage_service
+from shared.storage.fallback import StorageWithFallbackService
+from shared.storage.aws import AWSStorageService
+from shared.storage.gcp import GCPStorageService
+from shared.storage.minio import MinioStorageService
 
 fake_private_key = """-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCnND/Neha4aNJ6

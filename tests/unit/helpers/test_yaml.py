@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.yaml import walk, default_if_true
+from shared.helpers.yaml import walk, default_if_true
 from types import GeneratorType
 
 

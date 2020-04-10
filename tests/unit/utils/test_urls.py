@@ -2,7 +2,7 @@
 
 import pytest
 from tests.base import BaseTestCase
-from covreports.utils.urls import escape, make_url, _url_concat
+from shared.utils.urls import escape, make_url, _url_concat
 
 
 class TestUrlsUtil(BaseTestCase):

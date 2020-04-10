@@ -5,7 +5,7 @@ import pytest
 from schema import SchemaError
 
 from tests.base import BaseTestCase
-from covreports.validation.yaml import (
+from shared.validation.yaml import (
     LayoutStructure,
     validate_yaml,
     PathPatternSchemaField,
@@ -15,8 +15,8 @@ from covreports.validation.yaml import (
     pre_process_yaml,
     UserGivenSecret,
 )
-from covreports.validation.exceptions import InvalidYamlException
-from covreports.validation.helpers import (
+from shared.validation.exceptions import InvalidYamlException
+from shared.validation.helpers import (
     determine_path_pattern_type,
     translate_glob_to_regex,
 )

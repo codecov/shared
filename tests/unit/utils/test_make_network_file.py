@@ -1,6 +1,6 @@
 import pytest
-from covreports.reports.types import ReportTotals, NetworkFile
-from covreports.utils.make_network_file import make_network_file
+from shared.reports.types import ReportTotals, NetworkFile
+from shared.utils.make_network_file import make_network_file
 
 
 @pytest.mark.unit

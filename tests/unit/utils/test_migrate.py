@@ -1,5 +1,5 @@
 import pytest
-from covreports.utils.migrate import *
+from shared.utils.migrate import *
 
 
 @pytest.mark.unit

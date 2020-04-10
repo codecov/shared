@@ -1,7 +1,7 @@
 import pytest
 
-from covreports.reports.resources import ReportFile
-from covreports.reports.types import ReportTotals, ReportLine
+from shared.reports.resources import ReportFile
+from shared.reports.types import ReportTotals, ReportLine
 
 
 @pytest.mark.integration

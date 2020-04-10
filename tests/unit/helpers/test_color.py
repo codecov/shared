@@ -1,5 +1,5 @@
 import pytest
-from covreports.helpers.color import coverage_to_color
+from shared.helpers.color import coverage_to_color
 
 
 @pytest.mark.parametrize(

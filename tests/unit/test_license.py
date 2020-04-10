@@ -2,8 +2,8 @@ from datetime import datetime
 from base64 import b64encode
 import json
 
-from covreports.license import parse_license, LicenseInformation, get_current_license
-from covreports.encryption import EncryptorWithAlreadyGeneratedKey
+from shared.license import parse_license, LicenseInformation, get_current_license
+from shared.encryption import EncryptorWithAlreadyGeneratedKey
 
 
 def test_sample_license_checking():
