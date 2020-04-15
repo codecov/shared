@@ -61,6 +61,8 @@ minio_config = {
     "verify_ssl": False,
     "host": "minio",
     "port": "9000",
+    "iam_auth": False,
+    "iam_endpoint": None
 }
 
 
