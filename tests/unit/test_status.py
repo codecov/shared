@@ -105,12 +105,7 @@ class Test(unittest.TestCase):
                     "context": "demo/a",
                     "time": "2015-12-21T16:54:13Z",
                 },
-                {
-                    "url": None,
-                    "state": "pending",
-                    "context": "demo/b",
-                    "time": None,
-                },
+                {"url": None, "state": "pending", "context": "demo/b", "time": None,},
                 {
                     "url": None,
                     "state": "pending",
@@ -149,12 +144,7 @@ class Test(unittest.TestCase):
                 "context": "demo/a",
                 "time": "2015-12-21T16:54:13Z",
             },
-            {
-                "url": None,
-                "state": "pending",
-                "context": "demo/b",
-                "time": None,
-            },
+            {"url": None, "state": "pending", "context": "demo/b", "time": None,},
             {
                 "url": None,
                 "state": "pending",
@@ -173,18 +163,28 @@ class Test(unittest.TestCase):
                 "context": "ci",
                 "time": "2010-12-21T16:54:13Z",
             },
-            {
-                "url": None,
-                "state": "pending",
-                "context": "other",
-                "time": None,
-            },
+            {"url": None, "state": "pending", "context": "other", "time": None,},
         ]
         res = Status._fetch_most_relevant_status_per_context(statuses)
         expected_res = [
-            {'context': 'demo/a', 'state': 'success', 'time': '2015-12-21T16:54:13Z', 'url': None},
-            {'context': 'demo/b', 'state': 'pending', 'time': '2015-12-21T16:54:13Z', 'url': None},
-            {'context': 'ci', 'state': 'pending', 'time': '2015-12-21T16:54:13Z', 'url': None},
-            {'context': 'other', 'state': 'pending', 'time': None, 'url': None}
+            {
+                "context": "demo/a",
+                "state": "success",
+                "time": "2015-12-21T16:54:13Z",
+                "url": None,
+            },
+            {
+                "context": "demo/b",
+                "state": "pending",
+                "time": "2015-12-21T16:54:13Z",
+                "url": None,
+            },
+            {
+                "context": "ci",
+                "state": "pending",
+                "time": "2015-12-21T16:54:13Z",
+                "url": None,
+            },
+            {"context": "other", "state": "pending", "time": None, "url": None},
         ]
         assert expected_res == res

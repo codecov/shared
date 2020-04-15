@@ -211,13 +211,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "round": "down",
                 "range": "70...100",
                 "status": {"project": True, "patch": True, "changes": False},
-                "notify": {
-                    "irc": {
-                        "user_given_title": {
-                            "password": encoded_value
-                        }
-                    }
-                }
+                "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
             "codecov": {"notify": {"require_ci_to_pass": True}},
             "comment": {
@@ -242,13 +236,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "round": "down",
                 "range": [70, 100],
                 "status": {"project": True, "patch": True, "changes": False},
-                "notify": {
-                    "irc": {
-                        "user_given_title": {
-                            "password": encoded_value
-                        }
-                    }
-                }
+                "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
             "codecov": {"notify": {}, "require_ci_to_pass": True},
             "comment": {
@@ -333,13 +321,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "precision": 2,
                 "range": [70.0, 100.0],
                 "status": {"project": {"default": {"base": "auto",}}},
-                "notify": {
-                    "irc": {
-                        "user_given_title": {
-                            "password": encoded_value
-                        }
-                    }
-                }
+                "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
             "ignore": ["Pods/.*",],
         }
@@ -355,7 +337,7 @@ class TestUserYamlValidation(BaseTestCase):
                             "password": "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
                         }
                     }
-                }
+                },
             },
             "ignore": ["Pods/.*",],
         }

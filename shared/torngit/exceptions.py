@@ -3,7 +3,6 @@ class TorngitError(Exception):
 
 
 class TorngitClientError(TorngitError):
-
     def __init__(self, code, response, message):
         super().__init__(code, response)
         self.code = code
@@ -12,14 +11,12 @@ class TorngitClientError(TorngitError):
 
 
 class TorngitRepoNotFoundError(TorngitClientError):
-
     def __init__(self, response, message):
         code = 404
         super().__init__(code, response, message)
 
 
 class TorngitObjectNotFoundError(TorngitClientError):
-
     def __init__(self, response, message):
         code = 404
         super().__init__(code, response, message)
