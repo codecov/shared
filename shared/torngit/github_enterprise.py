@@ -2,12 +2,22 @@ import os
 
 from shared.torngit.github import Github
 
+from shared.config import get_config
+
 
 class GithubEnterprise(Github):
     # https://developer.github.com/v3/enterprise/#endpoint-urls
-    service = 'github_enterprise'
-    service_url = os.getenv('GITHUB_ENTERPRISE_URL', '').strip('/')
-    api_url = os.getenv('GITHUB_ENTERPRISE_API_URL', '').strip('/') or (
-        os.getenv('GITHUB_ENTERPRISE_URL', '').strip('/') + '/api/v3')
-    verify_ssl = os.getenv('GITHUB_ENTERPRISE_SSL_PEM') or (
-        os.getenv('GITHUB_ENTERPRISE_VERIFY_SSL') != 'FALSE')
+    @property
+    def service_url(self):
+        return get_config("github_enterprise", "url").strip("/")
+
+    @property
+    def api_url(self):
+        if get_config("github_enterprise", "api_url"):
+            return get_config("github_enterprise", "api_url").strip("/")
+        return self.service_url + "/api/v3"
+
+    service = "github_enterprise"
+    verify_ssl = os.getenv("GITHUB_ENTERPRISE_SSL_PEM") or (
+        os.getenv("GITHUB_ENTERPRISE_VERIFY_SSL") != "FALSE"
+    )
