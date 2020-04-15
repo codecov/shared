@@ -40,75 +40,99 @@ class Gitlab(BaseHandler):
         pull='{username}/{name}/merge_requests/%(pullid)s',
         tree='{username}/{name}/tree/%(commitid)s')
 
-    async def api(self, method, url_path, *, body=None, token=None, version=4,
-                  **args):
-        # http://doc.gitlab.com/ce/api
-        if url_path[0] == '/':
-            _log = dict(
-                event='api',
-                endpoint=url_path,
-                method=method,
-                bot=(token or self.token).get('username'))
-        else:
-            _log = {}
-
+    async def fetch_and_handle_errors(
+        self, method, url_path, *, body=None, token=None, version=4, **args
+    ):
         url_path = (
-            self.api_url.format(version) + url_path) if url_path[0] == '/' else url_path
+            (self.api_url.format(version) + url_path)
+            if url_path[0] == "/"
+            else url_path
+        )
         headers = {
-            'Accept': 'application/json',
-            'User-Agent': os.getenv('USER_AGENT', 'Default')
+            "Accept": "application/json",
+            "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
         if type(body) is dict:
-            headers['Content-Type'] = 'application/json'
+            headers["Content-Type"] = "application/json"
 
         if token or self.token:
-            headers['Authorization'] = 'Bearer %s' % (token
-                                                      or self.token)['key']
+            headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
-        url = url_concat(url_path, args).replace(' ', '%20')
+        url = url_concat(url_path, args).replace(" ", "%20")
         kwargs = dict(
             method=method.upper(),
             body=dumps(body) if type(body) is dict else body,
             headers=headers,
-            ca_certs=self.verify_ssl
-            if type(self.verify_ssl) is not bool else None,
-            validate_cert=self.verify_ssl
-            if type(self.verify_ssl) is bool else None,
+            ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
+            validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
             connect_timeout=self._timeouts[0],
-            request_timeout=self._timeouts[1])
+            request_timeout=self._timeouts[1],
+        )
 
         start = time()
         try:
-            res = await self.fetch(url, **kwargs)
+            return await self.fetch(url, **kwargs)
         except HTTPError as e:
             if e.code == 599:
-                log.info('count#%s.timeout=1\n' % self.service)
-                raise TorngitServerUnreachableError('Gitlab was not able to be reached, server timed out.')
+                log.info("count#%s.timeout=1\n" % self.service)
+                raise TorngitServerUnreachableError(
+                    "Gitlab was not able to be reached, server timed out."
+                )
             elif e.code >= 500:
                 raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
             log.warning(
-                'Gitlab HTTP %s' % e.response.code,
-                extra=dict(
-                    url=url,
-                    body=e.response.body
-                )
+                "Gitlab HTTP %s" % e.response.code,
+                extra=dict(url=url, body=e.response.body),
             )
-            message = f'Gitlab API: {e.message}'
+            message = f"Gitlab API: {e.message}"
             raise TorngitClientError(e.code, e.response, message)
 
         except socket.gaierror:
             raise TorngitServerUnreachableError(
-                'GitLab was not able to be reached. Gateway 502. Please try again.'
+                "GitLab was not able to be reached. Gateway 502. Please try again."
+            )
+        finally:
+            stdout.write(
+                "source=%s measure#service=%dms\n"
+                % (self.service, int((time() - start) * 1000))
             )
 
+    async def api(self, method, url_path, *, body=None, token=None, version=4, **args):
+        if url_path[0] == "/":
+            _log = dict(
+                event="api",
+                endpoint=url_path,
+                method=method,
+                bot=(token or self.token).get("username"),
+            )
         else:
-            log.info('GitLab HTTP %s' % res.code, extra=dict(**_log))
-            return None if res.code == 204 else loads(res.body)
+            _log = {}
+        res = await self.fetch_and_handle_errors(
+            method, url_path, body=body, token=token, version=4, **args
+        )
+        log.info("GitLab HTTP %s" % res.code, extra=dict(**_log))
+        return None if res.code == 204 else loads(res.body)
 
-        finally:
-            stdout.write("source=%s measure#service=%dms\n" %
-                         (self.service, int((time() - start) * 1000)))
+    async def make_paginated_call(
+        self, base_url, default_kwargs, max_per_page, max_number_of_pages=None, token=None
+    ):
+        current_page = None
+        has_more = True
+        count_so_far = 0
+        while has_more and (max_number_of_pages is None or count_so_far < max_number_of_pages):
+            current_kwargs = dict(per_page=max_per_page, **default_kwargs)
+            if current_page is not None:
+                current_kwargs["page"] = current_page
+            current_result = await self.fetch_and_handle_errors("GET", base_url, **current_kwargs)
+            count_so_far += 1
+            yield None if current_result.code == 204 else loads(current_result.body)
+            if max_number_of_pages is not None and count_so_far >= max_number_of_pages:
+                has_more = False
+            elif current_result.headers["X-Next-Page"]:
+                current_page, has_more = current_result.headers["X-Next-Page"], True
+            else:
+                current_page, has_more = None, False
 
     async def get_authenticated_user(self, **kwargs):
         creds = self._oauth_consumer_token()
@@ -283,15 +307,23 @@ class Gitlab(BaseHandler):
 
     async def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups
-        groups = await self.api('get', '/groups?per_page=100', token=token)
-        return [
-            dict(name=g['name'],
-                id=g['id'],
-                username=(g['full_path'].replace('/', ':')),
-                avatar_url=g['avatar_url'],
-                parent_id=g['parent_id'])
-            for g in groups
-        ]
+        all_groups = []
+        async_generator = self.make_paginated_call(
+            "/groups", max_per_page=100, default_kwargs={}, token=token
+        )
+        async for page in async_generator:
+            groups = page
+            all_groups.extend([
+                dict(
+                    name=g["name"],
+                    id=g["id"],
+                    username=(g["full_path"].replace("/", ":")),
+                    avatar_url=g["avatar_url"],
+                    parent_id=g["parent_id"],
+                )
+                for g in groups
+            ])
+        return all_groups
 
     async def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
