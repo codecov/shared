@@ -14,6 +14,7 @@ from tornado.httpclient import HTTPError as ClientError
 from shared.torngit.status import Status
 from shared.torngit.base import BaseHandler
 from shared.torngit.exceptions import TorngitObjectNotFoundError
+from shared.config import get_config
 
 
 PEM = """-----BEGIN RSA PRIVATE KEY-----
@@ -56,14 +57,13 @@ class _Signature(oauth.SignatureMethod):
         if token:
             key += oauth.escape(token.secret)
         raw = '&'.join(sig)
-        return key, raw
+        return key, raw.encode()
 
     def sign(self, request, consumer, token):
         """Builds the base signature string."""
         key, raw = self.signing_base(request, consumer, token)
 
         signature = PRIVATEKEY.hashAndSign(raw)
-
         return base64.b64encode(signature)
 
 
@@ -73,7 +73,11 @@ signature = _Signature()
 class BitbucketServer(BaseHandler):
     # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html
     service = 'bitbucket_server'
-    service_url = os.getenv('BITBUCKET_SERVER_URL')
+
+    @property
+    def service_url(self):
+        return get_config("bitbucket_server", "url")
+
     urls = dict(
         user='users/%(username)s',
         owner='projects/%(username)s',
@@ -170,7 +174,7 @@ class BitbucketServer(BaseHandler):
         response, content = client.request(
             url,
             method.upper(),
-            dumps(body) if body else '',
+            dumps(body).encode() if body else b'',
             headers={'Content-Type': 'application/json'} if body else {})
         status = int(response['status'])
 
