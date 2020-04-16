@@ -2,7 +2,7 @@ import pytest
 import os
 
 from tests.base import BaseTestCase
-from shared.storage.minio import MinioStorageService
+from shared.storage.minio import MinioStorageService, Minio
 from shared.storage.exceptions import (
     BucketAlreadyExistsError,
     FileNotInStorageError,
@@ -167,3 +167,36 @@ class TestMinioStorageService(BaseTestCase):
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == data
+
+    def test_minio_without_ports(self, mocker):
+        mocked_minio_client = mocker.patch("shared.storage.minio.Minio")
+        minio_no_ports_config = {
+            "access_key_id": "hodor",
+            "secret_access_key": "haha",
+            "verify_ssl": False,
+            "host": "cute_url_no_ports",
+            "iam_auth": True,
+            "iam_endpoint": None,
+        }
+        storage = MinioStorageService(minio_no_ports_config)
+        assert storage.minio_config == minio_no_ports_config
+        mocked_minio_client.assert_called_with(
+            "cute_url_no_ports", credentials=mocker.ANY, secure=False
+        )
+
+    def test_minio_with_ports(self, mocker):
+        mocked_minio_client = mocker.patch("shared.storage.minio.Minio")
+        minio_no_ports_config = {
+            "access_key_id": "hodor",
+            "secret_access_key": "haha",
+            "verify_ssl": False,
+            "host": "cute_url_no_ports",
+            "port": "9000",
+            "iam_auth": True,
+            "iam_endpoint": None,
+        }
+        storage = MinioStorageService(minio_no_ports_config)
+        assert storage.minio_config == minio_no_ports_config
+        mocked_minio_client.assert_called_with(
+            "cute_url_no_ports:9000", credentials=mocker.ANY, secure=False
+        )

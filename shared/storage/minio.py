@@ -4,7 +4,7 @@ import sys
 import gzip
 import json
 
-import minio
+from minio import Minio
 from minio.error import (
     ResponseError,
     BucketAlreadyOwnedByYou,
@@ -31,7 +31,7 @@ class MinioStorageService(BaseStorageService):
 
         self.minio_client = self.init_minio_client(
             self.minio_config["host"],
-            self.minio_config["port"],
+            self.minio_config.get("port"),
             self.minio_config["access_key_id"],
             self.minio_config["secret_access_key"],
             self.minio_config["verify_ssl"],
@@ -75,10 +75,11 @@ class MinioStorageService(BaseStorageService):
             iam_auth (bool, optional): Whether to use iam_auth
             iam_endpoint (str, optional): The endpoint to try to fetch EC2 metadata
         """
-        host = "{}:{}".format(host, port)
+        if port is not None:
+            host = "{}:{}".format(host, port)
 
         if iam_auth:
-            return minio.Minio(
+            return Minio(
                 host,
                 secure=verify_ssl,
                 credentials=Credentials(
@@ -91,7 +92,7 @@ class MinioStorageService(BaseStorageService):
                     )
                 ),
             )
-        return minio.Minio(
+        return Minio(
             host, access_key=access_key, secret_key=secret_key, secure=verify_ssl,
         )
 

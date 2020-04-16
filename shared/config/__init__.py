@@ -2,7 +2,7 @@ import os
 import logging
 from copy import deepcopy
 
-from yaml import load as yaml_load
+from yaml import safe_load as yaml_load
 import collections
 
 
@@ -15,7 +15,6 @@ log = logging.getLogger(__name__)
 default_config = {
     "services": {
         "minio": {
-            "port": "9000",
             "host": "minio",
             "access_key_id": "codecov-default-key",
             "secret_access_key": "codecov-default-secret",
@@ -45,12 +44,13 @@ class ConfigHelper(object):
     def load_env_var(self):
         val = {}
         for env_var in os.environ:
-            multiple_level_vars = env_var.split("__")
-            if len(multiple_level_vars) > 1:
-                current = val
-                for c in multiple_level_vars[:-1]:
-                    current = current.setdefault(c.lower(), {})
-                current[multiple_level_vars[-1].lower()] = os.getenv(env_var)
+            if not env_var.startswith("__"):
+                multiple_level_vars = env_var.split("__")
+                if len(multiple_level_vars) > 1:
+                    current = val
+                    for c in multiple_level_vars[:-1]:
+                        current = current.setdefault(c.lower(), {})
+                    current[multiple_level_vars[-1].lower()] = os.getenv(env_var)
         return val
 
     @property
@@ -75,11 +75,14 @@ class ConfigHelper(object):
                 raise MissingConfigException(args)
         return current_p
 
-    def yaml_content(self):
+    def load_yaml_file(self):
         yaml_path = os.getenv("CODECOV_YML", "/config/codecov.yml")
+        with open(yaml_path, "r") as c:
+            return c.read()
+
+    def yaml_content(self):
         try:
-            with open(yaml_path, "r") as c:
-                return yaml_load(c.read())
+            return yaml_load(self.load_yaml_file())
         except FileNotFoundError:
             return {}
 
