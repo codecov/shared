@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from tests.base import BaseTestCase
 from shared.storage.minio import MinioStorageService
@@ -13,6 +14,8 @@ minio_config = {
     "verify_ssl": False,
     "host": "minio",
     "port": "9000",
+    "iam_auth": False,
+    "iam_endpoint": None,
 }
 
 
@@ -141,3 +144,26 @@ class TestMinioStorageService(BaseTestCase):
         assert sorted(expected_result_2, key=lambda x: x["size"]) == sorted(
             results_2, key=lambda x: x["size"]
         )
+
+    def test_minio_with_iam_flow(self, codecov_vcr, mocker):
+        mocker.patch.dict(
+            os.environ, {"MINIO_ACCESS_KEY": "hodor", "MINIO_SECRET_KEY": "holdthedoor"}
+        )
+        minio_iam_config = {
+            "access_key_id": None,
+            "secret_access_key": None,
+            "verify_ssl": False,
+            "host": "minio",
+            "port": "9000",
+            "iam_auth": True,
+            "iam_endpoint": None,
+        }
+        bucket_name = "testminiowithiamflow"
+        storage = MinioStorageService(minio_iam_config)
+        storage.create_root_storage(bucket_name)
+        path = "test_write_then_read_file/result"
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        writing_result = storage.write_file(bucket_name, path, data)
+        assert writing_result
+        reading_result = storage.read_file(bucket_name, path)
+        assert reading_result.decode() == data

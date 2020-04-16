@@ -20,6 +20,8 @@ default_config = {
             "access_key_id": "codecov-default-key",
             "secret_access_key": "codecov-default-secret",
             "verify_ssl": False,
+            "iam_auth": False,
+            "iam_endpoint": None,
         }
     }
 }

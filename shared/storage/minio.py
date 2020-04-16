@@ -11,6 +11,7 @@ from minio.error import (
     BucketAlreadyExists,
     NoSuchKey,
 )
+from minio.credentials import Chain, EnvAWS, EnvMinio, IamEc2MetaData, Credentials
 from io import BytesIO
 
 from shared.storage.base import BaseStorageService
@@ -34,18 +35,64 @@ class MinioStorageService(BaseStorageService):
             self.minio_config["access_key_id"],
             self.minio_config["secret_access_key"],
             self.minio_config["verify_ssl"],
+            self.minio_config.get("iam_auth", False),
+            self.minio_config["iam_endpoint"],
         )
         log.debug("Done setting up minio client")
 
     def client(self):
         return self.minio_client if self.minio_client else None
 
-    def init_minio_client(self, host, port, access_key, secret_key, verify_ssl):
+    def init_minio_client(
+        self,
+        host: str,
+        port: str,
+        access_key: str = None,
+        secret_key: str = None,
+        verify_ssl: bool = False,
+        iam_auth: bool = False,
+        iam_endpoint: str = None,
+    ):
+        """
+            Initialize the minio client
+
+        `iam_auth` adds support for IAM base authentication in a fallback pattern.
+            The following will be checked in order:
+
+        * EC2 metadata -- a custom endpoint can be provided, default is None.
+        * AWS env vars, specifically AWS_ACCESS_KEY and AWS_SECRECT_KEY
+        * Minio env vars, specifically MINIO_ACCESS_KEY and MINIO_SECRET_KEY
+
+        to support backward compatibility, the iam_auth setting should be used in the installation
+            configuration
+
+        Args:
+            host (str): The address of the host where minio lives
+            port (str): The port number (as str or int should be ok)
+            access_key (str, optional): The access key (optional if IAM is being used)
+            secret_key (str, optional): The secret key (optional if IAM is being used)
+            verify_ssl (bool, optional): Whether minio should verify ssl
+            iam_auth (bool, optional): Whether to use iam_auth
+            iam_endpoint (str, optional): The endpoint to try to fetch EC2 metadata
+        """
+        host = "{}:{}".format(host, port)
+
+        if iam_auth:
+            return minio.Minio(
+                host,
+                secure=verify_ssl,
+                credentials=Credentials(
+                    provider=Chain(
+                        providers=[
+                            EnvMinio(),
+                            EnvAWS(),
+                            IamEc2MetaData(endpoint=iam_endpoint),
+                        ]
+                    )
+                ),
+            )
         return minio.Minio(
-            "{}:{}".format(host, port),
-            access_key=access_key,
-            secret_key=secret_key,
-            secure=verify_ssl,
+            host, access_key=access_key, secret_key=secret_key, secure=verify_ssl,
         )
 
     # writes the initial storage bucket to storage via minio.
