@@ -62,7 +62,7 @@ minio_config = {
     "host": "minio",
     "port": "9000",
     "iam_auth": False,
-    "iam_endpoint": None
+    "iam_endpoint": None,
 }
 
 
