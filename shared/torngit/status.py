@@ -6,20 +6,24 @@ def matches(string, pattern):
     if pattern == string:
         return True
     else:
-        if '*' in pattern:
-            return re.match('^%s$' % pattern.replace('*', '.*'),
-                            string) is not None
+        if "*" in pattern:
+            return re.match("^%s$" % pattern.replace("*", ".*"), string) is not None
         return False
 
 
 class Status(object):
     def __init__(self, statuses):
         self._statuses = self._fetch_most_relevant_status_per_context(statuses)
-        states = set(map(lambda s: s['state'], self._statuses))
-        self._state = 'failure' if 'failure' in states \
-                      else 'pending' if 'pending' in states \
-                      else 'failure' if 'error' in states \
-                      else 'success'
+        states = set(map(lambda s: s["state"], self._statuses))
+        self._state = (
+            "failure"
+            if "failure" in states
+            else "pending"
+            if "pending" in states
+            else "failure"
+            if "error" in states
+            else "success"
+        )
 
     @classmethod
     def _fetch_most_relevant_status_per_context(cls, statuses):
@@ -27,23 +31,26 @@ class Status(object):
         contexts = defaultdict(list)
         # group by context(time, !pending, <status>)
         for status in statuses:
-            contexts[status['context']].append(
-                (status['time'], status['state'] != 'pending', status))
+            contexts[status["context"]].append(
+                (status["time"], status["state"] != "pending", status)
+            )
         # extract most recent sorted(time, !pending)
         return [
-            sorted(context, key=lambda t: (t[0] if t[0] is not None else '', t[1]))[-1][2]
+            sorted(context, key=lambda t: (t[0] if t[0] is not None else "", t[1]))[-1][
+                2
+            ]
             for context in contexts.values()
         ]
 
     def __sub__(self, context):
         """Remove ci status from list, return new object"""
         return Status(
-            filter(lambda s: not matches(s['context'], context),
-                   self._statuses))
+            filter(lambda s: not matches(s["context"], context), self._statuses)
+        )
 
     def __eq__(self, other):
         """Returns the current ci status"""
-        assert other in ('success', 'failure', 'pending')
+        assert other in ("success", "failure", "pending")
         return self._state == other
 
     def __str__(self):
@@ -52,15 +59,15 @@ class Status(object):
 
     @property
     def is_pending(self):
-        return self._state == 'pending'
+        return self._state == "pending"
 
     @property
     def is_success(self):
-        return self._state == 'success'
+        return self._state == "success"
 
     @property
     def is_failure(self):
-        return self._state == 'failure'
+        return self._state == "failure"
 
     @property
     def state(self):
@@ -78,7 +85,7 @@ class Status(object):
 
     def __contains__(self, context):
         for c in self._statuses:
-            if matches(c['context'], context):
+            if matches(c["context"], context):
                 return True
         return False
 
@@ -88,11 +95,9 @@ class Status(object):
     @property
     def pending(self):
         # return list of pending statuses
-        return [
-            status for status in self._statuses if status['state'] == 'pending'
-        ]
+        return [status for status in self._statuses if status["state"] == "pending"]
 
     def get(self, context):
         for status in self._statuses:
-            if status['context'] == context:
+            if status["context"] == context:
                 return status

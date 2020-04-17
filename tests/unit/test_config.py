@@ -146,6 +146,8 @@ class TestConfig(object):
         assert expected_res == this_config.load_env_var()
 
     def test_yaml_content(self, mocker):
-        mocker.patch.object(ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError())
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
         this_config = ConfigHelper()
         assert this_config.yaml_content() == {}

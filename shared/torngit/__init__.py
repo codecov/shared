@@ -11,18 +11,18 @@ from shared.torngit.bitbucket_server import BitbucketServer
 
 
 def get(git, **data):
-    if git == 'github':
+    if git == "github":
         return Github(**data)
-    elif git == 'github_enterprise':
+    elif git == "github_enterprise":
         return GithubEnterprise(**data)
-    elif git == 'bitbucket':
+    elif git == "bitbucket":
         return Bitbucket(**data)
-    elif git == 'bitbucket_server':
+    elif git == "bitbucket_server":
         return BitbucketServer(**data)
-    elif git == 'gitlab':
+    elif git == "gitlab":
         return Gitlab(**data)
-    elif git == 'gitlab_enterprise':
-        if os.getenv('GITLAB_HOTFIX_PULL_REQUEST_ID') or os.getenv('GITLAB_8'):
+    elif git == "gitlab_enterprise":
+        if os.getenv("GITLAB_HOTFIX_PULL_REQUEST_ID") or os.getenv("GITLAB_8"):
             return GitlabEnterprise3(**data)
         else:
             return GitlabEnterprise(**data)

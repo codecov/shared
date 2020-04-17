@@ -12,9 +12,9 @@ get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 def unicode_escape(string, escape=True):
     if isinstance(string, str):
         if escape:
-            return url_escape(string, plus=False).replace('%2F', '/')
+            return url_escape(string, plus=False).replace("%2F", "/")
         elif isinstance(string, str):
-            return string.encode('utf-8', 'replace')
+            return string.encode("utf-8", "replace")
         return string
     else:
         return str(string)
@@ -28,10 +28,26 @@ class BaseHandler(object):
     verify_ssl = None
 
     valid_languages = (
-        'javascript', 'shell', 'python', 'ruby', 'perl',
-        'dart', 'java', 'c', 'clojure', 'd', 'fortran',
-        'go', 'groovy', 'kotlin', 'php', 'r', 'scala',
-        'swift', 'objective-c', 'xtend'
+        "javascript",
+        "shell",
+        "python",
+        "ruby",
+        "perl",
+        "dart",
+        "java",
+        "c",
+        "clojure",
+        "d",
+        "fortran",
+        "go",
+        "groovy",
+        "kotlin",
+        "php",
+        "r",
+        "scala",
+        "swift",
+        "objective-c",
+        "xtend",
     )
 
     def _oauth_consumer_token(self):
@@ -40,25 +56,29 @@ class BaseHandler(object):
         return self._oauth
 
     def __init__(
-            self,
-            oauth_consumer_token=None,
-            timeouts=None,
-            token=None,
-            verify_ssl=None,
-            **kwargs):
+        self,
+        oauth_consumer_token=None,
+        timeouts=None,
+        token=None,
+        verify_ssl=None,
+        **kwargs,
+    ):
         self._client = None
         self._timeouts = timeouts or [10, 30]
         self._token = token
         self._oauth = oauth_consumer_token
-        self.data = {'owner': {}, 'repo': {}}
+        self.data = {"owner": {}, "repo": {}}
         self.verify_ssl = verify_ssl
 
         self.data.update(kwargs)
 
     def __repr__(self):
-        return '<%s slug=%s ownerid=%s repoid=%s>' % (
-            self.service, self.slug, self.data['owner'].get('ownerid'),
-            self.data['repo'].get('repoid'))
+        return "<%s slug=%s ownerid=%s repoid=%s>" % (
+            self.service,
+            self.slug,
+            self.data["owner"].get("ownerid"),
+            self.data["repo"].get("repoid"),
+        )
 
     @property
     def client(self):
@@ -86,17 +106,18 @@ class BaseHandler(object):
 
     @property
     def slug(self):
-        if self.data['owner'] and self.data['repo']:
-            if self.data['owner'].get('username') and self.data['repo'].get(
-                    'name'):
-                return ('%s/%s' % (self.data['owner']['username'],
-                                   self.data['repo']['name']))
+        if self.data["owner"] and self.data["repo"]:
+            if self.data["owner"].get("username") and self.data["repo"].get("name"):
+                return "%s/%s" % (
+                    self.data["owner"]["username"],
+                    self.data["repo"]["name"],
+                )
 
     def build_tree_from_commits(self, start, commit_mapping):
         parents = []
         for p in commit_mapping.get(start, []):
             parents.append(self.build_tree_from_commits(p, commit_mapping))
-        return {'commitid': start, 'parents': parents}
+        return {"commitid": start, "parents": parents}
 
     def diff_to_json(self, diff):
         """
@@ -104,20 +125,20 @@ class BaseHandler(object):
         docs/specs/diff.json
         """
         results = {}
-        diff = ('\n%s' % diff).split('\ndiff --git a/')
+        diff = ("\n%s" % diff).split("\ndiff --git a/")
         segment = None
         for _diff in diff[1:]:
             _diff = _diff.splitlines()
 
             try:
-                before, after = _diff.pop(0).split(' b/', 1)
+                before, after = _diff.pop(0).split(" b/", 1)
             except IndexError:
                 before, after = None, None
                 # find the --- a
                 for source in _diff:
-                    if source.startswith('--- a/'):
+                    if source.startswith("--- a/"):
                         before = source[6:]
-                    elif source.startswith('+++ b/'):
+                    elif source.startswith("+++ b/"):
                         after = source[6:]
                         break
 
@@ -127,10 +148,10 @@ class BaseHandler(object):
             # Is the file empty, skipped, etc
             # -------------------------------
             _file = dict(
-                type='new' if before == '/dev/null' else 'modified',
-                before=None
-                if before == after or before == '/dev/null' else before,
-                segments=[])
+                type="new" if before == "/dev/null" else "modified",
+                before=None if before == after or before == "/dev/null" else before,
+                segments=[],
+            )
 
             results[after] = _file
 
@@ -138,27 +159,27 @@ class BaseHandler(object):
             # ------------------------------
             # make file, this is ONE file not multiple
             for source in _diff:
-                if source == '\ No newline at end of file':
+                if source == "\ No newline at end of file":
                     break
 
                 sol4 = source[:4]
-                if sol4 == 'dele':
+                if sol4 == "dele":
                     # deleted file mode 100644
-                    _file['before'] = after
-                    _file['type'] = 'deleted'
-                    _file.pop('segments')
+                    _file["before"] = after
+                    _file["type"] = "deleted"
+                    _file.pop("segments")
                     break
 
-                elif sol4 == 'new ' and not source.startswith('new mode '):
-                    _file['type'] = 'new'
+                elif sol4 == "new " and not source.startswith("new mode "):
+                    _file["type"] = "new"
 
-                elif sol4 == 'Bina':
-                    _file['type'] = 'binary'
-                    _file.pop('before')
-                    _file.pop('segments')
+                elif sol4 == "Bina":
+                    _file["type"] = "binary"
+                    _file.pop("before")
+                    _file.pop("segments")
                     break
 
-                elif sol4 in ('--- ', '+++ ', 'inde', 'diff', 'old ', 'new '):
+                elif sol4 in ("--- ", "+++ ", "inde", "diff", "old ", "new "):
                     # diff --git a/app/commit.py b/app/commit.py
                     # new file mode 100644
                     # index 0000000..d5ee3d6
@@ -166,19 +187,19 @@ class BaseHandler(object):
                     # +++ b/app/commit.py
                     continue
 
-                elif sol4 == '@@ -':
+                elif sol4 == "@@ -":
                     # ex: "@@ -31,8 +31,8 @@ blah blah blah"
                     # ex: "@@ -0,0 +1 @@"
                     l = get_start_of_line(source).groups()
                     segment = dict(header=[l[0], l[1], l[2], l[3]], lines=[])
-                    _file['segments'].append(segment)
+                    _file["segments"].append(segment)
 
-                elif source == '':
+                elif source == "":
                     continue
 
                 elif segment:
                     # actual lines
-                    segment['lines'].append(source)
+                    segment["lines"].append(source)
 
                 # else:
                 #     results.pop(fname)
@@ -191,18 +212,18 @@ class BaseHandler(object):
         for fname, data in diff.items():
             rm = 0
             add = 0
-            if 'segments' in data:
-                for segment in data['segments']:
-                    rm += sum(
-                        [1 for line in segment['lines'] if line[0] == '-'])
-                    add += sum(
-                        [1 for line in segment['lines'] if line[0] == '+'])
-            data['stats'] = dict(added=add, removed=rm)
+            if "segments" in data:
+                for segment in data["segments"]:
+                    rm += sum([1 for line in segment["lines"] if line[0] == "-"])
+                    add += sum([1 for line in segment["lines"] if line[0] == "+"])
+            data["stats"] = dict(added=add, removed=rm)
         return diff
 
     # COMMENT LOGIC
 
-    async def delete_comment(self, pullid: str, commentid: str, token: str=None) -> bool:
+    async def delete_comment(
+        self, pullid: str, commentid: str, token: str = None
+    ) -> bool:
         """Deletes a comment on a PR from the provider
 
         Args:
@@ -221,12 +242,16 @@ class BaseHandler(object):
     async def post_comment(self, pullid: str, body: str, token=None) -> dict:
         raise NotImplementedError()
 
-    async def edit_comment(self, pullid: str, commentid: str, body: str, token=None) -> dict:
+    async def edit_comment(
+        self, pullid: str, commentid: str, body: str, token=None
+    ) -> dict:
         raise NotImplementedError()
 
     # PULL REQUEST LOGIC
 
-    async def find_pull_request(self, commit=None, branch=None, state='open', token=None):
+    async def find_pull_request(
+        self, commit=None, branch=None, state="open", token=None
+    ):
         raise NotImplementedError()
 
     async def get_pull_request(self, pullid: str, token=None):
@@ -235,7 +260,7 @@ class BaseHandler(object):
     async def get_pull_request_commits(self, pullid: str, token=None):
         raise NotImplementedError()
 
-    async def get_pull_requests(self, state='open', token=None):
+    async def get_pull_requests(self, state="open", token=None):
         raise NotImplementedError()
 
     # COMMIT LOGIC
@@ -249,7 +274,17 @@ class BaseHandler(object):
     async def get_commit_statuses(self, commit: str, _merge=None, token=None):
         raise NotImplementedError()
 
-    async def set_commit_status(self, commit: str, status, context, description, url, coverage=None, merge_commit=None, token=None):
+    async def set_commit_status(
+        self,
+        commit: str,
+        status,
+        context,
+        description,
+        url,
+        coverage=None,
+        merge_commit=None,
+        token=None,
+    ):
         raise NotImplementedError()
 
     # WEBHOOK LOGIC
@@ -260,7 +295,9 @@ class BaseHandler(object):
     async def delete_webhook(self, hookid: str, token=None):
         raise NotImplementedError()
 
-    async def edit_webhook(self, hookid: str, name, url, events: dict, secret, token=None) -> dict:
+    async def edit_webhook(
+        self, hookid: str, name, url, events: dict, secret, token=None
+    ) -> dict:
         raise NotImplementedError()
 
     # OTHERS
@@ -274,7 +311,9 @@ class BaseHandler(object):
     async def get_branches(self, token=None):
         raise NotImplementedError()
 
-    async def get_compare(self, base, head, context=None, with_commits=True, token=None):
+    async def get_compare(
+        self, base, head, context=None, with_commits=True, token=None
+    ):
         raise NotImplementedError()
 
     async def get_is_admin(self, user: dict, token=None):
