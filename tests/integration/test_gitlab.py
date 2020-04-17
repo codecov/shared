@@ -857,3 +857,52 @@ class TestGitlabTestCase(object):
         expected_result = f'https://gitlab.com/group/subgroup1/subgroup2/codecov-test/commit/{commitid}'
         res = subgroup_handler.get_href(Endpoints.commit_detail, commitid=commitid)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_make_paginated_call_no_limit(self, codecov_vcr):
+        handler = Gitlab(
+            repo=dict(service_id='9715852'),
+            owner=dict(username='1nf1n1t3l00p'),
+            token=dict(
+                key='test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex'
+            )
+        )
+
+        res = handler.make_paginated_call(
+            "/groups", max_per_page=100, default_kwargs={}
+        )
+        res = [i async for i in res]
+        assert len(res) == 1
+        assert list(len(p) for p in res) == [8]
+
+    @pytest.mark.asyncio
+    async def test_make_paginated_call(self, codecov_vcr):
+        handler = Gitlab(
+            repo=dict(service_id='9715852'),
+            owner=dict(username='1nf1n1t3l00p'),
+            token=dict(
+                key='test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex'
+            )
+        )
+        res = handler.make_paginated_call(
+            "/groups", max_per_page=3, default_kwargs={}
+        )
+        res = [i async for i in res]
+        assert len(res) == 3
+        assert list(len(p) for p in res) == [3, 3, 2]
+
+    @pytest.mark.asyncio
+    async def test_make_paginated_call_max_number_of_pages(self, codecov_vcr):
+        handler = Gitlab(
+            repo=dict(service_id='9715852'),
+            owner=dict(username='1nf1n1t3l00p'),
+            token=dict(
+                key='test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex'
+            )
+        )
+        res = handler.make_paginated_call(
+            "/groups", max_per_page=3, max_number_of_pages=2, default_kwargs={}
+        )
+        res = [i async for i in res]
+        assert len(res) == 2
+        assert list(len(p) for p in res) == [3, 3]
