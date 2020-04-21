@@ -74,7 +74,9 @@ class Gitlab(BaseHandler):
 
         start = time()
         try:
-            return await self.fetch(url, **kwargs)
+            res = await self.fetch(url, **kwargs)
+            self.log_response_headers(res)
+            return res
         except HTTPError as e:
             if e.code == 599:
                 log.info("count#%s.timeout=1\n" % self.service)
@@ -144,6 +146,40 @@ class Gitlab(BaseHandler):
                 current_page, has_more = current_result.headers["X-Next-Page"], True
             else:
                 current_page, has_more = None, False
+
+    def log_response_headers(self, response) -> None:
+        safe_headers = [
+            "Date",
+            "Content-Type",
+            "Transfer-Encoding",
+            "Connection",
+            "Set-Cookie",
+            "Cache-Control",
+            "Etag",
+            "Vary",
+            "X-Content-Type-Options",
+            "X-Frame-Options",
+            "X-Request-Id",
+            "X-Runtime",
+            "Strict-Transport-Security",
+            "Referrer-Policy",
+            "Ratelimit-Limit",
+            "Ratelimit-Observed",
+            "Ratelimit-Remaining",
+            "Ratelimit-Reset",
+            "Ratelimit-Resettime",
+            "Gitlab-Lb",
+            "Gitlab-Sv",
+            "Cf-Cache-Status",
+            "Expect-Ct",
+            "Server",
+            "Cf-Ray",
+            "X-Consumed-Content-Encoding",
+        ]
+        headers_to_log = {
+            k: v for (k, v) in response.headers.items() if k in safe_headers
+        }
+        log.info("Gitlab response had some headers", extra=dict(headers=headers_to_log))
 
     async def get_authenticated_user(self, **kwargs):
         creds = self._oauth_consumer_token()
