@@ -3,22 +3,12 @@ import logging
 
 from shared.reports.resources import Report, ReportFile, ReportLine
 from shared.reports.types import EMPTY
-from shared.utils.merge import merge_all
 from shared.utils.sessions import Session, SessionType
 
 log = logging.getLogger(__name__)
 
 
 class EditableReportFile(ReportFile):
-    @classmethod
-    def line_without_session(cls, line: ReportLine, sessionid: int):
-        new_sessions = [s for s in line.sessions if s.id != sessionid]
-        remaining_coverages = [s.coverage for s in new_sessions]
-        if len(new_sessions) == 0:
-            return EMPTY
-        new_coverage = merge_all(remaining_coverages)
-        return dataclasses.replace(line, sessions=new_sessions, coverage=new_coverage)
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.turn_lines_into_report_lines()

@@ -4,7 +4,7 @@ from mock import PropertyMock
 from shared.reports.resources import Report, ReportFile, _encode_chunk
 from shared.utils.match import match
 from shared.utils.sessions import Session
-from shared.reports.types import ReportLine, ReportTotals, NetworkFile
+from shared.reports.types import ReportLine, ReportTotals, NetworkFile, LineSession
 from tests.helper import v2_to_v3
 
 END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
@@ -726,3 +726,93 @@ def test_filter_exception(patch):
 )
 def test_encode_chunk(chunk, res):
     assert _encode_chunk(chunk) == res
+
+
+def test_delete_session():
+    chunks = "\n".join(
+        [
+            "{}",
+            "[1, null, [[0, 1], [1, 0]]]",
+            "",
+            "",
+            "[0, null, [[0, 0], [1, 0]]]",
+            "[1, null, [[0, 1], [1, 1]]]",
+            "[1, null, [[0, 0], [1, 1]]]",
+            "",
+            "",
+            '[1, null, [[0, 1], [1, "1/2"]]]',
+            '[1, null, [[0, "1/2"], [1, 1]]]',
+            "",
+            "",
+            "[1, null, [[0, 1]]]",
+            "[1, null, [[1, 1]]]",
+            '["1/2", null, [[0, "1/2"], [1, 0]]]',
+            '["1/2", null, [[0, 0], [1, "1/2"]]]',
+        ]
+    )
+    report_file = ReportFile(name="file.py", lines=chunks)
+    original_lines = [
+        ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+        "",
+        "",
+        ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+        ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+        ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+        "",
+        "",
+        ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]),
+        ReportLine(coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]),
+        "",
+        "",
+        ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
+        ReportLine(coverage=1, sessions=[LineSession(1, 1)]),
+        ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]),
+        ReportLine(coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]),
+    ]
+    assert report_file._lines == chunks.split("\n")[1:]
+    assert report_file.totals == ReportTotals(
+        files=0,
+        lines=10,
+        hits=7,
+        misses=1,
+        partials=2,
+        coverage="70.00000",
+        branches=0,
+        methods=0,
+        messages=0,
+        sessions=0,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )
+    report_file.delete_session(1)
+    expected_result = [
+        (1, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+        (4, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+        (5, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+        (6, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+        (9, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+        (10, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+        (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+        (15, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+        (16, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+    ]
+    assert list(report_file.lines) == expected_result
+    assert report_file.get(1) == ReportLine(coverage=1, sessions=[LineSession(0, 1)])
+    assert report_file.get(13) == ReportLine(coverage=1, sessions=[LineSession(0, 1)])
+    assert report_file.get(14) is None
+    assert report_file.totals == ReportTotals(
+        files=0,
+        lines=9,
+        hits=4,
+        misses=3,
+        partials=2,
+        coverage="44.44444",
+        branches=0,
+        methods=0,
+        messages=0,
+        sessions=0,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )
