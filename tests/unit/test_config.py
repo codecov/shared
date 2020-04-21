@@ -4,6 +4,31 @@ from shared.config import ConfigHelper, get_config
 
 
 class TestConfig(object):
+    def test_get_config_nothing_user_set(self, mocker):
+        mocker.patch.dict(os.environ, {}, clear=True)
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
+        this_config = ConfigHelper()
+        mocker.patch("shared.config._get_config_instance", return_value=this_config)
+        assert get_config() == {
+            "services": {
+                "minio": {
+                    "host": "minio",
+                    "access_key_id": "codecov-default-key",
+                    "secret_access_key": "codecov-default-secret",
+                    "verify_ssl": False,
+                    "iam_auth": False,
+                    "iam_endpoint": None,
+                    "hash_key": "ab164bf3f7d947f2a0681b215404873e",
+                }
+            }
+        }
+        assert (
+            get_config("services", "minio", "hash_key")
+            == "ab164bf3f7d947f2a0681b215404873e"
+        )
+
     def test_get_config_minio_without_port(self, mocker):
         yaml_content = "\n".join(
             [
@@ -30,6 +55,7 @@ class TestConfig(object):
                     "iam_endpoint": None,
                     "bucket": "cce-minio-update-test",
                     "region": "us-east-2",
+                    "hash_key": "ab164bf3f7d947f2a0681b215404873e",
                 }
             }
         }
@@ -62,6 +88,7 @@ class TestConfig(object):
                     "iam_endpoint": None,
                     "bucket": "cce-minio-update-test",
                     "region": "us-east-2",
+                    "hash_key": "ab164bf3f7d947f2a0681b215404873e",
                 }
             }
         }
