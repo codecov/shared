@@ -15,6 +15,7 @@ from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
 from shared.utils.merge import (
+    merge_all,
     merge_line,
     line_type,
     get_coverage_from_sessions,
@@ -152,6 +153,17 @@ class ReportFile(object):
                     if not line:
                         continue
                 yield ln, line
+
+    def delete_session(self, sessionid: int):
+        self._totals = None
+        for index, line in self.lines:
+            if any(s.id == sessionid for s in line.sessions):
+                log.error(
+                    "Line should not have this session since it's new",
+                    extra=dict(sessionid=sessionid, line=line),
+                )
+                line_without_session = self.line_without_session(line, sessionid)
+                self._lines[index - 1] = line_without_session
 
     def __iter__(self):
         """Iter through lines
@@ -447,6 +459,15 @@ class ReportFile(object):
         except:
             # https://sentry.io/codecov/v4/issues/226391457/events/5041535451/
             pass
+
+    @classmethod
+    def line_without_session(cls, line: ReportLine, sessionid: int):
+        new_sessions = [s for s in line.sessions if s.id != sessionid]
+        remaining_coverages = [s.coverage for s in new_sessions]
+        if len(new_sessions) == 0:
+            return EMPTY
+        new_coverage = merge_all(remaining_coverages)
+        return dataclasses.replace(line, sessions=new_sessions, coverage=new_coverage)
 
 
 class Report(object):

@@ -1,3 +1,4 @@
+from shared.storage.base import BaseStorageService
 from shared.storage.minio import MinioStorageService
 from shared.storage.gcp import GCPStorageService
 from shared.storage.aws import AWSStorageService
@@ -5,12 +6,14 @@ from shared.storage.fallback import StorageWithFallbackService
 from shared.config import get_config
 
 
-def get_appropriate_storage_service():
+def get_appropriate_storage_service() -> BaseStorageService:
     chosen_storage = get_config("services", "chosen_storage", default="minio")
     return _get_appropriate_storage_service_given_storage(chosen_storage)
 
 
-def _get_appropriate_storage_service_given_storage(chosen_storage):
+def _get_appropriate_storage_service_given_storage(
+    chosen_storage: str,
+) -> BaseStorageService:
     if chosen_storage == "gcp":
         gcp_config = get_config("services", "gcp", default={})
         return GCPStorageService(gcp_config)
