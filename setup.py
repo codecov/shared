@@ -36,6 +36,7 @@ setup(
         "six==1.11.0",
         "tlslite-ng",
         "tornado",
+        "pycurl==7.43.0.5",
         "vcrpy==2.1.0",
     ],
 )

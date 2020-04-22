@@ -83,6 +83,7 @@ class BaseHandler(object):
     @property
     def client(self):
         if self._client is None:
+            AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
             self._client = AsyncHTTPClient()
         return self._client
 
