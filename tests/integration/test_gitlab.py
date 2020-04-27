@@ -188,6 +188,32 @@ class TestGitlabTestCase(object):
         assert res == b
 
     @pytest.mark.asyncio
+    async def test_get_pull_request_with_diff_refs(self):
+        recent_handler = Gitlab(
+            repo=dict(service_id="18347774", name="codecov-example"),
+            owner=dict(username="ThiagoCodecov", service_id="_meaningless_"),
+            token=dict(
+                key="testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w"
+            ),
+        )
+        res = await recent_handler.get_pull_request("1")
+        assert res == {
+            "author": {"id": "3124507", "username": "ThiagoCodecov"},
+            "base": {
+                "branch": "master",
+                "commitid": "081d91921f05a8a39d39aef667eddb88e96300c7",
+            },
+            "head": {
+                "branch": "thiago/base-no-base",
+                "commitid": "057fbf1c186560b1ea49ab02353e3d021d15bc9e",
+            },
+            "state": "open",
+            "title": "Thiago/base no base",
+            "id": "1",
+            "number": "1",
+        }
+
+    @pytest.mark.asyncio
     async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
         expected_result = ["dd798926730aad14aadf72281204bdb85734fe67"]
         res = await valid_handler.get_pull_request_commits("1")
