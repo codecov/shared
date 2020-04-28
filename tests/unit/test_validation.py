@@ -1,10 +1,12 @@
 import re
+import os
 from base64 import b64encode
 
 import pytest
 from schema import SchemaError
 
 from tests.base import BaseTestCase
+from shared.config import get_config, ConfigHelper
 from shared.validation.yaml import (
     LayoutStructure,
     validate_yaml,
@@ -421,3 +423,25 @@ class TestUserGivenSecret(BaseTestCase):
         ugs = UserGivenSecret(show_secret=False)
         assert ugs.validate(value) == value
         assert ugs.validate(encoded_value) == encoded_value
+
+
+class TestValidationConfig(object):
+    def test_validate_default_config_yaml(self, mocker):
+        mocker.patch.dict(os.environ, {}, clear=True)
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
+        this_config = ConfigHelper()
+        mocker.patch("shared.config._get_config_instance", return_value=this_config)
+        expected_result = {
+            "codecov": {"require_ci_to_pass": True},
+            "coverage": {
+                "precision": 2,
+                "round": "down",
+                "range": [70.0, 100.0],
+                "status": {"project": True, "patch": True, "changes": False},
+            },
+            "comment": {"layout": "reach,diff,flags,tree,reach", "behavior": "default"},
+        }
+        res = validate_yaml(get_config("site", default={}), show_secrets=True)
+        assert res == expected_result

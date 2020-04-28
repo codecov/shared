@@ -11,23 +11,130 @@ class TestConfig(object):
         )
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
-        assert get_config() == {
-            "services": {
-                "minio": {
-                    "host": "minio",
-                    "access_key_id": "codecov-default-key",
-                    "secret_access_key": "codecov-default-secret",
-                    "verify_ssl": False,
-                    "iam_auth": False,
-                    "iam_endpoint": None,
-                    "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-                }
-            }
-        }
         assert (
             get_config("services", "minio", "hash_key")
             == "ab164bf3f7d947f2a0681b215404873e"
         )
+        assert get_config("site", "codecov", "require_ci_to_pass") is True
+        assert get_config("site", "coverage", "precision") == 2
+        assert get_config("site", "coverage", "round") == "down"
+        assert get_config("site", "coverage", "range") == "70...100"
+        assert get_config("site", "coverage", "status", "project") is True
+        assert get_config("site", "coverage", "status", "patch") is True
+        assert get_config("site", "coverage", "status", "changes") is False
+        assert get_config("site", "comment", "layout") == "reach,diff,flags,tree,reach"
+        assert get_config("site", "comment", "behavior") == "default"
+        assert get_config("services") == {
+            "minio": {
+                "host": "minio",
+                "access_key_id": "codecov-default-key",
+                "secret_access_key": "codecov-default-secret",
+                "verify_ssl": False,
+                "iam_auth": False,
+                "iam_endpoint": None,
+                "hash_key": "ab164bf3f7d947f2a0681b215404873e",
+            }
+        }
+
+    def test_get_config_production_use_case(self, mocker):
+        yaml_content = "\n".join(
+            [
+                "setup:",
+                "  codecov_url: https://codecov.io",
+                "",
+                "  debug: no",
+                "  loglvl: INFO",
+                "  media:",
+                "    assets: assets_link",
+                "    dependancies: assets_link",
+                "  http:",
+                "    force_https: yes",
+                "    timeouts:",
+                "      connect: 10",
+                "      receive: 15",
+                "  tasks:",
+                "    celery:",
+                "      soft_timelimit: 200",
+                "      hard_timelimit: 240",
+                "    upload:",
+                "      queue: uploads",
+                "  cache:",
+                "    yaml: 600  # 10 minutes",
+                "    tree: 600  # 10 minutes",
+                "    diff: 300  # 5 minutes",
+                "    chunks: 300  # 5 minutes",
+                "    uploads: 86400  # 1 day",
+                "",
+                "services:",
+                "  minio:",
+                "    bucket: codecov",
+                "    periodic_callback_ms: false",
+                "  sentry:",
+                "    server_dsn: server_dsn",
+                "  google_analytics_key: UA-google_analytics_key-1",
+                "",
+                "github:",
+                "  bot:",
+                "    username: codecov-io",
+                "  integration:",
+                "    id: 254",
+                "    pem: src/certs/github.pem",
+                "",
+                "bitbucket:",
+                "  bot:",
+                "    username: codecov-io",
+                "",
+                "gitlab:",
+                "  bot:",
+                "    username: codecov-io",
+                "",
+                "site:",
+                "  codecov:",
+                "    require_ci_to_pass: yes",
+                "",
+                "  coverage:",
+                "    precision: 2",
+                "    round: down",
+                "    range: '70...100'",
+                "",
+                "    status:",
+                "      project: yes",
+                "      patch: yes",
+                "      changes: no",
+                "",
+                "  parsers:",
+                "    gcov:",
+                "      branch_detection:",
+                "        conditional: yes",
+                "        loop: yes",
+                "        method: no",
+                "        macro: no",
+                "",
+                "    javascript:",
+                "      enable_partials: no",
+                "",
+                "  comment:",
+                "    layout: 'reach, diff, flags, files, footer'",
+                "    behavior: default",
+                "    require_changes: no",
+                "    require_base: no",
+                "    require_head: yes",
+            ]
+        )
+        mocker.patch.object(ConfigHelper, "load_yaml_file", return_value=yaml_content)
+        this_config = ConfigHelper()
+        mocker.patch("shared.config._get_config_instance", return_value=this_config)
+        assert get_config("site", "codecov", "require_ci_to_pass") is True
+        assert get_config("site", "coverage", "precision") == 2
+        assert get_config("site", "coverage", "round") == "down"
+        assert get_config("site", "coverage", "range") == "70...100"
+        assert get_config("site", "coverage", "status", "project") is True
+        assert get_config("site", "coverage", "status", "patch") is True
+        assert get_config("site", "coverage", "status", "changes") is False
+        assert [
+            x.strip() for x in get_config("site", "comment", "layout").split(",")
+        ] == ["reach", "diff", "flags", "files", "footer"]
+        assert get_config("site", "comment", "behavior") == "default"
 
     def test_get_config_minio_without_port(self, mocker):
         yaml_content = "\n".join(
@@ -44,19 +151,17 @@ class TestConfig(object):
         mocker.patch.object(ConfigHelper, "load_yaml_file", return_value=yaml_content)
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
-        assert get_config() == {
-            "services": {
-                "minio": {
-                    "host": "s3.amazonaws.com",
-                    "access_key_id": "codecov-default-key",
-                    "secret_access_key": "codecov-default-secret",
-                    "verify_ssl": True,
-                    "iam_auth": True,
-                    "iam_endpoint": None,
-                    "bucket": "cce-minio-update-test",
-                    "region": "us-east-2",
-                    "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-                }
+        assert get_config("services") == {
+            "minio": {
+                "host": "s3.amazonaws.com",
+                "access_key_id": "codecov-default-key",
+                "secret_access_key": "codecov-default-secret",
+                "verify_ssl": True,
+                "iam_auth": True,
+                "iam_endpoint": None,
+                "bucket": "cce-minio-update-test",
+                "region": "us-east-2",
+                "hash_key": "ab164bf3f7d947f2a0681b215404873e",
             }
         }
 
@@ -76,20 +181,18 @@ class TestConfig(object):
         mocker.patch.object(ConfigHelper, "load_yaml_file", return_value=yaml_content)
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
-        assert get_config() == {
-            "services": {
-                "minio": {
-                    "host": "s3.amazonaws.com",
-                    "port": 9000,
-                    "access_key_id": "codecov-default-key",
-                    "secret_access_key": "codecov-default-secret",
-                    "verify_ssl": True,
-                    "iam_auth": True,
-                    "iam_endpoint": None,
-                    "bucket": "cce-minio-update-test",
-                    "region": "us-east-2",
-                    "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-                }
+        assert get_config("services") == {
+            "minio": {
+                "host": "s3.amazonaws.com",
+                "port": 9000,
+                "access_key_id": "codecov-default-key",
+                "secret_access_key": "codecov-default-secret",
+                "verify_ssl": True,
+                "iam_auth": True,
+                "iam_endpoint": None,
+                "bucket": "cce-minio-update-test",
+                "region": "us-east-2",
+                "hash_key": "ab164bf3f7d947f2a0681b215404873e",
             }
         }
 

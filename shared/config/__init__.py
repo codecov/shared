@@ -23,7 +23,17 @@ default_config = {
             "iam_endpoint": None,
             "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
-    }
+    },
+    "site": {
+        "codecov": {"require_ci_to_pass": True},
+        "coverage": {
+            "precision": 2,
+            "round": "down",
+            "range": "70...100",
+            "status": {"project": True, "patch": True, "changes": False},
+        },
+        "comment": {"layout": "reach,diff,flags,tree,reach", "behavior": "default"},
+    },
 }
 
 
