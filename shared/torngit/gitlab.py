@@ -438,19 +438,32 @@ class Gitlab(BaseHandler):
             raise
 
         if pull:
-            # get first commit on pull
             parent = None
-            try:
+            if pull.get("diff_refs", {}) and pull.get("diff_refs", {}).get("base_sha"):
+                parent = pull.get("diff_refs", {}).get("base_sha")
+            else:
+                log.info(
+                    "Could not fetch pull base from diff_refs",
+                    extra=dict(pullid=pullid, pull_information=pull),
+                )
                 # get list of commits and first one out
-                first_commit = (
-                    await self.api(
-                        "get",
-                        "/projects/{}/merge_requests/{}/commits".format(
-                            self.data["repo"]["service_id"], pullid
-                        ),
-                        token=token,
-                    )
-                )[-1]
+                all_commits = await self.api(
+                    "get",
+                    "/projects/{}/merge_requests/{}/commits".format(
+                        self.data["repo"]["service_id"], pullid
+                    ),
+                    token=token,
+                )
+                log.info(
+                    "List of commits is fetched for PR calculation",
+                    extra=dict(
+                        commit_list=[
+                            {"id": c.get("id"), "parents": c.get("parent_ids")}
+                            for c in all_commits
+                        ]
+                    ),
+                )
+                first_commit = all_commits[-1]
                 if len(first_commit["parent_ids"]) > 0:
                     parent = first_commit["parent_ids"][0]
                 else:
@@ -464,8 +477,6 @@ class Gitlab(BaseHandler):
                             token=token,
                         )
                     )["parent_ids"][0]
-            except Exception:
-                pass
 
             if pull["state"] == "locked":
                 pull["state"] = "closed"
