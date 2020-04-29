@@ -188,7 +188,7 @@ class TestGitlabTestCase(object):
         assert res == b
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_with_diff_refs(self):
+    async def test_get_pull_request_with_diff_refs(self, codecov_vcr):
         recent_handler = Gitlab(
             repo=dict(service_id="18347774", name="codecov-example"),
             owner=dict(username="ThiagoCodecov", service_id="_meaningless_"),
@@ -205,7 +205,7 @@ class TestGitlabTestCase(object):
             },
             "head": {
                 "branch": "thiago/base-no-base",
-                "commitid": "057fbf1c186560b1ea49ab02353e3d021d15bc9e",
+                "commitid": "b34b00d0872d129943b634693fd8f19f5f37acf9",
             },
             "state": "open",
             "title": "Thiago/base no base",
