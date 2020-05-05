@@ -533,14 +533,17 @@ def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res, patch):
 
 
 @pytest.mark.unit
-def test_apply_diff(patch):
-    v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}})
-    r = Report(files=v3["files"])
-    r.sessions = v3["sessions"]
-    r._totals = v3["totals"]
-    r._chunks = v3["chunks"]
-    r._path_filter = None
-    r._line_modifier = None
+def test_calculate_diff():
+    v3 = {
+        "files": {"a": [0, None], "d": [1, None]},
+        "sessions": {},
+        "totals": {},
+        "chunks": [
+            "\n[1, null, null, null]\n[0, null, null, null]",
+            "\n[1, null, null, null]\n[0, null, null, null]",
+        ],
+    }
+    r = Report(**v3)
     diff = {
         "files": {
             "a": {
@@ -549,6 +552,70 @@ def test_apply_diff(patch):
             },
             "b": {"type": "deleted"},
             "c": {"type": "modified"},
+            "d": {
+                "type": "modified",
+                "segments": [
+                    {"header": ["10", "3", "10", "3"], "lines": list("---+++")}
+                ],
+            },
+        }
+    }
+    res = r.calculate_diff(diff)
+    expected_result = {
+        "files": {
+            "a": ReportTotals(
+                files=0, lines=2, hits=1, misses=1, partials=0, coverage="50.00000"
+            ),
+            "d": ReportTotals(
+                files=0, lines=0, hits=0, misses=0, partials=0, coverage=None
+            ),
+        },
+        "general": ReportTotals(
+            files=2,
+            lines=2,
+            hits=1,
+            misses=1,
+            partials=0,
+            coverage="50.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        ),
+    }
+    assert res["files"] == expected_result["files"]
+    assert res == expected_result
+
+
+@pytest.mark.unit
+def test_apply_diff():
+    v3 = {
+        "files": {"a": [0, None], "d": [1, None]},
+        "sessions": {},
+        "totals": {},
+        "chunks": [
+            "\n[1, null, null, null]\n[0, null, null, null]",
+            "\n[1, null, null, null]\n[0, null, null, null]",
+        ],
+    }
+    r = Report(**v3)
+    diff = {
+        "files": {
+            "a": {
+                "type": "new",
+                "segments": [{"header": list("1313"), "lines": list("---+++")}],
+            },
+            "b": {"type": "deleted"},
+            "c": {"type": "modified"},
+            "d": {
+                "type": "modified",
+                "segments": [
+                    {"header": ["10", "3", "10", "3"], "lines": list("---+++")}
+                ],
+            },
         }
     }
     assert r.apply_diff(None) is None
