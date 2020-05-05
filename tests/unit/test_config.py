@@ -136,6 +136,120 @@ class TestConfig(object):
         ] == ["reach", "diff", "flags", "files", "footer"]
         assert get_config("site", "comment", "behavior") == "default"
 
+    def test_get_config_case_with_more_nested_types(self, mocker):
+        yaml_content = "\n".join(
+            [
+                "setup:",
+                "  codecov_url: https://codecov.io",
+                "",
+                "  debug: no",
+                "  loglvl: INFO",
+                "  media:",
+                "    assets: assets_link",
+                "    dependancies: assets_link",
+                "  http:",
+                "    force_https: yes",
+                "    timeouts:",
+                "      connect: 10",
+                "      receive: 15",
+                "  tasks:",
+                "    celery:",
+                "      soft_timelimit: 200",
+                "      hard_timelimit: 240",
+                "    upload:",
+                "      queue: uploads",
+                "  cache:",
+                "    yaml: 600  # 10 minutes",
+                "    tree: 600  # 10 minutes",
+                "    diff: 300  # 5 minutes",
+                "    chunks: 300  # 5 minutes",
+                "    uploads: 86400  # 1 day",
+                "",
+                "services:",
+                "  minio:",
+                "    bucket: codecov",
+                "    periodic_callback_ms: false",
+                "  sentry:",
+                "    server_dsn: server_dsn",
+                "  google_analytics_key: UA-google_analytics_key-1",
+                "",
+                "github:",
+                "  bot:",
+                "    username: codecov-io",
+                "  integration:",
+                "    id: 254",
+                "    pem: src/certs/github.pem",
+                "",
+                "bitbucket:",
+                "  bot:",
+                "    username: codecov-io",
+                "",
+                "gitlab:",
+                "  bot:",
+                "    username: codecov-io",
+                "",
+                "site:",
+                "  codecov:",
+                "    require_ci_to_pass: yes",
+                "",
+                "    status:",
+                "      project: yes",
+                "      patch: yes",
+                "      changes: no",
+                "",
+                "  parsers:",
+                "    gcov:",
+                "      branch_detection:",
+                "        conditional: yes",
+                "        loop: yes",
+                "        method: no",
+                "        macro: no",
+                "",
+                "    javascript:",
+                "      enable_partials: no",
+                "",
+                "  coverage:",
+                "    status:",
+                "      project:",
+                "        default:",
+                "          only_pulls: true",
+                "          target: auto",
+                "          threshold: 100%",
+                "      patch:",
+                "        default:",
+                "          only_pulls: true",
+                "          target: auto",
+                "          threshold: 100%",
+            ]
+        )
+        mocker.patch.object(ConfigHelper, "load_yaml_file", return_value=yaml_content)
+        this_config = ConfigHelper()
+        mocker.patch("shared.config._get_config_instance", return_value=this_config)
+        assert get_config("site", "codecov", "require_ci_to_pass") is True
+        assert get_config("site", "coverage", "precision") == 2
+        assert get_config("site", "coverage", "round") == "down"
+        assert get_config("site", "coverage", "range") == "70...100"
+        assert get_config("site", "coverage", "status") == {
+            "project": {
+                "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
+            },
+            "patch": {
+                "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
+            },
+            "changes": False,
+        }
+        assert get_config("site", "coverage", "status", "project") == {
+            "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
+        }
+        assert get_config("site", "coverage", "status", "patch") == {
+            "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
+        }
+        assert get_config("site", "coverage", "status", "changes") is False
+        assert [
+            x.strip() for x in get_config("site", "comment", "layout").split(",")
+        ] == ["reach", "diff", "flags", "tree", "reach"]
+        assert get_config("site", "comment", "behavior") == "default"
+
     def test_get_config_minio_without_port(self, mocker):
         yaml_content = "\n".join(
             [
