@@ -40,7 +40,9 @@ default_config = {
 def update(d, u):
     d = deepcopy(d)
     for k, v in u.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, collections.Mapping) and isinstance(
+            d.get(k), collections.Mapping
+        ):
             d[k] = update(d.get(k, {}), v)
         else:
             d[k] = v
