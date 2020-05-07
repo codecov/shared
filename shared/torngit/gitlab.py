@@ -549,6 +549,7 @@ class Gitlab(BaseHandler):
             % (self.data["repo"]["service_id"], commit),
             token=token,
         )
+
         _states = dict(
             pending="pending",
             success="success",
@@ -565,6 +566,14 @@ class Gitlab(BaseHandler):
                 "context": s["name"],
             }
             for s in statuses
+        ]
+
+        [
+            log.warning(
+                "Commit status has None time", extra=dict(commit=commit, status=status)
+            )
+            for status in statuses
+            if status["time"] is None
         ]
 
         return Status(statuses)
