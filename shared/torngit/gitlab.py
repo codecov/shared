@@ -10,6 +10,7 @@ from tornado.httputil import urlencode
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError
 
+from shared.metrics import metrics
 from shared.torngit.status import Status
 from shared.torngit.base import BaseHandler
 from shared.torngit.enums import Endpoints
@@ -21,6 +22,8 @@ from shared.torngit.exceptions import (
 )
 
 log = logging.getLogger(__name__)
+
+METRICS_PREFIX = "services.torngit.gitlab"
 
 
 class Gitlab(BaseHandler):
@@ -72,34 +75,31 @@ class Gitlab(BaseHandler):
             request_timeout=self._timeouts[1],
         )
 
-        start = time()
         try:
-            res = await self.fetch(url, **kwargs)
-            self.log_response_headers(res)
+            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
+                res = await self.fetch(url, **kwargs)
             return res
         except HTTPError as e:
             if e.code == 599:
-                log.info("count#%s.timeout=1\n" % self.service)
+                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "Gitlab was not able to be reached, server timed out."
                 )
             elif e.code >= 500:
+                metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                 raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
             log.warning(
                 "Gitlab HTTP %s" % e.response.code,
                 extra=dict(url=url, body=e.response.body),
             )
             message = f"Gitlab API: {e.message}"
+            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
             raise TorngitClientError(e.code, e.response, message)
 
         except socket.gaierror:
+            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
             raise TorngitServerUnreachableError(
                 "GitLab was not able to be reached. Gateway 502. Please try again."
-            )
-        finally:
-            stdout.write(
-                "source=%s measure#service=%dms\n"
-                % (self.service, int((time() - start) * 1000))
             )
 
     async def api(self, method, url_path, *, body=None, token=None, version=4, **args):
@@ -146,40 +146,6 @@ class Gitlab(BaseHandler):
                 current_page, has_more = current_result.headers["X-Next-Page"], True
             else:
                 current_page, has_more = None, False
-
-    def log_response_headers(self, response) -> None:
-        safe_headers = [
-            "Date",
-            "Content-Type",
-            "Transfer-Encoding",
-            "Connection",
-            "Set-Cookie",
-            "Cache-Control",
-            "Etag",
-            "Vary",
-            "X-Content-Type-Options",
-            "X-Frame-Options",
-            "X-Request-Id",
-            "X-Runtime",
-            "Strict-Transport-Security",
-            "Referrer-Policy",
-            "Ratelimit-Limit",
-            "Ratelimit-Observed",
-            "Ratelimit-Remaining",
-            "Ratelimit-Reset",
-            "Ratelimit-Resettime",
-            "Gitlab-Lb",
-            "Gitlab-Sv",
-            "Cf-Cache-Status",
-            "Expect-Ct",
-            "Server",
-            "Cf-Ray",
-            "X-Consumed-Content-Encoding",
-        ]
-        headers_to_log = {
-            k: v for (k, v) in response.headers.items() if k in safe_headers
-        }
-        log.info("Gitlab response had some headers", extra=dict(headers=headers_to_log))
 
     async def get_authenticated_user(self, **kwargs):
         creds = self._oauth_consumer_token()

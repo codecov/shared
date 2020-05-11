@@ -9,6 +9,7 @@ from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
 from tornado.escape import json_decode, json_encode, url_escape
 
+from shared.metrics import metrics
 from shared.torngit.status import Status
 from shared.torngit.base import BaseHandler
 from shared.torngit.enums import Endpoints
@@ -21,6 +22,8 @@ from shared.torngit.exceptions import (
 )
 
 log = logging.getLogger(__name__)
+
+METRICS_PREFIX = "services.torngit.github"
 
 
 class Github(BaseHandler, OAuth2Mixin):
@@ -64,6 +67,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 endpoint=url,
                 method=method,
                 bot=(token or self.token).get("username"),
+                repo_slug=self.slug,
             )
             url = self.api_url + url
 
@@ -79,18 +83,17 @@ class Github(BaseHandler, OAuth2Mixin):
             connect_timeout=self._timeouts[0],
             request_timeout=self._timeouts[1],
         )
-
-        start = time()
         try:
-            res = await self.fetch(url, **kwargs)
-
+            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
+                res = await self.fetch(url, **kwargs)
         except ClientError as e:
             if e.code == 599:
-                log.info("count#%s.timeout=1\n" % self.service)
+                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "Github was not able to be reached, server timed out."
                 )
             elif e.code >= 500:
+                metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                 raise TorngitServer5xxCodeError("Github is having 5xx issues")
             log.warning(
                 "Github HTTP %s" % e.response.code,
@@ -104,9 +107,11 @@ class Github(BaseHandler, OAuth2Mixin):
                 ),
             )
             message = f"Github API: {e.message}"
+            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
             raise TorngitClientError(e.code, e.response, message)
 
         except socket.gaierror:
+            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
             raise TorngitServerUnreachableError("GitHub was not able to be reached.")
 
         else:
@@ -127,12 +132,6 @@ class Github(BaseHandler, OAuth2Mixin):
 
             else:
                 return res.body
-
-        finally:
-            log.debug(
-                "source=%s measure#service=%dms\n"
-                % (self.service, int((time() - start) * 1000))
-            )
 
     # Generic
     # -------

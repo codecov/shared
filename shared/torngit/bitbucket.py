@@ -9,6 +9,7 @@ from tornado.auth import OAuthMixin
 from tornado.httpclient import HTTPError as ClientError
 from tornado.httputil import url_concat
 
+from shared.metrics import metrics
 from shared.torngit.base import BaseHandler
 from shared.torngit.enums import Endpoints
 from shared.torngit.status import Status
@@ -20,6 +21,8 @@ from shared.torngit.exceptions import (
 )
 
 log = logging.getLogger(__name__)
+
+METRICS_PREFIX = "services.torngit.bitbucket"
 
 
 class Bitbucket(BaseHandler, OAuthMixin):
@@ -83,24 +86,24 @@ class Bitbucket(BaseHandler, OAuthMixin):
             request_timeout=self._timeouts[1],
         )
 
-        start = time()
         try:
             res = await self.fetch(url, **kwargs)
         except ClientError as e:
             if e.code == 599:
-                log.debug("count#%s.timeout=1\n" % self.service)
+                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "Bitbucket was not able to be reached, server timed out."
                 )
             elif e.code >= 500:
+                metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                 raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
             log.warning(
                 "Bitbucket HTTP %s" % e.response.code,
                 extra=dict(url=url, endpoint=path, body=e.response.body),
             )
             message = f"Bitbucket API: {e.message}"
+            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
             raise TorngitClientError(e.code, e.response, message)
-
         else:
             log.info("Bitbucket HTTP %s" % res.code, extra=dict(url=url, endpoint=path))
             if res.code == 204:
@@ -111,12 +114,6 @@ class Bitbucket(BaseHandler, OAuthMixin):
 
             else:
                 return res.body
-
-        finally:
-            log.debug(
-                "source=%s measure#service=%dms\n"
-                % (self.service, int((time() - start) * 1000))
-            )
 
     async def _oauth_get_user_future(self, access_token):
         self.set_token(access_token)
