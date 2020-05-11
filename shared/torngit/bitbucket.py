@@ -87,7 +87,8 @@ class Bitbucket(BaseHandler, OAuthMixin):
         )
 
         try:
-            res = await self.fetch(url, **kwargs)
+            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
+                res = await self.fetch(url, **kwargs)
         except ClientError as e:
             if e.code == 599:
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
