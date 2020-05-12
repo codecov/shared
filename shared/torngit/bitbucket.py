@@ -542,7 +542,7 @@ class Bitbucket(BaseHandler, OAuthMixin):
         return res
 
     async def get_commit(self, commit, token=None):
-        # https://confluence.atlassian.com/display/BITBUCKET/commits+or+commit+Resource#commitsorcommitResource-GETanindividualcommit
+        # https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Bworkspace%7D/%7Brepo_slug%7D/commit/%7Bnode%7D
         try:
             data = await self.api(
                 "2",
@@ -556,23 +556,28 @@ class Bitbucket(BaseHandler, OAuthMixin):
                     ce.response, f"Commit {commit} cannot be found"
                 )
             raise
-        author_login = data["author"].get("user", {}).get("username")
+        username = data["author"].get("user", {}).get("nickname")
         author_raw = (
             data["author"].get("raw", "")[:-1].rsplit(" <", 1)
             if " <" in data["author"].get("raw", "")
             else None
         )
-        if author_login:
-            # https://confluence.atlassian.com/display/BITBUCKET/users+Endpoint#usersEndpoint-GETtheuserprofile
-            res = await self.api("2", "get", "/users/%s" % author_login, token=token)
+
+        userid = data["author"].get("user", {}).get("uuid", "")[1:-1] or None
+
+        # We used to look up the userid from the username if no uuid provided but
+        # BitBucket has deprecated the '/users/{username}' endpoint for privacy reasons so we
+        # have to use '/users/{account_id}' instead
+        # https://developer.atlassian.com/bitbucket/api/2/reference/resource/users/%7Busername%7D
+        account_id = data["author"].get("user", {}).get("account_id")
+        if not userid and account_id:
+            res = await self.api("2", "get", "/users/%s" % account_id, token=token)
             userid = res["uuid"][1:-1]
-        else:
-            userid = None
 
         return dict(
             author=dict(
                 id=userid,
-                username=author_login,
+                username=username,
                 name=author_raw[0] if author_raw else None,
                 email=author_raw[1] if author_raw else None,
             ),

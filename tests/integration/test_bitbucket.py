@@ -29,6 +29,18 @@ def valid_handler():
     )
 
 
+@pytest.fixture
+def valid_codecov_handler():
+    return Bitbucket(
+        repo=dict(name="private"),
+        owner=dict(username="codecov"),
+        oauth_consumer_token=dict(
+            key="test51hdmhalc053rb", secret="testrgj6ezg5b4zc5z8t2rspg90rw6dp"
+        ),
+        token=dict(secret="test3spp3gm9db4f43y0zfm2jvvkpnd6", key="testm0141jl7b6ux9l"),
+    )
+
+
 class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_api_client_error_unreachable(self, valid_handler, mocker):
@@ -210,19 +222,35 @@ class TestBitbucketTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_commit(self, valid_handler, codecov_vcr):
-        commit = await valid_handler.get_commit("6895b64")
+    async def test_get_commit(self, valid_codecov_handler, codecov_vcr):
+        commit = await valid_codecov_handler.get_commit("6a45b83")
         assert commit == {
+            "commitid": "6a45b83",
+            "timestamp": "2015-02-27T03:44:32+00:00",
+            "message": """wip\n""",
+            "parents": ["0028015f7fa260f5fd68f78c0deffc15183d955e",],
             "author": {
-                "id": None,
-                "username": None,
-                "email": "jerrod@fundersclub.com",
-                "name": "Jerrod",
+                "username": "stevepeak",
+                "id": "test6y9pl15lzivhmkgsk67k10x53n04i85o",
+                "name": "stevepeak",
+                "email": "steve@stevepeak.net",
             },
-            "message": "Adding 'include' term if multiple sources\n\nbased on a support ticket around multiple sources\r\n\r\nhttps://codecov.freshdesk.com/a/tickets/87",
-            "parents": ["adb252173d2107fad86bcdcbc149884c2dd4c609"],
-            "commitid": "6895b64",
-            "timestamp": "2018-07-09T23:39:20+00:00",
+        }
+
+    @pytest.mark.asyncio
+    async def test_get_commit_no_uuid(self, valid_codecov_handler, codecov_vcr):
+        commit = await valid_codecov_handler.get_commit("6a45b83")
+        assert commit == {
+            "commitid": "6a45b83",
+            "timestamp": "2015-02-27T03:44:32+00:00",
+            "message": """wip\n""",
+            "parents": ["0028015f7fa260f5fd68f78c0deffc15183d955e",],
+            "author": {
+                "username": "stevepeak",
+                "id": "test6y9pl15lzivhmkgsk67k10x53n04i85o",
+                "name": "stevepeak",
+                "email": "steve@stevepeak.net",
+            },
         }
 
     @pytest.mark.asyncio
