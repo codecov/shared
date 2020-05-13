@@ -542,6 +542,29 @@ class TestGitlabTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_repository_subgroup_no_repo_service_id(self, codecov_vcr):
+        # test get repo in a subgroup when no repo service_id which happens when a user
+        # tries to view a repo on legacy codecov.io and the repo is not in the database yet
+        expected_result = {
+            "owner": {"service_id": 4165905, "username": "l00p_group_1:subgroup1"},
+            "repo": {
+                "branch": b"master",
+                "language": None,
+                "name": "proj-a",
+                "private": True,
+                "service_id": 9715852,
+            },
+        }
+        res = await Gitlab(
+            repo=dict(name="proj-a"),
+            owner=dict(username="l00p_group_1:subgroup1"),
+            token=dict(
+                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
+            ),
+        ).get_repository()
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
             "commitid": None,
