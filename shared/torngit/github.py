@@ -860,6 +860,7 @@ class Github(BaseHandler, OAuth2Mixin):
         hasher = hashlib.sha256()
         hasher.update(some_secret)
         hasher.update(self.service.encode())
-        hasher.update(self.slug.encode())
+        if self.slug:
+            hasher.update(self.slug.encode())
         hasher.update(self.token.get("key").encode())
         return base64.b64encode(hasher.digest()).decode()[:5]
