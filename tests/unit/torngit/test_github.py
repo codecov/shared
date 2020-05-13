@@ -23,3 +23,23 @@ class TestUnitGithub(object):
             await valid_handler.api(
                 "get", "/repos/%s/branches" % valid_handler.slug, per_page=100,
             )
+
+    def test_loggable_token(self, mocker, valid_handler):
+        no_username_handler = Github(
+            repo=dict(name="example-python"),
+            owner=dict(username="ThiagoCodecov"),
+            token=dict(key="some_key"),
+        )
+        assert no_username_handler.loggable_token == "f7CMr"
+        with_username_handler = Github(
+            repo=dict(name="example-python"),
+            owner=dict(username="ThiagoCodecov"),
+            token=dict(key="some_key", username="Thiago"),
+        )
+        assert with_username_handler.loggable_token == "Thiago's token"
+        no_token_handler = Github(
+            repo=dict(name="example-python"),
+            owner=dict(username="ThiagoCodecov"),
+            token=dict(key=None),
+        )
+        assert no_token_handler.loggable_token == "notoken"
