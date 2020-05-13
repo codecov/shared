@@ -43,3 +43,9 @@ class TestUnitGithub(object):
             token=dict(key=None),
         )
         assert no_token_handler.loggable_token == "notoken"
+        no_repo_handler = Github(
+            repo=dict(),
+            owner=dict(username="ThiagoCodecov"),
+            token=dict(key="some_key"),
+        )
+        assert no_repo_handler.loggable_token == "2vwGK"
