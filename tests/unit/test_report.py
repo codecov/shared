@@ -626,6 +626,24 @@ def test_apply_diff():
 
 
 @pytest.mark.unit
+def test_apply_diff_no_diff():
+    v3 = {
+        "files": {"a": [0, None], "d": [1, None]},
+        "sessions": {},
+        "totals": {},
+        "chunks": [
+            "\n[1, null, null, null]\n[0, null, null, null]",
+            "\n[1, null, null, null]\n[0, null, null, null]",
+        ],
+    }
+    r = Report(**v3)
+    diff = {"files": {}}
+    res = r.apply_diff(diff)
+    assert res is None
+    assert diff == {"files": {}}
+
+
+@pytest.mark.unit
 def test_apply_diff_no_append(patch):
     v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}})
     r = Report(files=v3["files"])

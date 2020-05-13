@@ -1212,12 +1212,12 @@ class Report(object):
         Add coverage details to the diff at ['coverage'] = <ReportTotals>
         returns <ReportTotals>
         """
-        if not diff:
+        if not diff or not diff.get("files"):
             return None
         totals = self.calculate_diff(diff)
-        if _save:
+        if _save and totals:
             self.save_diff_calculation(diff, totals)
-        return totals["general"]
+        return totals.get("general")
 
     def has_flag(self, flag_name):
         """
