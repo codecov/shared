@@ -1,6 +1,7 @@
 import os
 import socket
-from time import time
+import hashlib
+import base64
 from base64 import b64decode
 import logging
 
@@ -68,6 +69,7 @@ class Github(BaseHandler, OAuth2Mixin):
                 method=method,
                 bot=(token or self.token).get("username"),
                 repo_slug=self.slug,
+                loggable_token=self.loggable_token,
             )
             url = self.api_url + url
 
@@ -826,3 +828,38 @@ class Github(BaseHandler, OAuth2Mixin):
             "get", "/repos/%s/actions/runs/%s" % (self.slug, run_id), token=token
         )
         return self.actions_run_info(res)
+
+    @property
+    def loggable_token(self) -> str:
+        """Gets a "loggable" version of the current repo token.
+
+        The idea here is to get something in the logs that is enough for us to make comparisons like
+            "this log line is probably using the same token as this log line"
+
+        But nothing else
+
+        When there is a username, we will just log who owns that token
+
+        For this, on the cases that there are no username, which is the case for integration tokens,
+            we are taking the token, mixing it with a secret that is present only in the code,
+            doing a sha256, base64-encoding and only logging the first 5 chars from it
+            (from the original 44 chars)
+
+        This, added with the fact that each token is valid only for 1 hour, should be enough
+            for people not to be able to extract any useful information from it
+
+        Returns:
+            str: A good enough string to tell tokens apart
+        """
+        if self.token.get("username"):
+            username = self.token.get("username")
+            return f"{username}'s token"
+        if self.token is None or self.token.get("key") is None:
+            return "notoken"
+        some_secret = "v1CAF4bFYi2+7sN7hgS/flGtooomdTZF0+uGiigV3AY8f4HHNg".encode()
+        hasher = hashlib.sha256()
+        hasher.update(some_secret)
+        hasher.update(self.service.encode())
+        hasher.update(self.slug.encode())
+        hasher.update(self.token.get("key").encode())
+        return base64.b64encode(hasher.digest()).decode()[:5]
