@@ -3,6 +3,7 @@ import re
 import dataclasses
 from time import time
 
+from shared.metrics import metrics
 from shared.reports.resources import Report, ReportLine
 from shared.reports.editable import EditableReportFile, EditableReport
 from shared.utils.merge import (
@@ -13,6 +14,7 @@ from shared.utils.match import match_any, match
 from shared.utils.sessions import Session, SessionType
 
 
+@metrics.timer("services.report.carryforward.generate_carryforward_report_file")
 def generate_carryforward_report_file(existing_file_report, old_to_new_session_mapping):
     new_file_report = EditableReportFile(existing_file_report.name)
     for line_number, report_line in existing_file_report.lines:
@@ -56,6 +58,7 @@ def carriedforward_session_name(original_session_name: str) -> str:
     return f"CF[1] - {original_session_name}"
 
 
+@metrics.timer("services.report.carryforward.generate_carryforward_report")
 def generate_carryforward_report(
     report: Report,
     flags: Sequence[str],

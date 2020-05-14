@@ -48,6 +48,15 @@ class Gitlab(BaseHandler):
     async def fetch_and_handle_errors(
         self, method, url_path, *, body=None, token=None, version=4, **args
     ):
+        if url_path[0] == "/":
+            _log = dict(
+                event="api",
+                endpoint=url_path,
+                method=method,
+                bot=(token or self.token).get("username"),
+            )
+        else:
+            _log = {}
         url_path = (
             (self.api_url.format(version) + url_path)
             if url_path[0] == "/"
@@ -78,6 +87,7 @@ class Gitlab(BaseHandler):
         try:
             with metrics.timer(f"{METRICS_PREFIX}.api.run"):
                 res = await self.fetch(url, **kwargs)
+            log.info("GitLab HTTP %s" % res.code, extra=dict(**_log))
             return res
         except HTTPError as e:
             if e.code == 599:
@@ -103,19 +113,9 @@ class Gitlab(BaseHandler):
             )
 
     async def api(self, method, url_path, *, body=None, token=None, version=4, **args):
-        if url_path[0] == "/":
-            _log = dict(
-                event="api",
-                endpoint=url_path,
-                method=method,
-                bot=(token or self.token).get("username"),
-            )
-        else:
-            _log = {}
         res = await self.fetch_and_handle_errors(
             method, url_path, body=body, token=token, version=4, **args
         )
-        log.info("GitLab HTTP %s" % res.code, extra=dict(**_log))
         return None if res.code == 204 else loads(res.body)
 
     async def make_paginated_call(

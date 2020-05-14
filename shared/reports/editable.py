@@ -1,6 +1,7 @@
 import dataclasses
 import logging
 
+from shared.metrics import metrics
 from shared.reports.resources import Report, ReportFile, ReportLine
 from shared.reports.types import EMPTY
 from shared.utils.sessions import Session, SessionType
@@ -13,9 +14,11 @@ class EditableReportFile(ReportFile):
         super().__init__(*args, **kwargs)
         self.turn_lines_into_report_lines()
 
+    @metrics.timer("services.report.EditableReportFile.turn_lines_into_report_lines")
     def turn_lines_into_report_lines(self):
         self._lines = [self._line(l) if l else EMPTY for l in self._lines]
 
+    @metrics.timer("services.report.EditableReportFile.delete_session")
     def delete_session(self, sessionid: int):
         self._totals = None
         for index, line in enumerate(self._lines):
@@ -31,6 +34,7 @@ class EditableReport(Report):
         super().__init__(*args, **kwargs)
         self.turn_chunks_into_reports()
 
+    @metrics.timer("services.report.EditableReport.turn_chunks_into_reports")
     def turn_chunks_into_reports(self):
         filename_mapping = {
             file_summary.file_index: filename
@@ -51,6 +55,7 @@ class EditableReport(Report):
             else:
                 self._chunks[chunk_index] = None
 
+    @metrics.timer("services.report.EditableReport.delete_session")
     def delete_session(self, sessionid: int):
         self.reset()
         session_to_delete = self.sessions.pop(sessionid)
@@ -66,6 +71,7 @@ class EditableReport(Report):
                     del self[file.name]
         return session_to_delete
 
+    @metrics.timer("services.report.EditableReport.add_session")
     def add_session(self, session: Session):
         sessions_to_delete = []
         for sess_id, curr_sess in self.sessions.items():
