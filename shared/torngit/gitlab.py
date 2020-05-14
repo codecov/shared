@@ -543,7 +543,7 @@ class Gitlab(BaseHandler):
 
     async def get_commit_statuses(self, commit, _merge=None, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-status-of-a-commit
-        statuses = await self.api(
+        statuses_response = await self.api(
             "get",
             "/projects/%s/repository/commits/%s/statuses"
             % (self.data["repo"]["service_id"], commit),
@@ -565,16 +565,17 @@ class Gitlab(BaseHandler):
                 "url": s.get("target_url"),
                 "context": s["name"],
             }
-            for s in statuses
+            for s in statuses_response
         ]
 
-        [
-            log.warning(
-                "Commit status has None time", extra=dict(commit=commit, status=status)
-            )
-            for status in statuses
-            if status["time"] is None
-        ]
+        for idx, status in enumerate(statuses):
+            if status["time"] is None:
+                log.warning(
+                    "Set a None time on Gitlab commit status",
+                    extra=dict(
+                        commit=commit, status=status, gitlab_data=statuses_response[idx]
+                    ),
+                )
 
         return Status(statuses)
 
