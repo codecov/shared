@@ -1,6 +1,6 @@
 from typing import Sequence, Mapping
 import re
-import dataclasses
+import logging
 from time import time
 
 from shared.metrics import metrics
@@ -13,28 +13,7 @@ from shared.utils.merge import (
 from shared.utils.match import match_any, match
 from shared.utils.sessions import Session, SessionType
 
-
-@metrics.timer("services.report.carryforward.generate_carryforward_report_file")
-def generate_carryforward_report_file(existing_file_report, old_to_new_session_mapping):
-    new_file_report = EditableReportFile(existing_file_report.name)
-    for line_number, report_line in existing_file_report.lines:
-        new_sessions = [
-            dataclasses.replace(s, id=old_to_new_session_mapping[s.id])
-            for s in (report_line.sessions or [])
-            if int(s.id) in old_to_new_session_mapping.keys()
-        ]
-        if new_sessions:
-            new_file_report.append(
-                line_number,
-                ReportLine(
-                    coverage=get_coverage_from_sessions(new_sessions),
-                    complexity=get_complexity_from_sessions(new_sessions),
-                    type=report_line.type,
-                    sessions=new_sessions,
-                    messages=report_line.messages,
-                ),
-            )
-    return new_file_report
+log = logging.getLogger(__name__)
 
 
 def carriedforward_session_name(original_session_name: str) -> str:
@@ -94,35 +73,27 @@ def generate_carryforward_report(
     Returns:
         EditableReport: A new report with only the info related to `flags` on it, as described above
     """
-    new_report = EditableReport()
-    relevant_sessions_items = {
-        int(sid): session
-        for sid, session in report.sessions.items()
-        if match_any(flags, session.flags)
-    }
-    old_to_new_session_mapping = {}
-    for old_sess_id, sess in relevant_sessions_items.items():
-        new_session = Session(
-            provider=sess.provider,
-            build=sess.build,
-            job=sess.job,
-            name=carriedforward_session_name(sess.name),
-            time=int(time()),
-            id=new_report.next_session_number(),
-            flags=sess.flags,
-            archive=sess.archive,
-            url=sess.url,
-            session_type=SessionType.carriedforward,
-            totals=sess.totals,
-            session_extras=session_extras or {},
-        )
-        new_report.sessions[new_session.id] = new_session
-        old_to_new_session_mapping[old_sess_id] = new_session.id
-    for filename in report.files:
-        if not paths or match(paths, filename):
-            existing_file_report = report.get(filename)
-            new_file_report = generate_carryforward_report_file(
-                existing_file_report, old_to_new_session_mapping
-            )
-            new_report.append(new_file_report)
+    new_report = EditableReport(
+        chunks=report._chunks,
+        files=report._files,
+        sessions=report.sessions,
+        totals=None,
+    )
+    if paths:
+        for filename in new_report.files:
+            if not match(paths, filename):
+                del new_report[filename]
+    sessions_to_delete = []
+    for sid, session in new_report.sessions.items():
+        if not match_any(flags, session.flags):
+            sessions_to_delete.append(int(sid))
+        else:
+            session.session_extras = session_extras or session.session_extras
+            session.name = carriedforward_session_name(session.name)
+            session.session_type = SessionType.carriedforward
+    log.info(
+        "Removing sessions that are not supposed to carryforward",
+        extra=dict(deleted_sessions=sessions_to_delete),
+    )
+    new_report.delete_multiple_sessions(sessions_to_delete)
     return new_report

@@ -2,12 +2,11 @@ from pathlib import Path
 from json import loads
 import dataclasses
 from fractions import Fraction
-import pprint
 
 import pytest
 
 from shared.reports.types import ReportLine, LineSession, ReportTotals
-from shared.reports.resources import ReportFileSummary, Session
+from shared.reports.resources import ReportFileSummary, Session, ReportFile
 from shared.utils.merge import merge_coverage
 from shared.utils.sessions import SessionType
 from shared.reports.editable import (
@@ -65,28 +64,155 @@ class TestEditableReportFile(object):
         )
         report_file = EditableReportFile(name="file.py", lines=chunks)
         expected_result = [
-            ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
-            "",
-            "",
-            ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
-            ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
-            ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
-            "",
-            "",
-            ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]),
-            ReportLine(coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]),
-            "",
-            "",
-            ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-            ReportLine(coverage=1, sessions=[LineSession(1, 1)]),
-            ReportLine(
-                coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+            (
+                1,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
             ),
-            ReportLine(
-                coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+            (
+                4,
+                ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+            ),
+            (
+                5,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+            ),
+            (
+                6,
+                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+            ),
+            (
+                9,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
+                ),
+            ),
+            (
+                10,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
+                ),
+            ),
+            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (
+                15,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+                ),
+            ),
+            (
+                16,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+                ),
             ),
         ]
-        assert report_file._lines == expected_result
+        assert list(report_file.lines) == expected_result
+
+    def test_merge_not_previously_set_sessions_header(self):
+        chunks = "\n".join(
+            [
+                "{}",
+                "[1, null, [[0, 1], [1, 0]]]",
+                "",
+                "",
+                "[0, null, [[0, 0], [1, 0]]]",
+                "[1, null, [[0, 1], [1, 1]]]",
+                "[1, null, [[0, 0], [1, 1]]]",
+                "",
+                "",
+                '[1, null, [[0, 1], [1, "1/2"]]]',
+                '[1, null, [[0, "1/2"], [1, 1]]]',
+                "",
+                "",
+                "[1, null, [[0, 1]]]",
+                "[1, null, [[1, 1]]]",
+                '["1/2", null, [[0, "1/2"], [1, 0]]]',
+                '["1/2", null, [[0, 0], [1, "1/2"]]]',
+            ]
+        )
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        assert report_file.details == {}
+        new_chunks = "\n".join(
+            [
+                "{}",
+                "[1, null, [[0, 1], [2, 0]]]",
+                "",
+                "",
+                "[0, null, [[2, 0], [1, 0]]]",
+                "[1, null, [[2, 1], [3, 1]]]",
+                "[1, null, [[0, 0], [1, 1]]]",
+                "",
+                "",
+                '[1, null, [[0, 1], [1, "1/2"]]]',
+                '[1, null, [[0, "1/2"], [1, 1]]]',
+                "",
+                "",
+                "[1, null, [[0, 1]]]",
+                "[1, null, [[1, 1]]]",
+                '["1/2", null, [[0, "1/2"], [1, 0]]]',
+                '["1/2", null, [[2, 0], [1, "1/2"]]]',
+            ]
+        )
+        new_report_file = ReportFile(name="file.py", lines=new_chunks)
+        report_file.merge(new_report_file)
+        assert report_file.details == {"present_sessions": [0, 1, 2, 3]}
+
+    def test_details(self):
+        chunks = "\n".join(
+            ['{"some_field": "nah"}', "[1, null, [[0, 1], [1, 0]]]", "",]
+        )
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        assert report_file.details == {"some_field": "nah"}
+
+    def test_merge_already_previously_set_sessions_header(self):
+        chunks = "\n".join(
+            [
+                '{"present_sessions":[0,1]}',
+                "[1, null, [[0, 1], [1, 0]]]",
+                "",
+                "",
+                "[0, null, [[0, 0], [1, 0]]]",
+                "[1, null, [[0, 1], [1, 1]]]",
+                "[1, null, [[0, 0], [1, 1]]]",
+                "",
+                "",
+                '[1, null, [[0, 1], [1, "1/2"]]]',
+                '[1, null, [[0, "1/2"], [1, 1]]]',
+                "",
+                "",
+                "[1, null, [[0, 1]]]",
+                "[1, null, [[1, 1]]]",
+                '["1/2", null, [[0, "1/2"], [1, 0]]]',
+                '["1/2", null, [[0, 0], [1, "1/2"]]]',
+            ]
+        )
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        assert report_file.details == {"present_sessions": [0, 1]}
+        new_chunks = "\n".join(
+            [
+                "{}",
+                "[1, null, [[0, 1], [2, 0]]]",
+                "",
+                "",
+                "[0, null, [[2, 0], [1, 0]]]",
+                "[1, null, [[2, 1], [3, 1]]]",
+                "[1, null, [[0, 0], [1, 1]]]",
+                "",
+                "",
+                '[1, null, [[0, 1], [1, "1/2"]]]',
+                '[1, null, [[0, "1/2"], [1, 1]]]',
+                "",
+                "",
+                "[1, null, [[0, 1]]]",
+                "[1, null, [[1, 1]]]",
+                '["1/2", null, [[0, "1/2"], [1, 0]]]',
+                '["1/2", null, [[2, 0], [1, "1/2"]]]',
+            ]
+        )
+        new_report_file = ReportFile(name="file.py", lines=new_chunks)
+        report_file.merge(new_report_file)
+        assert report_file.details == {"present_sessions": [0, 1, 2, 3]}
 
     def test_delete_session(self):
         chunks = "\n".join(
@@ -112,28 +238,50 @@ class TestEditableReportFile(object):
         )
         report_file = EditableReportFile(name="file.py", lines=chunks)
         original_lines = [
-            ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
-            "",
-            "",
-            ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
-            ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
-            ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
-            "",
-            "",
-            ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]),
-            ReportLine(coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]),
-            "",
-            "",
-            ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-            ReportLine(coverage=1, sessions=[LineSession(1, 1)]),
-            ReportLine(
-                coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+            (
+                1,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
             ),
-            ReportLine(
-                coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+            (
+                4,
+                ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+            ),
+            (
+                5,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+            ),
+            (
+                6,
+                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+            ),
+            (
+                9,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
+                ),
+            ),
+            (
+                10,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
+                ),
+            ),
+            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (
+                15,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+                ),
+            ),
+            (
+                16,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+                ),
             ),
         ]
-        assert report_file._lines == original_lines
+        assert list(report_file.lines) == original_lines
         assert report_file.totals == ReportTotals(
             files=0,
             lines=10,
@@ -151,24 +299,17 @@ class TestEditableReportFile(object):
         )
         report_file.delete_session(1)
         expected_result = [
-            ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-            "",
-            "",
-            ReportLine(coverage=0, sessions=[LineSession(0, 0)]),
-            ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-            ReportLine(coverage=0, sessions=[LineSession(0, 0)]),
-            "",
-            "",
-            ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-            ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")]),
-            "",
-            "",
-            ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-            "",
-            ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")]),
-            ReportLine(coverage=0, sessions=[LineSession(0, 0)]),
+            (1, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (4, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+            (5, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (6, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+            (9, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (10, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (15, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (16, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
         ]
-        assert report_file._lines == expected_result
+        assert list(report_file.lines) == expected_result
         assert report_file.get(1) == ReportLine(
             coverage=1, sessions=[LineSession(0, 1)]
         )
@@ -191,6 +332,173 @@ class TestEditableReportFile(object):
             complexity_total=0,
             diff=0,
         )
+        assert report_file.details == {"present_sessions": [0]}
+
+    def test_delete_session_not_present(self):
+        chunks = "\n".join(
+            [
+                '{"present_sessions":[0,1]}',
+                "[1, null, [[0, 1], [1, 0]]]",
+                "",
+                "",
+                "[0, null, [[0, 0], [1, 0]]]",
+                "[1, null, [[0, 1], [1, 1]]]",
+                "[1, null, [[0, 0], [1, 1]]]",
+                "",
+                "",
+                '[1, null, [[0, 1], [1, "1/2"]]]',
+                '[1, null, [[0, "1/2"], [1, 1]]]',
+                "",
+                "",
+                "[1, null, [[0, 1]]]",
+                "[1, null, [[1, 1]]]",
+                '["1/2", null, [[0, "1/2"], [1, 0]]]',
+                '["1/2", null, [[0, 0], [1, "1/2"]]]',
+            ]
+        )
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        original_lines = [
+            (
+                1,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+            ),
+            (
+                4,
+                ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+            ),
+            (
+                5,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+            ),
+            (
+                6,
+                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+            ),
+            (
+                9,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
+                ),
+            ),
+            (
+                10,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
+                ),
+            ),
+            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (
+                15,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+                ),
+            ),
+            (
+                16,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+                ),
+            ),
+        ]
+        assert list(report_file.lines) == original_lines
+        report_file.delete_session(3)
+        assert list(report_file.lines) == original_lines
+        assert report_file.details == {"present_sessions": [0, 1]}
+
+    def test_delete_multiple_sessions(self):
+        chunks = "\n".join(
+            [
+                '{"present_sessions":[0,1,2,3]}',
+                "[1, null, [[0, 1], [1, 0]]]",
+                "",
+                "",
+                "[0, null, [[2, 0], [1, 0]]]",
+                "[1, null, [[0, 1], [3, 1]]]",
+                "[1, null, [[0, 0], [1, 1]]]",
+                "",
+                "",
+                '[1, null, [[0, 1], [1, "1/2"], [2, 1], [3, 1]]]',
+                '[1, null, [[0, "1/2"], [1, 1]]]',
+                "",
+                "",
+                "[1, null, [[0, 1]]]",
+                "[1, null, [[1, 1]]]",
+                '["1/2", null, [[0, "1/2"], [1, 0]]]',
+                '["1/2", null, [[0, 0], [1, "1/2"]]]',
+            ]
+        )
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        original_lines = [
+            (
+                1,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+            ),
+            (
+                4,
+                ReportLine(coverage=0, sessions=[LineSession(2, 0), LineSession(1, 0)]),
+            ),
+            (
+                5,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(3, 1)]),
+            ),
+            (
+                6,
+                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+            ),
+            (
+                9,
+                ReportLine(
+                    coverage=1,
+                    sessions=[
+                        LineSession(0, 1),
+                        LineSession(1, "1/2"),
+                        LineSession(2, 1),
+                        LineSession(3, 1),
+                    ],
+                ),
+            ),
+            (
+                10,
+                ReportLine(
+                    coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
+                ),
+            ),
+            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (
+                15,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+                ),
+            ),
+            (
+                16,
+                ReportLine(
+                    coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+                ),
+            ),
+        ]
+        assert list(report_file.lines) == original_lines
+        report_file.delete_multiple_sessions([1, 3, 5])
+        expected_result = [
+            (1, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (4, ReportLine(coverage=0, sessions=[LineSession(2, 0)])),
+            (5, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (6, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+            (
+                9,
+                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(2, 1)]),
+            ),
+            (10, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
+            (15, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (16, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+        ]
+        res = list(report_file.lines)
+        assert res[0] == expected_result[0]
+        assert res == expected_result
+        assert report_file.details == {"present_sessions": [0, 2]}
 
 
 @pytest.fixture
