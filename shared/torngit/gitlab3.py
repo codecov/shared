@@ -532,8 +532,10 @@ class Gitlab(BaseHandler):
     async def get_repository(self, token=None):
         # http://doc.gitlab.com/ce/api/projects.html#get-single-project
         if self.data["repo"].get("service_id") is None:
+            # convert from codecov ':' separator to gitlab '/' separator for groups/subgroups
+            slug = self.slug.replace(":", "/")
             res = await self.api(
-                "get", "/projects/" + self.slug.replace("/", "%2F"), token=token
+                "get", "/projects/" + slug.replace("/", "%2F"), token=token
             )
         else:
             res = await self.api(

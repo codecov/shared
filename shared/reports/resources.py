@@ -3,7 +3,7 @@ from itertools import zip_longest, filterfalse
 import logging
 from json import loads, dumps, JSONEncoder
 import dataclasses
-from typing import Sequence, Any
+from typing import Dict
 
 from shared.helpers.yaml import walk
 from shared.helpers.flag import Flag
@@ -1099,13 +1099,64 @@ class Report(object):
                     # clear out totals
                     self._files[path] = [chunk_loc, None, None, None]
 
-    def apply_diff(self, diff, _save=True):
+    def calculate_diff(self, diff: Dict) -> Dict:
         """
-        Add coverage details to the diff at ['coverage'] = <ReportTotals>
-        returns <ReportTotals>
+            Calculates the per-file totals (and total) of the parts
+                from a `git diff` that are relevant in the report
+
+        Args:
+            diff (Dict): The diff,as generated from `get_compare` or `get_commit_diff`.
+                It has roughly the format:
+
+                {
+                    "files": {
+                        "a": {
+                            "type": "new",
+                            "segments": [{"header": list("1313"), "lines": list("---+++")}],
+                        },
+                        "b": {"type": "deleted"},
+                        "c": {"type": "modified"},
+                        "d": {
+                            "type": "modified",
+                            "segments": [
+                                {"header": ["10", "3", "10", "3"], "lines": list("---+++")}
+                            ],
+                        },
+                    }
+                }
+
+        Returns:
+            Dict: A dictionary in the format:
+
+            {
+                "files": {
+                    "a": ReportTotals(
+                        files=0, lines=2, hits=1, misses=1, partials=0, coverage="50.00000"
+                    ),
+                    "d": ReportTotals(
+                        files=0, lines=0, hits=0, misses=0, partials=0, coverage=None
+                    ),
+                },
+                "general": ReportTotals(
+                    files=2,
+                    lines=2,
+                    hits=1,
+                    misses=1,
+                    partials=0,
+                    coverage="50.00000",
+                    branches=0,
+                    methods=0,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+            }
         """
+        file_dict = {}
         if diff and diff.get("files"):
-            totals = []
+            list_of_file_totals = []
             for path, data in diff["files"].items():
                 if data["type"] in ("modified", "new"):
                     _file = self.get(path)
@@ -1131,33 +1182,42 @@ class Report(object):
                         file_totals = ReportFile(
                             name=None, totals=None, lines=lines
                         ).totals
-                        totals.append(file_totals)
-                        if _save:
-                            data["totals"] = file_totals
-                            # store in network
-                            network_file = self._files[path]
-                            if file_totals.lines == 0:
-                                # no lines touched
-                                file_totals = dataclasses.replace(
-                                    file_totals,
-                                    coverage=None,
-                                    complexity=None,
-                                    complexity_total=None,
-                                )
-                            network_file.diff_totals = file_totals
+                        file_dict[path] = file_totals
+                        list_of_file_totals.append(file_totals)
 
-            totals = sum_totals(totals)
+            totals = sum_totals(list_of_file_totals)
 
             if totals.lines == 0:
                 totals = dataclasses.replace(
                     totals, coverage=None, complexity=None, complexity_total=None
                 )
 
-            if _save and totals.files:
-                diff["totals"] = totals
-                self.diff_totals = totals
+            return {"general": totals, "files": file_dict}
 
-            return totals
+    def save_diff_calculation(self, diff, diff_result):
+        diff["totals"] = diff_result["general"]
+        self.diff_totals = diff["totals"]
+        for filename, file_totals in diff_result["files"].items():
+            data = diff["files"].get(filename)
+            data["totals"] = file_totals
+            network_file = self._files[filename]
+            if file_totals.lines == 0:
+                file_totals = dataclasses.replace(
+                    file_totals, coverage=None, complexity=None, complexity_total=None,
+                )
+            network_file.diff_totals = file_totals
+
+    def apply_diff(self, diff, _save=True):
+        """
+        Add coverage details to the diff at ['coverage'] = <ReportTotals>
+        returns <ReportTotals>
+        """
+        if not diff or not diff.get("files"):
+            return None
+        totals = self.calculate_diff(diff)
+        if _save and totals:
+            self.save_diff_calculation(diff, totals)
+        return totals.get("general")
 
     def has_flag(self, flag_name):
         """
