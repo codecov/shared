@@ -18,7 +18,7 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="testnvebxku3hfiwi16ka7hff42y0jtf5fithlij"),
+        token=dict(key="test2d3454fe2s1xtot3dch9i939liacsgndapgf"),
     )
 
 
@@ -140,6 +140,29 @@ class TestGithubTestCase(object):
             },
         ),
     ]
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_way_more_than_250_results(
+        self, valid_handler, codecov_vcr
+    ):
+        pull_id = "16"
+        expected_result = {
+            "base": {
+                "branch": "master",
+                "commitid": "d723f5cb5c9c9f48c47f2df97c47de20457d3fdc",
+            },
+            "head": {
+                "branch": "thiago/f/big-pt",
+                "commitid": "d55dc4ef748fd11537e50c9abed4ab1864fa1d94",
+            },
+            "number": pull_id,
+            "id": pull_id,
+            "state": "open",
+            "title": "PR with more than 250 results",
+            "author": {"id": "44376991", "username": "ThiagoCodecov"},
+        }
+        res = await valid_handler.get_pull_request(pull_id)
+        assert res == expected_result
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("a,b", get_pull_request_test_data)

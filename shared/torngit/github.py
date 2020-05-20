@@ -101,7 +101,9 @@ class Github(BaseHandler, OAuth2Mixin):
                 "Github HTTP %s" % e.response.code,
                 extra=dict(
                     url=url,
-                    body=e.response.body,
+                    body=e.response.body.decode()
+                    if e.response.body is not None
+                    else "NORESPONSE",
                     rlx=e.response.headers.get("X-RateLimit-Remaining"),
                     rly=e.response.headers.get("X-RateLimit-Limit"),
                     rlr=e.response.headers.get("X-RateLimit-Reset"),
@@ -682,7 +684,10 @@ class Github(BaseHandler, OAuth2Mixin):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         try:
             res = await self.api(
-                "get", "/repos/%s/pulls/%s" % (self.slug, pullid), token=token
+                "get",
+                "/repos/%s/pulls/%s" % (self.slug, pullid),
+                per_page=250,
+                token=token,
             )
         except TorngitClientError as ce:
             if ce.code == 404:
@@ -704,18 +709,24 @@ class Github(BaseHandler, OAuth2Mixin):
                 new_level.extend(commit_mapping[x])
             current_level = new_level
         result = self._pull(res)
-        possible_bases = [x for x in current_level if x not in all_commits_in_pr]
-        if possible_bases and result["base"]["commitid"] not in possible_bases:
-            log.info(
-                "Github base differs from original base",
-                extra=dict(
-                    current_level=current_level,
-                    github_base=result["base"]["commitid"],
-                    possible_bases=possible_bases,
-                    pullid=pullid,
-                ),
+        if current_level == [res["head"]["sha"]]:
+            log.warning(
+                "Head not found in PR. PR has probably too many commits to list all of them",
+                extra=dict(number_commits=len(commits), pullid=pullid),
             )
-            result["base"]["commitid"] = possible_bases[0]
+        else:
+            possible_bases = [x for x in current_level if x not in all_commits_in_pr]
+            if possible_bases and result["base"]["commitid"] not in possible_bases:
+                log.info(
+                    "Github base differs from original base",
+                    extra=dict(
+                        current_level=current_level,
+                        github_base=result["base"]["commitid"],
+                        possible_bases=possible_bases,
+                        pullid=pullid,
+                    ),
+                )
+                result["base"]["commitid"] = possible_bases[0]
         return result
 
     async def get_pull_requests(self, state="open", token=None):
