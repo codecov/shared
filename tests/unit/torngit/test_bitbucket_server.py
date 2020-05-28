@@ -13,6 +13,9 @@ class TestBitbucketServer(object):
         }
         gl = BitbucketServer()
         assert gl.service_url == "https://bitbucketserver.codecov.dev"
+        assert (
+            BitbucketServer.get_service_url() == "https://bitbucketserver.codecov.dev"
+        )
 
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):

@@ -73,9 +73,13 @@ class BitbucketServer(BaseHandler):
     # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html
     service = "bitbucket_server"
 
+    @classmethod
+    def get_service_url(cls):
+        return get_config("bitbucket_server", "url")
+
     @property
     def service_url(self):
-        return get_config("bitbucket_server", "url")
+        return self.get_service_url()
 
     urls = dict(
         user="users/%(username)s",
