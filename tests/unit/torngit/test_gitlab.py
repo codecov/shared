@@ -45,7 +45,7 @@ class TestUnitGitlab(object):
                             "target_url": "url",
                             "name": "name",
                             "created_at": "not none",
-                        }
+                        },
                     ]
                 ),
             )
