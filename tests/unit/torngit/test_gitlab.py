@@ -38,6 +38,13 @@ class TestUnitGitlab(object):
                             "name": "name",
                             "finished_at": None,
                             "created_at": None,
+                        },
+                        {
+                            "status": "pending",
+                            "description": "Pending status",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
                         }
                     ]
                 ),
@@ -46,4 +53,4 @@ class TestUnitGitlab(object):
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
-        assert res == "success"
+        assert res == "pending"
