@@ -12,6 +12,14 @@ class TestGithubEnterprise(object):
         gl = GithubEnterprise()
         assert gl.service_url == "https://github-enterprise.codecov.dev"
         assert gl.api_url == "https://github-enterprise.codecov.dev/api/v3"
+        assert (
+            GithubEnterprise.get_service_url()
+            == "https://github-enterprise.codecov.dev"
+        )
+        assert (
+            GithubEnterprise.get_api_url()
+            == "https://github-enterprise.codecov.dev/api/v3"
+        )
 
     def test_urls_with_api_url_set(self, mock_configuration):
         mock_configuration._params["github_enterprise"] = {

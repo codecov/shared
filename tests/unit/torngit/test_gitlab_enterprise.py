@@ -12,6 +12,14 @@ class TestGitlabEnterprise(object):
         gl = GitlabEnterprise()
         assert gl.service_url == "https://gitlab-enterprise.codecov.dev"
         assert gl.api_url == "https://gitlab-enterprise.codecov.dev/api/v4"
+        assert (
+            GitlabEnterprise.get_service_url()
+            == "https://gitlab-enterprise.codecov.dev"
+        )
+        assert (
+            GitlabEnterprise.get_api_url()
+            == "https://gitlab-enterprise.codecov.dev/api/v4"
+        )
 
     def test_urls_with_api_url_set(self, mock_configuration):
         mock_configuration._params["gitlab_enterprise"] = {
