@@ -9,6 +9,7 @@ from shared.reports.resources import (
     ReportLine,
     LineSession,
     Session,
+    ReportTotals,
 )
 from shared.reports.carryforward import (
     generate_carryforward_report,
@@ -38,11 +39,62 @@ def sample_report():
     )
     second_file = ReportFile("file_2.py")
     second_file.append(12, ReportLine(coverage=1, sessions=[[0, 1]]))
-    second_file.append(51, ReportLine(coverage="1/2", type="b", sessions=[[0, 1]]))
+    second_file.append(51, ReportLine(coverage="1/2", type="b", sessions=[[0, "1/2"]]))
     report.append(first_file)
     report.append(second_file)
     report.add_session(Session(id=0, flags=["simple"]))
     report.add_session(Session(id=1, flags=["complex"]))
+    # manually fixing this because the defautl logic doesn't
+    report._files["file_1.go"].session_totals = [
+        ReportTotals(
+            files=0,
+            lines=5,
+            hits=2,
+            misses=2,
+            partials=1,
+            coverage="40.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        ),
+        ReportTotals(
+            files=0,
+            lines=5,
+            hits=2,
+            misses=3,
+            partials=0,
+            coverage="40.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        ),
+    ]
+    report._files["file_2.py"].session_totals = [
+        ReportTotals(
+            files=0,
+            lines=2,
+            hits=1,
+            misses=0,
+            partials=1,
+            coverage="50.00000",
+            branches=1,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        ),
+        None,
+    ]
     return report
 
 
@@ -99,7 +151,7 @@ class TestCarryfowardFlag(object):
                 ],
                 "file_2.py": [
                     (12, 1, None, [[0, 1, None, None, None]], None, None),
-                    (51, 1, "b", [[0, 1, None, None, None]], None, None),
+                    (51, "1/2", "b", [[0, "1/2", None, None, None]], None, None),
                 ],
             },
             "report": {
@@ -112,8 +164,8 @@ class TestCarryfowardFlag(object):
                     ],
                     "file_2.py": [
                         1,
-                        [0, 2, 2, 0, 0, "100", 1, 0, 0, 0, 0, 0, 0],
-                        [[0, 2, 2, 0, 0, "100", 1, 0, 0, 0, 0, 0, 0]],
+                        [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
+                        [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
                         None,
                     ],
                 },
@@ -140,22 +192,35 @@ class TestCarryfowardFlag(object):
                 "M": 0,
                 "N": 0,
                 "b": 1,
-                "c": "57.14286",
+                "c": "42.85714",
                 "d": 0,
                 "diff": None,
                 "f": 2,
-                "h": 4,
+                "h": 3,
                 "m": 2,
                 "n": 7,
-                "p": 1,
+                "p": 2,
                 "s": 1,
             },
         }
+        assert (
+            readable_report["archive"]["file_2.py"]
+            == expected_result["archive"]["file_2.py"]
+        )
         assert readable_report["archive"] == expected_result["archive"]
         assert (
             readable_report["report"]["sessions"]
             == expected_result["report"]["sessions"]
         )
+        assert (
+            readable_report["report"]["files"]["file_2.py"]
+            == expected_result["report"]["files"]["file_2.py"]
+        )
+        assert (
+            readable_report["report"]["files"]["file_1.go"]
+            == expected_result["report"]["files"]["file_1.go"]
+        )
+        assert readable_report["report"]["files"] == expected_result["report"]["files"]
         assert readable_report["report"] == expected_result["report"]
         assert readable_report["totals"] == expected_result["totals"]
         assert readable_report == expected_result
@@ -291,15 +356,15 @@ class TestCarryfowardFlag(object):
             "archive": {
                 "file_2.py": [
                     (12, 1, None, [[0, 1, None, None, None]], None, None),
-                    (51, 1, "b", [[0, 1, None, None, None]], None, None),
+                    (51, "1/2", "b", [[0, "1/2", None, None, None]], None, None),
                 ],
             },
             "report": {
                 "files": {
                     "file_2.py": [
-                        0,
-                        [0, 2, 2, 0, 0, "100", 1, 0, 0, 0, 0, 0, 0],
-                        [[0, 2, 2, 0, 0, "100", 1, 0, 0, 0, 0, 0, 0]],
+                        1,
+                        [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
+                        [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
                         None,
                     ],
                 },
@@ -326,21 +391,29 @@ class TestCarryfowardFlag(object):
                 "M": 0,
                 "N": 0,
                 "b": 1,
-                "c": "100",
+                "c": "50.00000",
                 "d": 0,
                 "diff": None,
                 "f": 1,
-                "h": 2,
+                "h": 1,
                 "m": 0,
                 "n": 2,
-                "p": 0,
+                "p": 1,
                 "s": 1,
             },
         }
+        assert (
+            readable_report["archive"]["file_2.py"]
+            == expected_result["archive"]["file_2.py"]
+        )
         assert readable_report["archive"] == expected_result["archive"]
         assert (
             readable_report["report"]["sessions"]
             == expected_result["report"]["sessions"]
+        )
+        assert (
+            readable_report["report"]["files"]["file_2.py"]
+            == expected_result["report"]["files"]["file_2.py"]
         )
         assert readable_report["report"]["files"] == expected_result["report"]["files"]
         assert readable_report["report"] == expected_result["report"]
@@ -356,11 +429,11 @@ class TestCarryfowardFlag(object):
         expected_result = {
             "archive": {
                 "file_1.go": [
-                    (1, 1, None, [[0, 1, None, None, None]], None, None),
-                    (2, 1, None, [[0, 1, None, None, None]], None, None),
-                    (3, 0, None, [[0, 0, None, None, None]], None, None),
-                    (5, 0, None, [[0, 0, None, None, None]], None, None),
-                    (6, 0, None, [[0, 0, None, None, None]], None, None),
+                    (1, 1, None, [[1, 1, None, None, None]], None, None),
+                    (2, 1, None, [[1, 1, None, None, None]], None, None),
+                    (3, 0, None, [[1, 0, None, None, None]], None, None),
+                    (5, 0, None, [[1, 0, None, None, None]], None, None),
+                    (6, 0, None, [[1, 0, None, None, None]], None, None),
                 ],
             },
             "report": {
@@ -373,10 +446,10 @@ class TestCarryfowardFlag(object):
                     ],
                 },
                 "sessions": {
-                    "0": {
+                    "1": {
                         "a": None,
                         "c": None,
-                        "d": readable_report["report"]["sessions"]["0"]["d"],
+                        "d": readable_report["report"]["sessions"]["1"]["d"],
                         "e": None,
                         "f": ["complex"],
                         "N": "Carriedforward",
@@ -406,6 +479,10 @@ class TestCarryfowardFlag(object):
                 "s": 1,
             },
         }
+        assert (
+            readable_report["archive"]["file_1.go"]
+            == expected_result["archive"]["file_1.go"]
+        )
         assert readable_report["archive"] == expected_result["archive"]
         assert readable_report["report"] == expected_result["report"]
         assert readable_report["totals"] == expected_result["totals"]
@@ -425,11 +502,11 @@ class TestCarryfowardFlag(object):
         expected_result = {
             "archive": {
                 "file_1.go": [
-                    (1, 1, None, [[0, 1, None, None, None]], None, None),
-                    (2, 1, None, [[0, 1, None, None, None]], None, None),
-                    (3, 0, None, [[0, 0, None, None, None]], None, None),
-                    (5, 0, None, [[0, 0, None, None, None]], None, None),
-                    (6, 0, None, [[0, 0, None, None, None]], None, None),
+                    (1, 1, None, [[1, 1, None, None, None]], None, None),
+                    (2, 1, None, [[1, 1, None, None, None]], None, None),
+                    (3, 0, None, [[1, 0, None, None, None]], None, None),
+                    (5, 0, None, [[1, 0, None, None, None]], None, None),
+                    (6, 0, None, [[1, 0, None, None, None]], None, None),
                 ],
             },
             "report": {
@@ -442,10 +519,10 @@ class TestCarryfowardFlag(object):
                     ],
                 },
                 "sessions": {
-                    "0": {
+                    "1": {
                         "a": None,
                         "c": None,
-                        "d": readable_report["report"]["sessions"]["0"]["d"],
+                        "d": readable_report["report"]["sessions"]["1"]["d"],
                         "e": None,
                         "f": ["complex"],
                         "N": "Carriedforward",

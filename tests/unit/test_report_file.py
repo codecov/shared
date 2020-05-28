@@ -340,3 +340,12 @@ def test_shift_lines_by_diff(patch):
         }
     )
     assert len(list(r.lines)) == 1
+
+
+@pytest.mark.unit
+def test_del_item():
+    r = ReportFile("name.h")
+    with pytest.raises(TypeError):
+        del r["line"]
+    with pytest.raises(ValueError):
+        del r[-1]

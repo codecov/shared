@@ -3,7 +3,7 @@ from itertools import zip_longest, filterfalse
 import logging
 from json import loads, dumps, JSONEncoder
 import dataclasses
-from typing import Dict
+from typing import Dict, List
 
 from shared.helpers.yaml import walk
 from shared.helpers.flag import Flag
@@ -155,15 +155,19 @@ class ReportFile(object):
                 yield ln, line
 
     def delete_session(self, sessionid: int):
+        self.delete_multiple_sessions([sessionid])
+
+    def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
         self._totals = None
-        for index, line in self.lines:
-            if any(s.id == sessionid for s in line.sessions):
-                log.error(
-                    "Line should not have this session since it's new",
-                    extra=dict(sessionid=sessionid, line=line),
-                )
-                line_without_session = self.line_without_session(line, sessionid)
-                self._lines[index - 1] = line_without_session
+        for sessionid in session_ids_to_delete:
+            for index, line in self.lines:
+                if any(s.id == sessionid for s in line.sessions):
+                    log.error(
+                        "Line should not have this session since it's new",
+                        extra=dict(sessionid=sessionid, line=line),
+                    )
+                    line_without_session = self.line_without_session(line, sessionid)
+                    self._lines[index - 1] = line_without_session
 
     def __iter__(self):
         """Iter through lines
@@ -225,6 +229,21 @@ class ReportFile(object):
             self._lines.extend([EMPTY] * (ln - length))
 
         self._lines[ln - 1] = line
+        return
+
+    def __delitem__(self, ln: int):
+        """Delete line from file
+        """
+        if not isinstance(ln, int):
+            raise TypeError("expecting type int got %s" % type(ln))
+        elif ln < 1:
+            raise ValueError("Line number must be greater then 0. Got %s" % ln)
+
+        length = len(self._lines)
+        if length <= ln:
+            self._lines.extend([EMPTY] * (ln - length))
+
+        self._lines[ln - 1] = EMPTY
         return
 
     def __len__(self):
@@ -379,7 +398,6 @@ class ReportFile(object):
             _cov(line_type(line.coverage))
             _types(line.type)
             _messages(len(line.messages or []))
-
         hits = cov.count(0)
         misses = cov.count(1)
         partials = cov.count(2)
@@ -462,7 +480,13 @@ class ReportFile(object):
 
     @classmethod
     def line_without_session(cls, line: ReportLine, sessionid: int):
-        new_sessions = [s for s in line.sessions if s.id != sessionid]
+        return cls.line_without_multiple_sessions(line, [sessionid])
+
+    @classmethod
+    def line_without_multiple_sessions(
+        cls, line: ReportLine, session_ids_to_delete: List[int]
+    ):
+        new_sessions = [s for s in line.sessions if s.id not in session_ids_to_delete]
         remaining_coverages = [s.coverage for s in new_sessions]
         if len(new_sessions) == 0:
             return EMPTY
@@ -493,7 +517,7 @@ class Report(object):
         # {1: {...}}
         self.sessions = (
             dict(
-                (int(sid), Session.parse_session(**session))
+                (int(sid), self.get_session_from_session(session))
                 for sid, session in sessions.items()
             )
             if sessions
@@ -521,6 +545,11 @@ class Report(object):
         self._filter_cache = (None, None)
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
+
+    def get_session_from_session(self, sess):
+        if isinstance(sess, Session):
+            return copy(sess)
+        return Session.parse_session(**sess)
 
     @property
     def network(self):
