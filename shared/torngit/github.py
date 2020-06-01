@@ -3,6 +3,7 @@ import socket
 import hashlib
 import base64
 from base64 import b64decode
+from typing import Optional
 import logging
 
 from tornado.auth import OAuth2Mixin
@@ -12,7 +13,7 @@ from tornado.escape import json_decode, json_encode, url_escape
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
-from shared.torngit.base import BaseHandler
+from shared.torngit.base import TorngitBaseAdapter, TokenType
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
@@ -27,7 +28,7 @@ log = logging.getLogger(__name__)
 METRICS_PREFIX = "services.torngit.github"
 
 
-class Github(BaseHandler, OAuth2Mixin):
+class Github(TorngitBaseAdapter, OAuth2Mixin):
     service = "github"
     service_url = "https://github.com"
     api_url = "https://api.github.com"
@@ -61,15 +62,15 @@ class Github(BaseHandler, OAuth2Mixin):
         log_dict = {}
 
         method = (method or "GET").upper()
-
+        token_to_use = token or self.token
         if url[0] == "/":
             log_dict = dict(
                 event="api",
                 endpoint=url,
                 method=method,
-                bot=(token or self.token).get("username"),
+                bot=token_to_use.get("username"),
                 repo_slug=self.slug,
-                loggable_token=self.loggable_token,
+                loggable_token=self.loggable_token(token_to_use),
             )
             url = self.api_url + url
 
@@ -140,6 +141,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # Generic
     # -------
     async def get_branches(self, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/#list-branches
         page = 0
         branches = []
@@ -198,7 +200,8 @@ class Github(BaseHandler, OAuth2Mixin):
         ok = r["permissions"]["admin"] or r["permissions"]["push"]
         return (True, ok)
 
-    async def get_repository(self, token=None, _in_loop=None):
+    async def get_repository(self, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         if self.data["repo"].get("service_id") is None:
             # https://developer.github.com/v3/repos/#get
             res = await self.api("get", "/repos/%s" % self.slug, token=token)
@@ -265,6 +268,7 @@ class Github(BaseHandler, OAuth2Mixin):
         GitHub includes all visible repos through
         the same endpoint.
         """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         page = 0
         data = []
         while True:
@@ -331,6 +335,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return data
 
     async def list_teams(self, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/orgs/#list-your-organizations
         page, data = 0, []
         while True:
@@ -357,6 +362,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # Commits
     # -------
     async def get_pull_request_commits(self, pullid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/pulls/#list-commits-on-a-pull-request
         # NOTE limited to 250 commits
         res = await self.api(
@@ -367,6 +373,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # Webhook
     # -------
     async def post_webhook(self, name, url, events, secret, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
         res = await self.api(
             "post",
@@ -382,6 +389,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return res
 
     async def edit_webhook(self, hookid, name, url, events, secret, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#edit-a-hook
         try:
             return await self.api(
@@ -403,6 +411,7 @@ class Github(BaseHandler, OAuth2Mixin):
             raise
 
     async def delete_webhook(self, hookid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#delete-a-hook
         try:
             await self.api(
@@ -419,6 +428,7 @@ class Github(BaseHandler, OAuth2Mixin):
     # Comments
     # --------
     async def post_comment(self, issueid, body, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         res = await self.api(
             "post",
@@ -429,6 +439,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             return await self.api(
@@ -446,6 +457,7 @@ class Github(BaseHandler, OAuth2Mixin):
             raise
 
     async def delete_comment(self, issueid, commentid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#delete-a-comment
         try:
             await self.api(
@@ -476,6 +488,7 @@ class Github(BaseHandler, OAuth2Mixin):
         coverage=None,
     ):
         # https://developer.github.com/v3/repos/statuses
+        token = self.get_token_by_type_if_none(token, TokenType.status)
         assert status in ("pending", "success", "error", "failure"), "status not valid"
         try:
             res = await self.api(
@@ -506,6 +519,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return res
 
     async def get_commit_statuses(self, commit, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.status)
         page = 0
         statuses = []
         while True:
@@ -536,16 +550,10 @@ class Github(BaseHandler, OAuth2Mixin):
 
         return Status(statuses)
 
-    async def get_commit_status(self, commit, token=None):
-        # https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
-        res = await self.api(
-            "get", "/repos/%s/commits/%s/status" % (self.slug, commit), token=token
-        )
-        return res["state"]
-
     # Source
     # ------
     async def get_source(self, path, ref, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
         try:
             content = await self.api(
@@ -563,6 +571,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
 
     async def get_commit_diff(self, commit, context=None, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             res = await self.api(
@@ -582,6 +591,7 @@ class Github(BaseHandler, OAuth2Mixin):
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         res = await self.api(
             "get", "/repos/%s/compare/%s...%s" % (self.slug, base, head), token=token
@@ -635,6 +645,7 @@ class Github(BaseHandler, OAuth2Mixin):
         )
 
     async def get_commit(self, commit, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             res = await self.api(
@@ -681,6 +692,7 @@ class Github(BaseHandler, OAuth2Mixin):
         )
 
     async def get_pull_request(self, pullid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         try:
             res = await self.api(
@@ -730,6 +742,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return result
 
     async def get_pull_requests(self, state="open", token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/pulls/#list-pull-requests
         page, pulls = 0, []
         while True:
@@ -755,6 +768,7 @@ class Github(BaseHandler, OAuth2Mixin):
     async def find_pull_request(
         self, commit=None, branch=None, state="open", token=None
     ):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         query = "%srepo:%s+type:pr%s" % (
             (("%s+" % commit) if commit else ""),
             url_escape(self.slug),
@@ -770,6 +784,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return await self.list_files(ref, dir_path="", token=None)
 
     async def list_files(self, ref, dir_path, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
         if dir_path:
             url = f"/repos/{self.slug}/contents/{dir_path}"
@@ -793,6 +808,7 @@ class Github(BaseHandler, OAuth2Mixin):
         return "other"
 
     async def get_ancestors_tree(self, commitid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         res = await self.api(
             "get", "/repos/%s/commits" % self.slug, token=token, sha=commitid
         )
@@ -840,8 +856,7 @@ class Github(BaseHandler, OAuth2Mixin):
         )
         return self.actions_run_info(res)
 
-    @property
-    def loggable_token(self) -> str:
+    def loggable_token(self, token) -> str:
         """Gets a "loggable" version of the current repo token.
 
         The idea here is to get something in the logs that is enough for us to make comparisons like
@@ -862,10 +877,10 @@ class Github(BaseHandler, OAuth2Mixin):
         Returns:
             str: A good enough string to tell tokens apart
         """
-        if self.token.get("username"):
-            username = self.token.get("username")
+        if token.get("username"):
+            username = token.get("username")
             return f"{username}'s token"
-        if self.token is None or self.token.get("key") is None:
+        if token is None or token.get("key") is None:
             return "notoken"
         some_secret = "v1CAF4bFYi2+7sN7hgS/flGtooomdTZF0+uGiigV3AY8f4HHNg".encode()
         hasher = hashlib.sha256()
@@ -873,5 +888,10 @@ class Github(BaseHandler, OAuth2Mixin):
         hasher.update(self.service.encode())
         if self.slug:
             hasher.update(self.slug.encode())
-        hasher.update(self.token.get("key").encode())
+        hasher.update(token.get("key").encode())
         return base64.b64encode(hasher.digest()).decode()[:5]
+
+    def get_token_by_type_if_none(self, token: Optional[str], token_type: TokenType):
+        if token is not None:
+            return token
+        return self.get_token_by_type(token_type)

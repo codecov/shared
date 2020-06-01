@@ -10,7 +10,7 @@ from tornado.httpclient import HTTPError as ClientError
 from tornado.httputil import url_concat
 
 from shared.metrics import metrics
-from shared.torngit.base import BaseHandler
+from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.status import Status
 from shared.torngit.exceptions import (
@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 METRICS_PREFIX = "services.torngit.bitbucket"
 
 
-class Bitbucket(BaseHandler, OAuthMixin):
+class Bitbucket(TorngitBaseAdapter, OAuthMixin):
     _OAUTH_REQUEST_TOKEN_URL = "https://bitbucket.org/api/1.0/oauth/request_token"
     _OAUTH_ACCESS_TOKEN_URL = "https://bitbucket.org/api/1.0/oauth/access_token"
     _OAUTH_AUTHORIZE_URL = "https://bitbucket.org/api/1.0/oauth/authenticate"

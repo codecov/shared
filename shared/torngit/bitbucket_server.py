@@ -12,7 +12,7 @@ from tornado.httpclient import HTTPError as ClientError
 
 
 from shared.torngit.status import Status
-from shared.torngit.base import BaseHandler
+from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.exceptions import TorngitObjectNotFoundError
 from shared.config import get_config
 
@@ -69,7 +69,7 @@ class _Signature(oauth.SignatureMethod):
 signature = _Signature()
 
 
-class BitbucketServer(BaseHandler):
+class BitbucketServer(TorngitBaseAdapter):
     # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html
     service = "bitbucket_server"
 
