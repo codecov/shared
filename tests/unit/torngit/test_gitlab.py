@@ -40,8 +40,8 @@ class TestUnitGitlab(object):
                             "created_at": None,
                         },
                         {
-                            "status": "pending",
-                            "description": "Pending status",
+                            "status": None,
+                            "description": "None status",
                             "target_url": "url",
                             "name": "name",
                             "created_at": "not none",
@@ -53,4 +53,35 @@ class TestUnitGitlab(object):
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
-        assert res == "pending"
+        assert res == "failure"
+
+    @pytest.mark.asyncio
+    async def test_get_commit_statuses_success(self, mocker, valid_handler):
+        mocked_fetch = mocker.patch.object(Gitlab, "fetch", return_value=Future())
+        mocked_fetch.return_value.set_result(
+            mocker.MagicMock(
+                headers={"Content-Type": "application/json"},
+                body=dumps(
+                    [
+                        {
+                            "status": "success",
+                            "description": "Successful status",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
+                        },
+                        {
+                            "status": "success",
+                            "description": "Another successful status",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
+                        },
+                    ]
+                ),
+            )
+        )
+        res = await valid_handler.get_commit_statuses(
+            "c739768fcac68144a3a6d82305b9c4106934d31a"
+        )
+        assert res == "success"

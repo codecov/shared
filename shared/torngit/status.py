@@ -16,13 +16,13 @@ class Status(object):
         self._statuses = self._fetch_most_relevant_status_per_context(statuses)
         states = set(map(lambda s: s["state"], self._statuses))
         self._state = (
-            "failure"
-            if "failure" in states
+            "success"
+            if all(state == "success" for state in states)
+            else "failure"
+            if "failure" in states or "error" in states
             else "pending"
             if "pending" in states
             else "failure"
-            if "error" in states
-            else "success"
         )
 
     @classmethod

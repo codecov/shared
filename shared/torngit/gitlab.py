@@ -518,10 +518,15 @@ class Gitlab(BaseHandler):
 
         _states = dict(
             pending="pending",
+            running="pending",
             success="success",
             error="failure",
-            failure="failure",
+            failed="failure",
+            canceled="failure",
+            # These aren't on Github documentation but keeping here in case they're used somewhere
+            # see https://github.com/codecov/shared/pull/30/ for context
             cancelled="failure",
+            failure="failure",
         )
         statuses = [
             {
@@ -538,6 +543,13 @@ class Gitlab(BaseHandler):
             if status["time"] is None:
                 log.warning(
                     "Set a None time on Gitlab commit status",
+                    extra=dict(
+                        commit=commit, status=status, gitlab_data=statuses_response[idx]
+                    ),
+                )
+            if status["state"] is None:
+                log.warning(
+                    "Set a None state on Gitlab commit status",
                     extra=dict(
                         commit=commit, status=status, gitlab_data=statuses_response[idx]
                     ),
