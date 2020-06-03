@@ -1,5 +1,6 @@
 import re
 from typing import Tuple
+from enum import Enum, auto
 
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
@@ -20,7 +21,14 @@ def unicode_escape(string, escape=True):
         return str(string)
 
 
-class BaseHandler(object):
+class TokenType(Enum):
+    read = auto()
+    admin = auto()
+    comment = auto()
+    status = auto()
+
+
+class TorngitBaseAdapter(object):
     _repo_url = None
     _aws_key = None
     _oauth = None
@@ -50,6 +58,11 @@ class BaseHandler(object):
         "xtend",
     )
 
+    def get_token_by_type(self, token_type: TokenType):
+        if token_type in self._token_type_mapping:
+            return self._token_type_mapping.get(token_type)
+        return self.token
+
     def _oauth_consumer_token(self):
         if not self._oauth:
             raise Exception("Oauth consumer token not present")
@@ -60,12 +73,14 @@ class BaseHandler(object):
         oauth_consumer_token=None,
         timeouts=None,
         token=None,
+        token_type_mapping=None,
         verify_ssl=None,
         **kwargs,
     ):
         self._client = None
         self._timeouts = timeouts or [10, 30]
         self._token = token
+        self._token_type_mapping = token_type_mapping or {}
         self._oauth = oauth_consumer_token
         self.data = {"owner": {}, "repo": {}}
         self.verify_ssl = verify_ssl

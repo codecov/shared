@@ -12,7 +12,7 @@ from tornado.httpclient import HTTPError
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
-from shared.torngit.base import BaseHandler
+from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 METRICS_PREFIX = "services.torngit.gitlab"
 
 
-class Gitlab(BaseHandler):
+class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
     api_url = "https://gitlab.com/api/v{}"

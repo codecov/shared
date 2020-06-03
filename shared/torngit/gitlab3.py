@@ -10,7 +10,7 @@ from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError
 
 from shared.torngit.status import Status
-from shared.torngit.base import BaseHandler
+from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitServerUnreachableError,
@@ -21,7 +21,7 @@ from shared.torngit.exceptions import (
 log = logging.getLogger(__name__)
 
 
-class Gitlab(BaseHandler):
+class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
     api_url = "https://gitlab.com/api/v3"
@@ -186,11 +186,11 @@ class Gitlab(BaseHandler):
                     + mode
                     + d["diff"]
                 )
-            return BaseHandler.diff_to_json(
+            return TorngitBaseAdapter.diff_to_json(
                 self, "\n".join(map(lambda a: a["diff"], diff))
             )
         else:
-            return BaseHandler.diff_to_json(self, diff)
+            return TorngitBaseAdapter.diff_to_json(self, diff)
 
     async def list_repos(self, username=None, token=None):
         data, page = [], 0
