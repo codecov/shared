@@ -22,7 +22,7 @@ default_config = {
             "iam_auth": False,
             "iam_endpoint": None,
             "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-        }
+        },
     },
     "site": {
         "codecov": {"require_ci_to_pass": True},
@@ -34,6 +34,7 @@ default_config = {
         },
         "comment": {"layout": "reach,diff,flags,tree,reach", "behavior": "default"},
     },
+    "setup": {"segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"}},
 }
 
 
@@ -54,10 +55,13 @@ class ConfigHelper(object):
         self._params = None
         self.loaded_files = {}
 
+    # Load config values from environment variables
     def load_env_var(self):
         val = {}
         for env_var in os.environ:
             if not env_var.startswith("__"):
+                # Split env variables on "__" to get values for nested config fields
+                # For example: ONE__TWO__THREE='value' --> { 'one': { 'two': { 'three': 'value' }}}
                 multiple_level_vars = env_var.split("__")
                 if len(multiple_level_vars) > 1:
                     current = val
@@ -68,6 +72,10 @@ class ConfigHelper(object):
 
     @property
     def params(self):
+        """
+            Construct the config by combining default values, yaml config, and env vars.
+            An env var overrides a yaml config value, which overrides the default values.
+        """
         if self._params is None:
             content = self.yaml_content()
             env_vars = self.load_env_var()

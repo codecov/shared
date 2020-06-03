@@ -31,5 +31,6 @@ setup(
         "tornado",
         "statsd==3.3.0",
         "pycurl==7.43.0.5",
+        "analytics-python==1.3.0b1",
     ],
 )

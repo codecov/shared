@@ -35,6 +35,10 @@ class TestConfig(object):
                 "hash_key": "ab164bf3f7d947f2a0681b215404873e",
             }
         }
+        assert get_config("setup", "segment", "enabled") is False
+        assert (
+            get_config("setup", "segment", "key") == "test93utbz4l7nybyx5y960y8pb8w672"
+        )
 
     def test_get_config_production_use_case(self, mocker):
         yaml_content = "\n".join(
@@ -42,6 +46,9 @@ class TestConfig(object):
                 "setup:",
                 "  codecov_url: https://codecov.io",
                 "",
+                "  segment:",
+                "    enabled: True",
+                "    key: '123'",
                 "  debug: no",
                 "  loglvl: INFO",
                 "  media:",
@@ -135,6 +142,8 @@ class TestConfig(object):
             x.strip() for x in get_config("site", "comment", "layout").split(",")
         ] == ["reach", "diff", "flags", "files", "footer"]
         assert get_config("site", "comment", "behavior") == "default"
+        assert get_config("setup", "segment", "enabled") is True
+        assert get_config("setup", "segment", "key") == "123"
 
     def test_get_config_case_with_more_nested_types(self, mocker):
         yaml_content = "\n".join(
@@ -342,6 +351,8 @@ class TestConfig(object):
                 "SERVICES__AWS__REGION_NAME": "us-east-1",
                 "SENTRY_PERCENTAGE": "0.9",
                 "__BAD__KEY": "GITLAB__BOT__KEY",
+                "SETUP__SEGMENT__ENABLED": "True",
+                "SETUP__SEGMENT__KEY": "abc",
             },
         )
         expected_res = {
@@ -372,6 +383,7 @@ class TestConfig(object):
             "setup": {
                 "encryption_secret": "secret",
                 "tasks": {"status": {"queue": "new_tasks"}},
+                "segment": {"enabled": "True", "key": "abc"},
             },
             "github": {
                 "bot": {"key": "GITHUB__BOT__KEY"},
