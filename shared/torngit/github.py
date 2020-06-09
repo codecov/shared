@@ -696,10 +696,7 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         try:
             res = await self.api(
-                "get",
-                "/repos/%s/pulls/%s" % (self.slug, pullid),
-                per_page=250,
-                token=token,
+                "get", "/repos/%s/pulls/%s" % (self.slug, pullid), token=token,
             )
         except TorngitClientError as ce:
             if ce.code == 404:
@@ -708,7 +705,10 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
                 )
             raise
         commits = await self.api(
-            "get", "/repos/%s/pulls/%s/commits" % (self.slug, pullid), token=token
+            "get",
+            "/repos/%s/pulls/%s/commits" % (self.slug, pullid),
+            token=token,
+            per_page=250,
         )
         commit_mapping = {
             val["sha"]: [k["sha"] for k in val["parents"]] for val in commits
