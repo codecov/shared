@@ -57,7 +57,6 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
 
         if token or self.token:
             _headers["Authorization"] = "token %s" % (token or self.token)["key"]
-
         _headers.update(headers or {})
         log_dict = {}
 
@@ -824,6 +823,73 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
                 commitid=kwargs["commitid"],
             )
         raise NotImplementedError()
+
+    # Checks
+    # ------
+    # Checks Docs: https://developer.github.com/v3/checks/
+    #
+    # The Checks API is currently marked as being in a 'Preview Period' by github
+    # In order to access the API during this preview period we must provide the following header:
+    # {"Accept": "application/vnd.github.antiope-preview+json"} see https://developer.github.com/changes/2018-05-07-new-checks-api-public-beta/ for more info
+
+    async def create_check_run(
+        self, check_name, head_sha, status="in_progress", token=None
+    ):
+        res = await self.api(
+            "post",
+            "/repos/{}/check-runs".format(self.slug),
+            body=dict(name=check_name, head_sha=head_sha, status=status),
+            headers={"Accept": "application/vnd.github.antiope-preview+json"},
+            token=token,
+        )
+        return res["id"]
+
+    async def get_check_runs(
+        self, check_suite_id=None, head_sha=None, name=None, token=None
+    ):
+        if check_suite_id is None and head_sha is None:
+            raise Exception(
+                "check_suite_id and head_sha parameter should not both be None"
+            )
+        url = ""
+        if check_suite_id is not None:
+            url = (
+                "/repos/{}/check-suites/{}/check-runs".format(
+                    self.slug, check_suite_id,
+                ),
+            )
+        elif head_sha is not None:
+            url = "/repos/{}/commits/{}/check-runs".format(self.slug, head_sha)
+        if name is not None:
+            url += "?check_name={}".format(name)
+        res = await self.api(
+            "get",
+            url,
+            headers={"Accept": "application/vnd.github.antiope-preview+json"},
+            token=token,
+        )
+        return res
+
+    async def get_check_suites(self, git_sha, token=None):
+        res = await self.api(
+            "get",
+            "/repos/{}/commits/{}/check-suites".format(self.slug, git_sha),
+            headers={"Accept": "application/vnd.github.antiope-preview+json"},
+            token=token,
+        )
+        return res
+
+    async def update_check_run(
+        self, check_run_id, conclusion, status="completed", output=None, token=None
+    ):
+        res = await self.api(
+            "patch",
+            "/repos/{}/check-runs/{}".format(self.slug, check_run_id),
+            body=dict(conclusion=conclusion, status=status, output=output),
+            headers={"Accept": "application/vnd.github.antiope-preview+json"},
+            token=token,
+        )
+        return res
 
     # Get information for a GitHub Actions build/workflow run
     # -------------

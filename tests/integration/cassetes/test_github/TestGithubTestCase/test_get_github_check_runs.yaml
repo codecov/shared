@@ -1,0 +1,94 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.antiope-preview+json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/codecov/worker/commits/0c71264642a03372df1534704f34d6a2242fdf2c/check-runs?check_name=Test+check
+  response:
+    body:
+      string: '{"total_count":1,"check_runs":[{"id":751486637,"node_id":"MDg6Q2hlY2tSdW43NTE0ODY2Mzc=","head_sha":"0c71264642a03372df1534704f34d6a2242fdf2c","external_id":"","url":"https://api.github.com/repos/codecov/worker/check-runs/751486637","html_url":"https://github.com/codecov/worker/runs/751486637","details_url":"https://stage-web.codecov.dev","status":"in_progress","conclusion":null,"started_at":"2020-06-08T20:38:11Z","completed_at":null,"output":{"title":null,"summary":null,"text":null,"annotations_count":0,"annotations_url":"https://api.github.com/repos/codecov/worker/check-runs/751486637/annotations"},"name":"Test
+        check","check_suite":{"id":772837618},"app":{"id":67788,"slug":"codecov-app-integration-testing","node_id":"MDM6QXBwNjc3ODg=","owner":{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","avatar_url":"https://avatars3.githubusercontent.com/u/8226205?v=4","gravatar_id":"","url":"https://api.github.com/users/codecov","html_url":"https://github.com/codecov","followers_url":"https://api.github.com/users/codecov/followers","following_url":"https://api.github.com/users/codecov/following{/other_user}","gists_url":"https://api.github.com/users/codecov/gists{/gist_id}","starred_url":"https://api.github.com/users/codecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/codecov/subscriptions","organizations_url":"https://api.github.com/users/codecov/orgs","repos_url":"https://api.github.com/users/codecov/repos","events_url":"https://api.github.com/users/codecov/events{/privacy}","received_events_url":"https://api.github.com/users/codecov/received_events","type":"Organization","site_admin":false},"name":"Codecov
+        App Integration - Testing","description":"An app used for the github app integration
+        in test envrionments","external_url":"https://stage-web.codecov.dev","html_url":"https://github.com/apps/codecov-app-integration-testing","created_at":"2020-06-06T01:35:43Z","updated_at":"2020-06-06T01:35:43Z","permissions":{"administration":"read","checks":"write","contents":"read","issues":"read","members":"read","metadata":"read","pull_requests":"write","statuses":"write"},"events":["check_run","check_suite","create","delete","fork","membership","public","pull_request","push","release","repository","status","team_add"]},"pull_requests":[{"url":"https://api.github.com/repos/codecov/worker/pulls/336","id":425229535,"number":336,"head":{"ref":"fb_message_mixin","sha":"0c71264642a03372df1534704f34d6a2242fdf2c","repo":{"id":157271496,"url":"https://api.github.com/repos/codecov/worker","name":"worker"}},"base":{"ref":"master","sha":"2a5a8741a8fd0d9180f9e8b907442ac4b7a37c67","repo":{"id":157271496,"url":"https://api.github.com/repos/codecov/worker","name":"worker"}}}]}]}'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - OK
+    - !!python/tuple
+      - Server
+      - - GitHub.com
+    - !!python/tuple
+      - Date
+      - - Mon, 08 Jun 2020 20:45:46 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - Status
+      - - 200 OK
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - - '5050'
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - - '5047'
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - - '1591652291'
+    - !!python/tuple
+      - Cache-Control
+      - - private, max-age=60, s-maxage=60
+    - !!python/tuple
+      - Vary
+      - - Accept, Authorization, Cookie, X-GitHub-OTP
+        - Accept-Encoding, Accept, X-Requested-With
+    - !!python/tuple
+      - Etag
+      - - W/"420ffe90b255729c8631834e6f319256"
+    - !!python/tuple
+      - X-Github-Media-Type
+      - - github.antiope-preview; format=json
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type, Deprecation, Sunset
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - - '*'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubdomains; preload
+    - !!python/tuple
+      - X-Frame-Options
+      - - deny
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Xss-Protection
+      - - 1; mode=block
+    - !!python/tuple
+      - Referrer-Policy
+      - - origin-when-cross-origin, strict-origin-when-cross-origin
+    - !!python/tuple
+      - Content-Security-Policy
+      - - default-src 'none'
+    - !!python/tuple
+      - Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Github-Request-Id
+      - - AD9B:136A:15B55FC:24FFB0E:5EDEA37A
+    status:
+      code: 200
+      message: OK
+    url: https://api.github.com/repos/codecov/worker/commits/0c71264642a03372df1534704f34d6a2242fdf2c/check-runs?check_name=Test+check
+version: 1
