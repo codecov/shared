@@ -448,15 +448,11 @@ class BitbucketServer(TorngitBaseAdapter):
             id=str(pullid),
             number=str(pullid),
             base=dict(
-                branch=res["toRef"]["id"]
-                .encode("utf-8", "replace")
-                .replace("refs/heads/", ""),
+                branch=res["toRef"]["displayId"]
                 commitid=first_commit,
             ),
             head=dict(
-                branch=res["fromRef"]["id"]
-                .encode("utf-8", "replace")
-                .replace("refs/heads/", ""),
+                branch=res["fromRef"]["displayId"]
                 commitid=pull_commitids[0],
             ),
         )
@@ -710,9 +706,7 @@ class BitbucketServer(TorngitBaseAdapter):
 
                 for pull in res["values"]:
                     if (
-                        pull["fromRef"]["id"]
-                        .encode("utf-8", "replace")
-                        .replace("refs/heads/", "")
+                        pull["fromRef"]["displayId"]
                         == branch
                     ):
                         return pull["id"]
