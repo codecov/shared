@@ -447,18 +447,8 @@ class BitbucketServer(TorngitBaseAdapter):
             ),
             id=str(pullid),
             number=str(pullid),
-            base=dict(
-                branch=res["toRef"]["id"]
-                .encode("utf-8", "replace")
-                .replace("refs/heads/", ""),
-                commitid=first_commit,
-            ),
-            head=dict(
-                branch=res["fromRef"]["id"]
-                .encode("utf-8", "replace")
-                .replace("refs/heads/", ""),
-                commitid=pull_commitids[0],
-            ),
+            base=dict(branch=res["toRef"]["displayId"], commitid=first_commit,),
+            head=dict(branch=res["fromRef"]["displayId"], commitid=pull_commitids[0],),
         )
 
     async def list_repos(self, username=None, token=None):
@@ -692,7 +682,6 @@ class BitbucketServer(TorngitBaseAdapter):
             state, "ALL"
         )
         if branch:
-            branch = branch.encode("utf-8", "replace")
             while True:
                 # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2048560
                 res = await self.api(
@@ -709,12 +698,7 @@ class BitbucketServer(TorngitBaseAdapter):
                     break
 
                 for pull in res["values"]:
-                    if (
-                        pull["fromRef"]["id"]
-                        .encode("utf-8", "replace")
-                        .replace("refs/heads/", "")
-                        == branch
-                    ):
+                    if pull["fromRef"]["displayId"] == branch:
                         return pull["id"]
 
                 if res["isLastPage"] or res.get("nextPageStart") is None:
