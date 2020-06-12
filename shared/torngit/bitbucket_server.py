@@ -174,6 +174,7 @@ class BitbucketServer(TorngitBaseAdapter):
             oauth.Consumer(self._oauth_consumer_token()["key"], ""), token, **verify_ssl
         )
         client.set_signature_method(signature)
+
         response, content = client.request(
             url,
             method.upper(),

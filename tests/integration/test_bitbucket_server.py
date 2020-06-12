@@ -27,7 +27,6 @@ class TestBitbucketTestCase(object):
 
     @pytest.mark.asyncio
     async def test_find_pull_request_nothing_found(self, mocker):
-
         api_result = {"size":0,"limit":25,"isLastPage":True,"values":[],"start":0}
         mocked_fetch = mocker.patch.object(
             BitbucketServer, "api", return_value=Future()
