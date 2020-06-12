@@ -174,7 +174,6 @@ class BitbucketServer(TorngitBaseAdapter):
             oauth.Consumer(self._oauth_consumer_token()["key"], ""), token, **verify_ssl
         )
         client.set_signature_method(signature)
-
         response, content = client.request(
             url,
             method.upper(),
@@ -448,11 +447,11 @@ class BitbucketServer(TorngitBaseAdapter):
             id=str(pullid),
             number=str(pullid),
             base=dict(
-                branch=res["toRef"]["displayId"]
+                branch=res["toRef"]["displayId"],
                 commitid=first_commit,
             ),
             head=dict(
-                branch=res["fromRef"]["displayId"]
+                branch=res["fromRef"]["displayId"],
                 commitid=pull_commitids[0],
             ),
         )
@@ -688,7 +687,6 @@ class BitbucketServer(TorngitBaseAdapter):
             state, "ALL"
         )
         if branch:
-            branch = branch.encode("utf-8", "replace")
             while True:
                 # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2048560
                 res = await self.api(
