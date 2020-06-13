@@ -261,6 +261,7 @@ def get_schema(show_secrets):
                     Optional("paths"): Or(None, [path_structure]),  # DEPRECATED
                 },
             ),
+            Optional("github_checks"): Or(bool, {Optional("annotations"): bool,}),
         }
     )
 

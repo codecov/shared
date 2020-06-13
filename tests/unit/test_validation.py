@@ -346,6 +346,14 @@ class TestUserYamlValidation(BaseTestCase):
         result = validate_yaml(user_input, show_secrets=True)
         assert result == expected_result
 
+    def test_github_checks(self):
+        user_input = {"github_checks": True}
+        expected_result = {"github_checks": True}
+        assert validate_yaml(user_input) == expected_result
+        user_input = {"github_checks": {"annotations": False}}
+        expected_result = {"github_checks": {"annotations": False}}
+        assert validate_yaml(user_input) == expected_result
+
 
 class TestGlobToRegexTranslation(BaseTestCase):
     def test_translate_glob_to_regex(self):
