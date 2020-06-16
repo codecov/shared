@@ -429,7 +429,6 @@ class BitbucketServer(TorngitBaseAdapter):
             json=True,
             token=token,
         )
-        res["id"] = res["uuid"][1:-1]
         return res
 
     async def get_pull_request(self, pullid, token=None):
