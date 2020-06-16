@@ -420,6 +420,18 @@ class BitbucketServer(TorngitBaseAdapter):
 
         return dict(diff=self.diff_to_json(diff), commits=commits[::-1])
 
+    async def post_webhook(self, name, url, events, secret, token=None):
+        # https://docs.atlassian.com/bitbucket-server/rest/6.0.1/bitbucket-rest.html#idp325
+        res = await self.api(
+            "post",
+            "/repos/%s/settings/webhooks" % self.slug,
+            body=dict(description=name, active=True, events=events, url=url),
+            json=True,
+            token=token,
+        )
+        res["id"] = res["uuid"][1:-1]
+        return res
+
     async def get_pull_request(self, pullid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2167824
         res = await self.api(
