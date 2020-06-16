@@ -303,6 +303,21 @@ class BitbucketServer(TorngitBaseAdapter):
             content="\n".join(map(lambda a: a.get("text", ""), content)),
         )
 
+    async def get_ancestors_tree(self, commitid, token=None):
+        res = await self.api(
+            "get",
+            "%s/repos/%s/commits/"
+            % (self.project, self.data["repo"]["name"]),
+            token=token,
+            until=commitid
+        )
+        start = res["values"][0]["id"]
+        commit_mapping = {
+            val["id"]: [k["id"] for k in val["parents"]] for val in res["values"]
+        }
+        return self.build_tree_from_commits(start, commit_mapping)
+
+
     async def get_commit(self, commit, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3530560
         res = await self.api(
