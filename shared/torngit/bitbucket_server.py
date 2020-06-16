@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl
 import oauth2 as oauth
 from tornado.web import HTTPError
 from tlslite.utils import keyfactory
+import urllib.parse as urllib_parse
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
 
@@ -422,6 +423,7 @@ class BitbucketServer(TorngitBaseAdapter):
 
     async def post_webhook(self, name, url, events, secret, token=None):
         # https://docs.atlassian.com/bitbucket-server/rest/6.0.1/bitbucket-rest.html#idp325
+        # https://confluence.atlassian.com/bitbucketserver066/event-payload-978197889.html
         res = await self.api(
             "post",
             "%s/repos/%s/webhooks" % (self.project, self.data["repo"]["name"]),
@@ -461,6 +463,36 @@ class BitbucketServer(TorngitBaseAdapter):
             base=dict(branch=res["toRef"]["displayId"], commitid=first_commit,),
             head=dict(branch=res["fromRef"]["displayId"], commitid=pull_commitids[0],),
         )
+
+    async def list_top_level_files(self, ref, token=None):
+        return await self.list_files(ref, dir_path="", token=None)
+
+    async def list_files(self, ref, dir_path, token=None):
+        page = None
+        has_more = True
+        files = []
+        while has_more:
+            # https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/src#get
+            kwargs = {}
+
+            if page is not None:
+                kwargs["page"] = page
+
+            if ref not in [None, ""]:
+                kwargs["at"] =  ref
+
+            results = await self.api(
+                "get",
+                "%s/repos/%s/files/%s" % (self.project, self.data["repo"]["name"], dir_path),
+                **kwargs
+            )
+            files.extend(results["values"])
+            page = results["nextPageStart"]
+            has_more = results["isLastPage"]
+        return [
+            {"path": f, "type": "file"}
+            for f in files
+        ]
 
     async def list_repos(self, username=None, token=None):
         data, start = [], 0
