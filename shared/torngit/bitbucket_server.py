@@ -424,7 +424,7 @@ class BitbucketServer(TorngitBaseAdapter):
         # https://docs.atlassian.com/bitbucket-server/rest/6.0.1/bitbucket-rest.html#idp325
         res = await self.api(
             "post",
-            "/repos/%s/webhooks" % self.slug,
+            "%s/repos/%s/webhooks" % (self.project, self.data["repo"]["name"]),
             body=dict(description=name, active=True, events=events, url=url),
             json=True,
             token=token,
