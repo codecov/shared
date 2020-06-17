@@ -121,8 +121,7 @@ class BitbucketServer(TorngitBaseAdapter):
                         segments=[],
                     ),
                 )
-
-                for hunk in _diff["hunks"]:
+                for hunk in _diff.get("hunks", []):
                     segment = dict(
                         header=[
                             str(hunk["sourceLine"]),
@@ -143,6 +142,8 @@ class BitbucketServer(TorngitBaseAdapter):
 
         if results:
             return dict(files=self._add_diff_totals(results))
+        else:
+            return dict(files=[])
 
     async def api(self, method, url, body=None, token=None, **kwargs):
         # process desired api path
@@ -635,7 +636,7 @@ class BitbucketServer(TorngitBaseAdapter):
     ):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
         assert status in ("pending", "success", "error", "failure"), "status not valid"
-        await self.api(
+        res = await self.api(
             "post",
             "%s/rest/build-status/1.0/commits/%s" % (self.service_url, commit),
             body=dict(
@@ -671,14 +672,14 @@ class BitbucketServer(TorngitBaseAdapter):
                 ),
                 token=token,
             )
-        return True
+        return {"id": res.get("id")}
 
-    async def post_comment(self, issueid, body, token=None):
+    async def post_comment(self, pullid, body, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3165808
         res = await self.api(
             "post",
             "%s/repos/%s/pull-requests/%s/comments"
-            % (self.project, self.data["repo"]["name"], issueid),
+            % (self.project, self.data["repo"]["name"], pullid),
             body=dict(text=body),
             token=token,
         )

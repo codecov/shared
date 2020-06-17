@@ -183,3 +183,10 @@ class TestBitbucketTestCase(object):
         )
         mocked_fetch.return_value.set_result(api_result)
         assert await valid_handler().find_pull_request("a" * 40, "no-branch") is None
+
+
+    @pytest.mark.asyncio
+    async def test_diff_to_json(self, mocker):
+        diff = [{'source': None, 'destination': {'components': ['src', '__pycache__', 'test_index.cpython-36-PYTEST.pyc'], 'parent': 'src/__pycache__', 'name': 'test_index.cpython-36-PYTEST.pyc', 'extension': 'pyc', 'toString': 'src/__pycache__/test_index.cpython-36-PYTEST.pyc'}, 'binary': True}, {'source': {'components': ['src', 'index.py'], 'parent': 'src', 'name': 'index.py', 'extension': 'py', 'toString': 'src/index.py'}, 'destination': {'components': ['src', 'index.py'], 'parent': 'src', 'name': 'index.py', 'extension': 'py', 'toString': 'src/index.py'}, 'hunks': [{'sourceLine': 1, 'sourceSpan': 10, 'destinationLine': 1, 'destinationSpan': 11, 'segments': [{'type': 'ADDED', 'lines': [{'source': 1, 'destination': 1, 'line': 'import asyncio', 'truncated': False}], 'truncated': False}, {'type': 'CONTEXT', 'lines': [{'source': 1, 'destination': 2, 'line': 'def uncovered_if(var=True):', 'truncated': False}, {'source': 2, 'destination': 3, 'line': '    if var:', 'truncated': False}, {'source': 3, 'destination': 4, 'line': '      return False', 'truncated': False}, {'source': 4, 'destination': 5, 'line': '    else:', 'truncated': False}, {'source': 5, 'destination': 6, 'line': '      return True', 'truncated': False}, {'source': 6, 'destination': 7, 'line': '', 'truncated': False}, {'source': 7, 'destination': 8, 'line': 'def fully_covered():', 'truncated': False}, {'source': 8, 'destination': 9, 'line': '    return True;', 'truncated': False}, {'source': 9, 'destination': 10, 'line': '', 'truncated': False}, {'source': 10, 'destination': 11, 'line': 'def uncovered():', 'truncated': False}], 'truncated': False}], 'truncated': False}], 'truncated': False}]
+        assert  valid_handler().diff_to_json(diff) is not None
+
