@@ -672,7 +672,7 @@ class BitbucketServer(TorngitBaseAdapter):
                 ),
                 token=token,
             )
-        return {"id": res.get("id")}
+        return {"id": res.get("id", "NO-ID") if res else "NO-ID"}
 
     async def post_comment(self, pullid, body, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3165808
@@ -683,19 +683,19 @@ class BitbucketServer(TorngitBaseAdapter):
             body=dict(text=body),
             token=token,
         )
-        return "%(id)s:%(version)s" % res
+        return {"id": "%(id)s:%(version)s" % res}
 
-    async def edit_comment(self, issueid, commentid, body, token=None):
+    async def edit_comment(self, pullid, commentid, body, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3184624
         commentid, version = commentid.split(":", 1)
         res = await self.api(
             "put",
             "%s/repos/%s/pull-requests/%s/comments/%s"
-            % (self.project, self.data["repo"]["name"], issueid, commentid),
+            % (self.project, self.data["repo"]["name"], pullid, commentid),
             body=dict(text=body, version=version),
             token=token,
         )
-        return "%(id)s:%(version)s" % res
+        return {"id": "%(id)s:%(version)s" % res}
 
     async def delete_comment(self, issueid, commentid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3189408
