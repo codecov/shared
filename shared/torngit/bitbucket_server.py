@@ -307,17 +307,15 @@ class BitbucketServer(TorngitBaseAdapter):
     async def get_ancestors_tree(self, commitid, token=None):
         res = await self.api(
             "get",
-            "%s/repos/%s/commits/"
-            % (self.project, self.data["repo"]["name"]),
+            "%s/repos/%s/commits/" % (self.project, self.data["repo"]["name"]),
             token=token,
-            until=commitid
+            until=commitid,
         )
         start = res["values"][0]["id"]
         commit_mapping = {
             val["id"]: [k["id"] for k in val["parents"]] for val in res["values"]
         }
         return self.build_tree_from_commits(start, commit_mapping)
-
 
     async def get_commit(self, commit, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3530560
@@ -495,20 +493,18 @@ class BitbucketServer(TorngitBaseAdapter):
                 kwargs["page"] = page
 
             if ref not in [None, ""]:
-                kwargs["at"] =  ref
+                kwargs["at"] = ref
 
             results = await self.api(
                 "get",
-                "%s/repos/%s/files/%s" % (self.project, self.data["repo"]["name"], dir_path),
-                **kwargs
+                "%s/repos/%s/files/%s"
+                % (self.project, self.data["repo"]["name"], dir_path),
+                **kwargs,
             )
             files.extend(results["values"])
             page = results["nextPageStart"]
             has_more = not results["isLastPage"]
-        return [
-            {"path": f, "type": "file"}
-            for f in files
-        ]
+        return [{"path": f, "type": "file"} for f in files]
 
     async def list_repos(self, username=None, token=None):
         data, start = [], 0
