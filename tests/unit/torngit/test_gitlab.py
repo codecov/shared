@@ -85,3 +85,27 @@ class TestUnitGitlab(object):
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
         assert res == "success"
+
+    @pytest.mark.asyncio
+    async def test_find_pull_request_by_commit_new_endpoint_doesnt_find_old_does(
+        self, mocker, valid_handler
+    ):
+        commit_sha = "c739768fcac68144a3a6d82305b9c4106934d31a"
+        first_result, second_result = Future(), Future()
+        results = [first_result, second_result]
+        mocker.patch.object(Gitlab, "fetch", side_effect=results)
+        first_result.set_result(
+            mocker.MagicMock(
+                headers={"Content-Type": "application/json"}, body=dumps([]),
+            )
+        )
+        second_result.set_result(
+            mocker.MagicMock(
+                headers={"Content-Type": "application/json"},
+                body=dumps(
+                    [{"sha": "aaaa", "iid": 123}, {"sha": commit_sha, "iid": 986}]
+                ),
+            )
+        )
+        res = await valid_handler.find_pull_request(commit_sha)
+        assert res == 986

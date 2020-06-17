@@ -2,90 +2,185 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
     method: GET
     uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
   response:
-    body: {string: '{"message":"404 Not found"}'}
+    body:
+      string: '{"message":"404 Not found"}'
     headers:
     - !!python/tuple
       - Server
-      - [nginx]
+      - - nginx
     - !!python/tuple
       - Date
-      - ['Mon, 05 Nov 2018 19:13:26 GMT']
+      - - Mon, 05 Nov 2018 19:13:26 GMT
     - !!python/tuple
       - Content-Type
-      - [application/json]
+      - - application/json
     - !!python/tuple
       - Content-Length
-      - ['1084']
+      - - '1084'
     - !!python/tuple
       - Connection
-      - [close]
+      - - close
     - !!python/tuple
       - Cache-Control
-      - ['max-age=0, private, must-revalidate']
+      - - max-age=0, private, must-revalidate
     - !!python/tuple
       - Etag
-      - [W/"89a964567a1549306cc2fe9aa5ca23ae"]
+      - - W/"89a964567a1549306cc2fe9aa5ca23ae"
     - !!python/tuple
       - Link
-      - ['<https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
+      - - <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
           rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
-          rel="last"']
+          rel="last"
     - !!python/tuple
       - Vary
-      - [Origin]
+      - - Origin
     - !!python/tuple
       - X-Content-Type-Options
-      - [nosniff]
+      - - nosniff
     - !!python/tuple
       - X-Frame-Options
-      - [SAMEORIGIN]
+      - - SAMEORIGIN
     - !!python/tuple
       - X-Next-Page
-      - ['']
+      - - ''
     - !!python/tuple
       - X-Page
-      - ['1']
+      - - '1'
     - !!python/tuple
       - X-Per-Page
-      - ['20']
+      - - '20'
     - !!python/tuple
       - X-Prev-Page
-      - ['']
+      - - ''
     - !!python/tuple
       - X-Request-Id
-      - [f9101899-1557-4c8e-a461-0db681ffe5fd]
+      - - f9101899-1557-4c8e-a461-0db681ffe5fd
     - !!python/tuple
       - X-Runtime
-      - ['0.060825']
+      - - '0.060825'
     - !!python/tuple
       - X-Total
-      - ['1']
+      - - '1'
     - !!python/tuple
       - X-Total-Pages
-      - ['1']
+      - - '1'
     - !!python/tuple
       - Strict-Transport-Security
-      - [max-age=31536000]
+      - - max-age=31536000
     - !!python/tuple
       - Ratelimit-Limit
-      - ['600']
+      - - '600'
     - !!python/tuple
       - Ratelimit-Observed
-      - ['5']
+      - - '5'
     - !!python/tuple
       - Ratelimit-Remaining
-      - ['595']
+      - - '595'
     - !!python/tuple
       - Ratelimit-Reset
-      - ['1541445266']
+      - - '1541445266'
     - !!python/tuple
       - Ratelimit-Resettime
-      - ['Tue, 05 Nov 2018 19:14:26 GMT']
-    status: {code: 404, message: Not Found}
+      - - Tue, 05 Nov 2018 19:14:26 GMT
+    status:
+      code: 404
+      message: Not Found
     url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/repository/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/merge_requests
+  response:
+    body:
+      string: '{"message":"404 Commit Not Found"}'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - Not Found
+    - !!python/tuple
+      - Date
+      - - Wed, 17 Jun 2020 18:28:50 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json
+    - !!python/tuple
+      - Content-Length
+      - - '34'
+    - !!python/tuple
+      - Connection
+      - - keep-alive
+    - !!python/tuple
+      - Set-Cookie
+      - - __cfduid=dbfc65142d3a405159327b5a39321e61e1592418529; expires=Fri, 17-Jul-20
+          18:28:49 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax; Secure
+    - !!python/tuple
+      - Cache-Control
+      - - no-cache
+    - !!python/tuple
+      - Vary
+      - - Origin
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Request-Id
+      - - 4cKJfBOUbw6
+    - !!python/tuple
+      - X-Runtime
+      - - '0.166783'
+    - !!python/tuple
+      - Ratelimit-Limit
+      - - '600'
+    - !!python/tuple
+      - Ratelimit-Observed
+      - - '1'
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - - '599'
+    - !!python/tuple
+      - Ratelimit-Reset
+      - - '1592418590'
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - - Wed, 17 Jun 2020 18:29:50 GMT
+    - !!python/tuple
+      - Gitlab-Lb
+      - - fe-12-lb-gprd
+    - !!python/tuple
+      - Gitlab-Sv
+      - - localhost
+    - !!python/tuple
+      - Cf-Cache-Status
+      - - DYNAMIC
+    - !!python/tuple
+      - Cf-Request-Id
+      - - 03652389db0000f6371b2fd200000001
+    - !!python/tuple
+      - Expect-Ct
+      - - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+    - !!python/tuple
+      - Server
+      - - cloudflare
+    - !!python/tuple
+      - Cf-Ray
+      - - 5a4ed522f864f637-GRU
+    status:
+      code: 404
+      message: Not Found
+    url: https://gitlab.com/api/v4/projects/187725/repository/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/merge_requests
 version: 1
