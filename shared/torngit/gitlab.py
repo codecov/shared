@@ -673,13 +673,31 @@ class Gitlab(TorngitBaseAdapter):
         # first check if the sha matches
         return [pull["iid"] for pull in res]
 
+    def get_gitlab_pull_state_from_codecov_state(self, state):
+        return {"merged": "merged", "open": "opened", "close": "closed"}.get(
+            state, "all"
+        )
+
     async def find_pull_request(
         self, commit=None, branch=None, state="open", token=None
     ):
-        # ONLY searchable by branch.
-        state = {"merged": "merged", "open": "opened", "close": "closed"}.get(
-            state, "all"
-        )
+        gitlab_state = self.get_gitlab_pull_state_from_codecov_state(state)
+        if commit is not None:
+            try:
+                res = await self.api(
+                    "get",
+                    "/projects/{}/repository/commits/{}/merge_requests".format(
+                        self.data["repo"]["service_id"], commit
+                    ),
+                    token=token,
+                )
+                if len(res) > 1:
+                    log.info("More than one pull request associated with commit")
+                for possible_pull in res:
+                    if possible_pull["state"] == gitlab_state or gitlab_state == "all":
+                        return possible_pull["iid"]
+            except TorngitClientError:
+                log.warning("Unable to use new merge_requests endpoint")
 
         # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
@@ -687,7 +705,7 @@ class Gitlab(TorngitBaseAdapter):
             res = await self.api(
                 "get",
                 "/projects/%s/merge_requests?state=%s"
-                % (self.data["repo"]["service_id"], state),
+                % (self.data["repo"]["service_id"], gitlab_state),
                 token=token,
             )
         except TorngitClientError as e:
@@ -700,6 +718,10 @@ class Gitlab(TorngitBaseAdapter):
         if commit:
             for pull in res:
                 if pull["sha"] == commit:
+                    log.info(
+                        "Unable to find PR from new endpoint, found from old one",
+                        extra=dict(commit=commit),
+                    )
                     return pull["iid"]
 
         elif branch:
