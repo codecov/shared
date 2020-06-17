@@ -503,7 +503,7 @@ class BitbucketServer(TorngitBaseAdapter):
             )
             files.extend(results["values"])
             page = results["nextPageStart"]
-            has_more = results["isLastPage"]
+            has_more = not results["isLastPage"]
         return [
             {"path": f, "type": "file"}
             for f in files
