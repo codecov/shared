@@ -211,7 +211,7 @@ class TestBitbucketTestCase(object):
             BitbucketServer, "api", return_value=Future()
         )
         mocked_fetch.return_value.set_result(api_result)
-        files = await valid_handler().list_top_level_files("ref")
+        files = await valid_handler().list_top_level_files("ref", "")
         assert len(files) == 11
 
 
