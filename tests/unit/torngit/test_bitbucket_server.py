@@ -42,7 +42,7 @@ class TestBitbucketServer(object):
             ),
         )
         res = await gl.post_comment("pullid", "body")
-        assert res == {"id" : "198:3"}
+        assert res == {"id": "198:3"}
         mocked_fetch.assert_called_with(
             "https://bitbucketserver.codecov.dev/rest/api/1.0/projects/THIAGOCODECOV/repos/example-python/pull-requests/pullid/comments",
             "POST",
