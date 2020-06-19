@@ -184,6 +184,37 @@ class TestBitbucketTestCase(object):
         mocked_fetch.return_value.set_result(api_result)
         assert await valid_handler().find_pull_request("a" * 40, "no-branch") is None
 
+
+    @pytest.mark.asyncio
+    async def test_list_top_level_files(self, mocker):
+        api_result = {
+            "values":[
+                ".gitignore",
+                ".travis.yml",
+                "Dockerfile",
+                "README.md",
+                "codecov.yml",
+                "coverage.xml",
+                "docker-compose.yml",
+                "entrypoint.sh",
+                "src/index.py",
+                "src/request.py",
+                "src/test_index.py"
+            ],
+            "size":11,
+            "isLastPage":True,
+            "start":0,
+            "limit":25,
+            "nextPageStart":None
+        }
+        mocked_fetch = mocker.patch.object(
+            BitbucketServer, "api", return_value=Future()
+        )
+        mocked_fetch.return_value.set_result(api_result)
+        files = await valid_handler().list_top_level_files("ref")
+        assert len(files) == 11
+
+
     @pytest.mark.asyncio
     async def test_diff_to_json(self, mocker):
         diff = [
