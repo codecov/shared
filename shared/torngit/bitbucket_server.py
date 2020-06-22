@@ -7,6 +7,7 @@ from urllib.parse import parse_qsl
 import oauth2 as oauth
 from tornado.web import HTTPError
 from tlslite.utils import keyfactory
+import urllib.parse as urllib_parse
 from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
 
@@ -120,8 +121,7 @@ class BitbucketServer(TorngitBaseAdapter):
                         segments=[],
                     ),
                 )
-
-                for hunk in _diff["hunks"]:
+                for hunk in _diff.get("hunks", []):
                     segment = dict(
                         header=[
                             str(hunk["sourceLine"]),
@@ -142,6 +142,8 @@ class BitbucketServer(TorngitBaseAdapter):
 
         if results:
             return dict(files=self._add_diff_totals(results))
+        else:
+            return dict(files=[])
 
     async def api(self, method, url, body=None, token=None, **kwargs):
         # process desired api path
@@ -302,6 +304,19 @@ class BitbucketServer(TorngitBaseAdapter):
             content="\n".join(map(lambda a: a.get("text", ""), content)),
         )
 
+    async def get_ancestors_tree(self, commitid, token=None):
+        res = await self.api(
+            "get",
+            "%s/repos/%s/commits/" % (self.project, self.data["repo"]["name"]),
+            token=token,
+            until=commitid,
+        )
+        start = res["values"][0]["id"]
+        commit_mapping = {
+            val["id"]: [k["id"] for k in val["parents"]] for val in res["values"]
+        }
+        return self.build_tree_from_commits(start, commit_mapping)
+
     async def get_commit(self, commit, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3530560
         res = await self.api(
@@ -420,6 +435,18 @@ class BitbucketServer(TorngitBaseAdapter):
 
         return dict(diff=self.diff_to_json(diff), commits=commits[::-1])
 
+    async def post_webhook(self, name, url, events, secret, token=None):
+        # https://docs.atlassian.com/bitbucket-server/rest/6.0.1/bitbucket-rest.html#idp325
+        # https://confluence.atlassian.com/bitbucketserver066/event-payload-978197889.html
+        res = await self.api(
+            "post",
+            "%s/repos/%s/webhooks" % (self.project, self.data["repo"]["name"]),
+            body=dict(description=name, active=True, events=events, url=url),
+            json=True,
+            token=token,
+        )
+        return res
+
     async def get_pull_request(self, pullid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp2167824
         res = await self.api(
@@ -450,6 +477,34 @@ class BitbucketServer(TorngitBaseAdapter):
             base=dict(branch=res["toRef"]["displayId"], commitid=first_commit,),
             head=dict(branch=res["fromRef"]["displayId"], commitid=pull_commitids[0],),
         )
+
+    async def list_top_level_files(self, ref, token=None):
+        return await self.list_files(ref, dir_path="", token=None)
+
+    async def list_files(self, ref, dir_path, token=None):
+        page = None
+        has_more = True
+        files = []
+        while has_more:
+            # https://developer.atlassian.com/bitbucket/api/2/reference/resource/repositories/%7Busername%7D/%7Brepo_slug%7D/src#get
+            kwargs = {}
+
+            if page is not None:
+                kwargs["page"] = page
+
+            if ref not in [None, ""]:
+                kwargs["at"] = ref
+
+            results = await self.api(
+                "get",
+                "%s/repos/%s/files/%s"
+                % (self.project, self.data["repo"]["name"], dir_path),
+                **kwargs,
+            )
+            files.extend(results["values"])
+            page = results["nextPageStart"]
+            has_more = not results["isLastPage"]
+        return [{"path": f, "type": "file"} for f in files]
 
     async def list_repos(self, username=None, token=None):
         data, start = [], 0
@@ -577,7 +632,7 @@ class BitbucketServer(TorngitBaseAdapter):
     ):
         # https://developer.atlassian.com/stash/docs/latest/how-tos/updating-build-status-for-commits.html
         assert status in ("pending", "success", "error", "failure"), "status not valid"
-        await self.api(
+        res = await self.api(
             "post",
             "%s/rest/build-status/1.0/commits/%s" % (self.service_url, commit),
             body=dict(
@@ -613,30 +668,30 @@ class BitbucketServer(TorngitBaseAdapter):
                 ),
                 token=token,
             )
-        return True
+        return {"id": res.get("id", "NO-ID") if res else "NO-ID"}
 
-    async def post_comment(self, issueid, body, token=None):
+    async def post_comment(self, pullid, body, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3165808
         res = await self.api(
             "post",
             "%s/repos/%s/pull-requests/%s/comments"
-            % (self.project, self.data["repo"]["name"], issueid),
+            % (self.project, self.data["repo"]["name"], pullid),
             body=dict(text=body),
             token=token,
         )
-        return "%(id)s:%(version)s" % res
+        return {"id": "%(id)s:%(version)s" % res}
 
-    async def edit_comment(self, issueid, commentid, body, token=None):
+    async def edit_comment(self, pullid, commentid, body, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3184624
         commentid, version = commentid.split(":", 1)
         res = await self.api(
             "put",
             "%s/repos/%s/pull-requests/%s/comments/%s"
-            % (self.project, self.data["repo"]["name"], issueid, commentid),
+            % (self.project, self.data["repo"]["name"], pullid, commentid),
             body=dict(text=body, version=version),
             token=token,
         )
-        return "%(id)s:%(version)s" % res
+        return {"id": "%(id)s:%(version)s" % res}
 
     async def delete_comment(self, issueid, commentid, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp3189408
