@@ -450,6 +450,7 @@ class TestValidationConfig(object):
                 "status": {"project": True, "patch": True, "changes": False},
             },
             "comment": {"layout": "reach,diff,flags,tree,reach", "behavior": "default"},
+            "github_checks": {"annotations": False},
         }
         res = validate_yaml(get_config("site", default={}), show_secrets=True)
         assert res == expected_result

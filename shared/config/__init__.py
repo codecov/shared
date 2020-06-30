@@ -33,6 +33,7 @@ default_config = {
             "status": {"project": True, "patch": True, "changes": False},
         },
         "comment": {"layout": "reach,diff,flags,tree,reach", "behavior": "default"},
+        "github_checks": {"annotations": False},
     },
     "setup": {"segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"}},
 }
