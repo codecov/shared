@@ -93,6 +93,7 @@ def get_schema(show_secrets):
         Optional("only_pulls"): bool,
         Optional("paths"): Or(None, [path_structure]),
         Optional("skip_if_assumes"): bool,
+        Optional("carryforward_behavior"): Or("include", "exclude", "pass"),
     }
 
     return Schema(
@@ -176,6 +177,11 @@ def get_schema(show_secrets):
                 Optional("status"): Or(
                     bool,
                     {
+                        Optional("default_rules"): {
+                            Optional("carryforward_behavior"): Or(
+                                "include", "exclude", "pass"
+                            ),
+                        },
                         Optional("project"): Or(
                             bool,
                             {
