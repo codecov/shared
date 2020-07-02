@@ -2,11 +2,15 @@ from shared.helpers.yaml import walk
 
 
 class Flag(object):
-    def __init__(self, report, name, totals=None):
+    def __init__(
+        self, report, name, totals=None, carriedforward=False, carriedforward_from=None
+    ):
         self._report = report
         self.name = name
         # TODO cache by storing in database
         self._totals = totals
+        self.carriedforward = carriedforward
+        self.carriedforward_from = carriedforward_from
 
     @property
     def report(self):

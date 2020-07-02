@@ -220,6 +220,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "behavior": "default",
                 "layout": "header, diff",
                 "require_changes": False,
+                "show_carryforward_flags": False,
             },
             "parsers": {
                 "gcov": {
@@ -245,6 +246,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "behavior": "default",
                 "layout": "header, diff",
                 "require_changes": False,
+                "show_carryforward_flags": False,
             },
             "parsers": {
                 "gcov": {

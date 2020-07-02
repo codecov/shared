@@ -3,7 +3,7 @@ from mock import PropertyMock
 
 from shared.reports.resources import Report, ReportFile, _encode_chunk
 from shared.utils.match import match
-from shared.utils.sessions import Session
+from shared.utils.sessions import Session, SessionType
 from shared.reports.types import ReportLine, ReportTotals, NetworkFile, LineSession
 from tests.helper import v2_to_v3
 
@@ -280,8 +280,18 @@ def test_flags(patch):
     r._chunks = None
     r._path_filter = None
     r._line_modifier = None
-    r.sessions = {1: Session(flags={"a": 1, 1: 1, "test": 1})}
-    assert list(r.flags.keys()) == ["a", 1, "test"]
+    r.sessions = {
+        1: Session(flags={"a": 1, 1: 1, "test": 1}),
+        2: Session(
+            flags=["c"],
+            session_type=SessionType.carriedforward,
+            session_extras=dict(carriedforward_from="commit_SHA"),
+        ),
+    }
+    assert list(r.flags.keys()) == ["a", 1, "test", "c"]
+    for name, flag in r.flags.items():
+        assert flag.carriedforward is (True if name == "c" else False)
+        assert flag.carriedforward_from is ("commit_SHA" if name == "c" else None)
 
 
 @pytest.mark.unit

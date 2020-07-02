@@ -257,11 +257,12 @@ def get_schema(show_secrets):
                     Optional("branches"): Or(None, [user_given_regex]),
                     Optional("behavior"): Or("default", "once", "new", "spammy"),
                     Optional("after_n_builds"): And(int, lambda x: x >= 0),
+                    Optional("show_carryforward_flags"): bool,
                     Optional("flags"): Or(None, [flag_name]),  # DEPRECATED
                     Optional("paths"): Or(None, [path_structure]),  # DEPRECATED
                 },
             ),
-            Optional("github_checks"): Or(bool, {Optional("annotations"): bool,}),
+            Optional("github_checks"): Or(bool, {Optional("annotations"): bool}),
         }
     )
 

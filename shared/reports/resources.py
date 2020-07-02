@@ -22,7 +22,7 @@ from shared.utils.merge import (
     get_complexity_from_sessions,
 )
 from shared.utils.migrate import migrate_totals
-from shared.utils.sessions import Session
+from shared.utils.sessions import Session, SessionType
 from shared.reports.types import (
     ReportTotals,
     ReportLine,
@@ -596,8 +596,21 @@ class Report(object):
         flags_dict = {}
         for sid, session in self.sessions.items():
             if session.flags:
+                # If the session was carriedforward, mark its flags as carriedforward
+                session_carriedforward = (
+                    session.session_type == SessionType.carriedforward
+                )
+                session_carriedforward_from = getattr(
+                    session, "session_extras", {}
+                ).get("carriedforward_from")
+
                 for flag in session.flags:
-                    flags_dict[flag] = Flag(self, flag)
+                    flags_dict[flag] = Flag(
+                        self,
+                        flag,
+                        carriedforward=session_carriedforward,
+                        carriedforward_from=session_carriedforward_from,
+                    )
         return flags_dict
 
     def append(self, _file, joined=True):

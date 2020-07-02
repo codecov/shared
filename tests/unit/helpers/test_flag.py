@@ -40,3 +40,15 @@ def test_apply_diff():
     )
     assert Flag(report, "_").apply_diff("<diff>") == "<totals>"
     apply_diff.assert_called_with("<diff>", _save=False)
+
+
+def test_carryforward_info():
+    flag_no_cf_info = Flag(None, "Flag")
+    assert flag_no_cf_info.carriedforward is False
+    assert flag_no_cf_info.carriedforward_from is None
+
+    flag_with_cf_info = Flag(
+        None, "Another flag", carriedforward=True, carriedforward_from="12345"
+    )
+    assert flag_with_cf_info.carriedforward is True
+    assert flag_with_cf_info.carriedforward_from == "12345"
