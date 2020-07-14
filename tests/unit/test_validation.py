@@ -459,9 +459,18 @@ class TestValidationConfig(object):
                 "precision": 2,
                 "round": "down",
                 "range": [70.0, 100.0],
-                "status": {"project": True, "patch": True, "changes": False},
+                "status": {
+                    "project": True,
+                    "patch": True,
+                    "changes": False,
+                    "default_rules": {"carryforward_behavior": "pass"},
+                },
             },
-            "comment": {"layout": "reach,diff,flags,tree,reach", "behavior": "default"},
+            "comment": {
+                "layout": "reach,diff,flags,tree,reach",
+                "behavior": "default",
+                "show_carryforward_flags": False,
+            },
             "github_checks": {"annotations": False},
         }
         res = validate_yaml(get_config("site", default={}), show_secrets=True)

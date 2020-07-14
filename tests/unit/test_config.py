@@ -138,10 +138,17 @@ class TestConfig(object):
         assert get_config("site", "coverage", "status", "project") is True
         assert get_config("site", "coverage", "status", "patch") is True
         assert get_config("site", "coverage", "status", "changes") is False
+        assert (
+            get_config(
+                "site", "coverage", "status", "default_rules", "carryforward_behavior"
+            )
+            == "pass"
+        )
         assert [
             x.strip() for x in get_config("site", "comment", "layout").split(",")
         ] == ["reach", "diff", "flags", "files", "footer"]
         assert get_config("site", "comment", "behavior") == "default"
+        assert get_config("site", "comment", "show_carryforward_flags") is False
         assert get_config("setup", "segment", "enabled") is True
         assert get_config("setup", "segment", "key") == "123"
 
@@ -246,6 +253,7 @@ class TestConfig(object):
                 "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
             },
             "changes": False,
+            "default_rules": {"carryforward_behavior": "pass"},
         }
         assert get_config("site", "coverage", "status", "project") == {
             "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
@@ -258,6 +266,7 @@ class TestConfig(object):
             x.strip() for x in get_config("site", "comment", "layout").split(",")
         ] == ["reach", "diff", "flags", "tree", "reach"]
         assert get_config("site", "comment", "behavior") == "default"
+        assert get_config("site", "comment", "show_carryforward_flags") is False
 
     def test_get_config_minio_without_port(self, mocker):
         yaml_content = "\n".join(
