@@ -42,7 +42,7 @@ default_config = {
             "behavior": "default",
             "show_carryforward_flags": False,
         },
-        "github_checks": {"annotations": False},
+        "github_checks": {"annotations": True},
     },
     "setup": {"segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"}},
 }

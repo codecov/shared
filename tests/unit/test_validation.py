@@ -471,7 +471,7 @@ class TestValidationConfig(object):
                 "behavior": "default",
                 "show_carryforward_flags": False,
             },
-            "github_checks": {"annotations": False},
+            "github_checks": {"annotations": True},
         }
         res = validate_yaml(get_config("site", default={}), show_secrets=True)
         assert res == expected_result
