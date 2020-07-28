@@ -523,6 +523,10 @@ class Gitlab(TorngitBaseAdapter):
             error="failure",
             failed="failure",
             canceled="failure",
+            created="pending",
+            manual="pending",
+            skipped="success",
+            waiting_for_resource="pending",
             # These aren't on Github documentation but keeping here in case they're used somewhere
             # see https://github.com/codecov/shared/pull/30/ for context
             cancelled="failure",

@@ -77,6 +77,13 @@ class TestUnitGitlab(object):
                             "name": "name",
                             "created_at": "not none",
                         },
+                        {
+                            "status": "skipped",
+                            "description": "This was skipped so still counts as success",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
+                        },
                     ]
                 ),
             )
@@ -85,6 +92,44 @@ class TestUnitGitlab(object):
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
         assert res == "success"
+
+    @pytest.mark.asyncio
+    async def test_get_commit_statuses_pending(self, mocker, valid_handler):
+        mocked_fetch = mocker.patch.object(Gitlab, "fetch", return_value=Future())
+        mocked_fetch.return_value.set_result(
+            mocker.MagicMock(
+                headers={"Content-Type": "application/json"},
+                body=dumps(
+                    [
+                        {
+                            "status": "created",
+                            "description": "Created means still pending",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
+                        },
+                        {
+                            "status": "manual",
+                            "description": "This requires a manual run so we'll consider it pending until then",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
+                        },
+                        {
+                            "status": "waiting_for_resource",
+                            "description": "Waiting for a resource",
+                            "target_url": "url",
+                            "name": "name",
+                            "created_at": "not none",
+                        },
+                    ]
+                ),
+            )
+        )
+        res = await valid_handler.get_commit_statuses(
+            "c739768fcac68144a3a6d82305b9c4106934d31a"
+        )
+        assert res == "pending"
 
     @pytest.mark.asyncio
     async def test_find_pull_request_by_commit_new_endpoint_doesnt_find_old_does(
