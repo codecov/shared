@@ -148,7 +148,11 @@ class TestMinioStorageService(BaseTestCase):
 
     def test_minio_with_iam_flow(self, codecov_vcr, mocker):
         mocker.patch.dict(
-            os.environ, {"MINIO_ACCESS_KEY": "codecov-default-key", "MINIO_SECRET_KEY": "codecov-default-secret"}
+            os.environ,
+            {
+                "MINIO_ACCESS_KEY": "codecov-default-key",
+                "MINIO_SECRET_KEY": "codecov-default-secret",
+            },
         )
         minio_iam_config = {
             "access_key_id": "codecov-default-key",
