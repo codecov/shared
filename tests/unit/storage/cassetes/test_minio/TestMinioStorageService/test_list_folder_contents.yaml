@@ -2,258 +2,437 @@ interactions:
 - request:
     body: null
     headers:
-      Host: ['minio:9000']
-      X-Amz-Content-Sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      X-Amz-Date: [20190821T231216Z]
+      host:
+      - 172.18.0.5:9000
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://172.18.0.5:9000/thiagoarchivetest?location=
   response:
-    body: {string: '<?xml version="1.0" encoding="UTF-8"?>
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'}
+        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['128']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [application/xml]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD130026AD287A]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9137D321A
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANDPXV0C/w3E0Q2AMAgFwFWYwMY93KExCkpCwcBr4vh6H7dF8iB9ag4KJ1Fjwq37FQ1c6KZ/
+        H4sIADRdKF8C/w3E0Q2AMAgFwFWYwMY93KExCkpCwcBr4vh6H7dF8iB9ag4KJ1Fjwq37FQ1c6KZ/
         EnZy9iMc7KiWXNPQ1wUvSCLpAwxDez5GAAAA
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [84]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [966c0b11ce6e8aa3440d910e05e1ccce4ab9020108dc5773bc7883c3b8a3f605]
-      x-amz-date: [20190821T231216Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 84
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - 026656bc1c021ef30e045a8a29f0d61e2d1d3f820ff864720c30b29b04b2b7c2
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/thiago/test_list_folder_contents/result_1.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/thiago/test_list_folder_contents/result_1.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      ETag: ['"bd0c96817253c0c6f95de27db3315834-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD130026D6CE76]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"2a31dc29ac7964692e1bd1ab13f33c8c"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D913A1DBCA
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANDPXV0C/w3E0QmAMAwFwFUygYJzuEMRTTWQ9pXkFRxf7+N2hDaxkbMJulRzFT523FipyeL2
+        H4sIADRdKF8C/w3E0QmAMAwFwFUygYJzuEMRTTWQ9pXkFRxf7+N2hDaxkbMJulRzFT523FipyeL2
         V+GXRjnRqZ25huZ0lm3hS6kIGfgAbaQVh0gAAAA=
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [86]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [5c7a1d6cd1099ebfe1f52ccfa77df7e4a8a296b40c90c1d10ec714341e063403]
-      x-amz-date: [20190821T231216Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 86
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - 6e0ea5115160af8ec0b38d0b685999ca26d10d6f9b06ef501d8737ccc40904a0
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/thiago/test_list_folder_contents/result_2.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/thiago/test_list_folder_contents/result_2.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      ETag: ['"ea9023a2771a0cf1783ebc7007baef7d-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD1300274EE133]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"910d850602b1dd539450b2f24fda17c7"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D913FE9BD9
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANDPXV0C/w3E0QmAMAwFwFUygX64hjsU0VQDaV9JXsHx9T5uR2gTGzmboEs1V+Fjx42Vmixu
+        H4sIADRdKF8C/w3E0QmAMAwFwFUygX64hjsU0VQDaV9JXsHx9T5uR2gTGzmboEs1V+Fjx42Vmixu
         fxV+aZQTndqZa2hOZ9kWvpSKkIGBD7gDDC9KAAAA
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [87]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [de2d4b0d167c82c72c72a3b9c8320f47947997be2f7f85f00aaf76907863f37d]
-      x-amz-date: [20190821T231216Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 87
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - 6f370d266449a04fd09ed491f529e3807699371a618f6200964165500293ad61
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/thiago/test_list_folder_contents/result_3.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/thiago/test_list_folder_contents/result_3.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      ETag: ['"f0ae16af2b52eec64d549bb3294e3b4b-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD130027BF49FE]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"5189f99a3c1bf81c081ddbd70277d218"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D91459AB57
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANDPXV0C/xXEgQmAMAwEwFUygaV7uEMRTTSQNiV5wfFVDm714E468+7kg0SNCZdupxdwopl+
+        H4sIADRdKF8C/xXEgQmAMAwEwFUygaV7uEMRTTSQNiV5wfFVDm714E468+7kg0SNCZdupxdwopl+
         idvB0XYf4IEsUktw3oZWFzwg8aDpvxfpCA9JTwAAAA==
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [88]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [4a1a5e1301a78671db5e5976917e24f5d5366f534d9e5192d3aeaf5666328e70]
-      x-amz-date: [20190821T231216Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 88
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - 00172f9d4f7742c5d9b6a4c3dc417203a353612aa59bf67a17ebd541477ef9b4
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/thiago/test_list_folder_contents/f1/result_1.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/thiago/test_list_folder_contents/f1/result_1.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      ETag: ['"d981bf48299c8ba0e060bdffdb19e8e4-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD130028348905]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"7223a05cdb7fe91e17431c9ebabbc3a7"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D914C277F1
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANDPXV0C/yXEgQmAMAwEwFUygUXncIcimmggbUryguMryMGtHtxIR96NvJOoMeHS7fQCTlTT
+        H4sIADRdKF8C/yXEgQmAMAwEwFUygUXncIcimmggbUryguMryMGtHtxIR96NvJOoMeHS7fQCTlTT
         L3E7OOruHdyRReYSnLehLhMekHjQ8N8LOkMK2FEAAAA=
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [89]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [00ce7d47b94fc2b10bff34df686333d4a3c7b49bb10b0a4147a233060b943867]
-      x-amz-date: [20190821T231216Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 89
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - a9bfa23da42ed64c80328d3f4a91eb6f276bb71d13d42265784917e5bb8a3773
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/thiago/test_list_folder_contents/f1/result_2.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/thiago/test_list_folder_contents/f1/result_2.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      ETag: ['"ffc0e852ae658e7798b1edff70537be0-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD130028A94461]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"ba08e351960e00bda49020291ad8453a"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9152B1AD4
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANDPXV0C/zXE0QmAMAwFwFUygUVcwx2KaKKBtCnJExxff+TgVg9upCPvRt5J1Jhw6XZ6ASeq
+        H4sIADRdKF8C/zXE0QmAMAwFwFUygUVcwx2KaKKBtCnJExxff+TgVg9upCPvRt5J1Jhw6XZ6ASeq
         6Ze4HRx19w7uyCJzCc7bUJcJD0g8aPjvBd868BxTAAAA
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [90]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [7532be3f960931766ca389f78d25727baa6b50915fa76859b3360fb8bd3bd43d]
-      x-amz-date: [20190821T231216Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 90
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - a4349611c279279944b6cfa99e61447a971c514fd78d648a3b30a10eb503bb4b
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/thiago/test_list_folder_contents/f1/result_3.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/thiago/test_list_folder_contents/f1/result_3.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      ETag: ['"8ffcea34c5ade990046a623e6d0e967f-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD13002925C16B]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"d20956ecde0fe317b30d6ced77a6a56a"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9159438EA
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: null
     headers:
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      x-amz-date: [20190821T231216Z]
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/?list-type=2&prefix=thiago%2Ftest_list_folder_contents
+    uri: http://172.18.0.5:9000/thiagoarchivetest/?delimiter=&list-type=2&max-keys=1000&prefix=thiago%2Ftest_list_folder_contents
   response:
-    body: {string: '<?xml version="1.0" encoding="UTF-8"?>
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>thiagoarchivetest</Name><Prefix>thiago/test_list_folder_contents</Prefix><KeyCount>6</KeyCount><MaxKeys>1000</MaxKeys><Delimiter></Delimiter><IsTruncated>false</IsTruncated><Contents><Key>thiago/test_list_folder_contents/f1/result_1.txt</Key><LastModified>2019-08-21T23:12:16.786Z</LastModified><ETag>&#34;d981bf48299c8ba0e060bdffdb19e8e4-1&#34;</ETag><Size>88</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_2.txt</Key><LastModified>2019-08-21T23:12:16.794Z</LastModified><ETag>&#34;ffc0e852ae658e7798b1edff70537be0-1&#34;</ETag><Size>89</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_3.txt</Key><LastModified>2019-08-21T23:12:16.802Z</LastModified><ETag>&#34;8ffcea34c5ade990046a623e6d0e967f-1&#34;</ETag><Size>90</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/result_1.txt</Key><LastModified>2019-08-21T23:12:16.762Z</LastModified><ETag>&#34;bd0c96817253c0c6f95de27db3315834-1&#34;</ETag><Size>84</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/result_2.txt</Key><LastModified>2019-08-21T23:12:16.770Z</LastModified><ETag>&#34;ea9023a2771a0cf1783ebc7007baef7d-1&#34;</ETag><Size>86</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/result_3.txt</Key><LastModified>2019-08-21T23:12:16.778Z</LastModified><ETag>&#34;f0ae16af2b52eec64d549bb3294e3b4b-1&#34;</ETag><Size>87</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>'}
+        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>thiagoarchivetest</Name><Prefix>thiago/test_list_folder_contents</Prefix><KeyCount>6</KeyCount><MaxKeys>1000</MaxKeys><Delimiter></Delimiter><IsTruncated>false</IsTruncated><Contents><Key>thiago/test_list_folder_contents/f1/result_1.txt</Key><LastModified>2020-08-03T18:53:40.766Z</LastModified><ETag>&#34;7223a05cdb7fe91e17431c9ebabbc3a7&#34;</ETag><Size>88</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_2.txt</Key><LastModified>2020-08-03T18:53:40.774Z</LastModified><ETag>&#34;ba08e351960e00bda49020291ad8453a&#34;</ETag><Size>89</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_3.txt</Key><LastModified>2020-08-03T18:53:40.778Z</LastModified><ETag>&#34;d20956ecde0fe317b30d6ced77a6a56a&#34;</ETag><Size>90</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/result_1.txt</Key><LastModified>2020-08-03T18:53:40.746Z</LastModified><ETag>&#34;2a31dc29ac7964692e1bd1ab13f33c8c&#34;</ETag><Size>84</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/result_2.txt</Key><LastModified>2020-08-03T18:53:40.754Z</LastModified><ETag>&#34;910d850602b1dd539450b2f24fda17c7&#34;</ETag><Size>86</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/result_3.txt</Key><LastModified>2020-08-03T18:53:40.758Z</LastModified><ETag>&#34;5189f99a3c1bf81c081ddbd70277d218&#34;</ETag><Size>87</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>'
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['2052']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [application/xml]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD13002997C447]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D915FEAE24
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: null
     headers:
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      x-amz-date: [20190821T231216Z]
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/?list-type=2&prefix=thiago%2Ftest_list_folder_contents%2Ff1
+    uri: http://172.18.0.5:9000/thiagoarchivetest/?delimiter=&list-type=2&max-keys=1000&prefix=thiago%2Ftest_list_folder_contents%2Ff1
   response:
-    body: {string: '<?xml version="1.0" encoding="UTF-8"?>
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>thiagoarchivetest</Name><Prefix>thiago/test_list_folder_contents/f1</Prefix><KeyCount>3</KeyCount><MaxKeys>1000</MaxKeys><Delimiter></Delimiter><IsTruncated>false</IsTruncated><Contents><Key>thiago/test_list_folder_contents/f1/result_1.txt</Key><LastModified>2019-08-21T23:12:16.786Z</LastModified><ETag>&#34;d981bf48299c8ba0e060bdffdb19e8e4-1&#34;</ETag><Size>88</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_2.txt</Key><LastModified>2019-08-21T23:12:16.794Z</LastModified><ETag>&#34;ffc0e852ae658e7798b1edff70537be0-1&#34;</ETag><Size>89</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_3.txt</Key><LastModified>2019-08-21T23:12:16.802Z</LastModified><ETag>&#34;8ffcea34c5ade990046a623e6d0e967f-1&#34;</ETag><Size>90</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>'}
+        <ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Name>thiagoarchivetest</Name><Prefix>thiago/test_list_folder_contents/f1</Prefix><KeyCount>3</KeyCount><MaxKeys>1000</MaxKeys><Delimiter></Delimiter><IsTruncated>false</IsTruncated><Contents><Key>thiago/test_list_folder_contents/f1/result_1.txt</Key><LastModified>2020-08-03T18:53:40.766Z</LastModified><ETag>&#34;7223a05cdb7fe91e17431c9ebabbc3a7&#34;</ETag><Size>88</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_2.txt</Key><LastModified>2020-08-03T18:53:40.774Z</LastModified><ETag>&#34;ba08e351960e00bda49020291ad8453a&#34;</ETag><Size>89</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>thiago/test_list_folder_contents/f1/result_3.txt</Key><LastModified>2020-08-03T18:53:40.778Z</LastModified><ETag>&#34;d20956ecde0fe317b30d6ced77a6a56a&#34;</ETag><Size>90</Size><Owner><ID></ID><DisplayName></DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>'
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['1185']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [application/xml]
-      Date: ['Wed, 21 Aug 2019 23:12:16 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD130029E62453]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9167013C5
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 version: 1

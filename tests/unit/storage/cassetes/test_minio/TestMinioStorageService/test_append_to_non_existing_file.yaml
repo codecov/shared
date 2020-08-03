@@ -2,128 +2,221 @@ interactions:
 - request:
     body: null
     headers:
-      Host: ['minio:9000']
-      X-Amz-Content-Sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      X-Amz-Date: [20190821T224627Z]
+      host:
+      - 172.18.0.5:9000
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://172.18.0.5:9000/thiagoarchivetest?location=
   response:
-    body: {string: '<?xml version="1.0" encoding="UTF-8"?>
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'}
+        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['128']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [application/xml]
-      Date: ['Wed, 21 Aug 2019 22:46:27 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD1197610E6930]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9079D59FA
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: null
     headers:
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      x-amz-date: [20190821T224627Z]
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
   response:
-    body: {string: '<?xml version="1.0" encoding="UTF-8"?>
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_append_to_non_existing_file/result.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_append_to_non_existing_file/result.txt</Resource><RequestId>15BD1197614138AE</RequestId><HostId>2126bf0a-5175-4816-a76c-e13a7df46e02</HostId></Error>'}
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_append_to_non_existing_file/result.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_append_to_non_existing_file/result.txt</Resource><RequestId>1627D6D907C4CC0D</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['399']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [application/xml]
-      Date: ['Wed, 21 Aug 2019 22:46:27 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD1197614138AE]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 404, message: Not Found}
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D907C4CC0D
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: Not Found
 - request:
     body: null
     headers:
-      Host: ['minio:9000']
-      X-Amz-Content-Sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      X-Amz-Date: [20190821T224627Z]
+      host:
+      - 172.18.0.5:9000
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://172.18.0.5:9000/thiagoarchivetest?location=
   response:
-    body: {string: '<?xml version="1.0" encoding="UTF-8"?>
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'}
+        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['128']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [application/xml]
-      Date: ['Wed, 21 Aug 2019 22:46:27 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD119761688E35]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D907EE1C52
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIAMPJXV0C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
+        H4sIADRdKF8C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
       - 0
       - null
     headers:
-      content-encoding: [gzip]
-      content-length: [51]
-      content-type: [text/plain]
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [6114835365176ba31d85a5491ffd69a432536fef2413a35200a40d3b5f514031]
-      x-amz-date: [20190821T224627Z]
+      content-encoding:
+      - gzip
+      content-length:
+      - 51
+      content-type:
+      - text/plain
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - c76b3e6d8eb505ce25dfdb8a75b18ddefa8e66a024c86c938cbe025ddde2f366
+      x-amz-date:
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
   response:
-    body: {string: ''}
+    body:
+      string: ''
     headers:
-      Accept-Ranges: [bytes]
-      Content-Length: ['0']
-      Content-Security-Policy: [block-all-mixed-content]
-      Date: ['Wed, 21 Aug 2019 22:46:27 GMT']
-      ETag: ['"8b4cc3109be90bf657c6e2f95b60a11a-1"']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD1197618DA481]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"d148f4e8f4346657f156d672fc7ce52e"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9080F0CAA
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: null
     headers:
-      host: ['minio:9000']
-      user-agent: [MinIO (Linux; x86_64) minio-py/4.0.19]
-      x-amz-content-sha256: [e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855]
-      x-amz-date: [20190821T224627Z]
+      host:
+      - 172.18.0.5:9000
+      user-agent:
+      - MinIO (Linux; x86_64) minio-py/6.0.0
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
+    uri: http://172.18.0.5:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
   response:
     body:
       string: !!binary |
-        H4sIAMPJXV0C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
+        H4sIADRdKF8C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
     headers:
-      Accept-Ranges: [bytes]
-      Content-Encoding: [gzip]
-      Content-Length: ['51']
-      Content-Security-Policy: [block-all-mixed-content]
-      Content-Type: [text/plain]
-      Date: ['Wed, 21 Aug 2019 22:46:27 GMT']
-      ETag: ['"8b4cc3109be90bf657c6e2f95b60a11a-1"']
-      Last-Modified: ['Wed, 21 Aug 2019 22:46:27 GMT']
-      Server: [MinIO/RELEASE.2019-08-21T19-40-07Z]
-      Vary: [Origin]
-      X-Amz-Request-Id: [15BD11976204242A]
-      X-Xss-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '51'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - text/plain
+      Date:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      ETag:
+      - '"d148f4e8f4346657f156d672fc7ce52e"'
+      Last-Modified:
+      - Mon, 03 Aug 2020 18:53:40 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 1627D6D9086A21DF
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 version: 1

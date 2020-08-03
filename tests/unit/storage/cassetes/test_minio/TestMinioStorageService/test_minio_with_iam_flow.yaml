@@ -2,36 +2,38 @@ interactions:
 - request:
     body: null
     headers:
-      Host:
-      - minio:9000
-      X-Amz-Content-Sha256:
+      host:
+      - 172.18.0.5:9000
+      x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      X-Amz-Date:
-      - 20200415T232048Z
+      x-amz-date:
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/testminiowithiamflow?location=
+    uri: http://172.18.0.5:9000/testminiowithiamflow?location=
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>testminiowithiamflow</BucketName><Resource>/testminiowithiamflow</Resource><RequestId>160621965B3AB61C</RequestId><HostId>9eb4063b-34a4-4c4f-a169-8feb99fd187d</HostId></Error>'
+        <Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>testminiowithiamflow</BucketName><Resource>/testminiowithiamflow</Resource><RequestId>1627D6D91A5FC477</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
-      Content-Length:
-      - '312'
       Content-Security-Policy:
       - block-all-mixed-content
       Content-Type:
       - application/xml
       Date:
-      - Wed, 15 Apr 2020 23:20:48 GMT
+      - Mon, 03 Aug 2020 18:53:40 GMT
       Server:
-      - MinIO/RELEASE.2020-04-15T19-42-18Z
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 160621965B3AB61C
+      - 1627D6D91A5FC477
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -41,15 +43,15 @@ interactions:
     body: null
     headers:
       Host:
-      - minio:9000
+      - 172.18.0.5:9000
       User-Agent:
-      - MinIO (Darwin; x86_64) minio-py/5.0.8
+      - MinIO (Linux; x86_64) minio-py/6.0.0
       X-Amz-Content-Sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       X-Amz-Date:
-      - 20200415T232048Z
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/testminiowithiamflow/
+    uri: http://172.18.0.5:9000/testminiowithiamflow/
   response:
     body:
       string: ''
@@ -61,15 +63,17 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Wed, 15 Apr 2020 23:20:48 GMT
+      - Mon, 03 Aug 2020 18:53:40 GMT
       Location:
       - /testminiowithiamflow
       Server:
-      - MinIO/RELEASE.2020-04-15T19-42-18Z
+      - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 160621965B8AFED8
+      - 1627D6D91A8170E5
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -85,15 +89,15 @@ interactions:
       content-md5:
       - 1ZDa6JLw1Ar3yGO8SylLeA==
       host:
-      - minio:9000
+      - 172.18.0.5:9000
       user-agent:
-      - MinIO (Darwin; x86_64) minio-py/5.0.8
+      - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
       - 76558e14aa59b766163f4d28fff2cdcde3c60736b9352b947675953fefe5f1d5
       x-amz-date:
-      - 20200415T232048Z
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/testminiowithiamflow/?policy=
+    uri: http://172.18.0.5:9000/testminiowithiamflow/?policy=
   response:
     body:
       string: ''
@@ -103,13 +107,15 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Wed, 15 Apr 2020 23:20:48 GMT
+      - Mon, 03 Aug 2020 18:53:40 GMT
       Server:
-      - MinIO/RELEASE.2020-04-15T19-42-18Z
+      - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 160621965BCC6058
+      - 1627D6D91AC523CF
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -119,7 +125,7 @@ interactions:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIANCWl14C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+        H4sIADRdKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
         ABQu+7guAAAA
       - 0
       - null
@@ -131,15 +137,15 @@ interactions:
       content-type:
       - text/plain
       host:
-      - minio:9000
+      - 172.18.0.5:9000
       user-agent:
-      - MinIO (Darwin; x86_64) minio-py/5.0.8
+      - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
-      - 4dd4b5455b4be70343e7ba3d81a2dc0b194b01719f998d34eee9c3c3424c676f
+      - 93c60e614140d7cbfabb86505ad95836e9cef67fe7242ca180ace14daab6b67c
       x-amz-date:
-      - 20200415T232048Z
+      - 20200803T185340Z
     method: PUT
-    uri: http://minio:9000/testminiowithiamflow/test_write_then_read_file/result
+    uri: http://172.18.0.5:9000/testminiowithiamflow/test_write_then_read_file/result
   response:
     body:
       string: ''
@@ -151,15 +157,17 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Wed, 15 Apr 2020 23:20:48 GMT
+      - Mon, 03 Aug 2020 18:53:40 GMT
       ETag:
-      - '"9e31dd092838ccf3a439d4d7ece03857"'
+      - '"81795cdd3049cd8bb7a582bf61ffdbd6"'
       Server:
-      - MinIO/RELEASE.2020-04-15T19-42-18Z
+      - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 160621965C1E8734
+      - 1627D6D91B07A43F
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -169,19 +177,19 @@ interactions:
     body: null
     headers:
       host:
-      - minio:9000
+      - 172.18.0.5:9000
       user-agent:
-      - MinIO (Darwin; x86_64) minio-py/5.0.8
+      - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200415T232048Z
+      - 20200803T185340Z
     method: GET
-    uri: http://minio:9000/testminiowithiamflow/test_write_then_read_file/result
+    uri: http://172.18.0.5:9000/testminiowithiamflow/test_write_then_read_file/result
   response:
     body:
       string: !!binary |
-        H4sIANCWl14C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+        H4sIADRdKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
         ABQu+7guAAAA
     headers:
       Accept-Ranges:
@@ -195,17 +203,19 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Wed, 15 Apr 2020 23:20:48 GMT
+      - Mon, 03 Aug 2020 18:53:40 GMT
       ETag:
-      - '"9e31dd092838ccf3a439d4d7ece03857"'
+      - '"81795cdd3049cd8bb7a582bf61ffdbd6"'
       Last-Modified:
-      - Wed, 15 Apr 2020 23:20:48 GMT
+      - Mon, 03 Aug 2020 18:53:40 GMT
       Server:
-      - MinIO/RELEASE.2020-04-15T19-42-18Z
+      - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 160621965C91F854
+      - 1627D6D91B9E7E85
+      X-Minio-Deployment-Id:
+      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
       - 1; mode=block
     status:
