@@ -11,7 +11,7 @@ from minio.error import (
     BucketAlreadyExists,
     NoSuchKey,
 )
-from minio.credentials import Chain, EnvAWS, EnvMinio, IamEc2MetaData, Credentials
+from minio.credentials import Chain, EnvAWS, EnvMinio, IAMProvider, Credentials
 from io import BytesIO
 
 from shared.storage.base import BaseStorageService
@@ -87,7 +87,7 @@ class MinioStorageService(BaseStorageService):
                         providers=[
                             EnvMinio(),
                             EnvAWS(),
-                            IamEc2MetaData(endpoint=iam_endpoint),
+                            IAMProvider(endpoint=iam_endpoint),
                         ]
                     )
                 ),
