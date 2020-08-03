@@ -12,7 +12,7 @@ minio_config = {
     "access_key_id": "codecov-default-key",
     "secret_access_key": "codecov-default-secret",
     "verify_ssl": False,
-    "host": "172.18.0.5",
+    "host": "minio",
     "port": "9000",
     "iam_auth": False,
     "iam_endpoint": None,
@@ -148,13 +148,13 @@ class TestMinioStorageService(BaseTestCase):
 
     def test_minio_with_iam_flow(self, codecov_vcr, mocker):
         mocker.patch.dict(
-            os.environ, {"MINIO_ACCESS_KEY": "codecov-default-key", "MINIO_SECRET_KEY": "codecov-default-secret"}
+            os.environ, {"MINIO_ACCESS_KEY": "holdthedoor", "MINIO_SECRET_KEY": "hodor"}
         )
         minio_iam_config = {
-            "access_key_id": "codecov-default-key",
-            "secret_access_key": "codecov-default-secret",
+            "access_key_id": "holdthedoor",
+            "secret_access_key": "hodor",
             "verify_ssl": False,
-            "host": "172.18.0.5",
+            "host": "minio",
             "port": "9000",
             "iam_auth": True,
             "iam_endpoint": None,
