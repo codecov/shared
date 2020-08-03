@@ -148,11 +148,8 @@ class TestMinioStorageService(BaseTestCase):
 
     def test_minio_with_iam_flow(self, codecov_vcr, mocker):
         mocker.patch.dict(
-            os.environ, 
-            {
-                "MINIO_ACCESS_KEY": "holdthedoor", 
-                "MINIO_SECRET_KEY": "hodor"
-            },
+            os.environ,
+            {"MINIO_ACCESS_KEY": "holdthedoor", "MINIO_SECRET_KEY": "hodor"},
         )
         minio_iam_config = {
             "access_key_id": "holdthedoor",
