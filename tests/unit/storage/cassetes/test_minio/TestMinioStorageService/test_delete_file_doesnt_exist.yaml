@@ -3,13 +3,13 @@ interactions:
     body: null
     headers:
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: GET
-    uri: http://172.18.0.5:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/thiagoarchivetest?location=
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +23,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,7 +31,7 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D90DA428EE
+      - 1627D922CFACBC0B
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
@@ -43,15 +43,15 @@ interactions:
     body: null
     headers:
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       user-agent:
       - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: DELETE
-    uri: http://172.18.0.5:9000/thiagoarchivetest/test_delete_file_doesnt_exist/result.txt
+    uri: http://minio:9000/thiagoarchivetest/test_delete_file_doesnt_exist/result.txt
   response:
     body:
       string: ''
@@ -61,13 +61,13 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D90DC8FCC3
+      - 1627D922CFD4B079
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:

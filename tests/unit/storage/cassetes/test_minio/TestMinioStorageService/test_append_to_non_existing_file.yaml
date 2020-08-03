@@ -3,13 +3,13 @@ interactions:
     body: null
     headers:
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: GET
-    uri: http://172.18.0.5:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/thiagoarchivetest?location=
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +23,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,7 +31,7 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D9079D59FA
+      - 1627D922C967352F
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
@@ -43,20 +43,20 @@ interactions:
     body: null
     headers:
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       user-agent:
       - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: GET
-    uri: http://172.18.0.5:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
+    uri: http://minio:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_append_to_non_existing_file/result.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_append_to_non_existing_file/result.txt</Resource><RequestId>1627D6D907C4CC0D</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_append_to_non_existing_file/result.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_append_to_non_existing_file/result.txt</Resource><RequestId>1627D922C9890788</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -73,7 +73,7 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D907C4CC0D
+      - 1627D922C9890788
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
@@ -85,13 +85,13 @@ interactions:
     body: null
     headers:
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: GET
-    uri: http://172.18.0.5:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/thiagoarchivetest?location=
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -105,7 +105,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -113,7 +113,7 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D907EE1C52
+      - 1627D922C9AB175D
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
@@ -125,7 +125,7 @@ interactions:
     body: !!python/object/new:_io.BytesIO
       state: !!python/tuple
       - !!binary |
-        H4sIADRdKF8C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
+        H4sIAAhnKF8C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
       - 0
       - null
     headers:
@@ -136,15 +136,15 @@ interactions:
       content-type:
       - text/plain
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       user-agent:
       - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
-      - c76b3e6d8eb505ce25dfdb8a75b18ddefa8e66a024c86c938cbe025ddde2f366
+      - 6bcd793b99bbab0b7abaf818c4e73f5f4170fcef28ea7a37fec891b034ca45cc
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: PUT
-    uri: http://172.18.0.5:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
+    uri: http://minio:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
   response:
     body:
       string: ''
@@ -156,15 +156,15 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       ETag:
-      - '"d148f4e8f4346657f156d672fc7ce52e"'
+      - '"8022344bd59265c4b45bb5d9c77fc042"'
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D9080F0CAA
+      - 1627D922C9CBEF0C
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
@@ -176,19 +176,19 @@ interactions:
     body: null
     headers:
       host:
-      - 172.18.0.5:9000
+      - minio:9000
       user-agent:
       - MinIO (Linux; x86_64) minio-py/6.0.0
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T185340Z
+      - 20200803T193536Z
     method: GET
-    uri: http://172.18.0.5:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
+    uri: http://minio:9000/thiagoarchivetest/test_append_to_non_existing_file/result.txt
   response:
     body:
       string: !!binary |
-        H4sIADRdKF8C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
+        H4sIAAhnKF8C/8vNz9VRyMnPz1ZILFHITdVRSCwoSM1LycxLV0hJLEkEAMTXCy8fAAAA
     headers:
       Accept-Ranges:
       - bytes
@@ -201,17 +201,17 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       ETag:
-      - '"d148f4e8f4346657f156d672fc7ce52e"'
+      - '"8022344bd59265c4b45bb5d9c77fc042"'
       Last-Modified:
-      - Mon, 03 Aug 2020 18:53:40 GMT
+      - Mon, 03 Aug 2020 19:35:36 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D6D9086A21DF
+      - 1627D922CA21F4BC
       X-Minio-Deployment-Id:
       - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
       X-Xss-Protection:
