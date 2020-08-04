@@ -29,6 +29,7 @@ class TestMinioStorageService(BaseTestCase):
     def test_create_bucket_already_exists(self, codecov_vcr):
         storage = MinioStorageService(minio_config)
         bucket_name = "alreadyexists"
+        storage.create_root_storage(bucket_name)
         with pytest.raises(BucketAlreadyExistsError):
             storage.create_root_storage(bucket_name)
 
@@ -147,11 +148,15 @@ class TestMinioStorageService(BaseTestCase):
 
     def test_minio_with_iam_flow(self, codecov_vcr, mocker):
         mocker.patch.dict(
-            os.environ, {"MINIO_ACCESS_KEY": "hodor", "MINIO_SECRET_KEY": "holdthedoor"}
+            os.environ,
+            {
+                "MINIO_ACCESS_KEY": "codecov-default-key",
+                "MINIO_SECRET_KEY": "codecov-default-secret",
+            },
         )
         minio_iam_config = {
-            "access_key_id": None,
-            "secret_access_key": None,
+            "access_key_id": "codecov-default-key",
+            "secret_access_key": "codecov-default-secret",
             "verify_ssl": False,
             "host": "minio",
             "port": "9000",

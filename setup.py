@@ -23,7 +23,7 @@ setup(
         "cryptography==2.7",
         "google-cloud-storage==1.18.0",
         "htmldom",
-        "minio==5.0.8",
+        "minio==6.0.0",
         "oauth2",
         "schema==0.7.0",
         "six==1.11.0",
