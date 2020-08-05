@@ -1,3 +1,6 @@
+from shared.utils.migrate import migrate_totals
+from shared.reports.types import ReportTotals
+
 from enum import Enum
 
 
@@ -72,7 +75,7 @@ class Session(object):
     ):
         return cls(
             id=id,
-            totals=t or kwargs.get("totals"),
+            totals=parse_totals(t or kwargs.get("totals")),
             time=d or kwargs.get("time"),
             archive=a or kwargs.get("archive"),
             flags=f or kwargs.get("flags"),
@@ -89,7 +92,9 @@ class Session(object):
 
     def _encode(self):
         return {
-            "t": self.totals,
+            "t": self.totals.astuple()
+            if isinstance(self.totals, ReportTotals)
+            else self.totals,
             "d": self.time,
             "a": self.archive,
             "f": self.flags,
@@ -103,3 +108,11 @@ class Session(object):
             "st": self.session_type.value,
             "se": self.session_extras,
         }
+
+
+def parse_totals(totals):
+    if isinstance(totals, ReportTotals):
+        return totals
+    if totals:
+        return ReportTotals(*totals)
+    return None
