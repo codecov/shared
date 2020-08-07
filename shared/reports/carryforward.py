@@ -1,17 +1,12 @@
 from typing import Sequence, Mapping
 import re
 import logging
-from time import time
 
 from shared.metrics import metrics
-from shared.reports.resources import Report, ReportLine
-from shared.reports.editable import EditableReportFile, EditableReport
-from shared.utils.merge import (
-    get_complexity_from_sessions,
-    get_coverage_from_sessions,
-)
-from shared.utils.match import match_any, match
-from shared.utils.sessions import Session, SessionType
+from shared.reports.resources import Report
+from shared.reports.editable import EditableReport
+from shared.utils.match import match
+from shared.utils.sessions import SessionType
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +80,7 @@ def generate_carryforward_report(
                 del new_report[filename]
     sessions_to_delete = []
     for sid, session in new_report.sessions.items():
-        if not match_any(flags, session.flags):
+        if not contain_any_of_the_flags(flags, session.flags):
             sessions_to_delete.append(int(sid))
         else:
             session.session_extras = session_extras or session.session_extras
@@ -97,3 +92,7 @@ def generate_carryforward_report(
     )
     new_report.delete_multiple_sessions(sessions_to_delete)
     return new_report
+
+
+def contain_any_of_the_flags(expected_flags, actual_flags):
+    return len(set(expected_flags) & set(actual_flags)) > 0
