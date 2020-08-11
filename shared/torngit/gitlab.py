@@ -861,21 +861,23 @@ class Gitlab(TorngitBaseAdapter):
 
     async def list_files(self, ref, dir_path, token=None):
         # https://docs.gitlab.com/ee/api/repositories.html#list-repository-tree
-        result = await self.api(
-            "get",
+        async_generator = self.make_paginated_call(
             f"/projects/{self.data['repo']['service_id']}/repository/tree",
-            ref=ref,
-            path=dir_path,
+            default_kwargs=dict(ref=ref, path=dir_path,),
+            max_per_page=100,
             token=token,
         )
-        for res in result:
-            if res["type"] == "blob":
-                res["type"] = "file"
-            elif res["type"] == "tree":
-                res["type"] = "folder"
-            else:
-                res["type"] = "other"
-        return result
+        all_results = []
+        async for page in async_generator:
+            for res in page:
+                if res["type"] == "blob":
+                    res["type"] = "file"
+                elif res["type"] == "tree":
+                    res["type"] = "folder"
+                else:
+                    res["type"] = "other"
+                all_results.append(res)
+        return all_results
 
     async def get_ancestors_tree(self, commitid, token=None):
         res = await self.api(
