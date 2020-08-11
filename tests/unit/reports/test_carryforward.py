@@ -558,3 +558,10 @@ class TestCarryfowardFlag(object):
         assert readable_report["report"] == expected_result["report"]
         assert readable_report["totals"] == expected_result["totals"]
         assert readable_report == expected_result
+
+
+def test_generate_carryforward_report_similar_flags():
+    r = Report()
+    r.add_session(Session(id=0, flags=["simple_man"]))
+    res = generate_carryforward_report(r, flags=["simple"], paths=None)
+    assert res.sessions == {}
