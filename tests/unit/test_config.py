@@ -140,9 +140,13 @@ class TestConfig(object):
         assert get_config("site", "coverage", "status", "changes") is False
         assert (
             get_config(
-                "site", "coverage", "status", "default_rules", "carryforward_behavior"
+                "site",
+                "coverage",
+                "status",
+                "default_rules",
+                "flag_coverage_not_uploaded_behavior",
             )
-            == "pass"
+            == "include"
         )
         assert [
             x.strip() for x in get_config("site", "comment", "layout").split(",")
@@ -253,7 +257,7 @@ class TestConfig(object):
                 "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}
             },
             "changes": False,
-            "default_rules": {"carryforward_behavior": "pass"},
+            "default_rules": {"flag_coverage_not_uploaded_behavior": "include"},
         }
         assert get_config("site", "coverage", "status", "project") == {
             "default": {"only_pulls": True, "target": "auto", "threshold": "100%"}

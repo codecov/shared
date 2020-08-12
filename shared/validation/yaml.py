@@ -16,6 +16,9 @@ from shared.validation.helpers import (
 
 log = logging.getLogger(__name__)
 
+# *** Reminder: when changes are made to YAML validation, you will need to update the version of shared in both
+# worker (to apply the changes) AND codecov-api (so the validate route reflects the changes) ***
+
 
 def validate_yaml(inputted_yaml_dict, show_secrets=False):
     """Receives a user-given yaml dict, validates and normalizes the fields for
@@ -94,6 +97,9 @@ def get_schema(show_secrets):
         Optional("paths"): Or(None, [path_structure]),
         Optional("skip_if_assumes"): bool,
         Optional("carryforward_behavior"): Or("include", "exclude", "pass"),
+        Optional("flag_coverage_not_uploaded_behavior"): Or(
+            "include", "exclude", "pass"
+        ),
     }
 
     return Schema(
@@ -179,6 +185,9 @@ def get_schema(show_secrets):
                     {
                         Optional("default_rules"): {
                             Optional("carryforward_behavior"): Or(
+                                "include", "exclude", "pass"
+                            ),
+                            Optional("flag_coverage_not_uploaded_behavior"): Or(
                                 "include", "exclude", "pass"
                             ),
                         },

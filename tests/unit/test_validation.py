@@ -213,10 +213,18 @@ class TestUserYamlValidation(BaseTestCase):
                 "round": "down",
                 "range": "70...100",
                 "status": {
-                    "project": {"custom_project": {"carryforward_behavior": "exclude"}},
+                    "project": {
+                        "custom_project": {
+                            "carryforward_behavior": "exclude",
+                            "flag_coverage_not_uploaded_behavior": "exclude",
+                        }
+                    },
                     "patch": True,
                     "changes": False,
-                    "default_rules": {"carryforward_behavior": "pass"},
+                    "default_rules": {
+                        "carryforward_behavior": "pass",
+                        "flag_coverage_not_uploaded_behavior": "pass",
+                    },
                 },
                 "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
@@ -244,10 +252,18 @@ class TestUserYamlValidation(BaseTestCase):
                 "round": "down",
                 "range": [70, 100],
                 "status": {
-                    "project": {"custom_project": {"carryforward_behavior": "exclude"}},
+                    "project": {
+                        "custom_project": {
+                            "carryforward_behavior": "exclude",
+                            "flag_coverage_not_uploaded_behavior": "exclude",
+                        }
+                    },
                     "patch": True,
                     "changes": False,
-                    "default_rules": {"carryforward_behavior": "pass"},
+                    "default_rules": {
+                        "carryforward_behavior": "pass",
+                        "flag_coverage_not_uploaded_behavior": "pass",
+                    },
                 },
                 "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
@@ -463,7 +479,7 @@ class TestValidationConfig(object):
                     "project": True,
                     "patch": True,
                     "changes": False,
-                    "default_rules": {"carryforward_behavior": "pass"},
+                    "default_rules": {"flag_coverage_not_uploaded_behavior": "include"},
                 },
             },
             "comment": {

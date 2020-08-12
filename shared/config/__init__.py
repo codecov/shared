@@ -34,7 +34,7 @@ default_config = {
                 "project": True,
                 "patch": True,
                 "changes": False,
-                "default_rules": {"carryforward_behavior": "pass"},
+                "default_rules": {"flag_coverage_not_uploaded_behavior": "include"},
             },
         },
         "comment": {
