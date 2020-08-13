@@ -565,3 +565,10 @@ def test_generate_carryforward_report_similar_flags():
     r.add_session(Session(id=0, flags=["simple_man"]))
     res = generate_carryforward_report(r, flags=["simple"], paths=None)
     assert res.sessions == {}
+
+
+def test_generate_carryforward_report_no_flags():
+    r = Report()
+    r.add_session(Session(id=0, flags=None))
+    res = generate_carryforward_report(r, flags=["simple"], paths=None)
+    assert res.sessions == {}

@@ -95,4 +95,6 @@ def generate_carryforward_report(
 
 
 def contain_any_of_the_flags(expected_flags, actual_flags):
+    if expected_flags is None or actual_flags is None:
+        return False
     return len(set(expected_flags) & set(actual_flags)) > 0
