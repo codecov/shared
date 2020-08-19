@@ -5,6 +5,7 @@ from json import dumps
 
 from shared.torngit.gitlab import Gitlab
 from shared.torngit.exceptions import TorngitServerUnreachableError
+from shared.torngit.base import TokenType
 
 
 @pytest.fixture
@@ -154,3 +155,30 @@ class TestUnitGitlab(object):
         )
         res = await valid_handler.find_pull_request(commit_sha)
         assert res == 986
+
+    def test_get_token_by_type_if_none(self):
+        instance = Gitlab(
+            token="token",
+            token_type_mapping={
+                TokenType.read: "read",
+                TokenType.admin: "admin",
+                TokenType.comment: None,
+                TokenType.status: "status",
+            },
+        )
+        assert instance.get_token_by_type_if_none(None, TokenType.read) == "read"
+        assert instance.get_token_by_type_if_none(None, TokenType.admin) == "admin"
+        assert instance.get_token_by_type_if_none(None, TokenType.comment) == "token"
+        assert instance.get_token_by_type_if_none(None, TokenType.status) == "status"
+        assert instance.get_token_by_type_if_none(
+            {"key": "token_set_user"}, TokenType.read
+        ) == {"key": "token_set_user"}
+        assert instance.get_token_by_type_if_none(
+            {"key": "token_set_user"}, TokenType.admin
+        ) == {"key": "token_set_user"}
+        assert instance.get_token_by_type_if_none(
+            {"key": "token_set_user"}, TokenType.comment
+        ) == {"key": "token_set_user"}
+        assert instance.get_token_by_type_if_none(
+            {"key": "token_set_user"}, TokenType.status
+        ) == {"key": "token_set_user"}

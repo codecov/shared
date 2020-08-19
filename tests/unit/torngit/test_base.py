@@ -36,4 +36,4 @@ class TestTorngitBaseAdapter(object):
         assert instance.get_token_by_type(TokenType.read) == {"key": "read"}
         assert instance.get_token_by_type(TokenType.admin) == {"key": "admin"}
         assert instance.get_token_by_type(TokenType.comment) == {"key": "token"}
-        assert instance.get_token_by_type(TokenType.status) is None
+        assert instance.get_token_by_type(TokenType.status) == {"key": "token"}

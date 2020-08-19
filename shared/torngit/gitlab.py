@@ -1,10 +1,9 @@
 import os
 import socket
-from time import time
-from sys import stdout
 from base64 import b64decode
 from json import loads, dumps
 import logging
+from typing import Optional
 
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
@@ -12,7 +11,7 @@ from tornado.httpclient import HTTPError
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
-from shared.torngit.base import TorngitBaseAdapter
+from shared.torngit.base import TorngitBaseAdapter, TokenType
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
@@ -172,6 +171,7 @@ class Gitlab(TorngitBaseAdapter):
         return user
 
     async def post_webhook(self, name, url, events, secret, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # http://doc.gitlab.com/ce/api/projects.html#add-project-hook
         res = await self.api(
             "post",
@@ -188,6 +188,7 @@ class Gitlab(TorngitBaseAdapter):
         return res
 
     async def edit_webhook(self, hookid, name, url, events, secret, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # http://doc.gitlab.com/ce/api/projects.html#edit-project-hook
         return await self.api(
             "put",
@@ -203,6 +204,7 @@ class Gitlab(TorngitBaseAdapter):
         )
 
     async def delete_webhook(self, hookid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
         # http://docs.gitlab.com/ce/api/projects.html#delete-project-hook
         try:
             await self.api(
@@ -562,6 +564,7 @@ class Gitlab(TorngitBaseAdapter):
         return Status(statuses)
 
     async def post_comment(self, pullid, body, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
         return await self.api(
             "post",
@@ -572,6 +575,7 @@ class Gitlab(TorngitBaseAdapter):
         )
 
     async def edit_comment(self, pullid, commentid, body, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
         try:
             return await self.api(
@@ -589,6 +593,7 @@ class Gitlab(TorngitBaseAdapter):
             raise
 
     async def delete_comment(self, pullid, commentid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://docs.gitlab.com/ce/api/notes.html#delete-a-merge-request-note
         try:
             await self.api(
@@ -605,8 +610,9 @@ class Gitlab(TorngitBaseAdapter):
             raise
         return True
 
-    async def get_commit(self, commit, token=None):
+    async def get_commit(self, commit: str, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-a-single-commit
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         try:
             res = await self.api(
                 "get",
@@ -643,6 +649,7 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_pull_request_commits(self, pullid, token=None):
         # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         commits = await self.api(
             "get",
             "/projects/{}/merge_requests/{}/commits".format(
@@ -654,6 +661,7 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_branches(self, token=None):
         # http://doc.gitlab.com/ce/api/projects.html#list-branches
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         res = await self.api(
             "get",
             "/projects/%s/repository/branches" % self.data["repo"]["service_id"],
@@ -662,6 +670,7 @@ class Gitlab(TorngitBaseAdapter):
         return [(b["name"], b["commit"]["id"]) for b in res]
 
     async def get_pull_requests(self, state="open", token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # ONLY searchable by branch.
         state = {"merged": "merged", "open": "opened", "close": "closed"}.get(
             state, "all"
@@ -685,6 +694,7 @@ class Gitlab(TorngitBaseAdapter):
     async def find_pull_request(
         self, commit=None, branch=None, state="open", token=None
     ):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         gitlab_state = self.get_gitlab_pull_state_from_codecov_state(state)
         if commit is not None:
             try:
@@ -776,6 +786,7 @@ class Gitlab(TorngitBaseAdapter):
         return bool(res["state"] == "active" and res["access_level"] > 39)
 
     async def get_commit_diff(self, commit, context=None, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # http://doc.gitlab.com/ce/api/commits.html#get-the-diff-of-a-commit
         res = await self.api(
             "get",
@@ -786,6 +797,7 @@ class Gitlab(TorngitBaseAdapter):
         return self.diff_to_json(res)
 
     async def get_repository(self, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ce/api/projects.html#get-single-project
         if self.data["repo"].get("service_id") is None:
             # convert from codecov ':' separator to gitlab '/' separator for groups/subgroups
@@ -812,6 +824,7 @@ class Gitlab(TorngitBaseAdapter):
         )
 
     async def get_source(self, path, ref, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository
         try:
             res = await self.api(
@@ -834,6 +847,7 @@ class Gitlab(TorngitBaseAdapter):
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ee/api/repositories.html#compare-branches-tags-or-commits
         compare = await self.api(
             "get",
@@ -861,6 +875,7 @@ class Gitlab(TorngitBaseAdapter):
 
     async def list_files(self, ref, dir_path, token=None):
         # https://docs.gitlab.com/ee/api/repositories.html#list-repository-tree
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         async_generator = self.make_paginated_call(
             f"/projects/{self.data['repo']['service_id']}/repository/tree",
             default_kwargs=dict(ref=ref, path=dir_path,),
@@ -880,6 +895,7 @@ class Gitlab(TorngitBaseAdapter):
         return all_results
 
     async def get_ancestors_tree(self, commitid, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
         res = await self.api(
             "get",
             "/projects/%s/repository/commits" % self.data["repo"]["service_id"],
@@ -898,3 +914,10 @@ class Gitlab(TorngitBaseAdapter):
                 commitid=kwargs["commitid"],
             )
         raise NotImplementedError()
+
+    def get_token_by_type_if_none(
+        self, token: Optional[str], token_type: TokenType
+    ) -> Optional[str]:
+        if token is not None:
+            return token
+        return self.get_token_by_type(token_type)
