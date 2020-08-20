@@ -87,7 +87,7 @@ class MinioStorageService(BaseStorageService):
                         providers=[
                             IAMProvider(endpoint=iam_endpoint),
                             EnvMinio(),
-                            EnvAWS()
+                            EnvAWS(),
                         ]
                     )
                 ),
