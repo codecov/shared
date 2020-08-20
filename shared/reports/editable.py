@@ -140,7 +140,7 @@ class EditableReport(Report):
                 if curr_sess.flags and session.flags:
                     if any(f in session.flags for f in curr_sess.flags):
                         sessions_to_delete.append(sess_id)
-        for sess_id_to_delete in sessions_to_delete:
-            log.info("Deleted session due to carriedforward overwrite")
-            self.delete_session(sess_id_to_delete)
+        if sessions_to_delete:
+            log.info("Deleted multiple sessions due to carriedforward overwrite")
+            self.delete_multiple_sessions(sessions_to_delete)
         return super().add_session(session)
