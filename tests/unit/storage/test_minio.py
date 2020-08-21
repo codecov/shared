@@ -145,8 +145,7 @@ class TestMinioStorageService(BaseTestCase):
         assert sorted(expected_result_2, key=lambda x: x["size"]) == sorted(
             results_2, key=lambda x: x["size"]
         )
-    
-    
+
     """
     Since we cannot rely on `Chain` in the underlying implementation 
     we cannot ''trick'' minio into using the IAM auth flow while testing,
@@ -154,6 +153,7 @@ class TestMinioStorageService(BaseTestCase):
     We can unskip this test after minio fixes their credential 
     chain problem
     """
+
     @pytest.mark.skip(reason="Skipping because minio IAM is currently untestable.")
     def test_minio_with_iam_flow(self, codecov_vcr, mocker):
         mocker.patch.dict(
