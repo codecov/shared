@@ -85,9 +85,9 @@ class MinioStorageService(BaseStorageService):
                 credentials=Credentials(
                     provider=Chain(
                         providers=[
+                            IAMProvider(endpoint=iam_endpoint),
                             EnvMinio(),
                             EnvAWS(),
-                            IAMProvider(endpoint=iam_endpoint),
                         ]
                     )
                 ),
