@@ -59,7 +59,7 @@ class TorngitBaseAdapter(object):
     )
 
     def get_token_by_type(self, token_type: TokenType):
-        if token_type in self._token_type_mapping:
+        if self._token_type_mapping.get(token_type) is not None:
             return self._token_type_mapping.get(token_type)
         return self.token
 
