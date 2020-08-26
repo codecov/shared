@@ -4,6 +4,7 @@ from base64 import b64encode
 
 import pytest
 from schema import SchemaError
+from mock import patch
 
 from tests.base import BaseTestCase
 from shared.config import get_config, ConfigHelper
@@ -381,6 +382,16 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"github_checks": {"annotations": False}}
         expected_result = {"github_checks": {"annotations": False}}
         assert validate_yaml(user_input) == expected_result
+
+    def test_new_schema_exception_handling(self, mocker):
+        # raise an exception during new schema validation
+        mocker.patch(
+            "shared.validation.yaml.get_new_schema",
+            return_value=mocker.MagicMock(side_effect=TypeError()),
+        )
+
+        # call should complete successfully and not raise any errors when handlin the exception
+        assert validate_yaml({}) == {}
 
 
 class TestGlobToRegexTranslation(BaseTestCase):

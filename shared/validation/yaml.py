@@ -86,7 +86,7 @@ def validate_yaml(inputted_yaml_dict, show_secrets=False):
         new_schema_valid = False
         new_schema_exception = e
 
-        new_schema_error_message = e.errors
+        new_schema_error_message = e.errors if hasattr(e, "errors") else str(e)
 
     # log discrepancy in validation
     if original_schema_valid != new_schema_valid:

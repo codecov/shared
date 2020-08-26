@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Running linter
           command: |
-            pip3 install black
+            pip3 install black==19.10b0
             black --check .
   build:
     docker:
