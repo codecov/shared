@@ -1,0 +1,186 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://github.com/login/oauth/access_token?code=a8d0f143cd8a98498773&client_id=999247146557c3ba045c&client_secret=test6q9im2vau3pom1w4zkcm8zqbrkhqcaodsbce
+  response:
+    body:
+      string: '{"access_token":"testvhzseisglamvo88u0zo7zp4js3hlpoit20kg","token_type":"bearer","scope":"read:org,repo:status,user:email,write:repo_hook"}'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - OK
+    - !!python/tuple
+      - Server
+      - - GitHub.com
+    - !!python/tuple
+      - Date
+      - - Thu, 27 Aug 2020 23:22:42 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - Status
+      - - 200 OK
+    - !!python/tuple
+      - Vary
+      - - X-PJAX
+        - Accept-Encoding, Accept, X-Requested-With
+    - !!python/tuple
+      - Etag
+      - - W/"f580fbd675a564b1d45994c8f1f77653"
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=0, private, must-revalidate
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubdomains; preload
+    - !!python/tuple
+      - X-Frame-Options
+      - - deny
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Xss-Protection
+      - - 1; mode=block
+    - !!python/tuple
+      - Referrer-Policy
+      - - origin-when-cross-origin, strict-origin-when-cross-origin
+    - !!python/tuple
+      - Expect-Ct
+      - - max-age=2592000, report-uri="https://api.github.com/_private/browser/errors"
+    - !!python/tuple
+      - Content-Security-Policy
+      - - 'default-src ''none''; base-uri ''self''; block-all-mixed-content; connect-src
+          ''self'' uploads.github.com www.githubstatus.com collector.githubapp.com
+          api.github.com www.google-analytics.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com
+          github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com
+          cdn.optimizely.com logx.optimizely.com/v1/events wss://alive.github.com;
+          font-src github.githubassets.com; form-action ''self'' github.com gist.github.com;
+          frame-ancestors ''none''; frame-src render.githubusercontent.com; img-src
+          ''self'' data: github.githubassets.com identicons.github.com collector.githubapp.com
+          github-cloud.s3.amazonaws.com *.githubusercontent.com; manifest-src ''self'';
+          media-src ''none''; script-src github.githubassets.com; style-src ''unsafe-inline''
+          github.githubassets.com; worker-src github.com/socket-worker.js gist.github.com/socket-worker.js'
+    - !!python/tuple
+      - Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Github-Request-Id
+      - - CF4C:70B2:D5FDD0:13FDC28:5F484042
+    status:
+      code: 200
+      message: OK
+    url: https://github.com/login/oauth/access_token?code=a8d0f143cd8a98498773&client_id=999247146557c3ba045c&client_secret=test6q9im2vau3pom1w4zkcm8zqbrkhqcaodsbce
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/user
+  response:
+    body:
+      string: '{"login":"ThiagoCodecov","id":44376991,"node_id":"MDQ6VXNlcjQ0Mzc2OTkx","avatar_url":"https://avatars3.githubusercontent.com/u/44376991?v=4","gravatar_id":"","url":"https://api.github.com/users/ThiagoCodecov","html_url":"https://github.com/ThiagoCodecov","followers_url":"https://api.github.com/users/ThiagoCodecov/followers","following_url":"https://api.github.com/users/ThiagoCodecov/following{/other_user}","gists_url":"https://api.github.com/users/ThiagoCodecov/gists{/gist_id}","starred_url":"https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/ThiagoCodecov/subscriptions","organizations_url":"https://api.github.com/users/ThiagoCodecov/orgs","repos_url":"https://api.github.com/users/ThiagoCodecov/repos","events_url":"https://api.github.com/users/ThiagoCodecov/events{/privacy}","received_events_url":"https://api.github.com/users/ThiagoCodecov/received_events","type":"User","site_admin":false,"name":"Thiago","company":"@codecov
+        ","blog":"","location":null,"email":null,"hireable":null,"bio":null,"twitter_username":null,"public_repos":3,"public_gists":0,"followers":0,"following":0,"created_at":"2018-10-22T17:51:44Z","updated_at":"2020-08-27T23:16:04Z"}'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - OK
+    - !!python/tuple
+      - Server
+      - - GitHub.com
+    - !!python/tuple
+      - Date
+      - - Thu, 27 Aug 2020 23:22:43 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - Status
+      - - 200 OK
+    - !!python/tuple
+      - Cache-Control
+      - - private, max-age=60, s-maxage=60
+    - !!python/tuple
+      - Vary
+      - - Accept, Authorization, Cookie, X-GitHub-OTP
+        - Accept-Encoding, Accept, X-Requested-With
+    - !!python/tuple
+      - Etag
+      - - W/"b5e14b0783da60813d27499fc18c3be0"
+    - !!python/tuple
+      - Last-Modified
+      - - Thu, 27 Aug 2020 23:16:04 GMT
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - read:org, repo:status, user:email, write:repo_hook
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - ''
+    - !!python/tuple
+      - X-Oauth-Client-Id
+      - - 999247146557c3ba045c
+    - !!python/tuple
+      - X-Github-Media-Type
+      - - github.v3
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - - '5000'
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - - '4999'
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - - '1598574163'
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+          X-GitHub-Media-Type, Deprecation, Sunset
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - - '*'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubdomains; preload
+    - !!python/tuple
+      - X-Frame-Options
+      - - deny
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Xss-Protection
+      - - 1; mode=block
+    - !!python/tuple
+      - Referrer-Policy
+      - - origin-when-cross-origin, strict-origin-when-cross-origin
+    - !!python/tuple
+      - Content-Security-Policy
+      - - default-src 'none'
+    - !!python/tuple
+      - Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Github-Request-Id
+      - - CF4D:5E01:F9035F:1A2C8BD:5F484042
+    status:
+      code: 200
+      message: OK
+    url: https://api.github.com/user
+version: 1

@@ -89,6 +89,54 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_authenticated_user(self, codecov_vcr):
+        code = "a8d0f143cd8a98498773"
+        handler = Github(
+            oauth_consumer_token=dict(
+                key="999247146557c3ba045c",
+                secret="test6q9im2vau3pom1w4zkcm8zqbrkhqcaodsbce",
+            )
+        )
+        res = await handler.get_authenticated_user(code)
+        assert res == {
+            "login": "ThiagoCodecov",
+            "id": 44376991,
+            "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+            "avatar_url": "https://avatars3.githubusercontent.com/u/44376991?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/ThiagoCodecov",
+            "html_url": "https://github.com/ThiagoCodecov",
+            "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+            "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+            "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+            "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+            "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+            "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+            "type": "User",
+            "site_admin": False,
+            "name": "Thiago",
+            "company": "@codecov ",
+            "blog": "",
+            "location": None,
+            "email": None,
+            "hireable": None,
+            "bio": None,
+            "twitter_username": None,
+            "public_repos": 3,
+            "public_gists": 0,
+            "followers": 0,
+            "following": 0,
+            "created_at": "2018-10-22T17:51:44Z",
+            "updated_at": "2020-08-27T23:16:04Z",
+            "access_token": "testvhzseisglamvo88u0zo7zp4js3hlpoit20kg",
+            "token_type": "bearer",
+            "scope": "read:org,repo:status,user:email,write:repo_hook",
+        }
+
+    @pytest.mark.asyncio
     async def test_edit_comment(self, valid_handler, codecov_vcr):
         res = await valid_handler.edit_comment(
             "1", "436811257", "Hello world numbah 2 my friendo"
