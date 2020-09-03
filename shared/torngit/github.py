@@ -894,10 +894,10 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
     # Get information for a GitHub Actions build/workflow run
     # -------------
     def actions_run_info(self, run):
-        """ 
-        This method formats the API response from GitHub Actions 
-        for any particular build/workflow run. All fields are relevant to 
-        validating a tokenless response. 
+        """
+        This method formats the API response from GitHub Actions
+        for any particular build/workflow run. All fields are relevant to
+        validating a tokenless response.
         """
         public = True
         if run["repository"]["private"]:
@@ -912,8 +912,8 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         )
 
     async def get_workflow_run(self, run_id, token=None):
-        """ 
-        GitHub defines a workflow and a run as the following properties: 
+        """
+        GitHub defines a workflow and a run as the following properties:
         Workflow = yaml with build configuration options
         Run = one instance when the workflow was triggered
         """
