@@ -146,10 +146,9 @@ class Gitlab(TorngitBaseAdapter):
             else:
                 current_page, has_more = None, False
 
-    async def get_authenticated_user(self, **kwargs):
+    async def get_authenticated_user(self, code, redirect_uri):
         creds = self._oauth_consumer_token()
         creds = dict(client_id=creds["key"], client_secret=creds["secret"])
-        kwargs.update(creds)
 
         # http://doc.gitlab.com/ce/api/oauth2.html
         res = await self.api(
@@ -157,9 +156,9 @@ class Gitlab(TorngitBaseAdapter):
             self.service_url + "/oauth/token",
             body=urlencode(
                 dict(
-                    code=self.get_argument("code"),
+                    code=code,
                     grant_type="authorization_code",
-                    redirect_uri=self.get_url("/login/" + self.service),
+                    redirect_uri=redirect_uri,
                     **creds,
                 )
             ),

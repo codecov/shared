@@ -1007,3 +1007,62 @@ class TestGitlabTestCase(object):
         res = [i async for i in res]
         assert len(res) == 2
         assert list(len(p) for p in res) == [3, 3]
+
+    @pytest.mark.asyncio
+    async def test_get_authenticated_user(self, codecov_vcr):
+        code = "7c005cbb342626fffe4f24e5eedac28d9e8fa1c8592808dd294bfe0d39ea084d"
+        handler = Gitlab(
+            oauth_consumer_token=dict(
+                key="testsb4ooxhwdveqlkv2gpoqq1n2tf54kzwv3q9xvsqfq45c33lx0jxp4j8a0och",
+                secret="testux56mx9le9kn3cf0p8j8s1qpuurxk6wqebni1vm3slvbpuhmblgefp6yyoam",
+            )
+        )
+        res = await handler.get_authenticated_user(
+            code, "http://localhost:8000/login/gl"
+        )
+        assert res == {
+            "id": 3124507,
+            "name": "Thiago Ramos",
+            "username": "ThiagoCodecov",
+            "state": "active",
+            "avatar_url": "https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80&d=identicon",
+            "web_url": "https://gitlab.com/ThiagoCodecov",
+            "created_at": 1599149427,
+            "bio": "",
+            "bio_html": "",
+            "location": None,
+            "public_email": "",
+            "skype": "",
+            "linkedin": "",
+            "twitter": "",
+            "website_url": "",
+            "organization": None,
+            "job_title": "",
+            "work_information": None,
+            "last_sign_in_at": "2020-05-28T21:29:21.563Z",
+            "confirmed_at": "2018-11-12T19:05:01.249Z",
+            "last_activity_on": "2020-09-03",
+            "email": "thiago@codecov.io",
+            "theme_id": 1,
+            "color_scheme_id": 1,
+            "projects_limit": 100000,
+            "current_sign_in_at": "2020-09-03T15:46:43.559Z",
+            "identities": [
+                {
+                    "provider": "google_oauth2",
+                    "extern_uid": "114705562456763720684",
+                    "saml_provider_id": None,
+                }
+            ],
+            "can_create_group": True,
+            "can_create_project": True,
+            "two_factor_enabled": False,
+            "external": False,
+            "private_profile": False,
+            "shared_runners_minutes_limit": None,
+            "extra_shared_runners_minutes_limit": None,
+            "access_token": "testhi9nk25akajgzhudabirpz3vjau7qe8i9mavz2d9i1i0cfwjp8ggkcqavglx",
+            "token_type": "Bearer",
+            "refresh_token": "testwnoeg1a4bjhoa65vzxdn8grh4asp0b6l4idtdazw7ps5h8xx77m8gbyty7gi",
+            "scope": "api",
+        }
