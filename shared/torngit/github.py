@@ -160,12 +160,12 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
                 break
         return branches
 
-    async def get_authenticated_user(self):
+    async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
         session = await self.api(
             "get",
             self.service_url + "/login/oauth/access_token",
-            code=self.get_argument("code"),
+            code=code,
             client_id=creds["key"],
             client_secret=creds["secret"],
         )
