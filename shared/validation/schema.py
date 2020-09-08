@@ -254,4 +254,5 @@ def get_new_schema(show_secrets):
             ),
             Optional("github_checks"): Or(bool, {Optional("annotations"): bool}),
         },
+        required=True,
     )

@@ -383,6 +383,42 @@ class TestUserYamlValidation(BaseTestCase):
         expected_result = {"github_checks": {"annotations": False}}
         assert validate_yaml(user_input) == expected_result
 
+    def test_required_fields(self):
+        # Valid beause it has all required sub-fields
+        user_input = {
+            "parsers": {
+                "gcov": {
+                    "branch_detection": {
+                        "conditional": True,
+                        "loop": True,
+                        "method": False,
+                        "macro": False,
+                    }
+                }
+            }
+        }
+        expected_result = {
+            "parsers": {
+                "gcov": {
+                    "branch_detection": {
+                        "conditional": True,
+                        "loop": True,
+                        "method": False,
+                        "macro": False,
+                    }
+                }
+            }
+        }
+        assert validate_yaml(user_input) == expected_result
+
+        # Invalid because it only specifies one sub-field but all are required
+        with pytest.raises(InvalidYamlException) as exc:
+            user_input = {
+                "parsers": {"gcov": {"branch_detection": {"conditional": True}}}
+            }
+            validate_yaml(user_input)
+        assert exc.value.error_location == "Path: parsers->gcov->branch_detection"
+
     def test_new_schema_exception_handling(self, mocker):
         # raise an exception during new schema validation
         mocker.patch(
