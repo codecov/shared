@@ -1,5 +1,5 @@
 import re
-from typing import Tuple
+from typing import Tuple, List
 from enum import Enum, auto
 
 from tornado.escape import url_escape
@@ -372,4 +372,16 @@ class TorngitBaseAdapter(object):
         raise NotImplementedError()
 
     async def get_workflow_run(self, run_id, token=None):
+        raise NotImplementedError()
+
+    async def get_best_effort_branches(self, commit_sha: str, token=None) -> List[str]:
+        """
+        Gets a 'best effort' list of branches this commit is in.
+        If a branch is returned, this means this commit is in that branch. If not, it could still be
+            possible that this commit is in that branch
+        Args:
+            commit_sha (str): The sha of the commit we want to look at
+        Returns:
+            List[str]: A list of branch names
+        """
         raise NotImplementedError()

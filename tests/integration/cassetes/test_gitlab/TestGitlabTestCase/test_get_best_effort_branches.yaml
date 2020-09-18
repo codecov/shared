@@ -1,0 +1,127 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/refs?type=branch&per_page=100
+  response:
+    body:
+      string: '[{"type":"branch","name":"master"},{"type":"branch","name":"other-branch"}]'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - OK
+    - !!python/tuple
+      - Date
+      - - Fri, 18 Sep 2020 05:49:38 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - Connection
+      - - keep-alive
+    - !!python/tuple
+      - Set-Cookie
+      - - __cfduid=d0bcead20ac32e40f612652c91451575e1600408177; expires=Sun, 18-Oct-20
+          05:49:37 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax; Secure
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=0, private, must-revalidate
+    - !!python/tuple
+      - Etag
+      - - W/"67a38a4ca73fa48247cd38cf22c91eb7"
+    - !!python/tuple
+      - Link
+      - - <https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/refs?id=187725&page=1&per_page=100&sha=c739768fcac68144a3a6d82305b9c4106934d31a&type=branch>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/refs?id=187725&page=1&per_page=100&sha=c739768fcac68144a3a6d82305b9c4106934d31a&type=branch>;
+          rel="last"
+    - !!python/tuple
+      - Vary
+      - - Origin
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Frame-Options
+      - - SAMEORIGIN
+    - !!python/tuple
+      - X-Next-Page
+      - - ''
+    - !!python/tuple
+      - X-Page
+      - - '1'
+    - !!python/tuple
+      - X-Per-Page
+      - - '100'
+    - !!python/tuple
+      - X-Prev-Page
+      - - ''
+    - !!python/tuple
+      - X-Request-Id
+      - - bDHArNkwCy4
+    - !!python/tuple
+      - X-Runtime
+      - - '0.042247'
+    - !!python/tuple
+      - X-Total
+      - - '2'
+    - !!python/tuple
+      - X-Total-Pages
+      - - '1'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000
+    - !!python/tuple
+      - Referrer-Policy
+      - - strict-origin-when-cross-origin
+    - !!python/tuple
+      - Ratelimit-Limit
+      - - '600'
+    - !!python/tuple
+      - Ratelimit-Observed
+      - - '2'
+    - !!python/tuple
+      - Ratelimit-Remaining
+      - - '598'
+    - !!python/tuple
+      - Ratelimit-Reset
+      - - '1600408238'
+    - !!python/tuple
+      - Ratelimit-Resettime
+      - - Fri, 18 Sep 2020 05:50:38 GMT
+    - !!python/tuple
+      - Gitlab-Lb
+      - - fe-01-lb-gprd
+    - !!python/tuple
+      - Gitlab-Sv
+      - - localhost
+    - !!python/tuple
+      - Cf-Cache-Status
+      - - DYNAMIC
+    - !!python/tuple
+      - Cf-Request-Id
+      - - 05415be4140000f3cb6ea2f200000001
+    - !!python/tuple
+      - Expect-Ct
+      - - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+    - !!python/tuple
+      - Server
+      - - cloudflare
+    - !!python/tuple
+      - Cf-Ray
+      - - 5d48c8e68e02f3cb-GRU
+    - !!python/tuple
+      - Content-Encoding
+      - - gzip
+    status:
+      code: 200
+      message: OK
+    url: https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/refs?type=branch&per_page=100
+version: 1

@@ -88,6 +88,13 @@ class TestGitlabTestCase(object):
         assert is_admin
 
     @pytest.mark.asyncio
+    async def test_get_best_effort_branches(self, valid_handler, codecov_vcr):
+        branches = await valid_handler.get_best_effort_branches(
+            "c739768fcac68144a3a6d82305b9c4106934d31a"
+        )
+        assert branches == ["master", "other-branch"]
+
+    @pytest.mark.asyncio
     async def test_post_comment(self, valid_handler, codecov_vcr):
         expected_result = {
             "id": 113977323,

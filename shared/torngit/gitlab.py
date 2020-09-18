@@ -3,7 +3,7 @@ import socket
 from base64 import b64decode
 from json import loads, dumps
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
@@ -920,3 +920,26 @@ class Gitlab(TorngitBaseAdapter):
         if token is not None:
             return token
         return self.get_token_by_type(token_type)
+
+    async def get_best_effort_branches(self, commit_sha: str, token=None) -> List[str]:
+        """
+        Gets a 'best effort' list of branches this commit is in.
+        If a branch is returned, this means this commit is in that branch. If not, it could still be
+            possible that this commit is in that branch
+        Args:
+            commit_sha (str): The sha of the commit we want to look at
+        Returns:
+            List[str]: A list of branch names
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        async_generator = self.make_paginated_call(
+            f"/projects/{self.data['repo']['service_id']}/repository/commits/{commit_sha}/refs?type=branch",
+            default_kwargs=dict(),
+            max_per_page=100,
+            token=token,
+        )
+        all_results = []
+        async for page in async_generator:
+            for res in page:
+                all_results.append(res["name"])
+        return all_results

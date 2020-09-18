@@ -1,0 +1,100 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/vnd.github.groot-preview+json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/commits/2dabe97a4a207053e02e82c6632000e9f1be7cea/branches-where-head
+  response:
+    body:
+      string: '[{"name":"thiago/base-no-base","commit":{"sha":"2dabe97a4a207053e02e82c6632000e9f1be7cea","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/2dabe97a4a207053e02e82c6632000e9f1be7cea"},"protected":false}]'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - OK
+    - !!python/tuple
+      - Server
+      - - GitHub.com
+    - !!python/tuple
+      - Date
+      - - Fri, 18 Sep 2020 05:46:10 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - Status
+      - - 200 OK
+    - !!python/tuple
+      - Cache-Control
+      - - private, max-age=60, s-maxage=60
+    - !!python/tuple
+      - Vary
+      - - Accept, Authorization, Cookie, X-GitHub-OTP
+        - Accept-Encoding, Accept, X-Requested-With
+    - !!python/tuple
+      - Etag
+      - - W/"473487da41d9098f71c230c4f7b429c9"
+    - !!python/tuple
+      - X-Oauth-Scopes
+      - - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+    - !!python/tuple
+      - X-Accepted-Oauth-Scopes
+      - - ''
+    - !!python/tuple
+      - X-Github-Media-Type
+      - - github.groot-preview; format=json
+    - !!python/tuple
+      - X-Ratelimit-Limit
+      - - '5000'
+    - !!python/tuple
+      - X-Ratelimit-Remaining
+      - - '4993'
+    - !!python/tuple
+      - X-Ratelimit-Reset
+      - - '1600409089'
+    - !!python/tuple
+      - X-Ratelimit-Used
+      - - '7'
+    - !!python/tuple
+      - Access-Control-Expose-Headers
+      - - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+          X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+          X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+    - !!python/tuple
+      - Access-Control-Allow-Origin
+      - - '*'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000; includeSubdomains; preload
+    - !!python/tuple
+      - X-Frame-Options
+      - - deny
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Xss-Protection
+      - - 1; mode=block
+    - !!python/tuple
+      - Referrer-Policy
+      - - origin-when-cross-origin, strict-origin-when-cross-origin
+    - !!python/tuple
+      - Content-Security-Policy
+      - - default-src 'none'
+    - !!python/tuple
+      - Content-Encoding
+      - - gzip
+    - !!python/tuple
+      - X-Github-Request-Id
+      - - 3AAB:7A14:265508F:57728BD:5F6449A1
+    status:
+      code: 200
+      message: OK
+    url: https://api.github.com/repos/ThiagoCodecov/example-python/commits/2dabe97a4a207053e02e82c6632000e9f1be7cea/branches-where-head
+version: 1
