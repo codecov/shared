@@ -1,6 +1,6 @@
 from json import dumps
 from json import loads
-from time import time
+from typing import List
 import os
 import urllib.parse as urllib_parse
 import logging
@@ -810,3 +810,15 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 commitid=kwargs["commitid"],
             )
         raise NotImplementedError()
+
+    async def get_best_effort_branches(self, commit_sha: str, token=None) -> List[str]:
+        """
+        Gets a 'best effort' list of branches this commit is in.
+        If a branch is returned, this means this commit is in that branch. If not, it could still be
+            possible that this commit is in that branch
+        Args:
+            commit_sha (str): The sha of the commit we want to look at
+        Returns:
+            List[str]: A list of branch names
+        """
+        return []

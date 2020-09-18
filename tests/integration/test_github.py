@@ -18,7 +18,7 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="test2d3454fe2s1xtot3dch9i939liacsgndapgf"),
+        token=dict(key="test5zf33fh1v64utlnh9zasgul6jygykdzpt3my"),
     )
 
 
@@ -1172,6 +1172,12 @@ class TestGithubTestCase(object):
             ],
         }
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_best_effort_branches(self, valid_handler, codecov_vcr):
+        commit_sha = "2dabe97a4a207053e02e82c6632000e9f1be7cea"
+        res = await valid_handler.get_best_effort_branches(commit_sha)
+        assert res == ["thiago/base-no-base"]
 
     @pytest.mark.asyncio
     async def test_get_github_check_suite(self, more_complex_handler, codecov_vcr):

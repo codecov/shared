@@ -52,6 +52,11 @@ class TestBitbucketTestCase(object):
             await valid_handler.api(method, "1", url)
 
     @pytest.mark.asyncio
+    async def test_get_best_effort_branches(self, valid_handler, codecov_vcr):
+        branches = await valid_handler.get_best_effort_branches("6a45b83")
+        assert branches == []
+
+    @pytest.mark.asyncio
     async def test_api_client_error_server_error(self, valid_handler, mocker):
         mocked_fetch = mocker.patch.object(Bitbucket, "fetch")
         mocked_fetch.side_effect = HTTPError(503, "message")
