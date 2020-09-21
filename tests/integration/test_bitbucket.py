@@ -1122,3 +1122,8 @@ class TestBitbucketTestCase(object):
             Endpoints.commit_detail, commitid="8631ea09b9b689de0a348d5abf70bdd7273d2ae3"
         )
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_is_student(self, valid_handler, codecov_vcr):
+        res = await valid_handler.is_student()
+        assert not res
