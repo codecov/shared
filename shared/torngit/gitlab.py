@@ -943,3 +943,6 @@ class Gitlab(TorngitBaseAdapter):
             for res in page:
                 all_results.append(res["name"])
         return all_results
+
+    async def is_student(self):
+        return False

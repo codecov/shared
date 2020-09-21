@@ -1073,3 +1073,8 @@ class TestGitlabTestCase(object):
             "refresh_token": "testwnoeg1a4bjhoa65vzxdn8grh4asp0b6l4idtdazw7ps5h8xx77m8gbyty7gi",
             "scope": "api",
         }
+
+    @pytest.mark.asyncio
+    async def test_is_student(self, valid_handler, codecov_vcr):
+        res = await valid_handler.is_student()
+        assert not res

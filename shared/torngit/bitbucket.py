@@ -822,3 +822,6 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
             List[str]: A list of branch names
         """
         return []
+
+    async def is_student(self):
+        return False

@@ -1,0 +1,89 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://education.github.com/api/user
+  response:
+    body:
+      string: '{"student":true}'
+    headers:
+    - !!python/tuple
+      - X-Http-Reason
+      - - OK
+    - !!python/tuple
+      - Server
+      - - nginx/1.15.12
+    - !!python/tuple
+      - Date
+      - - Mon, 21 Sep 2020 19:32:22 GMT
+    - !!python/tuple
+      - Content-Type
+      - - application/json; charset=utf-8
+    - !!python/tuple
+      - Transfer-Encoding
+      - - chunked
+    - !!python/tuple
+      - X-Frame-Options
+      - - DENY
+    - !!python/tuple
+      - X-Xss-Protection
+      - - 1; mode=block
+    - !!python/tuple
+      - X-Content-Type-Options
+      - - nosniff
+    - !!python/tuple
+      - X-Download-Options
+      - - noopen
+    - !!python/tuple
+      - X-Permitted-Cross-Domain-Policies
+      - - none
+    - !!python/tuple
+      - Referrer-Policy
+      - - strict-origin-when-cross-origin
+    - !!python/tuple
+      - Content-Security-Policy
+      - - 'default-src ''self'' dwa5x7aod66zk.cloudfront.net; object-src ''self'';
+          frame-src *.vimeo.com platform.twitter.com connect.facebook.net *.facebook.com
+          speakerdeck.com *.youtube.com; connect-src ''self'' github-education-web.s3.amazonaws.com
+          *.tiles.mapbox.com *.clearbit.com www.google.com *.githubusercontent.com;
+          img-src ''self'' blob: dwa5x7aod66zk.cloudfront.net data: github.com *.tiles.mapbox.com
+          *.clearbit.com avatars.githubusercontent.com user-images.githubusercontent.com
+          github-education-web.s3.amazonaws.com www.google-analytics.com analytics.twitter.com
+          t.com *.facebook.com *.twitter.com *.youtube.com raw.githubusercontent.com;
+          font-src ''self'' dwa5x7aod66zk.cloudfront.net; script-src ''self'' dwa5x7aod66zk.cloudfront.net
+          ''unsafe-eval'' ''unsafe-inline'' www.google.com www.google-analytics.com
+          api.demandbase.com speakerdeck.com platform.twitter.com connect.facebook.net
+          *.facebook.com s3-eu-west-1.amazonaws.com/share.typeform.com/* *.github.com
+          *.githubassets.com; style-src ''self'' dwa5x7aod66zk.cloudfront.net ''unsafe-inline''
+          www.google.com ajax.googleapis.com *.github.com'
+    - !!python/tuple
+      - Etag
+      - - W/"31a958d4bc41803067179ef7230b0b12"
+    - !!python/tuple
+      - Cache-Control
+      - - max-age=0, private, must-revalidate
+    - !!python/tuple
+      - X-Request-Id
+      - - 8214ace8-1f5c-458f-b7b4-373c0e6144a6
+    - !!python/tuple
+      - X-Runtime
+      - - '0.193246'
+    - !!python/tuple
+      - Strict-Transport-Security
+      - - max-age=31536000
+    - !!python/tuple
+      - X-Github-Backend
+      - - Kubernetes
+    - !!python/tuple
+      - X-Github-Request-Id
+      - - 3BC2:1781:391C1:98EBD:5F68FFC5
+    status:
+      code: 200
+      message: OK
+    url: https://education.github.com/api/user
+version: 1

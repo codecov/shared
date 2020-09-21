@@ -981,3 +981,7 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
             headers={"Accept": "application/vnd.github.groot-preview+json"},
         )
         return [r["name"] for r in res]
+
+    async def is_student(self):
+        res = await self.api("get", "https://education.github.com/api/user")
+        return res["student"]
