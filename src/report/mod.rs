@@ -1,16 +1,12 @@
 extern crate rayon;
 
+use fraction::GenericFraction;
 use pyo3::prelude::*;
 use rayon::prelude::*;
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::collections::HashMap;
-
-struct Fraction {
-    numerator: u64,
-    denominator: u64,
-}
 
 enum CoverageType {
     Standard,
@@ -21,7 +17,7 @@ enum CoverageType {
 enum Coverage {
     Hit,
     Miss,
-    Partial(Fraction),
+    Partial(GenericFraction<u64>),
 }
 
 struct ReportLine {
@@ -242,10 +238,8 @@ fn parse_coverage(line: &Value) -> Coverage {
                 let v: Vec<&str> = s.rsplit('/').collect();
                 let num: u64 = v[0].parse().unwrap();
                 let den: u64 = v[1].parse().unwrap();
-                return Coverage::Partial(Fraction {
-                    numerator: num,
-                    denominator: den,
-                });
+                let f: GenericFraction<u64> = GenericFraction::new(num, den);
+                return Coverage::Partial(f);
             }
             None => {
                 let val: u64 = s.parse().unwrap();
