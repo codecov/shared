@@ -1,4 +1,7 @@
+extern crate rayon;
+
 use pyo3::prelude::*;
+use rayon::prelude::*;
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -32,6 +35,8 @@ struct ReportLine {
 enum LineType {
     Content(ReportLine),
     Emptyline,
+    Separator,
+    Details,
 }
 
 struct LineSession {
@@ -262,24 +267,35 @@ fn parse_line(line: &str) -> LineType {
     if line.is_empty() {
         return LineType::Emptyline;
     }
-    let array_data: Vec<Value> = serde_json::from_str(&line).unwrap();
-    let mut sessions: Vec<LineSession> = Vec::new();
-    for el in array_data[2].as_array().unwrap() {
-        sessions.push(LineSession {
-            id: el[0].as_u64().unwrap(),
-            coverage: parse_coverage(&el[1]),
-            branches: 0,
-            partials: [0].to_vec(),
-            complexity: 0,
-        });
+    if line == "<<<<< end_of_chunk >>>>>" {
+        return LineType::Separator;
     }
-    return LineType::Content(ReportLine {
-        coverage: parse_coverage(&array_data[0]),
-        coverage_type: CoverageType::Standard, // TODO: fix this
-        sessions: sessions,
-        messages: Option::None,
-        complexity: Option::None,
-    });
+    match serde_json::from_str(&line).unwrap() {
+        Value::Number(o) => panic!("{:?}", o),
+        Value::String(s) => panic!("{:?}", s),
+        Value::Array(array_data) => {
+            let mut sessions: Vec<LineSession> = Vec::new();
+            for el in array_data[2].as_array().unwrap() {
+                sessions.push(LineSession {
+                    id: el[0].as_u64().unwrap(),
+                    coverage: parse_coverage(&el[1]),
+                    branches: 0,
+                    partials: [0].to_vec(),
+                    complexity: 0,
+                })
+            }
+            return LineType::Content(ReportLine {
+                coverage: parse_coverage(&array_data[0]),
+                coverage_type: CoverageType::Standard, // TODO: fix this
+                sessions: sessions,
+                messages: Option::None,
+                complexity: Option::None,
+            });
+        }
+        Value::Null => return LineType::Emptyline,
+        Value::Bool(_) => panic!("{:?}", "BOOL"),
+        Value::Object(_) => return LineType::Details,
+    }
 }
 
 fn parse_reportfile_from_section(section: &str) -> ReportFile {
@@ -299,6 +315,12 @@ fn parse_reportfile_from_section(section: &str) -> ReportFile {
                     file_mapping.insert(line_count, s);
                     line_count += 1;
                 }
+                LineType::Separator => {
+                    panic!("{:?}", "Separator");
+                }
+                LineType::Details => {
+                    panic!("{:?}", "Details");
+                }
             }
         }
         line_count += 1;
@@ -310,12 +332,35 @@ fn parse_reportfile_from_section(section: &str) -> ReportFile {
 
 pub fn parse_report_from_str(filenames: Vec<String>, chunks: String) -> Report {
     let mut book_reviews: HashMap<u64, ReportFile> = HashMap::new();
-    let mut file_count = 0;
     println!("TGH");
+    let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
+    let mut current_report_lines: HashMap<u64, ReportLine> = HashMap::new();
+    let mut all_report_files: Vec<ReportFile> = Vec::new();
+    let mut line_count = 1;
+    for l in v {
+        match l {
+            LineType::Separator => {
+                all_report_files.push(ReportFile {
+                    lines: current_report_lines,
+                });
+                current_report_lines = HashMap::new();
+            }
+            LineType::Emptyline => {
+                line_count += 1;
+            }
+            LineType::Details => {}
+            LineType::Content(report_line) => {
+                current_report_lines.insert(line_count, report_line);
+                line_count += 1;
+            }
+        }
+    }
+    all_report_files.push(ReportFile {
+        lines: current_report_lines,
+    });
     let mut file_count: u64 = 0;
-    for section in chunks.split("\n<<<<< end_of_chunk >>>>>\n") {
-        let file_mapping = parse_reportfile_from_section(&section);
-        book_reviews.insert(file_count, file_mapping);
+    for report_file in all_report_files {
+        book_reviews.insert(file_count, report_file);
         file_count += 1;
     }
     println!("{:?}", book_reviews.len());
@@ -383,6 +428,6 @@ mod tests {
         let calc_2 = res.get_totals();
         println!("{}", serde_json::to_string(&calc).unwrap());
         println!("{}", serde_json::to_string(&calc_2).unwrap());
-        panic!("{:?}", "Error");
+        panic!("{:?}", "Error test succeeded");
     }
 }
