@@ -1,6 +1,8 @@
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
+use std::collections::HashMap;
+
 mod report;
 
 /// Formats the sum of two numbers as string.
@@ -11,8 +13,8 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
 
 /// Formats the sum of two numbers as string.
 #[pyfunction]
-fn parse_report(filenames: Vec<String>, a: String) -> Py<report::Report> {
-    let r = report::parse_report_from_str(filenames, a);
+fn parse_report(filenames: HashMap<String, u64>, chunks: String, session_mapping: HashMap<u64, Vec<String>>) -> Py<report::Report> {
+    let r = report::parse_report_from_str(filenames, chunks, session_mapping);
     let gil = Python::acquire_gil();
     let py = gil.python();
     Py::new(py, r).unwrap()

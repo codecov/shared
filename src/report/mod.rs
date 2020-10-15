@@ -44,11 +44,52 @@ struct LineSession {
 }
 
 #[pyclass]
+#[derive(Serialize, Deserialize)]
+struct ReportTotals {
+    #[pyo3(get)]
+    files: u64,
+    lines: u64,
+    #[pyo3(get)]
+    hits: u64,
+    misses: u64,
+    partials: u64,
+    branches: u64,
+    methods: u64,
+    messages: u64,
+    sessions: u64,
+    complexity: u64,
+    complexity_total: u64,
+}
+
+#[pyclass]
 pub struct ReportFile {
     lines: HashMap<u64, ReportLine>,
 }
 
+#[pyclass]
+pub struct Report {
+    filenames: HashMap<String, u64>,
+    report_files: HashMap<u64, ReportFile>,
+    session_mapping: HashMap<u64, Vec<String>>
+}
+
 impl ReportFile {
+    fn get_filtered_totals(&self, flags: &Vec<&str>) -> ReportTotals {
+        ReportTotals {
+            files: 1,
+            lines: 0,
+            hits: 0,
+            misses: 0,
+            partials: 0,
+            branches: 0,
+            methods: 0,
+            messages: 0,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+        }
+    }
+
     fn calculate_per_flag_totals(
         &self,
         flag_mapping: &HashMap<u64, Vec<String>>,
@@ -66,14 +107,12 @@ impl ReportFile {
                                     hits: 0,
                                     misses: 0,
                                     partials: 0,
-                                    coverage: 0,
                                     branches: 0,
                                     methods: 0,
                                     messages: 0,
                                     sessions: 0,
                                     complexity: 0,
                                     complexity_total: 0,
-                                    diff: 0,
                                 });
                             stat.lines += 1;
                             match sess.coverage {
@@ -97,14 +136,12 @@ impl ReportFile {
             hits: 0,
             misses: 0,
             partials: 0,
-            coverage: 0,
             branches: 0,
             methods: 0,
             messages: 0,
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
-            diff: 0,
         };
         for (line_number, report_line) in self.lines.iter() {
             res.lines += 1;
@@ -118,39 +155,53 @@ impl ReportFile {
     }
 }
 
-#[pyclass]
-pub struct Report {
-    filenames: Vec<String>,
-    report_files: HashMap<u64, ReportFile>,
-}
-
-#[pyclass]
-#[derive(Serialize, Deserialize)]
-struct ReportTotals {
-    files: u64,
-    lines: u64,
-    hits: u64,
-    misses: u64,
-    partials: u64,
-    coverage: u64,
-    branches: u64,
-    methods: u64,
-    messages: u64,
-    sessions: u64,
-    complexity: u64,
-    complexity_total: u64,
-    diff: u64,
-}
-
 #[pymethods]
 impl Report {
+    fn get_filtered_totals(&self, files: Vec<&str>, flags: Vec<&str>) -> ReportTotals {
+        let mut initial = ReportTotals {
+            files: 0,
+            lines: 0,
+            hits: 0,
+            misses: 0,
+            partials: 0,
+            branches: 0,
+            methods: 0,
+            messages: 0,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+        };
+        for filename in files {
+            let location = self.filenames.get(filename);
+            if let Some(i) = location {
+                match self.report_files.get(i) {
+                    Some(report_file) => {
+                        let some_totals = report_file.get_filtered_totals(&flags);
+                        initial.files += some_totals.files;
+                        initial.lines += some_totals.lines;
+                        initial.hits += some_totals.hits;
+                        initial.misses += some_totals.misses;
+                        initial.partials += some_totals.partials;
+                        initial.branches += some_totals.branches;
+                        initial.methods += some_totals.methods;
+                        initial.messages += some_totals.messages;
+                        initial.sessions += some_totals.sessions;
+                        initial.complexity += some_totals.complexity;
+                        initial.complexity_total += some_totals.complexity_total;
+                    }
+                    None => {panic!("Location");}
+                }
+            }
+        }
+        return initial;
+    }
+
     fn calculate_per_flag_totals(
-        &self,
-        flag_mapping: HashMap<u64, Vec<String>>,
+        &self
     ) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
         for (key, report_file) in self.report_files.iter() {
-            let file_totals = report_file.calculate_per_flag_totals(&flag_mapping);
+            let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
             for (flag_name, totals) in file_totals.iter() {
                 let mut current =
                     book_reviews
@@ -161,28 +212,24 @@ impl Report {
                             hits: 0,
                             misses: 0,
                             partials: 0,
-                            coverage: 0,
                             branches: 0,
                             methods: 0,
                             messages: 0,
                             sessions: 0,
                             complexity: 0,
                             complexity_total: 0,
-                            diff: 0,
                         });
                 current.files += totals.files;
                 current.lines += totals.lines;
                 current.hits += totals.hits;
                 current.misses += totals.misses;
                 current.partials += totals.partials;
-                current.coverage += totals.coverage;
                 current.branches += totals.branches;
                 current.methods += totals.methods;
                 current.messages += totals.messages;
                 current.sessions += totals.sessions;
                 current.complexity += totals.complexity;
                 current.complexity_total += totals.complexity_total;
-                current.diff += totals.diff;
             }
         }
         return book_reviews;
@@ -195,14 +242,12 @@ impl Report {
             hits: 0,
             misses: 0,
             partials: 0,
-            coverage: 0,
             branches: 0,
             methods: 0,
             messages: 0,
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
-            diff: 0,
         };
         for (key, report_file) in self.report_files.iter() {
             let totals = report_file.get_totals();
@@ -211,14 +256,12 @@ impl Report {
             res.hits += totals.hits;
             res.misses += totals.misses;
             res.partials += totals.partials;
-            res.coverage += totals.coverage;
             res.branches += totals.branches;
             res.methods += totals.methods;
             res.messages += totals.messages;
             res.sessions += totals.sessions;
             res.complexity += totals.complexity;
             res.complexity_total += totals.complexity_total;
-            res.diff += totals.diff;
         }
         return res;
     }
@@ -324,9 +367,8 @@ fn parse_reportfile_from_section(section: &str) -> ReportFile {
     };
 }
 
-pub fn parse_report_from_str(filenames: Vec<String>, chunks: String) -> Report {
+pub fn parse_report_from_str(filenames: HashMap<String, u64>, chunks: String, session_mapping: HashMap<u64, Vec<String>>) -> Report {
     let mut book_reviews: HashMap<u64, ReportFile> = HashMap::new();
-    println!("TGH");
     let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
     let mut current_report_lines: HashMap<u64, ReportLine> = HashMap::new();
     let mut all_report_files: Vec<ReportFile> = Vec::new();
@@ -361,6 +403,7 @@ pub fn parse_report_from_str(filenames: Vec<String>, chunks: String) -> Report {
     return Report {
         report_files: book_reviews,
         filenames: filenames,
+        session_mapping: session_mapping
     };
 }
 
@@ -410,15 +453,15 @@ mod tests {
 [1, null, [[0, 1], [1, 0]]]
 [0, null, [[0, 0], [1, 0]]]
 ";
-        let filenames: Vec<String> = Vec::new();
-        let res = parse_report_from_str(filenames, content.to_string());
+        let filenames: HashMap<String, u64> = HashMap::new();
         let mut flags: HashMap<u64, Vec<String>> = HashMap::new();
         flags.insert(1, ["flag_one".to_string()].to_vec());
         flags.insert(
             0,
             ["flag_three".to_string(), "flag_two".to_string()].to_vec(),
         );
-        let calc = res.calculate_per_flag_totals(flags);
+        let res = parse_report_from_str(filenames, content.to_string(), flags);
+        let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_totals();
         println!("{}", serde_json::to_string(&calc).unwrap());
         println!("{}", serde_json::to_string(&calc_2).unwrap());
