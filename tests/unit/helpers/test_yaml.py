@@ -3,17 +3,12 @@ from shared.helpers.yaml import walk, default_if_true
 from types import GeneratorType
 
 
-@pytest.mark.parametrize(
-    "_dict, keys, _else, res",
-    [
-        ({"a": "b"}, ("a",), "c", "b"),
-        ({"a": {"b": "c"}}, ("a", "b"), "d", "c"),
-        ({"a": {"_": "c"}}, ("a", "b"), "d", "d"),
-        ({"a": {"_": "c"}}, ("a", "b"), None, None),
-    ],
-)
-def test_yaml_walk(_dict, keys, _else, res):
-    assert walk(_dict, keys, _else) == res
+def test_yaml_walk(mocker):
+    assert walk({"a": "b"}, ("a",), "c") == "b"
+    assert walk({"a": {"b": "c"}}, ("a", "b"), "d") == "c"
+    assert walk({"a": mocker.Mock(b="banana")}, ("a", "b"), "d") == "banana"
+    assert walk({"a": {"_": "c"}}, ("a", "b"), "d") == "d"
+    assert walk({"a": {"_": "c"}}, ("a", "b"), None) is None
 
 
 @pytest.mark.parametrize(

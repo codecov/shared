@@ -384,32 +384,6 @@ def test_merge(r, new_report, manifest):
 
 
 @pytest.mark.integration
-def test_assume_flags():
-    prev_r = Report(
-        files={"file.py": [0, ReportTotals(1)]},
-        chunks=[
-            ReportFile(
-                name="file.py", totals=[1, 2, 1], lines=[ReportLine(1), ReportLine(2)]
-            )
-        ],
-        sessions={1: {"id": "id", "f": ["int"],}},
-    )
-
-    r = Report(
-        files={"py.py": [0, ReportTotals(1)]},
-        chunks=[ReportFile(name="py.py", totals=[1, 2, 1])],
-    )
-
-    assert repr(r) == "<Report files=1>"
-    assert list(r.sessions.keys()) == []
-    r.assume_flags("int", prev_r)
-    assert repr(r) == "<Report files=2>"
-    assert list(r.sessions.keys()) == [
-        0
-    ]  # TODO filter should work but does not because of the issue with filter
-
-
-@pytest.mark.integration
 @pytest.mark.parametrize(
     "r, boolean",
     [
