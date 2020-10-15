@@ -9,7 +9,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.1.0",
+    version="0.2.0",
     description="Shared Codecov",
     long_description=long_description,
     url="https://github.com/codecov/report",
@@ -17,7 +17,7 @@ setup(
     author_email="support@codecov.io",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=[
-        "attrs==17.4.0",
+        "attrs>=17.4.0",
         "boto3==1.9.218",
         "colour==0.1.5",
         "cryptography==2.7",
@@ -26,12 +26,13 @@ setup(
         "minio==6.0.0",
         "oauth2",
         "schema==0.7.0",
-        "six==1.11.0",
+        "six>=1.11.0",
         "tlslite-ng",
         "tornado",
         "statsd==3.3.0",
         "pycurl==7.43.0.5",
         "analytics-python==1.3.0b1",
         "voluptuous==0.11.7",
+        "httpx~=0.16.0",
     ],
 )

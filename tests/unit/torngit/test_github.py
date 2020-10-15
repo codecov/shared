@@ -1,10 +1,15 @@
-import socket
+import httpx
 
 import pytest
 
 from shared.torngit.github import Github
-from shared.torngit.exceptions import TorngitServerUnreachableError
 from shared.torngit.base import TokenType
+
+from shared.torngit.exceptions import (
+    TorngitServerUnreachableError,
+    TorngitServer5xxCodeError,
+    TorngitClientError,
+)
 
 
 @pytest.fixture
@@ -18,11 +23,45 @@ def valid_handler():
 
 class TestUnitGithub(object):
     @pytest.mark.asyncio
+    async def test_api_client_error_unreachable(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=599))
+        )
+        method = "GET"
+        url = "random_url"
+        with pytest.raises(TorngitServerUnreachableError):
+            await valid_handler.api(client, method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_server_error(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=503))
+        )
+        method = "GET"
+        url = "random_url"
+        with pytest.raises(TorngitServer5xxCodeError):
+            await valid_handler.api(client, method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_client_error(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=404))
+        )
+        method = "GET"
+        url = "random_url"
+        with pytest.raises(TorngitClientError):
+            await valid_handler.api(client, method, url)
+
+    @pytest.mark.asyncio
     async def test_socker_gaierror(self, mocker, valid_handler):
-        mocker.patch.object(Github, "fetch", side_effect=socket.gaierror)
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                side_effect=httpx.TimeoutException("message", request="request")
+            )
+        )
         with pytest.raises(TorngitServerUnreachableError):
             await valid_handler.api(
-                "get", "/repos/%s/branches" % valid_handler.slug, per_page=100,
+                client, "get", "/repos/%s/branches" % valid_handler.slug, per_page=100,
             )
 
     def test_loggable_token(self, mocker, valid_handler):

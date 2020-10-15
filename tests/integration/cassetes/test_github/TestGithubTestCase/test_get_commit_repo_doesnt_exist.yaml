@@ -1,82 +1,70 @@
 interactions:
 - request:
-    body: null
+    body: ''
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
     method: GET
-    uri: https://api.github.com/repos/codecov/worker/commits/bbe3e94949d11471cc4e054f822d222254a4a4f8
+    uri: https://api.github.com/repos/codecov/badrepo/commits/bbe3e94949d11471cc4e054f822d222254a4a4f8
   response:
-    body: {string: '{"message":"Not Found","documentation_url":"https://developer.github.com/v3/repos/commits/#get-a-single-commit"}'}
+    content: '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/repos#get-a-commit"}'
     headers:
-    - !!python/tuple
-      - Server
-      - [GitHub.com]
-    - !!python/tuple
-      - Date
-      - ['Mon, 30 Sep 2019 12:28:05 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - Transfer-Encoding
-      - [chunked]
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Status
-      - [404 Not Found]
-    - !!python/tuple
-      - X-Ratelimit-Limit
-      - ['5000']
-    - !!python/tuple
-      - X-Ratelimit-Remaining
-      - ['4997']
-    - !!python/tuple
-      - X-Ratelimit-Reset
-      - ['1569849965']
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['notifications, repo, user']
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - ['']
-    - !!python/tuple
-      - X-Github-Media-Type
-      - [github.v3]
-    - !!python/tuple
-      - Access-Control-Expose-Headers
-      - ['ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-          X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
-          X-GitHub-Media-Type']
-    - !!python/tuple
-      - Access-Control-Allow-Origin
-      - ['*']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubdomains; preload]
-    - !!python/tuple
-      - X-Frame-Options
-      - [deny]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Xss-Protection
-      - [1; mode=block]
-    - !!python/tuple
-      - Referrer-Policy
-      - ['origin-when-cross-origin, strict-origin-when-cross-origin']
-    - !!python/tuple
-      - Content-Security-Policy
-      - [default-src 'none']
-    - !!python/tuple
-      - X-Github-Request-Id
-      - ['2A3E:5AB8:4655A0:841635:5D91F4D5']
-    - !!python/tuple
-      - X-Consumed-Content-Encoding
-      - [gzip]
-    status: {code: 404, message: Not Found}
-    url: https://api.github.com/repos/codecov/worker/commits/bbe3e94949d11471cc4e054f822d222254a4a4f8
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 17:54:19 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 404 Not Found
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - D0A5:646D:7A43A8:15252D7:5F873B4B
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4903'
+      X-RateLimit-Reset:
+      - '1602700322'
+      X-RateLimit-Used:
+      - '97'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 404
 version: 1

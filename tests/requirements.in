@@ -1,0 +1,9 @@
+beautifulsoup4
+codecov
+ddt
+mock
+pytest-asyncio
+pytest-cov
+pytest-mock
+pytest
+vcrpy

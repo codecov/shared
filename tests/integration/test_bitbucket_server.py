@@ -161,9 +161,8 @@ class TestBitbucketTestCase(object):
             "start": 0,
         }
         mocked_fetch = mocker.patch.object(
-            BitbucketServer, "api", return_value=Future()
+            BitbucketServer, "api", return_value=api_result
         )
-        mocked_fetch.return_value.set_result(api_result)
         res = await valid_handler().find_pull_request(
             "86be80adfc64355e523c38ef9b9bab7408c173e3", "brand-new-branch"
         )
@@ -179,9 +178,8 @@ class TestBitbucketTestCase(object):
             "start": 0,
         }
         mocked_fetch = mocker.patch.object(
-            BitbucketServer, "api", return_value=Future()
+            BitbucketServer, "api", return_value=api_result
         )
-        mocked_fetch.return_value.set_result(api_result)
         assert await valid_handler().find_pull_request("a" * 40, "no-branch") is None
 
     @pytest.mark.asyncio
@@ -207,9 +205,8 @@ class TestBitbucketTestCase(object):
             "nextPageStart": None,
         }
         mocked_fetch = mocker.patch.object(
-            BitbucketServer, "api", return_value=Future()
+            BitbucketServer, "api", return_value=api_result
         )
-        mocked_fetch.return_value.set_result(api_result)
         files = await valid_handler().list_top_level_files("ref", "")
         assert len(files) == 11
 
