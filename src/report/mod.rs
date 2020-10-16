@@ -123,7 +123,6 @@ impl ReportTotals {
     }
 }
 
-#[pyclass]
 pub struct ReportFile {
     lines: HashMap<i32, ReportLine>,
 }
@@ -136,6 +135,13 @@ pub struct Report {
 }
 
 impl ReportFile {
+    fn get_eof(&self) -> Option<i32> {
+        return match self.lines.keys().max() {
+            Some(expr) => Some(*expr),
+            None => None,
+        };
+    }
+
     fn get_filtered_totals(&self, sessions: &Vec<i32>) -> ReportTotals {
         let mut res = ReportTotals {
             files: 1,
@@ -150,7 +156,7 @@ impl ReportFile {
             complexity: 0,
             complexity_total: 0,
         };
-        for (line_number, line) in self.lines.iter() {
+        for (_, line) in self.lines.iter() {
             res.lines += 1;
             match line.calculate_sessions_coverage(sessions) {
                 Coverage::Hit => {
@@ -172,7 +178,7 @@ impl ReportFile {
         flag_mapping: &HashMap<i32, Vec<String>>,
     ) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
-        for (line_number, report_line) in self.lines.iter() {
+        for (_, report_line) in self.lines.iter() {
             for sess in &report_line.sessions {
                 match flag_mapping.get(&sess.id) {
                     Some(flags) => {
@@ -220,7 +226,7 @@ impl ReportFile {
             complexity: 0,
             complexity_total: 0,
         };
-        for (line_number, report_line) in self.lines.iter() {
+        for (_, report_line) in self.lines.iter() {
             res.lines += 1;
             match report_line.coverage {
                 Coverage::Hit => res.hits += 1,
@@ -290,7 +296,7 @@ impl Report {
 
     fn calculate_per_flag_totals(&self) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
-        for (key, report_file) in self.report_files.iter() {
+        for (_, report_file) in self.report_files.iter() {
             let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
             for (flag_name, totals) in file_totals.iter() {
                 let mut current =
@@ -339,7 +345,7 @@ impl Report {
             complexity: 0,
             complexity_total: 0,
         };
-        for (key, report_file) in self.report_files.iter() {
+        for (_, report_file) in self.report_files.iter() {
             let totals = report_file.get_totals();
             res.files += totals.files;
             res.lines += totals.lines;
@@ -354,6 +360,17 @@ impl Report {
             res.complexity_total += totals.complexity_total;
         }
         return Ok(res);
+    }
+}
+
+#[pymethods]
+impl Report {
+    fn get_eof(&self, file_number: i32) -> i32 {
+        let file: &ReportFile = self.report_files.get(&file_number).unwrap();
+        match file.get_eof() {
+            Some(expr) => expr,
+            None => 1,
+        }
     }
 }
 
@@ -425,37 +442,37 @@ fn parse_line(line: &str) -> LineType {
     }
 }
 
-fn parse_reportfile_from_section(section: &str) -> ReportFile {
-    let mut file_mapping: HashMap<i32, ReportLine> = HashMap::new();
-    let all_lines = section.lines();
-    let mut line_count = 0;
-    for line in all_lines {
-        if line_count == 0 {
-            let c: Map<String, Value> = serde_json::from_str(&line).unwrap();
-        } else {
-            let content = parse_line(&line);
-            match content {
-                LineType::Emptyline => {
-                    line_count += 1;
-                }
-                LineType::Content(s) => {
-                    file_mapping.insert(line_count, s);
-                    line_count += 1;
-                }
-                LineType::Separator => {
-                    panic!("{:?}", "Separator");
-                }
-                LineType::Details => {
-                    panic!("{:?}", "Details");
-                }
-            }
-        }
-        line_count += 1;
-    }
-    return ReportFile {
-        lines: file_mapping,
-    };
-}
+// fn parse_reportfile_from_section(section: &str) -> ReportFile {
+//     let mut file_mapping: HashMap<i32, ReportLine> = HashMap::new();
+//     let all_lines = section.lines();
+//     let mut line_count = 0;
+//     for line in all_lines {
+//         if line_count == 0 {
+//             let c: Map<String, Value> = serde_json::from_str(&line).unwrap();
+//         } else {
+//             let content = parse_line(&line);
+//             match content {
+//                 LineType::Emptyline => {
+//                     line_count += 1;
+//                 }
+//                 LineType::Content(s) => {
+//                     file_mapping.insert(line_count, s);
+//                     line_count += 1;
+//                 }
+//                 LineType::Separator => {
+//                     panic!("{:?}", "Separator");
+//                 }
+//                 LineType::Details => {
+//                     panic!("{:?}", "Details");
+//                 }
+//             }
+//         }
+//         line_count += 1;
+//     }
+//     return ReportFile {
+//         lines: file_mapping,
+//     };
+// }
 
 pub fn parse_report_from_str(
     filenames: HashMap<String, i32>,
@@ -474,6 +491,7 @@ pub fn parse_report_from_str(
                     lines: current_report_lines,
                 });
                 current_report_lines = HashMap::new();
+                line_count = 1;
             }
             LineType::Emptyline => {
                 line_count += 1;
@@ -560,6 +578,9 @@ mod tests {
         assert_eq!(calc_2.get_coverage().unwrap(), "90");
         println!("{}", serde_json::to_string(&calc).unwrap());
         println!("{}", serde_json::to_string(&calc_2).unwrap());
+        assert_eq!(res.get_eof(0), 5);
+        assert_eq!(res.get_eof(1), 13);
+        assert_eq!(res.get_eof(2), 16);
     }
 
     #[test]
