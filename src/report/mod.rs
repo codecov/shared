@@ -1,11 +1,13 @@
 extern crate rayon;
 
 use fraction::GenericFraction;
+use fraction::ToPrimitive;
 use pyo3::prelude::*;
 use rayon::prelude::*;
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+use std::cmp::Ordering;
 use std::collections::HashMap;
 
 enum CoverageType {
@@ -14,18 +16,63 @@ enum CoverageType {
     Method,
 }
 
+#[derive(PartialEq, Debug)]
 enum Coverage {
     Hit,
     Miss,
-    Partial(GenericFraction<u64>),
+    Partial(GenericFraction<i32>),
+}
+
+impl Coverage {
+    fn get_value(&self) -> f64 {
+        match self {
+            Coverage::Hit => {
+                return 1.0;
+            }
+            Coverage::Miss => {
+                return 0.0;
+            }
+            Coverage::Partial(f) => {
+                return f.to_f64().unwrap();
+            }
+        }
+    }
+
+    fn join_coverages(many_coverages: Vec<&Coverage>) -> Coverage {
+        let mut a: Coverage = Coverage::Miss;
+        for cov in many_coverages.iter() {
+            match cov {
+                Coverage::Hit => return Coverage::Hit,
+                Coverage::Miss => {}
+                Coverage::Partial(f) => {
+                    if f.to_f64().unwrap() > a.get_value() {
+                        a = Coverage::Partial(*f);
+                    }
+                }
+            }
+        }
+        return a;
+    }
 }
 
 struct ReportLine {
     coverage: Coverage,
     coverage_type: CoverageType,
     sessions: Vec<LineSession>,
-    messages: Option<u64>,
-    complexity: Option<u64>, // This has to be redone
+    messages: Option<i32>,
+    complexity: Option<i32>, // This has to be redone
+}
+
+impl ReportLine {
+    fn calculate_sessions_coverage(&self, session_ids: &Vec<i32>) -> Coverage {
+        let valid_sessions: Vec<&Coverage> = self
+            .sessions
+            .iter()
+            .filter(|k| session_ids.contains(&k.id))
+            .map(|k| &k.coverage)
+            .collect();
+        return Coverage::join_coverages(valid_sessions);
+    }
 }
 
 enum LineType {
@@ -36,46 +83,61 @@ enum LineType {
 }
 
 struct LineSession {
-    id: u64,
+    id: i32,
     coverage: Coverage,
-    branches: u64,
-    partials: Vec<u64>,
-    complexity: u64,
+    branches: i32,
+    partials: Vec<i32>,
+    complexity: i32,
 }
 
 #[pyclass]
 #[derive(Serialize, Deserialize)]
 struct ReportTotals {
     #[pyo3(get)]
-    files: u64,
-    lines: u64,
+    files: i32,
+    lines: i32,
     #[pyo3(get)]
-    hits: u64,
-    misses: u64,
-    partials: u64,
-    branches: u64,
-    methods: u64,
-    messages: u64,
-    sessions: u64,
-    complexity: u64,
-    complexity_total: u64,
+    hits: i32,
+    misses: i32,
+    partials: i32,
+    branches: i32,
+    methods: i32,
+    messages: i32,
+    sessions: i32,
+    complexity: i32,
+    complexity_total: i32,
+}
+
+#[pymethods]
+impl ReportTotals {
+    #[getter(coverage)]
+    fn get_coverage(&self) -> PyResult<String> {
+        if self.hits == self.lines {
+            return Ok("100".to_string());
+        }
+        if self.hits == 0 || self.lines == 0 {
+            return Ok("0".to_string());
+        }
+        let fraction: GenericFraction<i32> = GenericFraction::new(100 * self.hits, self.lines);
+        Ok(format!("{:.1$}", fraction, 5))
+    }
 }
 
 #[pyclass]
 pub struct ReportFile {
-    lines: HashMap<u64, ReportLine>,
+    lines: HashMap<i32, ReportLine>,
 }
 
 #[pyclass]
 pub struct Report {
-    filenames: HashMap<String, u64>,
-    report_files: HashMap<u64, ReportFile>,
-    session_mapping: HashMap<u64, Vec<String>>
+    filenames: HashMap<String, i32>,
+    report_files: HashMap<i32, ReportFile>,
+    session_mapping: HashMap<i32, Vec<String>>,
 }
 
 impl ReportFile {
-    fn get_filtered_totals(&self, flags: &Vec<&str>) -> ReportTotals {
-        ReportTotals {
+    fn get_filtered_totals(&self, sessions: &Vec<i32>) -> ReportTotals {
+        let mut res = ReportTotals {
             files: 1,
             lines: 0,
             hits: 0,
@@ -87,12 +149,27 @@ impl ReportFile {
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
+        };
+        for (line_number, line) in self.lines.iter() {
+            res.lines += 1;
+            match line.calculate_sessions_coverage(sessions) {
+                Coverage::Hit => {
+                    res.hits += 1;
+                }
+                Coverage::Miss => {
+                    res.misses += 1;
+                }
+                Coverage::Partial(_) => {
+                    res.partials += 1;
+                }
+            }
         }
+        return res;
     }
 
     fn calculate_per_flag_totals(
         &self,
-        flag_mapping: &HashMap<u64, Vec<String>>,
+        flag_mapping: &HashMap<i32, Vec<String>>,
     ) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
         for (line_number, report_line) in self.lines.iter() {
@@ -155,9 +232,22 @@ impl ReportFile {
     }
 }
 
+impl Report {
+    fn get_sessions_from_flags(&self, flags: &Vec<&str>) -> Vec<i32> {
+        let mut res: Vec<i32> = Vec::new();
+        for (session_id, session_flags) in self.session_mapping.iter() {
+            if flags.iter().any(|v| session_flags.contains(&v.to_string())) {
+                res.push(*session_id); // TODO Do I have to use this * ?
+            }
+        }
+        return res;
+    }
+}
+
 #[pymethods]
 impl Report {
     fn get_filtered_totals(&self, files: Vec<&str>, flags: Vec<&str>) -> ReportTotals {
+        let sessions = self.get_sessions_from_flags(&flags);
         let mut initial = ReportTotals {
             files: 0,
             lines: 0,
@@ -176,7 +266,7 @@ impl Report {
             if let Some(i) = location {
                 match self.report_files.get(i) {
                     Some(report_file) => {
-                        let some_totals = report_file.get_filtered_totals(&flags);
+                        let some_totals = report_file.get_filtered_totals(&sessions);
                         initial.files += some_totals.files;
                         initial.lines += some_totals.lines;
                         initial.hits += some_totals.hits;
@@ -189,16 +279,16 @@ impl Report {
                         initial.complexity += some_totals.complexity;
                         initial.complexity_total += some_totals.complexity_total;
                     }
-                    None => {panic!("Location");}
+                    None => {
+                        panic!("Location");
+                    }
                 }
             }
         }
         return initial;
     }
 
-    fn calculate_per_flag_totals(
-        &self
-    ) -> HashMap<String, ReportTotals> {
+    fn calculate_per_flag_totals(&self) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
         for (key, report_file) in self.report_files.iter() {
             let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
@@ -235,7 +325,7 @@ impl Report {
         return book_reviews;
     }
 
-    fn get_totals(&self) -> ReportTotals {
+    fn get_totals(&self) -> PyResult<ReportTotals> {
         let mut res: ReportTotals = ReportTotals {
             files: 0,
             lines: 0,
@@ -263,7 +353,7 @@ impl Report {
             res.complexity += totals.complexity;
             res.complexity_total += totals.complexity_total;
         }
-        return res;
+        return Ok(res);
     }
 }
 
@@ -279,13 +369,13 @@ fn parse_coverage(line: &Value) -> Coverage {
         Value::String(s) => match s.rfind("/") {
             Some(_) => {
                 let v: Vec<&str> = s.rsplit('/').collect();
-                let num: u64 = v[0].parse().unwrap();
-                let den: u64 = v[1].parse().unwrap();
-                let f: GenericFraction<u64> = GenericFraction::new(num, den);
+                let num: i32 = v[0].parse().unwrap();
+                let den: i32 = v[1].parse().unwrap();
+                let f: GenericFraction<i32> = GenericFraction::new(num, den);
                 return Coverage::Partial(f);
             }
             None => {
-                let val: u64 = s.parse().unwrap();
+                let val: i32 = s.parse().unwrap();
                 return if val > 0 {
                     Coverage::Hit
                 } else {
@@ -314,7 +404,7 @@ fn parse_line(line: &str) -> LineType {
             let mut sessions: Vec<LineSession> = Vec::new();
             for el in array_data[2].as_array().unwrap() {
                 sessions.push(LineSession {
-                    id: el[0].as_u64().unwrap(),
+                    id: el[0].as_i64().unwrap() as i32,
                     coverage: parse_coverage(&el[1]),
                     branches: 0,
                     partials: [0].to_vec(),
@@ -336,7 +426,7 @@ fn parse_line(line: &str) -> LineType {
 }
 
 fn parse_reportfile_from_section(section: &str) -> ReportFile {
-    let mut file_mapping: HashMap<u64, ReportLine> = HashMap::new();
+    let mut file_mapping: HashMap<i32, ReportLine> = HashMap::new();
     let all_lines = section.lines();
     let mut line_count = 0;
     for line in all_lines {
@@ -367,10 +457,14 @@ fn parse_reportfile_from_section(section: &str) -> ReportFile {
     };
 }
 
-pub fn parse_report_from_str(filenames: HashMap<String, u64>, chunks: String, session_mapping: HashMap<u64, Vec<String>>) -> Report {
-    let mut book_reviews: HashMap<u64, ReportFile> = HashMap::new();
+pub fn parse_report_from_str(
+    filenames: HashMap<String, i32>,
+    chunks: String,
+    session_mapping: HashMap<i32, Vec<String>>,
+) -> Report {
+    let mut book_reviews: HashMap<i32, ReportFile> = HashMap::new();
     let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
-    let mut current_report_lines: HashMap<u64, ReportLine> = HashMap::new();
+    let mut current_report_lines: HashMap<i32, ReportLine> = HashMap::new();
     let mut all_report_files: Vec<ReportFile> = Vec::new();
     let mut line_count = 1;
     for l in v {
@@ -394,7 +488,7 @@ pub fn parse_report_from_str(filenames: HashMap<String, u64>, chunks: String, se
     all_report_files.push(ReportFile {
         lines: current_report_lines,
     });
-    let mut file_count: u64 = 0;
+    let mut file_count: i32 = 0;
     for report_file in all_report_files {
         book_reviews.insert(file_count, report_file);
         file_count += 1;
@@ -403,7 +497,7 @@ pub fn parse_report_from_str(filenames: HashMap<String, u64>, chunks: String, se
     return Report {
         report_files: book_reviews,
         filenames: filenames,
-        session_mapping: session_mapping
+        session_mapping: session_mapping,
     };
 }
 
@@ -453,8 +547,8 @@ mod tests {
 [1, null, [[0, 1], [1, 0]]]
 [0, null, [[0, 0], [1, 0]]]
 ";
-        let filenames: HashMap<String, u64> = HashMap::new();
-        let mut flags: HashMap<u64, Vec<String>> = HashMap::new();
+        let filenames: HashMap<String, i32> = HashMap::new();
+        let mut flags: HashMap<i32, Vec<String>> = HashMap::new();
         flags.insert(1, ["flag_one".to_string()].to_vec());
         flags.insert(
             0,
@@ -462,9 +556,24 @@ mod tests {
         );
         let res = parse_report_from_str(filenames, content.to_string(), flags);
         let calc = res.calculate_per_flag_totals();
-        let calc_2 = res.get_totals();
+        let calc_2 = res.get_totals().unwrap();
+        assert_eq!(calc_2.get_coverage().unwrap(), "90");
         println!("{}", serde_json::to_string(&calc).unwrap());
         println!("{}", serde_json::to_string(&calc_2).unwrap());
-        panic!("{:?}", "Error test succeeded");
+    }
+
+    #[test]
+    fn joining_works() {
+        let v = Coverage::join_coverages(vec![
+            &Coverage::Miss,
+            &Coverage::Hit,
+            &Coverage::Partial(GenericFraction::new(3, 10)),
+        ]);
+        assert_eq!(v, Coverage::Hit);
+        let k = Coverage::join_coverages(vec![
+            &Coverage::Miss,
+            &Coverage::Partial(GenericFraction::new(3, 10)),
+        ]);
+        assert_eq!(k, Coverage::Partial(GenericFraction::new(3, 10)));
     }
 }
