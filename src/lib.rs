@@ -26,7 +26,14 @@ fn parse_report(
 fn get_changes(
     old_report: &report::Report,
     new_report: &report::Report,
-    diff: HashMap<String, (String, Option<String>, Vec<((i32, i32, i32, i32), Vec<String>)>)>,
+    diff: HashMap<
+        String,
+        (
+            String,
+            Option<String>,
+            Vec<((i32, i32, i32, i32), Vec<String>)>,
+        ),
+    >,
 ) -> Vec<changes::Change> {
     changes::get_changes(old_report, new_report, diff)
 }

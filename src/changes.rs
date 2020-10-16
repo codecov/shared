@@ -18,7 +18,14 @@ pub struct Change {
 pub fn get_changes(
     old_report: &report::Report,
     new_report: &report::Report,
-    diff: HashMap<String, (String, Option<String>, Vec<((i32, i32, i32, i32), Vec<String>)>)>,
+    diff: HashMap<
+        String,
+        (
+            String,
+            Option<String>,
+            Vec<((i32, i32, i32, i32), Vec<String>)>,
+        ),
+    >,
 ) -> Vec<Change> {
     let new = Vec::new();
     return new;

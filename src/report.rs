@@ -6,7 +6,7 @@ use fraction::ToPrimitive;
 use pyo3::prelude::*;
 use rayon::prelude::*;
 
-use serde_json::{Value};
+use serde_json::Value;
 use std::collections::HashMap;
 
 enum CoverageType {
@@ -95,7 +95,7 @@ pub struct ReportFile {
 #[pyclass]
 pub struct Report {
     filenames: HashMap<String, i32>,
-    report_files: HashMap<i32, ReportFile>,
+    report_files: Vec<ReportFile>,
     session_mapping: HashMap<i32, Vec<String>>,
 }
 
@@ -233,15 +233,9 @@ impl Report {
         for filename in files {
             let location = self.filenames.get(filename);
             if let Some(i) = location {
-                match self.report_files.get(i) {
-                    Some(report_file) => {
-                        let some_totals = report_file.get_filtered_totals(&sessions);
-                        initial.add_up(&some_totals);
-                    }
-                    None => {
-                        panic!("Location");
-                    }
-                }
+                let report_file = &self.report_files[*i as usize];
+                let some_totals = report_file.get_filtered_totals(&sessions);
+                initial.add_up(&some_totals);
             }
         }
         return initial;
@@ -249,7 +243,7 @@ impl Report {
 
     fn calculate_per_flag_totals(&self) -> HashMap<String, cov::ReportTotals> {
         let mut book_reviews: HashMap<String, cov::ReportTotals> = HashMap::new();
-        for (_, report_file) in self.report_files.iter() {
+        for report_file in self.report_files.iter() {
             let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
             for (flag_name, totals) in file_totals.iter() {
                 let mut current =
@@ -295,7 +289,7 @@ impl Report {
             complexity: 0,
             complexity_total: 0,
         };
-        for (_, report_file) in self.report_files.iter() {
+        for report_file in self.report_files.iter() {
             let totals = report_file.get_totals();
             res.files += totals.files;
             res.lines += totals.lines;
@@ -315,7 +309,7 @@ impl Report {
 #[pymethods]
 impl Report {
     fn get_eof(&self, file_number: i32) -> i32 {
-        let file: &ReportFile = self.report_files.get(&file_number).unwrap();
+        let file = &self.report_files[file_number as usize];
         match file.get_eof() {
             Some(expr) => expr,
             None => 1,
@@ -427,7 +421,6 @@ pub fn parse_report_from_str(
     chunks: String,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> Report {
-    let mut book_reviews: HashMap<i32, ReportFile> = HashMap::new();
     let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
     let mut current_report_lines: HashMap<i32, ReportLine> = HashMap::new();
     let mut all_report_files: Vec<ReportFile> = Vec::new();
@@ -454,14 +447,8 @@ pub fn parse_report_from_str(
     all_report_files.push(ReportFile {
         lines: current_report_lines,
     });
-    let mut file_count: i32 = 0;
-    for report_file in all_report_files {
-        book_reviews.insert(file_count, report_file);
-        file_count += 1;
-    }
-    println!("{:?}", book_reviews.len());
     return Report {
-        report_files: book_reviews,
+        report_files: all_report_files,
         filenames: filenames,
         session_mapping: session_mapping,
     };
