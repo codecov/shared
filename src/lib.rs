@@ -3,6 +3,8 @@ use pyo3::wrap_pyfunction;
 
 use std::collections::HashMap;
 
+mod changes;
+mod cov;
 mod report;
 
 /// Formats the sum of two numbers as string.
@@ -11,17 +13,22 @@ fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
     Ok((a + b).to_string())
 }
 
-/// Formats the sum of two numbers as string.
 #[pyfunction]
-fn parse_report(filenames: HashMap<String, i32>, chunks: String, session_mapping: HashMap<i32, Vec<String>>) -> report::Report {
-    let r = report::parse_report_from_str(filenames, chunks, session_mapping);
-    return r;
-    // I thought this function should return Py<report::Report>, but this works and I dont know if this is right
-    // If this was necessary, the below code would be needed.
-    // We will figure this out
-    // let gil = Python::acquire_gil();
-    // let py = gil.python();
-    // Py::new(py, r).unwrap()
+fn parse_report(
+    filenames: HashMap<String, i32>,
+    chunks: String,
+    session_mapping: HashMap<i32, Vec<String>>,
+) -> report::Report {
+    report::parse_report_from_str(filenames, chunks, session_mapping)
+}
+
+#[pyfunction]
+fn get_changes(
+    old_report: &report::Report,
+    new_report: &report::Report,
+    diff: HashMap<String, (String, Option<String>, Vec<((i32, i32, i32, i32), Vec<String>)>)>,
+) -> Vec<changes::Change> {
+    changes::get_changes(old_report, new_report, diff)
 }
 
 /// A Python module implemented in Rust.
@@ -29,6 +36,7 @@ fn parse_report(filenames: HashMap<String, i32>, chunks: String, session_mapping
 fn rustypole(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
     m.add_function(wrap_pyfunction!(parse_report, m)?)?;
+    m.add_function(wrap_pyfunction!(get_changes, m)?)?;
 
     Ok(())
 }

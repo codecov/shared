@@ -1,13 +1,12 @@
 extern crate rayon;
+use crate::cov;
 
 use fraction::GenericFraction;
 use fraction::ToPrimitive;
 use pyo3::prelude::*;
 use rayon::prelude::*;
 
-use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
-use std::cmp::Ordering;
+use serde_json::{Value};
 use std::collections::HashMap;
 
 enum CoverageType {
@@ -59,7 +58,6 @@ struct ReportLine {
     coverage: Coverage,
     coverage_type: CoverageType,
     sessions: Vec<LineSession>,
-    messages: Option<i32>,
     complexity: Option<i32>, // This has to be redone
 }
 
@@ -90,39 +88,6 @@ struct LineSession {
     complexity: i32,
 }
 
-#[pyclass]
-#[derive(Serialize, Deserialize)]
-struct ReportTotals {
-    #[pyo3(get)]
-    files: i32,
-    lines: i32,
-    #[pyo3(get)]
-    hits: i32,
-    misses: i32,
-    partials: i32,
-    branches: i32,
-    methods: i32,
-    messages: i32,
-    sessions: i32,
-    complexity: i32,
-    complexity_total: i32,
-}
-
-#[pymethods]
-impl ReportTotals {
-    #[getter(coverage)]
-    fn get_coverage(&self) -> PyResult<String> {
-        if self.hits == self.lines {
-            return Ok("100".to_string());
-        }
-        if self.hits == 0 || self.lines == 0 {
-            return Ok("0".to_string());
-        }
-        let fraction: GenericFraction<i32> = GenericFraction::new(100 * self.hits, self.lines);
-        Ok(format!("{:.1$}", fraction, 5))
-    }
-}
-
 pub struct ReportFile {
     lines: HashMap<i32, ReportLine>,
 }
@@ -142,8 +107,8 @@ impl ReportFile {
         };
     }
 
-    fn get_filtered_totals(&self, sessions: &Vec<i32>) -> ReportTotals {
-        let mut res = ReportTotals {
+    fn get_filtered_totals(&self, sessions: &Vec<i32>) -> cov::ReportTotals {
+        let mut res = cov::ReportTotals {
             files: 1,
             lines: 0,
             hits: 0,
@@ -151,7 +116,6 @@ impl ReportFile {
             partials: 0,
             branches: 0,
             methods: 0,
-            messages: 0,
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
@@ -176,27 +140,28 @@ impl ReportFile {
     fn calculate_per_flag_totals(
         &self,
         flag_mapping: &HashMap<i32, Vec<String>>,
-    ) -> HashMap<String, ReportTotals> {
-        let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
+    ) -> HashMap<String, cov::ReportTotals> {
+        let mut book_reviews: HashMap<String, cov::ReportTotals> = HashMap::new();
         for (_, report_line) in self.lines.iter() {
             for sess in &report_line.sessions {
                 match flag_mapping.get(&sess.id) {
                     Some(flags) => {
                         for f in flags {
                             let mut stat =
-                                book_reviews.entry(f.to_string()).or_insert(ReportTotals {
-                                    files: 1,
-                                    lines: 0,
-                                    hits: 0,
-                                    misses: 0,
-                                    partials: 0,
-                                    branches: 0,
-                                    methods: 0,
-                                    messages: 0,
-                                    sessions: 0,
-                                    complexity: 0,
-                                    complexity_total: 0,
-                                });
+                                book_reviews
+                                    .entry(f.to_string())
+                                    .or_insert(cov::ReportTotals {
+                                        files: 1,
+                                        lines: 0,
+                                        hits: 0,
+                                        misses: 0,
+                                        partials: 0,
+                                        branches: 0,
+                                        methods: 0,
+                                        sessions: 0,
+                                        complexity: 0,
+                                        complexity_total: 0,
+                                    });
                             stat.lines += 1;
                             match sess.coverage {
                                 Coverage::Hit => stat.hits += 1,
@@ -212,8 +177,8 @@ impl ReportFile {
         return book_reviews;
     }
 
-    fn get_totals(&self) -> ReportTotals {
-        let mut res: ReportTotals = ReportTotals {
+    fn get_totals(&self) -> cov::ReportTotals {
+        let mut res: cov::ReportTotals = cov::ReportTotals {
             files: 1,
             lines: 0,
             hits: 0,
@@ -221,7 +186,6 @@ impl ReportFile {
             partials: 0,
             branches: 0,
             methods: 0,
-            messages: 0,
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
@@ -252,9 +216,9 @@ impl Report {
 
 #[pymethods]
 impl Report {
-    fn get_filtered_totals(&self, files: Vec<&str>, flags: Vec<&str>) -> ReportTotals {
+    fn get_filtered_totals(&self, files: Vec<&str>, flags: Vec<&str>) -> cov::ReportTotals {
         let sessions = self.get_sessions_from_flags(&flags);
-        let mut initial = ReportTotals {
+        let mut initial = cov::ReportTotals {
             files: 0,
             lines: 0,
             hits: 0,
@@ -262,7 +226,6 @@ impl Report {
             partials: 0,
             branches: 0,
             methods: 0,
-            messages: 0,
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
@@ -273,17 +236,7 @@ impl Report {
                 match self.report_files.get(i) {
                     Some(report_file) => {
                         let some_totals = report_file.get_filtered_totals(&sessions);
-                        initial.files += some_totals.files;
-                        initial.lines += some_totals.lines;
-                        initial.hits += some_totals.hits;
-                        initial.misses += some_totals.misses;
-                        initial.partials += some_totals.partials;
-                        initial.branches += some_totals.branches;
-                        initial.methods += some_totals.methods;
-                        initial.messages += some_totals.messages;
-                        initial.sessions += some_totals.sessions;
-                        initial.complexity += some_totals.complexity;
-                        initial.complexity_total += some_totals.complexity_total;
+                        initial.add_up(&some_totals);
                     }
                     None => {
                         panic!("Location");
@@ -294,15 +247,15 @@ impl Report {
         return initial;
     }
 
-    fn calculate_per_flag_totals(&self) -> HashMap<String, ReportTotals> {
-        let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
+    fn calculate_per_flag_totals(&self) -> HashMap<String, cov::ReportTotals> {
+        let mut book_reviews: HashMap<String, cov::ReportTotals> = HashMap::new();
         for (_, report_file) in self.report_files.iter() {
             let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
             for (flag_name, totals) in file_totals.iter() {
                 let mut current =
                     book_reviews
                         .entry(flag_name.to_string())
-                        .or_insert(ReportTotals {
+                        .or_insert(cov::ReportTotals {
                             files: 0,
                             lines: 0,
                             hits: 0,
@@ -310,7 +263,6 @@ impl Report {
                             partials: 0,
                             branches: 0,
                             methods: 0,
-                            messages: 0,
                             sessions: 0,
                             complexity: 0,
                             complexity_total: 0,
@@ -322,7 +274,6 @@ impl Report {
                 current.partials += totals.partials;
                 current.branches += totals.branches;
                 current.methods += totals.methods;
-                current.messages += totals.messages;
                 current.sessions += totals.sessions;
                 current.complexity += totals.complexity;
                 current.complexity_total += totals.complexity_total;
@@ -331,8 +282,8 @@ impl Report {
         return book_reviews;
     }
 
-    fn get_totals(&self) -> PyResult<ReportTotals> {
-        let mut res: ReportTotals = ReportTotals {
+    fn get_totals(&self) -> PyResult<cov::ReportTotals> {
+        let mut res: cov::ReportTotals = cov::ReportTotals {
             files: 0,
             lines: 0,
             hits: 0,
@@ -340,7 +291,6 @@ impl Report {
             partials: 0,
             branches: 0,
             methods: 0,
-            messages: 0,
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
@@ -354,7 +304,6 @@ impl Report {
             res.partials += totals.partials;
             res.branches += totals.branches;
             res.methods += totals.methods;
-            res.messages += totals.messages;
             res.sessions += totals.sessions;
             res.complexity += totals.complexity;
             res.complexity_total += totals.complexity_total;
@@ -432,7 +381,6 @@ fn parse_line(line: &str) -> LineType {
                 coverage: parse_coverage(&array_data[0]),
                 coverage_type: CoverageType::Standard, // TODO: fix this
                 sessions: sessions,
-                messages: Option::None,
                 complexity: Option::None,
             });
         }
@@ -576,8 +524,6 @@ mod tests {
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), "90");
-        println!("{}", serde_json::to_string(&calc).unwrap());
-        println!("{}", serde_json::to_string(&calc_2).unwrap());
         assert_eq!(res.get_eof(0), 5);
         assert_eq!(res.get_eof(1), 13);
         assert_eq!(res.get_eof(2), 16);
