@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 mod changes;
 mod cov;
+mod parser;
 mod report;
 
 /// Formats the sum of two numbers as string.
@@ -19,7 +20,7 @@ fn parse_report(
     chunks: String,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> report::Report {
-    report::parse_report_from_str(filenames, chunks, session_mapping)
+    parser::parse_report_from_str(filenames, chunks, session_mapping)
 }
 
 #[pyfunction]
