@@ -3,8 +3,6 @@ use crate::cov;
 use crate::report;
 
 use fraction::GenericFraction;
-use fraction::ToPrimitive;
-use pyo3::prelude::*;
 use rayon::prelude::*;
 
 use serde_json::Value;
