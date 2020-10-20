@@ -15,6 +15,7 @@ pub enum CoverageType {
 pub struct ReportTotals {
     #[pyo3(get)]
     pub files: i32,
+    #[pyo3(get)]
     pub lines: i32,
     #[pyo3(get)]
     pub hits: i32,

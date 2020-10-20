@@ -7,19 +7,27 @@ use crate::cov;
 use crate::diff;
 use crate::report;
 
+#[pyclass]
+#[derive(Clone)]
 struct ChangeStats {
+    #[pyo3(get)]
     hits: i32,
+    #[pyo3(get)]
     partials: i32,
+    #[pyo3(get)]
     misses: i32,
 }
 
 #[pyclass]
 pub struct Change {
     path: String,
-    is_new: bool,
-    was_deleted: bool,
+    #[pyo3(get)]
+    new: bool,
+    #[pyo3(get)]
+    deleted: bool,
     in_diff: bool,
     old_path: Option<String>,
+    #[pyo3(get)]
     totals: Option<ChangeStats>,
 }
 
@@ -98,8 +106,8 @@ fn get_filereport_changes(
     let partials = head_partials - base_partials;
     Some(Change {
         path: filename.to_string(),
-        is_new: false,
-        was_deleted: false,
+        new: false,
+        deleted: false,
         in_diff: diff.is_some(),
         old_path: if original_name == filename {
             None
@@ -178,8 +186,8 @@ pub fn get_changes(
     for filename in missing_files {
         changes_list.push(Change {
             path: filename.to_string(),
-            was_deleted: true,
-            is_new: false,
+            deleted: true,
+            new: false,
             in_diff: false,
             old_path: None,
             totals: None,
@@ -189,8 +197,8 @@ pub fn get_changes(
     for filename in new_filenames {
         changes_list.push(Change {
             path: filename.to_string(),
-            is_new: true,
-            was_deleted: false,
+            new: true,
+            deleted: false,
             in_diff: false,
             old_path: None,
             totals: None,
