@@ -7,6 +7,12 @@ use crate::cov;
 use crate::diff;
 use crate::report;
 
+struct ChangeStats {
+    hits: i32,
+    partials: i32,
+    misses: i32,
+}
+
 #[pyclass]
 pub struct Change {
     path: String,
@@ -14,7 +20,7 @@ pub struct Change {
     was_deleted: bool,
     in_diff: bool,
     old_path: Option<String>,
-    totals: Option<report::ReportTotals>,
+    totals: Option<ChangeStats>,
 }
 
 fn get_filereport_changes(
@@ -100,16 +106,10 @@ fn get_filereport_changes(
         } else {
             Some(original_name.to_string())
         },
-        totals: Some(report::ReportTotals {
+        totals: Some(ChangeStats {
             hits,
             misses,
             partials,
-            branches: 0,
-            complexity: 0,
-            complexity_total: 0,
-            files: 1,
-            lines: 1,
-            sessions: 0,
         }),
     })
 }
