@@ -13,7 +13,6 @@ fn calculate_reportfile_diff(
 ) -> report::ReportTotals {
     let (_, lines_on_head) = get_exclusions_from_diff(Some(&diff_data.2));
     let mut involved_lines: Vec<&report::ReportLine> = Vec::new();
-    println!("{:?}", lines_on_head);
     for line_number in lines_on_head.iter() {
         match reportfile.lines.get(line_number) {
             None => {}

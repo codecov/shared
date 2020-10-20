@@ -8,7 +8,7 @@ use crate::diff;
 use crate::report;
 
 #[pyclass]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct ChangeStats {
     #[pyo3(get)]
     hits: i32,
@@ -19,6 +19,7 @@ struct ChangeStats {
 }
 
 #[pyclass]
+#[derive(Debug)]
 pub struct Change {
     path: String,
     #[pyo3(get)]
@@ -52,7 +53,7 @@ fn get_filereport_changes(
     let mut current_head: i32 = 0;
     let base_eof = base_report.get_eof();
     let head_eof = head_report.get_eof();
-    while current_base < base_eof && current_head < head_eof {
+    while current_base < base_eof || current_head < head_eof {
         current_base += 1;
         current_head += 1;
         while only_on_base.contains(&current_base) {
@@ -204,5 +205,6 @@ pub fn get_changes(
             totals: None,
         })
     }
+    println!("{:?}", changes_list);
     return changes_list;
 }
