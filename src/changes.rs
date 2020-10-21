@@ -1,3 +1,4 @@
+use fraction::GenericFraction;
 use pyo3::prelude::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -16,11 +17,21 @@ struct ChangeStats {
     partials: i32,
     #[pyo3(get)]
     misses: i32,
+    changed_coverage: GenericFraction<i32>,
+}
+
+#[pymethods]
+impl ChangeStats {
+    #[getter(coverage)]
+    pub fn get_coverage(&self) -> PyResult<Option<String>> {
+        Ok(Some(format!("{:.1$}", self.changed_coverage, 5)))
+    }
 }
 
 #[pyclass]
 #[derive(Debug)]
 pub struct Change {
+    #[pyo3(get)]
     path: String,
     #[pyo3(get)]
     new: bool,
@@ -105,6 +116,7 @@ fn get_filereport_changes(
     let hits = head_hits - base_hits;
     let misses = head_misses - base_misses;
     let partials = head_partials - base_partials;
+    let base_totals = base_report.get_totals();
     Some(Change {
         path: filename.to_string(),
         new: false,
@@ -119,6 +131,10 @@ fn get_filereport_changes(
             hits,
             misses,
             partials,
+            changed_coverage: GenericFraction::new(
+                hits + base_totals.hits,
+                partials + misses + base_totals.partials + base_totals.misses,
+            ),
         }),
     })
 }

@@ -4,11 +4,17 @@ use pyo3::prelude::*;
 
 use fraction::GenericFraction;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 pub enum CoverageType {
     Standard,
     Branch,
     Method,
+}
+
+pub enum Complexity {
+    TotalComplexity((i32, i32)),
+    SingleComplexity(i32),
 }
 
 #[pyclass]
@@ -19,12 +25,18 @@ pub struct ReportTotals {
     pub lines: i32,
     #[pyo3(get)]
     pub hits: i32,
+    #[pyo3(get)]
     pub misses: i32,
+    #[pyo3(get)]
     pub partials: i32,
+    #[pyo3(get)]
     pub branches: i32,
     pub sessions: i32,
+    #[pyo3(get)]
     pub complexity: i32,
     pub complexity_total: i32,
+    #[pyo3(get)]
+    methods: i32,
 }
 
 impl ReportTotals {
@@ -39,6 +51,7 @@ impl ReportTotals {
             sessions: 0,
             complexity: 0,
             complexity_total: 0,
+            methods: 0,
         }
     }
 
@@ -48,6 +61,7 @@ impl ReportTotals {
             lines: 0,
             hits: 0,
             misses: 0,
+            methods: 0,
             partials: 0,
             branches: 0,
             sessions: 0,
@@ -60,6 +74,64 @@ impl ReportTotals {
                 cov::Coverage::Hit => res.hits += 1,
                 cov::Coverage::Miss => res.misses += 1,
                 cov::Coverage::Partial(_) => res.partials += 1,
+            }
+            match &report_line.complexity {
+                Some(value) => match value {
+                    Complexity::SingleComplexity(v) => {
+                        res.complexity += v;
+                    }
+                    Complexity::TotalComplexity((n, d)) => {
+                        res.complexity += n;
+                        res.complexity_total += d;
+                    }
+                },
+                None => {}
+            }
+            match report_line.coverage_type {
+                CoverageType::Standard => {}
+                CoverageType::Branch => res.branches += 1,
+                CoverageType::Method => res.methods += 1,
+            }
+        }
+        return res;
+    }
+
+    pub fn from_filtered_lines(lines: Vec<&ReportLine>, session_ids: &Vec<i32>) -> ReportTotals {
+        let mut res: ReportTotals = ReportTotals {
+            files: 1,
+            lines: 0,
+            hits: 0,
+            misses: 0,
+            methods: 0,
+            partials: 0,
+            branches: 0,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+        };
+        for report_line in lines.iter() {
+            res.lines += 1;
+            match report_line.calculate_sessions_coverage(session_ids) {
+                cov::Coverage::Hit => res.hits += 1,
+                cov::Coverage::Miss => res.misses += 1,
+                cov::Coverage::Partial(_) => res.partials += 1,
+            }
+            match &report_line.complexity {
+                Some(value) => match value {
+                    Complexity::SingleComplexity(v) => {
+                        res.complexity += v;
+                    }
+                    Complexity::TotalComplexity((n, d)) => {
+                        res.complexity += n;
+                        res.complexity_total += d;
+                    }
+                },
+                None => {}
+            }
+            match report_line.coverage_type {
+                CoverageType::Standard => {}
+                CoverageType::Branch => res.branches += 1,
+                CoverageType::Method => res.methods += 1,
             }
         }
         return res;
@@ -83,15 +155,18 @@ impl ReportTotals {
 #[pymethods]
 impl ReportTotals {
     #[getter(coverage)]
-    pub fn get_coverage(&self) -> PyResult<String> {
-        if self.hits == self.lines {
-            return Ok("100".to_string());
+    pub fn get_coverage(&self) -> PyResult<Option<String>> {
+        if self.lines == 0 {
+            return Ok(None);
         }
-        if self.hits == 0 || self.lines == 0 {
-            return Ok("0".to_string());
+        if self.hits == self.lines {
+            return Ok(Some("100".to_string()));
+        }
+        if self.hits == 0 {
+            return Ok(Some("0".to_string()));
         }
         let fraction: GenericFraction<i32> = GenericFraction::new(100 * self.hits, self.lines);
-        Ok(format!("{:.1$}", fraction, 5))
+        Ok(Some(format!("{:.1$}", fraction, 5)))
     }
 }
 
@@ -100,14 +175,14 @@ pub struct LineSession {
     pub coverage: cov::Coverage,
     pub branches: i32,
     pub partials: Vec<i32>,
-    pub complexity: i32,
+    pub complexity: Option<Complexity>,
 }
 
 pub struct ReportLine {
     pub coverage: cov::Coverage,
     pub coverage_type: CoverageType,
     pub sessions: Vec<LineSession>,
-    pub complexity: Option<i32>, // This has to be redone
+    pub complexity: Option<Complexity>,
 }
 
 impl ReportLine {
@@ -142,32 +217,7 @@ impl ReportFile {
     }
 
     fn get_filtered_totals(&self, sessions: &Vec<i32>) -> ReportTotals {
-        let mut res = ReportTotals {
-            files: 1,
-            lines: 0,
-            hits: 0,
-            misses: 0,
-            partials: 0,
-            branches: 0,
-            sessions: 0,
-            complexity: 0,
-            complexity_total: 0,
-        };
-        for (_, line) in self.lines.iter() {
-            res.lines += 1;
-            match line.calculate_sessions_coverage(sessions) {
-                cov::Coverage::Hit => {
-                    res.hits += 1;
-                }
-                cov::Coverage::Miss => {
-                    res.misses += 1;
-                }
-                cov::Coverage::Partial(_) => {
-                    res.partials += 1;
-                }
-            }
-        }
-        return res;
+        return ReportTotals::from_filtered_lines(self.lines.values().collect(), sessions);
     }
 
     fn calculate_per_flag_totals(
@@ -191,6 +241,7 @@ impl ReportFile {
                                     sessions: 0,
                                     complexity: 0,
                                     complexity_total: 0,
+                                    methods: 0,
                                 });
                             stat.lines += 1;
                             match sess.coverage {
@@ -207,32 +258,13 @@ impl ReportFile {
         return book_reviews;
     }
 
-    fn get_totals(&self) -> ReportTotals {
-        let mut res: ReportTotals = ReportTotals {
-            files: 1,
-            lines: 0,
-            hits: 0,
-            misses: 0,
-            partials: 0,
-            branches: 0,
-            sessions: 0,
-            complexity: 0,
-            complexity_total: 0,
-        };
-        for (_, report_line) in self.lines.iter() {
-            res.lines += 1;
-            match report_line.coverage {
-                cov::Coverage::Hit => res.hits += 1,
-                cov::Coverage::Miss => res.misses += 1,
-                cov::Coverage::Partial(_) => res.partials += 1,
-            }
-        }
-        return res;
+    pub fn get_totals(&self) -> ReportTotals {
+        return ReportTotals::from_lines(self.lines.values().collect());
     }
 }
 
 impl Report {
-    fn get_sessions_from_flags(&self, flags: &Vec<&str>) -> Vec<i32> {
+    pub fn get_sessions_from_flags(&self, flags: &Vec<&str>) -> Vec<i32> {
         let mut res: Vec<i32> = Vec::new();
         for (session_id, session_flags) in self.session_mapping.iter() {
             if flags.iter().any(|v| session_flags.contains(&v.to_string())) {
@@ -261,19 +293,9 @@ impl Report {
 
 #[pymethods]
 impl Report {
-    fn get_filtered_totals(&self, files: Vec<&str>, flags: Vec<&str>) -> ReportTotals {
+    fn get_filtered_totals(&self, files: HashSet<&str>, flags: Vec<&str>) -> ReportTotals {
         let sessions = self.get_sessions_from_flags(&flags);
-        let mut initial = ReportTotals {
-            files: 0,
-            lines: 0,
-            hits: 0,
-            misses: 0,
-            partials: 0,
-            branches: 0,
-            sessions: 0,
-            complexity: 0,
-            complexity_total: 0,
-        };
+        let mut initial = ReportTotals::new();
         for filename in files {
             let location = self.filenames.get(filename);
             if let Some(i) = location {
@@ -290,29 +312,10 @@ impl Report {
         for report_file in self.report_files.iter() {
             let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
             for (flag_name, totals) in file_totals.iter() {
-                let mut current =
-                    book_reviews
-                        .entry(flag_name.to_string())
-                        .or_insert(ReportTotals {
-                            files: 0,
-                            lines: 0,
-                            hits: 0,
-                            misses: 0,
-                            partials: 0,
-                            branches: 0,
-                            sessions: 0,
-                            complexity: 0,
-                            complexity_total: 0,
-                        });
-                current.files += totals.files;
-                current.lines += totals.lines;
-                current.hits += totals.hits;
-                current.misses += totals.misses;
-                current.partials += totals.partials;
-                current.branches += totals.branches;
-                current.sessions += totals.sessions;
-                current.complexity += totals.complexity;
-                current.complexity_total += totals.complexity_total;
+                let current = book_reviews
+                    .entry(flag_name.to_string())
+                    .or_insert(ReportTotals::new());
+                current.add_up(&totals)
             }
         }
         return book_reviews;
@@ -322,15 +325,7 @@ impl Report {
         let mut res = ReportTotals::new();
         for report_file in self.report_files.iter() {
             let totals = report_file.get_totals();
-            res.files += totals.files;
-            res.lines += totals.lines;
-            res.hits += totals.hits;
-            res.misses += totals.misses;
-            res.partials += totals.partials;
-            res.branches += totals.branches;
-            res.sessions += totals.sessions;
-            res.complexity += totals.complexity;
-            res.complexity_total += totals.complexity_total;
+            res.add_up(&totals);
         }
         return Ok(res);
     }

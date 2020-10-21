@@ -15,6 +15,24 @@ enum LineType {
     Details,
 }
 
+fn parse_coverage_type(val: &Value) -> report::CoverageType {
+    match val {
+        Value::String(v) => {
+            if v == "m" {
+                return report::CoverageType::Method;
+            }
+            if v == "b" {
+                return report::CoverageType::Branch;
+            }
+            panic!("Unexpected coverage_type {:?}", v);
+        }
+        Value::Null => return report::CoverageType::Standard,
+        _ => {
+            panic!("{:?}", val);
+        }
+    }
+}
+
 fn parse_coverage(line: &Value) -> cov::Coverage {
     match line {
         Value::Number(o) => {
@@ -48,6 +66,26 @@ fn parse_coverage(line: &Value) -> cov::Coverage {
     }
 }
 
+fn parse_complexity(val: &Value) -> Option<report::Complexity> {
+    match val {
+        Value::Number(o) => {
+            return Some(report::Complexity::SingleComplexity(
+                o.as_i64().unwrap() as i32
+            ));
+        }
+        Value::String(s) => panic!("Unexpected complexity {:?}", s),
+        Value::Array(a) => {
+            return Some(report::Complexity::TotalComplexity((
+                a[0].as_i64().unwrap() as i32,
+                a[1].as_i64().unwrap() as i32,
+            )));
+        }
+        Value::Null => return None,
+        Value::Bool(_) => panic!("BOOL"),
+        Value::Object(_) => panic!("Object"),
+    }
+}
+
 fn parse_line(line: &str) -> LineType {
     if line.is_empty() {
         return LineType::Emptyline;
@@ -66,14 +104,22 @@ fn parse_line(line: &str) -> LineType {
                     coverage: parse_coverage(&el[1]),
                     branches: 0,
                     partials: [0].to_vec(),
-                    complexity: 0,
+                    complexity: parse_complexity(if array_data.len() > 4 {
+                        &array_data[4]
+                    } else {
+                        &Value::Null
+                    }),
                 })
             }
             return LineType::Content(report::ReportLine {
                 coverage: parse_coverage(&array_data[0]),
-                coverage_type: report::CoverageType::Standard, // TODO: fix this
+                coverage_type: parse_coverage_type(&array_data[1]), // TODO: fix this
                 sessions: sessions,
-                complexity: Option::None,
+                complexity: parse_complexity(if array_data.len() > 4 {
+                    &array_data[4]
+                } else {
+                    &Value::Null
+                }),
             });
         }
         Value::Null => return LineType::Emptyline,
@@ -176,7 +222,7 @@ mod tests {
         let res = parse_report_from_str(filenames, content.to_string(), flags);
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_totals().unwrap();
-        assert_eq!(calc_2.get_coverage().unwrap(), "90");
+        assert_eq!(calc_2.get_coverage().unwrap(), Some("90".to_string()));
         assert_eq!(res.get_eof(0), 5);
         assert_eq!(res.get_eof(1), 13);
         assert_eq!(res.get_eof(2), 16);

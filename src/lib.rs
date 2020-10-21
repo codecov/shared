@@ -2,6 +2,7 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 mod changes;
 mod cov;
@@ -49,12 +50,30 @@ fn calculate_diff(
     return diff::calculate_diff(report, diff);
 }
 
+#[pyfunction]
+fn calculate_filtered_diff(
+    report: &report::Report,
+    diff: HashMap<
+        String,
+        (
+            String,
+            Option<String>,
+            Vec<((i32, i32, i32, i32), Vec<String>)>,
+        ),
+    >,
+    files: HashSet<String>,
+    flags: Vec<&str>,
+) -> (report::ReportTotals, HashMap<String, report::ReportTotals>) {
+    return diff::calculate_filtered_diff(report, diff, files, flags);
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn rustypole(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_report, m)?)?;
     m.add_function(wrap_pyfunction!(get_changes, m)?)?;
     m.add_function(wrap_pyfunction!(calculate_diff, m)?)?;
+    m.add_function(wrap_pyfunction!(calculate_filtered_diff, m)?)?;
 
     Ok(())
 }
