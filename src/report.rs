@@ -6,18 +6,21 @@ use fraction::GenericFraction;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
+#[derive(Debug)]
 pub enum CoverageType {
     Standard,
     Branch,
     Method,
 }
 
+#[derive(Debug)]
 pub enum Complexity {
     TotalComplexity((i32, i32)),
     SingleComplexity(i32),
 }
 
 #[pyclass]
+#[derive(Debug)]
 pub struct ReportTotals {
     #[pyo3(get)]
     pub files: i32,
@@ -32,7 +35,6 @@ pub struct ReportTotals {
     #[pyo3(get)]
     pub branches: i32,
     pub sessions: i32,
-    #[pyo3(get)]
     pub complexity: i32,
     pub complexity_total: i32,
     #[pyo3(get)]
@@ -116,7 +118,7 @@ impl ReportTotals {
                 cov::Coverage::Miss => res.misses += 1,
                 cov::Coverage::Partial(_) => res.partials += 1,
             }
-            match &report_line.complexity {
+            match &report_line.calculate_sessions_complexity(session_ids) {
                 Some(value) => match value {
                     Complexity::SingleComplexity(v) => {
                         res.complexity += v;
@@ -168,8 +170,17 @@ impl ReportTotals {
         let fraction: GenericFraction<i32> = GenericFraction::new(100 * self.hits, self.lines);
         Ok(Some(format!("{:.1$}", fraction, 5)))
     }
+
+    #[getter(complexity)]
+    fn get_complexity(&self) -> PyResult<Option<i32>> {
+        if self.lines == 0 {
+            return Ok(None);
+        }
+        return Ok(Some(self.complexity));
+    }
 }
 
+#[derive(Debug)]
 pub struct LineSession {
     pub id: i32,
     pub coverage: cov::Coverage,
@@ -178,6 +189,7 @@ pub struct LineSession {
     pub complexity: Option<Complexity>,
 }
 
+#[derive(Debug)]
 pub struct ReportLine {
     pub coverage: cov::Coverage,
     pub coverage_type: CoverageType,
@@ -194,6 +206,32 @@ impl ReportLine {
             .map(|k| &k.coverage)
             .collect();
         return cov::Coverage::join_coverages(valid_sessions);
+    }
+
+    fn calculate_sessions_complexity(&self, session_ids: &Vec<i32>) -> Option<Complexity> {
+        let complexities: Vec<(i32, i32)> = self
+            .sessions
+            .iter()
+            .filter(|k| session_ids.contains(&k.id))
+            .filter_map(|k| match &k.complexity {
+                Some(x) => match x {
+                    Complexity::SingleComplexity(v) => Some((*v, 0)),
+                    Complexity::TotalComplexity(v) => Some((v.0, v.1)),
+                },
+                None => None,
+            })
+            .collect();
+        let complexity_total = complexities.iter().map(|x| x.1).max();
+        match complexity_total {
+            None => return None,
+            Some(total) => {
+                let complexity = complexities.iter().map(|x| x.0).max().unwrap();
+                if total > 0 {
+                    return Some(Complexity::TotalComplexity((complexity, total)));
+                }
+                return Some(Complexity::SingleComplexity(complexity));
+            }
+        }
     }
 }
 

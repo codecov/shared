@@ -99,13 +99,14 @@ fn parse_line(line: &str) -> LineType {
         Value::Array(array_data) => {
             let mut sessions: Vec<report::LineSession> = Vec::new();
             for el in array_data[2].as_array().unwrap() {
+                let el_as_array = el.as_array().unwrap();
                 sessions.push(report::LineSession {
-                    id: el[0].as_i64().unwrap() as i32,
+                    id: el_as_array[0].as_i64().unwrap() as i32,
                     coverage: parse_coverage(&el[1]),
                     branches: 0,
                     partials: [0].to_vec(),
-                    complexity: parse_complexity(if array_data.len() > 4 {
-                        &array_data[4]
+                    complexity: parse_complexity(if el_as_array.len() > 4 {
+                        &el_as_array[4]
                     } else {
                         &Value::Null
                     }),
