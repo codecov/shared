@@ -1,23 +1,12 @@
 use crate::cov;
+use crate::line;
+use crate::file;
 
 use pyo3::prelude::*;
 
 use fraction::GenericFraction;
 use std::collections::HashMap;
 use std::collections::HashSet;
-
-#[derive(Debug)]
-pub enum CoverageType {
-    Standard,
-    Branch,
-    Method,
-}
-
-#[derive(Debug)]
-pub enum Complexity {
-    TotalComplexity((i32, i32)),
-    SingleComplexity(i32),
-}
 
 #[pyclass]
 #[derive(Debug)]
@@ -57,7 +46,7 @@ impl ReportTotals {
         }
     }
 
-    pub fn from_lines(lines: Vec<&ReportLine>) -> ReportTotals {
+    pub fn from_lines(lines: Vec<&line::ReportLine>) -> ReportTotals {
         let mut res: ReportTotals = ReportTotals {
             files: 1,
             lines: 0,
@@ -79,10 +68,10 @@ impl ReportTotals {
             }
             match &report_line.complexity {
                 Some(value) => match value {
-                    Complexity::SingleComplexity(v) => {
+                    line::Complexity::SingleComplexity(v) => {
                         res.complexity += v;
                     }
-                    Complexity::TotalComplexity((n, d)) => {
+                    line::Complexity::TotalComplexity((n, d)) => {
                         res.complexity += n;
                         res.complexity_total += d;
                     }
@@ -90,50 +79,9 @@ impl ReportTotals {
                 None => {}
             }
             match report_line.coverage_type {
-                CoverageType::Standard => {}
-                CoverageType::Branch => res.branches += 1,
-                CoverageType::Method => res.methods += 1,
-            }
-        }
-        return res;
-    }
-
-    pub fn from_filtered_lines(lines: Vec<&ReportLine>, session_ids: &Vec<i32>) -> ReportTotals {
-        let mut res: ReportTotals = ReportTotals {
-            files: 1,
-            lines: 0,
-            hits: 0,
-            misses: 0,
-            methods: 0,
-            partials: 0,
-            branches: 0,
-            sessions: 0,
-            complexity: 0,
-            complexity_total: 0,
-        };
-        for report_line in lines.iter() {
-            res.lines += 1;
-            match report_line.calculate_sessions_coverage(session_ids) {
-                cov::Coverage::Hit => res.hits += 1,
-                cov::Coverage::Miss => res.misses += 1,
-                cov::Coverage::Partial(_) => res.partials += 1,
-            }
-            match &report_line.calculate_sessions_complexity(session_ids) {
-                Some(value) => match value {
-                    Complexity::SingleComplexity(v) => {
-                        res.complexity += v;
-                    }
-                    Complexity::TotalComplexity((n, d)) => {
-                        res.complexity += n;
-                        res.complexity_total += d;
-                    }
-                },
-                None => {}
-            }
-            match report_line.coverage_type {
-                CoverageType::Standard => {}
-                CoverageType::Branch => res.branches += 1,
-                CoverageType::Method => res.methods += 1,
+                line::CoverageType::Standard => {}
+                line::CoverageType::Branch => res.branches += 1,
+                line::CoverageType::Method => res.methods += 1,
             }
         }
         return res;
@@ -141,8 +89,8 @@ impl ReportTotals {
 }
 
 impl ReportTotals {
-    pub fn add_up(&mut self, other: &ReportTotals) {
-        self.files += other.files;
+    pub fn add_up(&mut self, other: &file::FileTotals) {
+        self.files += 1;
         self.lines += other.lines;
         self.hits += other.hits;
         self.misses += other.misses;
@@ -180,125 +128,11 @@ impl ReportTotals {
     }
 }
 
-#[derive(Debug)]
-pub struct LineSession {
-    pub id: i32,
-    pub coverage: cov::Coverage,
-    pub branches: i32,
-    pub partials: Vec<i32>,
-    pub complexity: Option<Complexity>,
-}
-
-#[derive(Debug)]
-pub struct ReportLine {
-    pub coverage: cov::Coverage,
-    pub coverage_type: CoverageType,
-    pub sessions: Vec<LineSession>,
-    pub complexity: Option<Complexity>,
-}
-
-impl ReportLine {
-    fn calculate_sessions_coverage(&self, session_ids: &Vec<i32>) -> cov::Coverage {
-        let valid_sessions: Vec<&cov::Coverage> = self
-            .sessions
-            .iter()
-            .filter(|k| session_ids.contains(&k.id))
-            .map(|k| &k.coverage)
-            .collect();
-        return cov::Coverage::join_coverages(valid_sessions);
-    }
-
-    fn calculate_sessions_complexity(&self, session_ids: &Vec<i32>) -> Option<Complexity> {
-        let complexities: Vec<(i32, i32)> = self
-            .sessions
-            .iter()
-            .filter(|k| session_ids.contains(&k.id))
-            .filter_map(|k| match &k.complexity {
-                Some(x) => match x {
-                    Complexity::SingleComplexity(v) => Some((*v, 0)),
-                    Complexity::TotalComplexity(v) => Some((v.0, v.1)),
-                },
-                None => None,
-            })
-            .collect();
-        let complexity_total = complexities.iter().map(|x| x.1).max();
-        match complexity_total {
-            None => return None,
-            Some(total) => {
-                let complexity = complexities.iter().map(|x| x.0).max().unwrap();
-                if total > 0 {
-                    return Some(Complexity::TotalComplexity((complexity, total)));
-                }
-                return Some(Complexity::SingleComplexity(complexity));
-            }
-        }
-    }
-}
-
-pub struct ReportFile {
-    pub lines: HashMap<i32, ReportLine>,
-}
-
 #[pyclass]
 pub struct Report {
     pub filenames: HashMap<String, i32>,
-    pub report_files: Vec<ReportFile>,
+    pub report_files: Vec<file::ReportFile>,
     pub session_mapping: HashMap<i32, Vec<String>>,
-}
-
-impl ReportFile {
-    pub fn get_eof(&self) -> i32 {
-        return match self.lines.keys().max() {
-            Some(expr) => *expr,
-            None => 0,
-        };
-    }
-
-    fn get_filtered_totals(&self, sessions: &Vec<i32>) -> ReportTotals {
-        return ReportTotals::from_filtered_lines(self.lines.values().collect(), sessions);
-    }
-
-    fn calculate_per_flag_totals(
-        &self,
-        flag_mapping: &HashMap<i32, Vec<String>>,
-    ) -> HashMap<String, ReportTotals> {
-        let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
-        for (_, report_line) in self.lines.iter() {
-            for sess in &report_line.sessions {
-                match flag_mapping.get(&sess.id) {
-                    Some(flags) => {
-                        for f in flags {
-                            let mut stat =
-                                book_reviews.entry(f.to_string()).or_insert(ReportTotals {
-                                    files: 1,
-                                    lines: 0,
-                                    hits: 0,
-                                    misses: 0,
-                                    partials: 0,
-                                    branches: 0,
-                                    sessions: 0,
-                                    complexity: 0,
-                                    complexity_total: 0,
-                                    methods: 0,
-                                });
-                            stat.lines += 1;
-                            match sess.coverage {
-                                cov::Coverage::Hit => stat.hits += 1,
-                                cov::Coverage::Miss => stat.misses += 1,
-                                cov::Coverage::Partial(_) => stat.partials += 1,
-                            }
-                        }
-                    }
-                    None => {}
-                }
-            }
-        }
-        return book_reviews;
-    }
-
-    pub fn get_totals(&self) -> ReportTotals {
-        return ReportTotals::from_lines(self.lines.values().collect());
-    }
 }
 
 impl Report {
@@ -312,7 +146,7 @@ impl Report {
         return res;
     }
 
-    pub fn get_by_filename(&self, filename: &str) -> Option<&ReportFile> {
+    pub fn get_by_filename(&self, filename: &str) -> Option<&file::ReportFile> {
         match self.filenames.get(filename) {
             Some(file_location) => match self.report_files.get(*file_location as usize) {
                 None => {

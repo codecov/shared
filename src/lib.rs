@@ -7,8 +7,10 @@ use std::collections::HashSet;
 mod changes;
 mod cov;
 mod diff;
+mod line;
 mod parser;
 mod report;
+mod file;
 
 #[pyfunction]
 fn parse_report(
@@ -46,7 +48,7 @@ fn calculate_diff(
             Vec<((i32, i32, i32, i32), Vec<String>)>,
         ),
     >,
-) -> (report::ReportTotals, HashMap<String, report::ReportTotals>) {
+) -> (report::ReportTotals, HashMap<String, file::FileTotals>) {
     return diff::calculate_diff(report, diff);
 }
 
@@ -63,7 +65,7 @@ fn calculate_filtered_diff(
     >,
     files: HashSet<String>,
     flags: Vec<&str>,
-) -> (report::ReportTotals, HashMap<String, report::ReportTotals>) {
+) -> (report::ReportTotals, HashMap<String, file::FileTotals>) {
     return diff::calculate_filtered_diff(report, diff, files, flags);
 }
 

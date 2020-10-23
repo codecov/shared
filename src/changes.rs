@@ -7,6 +7,7 @@ use std::iter::FromIterator;
 use crate::cov;
 use crate::diff;
 use crate::report;
+use crate::file;
 
 #[pyclass]
 #[derive(Clone, Debug)]
@@ -44,8 +45,8 @@ pub struct Change {
 }
 
 fn get_filereport_changes(
-    base_report: &report::ReportFile,
-    head_report: &report::ReportFile,
+    base_report: &file::ReportFile,
+    head_report: &file::ReportFile,
     filename: &str,
     original_name: &str,
     diff: Option<&(
@@ -183,12 +184,12 @@ pub fn get_changes(
                 },
                 None => filename.to_string(),
             };
-            let new_file: &report::ReportFile = head_report
+            let new_file: &file::ReportFile = head_report
                 .report_files
                 .get(*file_location as usize)
                 .unwrap();
             let old_file_location = base_report.filenames.get(&original_name).unwrap();
-            let old_file: &report::ReportFile = base_report
+            let old_file: &file::ReportFile = base_report
                 .report_files
                 .get(*old_file_location as usize)
                 .unwrap();

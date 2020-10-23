@@ -1,6 +1,8 @@
 extern crate rayon;
 use crate::cov;
+use crate::line;
 use crate::report;
+use crate::file;
 
 use fraction::GenericFraction;
 use rayon::prelude::*;
@@ -9,24 +11,24 @@ use serde_json::Value;
 use std::collections::HashMap;
 
 enum LineType {
-    Content(report::ReportLine),
+    Content(line::ReportLine),
     Emptyline,
     Separator,
     Details,
 }
 
-fn parse_coverage_type(val: &Value) -> report::CoverageType {
+fn parse_coverage_type(val: &Value) -> line::CoverageType {
     match val {
         Value::String(v) => {
             if v == "m" {
-                return report::CoverageType::Method;
+                return line::CoverageType::Method;
             }
             if v == "b" {
-                return report::CoverageType::Branch;
+                return line::CoverageType::Branch;
             }
             panic!("Unexpected coverage_type {:?}", v);
         }
-        Value::Null => return report::CoverageType::Standard,
+        Value::Null => return line::CoverageType::Standard,
         _ => {
             panic!("{:?}", val);
         }
@@ -66,16 +68,16 @@ fn parse_coverage(line: &Value) -> cov::Coverage {
     }
 }
 
-fn parse_complexity(val: &Value) -> Option<report::Complexity> {
+fn parse_complexity(val: &Value) -> Option<line::Complexity> {
     match val {
         Value::Number(o) => {
-            return Some(report::Complexity::SingleComplexity(
+            return Some(line::Complexity::SingleComplexity(
                 o.as_i64().unwrap() as i32
             ));
         }
         Value::String(s) => panic!("Unexpected complexity {:?}", s),
         Value::Array(a) => {
-            return Some(report::Complexity::TotalComplexity((
+            return Some(line::Complexity::TotalComplexity((
                 a[0].as_i64().unwrap() as i32,
                 a[1].as_i64().unwrap() as i32,
             )));
@@ -97,10 +99,10 @@ fn parse_line(line: &str) -> LineType {
         Value::Number(o) => panic!("{:?}", o),
         Value::String(s) => panic!("{:?}", s),
         Value::Array(array_data) => {
-            let mut sessions: Vec<report::LineSession> = Vec::new();
+            let mut sessions: Vec<line::LineSession> = Vec::new();
             for el in array_data[2].as_array().unwrap() {
                 let el_as_array = el.as_array().unwrap();
-                sessions.push(report::LineSession {
+                sessions.push(line::LineSession {
                     id: el_as_array[0].as_i64().unwrap() as i32,
                     coverage: parse_coverage(&el[1]),
                     branches: 0,
@@ -112,7 +114,7 @@ fn parse_line(line: &str) -> LineType {
                     }),
                 })
             }
-            return LineType::Content(report::ReportLine {
+            return LineType::Content(line::ReportLine {
                 coverage: parse_coverage(&array_data[0]),
                 coverage_type: parse_coverage_type(&array_data[1]), // TODO: fix this
                 sessions: sessions,
@@ -135,13 +137,13 @@ pub fn parse_report_from_str(
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> report::Report {
     let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
-    let mut current_report_lines: HashMap<i32, report::ReportLine> = HashMap::new();
-    let mut all_report_files: Vec<report::ReportFile> = Vec::new();
+    let mut current_report_lines: HashMap<i32, line::ReportLine> = HashMap::new();
+    let mut all_report_files: Vec<file::ReportFile> = Vec::new();
     let mut line_count = 1;
     for l in v {
         match l {
             LineType::Separator => {
-                all_report_files.push(report::ReportFile {
+                all_report_files.push(file::ReportFile {
                     lines: current_report_lines,
                 });
                 current_report_lines = HashMap::new();
@@ -157,7 +159,7 @@ pub fn parse_report_from_str(
             }
         }
     }
-    all_report_files.push(report::ReportFile {
+    all_report_files.push(file::ReportFile {
         lines: current_report_lines,
     });
     return report::Report {

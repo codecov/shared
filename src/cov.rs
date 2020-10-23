@@ -1,7 +1,7 @@
 use fraction::GenericFraction;
 use fraction::ToPrimitive;
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum Coverage {
     Hit,
     Miss,

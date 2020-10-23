@@ -1,25 +1,27 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
+use crate::line;
 use crate::report;
+use crate::file;
 
 fn calculate_reportfile_diff(
-    reportfile: &report::ReportFile,
+    reportfile: &file::ReportFile,
     diff_data: &(
         String,
         Option<String>,
         Vec<((i32, i32, i32, i32), Vec<String>)>,
     ),
-) -> report::ReportTotals {
+) -> file::FileTotals {
     let (_, lines_on_head) = get_exclusions_from_diff(Some(&diff_data.2));
-    let mut involved_lines: Vec<&report::ReportLine> = Vec::new();
+    let mut involved_lines: Vec<&line::ReportLine> = Vec::new();
     for line_number in lines_on_head.iter() {
         match reportfile.lines.get(line_number) {
             None => {}
             Some(line) => involved_lines.push(line),
         }
     }
-    return report::ReportTotals::from_lines(involved_lines);
+    return file::FileTotals::from_lines(involved_lines);
 }
 
 pub fn calculate_diff(
@@ -32,9 +34,9 @@ pub fn calculate_diff(
             Vec<((i32, i32, i32, i32), Vec<String>)>,
         ),
     >,
-) -> (report::ReportTotals, HashMap<String, report::ReportTotals>) {
+) -> (report::ReportTotals, HashMap<String, file::FileTotals>) {
     let mut res = report::ReportTotals::new();
-    let mut mapping: HashMap<String, report::ReportTotals> = HashMap::new();
+    let mut mapping: HashMap<String, file::FileTotals> = HashMap::new();
     for (filename, diff_data) in diff.iter() {
         match report.get_by_filename(filename) {
             None => {}
@@ -79,23 +81,23 @@ pub fn get_exclusions_from_diff(
 }
 
 fn calculate_reportfile_filtered_diff(
-    reportfile: &report::ReportFile,
+    reportfile: &file::ReportFile,
     diff_data: &(
         String,
         Option<String>,
         Vec<((i32, i32, i32, i32), Vec<String>)>,
     ),
     sessions: &Vec<i32>,
-) -> report::ReportTotals {
+) -> file::FileTotals {
     let (_, lines_on_head) = get_exclusions_from_diff(Some(&diff_data.2));
-    let mut involved_lines: Vec<&report::ReportLine> = Vec::new();
+    let mut involved_lines: Vec<line::ReportLine> = Vec::new();
     for line_number in lines_on_head.iter() {
         match reportfile.lines.get(line_number) {
             None => {}
-            Some(line) => involved_lines.push(line),
+            Some(line) => involved_lines.push(line.filter_by_session_ids(sessions)),
         }
     }
-    return report::ReportTotals::from_filtered_lines(involved_lines, sessions);
+    return file::FileTotals::from_lines(involved_lines.iter().collect());
 }
 
 pub fn calculate_filtered_diff(
@@ -110,10 +112,10 @@ pub fn calculate_filtered_diff(
     >,
     files: HashSet<String>,
     flags: Vec<&str>,
-) -> (report::ReportTotals, HashMap<String, report::ReportTotals>) {
+) -> (report::ReportTotals, HashMap<String, file::FileTotals>) {
     let sessions = report.get_sessions_from_flags(&flags);
     let mut res = report::ReportTotals::new();
-    let mut mapping: HashMap<String, report::ReportTotals> = HashMap::new();
+    let mut mapping: HashMap<String, file::FileTotals> = HashMap::new();
     for (filename, diff_data) in diff.iter() {
         if files.contains(filename) {
             match report.get_by_filename(filename) {
