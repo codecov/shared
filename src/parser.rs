@@ -1,8 +1,8 @@
 extern crate rayon;
 use crate::cov;
+use crate::file;
 use crate::line;
 use crate::report;
-use crate::file;
 
 use fraction::GenericFraction;
 use rayon::prelude::*;
@@ -49,6 +49,9 @@ fn parse_coverage(line: &Value) -> cov::Coverage {
                 let v: Vec<&str> = s.rsplit('/').collect();
                 let num: i32 = v[0].parse().unwrap();
                 let den: i32 = v[1].parse().unwrap();
+                if num == den {
+                    return cov::Coverage::Hit;
+                }
                 let f: GenericFraction<i32> = GenericFraction::new(num, den);
                 return cov::Coverage::Partial(f);
             }
@@ -100,23 +103,29 @@ fn parse_line(line: &str) -> LineType {
         Value::String(s) => panic!("{:?}", s),
         Value::Array(array_data) => {
             let mut sessions: Vec<line::LineSession> = Vec::new();
-            for el in array_data[2].as_array().unwrap() {
-                let el_as_array = el.as_array().unwrap();
-                sessions.push(line::LineSession {
-                    id: el_as_array[0].as_i64().unwrap() as i32,
-                    coverage: parse_coverage(&el[1]),
-                    branches: 0,
-                    partials: [0].to_vec(),
-                    complexity: parse_complexity(if el_as_array.len() > 4 {
-                        &el_as_array[4]
-                    } else {
-                        &Value::Null
-                    }),
-                })
+            if array_data.len() > 2 {
+                for el in array_data[2].as_array().unwrap() {
+                    let el_as_array = el.as_array().unwrap();
+                    sessions.push(line::LineSession {
+                        id: el_as_array[0].as_i64().unwrap() as i32,
+                        coverage: parse_coverage(&el[1]),
+                        branches: 0,
+                        partials: [0].to_vec(),
+                        complexity: parse_complexity(if el_as_array.len() > 4 {
+                            &el_as_array[4]
+                        } else {
+                            &Value::Null
+                        }),
+                    })
+                }
             }
             return LineType::Content(line::ReportLine {
                 coverage: parse_coverage(&array_data[0]),
-                coverage_type: parse_coverage_type(&array_data[1]), // TODO: fix this
+                coverage_type: if array_data.len() > 1 {
+                    parse_coverage_type(&array_data[1])
+                } else {
+                    line::CoverageType::Standard
+                },
                 sessions: sessions,
                 complexity: parse_complexity(if array_data.len() > 4 {
                     &array_data[4]

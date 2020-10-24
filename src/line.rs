@@ -22,7 +22,7 @@ pub struct LineSession {
     pub complexity: Option<Complexity>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ReportLine {
     pub coverage: cov::Coverage,
     pub coverage_type: CoverageType,
@@ -31,19 +31,22 @@ pub struct ReportLine {
 }
 
 impl ReportLine {
-    pub fn filter_by_session_ids(&self, session_ids: &Vec<i32>) -> ReportLine {
+    pub fn filter_by_session_ids(&self, session_ids: &Vec<i32>) -> Option<ReportLine> {
         let valid_sessions: Vec<LineSession> = self
             .sessions
             .iter()
             .filter(|k| session_ids.contains(&k.id))
             .map(|x| x.clone())
             .collect();
-        ReportLine {
+        if valid_sessions.is_empty() {
+            return None;
+        }
+        Some(ReportLine {
             coverage: self.calculate_sessions_coverage(&valid_sessions),
             coverage_type: self.coverage_type.clone(),
             complexity: self.calculate_sessions_complexity(&valid_sessions),
             sessions: valid_sessions,
-        }
+        })
     }
 
     pub fn calculate_sessions_coverage(&self, sessions: &Vec<LineSession>) -> cov::Coverage {

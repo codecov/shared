@@ -1,12 +1,12 @@
 use crate::cov;
-use crate::line;
 use crate::file;
+use crate::line;
 
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 
 use fraction::GenericFraction;
 use std::collections::HashMap;
-use std::collections::HashSet;
 
 #[pyclass]
 #[derive(Debug)]
@@ -116,7 +116,7 @@ impl ReportTotals {
             return Ok(Some("0".to_string()));
         }
         let fraction: GenericFraction<i32> = GenericFraction::new(100 * self.hits, self.lines);
-        Ok(Some(format!("{:.1$}", fraction, 5)))
+        Ok(Some(format!("{:#.5}", fraction)))
     }
 
     #[getter(complexity)]
@@ -125,6 +125,32 @@ impl ReportTotals {
             return Ok(None);
         }
         return Ok(Some(self.complexity));
+    }
+
+    fn asdict<'a>(&self, py: Python<'a>) -> &'a PyDict {
+        let t = PyDict::new(py);
+        t.set_item("files", self.files).unwrap();
+        t.set_item("lines", self.lines).unwrap();
+        t.set_item("hits", self.hits).unwrap();
+        t.set_item("misses", self.misses).unwrap();
+        t.set_item("partials", self.partials).unwrap();
+        t.set_item("branches", self.branches).unwrap();
+        t.set_item("sessions", self.sessions).unwrap();
+        t.set_item("complexity", self.complexity).unwrap();
+        t.set_item("complexity_total", self.complexity_total).unwrap();
+        t.set_item("methods", self.methods).unwrap();
+        t.set_item("coverage", self.get_coverage().unwrap()).unwrap();
+        t.set_item("diff", 0).unwrap();
+        t.set_item("messages", 0).unwrap();
+        return t;
+    }
+
+    fn to_str(&self) -> String {
+        format!("{:?}", self)
+    }
+
+    fn __str__(&self) -> String {
+        format!("{:?}", self)
     }
 }
 
@@ -136,10 +162,10 @@ pub struct Report {
 }
 
 impl Report {
-    pub fn get_sessions_from_flags(&self, flags: &Vec<&str>) -> Vec<i32> {
+    pub fn get_sessions_from_flags(&self, flags: &Vec<String>) -> Vec<i32> {
         let mut res: Vec<i32> = Vec::new();
         for (session_id, session_flags) in self.session_mapping.iter() {
-            if flags.iter().any(|v| session_flags.contains(&v.to_string())) {
+            if session_flags.iter().any(|v| flags.contains(&v.to_string())) {
                 res.push(*session_id); // TODO Do I have to use this * ?
             }
         }
@@ -163,22 +189,7 @@ impl Report {
     }
 }
 
-#[pymethods]
 impl Report {
-    fn get_filtered_totals(&self, files: HashSet<&str>, flags: Vec<&str>) -> ReportTotals {
-        let sessions = self.get_sessions_from_flags(&flags);
-        let mut initial = ReportTotals::new();
-        for filename in files {
-            let location = self.filenames.get(filename);
-            if let Some(i) = location {
-                let report_file = &self.report_files[*i as usize];
-                let some_totals = report_file.get_filtered_totals(&sessions);
-                initial.add_up(&some_totals);
-            }
-        }
-        return initial;
-    }
-
     pub fn calculate_per_flag_totals(&self) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
         for report_file in self.report_files.iter() {
@@ -193,12 +204,13 @@ impl Report {
         return book_reviews;
     }
 
-    pub fn get_totals(&self) -> PyResult<ReportTotals> {
+    pub fn get_simple_totals(&self) -> PyResult<ReportTotals> {
         let mut res = ReportTotals::new();
         for report_file in self.report_files.iter() {
             let totals = report_file.get_totals();
             res.add_up(&totals);
         }
+        res.sessions = self.session_mapping.len() as i32;
         return Ok(res);
     }
 }

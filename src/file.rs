@@ -1,11 +1,11 @@
 use pyo3::prelude::*;
 use std::collections::HashMap;
 
-use crate::line;
 use crate::cov;
+use crate::line;
 
 #[pyclass]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FileTotals {
     #[pyo3(get)]
     pub lines: i32,
@@ -23,7 +23,6 @@ pub struct FileTotals {
     #[pyo3(get)]
     methods: i32,
 }
-
 
 impl FileTotals {
     pub fn new() -> FileTotals {
@@ -81,7 +80,6 @@ impl FileTotals {
     }
 }
 
-
 pub struct ReportFile {
     pub lines: HashMap<i32, line::ReportLine>,
 }
@@ -95,8 +93,11 @@ impl ReportFile {
     }
 
     pub fn get_filtered_totals(&self, session_ids: &Vec<i32>) -> FileTotals {
-        let all_lines: Vec<line::ReportLine> = self.lines.values()
+        let all_lines: Vec<line::ReportLine> = self
+            .lines
+            .values()
             .map(|x| x.filter_by_session_ids(session_ids))
+            .filter_map(|x| x)
             .collect();
         return FileTotals::from_lines(all_lines.iter().collect());
     }
