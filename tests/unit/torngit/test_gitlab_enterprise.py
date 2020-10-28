@@ -1,4 +1,3 @@
-from asyncio import Future
 import pytest
 
 from shared.torngit.gitlab_enterprise import GitlabEnterprise
@@ -33,9 +32,8 @@ class TestGitlabEnterprise(object):
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):
         mocked_fetch = mocker.patch.object(
-            GitlabEnterprise, "fetch", return_value=Future()
+            GitlabEnterprise, "fetch", return_value=mocker.MagicMock(body="{}")
         )
-        mocked_fetch.return_value.set_result(mocker.MagicMock(body="{}"))
         mock_configuration._params["gitlab_enterprise"] = {
             "url": "https://gitlab-enterprise.codecov.dev",
             "api_url": "https://api.gitlab.dev",

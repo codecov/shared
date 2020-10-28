@@ -1,4 +1,3 @@
-from asyncio import Future
 import pytest
 
 from shared.torngit.github_enterprise import GithubEnterprise
@@ -32,11 +31,21 @@ class TestGithubEnterprise(object):
 
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):
-        mocked_fetch = mocker.patch.object(
-            GithubEnterprise, "fetch", return_value=Future()
+        client = mocker.MagicMock(
+            __aenter__=mocker.AsyncMock(
+                return_value=mocker.MagicMock(
+                    request=mocker.AsyncMock(
+                        return_value=mocker.MagicMock(
+                            headers={"Content-Type": "application/json"},
+                            status_code=201,
+                            json=mocker.MagicMock(return_value={}),
+                        )
+                    ),
+                ),
+            ),
         )
-        mocked_fetch.return_value.set_result(
-            mocker.MagicMock(headers={"Content-Type": "application/json"}, body="{}")
+        mocked_fetch = mocker.patch.object(
+            GithubEnterprise, "get_client", return_value=client
         )
         mock_configuration._params["github_enterprise"] = {
             "url": "https://github-enterprise.codecov.dev",
@@ -49,18 +58,14 @@ class TestGithubEnterprise(object):
         )
         res = await gl.post_comment("pullid", "body")
         assert res == {}
-        mocked_fetch.assert_called_with(
+        client.__aenter__.return_value.request.assert_called_with(
+            "POST",
             "https://api.github.dev/repos/stevepeak/codecov-test/issues/pullid/comments",
-            body='{"body": "body"}',
-            ca_certs=None,
-            connect_timeout=10,
+            json={"body": "body"},
             headers={
                 "Accept": "application/json",
                 "Authorization": "token fake_token",
                 "User-Agent": "Default",
             },
-            follow_redirects=False,
-            method="POST",
-            request_timeout=30,
-            validate_cert=None,
+            allow_redirects=False,
         )

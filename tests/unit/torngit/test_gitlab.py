@@ -1,6 +1,5 @@
 import socket
 import pytest
-from asyncio import Future
 from json import dumps
 
 from shared.torngit.gitlab import Gitlab
@@ -26,9 +25,10 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses(self, mocker, valid_handler):
-        mocked_fetch = mocker.patch.object(Gitlab, "fetch", return_value=Future())
-        mocked_fetch.return_value.set_result(
-            mocker.MagicMock(
+        mocked_fetch = mocker.patch.object(
+            Gitlab,
+            "fetch",
+            return_value=mocker.MagicMock(
                 headers={"Content-Type": "application/json"},
                 body=dumps(
                     [
@@ -49,7 +49,7 @@ class TestUnitGitlab(object):
                         },
                     ]
                 ),
-            )
+            ),
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -58,9 +58,10 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses_success(self, mocker, valid_handler):
-        mocked_fetch = mocker.patch.object(Gitlab, "fetch", return_value=Future())
-        mocked_fetch.return_value.set_result(
-            mocker.MagicMock(
+        mocked_fetch = mocker.patch.object(
+            Gitlab,
+            "fetch",
+            return_value=mocker.MagicMock(
                 headers={"Content-Type": "application/json"},
                 body=dumps(
                     [
@@ -87,7 +88,7 @@ class TestUnitGitlab(object):
                         },
                     ]
                 ),
-            )
+            ),
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -96,9 +97,10 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses_pending(self, mocker, valid_handler):
-        mocked_fetch = mocker.patch.object(Gitlab, "fetch", return_value=Future())
-        mocked_fetch.return_value.set_result(
-            mocker.MagicMock(
+        mocked_fetch = mocker.patch.object(
+            Gitlab,
+            "fetch",
+            return_value=mocker.MagicMock(
                 headers={"Content-Type": "application/json"},
                 body=dumps(
                     [
@@ -125,7 +127,7 @@ class TestUnitGitlab(object):
                         },
                     ]
                 ),
-            )
+            ),
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -137,22 +139,15 @@ class TestUnitGitlab(object):
         self, mocker, valid_handler
     ):
         commit_sha = "c739768fcac68144a3a6d82305b9c4106934d31a"
-        first_result, second_result = Future(), Future()
+        first_result = mocker.MagicMock(
+            headers={"Content-Type": "application/json"}, body=dumps([]),
+        )
+        second_result = mocker.MagicMock(
+            headers={"Content-Type": "application/json"},
+            body=dumps([{"sha": "aaaa", "iid": 123}, {"sha": commit_sha, "iid": 986}]),
+        )
         results = [first_result, second_result]
         mocker.patch.object(Gitlab, "fetch", side_effect=results)
-        first_result.set_result(
-            mocker.MagicMock(
-                headers={"Content-Type": "application/json"}, body=dumps([]),
-            )
-        )
-        second_result.set_result(
-            mocker.MagicMock(
-                headers={"Content-Type": "application/json"},
-                body=dumps(
-                    [{"sha": "aaaa", "iid": 123}, {"sha": commit_sha, "iid": 986}]
-                ),
-            )
-        )
         res = await valid_handler.find_pull_request(commit_sha)
         assert res == 986
 
