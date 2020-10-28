@@ -1,5 +1,5 @@
 [package]
-name = "rustypole"
+name = "ribs"
 version = "0.1.0"
 authors = ["Thiago Ramos <thiago@codecov.io>"]
 edition = "2018"
@@ -13,8 +13,8 @@ rayon = "1.1"
 fraction = "0.6.3"
 
 [lib]
-name = "rustypole"
-crate-type = ["cdylib"]
+name = "ribs"
+crate-type = ["cdylib", "rlib"]
 
 [dependencies.pyo3]
 version = "0.12.1"
