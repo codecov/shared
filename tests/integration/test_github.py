@@ -883,12 +883,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, codecov_vcr):
         expected_result = [
-            {
-                "email": "hello@codecov.io",
-                "id": "8226205",
-                "name": "Codecov",
-                "username": "codecov",
-            },
+            {"email": None, "id": "8226205", "name": "codecov", "username": "codecov",},
             {
                 "email": None,
                 "id": "57222756",

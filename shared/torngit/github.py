@@ -359,21 +359,22 @@ class Github(TorngitBaseAdapter):
             while True:
                 page += 1
                 orgs = await self.api(
-                    client, "get", "/user/orgs", page=page, token=token
+                    client, "get", "/user/memberships/orgs", page=page, token=token
                 )
                 if len(orgs) == 0:
                     break
                 # organization names
                 for org in orgs:
+                    organization = org["organization"]
                     org = await self.api(
-                        client, "get", "/users/%s" % org["login"], token=token
+                        client, "get", "/users/%s" % organization["login"], token=token
                     )
                     data.append(
                         dict(
-                            name=org["name"] or org["login"],
-                            id=str(org["id"]),
-                            email=org["email"],
-                            username=org["login"],
+                            name=organization.get("name", org["login"]),
+                            id=str(organization["id"]),
+                            email=organization.get("email"),
+                            username=organization["login"],
                         )
                     )
                 if len(orgs) < 30:
