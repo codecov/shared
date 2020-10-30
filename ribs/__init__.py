@@ -1,1 +1,1 @@
-from rustypole import *
+from .rustypole import *
