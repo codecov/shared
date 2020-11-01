@@ -114,7 +114,7 @@ impl FilterAnalyzer {
             }
         }
         let res = diff::FileDiffAnalysis {
-            summary: file::FileTotals::from_lines(involved_lines.iter().map(|(n, x)| x).collect()),
+            summary: file::FileTotals::from_lines(involved_lines.iter().map(|(_, x)| x).collect()),
             lines_with_hits: involved_lines
                 .iter()
                 .filter_map(|(line_number, line)| match line.coverage {
