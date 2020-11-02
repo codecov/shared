@@ -7,3 +7,5 @@ rustflags = [
 rustflags = [
     "-C", "target-feature=-crt-static"
 ]
+[net]
+git-fetch-with-cli = true
