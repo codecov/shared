@@ -233,8 +233,8 @@ mod tests {
         );
         let res = parse_report_from_str(filenames, content.to_string(), flags);
         let calc = res.calculate_per_flag_totals();
-        let calc_2 = res.get_totals().unwrap();
-        assert_eq!(calc_2.get_coverage().unwrap(), Some("90".to_string()));
+        let calc_2 = res.get_simple_totals().unwrap();
+        assert_eq!(calc_2.get_coverage().unwrap(), Some("90.00000".to_string()));
         assert_eq!(res.get_eof(0), 5);
         assert_eq!(res.get_eof(1), 13);
         assert_eq!(res.get_eof(2), 16);

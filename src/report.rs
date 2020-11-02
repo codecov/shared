@@ -6,6 +6,7 @@ use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
 use fraction::GenericFraction;
+use fraction::ToPrimitive;
 use std::collections::HashMap;
 
 #[pyclass]
@@ -116,7 +117,7 @@ impl ReportTotals {
             return Ok(Some("0".to_string()));
         }
         let fraction: GenericFraction<i32> = GenericFraction::new(100 * self.hits, self.lines);
-        Ok(Some(format!("{:#.5}", fraction)))
+        Ok(Some(format!("{:#.5}", fraction.to_f64().unwrap())))
     }
 
     #[getter(complexity)]
@@ -220,5 +221,27 @@ impl Report {
     pub fn get_eof(&self, file_number: i32) -> i32 {
         let file = &self.report_files[file_number as usize];
         file.get_eof()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rounds_right() {
+        let t = ReportTotals {
+            files: 2,
+            lines: 355,
+            hits: 261,
+            misses: 94,
+            partials: 0,
+            branches: 0,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+            methods: 0,
+        };
+        assert_eq!(t.get_coverage().unwrap(), Some("73.52113".to_string()));
     }
 }
