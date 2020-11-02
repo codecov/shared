@@ -110,7 +110,7 @@ class EditableReport(Report):
 
     @metrics.timer("services.report.EditableReport.delete_multiple_sessions")
     def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
-        self.reset()
+        self._totals = None
         deleted_sessions = []
         for sessionid in session_ids_to_delete:
             deleted_sessions.append(self.sessions.pop(sessionid))

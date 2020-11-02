@@ -30,14 +30,7 @@ def test_totals():
 
 def test_apply_diff():
     apply_diff = Mock(return_value="<totals>")
-    report = Mock(
-        filter=Mock(
-            return_value=Mock(
-                __enter__=lambda self: self, __exit__=Mock(), apply_diff=apply_diff
-            )
-        ),
-        yaml={},
-    )
+    report = Mock(filter=Mock(return_value=Mock(apply_diff=apply_diff)), yaml={},)
     assert Flag(report, "_").apply_diff("<diff>") == "<totals>"
     apply_diff.assert_called_with("<diff>", _save=False)
 

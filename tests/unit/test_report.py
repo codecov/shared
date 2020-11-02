@@ -121,52 +121,40 @@ def test_append_error(patch):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "files, chunks, path_filter, file_repr, lines",
+    "files, chunks, file_repr, lines",
     [
         (
             {"file.py": [0, ReportTotals(1)]},
             None,
-            None,
             "<ReportFile name=file.py lines=0>",
             [],
         ),
-        ({"py.py": [0, ReportTotals(1)]}, None, None, "None", None),
-        (
-            {"file.py": [0, ReportTotals(1)]},
-            None,
-            lambda filename: match(["py.py"], filename),
-            "None",
-            None,
-        ),
+        ({"py.py": [0, ReportTotals(1)]}, None, "None", None),
         (
             {"file.py": [0, ReportTotals(1)]},
             "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
                 END_OF_CHUNK
             ),
-            None,
             "<ReportFile name=file.py lines=3>",
             [(1, ReportLine(1)), (2, ReportLine(1)), (3, ReportLine(1))],
         ),
         (
             {"file.py": [0, ReportTotals(1)]},
             [ReportFile(name="file.py")],
-            None,
             "<ReportFile name=file.py lines=0>",
             [],
         ),
         (
             {"file.py": [1, ReportTotals(1)]},
             [ReportFile(name="other-file.py")],
-            None,
             "<ReportFile name=file.py lines=0>",
             [],
         ),
     ],
 )
-def test_get(files, chunks, path_filter, file_repr, lines, patch):
+def test_get(files, chunks, file_repr, lines, patch):
     r = Report(files=files)
     r._chunks = chunks
-    r._path_filter = path_filter
     r._line_modifier = None
 
     assert repr(r.get("file.py")) == file_repr
@@ -228,28 +216,21 @@ def test_del_item(patch):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "files, path_filter, manifest",
+    "files, manifest",
     [
         (
             {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]},
-            None,
             ["file1.py", "file2.py"],
-        ),
-        (
-            {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]},
-            lambda filename: match(["file2.py"], filename),
-            ["file2.py"],
         ),
     ],
 )
-def test_manifest(files, path_filter, manifest, patch):
+def test_manifest(files, manifest, patch):
     patch.init(Report)
     r = Report()
     r._files = files
     r._chunks = None
-    r._path_filter = path_filter
     r._line_modifier = None
-    assert r.manifest == manifest
+    assert list(r.files) == manifest
 
 
 @pytest.mark.unit
@@ -346,30 +327,20 @@ def test_merge(files, chunks, new_report, manifest, patch):
     r._line_modifier = None
     r.sessions = {}
     r._filter_cache = (None, None)
-    assert r.manifest == ["file.py"]
+    assert list(r.files) == ["file.py"]
     r.merge(new_report)
-    assert r.manifest == manifest
+    assert list(r.files) == manifest
 
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "files, path_filter, boolean",
-    [
-        ({}, None, True),
-        (
-            {"file.py": [0, ReportTotals(1)]},
-            lambda filename: match(["this-file.py"], filename),
-            True,
-        ),
-        ({"file.py": [0, ReportTotals(1)]}, None, False),
-    ],
+    "files, boolean", [({}, True), ({"file.py": [0, ReportTotals(1)]}, False),],
 )
-def test_is_empty(files, path_filter, boolean, patch):
+def test_is_empty(files, boolean, patch):
     patch.init(Report)
     r = Report()
     r._files = files
     r._chunks = None
-    r._path_filter = path_filter
     assert r.is_empty() is boolean
 
 
