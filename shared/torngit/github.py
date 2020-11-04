@@ -270,7 +270,7 @@ class Github(TorngitBaseAdapter):
                 if len(res["repositories"]) == 0:
                     break
                 repos.extend([repo["id"] for repo in res["repositories"]])
-                if len(res["repositories"]) <= 100:
+                if len(res["repositories"]) < 100:
                     break
 
             return repos
