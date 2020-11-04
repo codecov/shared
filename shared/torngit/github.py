@@ -101,7 +101,7 @@ class Github(TorngitBaseAdapter):
         elif res.status_code >= 500:
             metrics.incr(f"{METRICS_PREFIX}.api.5xx")
             raise TorngitServer5xxCodeError("Github is having 5xx issues")
-        elif res.status_code >= 400:
+        elif res.status_code >= 300:
             log.warning(
                 "Github HTTP %s",
                 res.status_code,
