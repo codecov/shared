@@ -36,6 +36,10 @@ class FilteredReportFile(object):
         return self._totals
 
     @property
+    def eof(self):
+        return self.report_file.eof
+
+    @property
     def lines(self):
         """Iter through lines with coverage
         returning (ln, line)

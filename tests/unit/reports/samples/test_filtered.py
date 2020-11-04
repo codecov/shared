@@ -67,6 +67,12 @@ class TestFilteredReportFile(object):
         f = FilteredReportFile(first_file, [1])
         assert f.name == "file_1.go"
 
+    def test_eof(self):
+        first_file = ReportFile("file_1.go")
+        f = FilteredReportFile(first_file, [1])
+        assert f.eof == 1
+        assert f.eof == first_file.eof
+
     def test_totals(self):
         first_file = ReportFile("file_1.go")
         first_file.append(
