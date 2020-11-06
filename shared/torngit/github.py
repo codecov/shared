@@ -359,7 +359,11 @@ class Github(TorngitBaseAdapter):
             while True:
                 page += 1
                 orgs = await self.api(
-                    client, "get", "/user/memberships/orgs", page=page, token=token
+                    client,
+                    "get",
+                    "/user/memberships/orgs?state=active",
+                    page=page,
+                    token=token,
                 )
                 if len(orgs) == 0:
                     break
