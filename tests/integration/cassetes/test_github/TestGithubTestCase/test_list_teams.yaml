@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://api.github.com/user/memberships/orgs?page=1
+    uri: https://api.github.com/user/memberships/orgs?state=active&page=1
   response:
     content: '[{"url":"https://api.github.com/orgs/codecov/memberships/ThiagoCodecov","state":"active","role":"member","organization_url":"https://api.github.com/orgs/codecov","user":{"login":"ThiagoCodecov","id":44376991,"node_id":"MDQ6VXNlcjQ0Mzc2OTkx","avatar_url":"https://avatars3.githubusercontent.com/u/44376991?v=4","gravatar_id":"","url":"https://api.github.com/users/ThiagoCodecov","html_url":"https://github.com/ThiagoCodecov","followers_url":"https://api.github.com/users/ThiagoCodecov/followers","following_url":"https://api.github.com/users/ThiagoCodecov/following{/other_user}","gists_url":"https://api.github.com/users/ThiagoCodecov/gists{/gist_id}","starred_url":"https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/ThiagoCodecov/subscriptions","organizations_url":"https://api.github.com/users/ThiagoCodecov/orgs","repos_url":"https://api.github.com/users/ThiagoCodecov/repos","events_url":"https://api.github.com/users/ThiagoCodecov/events{/privacy}","received_events_url":"https://api.github.com/users/ThiagoCodecov/received_events","type":"User","site_admin":false},"organization":{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","url":"https://api.github.com/orgs/codecov","repos_url":"https://api.github.com/orgs/codecov/repos","events_url":"https://api.github.com/orgs/codecov/events","hooks_url":"https://api.github.com/orgs/codecov/hooks","issues_url":"https://api.github.com/orgs/codecov/issues","members_url":"https://api.github.com/orgs/codecov/members{/member}","public_members_url":"https://api.github.com/orgs/codecov/public_members{/member}","avatar_url":"https://avatars3.githubusercontent.com/u/8226205?v=4","description":"Empower
       developers with tools to improve code quality and testing."}},{"url":"https://api.github.com/orgs/ThiagoCodecovTeam/memberships/ThiagoCodecov","state":"active","role":"admin","organization_url":"https://api.github.com/orgs/ThiagoCodecovTeam","user":{"login":"ThiagoCodecov","id":44376991,"node_id":"MDQ6VXNlcjQ0Mzc2OTkx","avatar_url":"https://avatars3.githubusercontent.com/u/44376991?v=4","gravatar_id":"","url":"https://api.github.com/users/ThiagoCodecov","html_url":"https://github.com/ThiagoCodecov","followers_url":"https://api.github.com/users/ThiagoCodecov/followers","following_url":"https://api.github.com/users/ThiagoCodecov/following{/other_user}","gists_url":"https://api.github.com/users/ThiagoCodecov/gists{/gist_id}","starred_url":"https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/ThiagoCodecov/subscriptions","organizations_url":"https://api.github.com/users/ThiagoCodecov/orgs","repos_url":"https://api.github.com/users/ThiagoCodecov/repos","events_url":"https://api.github.com/users/ThiagoCodecov/events{/privacy}","received_events_url":"https://api.github.com/users/ThiagoCodecov/received_events","type":"User","site_admin":false},"organization":{"login":"ThiagoCodecovTeam","id":57222756,"node_id":"MDEyOk9yZ2FuaXphdGlvbjU3MjIyNzU2","url":"https://api.github.com/orgs/ThiagoCodecovTeam","repos_url":"https://api.github.com/orgs/ThiagoCodecovTeam/repos","events_url":"https://api.github.com/orgs/ThiagoCodecovTeam/events","hooks_url":"https://api.github.com/orgs/ThiagoCodecovTeam/hooks","issues_url":"https://api.github.com/orgs/ThiagoCodecovTeam/issues","members_url":"https://api.github.com/orgs/ThiagoCodecovTeam/members{/member}","public_members_url":"https://api.github.com/orgs/ThiagoCodecovTeam/public_members{/member}","avatar_url":"https://avatars0.githubusercontent.com/u/57222756?v=4","description":null}}]'
@@ -33,9 +33,9 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 29 Oct 2020 15:43:53 GMT
+      - Fri, 06 Nov 2020 20:41:58 GMT
       ETag:
-      - W/"431f69cf70b4fd5dab55a7de32d54410a8b5ff21d807c8eb759073abaf8c2e9c"
+      - W/"97ec428bb30a385d4e2940afb219cddc9e68182724e767641bcc0f78180a6559"
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       Server:
@@ -58,17 +58,17 @@ interactions:
       X-GitHub-Media-Type:
       - github.v3
       X-GitHub-Request-Id:
-      - 12B1:66CC:1806C2A:28212E6:5F9AE338
+      - 13DD:47BE:1732FF4:426AC74:5FA5B515
       X-OAuth-Scopes:
       - admin:org, admin:public_key, admin:repo_hook, repo, user, workflow, write:discussion
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
-      - '4985'
+      - '4980'
       X-RateLimit-Reset:
-      - '1603988054'
+      - '1604698468'
       X-RateLimit-Used:
-      - '15'
+      - '20'
       X-XSS-Protection:
       - 1; mode=block
     http_version: HTTP/1.1
@@ -90,7 +90,7 @@ interactions:
     uri: https://api.github.com/users/codecov
   response:
     content: '{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","avatar_url":"https://avatars3.githubusercontent.com/u/8226205?v=4","gravatar_id":"","url":"https://api.github.com/users/codecov","html_url":"https://github.com/codecov","followers_url":"https://api.github.com/users/codecov/followers","following_url":"https://api.github.com/users/codecov/following{/other_user}","gists_url":"https://api.github.com/users/codecov/gists{/gist_id}","starred_url":"https://api.github.com/users/codecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/codecov/subscriptions","organizations_url":"https://api.github.com/users/codecov/orgs","repos_url":"https://api.github.com/users/codecov/repos","events_url":"https://api.github.com/users/codecov/events{/privacy}","received_events_url":"https://api.github.com/users/codecov/received_events","type":"Organization","site_admin":false,"name":"Codecov","company":null,"blog":"https://codecov.io/","location":null,"email":"hello@codecov.io","hireable":null,"bio":"Empower
-      developers with tools to improve code quality and testing.","twitter_username":null,"public_repos":98,"public_gists":0,"followers":0,"following":0,"created_at":"2014-07-21T16:22:31Z","updated_at":"2020-10-28T19:29:26Z"}'
+      developers with tools to improve code quality and testing.","twitter_username":null,"public_repos":97,"public_gists":0,"followers":0,"following":0,"created_at":"2014-07-21T16:22:31Z","updated_at":"2020-10-28T19:29:26Z"}'
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -107,9 +107,9 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 29 Oct 2020 15:43:53 GMT
+      - Fri, 06 Nov 2020 20:41:58 GMT
       ETag:
-      - W/"6cba88fdc221c202c344b62a1291d8b0739e2e923e14b49f81e79a35df493544"
+      - W/"41648e6e06e4f8a76fdeee41790889167493561656100b92875c5b655a76e5ec"
       Last-Modified:
       - Wed, 28 Oct 2020 19:29:26 GMT
       Referrer-Policy:
@@ -134,17 +134,17 @@ interactions:
       X-GitHub-Media-Type:
       - github.v3
       X-GitHub-Request-Id:
-      - 12B1:66CC:1806C4B:2821306:5F9AE339
+      - 13DD:47BE:1733009:426AC84:5FA5B516
       X-OAuth-Scopes:
       - admin:org, admin:public_key, admin:repo_hook, repo, user, workflow, write:discussion
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
-      - '4984'
+      - '4979'
       X-RateLimit-Reset:
-      - '1603988054'
+      - '1604698468'
       X-RateLimit-Used:
-      - '16'
+      - '21'
       X-XSS-Protection:
       - 1; mode=block
     http_version: HTTP/1.1
@@ -182,9 +182,9 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 29 Oct 2020 15:43:53 GMT
+      - Fri, 06 Nov 2020 20:41:58 GMT
       ETag:
-      - W/"bc20eb7e88709471f6534f752b7b9d39b2c145c0f156d9e95d8d3227aa9aa3d9"
+      - W/"9011bacd6db966b132bd676565a706280db7d7217c7d0f1d35119ddf132208f5"
       Last-Modified:
       - Thu, 31 Oct 2019 13:07:24 GMT
       Referrer-Policy:
@@ -209,17 +209,17 @@ interactions:
       X-GitHub-Media-Type:
       - github.v3
       X-GitHub-Request-Id:
-      - 12B1:66CC:1806C65:282132B:5F9AE339
+      - 13DD:47BE:173300E:426ACAC:5FA5B516
       X-OAuth-Scopes:
       - admin:org, admin:public_key, admin:repo_hook, repo, user, workflow, write:discussion
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
-      - '4983'
+      - '4978'
       X-RateLimit-Reset:
-      - '1603988054'
+      - '1604698468'
       X-RateLimit-Used:
-      - '17'
+      - '22'
       X-XSS-Protection:
       - 1; mode=block
     http_version: HTTP/1.1

@@ -18,7 +18,7 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="testgpf4l63k9hz1d41i1cmfl9lyl11nbadhi4za"),
+        token=dict(key="testfkj5qjd8am23247xas87spi6nhtirm3p7oy6"),
     )
 
 
