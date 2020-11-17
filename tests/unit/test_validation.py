@@ -118,6 +118,19 @@ class TestLayoutStructure(BaseTestCase):
         expected_result = "reach, diff, flags, files, footer"
         assert expected_result == schema.validate(result)
 
+    def test_simple_layout_with_number(self):
+        schema = LayoutStructure()
+        result = "reach, diff, flags, files:10, footer"
+        expected_result = "reach, diff, flags, files:10, footer"
+        assert expected_result == schema.validate(result)
+
+    def test_simple_layout_with_improper_number(self):
+        schema = LayoutStructure()
+        result = "reach, diff, flags, files:twenty, footer"
+        with pytest.raises(SchemaError) as exc:
+            schema.validate(result)
+        assert exc.value.code == "Improper pattern for value on layout: files:twenty"
+
     def test_simple_layout_bad_name(self):
         schema = LayoutStructure()
         result = "reach, diff, flags, love, files, footer"
