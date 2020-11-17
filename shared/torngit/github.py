@@ -57,7 +57,15 @@ class Github(TorngitBaseAdapter):
         )
 
     async def api(
-        self, client, method, url, body=None, headers=None, token=None, **args
+        self,
+        client,
+        method,
+        url,
+        body=None,
+        headers=None,
+        token=None,
+        statuses_to_retry=None,
+        **args,
     ):
         _headers = {
             "Accept": "application/json",
@@ -87,51 +95,61 @@ class Github(TorngitBaseAdapter):
         kwargs = dict(
             json=body if body else None, headers=_headers, allow_redirects=False,
         )
-        try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
-                res = await client.request(method, url, **kwargs)
-        except httpx.TimeoutException:
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
-            raise TorngitServerUnreachableError("GitHub was not able to be reached.")
-        if res.status_code == 599:
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
-            raise TorngitServerUnreachableError(
-                "Github was not able to be reached, server timed out."
-            )
-        elif res.status_code >= 500:
-            metrics.incr(f"{METRICS_PREFIX}.api.5xx")
-            raise TorngitServer5xxCodeError("Github is having 5xx issues")
-        elif res.status_code >= 300:
-            log.warning(
-                "Github HTTP %s",
-                res.status_code,
-                extra=dict(
-                    url=url,
-                    body=res.text if res.text is not None else "NORESPONSE",
-                    rlx=res.headers.get("X-RateLimit-Remaining"),
-                    rly=res.headers.get("X-RateLimit-Limit"),
-                    rlr=res.headers.get("X-RateLimit-Reset"),
-                    **log_dict,
-                ),
-            )
-            message = f"Github API: {res.reason_phrase}"
-            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-            raise TorngitClientError(res.status_code, res, message)
-        log.info(
-            "GitHub HTTP %s" % res.status_code,
-            extra=dict(
-                rlx=res.headers.get("X-RateLimit-Remaining"),
-                rly=res.headers.get("X-RateLimit-Limit"),
-                rlr=res.headers.get("X-RateLimit-Reset"),
-                **log_dict,
-            ),
-        )
-        if res.status_code == 204:
-            return None
-        elif res.headers.get("Content-Type")[:16] == "application/json":
-            return res.json()
-        else:
-            return res.text
+        max_number_retries = 3
+        for current_retry in range(1, max_number_retries + 1):
+            try:
+                with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
+                    res = await client.request(method, url, **kwargs)
+                logged_body = None
+                if res.status_code >= 300 and res.text is not None:
+                    logged_body = res.text
+                log.log(
+                    logging.WARNING if res.status_code >= 300 else logging.INFO,
+                    "Github HTTP %s",
+                    res.status_code,
+                    extra=dict(
+                        current_retry=current_retry,
+                        time_taken=timer.ms,
+                        body=logged_body,
+                        rlx=res.headers.get("X-RateLimit-Remaining"),
+                        rly=res.headers.get("X-RateLimit-Limit"),
+                        rlr=res.headers.get("X-RateLimit-Reset"),
+                        **log_dict,
+                    ),
+                )
+            except httpx.TimeoutException:
+                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
+                raise TorngitServerUnreachableError(
+                    "GitHub was not able to be reached."
+                )
+            if (
+                not statuses_to_retry
+                or res.status_code not in statuses_to_retry
+                or current_retry >= max_number_retries  # Last retry
+            ):
+                if res.status_code == 599:
+                    metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
+                    raise TorngitServerUnreachableError(
+                        "Github was not able to be reached, server timed out."
+                    )
+                elif res.status_code >= 500:
+                    metrics.incr(f"{METRICS_PREFIX}.api.5xx")
+                    raise TorngitServer5xxCodeError("Github is having 5xx issues")
+                elif res.status_code >= 300:
+                    message = f"Github API: {res.reason_phrase}"
+                    metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
+                    raise TorngitClientError(res.status_code, res, message)
+                if res.status_code == 204:
+                    return None
+                elif res.headers.get("Content-Type")[:16] == "application/json":
+                    return res.json()
+                else:
+                    return res.text
+            else:
+                log.info(
+                    "Retrying due to retriable status",
+                    extra=dict(status=res.status_code, **log_dict),
+                )
 
     # Generic
     # -------
@@ -713,6 +731,7 @@ class Github(TorngitBaseAdapter):
                     client,
                     "get",
                     "/repos/%s/commits/%s" % (self.slug, commit),
+                    statuses_to_retry=[401],
                     token=token,
                 )
         except TorngitClientError as ce:
