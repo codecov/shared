@@ -51,6 +51,24 @@ class Session(object):
         self.session_type = session_type or SessionType.uploaded
         self.session_extras = session_extras or {}
 
+    def __eq__(self, other):
+        return (
+            self.id == other.id
+            and self.totals == other.totals
+            and self.time == other.time
+            and self.archive == other.archive
+            and self.flags == other.flags
+            and self.provider == other.provider
+            and self.build == other.build
+            and self.job == other.job
+            and self.url == other.url
+            and self.state == other.state
+            and self.env == other.env
+            and self.name == other.name
+            and self.session_type == other.session_type
+            and self.session_extras == other.session_extras
+        )
+
     def __repr__(self):
         return f"Session<{self._encode()}>"
 

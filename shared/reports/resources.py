@@ -567,6 +567,10 @@ class Report(object):
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
 
+    @classmethod
+    def from_chunks(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
+
     def get_session_from_session(self, sess):
         if isinstance(sess, Session):
             return copy(sess)

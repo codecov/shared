@@ -1,5 +1,5 @@
 from decimal import Decimal
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Union, Tuple, Sequence, Any
 
 
@@ -38,6 +38,9 @@ class ReportTotals(object):
             self.complexity_total,
             self.diff,
         )
+
+    def asdict(self):
+        return asdict(self)
 
     @classmethod
     def default_totals(cls):

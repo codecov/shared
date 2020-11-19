@@ -15,52 +15,6 @@ from shared.reports.types import NetworkFile
 from shared.reports.filtered import FilteredReportFile
 
 
-@pytest.fixture
-def sample_report():
-    report = Report()
-    first_file = ReportFile("file_1.go")
-    second_file = ReportFile("file_2.go")
-    third_file = ReportFile("location/file_1.py")
-    first_file.append(
-        1,
-        ReportLine(
-            coverage=1,
-            sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
-        ),
-    )
-    first_file.append(
-        2, ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)])
-    )
-    first_file.append(
-        3, ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)])
-    )
-    first_file.append(
-        5, ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)])
-    )
-    first_file.append(
-        6,
-        ReportLine(
-            coverage="1/2",
-            sessions=[LineSession(0, "1/2"), LineSession(1, 0), LineSession(2, "1/4")],
-        ),
-    )
-    second_file.append(12, ReportLine(coverage=1, sessions=[[0, 1]]))
-    second_file.append(51, ReportLine(coverage="1/2", type="b", sessions=[[0, "1/2"]]))
-    third_file.append(100, ReportLine(coverage="1/2", type="b", sessions=[[3, "1/2"]]))
-    third_file.append(
-        101, ReportLine(coverage="1/2", type="b", sessions=[[2, "1/2"], [3, "1/2"]])
-    )
-    report.append(first_file)
-    report.append(second_file)
-    report.append(third_file)
-    report.add_session(Session(id=0, flags=["simple"]))
-    report.add_session(Session(id=1, flags=["complex"]))
-    report.add_session(Session(id=2, flags=["complex", "simple"]))
-    report.add_session(Session(id=3, flags=[]))
-    # TODO manually fix Session totals because the defautl logic doesn't
-    return report
-
-
 class TestFilteredReportFile(object):
     def test_name(self):
         first_file = ReportFile("file_1.go")
