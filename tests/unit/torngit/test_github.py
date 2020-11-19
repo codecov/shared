@@ -93,6 +93,54 @@ class TestUnitGithub(object):
         )
         assert no_repo_handler.loggable_token(no_repo_handler.token) == "2vwGK"
 
+    @pytest.mark.asyncio
+    async def test_api_retries(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                side_effect=[
+                    mocker.MagicMock(text="NOTHERE", status_code=401),
+                    mocker.MagicMock(text="FOUND", status_code=200),
+                ]
+            )
+        )
+        method = "GET"
+        url = "random_url"
+        res = await valid_handler.api(client, method, url, statuses_to_retry=[401])
+        assert res == "FOUND"
+
+    @pytest.mark.asyncio
+    async def test_api_almost_too_many_retries(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                side_effect=[
+                    mocker.MagicMock(text="NOTHERE", status_code=401),
+                    mocker.MagicMock(text="NOTHERE", status_code=401),
+                    mocker.MagicMock(text="FOUND", status_code=200),
+                ]
+            )
+        )
+        method = "GET"
+        url = "random_url"
+        res = await valid_handler.api(client, method, url, statuses_to_retry=[401])
+        assert res == "FOUND"
+
+    @pytest.mark.asyncio
+    async def test_api_too_many_retries(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                side_effect=[
+                    mocker.MagicMock(text="NOTHERE", status_code=401),
+                    mocker.MagicMock(text="NOTHERE", status_code=401),
+                    mocker.MagicMock(text="NOTHERE", status_code=401),
+                    mocker.MagicMock(text="FOUND", status_code=200),
+                ]
+            )
+        )
+        method = "GET"
+        url = "random_url"
+        with pytest.raises(TorngitClientError):
+            await valid_handler.api(client, method, url, statuses_to_retry=[401])
+
     def test_get_token_by_type_if_none(self):
         instance = Github(
             token="token",
