@@ -33,8 +33,13 @@ class ReadOnlyReport(object):
         }
         rust_report = None
         try:
-            with metrics.timer("shared.reports.readonly.from_chunks.rust"):
+            with metrics.timer("shared.reports.readonly.from_chunks.rust") as timer:
                 rust_report = parse_report(filename_mapping, chunks, session_mapping)
+            RUST_TIMER_THRESHOLD = 1000
+            if timer.ms > RUST_TIMER_THRESHOLD:
+                log.info(
+                    "Parsing in rust took longer than %d ms", RUST_TIMER_THRESHOLD,
+                )
         except Exception:
             log.warning("Could not parse report", exc_info=True)
         return cls(rust_analyzer, rust_report, inner_report)
@@ -141,7 +146,11 @@ class ReadOnlyReport(object):
                 if (
                     rust_totals.files != res.files
                     or rust_totals.lines != res.lines
-                    or rust_totals.coverage != res.coverage
+                    or rust_totals.hits != res.hits
+                    or (
+                        rust_totals.coverage != res.coverage
+                        and not (rust_totals.coverage is None and res.coverage == 0)
+                    )
                 ):
                     log.warning(
                         "Got unexpected result from rust on totals calculation",
