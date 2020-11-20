@@ -44,7 +44,7 @@ fn parse_coverage_type(val: &Value) -> Result<line::CoverageType, ParsingError> 
 fn parse_coverage(line: &Value) -> Result<cov::Coverage, ParsingError> {
     match line {
         Value::Number(o) => {
-            return if o.as_i64().unwrap() > 0 {
+            return if o.as_i64().ok_or(ParsingError::UnexpectedValue)? > 0 {
                 Ok(cov::Coverage::Hit)
             } else {
                 Ok(cov::Coverage::Miss)
@@ -96,8 +96,8 @@ fn parse_complexity(val: &Value) -> Result<Option<line::Complexity>, ParsingErro
         Value::String(_) => return Err(ParsingError::UnexpectedValue),
         Value::Array(a) => {
             return Ok(Some(line::Complexity::TotalComplexity((
-                a[0].as_i64().unwrap() as i32,
-                a[1].as_i64().unwrap() as i32,
+                a[0].as_i64().ok_or(ParsingError::UnexpectedValue)? as i32,
+                a[1].as_i64().ok_or(ParsingError::UnexpectedValue)? as i32,
             ))));
         }
         Value::Null => return Ok(None),

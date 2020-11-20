@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.8.6
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            source $HOME/.cargo/env
+            cargo --version
+            cargo test --no-default-features
