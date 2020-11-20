@@ -34,6 +34,6 @@ setup(
         "analytics-python==1.3.0b1",
         "voluptuous==0.11.7",
         "httpx~=0.16.0",
-        "ribs @ git+ssh://git@github.com/codecov/ribs@master#egg=ribs",
+        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.1#egg=ribs",
     ],
 )
