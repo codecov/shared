@@ -45,6 +45,7 @@ jobs:
             source $HOME/.cargo/env
             python3 -m venv venv
             . venv/bin/activate
+            pip uninstall ribs -y
             pip install -r requirements.txt
             pip install -r tests/requirements.txt
 

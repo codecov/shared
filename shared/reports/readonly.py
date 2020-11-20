@@ -107,8 +107,16 @@ class ReadOnlyReport(object):
             res = self.inner_report.totals
         try:
             if self.rust_report:
-                with metrics.timer("shared.reports.readonly._process_totals.rust"):
+                with metrics.timer(
+                    "shared.reports.readonly._process_totals.rust"
+                ) as timer:
                     rust_totals = self.rust_analyzer.get_totals(self.rust_report)
+                RUST_TIMER_THRESHOLD = 1000
+                if timer.ms > RUST_TIMER_THRESHOLD:
+                    log.info(
+                        "Processing totals in rust took longer than %d ms",
+                        RUST_TIMER_THRESHOLD,
+                    )
                 if (
                     rust_totals.files != res.files
                     or rust_totals.lines != res.lines
