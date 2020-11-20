@@ -1,6 +1,6 @@
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
-
 use std::collections::HashMap;
 
 mod analyzers;
@@ -18,7 +18,11 @@ fn parse_report(
     chunks: String,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> PyResult<report::Report> {
-    Ok(parser::parse_report_from_str(filenames, chunks, session_mapping))
+    let res = parser::parse_report_from_str(filenames, chunks, session_mapping);
+    match res {
+        Ok(val) => return Ok(val),
+        Err(_) => return Err(PyException::new_err("Unable to parse rust report")),
+    }
 }
 
 /// A Python module implemented in Rust.

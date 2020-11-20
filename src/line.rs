@@ -1,6 +1,6 @@
 use crate::cov;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CoverageType {
     Standard,
     Branch,

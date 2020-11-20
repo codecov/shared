@@ -138,9 +138,11 @@ impl ReportTotals {
         t.set_item("branches", self.branches).unwrap();
         t.set_item("sessions", self.sessions).unwrap();
         t.set_item("complexity", self.complexity).unwrap();
-        t.set_item("complexity_total", self.complexity_total).unwrap();
+        t.set_item("complexity_total", self.complexity_total)
+            .unwrap();
         t.set_item("methods", self.methods).unwrap();
-        t.set_item("coverage", self.get_coverage().unwrap()).unwrap();
+        t.set_item("coverage", self.get_coverage().unwrap())
+            .unwrap();
         t.set_item("diff", 0).unwrap();
         t.set_item("messages", 0).unwrap();
         return t;
