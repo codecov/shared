@@ -103,7 +103,9 @@ class ReadOnlyReport(object):
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
         metric_name = "cached" if self.inner_report._totals else "python"
-        with metrics.timer(f"shared.reports.readonly._process_totals.{metric_name}"):
+        with metrics.timer(
+            f"shared.reports.readonly._process_totals.{metric_name}"
+        ) as metric_python:
             res = self.inner_report.totals
         try:
             if self.rust_report:
@@ -111,6 +113,25 @@ class ReadOnlyReport(object):
                     "shared.reports.readonly._process_totals.rust"
                 ) as timer:
                     rust_totals = self.rust_analyzer.get_totals(self.rust_report)
+                if metric_name == "python":
+                    if metric_python.ms > 20 * timer.ms:
+                        metrics.incr(
+                            "shared.reports.readonly._process_totals.twentyfold"
+                        )
+                    elif metric_python.ms > 5 * timer.ms:
+                        metrics.incr("shared.reports.readonly._process_totals.fivefold")
+                    elif metric_python.ms > 2 * timer.ms:
+                        metrics.incr("shared.reports.readonly._process_totals.twofold")
+                    elif metric_python.ms > timer.ms:
+                        metrics.incr("shared.reports.readonly._process_totals.better")
+                    elif metric_python.ms <= timer.ms:
+                        metrics.incr("shared.reports.readonly._process_totals.worse")
+                        log.info(
+                            "Rust was worse than python on the metrics calculation",
+                            extra=dict(
+                                rust_timer=timer.ms, python_timer=metric_python.ms,
+                            ),
+                        )
                 RUST_TIMER_THRESHOLD = 1000
                 if timer.ms > RUST_TIMER_THRESHOLD:
                     log.info(
