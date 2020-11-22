@@ -9,7 +9,8 @@ current_file = Path(__file__)
 
 
 @pytest.fixture
-def sample_rust_report():
+def sample_rust_report(mocker):
+    mocker.patch.object(ReadOnlyReport, "should_load_rust_version", return_value=True)
     with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
         chunks = f.read()
     files_dict = {
@@ -95,8 +96,12 @@ class TestRustifyDiff(object):
 
 
 class TestReadOnly(object):
-    def test_create_from_report(self, sample_report):
+    def test_create_from_report(self, sample_report, mocker):
+        mocker.patch.object(
+            ReadOnlyReport, "should_load_rust_version", return_value=True
+        )
         r = ReadOnlyReport.create_from_report(sample_report)
+        assert r.rust_report is not None
         assert r.totals == sample_report.totals
         assert r.sessions[0] == sample_report.sessions[0]
         assert r.sessions == sample_report.sessions
@@ -235,9 +240,10 @@ class TestReadOnly(object):
         }
 
     def test_filter_none(self, sample_rust_report):
+        assert sample_rust_report.rust_report is not None
         assert sample_rust_report.filter() is sample_rust_report
 
-    def test_init_invalid_chunks(self):
+    def test_init_invalid_chunks(self, mocker):
         chunks = "\n".join(
             [
                 "{}",
@@ -283,6 +289,62 @@ class TestReadOnly(object):
                 "": None,
             }
         }
+        mocker.patch.object(
+            ReadOnlyReport, "should_load_rust_version", return_value=True
+        )
+        r = ReadOnlyReport.from_chunks(
+            chunks=chunks, files=files_dict, sessions=sessions_dict
+        )
+        assert r.rust_report is None
+
+    def test_init_no_loading_rust(self, mocker):
+        chunks = "\n".join(
+            [
+                "{}",
+                "",
+                "",
+                "[1, null, [[0, 1], [1, 0]]]",
+                "[0, null, [[0, 0], [1, 0]]]",
+            ]
+        )
+        files_dict = {
+            "awesome/__init__.py": [
+                2,
+                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
+                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
+            ],
+            "tests/__init__.py": [
+                0,
+                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
+                None,
+            ],
+            "tests/test_sample.py": [
+                1,
+                [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
+                None,
+            ],
+        }
+        sessions_dict = {
+            "0": {
+                "N": None,
+                "a": "v4/raw/2019-01-10/4434BC2A2EC4FCA57F77B473D83F928C/abf6d4df662c47e32460020ab14abf9303581429/9ccc55a1-8b41-4bb1-a946-ee7a33a7fb56.txt",
+                "c": None,
+                "d": 1547084427,
+                "e": None,
+                "f": ["unit"],
+                "j": None,
+                "n": None,
+                "p": None,
+                "t": [3, 20, 17, 3, 0, "85.00000", 0, 0, 0, 0, 0, 0, 0],
+                "": None,
+            }
+        }
+        mocker.patch.object(
+            ReadOnlyReport, "should_load_rust_version", return_value=False
+        )
         r = ReadOnlyReport.from_chunks(
             chunks=chunks, files=files_dict, sessions=sessions_dict
         )

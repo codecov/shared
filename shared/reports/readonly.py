@@ -1,4 +1,6 @@
 import logging
+import random
+import os
 
 from shared.reports.resources import Report
 from shared.helpers.flag import Flag
@@ -10,6 +12,10 @@ log = logging.getLogger(__name__)
 
 
 class ReadOnlyReport(object):
+    @classmethod
+    def should_load_rust_version(cls):
+        return random.random() < float(os.getenv("RUST_ENABLE_RATE", "0.0"))
+
     def __init__(self, rust_analyzer, rust_report, inner_report):
         self.rust_analyzer = rust_analyzer
         self.rust_report = rust_report
@@ -32,16 +38,21 @@ class ReadOnlyReport(object):
             sid: (session.flags or []) for sid, session in inner_report.sessions.items()
         }
         rust_report = None
-        try:
-            with metrics.timer("shared.reports.readonly.from_chunks.rust") as timer:
-                rust_report = parse_report(filename_mapping, chunks, session_mapping)
-            RUST_TIMER_THRESHOLD = 1000
-            if timer.ms > RUST_TIMER_THRESHOLD:
-                log.info(
-                    "Parsing in rust took longer than %d ms", RUST_TIMER_THRESHOLD,
-                )
-        except Exception:
-            log.warning("Could not parse report", exc_info=True)
+        if cls.should_load_rust_version():
+            try:
+                with metrics.timer("shared.reports.readonly.from_chunks.rust") as timer:
+                    rust_report = parse_report(
+                        filename_mapping, chunks, session_mapping
+                    )
+                RUST_TIMER_THRESHOLD = 2000
+                if timer.ms > RUST_TIMER_THRESHOLD:
+                    log.info(
+                        "Parsing in rust took longer than %d ms",
+                        RUST_TIMER_THRESHOLD,
+                        timing_ms=timer.ms,
+                    )
+            except Exception:
+                log.warning("Could not parse report", exc_info=True)
         return cls(rust_analyzer, rust_report, inner_report)
 
     @classmethod
