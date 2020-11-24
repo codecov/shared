@@ -167,6 +167,13 @@ pub fn parse_report_from_str(
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> Result<report::Report, ParsingError> {
     let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
+    if v.len() == 0 {
+        return Ok(report::Report {
+            report_files: Vec::new(),
+            filenames: filenames,
+            session_mapping: session_mapping,
+        });
+    }
     let mut current_report_lines: HashMap<i32, line::ReportLine> = HashMap::new();
     let mut all_report_files: Vec<file::ReportFile> = Vec::new();
     let mut line_count = 1;
@@ -263,6 +270,22 @@ mod tests {
         assert_eq!(res.get_eof(0), 5);
         assert_eq!(res.get_eof(1), 13);
         assert_eq!(res.get_eof(2), 16);
+    }
+
+    #[test]
+    fn parses_empty_report() {
+        let filenames: HashMap<String, i32> = HashMap::new();
+        let mut flags: HashMap<i32, Vec<String>> = HashMap::new();
+        flags.insert(1, ["flag_one".to_string()].to_vec());
+        flags.insert(
+            0,
+            ["flag_three".to_string(), "flag_two".to_string()].to_vec(),
+        );
+        let res = parse_report_from_str(filenames, "".to_string(), flags).expect("Unable to parse report");
+        assert_eq!(res.report_files.len(), 0);
+        let calc = res.calculate_per_flag_totals();
+        let calc_2 = res.get_simple_totals().unwrap();
+        assert_eq!(calc_2.get_coverage().unwrap(), None);
     }
 
     #[test]
