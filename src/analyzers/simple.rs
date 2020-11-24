@@ -280,3 +280,80 @@ impl SimpleAnalyzer {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn get_totals_works() {
+        let first_file = file::ReportFile {
+            lines: vec![
+                (
+                    1,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![line::LineSession {
+                            id: 0,
+                            coverage: cov::Coverage::Hit,
+                            branches: 0,
+                            partials: vec![],
+                            complexity: None,
+                        }],
+                        complexity: None,
+                    },
+                ),
+                (
+                    2,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![
+                            line::LineSession {
+                                id: 0,
+                                coverage: cov::Coverage::Hit,
+                                branches: 0,
+                                partials: vec![],
+                                complexity: None,
+                            },
+                            line::LineSession {
+                                id: 1,
+                                coverage: cov::Coverage::Partial(GenericFraction::new(1, 2)),
+                                branches: 0,
+                                partials: vec![],
+                                complexity: None,
+                            },
+                        ],
+                        complexity: None,
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let report = report::Report {
+            filenames: vec![
+                ("file1.go".to_string(), 0),
+                ("file_p.py".to_string(), 1),
+                ("plo.c".to_string(), 2),
+            ]
+            .into_iter()
+            .collect(),
+            report_files: vec![first_file],
+            session_mapping: vec![
+                (0, vec!["unit".to_string()]),
+                (1, vec!["integration".to_string()]),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let analyzer_unit = SimpleAnalyzer {};
+        let unit_res = analyzer_unit.get_totals(&report).unwrap();
+        assert_eq!(unit_res.files, 1);
+        assert_eq!(unit_res.lines, 2);
+        assert_eq!(unit_res.hits, 2);
+        assert_eq!(unit_res.misses, 0);
+        assert_eq!(unit_res.partials, 0);
+    }
+}

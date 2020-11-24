@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
+use fraction::GenericFraction;
 use pyo3::prelude::*;
+use rayon::prelude::*;
 
 use crate::cov;
 use crate::diff;
@@ -28,20 +30,33 @@ impl FilterAnalyzer {
             None => None,
         };
         let mut initial = report::ReportTotals::new();
-        for filename in report.filenames.keys().filter(|x| self.should_include(x)) {
-            if let Some(report_file) = report.get_by_filename(filename) {
-                match &sessions {
-                    Some(sess) => {
-                        let some_totals = report_file.get_filtered_totals(&sess);
-                        initial.add_up(&some_totals)
-                    }
-                    None => {
-                        let some_totals = report_file.get_totals();
-                        initial.add_up(&some_totals)
-                    }
-                };
+        match &sessions {
+            Some(sess) => {
+                let filtered_totals: Vec<file::FileTotals> = report
+                    .filenames
+                    .par_iter()
+                    .filter(|(x, _)| self.should_include(x))
+                    .filter_map(|(_, y)| report.report_files.get(*y as usize))
+                    .map(|v| v.get_filtered_totals(sess))
+                    .collect();
+                for t in filtered_totals {
+                    initial.add_up(&t);
+                }
             }
-        }
+            None => {
+                let filtered_totals: Vec<file::FileTotals> = report
+                    .filenames
+                    .par_iter()
+                    .filter(|(x, _)| self.should_include(x))
+                    .filter_map(|(_, y)| report.report_files.get(*y as usize))
+                    .map(|v| v.get_totals())
+                    .collect();
+                for t in filtered_totals {
+                    initial.add_up(&t);
+                }
+            }
+        };
+
         return Ok(initial);
     }
 
@@ -138,5 +153,95 @@ impl FilterAnalyzer {
                 .collect(),
         };
         return res;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn filtered_totals_works() {
+        let first_file = file::ReportFile {
+            lines: vec![
+                (
+                    1,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![line::LineSession {
+                            id: 0,
+                            coverage: cov::Coverage::Hit,
+                            branches: 0,
+                            partials: vec![],
+                            complexity: None,
+                        }],
+                        complexity: None,
+                    },
+                ),
+                (
+                    2,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![
+                            line::LineSession {
+                                id: 0,
+                                coverage: cov::Coverage::Hit,
+                                branches: 0,
+                                partials: vec![],
+                                complexity: None,
+                            },
+                            line::LineSession {
+                                id: 1,
+                                coverage: cov::Coverage::Partial(GenericFraction::new(1, 2)),
+                                branches: 0,
+                                partials: vec![],
+                                complexity: None,
+                            },
+                        ],
+                        complexity: None,
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let report = report::Report {
+            filenames: vec![
+                ("file1.go".to_string(), 0),
+                ("file_p.py".to_string(), 1),
+                ("plo.c".to_string(), 2),
+            ]
+            .into_iter()
+            .collect(),
+            report_files: vec![first_file],
+            session_mapping: vec![
+                (0, vec!["unit".to_string()]),
+                (1, vec!["integration".to_string()]),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let analyzer_unit = FilterAnalyzer {
+            files: Some(vec!["file1.go".to_string()].into_iter().collect()),
+            flags: Some(vec!["unit".to_string()]),
+        };
+        let unit_res = analyzer_unit.get_totals(&report).unwrap();
+        assert_eq!(unit_res.files, 1);
+        assert_eq!(unit_res.lines, 2);
+        assert_eq!(unit_res.hits, 2);
+        assert_eq!(unit_res.misses, 0);
+        assert_eq!(unit_res.partials, 0);
+        let analyzer_integration = FilterAnalyzer {
+            files: Some(vec!["file1.go".to_string()].into_iter().collect()),
+            flags: Some(vec!["integration".to_string()]),
+        };
+        let integration_res = analyzer_integration.get_totals(&report).unwrap();
+        assert_eq!(integration_res.files, 1);
+        assert_eq!(integration_res.lines, 1);
+        assert_eq!(integration_res.hits, 0);
+        assert_eq!(integration_res.misses, 0);
+        assert_eq!(integration_res.partials, 1);
     }
 }

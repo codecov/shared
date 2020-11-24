@@ -4,6 +4,7 @@ use crate::line;
 
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
+use rayon::prelude::*;
 
 use fraction::GenericFraction;
 use fraction::ToPrimitive;
@@ -209,8 +210,12 @@ impl Report {
 
     pub fn get_simple_totals(&self) -> PyResult<ReportTotals> {
         let mut res = ReportTotals::new();
-        for report_file in self.report_files.iter() {
-            let totals = report_file.get_totals();
+        let individual_totals: Vec<file::FileTotals> = self
+            .report_files
+            .par_iter()
+            .map(|x| x.get_totals())
+            .collect();
+        for totals in individual_totals {
             res.add_up(&totals);
         }
         res.sessions = self.session_mapping.len() as i32;
