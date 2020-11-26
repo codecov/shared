@@ -16,11 +16,11 @@ class ReadOnlyReport(object):
     def should_load_rust_version(cls):
         return random.random() < float(os.getenv("RUST_ENABLE_RATE", "0.0"))
 
-    def __init__(self, rust_analyzer, rust_report, inner_report):
+    def __init__(self, rust_analyzer, rust_report, inner_report, totals=None):
         self.rust_analyzer = rust_analyzer
         self.rust_report = rust_report
         self.inner_report = inner_report
-        self._totals = None
+        self._totals = totals
         self._flags = None
 
     @classmethod
@@ -49,11 +49,11 @@ class ReadOnlyReport(object):
                     log.info(
                         "Parsing in rust took longer than %d ms",
                         RUST_TIMER_THRESHOLD,
-                        timing_ms=timer.ms,
+                        extra=dict(timing_ms=timer.ms),
                     )
             except Exception:
                 log.warning("Could not parse report", exc_info=True)
-        return cls(rust_analyzer, rust_report, inner_report)
+        return cls(rust_analyzer, rust_report, inner_report, totals=totals)
 
     @classmethod
     def create_from_report(cls, report):
@@ -155,8 +155,7 @@ class ReadOnlyReport(object):
                         RUST_TIMER_THRESHOLD,
                     )
                 if (
-                    rust_totals.files != res.files
-                    or rust_totals.lines != res.lines
+                    rust_totals.lines != res.lines
                     or rust_totals.hits != res.hits
                     or (
                         rust_totals.coverage != res.coverage
@@ -165,6 +164,13 @@ class ReadOnlyReport(object):
                 ):
                     log.warning(
                         "Got unexpected result from rust on totals calculation",
+                        extra=dict(
+                            totals=res.asdict(), rust_totals=rust_totals.asdict(),
+                        ),
+                    )
+                elif rust_totals.files != res.files:
+                    log.warning(
+                        "Got unexpected number of files from rust on totals calculation",
                         extra=dict(
                             totals=res.asdict(), rust_totals=rust_totals.asdict(),
                         ),
