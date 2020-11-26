@@ -2,6 +2,7 @@ import re
 from typing import Tuple, List
 from enum import Enum, auto
 
+import httpx
 from tornado.escape import url_escape
 from tornado.httpclient import AsyncHTTPClient
 
@@ -57,6 +58,15 @@ class TorngitBaseAdapter(object):
         "objective-c",
         "xtend",
     )
+
+    def get_client(self):
+        timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
+        return httpx.AsyncClient(
+            verify=self.verify_ssl
+            if not isinstance(self.verify_ssl, bool)
+            else self.verify_ssl,
+            timeout=timeout,
+        )
 
     def get_token_by_type(self, token_type: TokenType):
         if self._token_type_mapping.get(token_type) is not None:
@@ -122,7 +132,7 @@ class TorngitBaseAdapter(object):
 
     @property
     def slug(self):
-        if self.data["owner"] and self.data["repo"]:
+        if self.data.get("owner") and self.data.get("repo"):
             if self.data["owner"].get("username") and self.data["repo"].get("name"):
                 return "%s/%s" % (
                     self.data["owner"]["username"],

@@ -2,90 +2,74 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
     method: GET
     uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
   response:
-    body: {string: "diff --git a/README.rst b/README.rst\nindex 09c90a8..405d834 100644\n---
-        a/README.rst\n+++ b/README.rst\n@@ -12 +12,2 @@ Overview\n-Main website: `Codecov
-        <https://codecov.io/>`_.\n+\n+website: `Codecov <https://codecov.io/>`_.\n@@
-        -49 +50 @@ You may need to configure a ``.coveragerc`` file. Learn more `here
-        <http://cover\n-We highly suggest adding `source` to your ``.coveragerc``
-        which solves a number of issues collecting coverage.\n+We highly suggest adding
-        ``source`` to your ``.coveragerc``, which solves a number of issues collecting
-        coverage.\n@@ -54,0 +56,7 @@ We highly suggest adding `source` to your ``.coveragerc``
-        which solves a number\n+   \n+If there are multiple sources, you instead should
-        add ``include`` to your ``.coveragerc``\n+\n+.. code-block:: ini\n+\n+   [run]\n+
-        \  include=your_package_name/*\n@@ -153,2 +161 @@ Links\n-We are happy to
-        help if you have any questions. Please contact email our Support at [support@codecov.io](mailto:support@codecov.io)\n-\n+We
-        are happy to help if you have any questions. Please contact email our Support
-        at `support@codecov.io <mailto:support@codecov.io>`_.\n"}
+    content: "diff --git a/README.rst b/README.rst\nindex 09c90a8..405d834 100644\n\
+      --- a/README.rst\n+++ b/README.rst\n@@ -12 +12,2 @@ Overview\n-Main website:\
+      \ `Codecov <https://codecov.io/>`_.\n+\n+website: `Codecov <https://codecov.io/>`_.\n\
+      @@ -49 +50 @@ You may need to configure a ``.coveragerc`` file. Learn more `here\
+      \ <http://cover\n-We highly suggest adding `source` to your ``.coveragerc``\
+      \ which solves a number of issues collecting coverage.\n+We highly suggest adding\
+      \ ``source`` to your ``.coveragerc``, which solves a number of issues collecting\
+      \ coverage.\n@@ -54,0 +56,7 @@ We highly suggest adding `source` to your ``.coveragerc``\
+      \ which solves a number\n+   \n+If there are multiple sources, you instead should\
+      \ add ``include`` to your ``.coveragerc``\n+\n+.. code-block:: ini\n+\n+   [run]\n\
+      +   include=your_package_name/*\n@@ -153,2 +161 @@ Links\n-We are happy to help\
+      \ if you have any questions. Please contact email our Support at [support@codecov.io](mailto:support@codecov.io)\n\
+      -\n+We are happy to help if you have any questions. Please contact email our\
+      \ Support at `support@codecov.io <mailto:support@codecov.io>`_.\n"
     headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - ['Authorization, Accept-Encoding']
-    - !!python/tuple
-      - Cache-Control
-      - [max-age=900]
-    - !!python/tuple
-      - Content-Type
-      - [text/plain]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Wed, 07 Nov 2018 14:53:56 GMT']
-    - !!python/tuple
-      - X-Served-By
-      - [app-139]
-    - !!python/tuple
-      - Accept-Ranges
-      - [bytes]
-    - !!python/tuple
-      - Etag
-      - ['"gz[356a192b7913b04c54574d18c28d46e6395428ab]"']
-    - !!python/tuple
-      - X-Static-Version
-      - [1f6d684e3c29]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [repository]
-    - !!python/tuple
-      - X-Credential-Type
-      - [oauth1]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.207107067108']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Request-Count
-      - ['588']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Version
-      - [1f6d684e3c29]
-    - !!python/tuple
-      - X-Cache-Info
-      - [caching]
-    - !!python/tuple
-      - X-Consumed-Content-Encoding
-      - [gzip]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - text/plain
+      Date:
+      - Wed, 07 Nov 2018 14:53:56 GMT
+      Etag:
+      - '"gz[356a192b7913b04c54574d18c28d46e6395428ab]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.207107067108'
+      X-Request-Count:
+      - '588'
+      X-Served-By:
+      - app-139
+      X-Static-Version:
+      - 1f6d684e3c29
+      X-Version:
+      - 1f6d684e3c29
+    status:
+      code: 200
+      message: OK
+    status_code: 200
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
 version: 1

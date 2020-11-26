@@ -2,318 +2,270 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
     method: GET
     uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519086&oauth_nonce=da983fada1d9419fa5de96e66bffbc3f&oauth_version=1.0&oauth_signature=XbL1fI4LzN%2Fngrmk%2BztzEVTrwMM%3D
   response:
-    body: {string: "{\"rendered\": {\"description\": {\"raw\": \"Maybeeeeee\\r\\n\\r\\nYou\u2019re
-        gonna be the one that saves meeee\", \"markup\": \"markdown\", \"html\": \"<p>Maybeeeeee</p>\\n<p>You\u2019re
-        gonna be the one that saves meeee</p>\", \"type\": \"rendered\"}, \"title\":
-        {\"raw\": \"Hahaa That is a PR\", \"markup\": \"markdown\", \"html\": \"<p>Hahaa
-        That is a PR</p>\", \"type\": \"rendered\"}}, \"type\": \"pullrequest\", \"description\":
-        \"Maybeeeeee\\r\\n\\r\\nYou\u2019re gonna be the one that saves meeee\", \"links\":
-        {\"decline\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/decline\"},
-        \"commits\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits\"},
-        \"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1\"},
-        \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments\"},
-        \"merge\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/merge\"},
-        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1\"},
-        \"activity\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/activity\"},
-        \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/diff\"},
-        \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/approve\"},
-        \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/statuses\"}},
-        \"title\": \"Hahaa That is a PR\", \"close_source_branch\": true, \"reviewers\":
-        [], \"id\": 1, \"destination\": {\"commit\": {\"hash\": \"b92edba44fdd\",
-        \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd\"},
-        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd\"}}},
-        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
-        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
-        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
-        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
-        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"branch\": {\"name\":
-        \"master\"}}, \"created_on\": \"2018-11-06T15:43:55.296636+00:00\", \"summary\":
-        {\"raw\": \"Maybeeeeee\\r\\n\\r\\nYou\u2019re gonna be the one that saves
-        meeee\", \"markup\": \"markdown\", \"html\": \"<p>Maybeeeeee</p>\\n<p>You\u2019re
-        gonna be the one that saves meeee</p>\", \"type\": \"rendered\"}, \"source\":
-        {\"commit\": {\"hash\": \"3017d534ab41\", \"type\": \"commit\", \"links\":
-        {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41\"},
-        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41\"}}},
-        \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"},
-        \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"},
-        \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"}},
-        \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"ThiagoCodecov/example-python\",
-        \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"}, \"branch\": {\"name\":
-        \"second-branch\"}}, \"comment_count\": 0, \"state\": \"OPEN\", \"task_count\":
-        0, \"participants\": [], \"reason\": \"\", \"updated_on\": \"2018-11-06T15:43:55.494768+00:00\",
-        \"author\": {\"username\": \"ThiagoCodecov\", \"display_name\": \"Thiago Ramos\",
-        \"account_id\": \"5bce04c759d0e84f8c7555e9\", \"links\": {\"self\": {\"href\":
-        \"https://bitbucket.org/!api/2.0/users/ThiagoCodecov\"}, \"html\": {\"href\":
-        \"https://bitbucket.org/ThiagoCodecov/\"}, \"avatar\": {\"href\": \"https://bitbucket.org/account/ThiagoCodecov/avatar/\"}},
-        \"nickname\": \"ThiagoCodecov\", \"type\": \"user\", \"uuid\": \"{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}\"},
-        \"merge_commit\": null, \"closed_by\": null}"}
+    content: "{\"rendered\": {\"description\": {\"raw\": \"Maybeeeeee\\r\\n\\r\\nYou\u2019\
+      re gonna be the one that saves meeee\", \"markup\": \"markdown\", \"html\":\
+      \ \"<p>Maybeeeeee</p>\\n<p>You\u2019re gonna be the one that saves meeee</p>\"\
+      , \"type\": \"rendered\"}, \"title\": {\"raw\": \"Hahaa That is a PR\", \"markup\"\
+      : \"markdown\", \"html\": \"<p>Hahaa That is a PR</p>\", \"type\": \"rendered\"\
+      }}, \"type\": \"pullrequest\", \"description\": \"Maybeeeeee\\r\\n\\r\\nYou\u2019\
+      re gonna be the one that saves meeee\", \"links\": {\"decline\": {\"href\":\
+      \ \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/decline\"\
+      }, \"commits\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits\"\
+      }, \"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1\"\
+      }, \"comments\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments\"\
+      }, \"merge\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/merge\"\
+      }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1\"\
+      }, \"activity\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/activity\"\
+      }, \"diff\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/diff\"\
+      }, \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/approve\"\
+      }, \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/statuses\"\
+      }}, \"title\": \"Hahaa That is a PR\", \"close_source_branch\": true, \"reviewers\"\
+      : [], \"id\": 1, \"destination\": {\"commit\": {\"hash\": \"b92edba44fdd\",\
+      \ \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd\"\
+      }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd\"\
+      }}}, \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"\
+      }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"\
+      }, \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"\
+      }}, \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"\
+      ThiagoCodecov/example-python\", \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"\
+      }, \"branch\": {\"name\": \"master\"}}, \"created_on\": \"2018-11-06T15:43:55.296636+00:00\"\
+      , \"summary\": {\"raw\": \"Maybeeeeee\\r\\n\\r\\nYou\u2019re gonna be the one\
+      \ that saves meeee\", \"markup\": \"markdown\", \"html\": \"<p>Maybeeeeee</p>\\\
+      n<p>You\u2019re gonna be the one that saves meeee</p>\", \"type\": \"rendered\"\
+      }, \"source\": {\"commit\": {\"hash\": \"3017d534ab41\", \"type\": \"commit\"\
+      , \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41\"\
+      }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41\"\
+      }}}, \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"\
+      }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"\
+      }, \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"\
+      }}, \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"\
+      ThiagoCodecov/example-python\", \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"\
+      }, \"branch\": {\"name\": \"second-branch\"}}, \"comment_count\": 0, \"state\"\
+      : \"OPEN\", \"task_count\": 0, \"participants\": [], \"reason\": \"\", \"updated_on\"\
+      : \"2018-11-06T15:43:55.494768+00:00\", \"author\": {\"username\": \"ThiagoCodecov\"\
+      , \"display_name\": \"Thiago Ramos\", \"account_id\": \"5bce04c759d0e84f8c7555e9\"\
+      , \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/ThiagoCodecov\"\
+      }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/\"}, \"avatar\"\
+      : {\"href\": \"https://bitbucket.org/account/ThiagoCodecov/avatar/\"}}, \"nickname\"\
+      : \"ThiagoCodecov\", \"type\": \"user\", \"uuid\": \"{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}\"\
+      }, \"merge_commit\": null, \"closed_by\": null}"
     headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - ['Authorization, Accept-Encoding']
-    - !!python/tuple
-      - Cache-Control
-      - [max-age=900]
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Tue, 06 Nov 2018 15:44:46 GMT']
-    - !!python/tuple
-      - X-Served-By
-      - [app-160]
-    - !!python/tuple
-      - Accept-Ranges
-      - [bytes]
-    - !!python/tuple
-      - Etag
-      - ['"gz[ebc1db0919c1607d962a7196fb91b235]"']
-    - !!python/tuple
-      - X-Static-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [pullrequest]
-    - !!python/tuple
-      - X-Credential-Type
-      - [oauth1]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.134595870972']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Request-Count
-      - ['131']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - X-Cache-Info
-      - [caching]
-    - !!python/tuple
-      - X-Consumed-Content-Encoding
-      - [gzip]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Nov 2018 15:44:46 GMT
+      Etag:
+      - '"gz[ebc1db0919c1607d962a7196fb91b235]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.134595870972'
+      X-Request-Count:
+      - '131'
+      X-Served-By:
+      - app-160
+      X-Static-Version:
+      - 4ea3c9800ace
+      X-Version:
+      - 4ea3c9800ace
+    status:
+      code: 200
+      message: OK
+    status_code: 200
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519086&oauth_nonce=da983fada1d9419fa5de96e66bffbc3f&oauth_version=1.0&oauth_signature=XbL1fI4LzN%2Fngrmk%2BztzEVTrwMM%3D
 - request:
     body: null
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
     method: GET
     uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519086&oauth_nonce=ccaeb71e52f54375b959a11234f8924b&oauth_version=1.0&oauth_signature=lS3Teg7gVOF0FHoSXr9Dj%2BRsrlo%3D
   response:
-    body: {string: '{"hash": "b92edba44fdd29fcc506317cc3ddeae1a723dd08", "repository":
-        {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
-        {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
-        "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
-        "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
-        "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
-        "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08/comments"},
-        "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
-        "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
-        "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08/approve"},
-        "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08/statuses"}},
-        "author": {"raw": "Jerrod <jerrod@fundersclub.com>"}, "summary": {"raw": "Update
-        README.rst", "markup": "markdown", "html": "<p>Update README.rst</p>", "type":
-        "rendered"}, "participants": [], "parents": [{"hash": "c7f608036a3d2e89f8c59989ee213900c1ef39d1",
-        "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c7f608036a3d2e89f8c59989ee213900c1ef39d1"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/c7f608036a3d2e89f8c59989ee213900c1ef39d1"}}}],
-        "date": "2018-07-09T23:51:16+00:00", "message": "Update README.rst", "type":
-        "commit"}'}
+    content: '{"hash": "b92edba44fdd29fcc506317cc3ddeae1a723dd08", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08/statuses"}},
+      "author": {"raw": "Jerrod <jerrod@fundersclub.com>"}, "summary": {"raw": "Update
+      README.rst", "markup": "markdown", "html": "<p>Update README.rst</p>", "type":
+      "rendered"}, "participants": [], "parents": [{"hash": "c7f608036a3d2e89f8c59989ee213900c1ef39d1",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c7f608036a3d2e89f8c59989ee213900c1ef39d1"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/c7f608036a3d2e89f8c59989ee213900c1ef39d1"}}}],
+      "date": "2018-07-09T23:51:16+00:00", "message": "Update README.rst", "type":
+      "commit"}'
     headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - ['Authorization, Accept-Encoding']
-    - !!python/tuple
-      - Cache-Control
-      - [max-age=900]
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Tue, 06 Nov 2018 15:44:47 GMT']
-    - !!python/tuple
-      - X-Served-By
-      - [app-144]
-    - !!python/tuple
-      - Accept-Ranges
-      - [bytes]
-    - !!python/tuple
-      - Etag
-      - ['"gz[6034116c6d1152b4896d2d76522be687]"']
-    - !!python/tuple
-      - X-Static-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [repository]
-    - !!python/tuple
-      - X-Credential-Type
-      - [oauth1]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.670464038849']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Request-Count
-      - ['575']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Last-Modified
-      - ['Tue, 06 Nov 2018 15:42:58 GMT']
-    - !!python/tuple
-      - X-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - X-Cache-Info
-      - [caching]
-    - !!python/tuple
-      - X-Consumed-Content-Encoding
-      - [gzip]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Nov 2018 15:44:47 GMT
+      Etag:
+      - '"gz[6034116c6d1152b4896d2d76522be687]"'
+      Last-Modified:
+      - Tue, 06 Nov 2018 15:42:58 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.670464038849'
+      X-Request-Count:
+      - '575'
+      X-Served-By:
+      - app-144
+      X-Static-Version:
+      - 4ea3c9800ace
+      X-Version:
+      - 4ea3c9800ace
+    status:
+      code: 200
+      message: OK
+    status_code: 200
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519086&oauth_nonce=ccaeb71e52f54375b959a11234f8924b&oauth_version=1.0&oauth_signature=lS3Teg7gVOF0FHoSXr9Dj%2BRsrlo%3D
 - request:
     body: null
     headers:
-      Accept: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
     method: GET
     uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519088&oauth_nonce=b3f1a11c3244492d961496da1249b514&oauth_version=1.0&oauth_signature=1b7GWr37zHQx6V0moLV0%2BWiXX6Y%3D
   response:
-    body: {string: '{"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b", "repository":
-        {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
-        {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
-        "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
-        "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
-        "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
-        "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/comments"},
-        "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
-        "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
-        "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/approve"},
-        "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/statuses"}},
-        "author": {"raw": "Thiago Ribeiro Ramos <thiago@ribeiroramos.com>"}, "summary":
-        {"raw": "Creating second branch :happy:\n", "markup": "markdown", "html":
-        "<p>Creating second branch :happy:</p>", "type": "rendered"}, "participants":
-        [], "parents": [{"hash": "b92edba44fdd29fcc506317cc3ddeae1a723dd08", "type":
-        "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"}}}],
-        "date": "2018-11-06T15:42:45+00:00", "message": "Creating second branch :happy:\n",
-        "type": "commit"}'}
+    content: '{"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/statuses"}},
+      "author": {"raw": "Thiago Ribeiro Ramos <thiago@ribeiroramos.com>"}, "summary":
+      {"raw": "Creating second branch :happy:\n", "markup": "markdown", "html": "<p>Creating
+      second branch :happy:</p>", "type": "rendered"}, "participants": [], "parents":
+      [{"hash": "b92edba44fdd29fcc506317cc3ddeae1a723dd08", "type": "commit", "links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"}}}],
+      "date": "2018-11-06T15:42:45+00:00", "message": "Creating second branch :happy:\n",
+      "type": "commit"}'
     headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - ['Authorization, Accept-Encoding']
-    - !!python/tuple
-      - Cache-Control
-      - [max-age=900]
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Tue, 06 Nov 2018 15:44:48 GMT']
-    - !!python/tuple
-      - X-Served-By
-      - [app-141]
-    - !!python/tuple
-      - Accept-Ranges
-      - [bytes]
-    - !!python/tuple
-      - Etag
-      - ['"gz[6a6a1c5c416b82641a089d388c37d191]"']
-    - !!python/tuple
-      - X-Static-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [repository]
-    - !!python/tuple
-      - X-Credential-Type
-      - [oauth1]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.313195943832']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Request-Count
-      - ['140']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Last-Modified
-      - ['Tue, 06 Nov 2018 15:42:58 GMT']
-    - !!python/tuple
-      - X-Version
-      - [4ea3c9800ace]
-    - !!python/tuple
-      - X-Cache-Info
-      - [caching]
-    - !!python/tuple
-      - X-Consumed-Content-Encoding
-      - [gzip]
-    status: {code: 200, message: OK}
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Nov 2018 15:44:48 GMT
+      Etag:
+      - '"gz[6a6a1c5c416b82641a089d388c37d191]"'
+      Last-Modified:
+      - Tue, 06 Nov 2018 15:42:58 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.313195943832'
+      X-Request-Count:
+      - '140'
+      X-Served-By:
+      - app-141
+      X-Static-Version:
+      - 4ea3c9800ace
+      X-Version:
+      - 4ea3c9800ace
+    status:
+      code: 200
+      message: OK
+    status_code: 200
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519088&oauth_nonce=b3f1a11c3244492d961496da1249b514&oauth_version=1.0&oauth_signature=1b7GWr37zHQx6V0moLV0%2BWiXX6Y%3D
 version: 1
