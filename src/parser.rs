@@ -166,18 +166,17 @@ pub fn parse_report_from_str(
     chunks: String,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> Result<report::Report, ParsingError> {
-    let v: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
-    if v.len() == 0 {
+    let all_lines_with_errors: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
+    if all_lines_with_errors.len() == 0 {
         return Ok(report::Report {
-            report_files: Vec::new(),
-            filenames: filenames,
+            report_files: HashMap::new(),
             session_mapping: session_mapping,
         });
     }
     let mut current_report_lines: HashMap<i32, line::ReportLine> = HashMap::new();
     let mut all_report_files: Vec<file::ReportFile> = Vec::new();
     let mut line_count = 1;
-    for result in v {
+    for result in all_lines_with_errors {
         match result {
             Ok(l) => match l {
                 LineType::Separator => {
@@ -202,9 +201,25 @@ pub fn parse_report_from_str(
     all_report_files.push(file::ReportFile {
         lines: current_report_lines,
     });
+    let number_to_filename: HashMap<i32, String> = filenames
+        .iter()
+        .map(|(x, y)| (*y, x.to_string()))
+        .into_iter()
+        .collect();
+    let filename_to_mapping: HashMap<String, file::ReportFile> = all_report_files
+        .into_iter()
+        .enumerate()
+        .map(|(current_count, file)| {
+            let filename = number_to_filename
+                .get(&(current_count as i32))
+                .unwrap()
+                .to_string();
+            (filename, file)
+        })
+        .into_iter()
+        .collect();
     return Ok(report::Report {
-        report_files: all_report_files,
-        filenames: filenames,
+        report_files: filename_to_mapping,
         session_mapping: session_mapping,
     });
 }
@@ -255,7 +270,13 @@ mod tests {
 [1, null, [[0, 1], [1, 0]]]
 [0, null, [[0, 0], [1, 0]]]
 ";
-        let filenames: HashMap<String, i32> = HashMap::new();
+        let filenames: HashMap<String, i32> = vec![
+            ("file1.go".to_string(), 0),
+            ("file_two.go".to_string(), 1),
+            ("file_iii.go".to_string(), 2),
+        ]
+        .into_iter()
+        .collect();
         let mut flags: HashMap<i32, Vec<String>> = HashMap::new();
         flags.insert(1, ["flag_one".to_string()].to_vec());
         flags.insert(
@@ -267,9 +288,6 @@ mod tests {
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_simple_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), Some("90.00000".to_string()));
-        assert_eq!(res.get_eof(0), 5);
-        assert_eq!(res.get_eof(1), 13);
-        assert_eq!(res.get_eof(2), 16);
     }
 
     #[test]
@@ -281,7 +299,8 @@ mod tests {
             0,
             ["flag_three".to_string(), "flag_two".to_string()].to_vec(),
         );
-        let res = parse_report_from_str(filenames, "".to_string(), flags).expect("Unable to parse report");
+        let res = parse_report_from_str(filenames, "".to_string(), flags)
+            .expect("Unable to parse report");
         assert_eq!(res.report_files.len(), 0);
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_simple_totals().unwrap();

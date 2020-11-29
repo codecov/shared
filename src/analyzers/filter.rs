@@ -33,10 +33,10 @@ impl FilterAnalyzer {
         match &sessions {
             Some(sess) => {
                 let filtered_totals: Vec<file::FileTotals> = report
-                    .filenames
+                    .report_files
                     .par_iter()
                     .filter(|(x, _)| self.should_include(x))
-                    .filter_map(|(_, y)| report.report_files.get(*y as usize))
+                    .filter_map(|(_, y)| Some(y))
                     .map(|v| v.get_filtered_totals(sess))
                     .collect();
                 for t in filtered_totals {
@@ -45,10 +45,10 @@ impl FilterAnalyzer {
             }
             None => {
                 let filtered_totals: Vec<file::FileTotals> = report
-                    .filenames
+                    .report_files
                     .par_iter()
                     .filter(|(x, _)| self.should_include(x))
-                    .filter_map(|(_, y)| report.report_files.get(*y as usize))
+                    .filter_map(|(_, y)| Some(y))
                     .map(|v| v.get_totals())
                     .collect();
                 for t in filtered_totals {
@@ -208,14 +208,23 @@ mod tests {
             .collect(),
         };
         let report = report::Report {
-            filenames: vec![
-                ("file1.go".to_string(), 0),
-                ("file_p.py".to_string(), 1),
-                ("plo.c".to_string(), 2),
+            report_files: vec![
+                ("file1.go".to_string(), first_file),
+                (
+                    "file_p.py".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
+                (
+                    "plo.c".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
             ]
             .into_iter()
             .collect(),
-            report_files: vec![first_file],
             session_mapping: vec![
                 (0, vec!["unit".to_string()]),
                 (1, vec!["integration".to_string()]),

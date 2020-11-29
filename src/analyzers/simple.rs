@@ -57,9 +57,9 @@ impl SimpleAnalyzer {
     ) -> Vec<changes::Change> {
         let mut changes_list = Vec::new();
         let base_filenames: HashSet<String> =
-            HashSet::from_iter(base_report.filenames.keys().map(|f| f.clone()));
+            HashSet::from_iter(base_report.report_files.keys().map(|f| f.clone()));
         let head_filenames: HashSet<String> =
-            HashSet::from_iter(head_report.filenames.keys().map(|f| f.clone()));
+            HashSet::from_iter(head_report.report_files.keys().map(|f| f.clone()));
         let files_in_diff: HashSet<String> = HashSet::from_iter(diff.keys().map(|f| f.clone()));
         let files_that_were_moved: HashSet<String> = HashSet::from_iter(
             diff.values()
@@ -79,7 +79,7 @@ impl SimpleAnalyzer {
             .difference(&files_that_went_somewhere)
             .map(|x| x.to_string())
             .collect();
-        for (filename, file_location) in head_report.filenames.iter() {
+        for (filename, new_file) in head_report.report_files.iter() {
             let diff_data = diff.get(filename);
             if !(&new_filenames.contains(filename)) {
                 let original_name: String = match diff_data {
@@ -89,10 +89,6 @@ impl SimpleAnalyzer {
                     },
                     None => filename.to_string(),
                 };
-                let new_file: &file::ReportFile = head_report
-                    .report_files
-                    .get(*file_location as usize)
-                    .unwrap();
                 match base_report.get_by_filename(&original_name) {
                     None => {
                         new_filenames.insert(original_name);
@@ -333,14 +329,23 @@ mod tests {
             .collect(),
         };
         let report = report::Report {
-            filenames: vec![
-                ("file1.go".to_string(), 0),
-                ("file_p.py".to_string(), 1),
-                ("plo.c".to_string(), 2),
+            report_files: vec![
+                ("file1.go".to_string(), first_file),
+                (
+                    "file_p.py".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
+                (
+                    "plo.c".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
             ]
             .into_iter()
             .collect(),
-            report_files: vec![first_file],
             session_mapping: vec![
                 (0, vec!["unit".to_string()]),
                 (1, vec!["integration".to_string()]),
@@ -350,7 +355,7 @@ mod tests {
         };
         let analyzer_unit = SimpleAnalyzer {};
         let unit_res = analyzer_unit.get_totals(&report).unwrap();
-        assert_eq!(unit_res.files, 1);
+        assert_eq!(unit_res.files, 3);
         assert_eq!(unit_res.lines, 2);
         assert_eq!(unit_res.hits, 2);
         assert_eq!(unit_res.misses, 0);

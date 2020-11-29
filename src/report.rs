@@ -160,8 +160,7 @@ impl ReportTotals {
 
 #[pyclass]
 pub struct Report {
-    pub filenames: HashMap<String, i32>,
-    pub report_files: Vec<file::ReportFile>,
+    pub report_files: HashMap<String, file::ReportFile>,
     pub session_mapping: HashMap<i32, Vec<String>>,
 }
 
@@ -177,15 +176,8 @@ impl Report {
     }
 
     pub fn get_by_filename(&self, filename: &str) -> Option<&file::ReportFile> {
-        match self.filenames.get(filename) {
-            Some(file_location) => match self.report_files.get(*file_location as usize) {
-                None => {
-                    return None;
-                }
-                Some(x) => {
-                    return Some(x);
-                }
-            },
+        match self.report_files.get(filename) {
+            Some(file_report) => return Some(file_report),
             None => {
                 return None;
             }
@@ -196,7 +188,7 @@ impl Report {
 impl Report {
     pub fn calculate_per_flag_totals(&self) -> HashMap<String, ReportTotals> {
         let mut book_reviews: HashMap<String, ReportTotals> = HashMap::new();
-        for report_file in self.report_files.iter() {
+        for (_, report_file) in self.report_files.iter() {
             let file_totals = report_file.calculate_per_flag_totals(&self.session_mapping);
             for (flag_name, totals) in file_totals.iter() {
                 let current = book_reviews
@@ -213,21 +205,13 @@ impl Report {
         let individual_totals: Vec<file::FileTotals> = self
             .report_files
             .par_iter()
-            .map(|x| x.get_totals())
+            .map(|(_, x)| x.get_totals())
             .collect();
         for totals in individual_totals {
             res.add_up(&totals);
         }
         res.sessions = self.session_mapping.len() as i32;
         return Ok(res);
-    }
-}
-
-#[pymethods]
-impl Report {
-    pub fn get_eof(&self, file_number: i32) -> i32 {
-        let file = &self.report_files[file_number as usize];
-        file.get_eof()
     }
 }
 
