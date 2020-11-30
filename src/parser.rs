@@ -16,6 +16,7 @@ enum LineType {
     Emptyline,
     Separator,
     Details,
+    NoFile,
 }
 
 #[derive(Debug)]
@@ -155,7 +156,7 @@ fn parse_line(line: &str) -> Result<LineType, ParsingError> {
                 })?,
             }));
         }
-        Value::Null => return Ok(LineType::Emptyline),
+        Value::Null => return Ok(LineType::NoFile),
         Value::Bool(_) => return Err(ParsingError::UnexpectedValue),
         Value::Object(_) => return Ok(LineType::Details),
     }
@@ -175,30 +176,42 @@ pub fn parse_report_from_str(
             session_mapping: session_mapping,
         });
     }
-    let mut current_report_lines: HashMap<i32, line::ReportLine> = HashMap::new();
-    let mut all_report_files: Vec<file::ReportFile> = Vec::new();
+    let mut current_report_lines: Option<HashMap<i32, line::ReportLine>> = None;
+    let mut all_report_files: Vec<Option<file::ReportFile>> = Vec::new();
     let mut line_count = 1;
     for line in all_lines {
         match line {
             LineType::Separator => {
-                all_report_files.push(file::ReportFile {
-                    lines: current_report_lines,
+                all_report_files.push(match current_report_lines {
+                    Some(lines) => Some(file::ReportFile { lines }),
+                    None => None,
                 });
-                current_report_lines = HashMap::new();
+                current_report_lines = None;
                 line_count = 1;
             }
             LineType::Emptyline => {
                 line_count += 1;
             }
-            LineType::Details => {}
+            LineType::Details => {
+                current_report_lines = Some(HashMap::new());
+            }
+            LineType::NoFile => {
+                current_report_lines = None;
+            }
             LineType::Content(report_line) => {
-                current_report_lines.insert(line_count, report_line);
+                match current_report_lines.as_mut() {
+                    Some(lines) => {
+                        lines.insert(line_count, report_line);
+                    }
+                    None => {}
+                }
                 line_count += 1;
             }
         }
     }
-    all_report_files.push(file::ReportFile {
-        lines: current_report_lines,
+    all_report_files.push(match current_report_lines {
+        Some(v) => Some(file::ReportFile { lines: v }),
+        None => None,
     });
     let number_to_filename: HashMap<i32, String> = filenames
         .iter()
@@ -208,12 +221,15 @@ pub fn parse_report_from_str(
     let filename_to_mapping: HashMap<String, file::ReportFile> = all_report_files
         .into_iter()
         .enumerate()
-        .map(|(current_count, file)| {
-            let filename = number_to_filename
-                .get(&(current_count as i32))
-                .unwrap()
-                .to_string();
-            (filename, file)
+        .filter_map(|(current_count, value)| match value {
+            Some(file) => {
+                let filename = number_to_filename
+                    .get(&(current_count as i32))
+                    .unwrap()
+                    .to_string();
+                Some((filename, file))
+            }
+            None => None,
         })
         .into_iter()
         .collect();
@@ -287,6 +303,61 @@ mod tests {
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_simple_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), Some("90.00000".to_string()));
+    }
+
+    #[test]
+    fn parses_report_with_null_chunks() {
+        let content = "{}
+[1, null, [[0, 1], [1, 0]]]
+
+
+[1, null, [[0, 1], [1, 0]]]
+[0, null, [[0, 0], [1, 0]]]
+<<<<< end_of_chunk >>>>>
+null
+<<<<< end_of_chunk >>>>>
+{}
+[1, null, [[0, 1], [1, 0]]]
+[1, null, [[0, 1], [1, 1]]]
+
+
+[1, null, [[0, 1], [1, 1]]]
+[1, null, [[0, 0], [1, 0]]]
+
+
+[1, null, [[0, 1], [1, 0]]]
+[1, null, [[0, 1], [1, 0]]]
+[1, null, [[0, 1], [1, 0]]]
+[1, null, [[0, 1], [1, 0]]]
+
+
+[1, null, [[0, 1], [1, 0]]]
+[0, null, [[0, 0], [1, 0]]]
+";
+        let filenames: HashMap<String, i32> = vec![
+            ("file1.go".to_string(), 0),
+            ("file_two.go".to_string(), 1),
+            ("file_iii.go".to_string(), 2),
+        ]
+        .into_iter()
+        .collect();
+        let flags: HashMap<i32, Vec<String>> = vec![
+            (0, ["flag_three".to_string(), "flag_two".to_string()].to_vec()),
+            (1, vec!["flag_one".to_string()]),
+        ]
+        .into_iter()
+        .collect();
+        let res = parse_report_from_str(filenames, content.to_string(), flags)
+            .expect("Unable to parse report");
+        let calc_2 = res.get_simple_totals().unwrap();
+        assert_eq!(calc_2.get_coverage().unwrap(), Some("84.61538".to_string()));
+        assert_eq!(calc_2.files, 2);
+        assert_eq!(calc_2.hits, 11);
+        assert_eq!(calc_2.lines, 13);
+        let involved_filenames: Vec<String> = res.report_files.keys().map(|x| x.to_string()).collect();
+        assert_eq!(involved_filenames.len(), 2);
+        assert!(involved_filenames.contains(&"file1.go".to_string()));
+        assert!(involved_filenames.contains(&"file_iii.go".to_string()));
     }
 
     #[test]
