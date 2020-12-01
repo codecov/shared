@@ -109,7 +109,7 @@ class Github(TorngitBaseAdapter):
                         **log_dict,
                     ),
                 )
-            except httpx.TimeoutException:
+            except (httpx.TimeoutException, httpx.NetworkError):
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "GitHub was not able to be reached."

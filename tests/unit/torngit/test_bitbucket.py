@@ -37,6 +37,18 @@ class TestUnitBitbucket(object):
             await valid_handler.api(client, "2", method, url)
 
     @pytest.mark.asyncio
+    async def test_api_client_error_connect_error(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                side_effect=httpx.ConnectError("message", request="request")
+            )
+        )
+        method = "GET"
+        url = "random_url"
+        with pytest.raises(TorngitServerUnreachableError):
+            await valid_handler.api(client, "2", method, url)
+
+    @pytest.mark.asyncio
     async def test_api_client_error_server_error(self, valid_handler, mocker):
         client = mocker.MagicMock(
             request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=503))
