@@ -1,5 +1,4 @@
 import os
-import socket
 import hashlib
 import base64
 from base64 import b64decode
@@ -48,13 +47,6 @@ class Github(TorngitBaseAdapter):
         src="{username}/{name}/blob/%(commitid)s/%(path)s",
         author="{username}/{name}/commits?author=%(author)s",
     )
-
-    def get_client(self):
-        timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
-        return httpx.AsyncClient(
-            verify=self.verify_ssl if not isinstance(self.verify_ssl, bool) else None,
-            timeout=timeout,
-        )
 
     async def api(
         self,
