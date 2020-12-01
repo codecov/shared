@@ -221,6 +221,85 @@ class TestReadOnly(object):
             diff=0,
         )
 
+    def test_from_chunks_with_totals(self, mocker):
+        mocked_process_totals = mocker.patch.object(ReadOnlyReport, "_process_totals")
+        mocker.patch.object(
+            ReadOnlyReport, "should_load_rust_version", return_value=True
+        )
+        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
+            chunks = f.read()
+        files_dict = {
+            "awesome/__init__.py": [
+                2,
+                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
+                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
+            ],
+            "tests/__init__.py": [
+                0,
+                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
+                None,
+            ],
+            "tests/test_sample.py": [
+                1,
+                [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
+                [[0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
+                None,
+            ],
+        }
+        sessions_dict = {
+            "0": {
+                "N": None,
+                "a": "v4/raw/2019-01-10/4434BC2A2EC4FCA57F77B473D83F928C/abf6d4df662c47e32460020ab14abf9303581429/9ccc55a1-8b41-4bb1-a946-ee7a33a7fb56.txt",
+                "c": None,
+                "d": 1547084427,
+                "e": None,
+                "f": ["unit"],
+                "j": None,
+                "n": None,
+                "p": None,
+                "t": [3, 20, 17, 3, 0, "85.00000", 0, 0, 0, 0, 0, 0, 0],
+                "": None,
+            }
+        }
+        r = ReadOnlyReport.from_chunks(
+            chunks=chunks,
+            files=files_dict,
+            sessions=sessions_dict,
+            totals={
+                "f": 3,
+                "n": 20,
+                "h": 17,
+                "m": 3,
+                "p": 0,
+                "c": "85.00000",
+                "b": 0,
+                "d": 0,
+                "M": 0,
+                "s": 1,
+                "C": 0,
+                "N": 0,
+            },
+        )
+        assert r._totals == ReportTotals(
+            files=3,
+            lines=20,
+            hits=17,
+            misses=3,
+            partials=0,
+            coverage="85.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
+        assert r.totals == r._totals
+        assert not mocked_process_totals.called
+
     def test_filter_totals(self, sample_report):
         r = ReadOnlyReport.create_from_report(sample_report)
         assert r.filter(paths=[".*.go"]).totals.asdict() == {

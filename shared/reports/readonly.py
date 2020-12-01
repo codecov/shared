@@ -30,6 +30,7 @@ class ReadOnlyReport(object):
         inner_report = Report(
             files=files, sessions=sessions, totals=totals, chunks=chunks
         )
+        totals = inner_report._totals
         filename_mapping = {
             filename: file_summary.file_index
             for (filename, file_summary) in inner_report._files.items()

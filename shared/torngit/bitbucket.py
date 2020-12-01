@@ -78,7 +78,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         )
         log_dict = dict(
             event="api",
-            endpoint=url,
+            endpoint=path,
             method=method,
             bot=token_to_use.get("username"),
             repo_slug=self.slug,
@@ -93,9 +93,9 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 logging.WARNING if res.status_code >= 300 else logging.INFO,
                 "Bitbucket HTTP %s",
                 res.status_code,
-                extra=dict(time_taken=timer.ms, body=logged_body, **log_dict,),
+                extra=dict(time_taken=timer.ms, body=logged_body, **log_dict),
             )
-        except httpx.TimeoutException:
+        except (httpx.NetworkError, httpx.TimeoutException):
             metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
             raise TorngitServerUnreachableError("Bitbucket was not able to be reached.")
         if res.status_code == 599:
