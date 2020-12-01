@@ -518,6 +518,30 @@ class TestReadOnly(object):
         r = ReadOnlyReport(rust_analyzer, rust_report, sample_report)
         assert r.totals == sample_report.totals
 
+    def test_differing_file_count_calculation(self, mocker, sample_report):
+        rust_analyzer = mocker.MagicMock(
+            get_totals=mocker.MagicMock(
+                return_value=ReportTotals(
+                    files=300,
+                    lines=9,
+                    hits=4,
+                    misses=1,
+                    partials=4,
+                    coverage="44.44444",
+                    branches=3,
+                    methods=0,
+                    messages=0,
+                    sessions=4,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                )
+            )
+        )
+        rust_report = mocker.MagicMock()
+        r = ReadOnlyReport(rust_analyzer, rust_report, sample_report)
+        assert r.totals == sample_report.totals
+
     def test_already_done_calculation(self, mocker, sample_rust_report):
         k = mocker.MagicMock()
         sample_rust_report._totals = k
