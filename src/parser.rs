@@ -167,7 +167,9 @@ pub fn parse_report_from_str(
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> Result<report::Report, ParsingError> {
     let all_lines_with_errors: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
-    if all_lines_with_errors.len() == 0 {
+    let all_lines_or_errors: Result<Vec<LineType>, _> = all_lines_with_errors.into_iter().collect();
+    let all_lines = all_lines_or_errors?;
+    if all_lines.len() == 0 {
         return Ok(report::Report {
             report_files: HashMap::new(),
             session_mapping: session_mapping,
@@ -176,26 +178,23 @@ pub fn parse_report_from_str(
     let mut current_report_lines: HashMap<i32, line::ReportLine> = HashMap::new();
     let mut all_report_files: Vec<file::ReportFile> = Vec::new();
     let mut line_count = 1;
-    for result in all_lines_with_errors {
-        match result {
-            Ok(l) => match l {
-                LineType::Separator => {
-                    all_report_files.push(file::ReportFile {
-                        lines: current_report_lines,
-                    });
-                    current_report_lines = HashMap::new();
-                    line_count = 1;
-                }
-                LineType::Emptyline => {
-                    line_count += 1;
-                }
-                LineType::Details => {}
-                LineType::Content(report_line) => {
-                    current_report_lines.insert(line_count, report_line);
-                    line_count += 1;
-                }
-            },
-            Err(err) => return Err(err),
+    for line in all_lines {
+        match line {
+            LineType::Separator => {
+                all_report_files.push(file::ReportFile {
+                    lines: current_report_lines,
+                });
+                current_report_lines = HashMap::new();
+                line_count = 1;
+            }
+            LineType::Emptyline => {
+                line_count += 1;
+            }
+            LineType::Details => {}
+            LineType::Content(report_line) => {
+                current_report_lines.insert(line_count, report_line);
+                line_count += 1;
+            }
         }
     }
     all_report_files.push(file::ReportFile {
