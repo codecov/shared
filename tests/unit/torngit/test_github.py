@@ -171,13 +171,13 @@ class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_get_commit_diff_bad_encoding(self):
         with respx.mock:
-            my_route = respx.get(
-                 'https://api.github.com/endpoint'
-            ).mock(
+            my_route = respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
                     status_code=200,
                     content="\xC4pple".encode("latin-1"),
-                    headers={"Content-Type": "application/vnd.github.v3.diff; charset=utf-8"}
+                    headers={
+                        "Content-Type": "application/vnd.github.v3.diff; charset=utf-8"
+                    },
                 )
             )
             handler = Github(
