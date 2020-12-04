@@ -1,6 +1,6 @@
 import httpx
-
 import pytest
+import respx
 
 from shared.torngit.github import Github
 from shared.torngit.base import TokenType
@@ -167,3 +167,24 @@ class TestUnitGithub(object):
         assert instance.get_token_by_type_if_none(
             {"key": "token_set_user"}, TokenType.status
         ) == {"key": "token_set_user"}
+
+    @pytest.mark.asyncio
+    async def test_get_commit_diff_bad_encoding(self):
+        with respx.mock:
+            my_route = respx.get(
+                 'https://api.github.com/endpoint'
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    content="\xC4pple".encode("latin-1"),
+                    headers={"Content-Type": "application/vnd.github.v3.diff; charset=utf-8"}
+                )
+            )
+            handler = Github(
+                repo=dict(name="aaaaa"),
+                owner=dict(username="aaaaa"),
+                token=dict(key="aaaaa"),
+            )
+            async with handler.get_client() as client:
+                res = await handler.api(client, "get", "/endpoint")
+            assert res == "Äpple"
