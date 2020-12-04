@@ -136,7 +136,22 @@ class Github(TorngitBaseAdapter):
                 elif res.headers.get("Content-Type")[:16] == "application/json":
                     return res.json()
                 else:
-                    return res.text
+                    try:
+                        return res.text
+                    except UnicodeDecodeError as uerror:
+                        log.warning(
+                            "Unable to parse Github response",
+                            extra=dict(
+                                first_bytes=res.content[:100],
+                                final_bytes=res.content[-100:],
+                                errored_bytes=res.content[
+                                    (uerror.start - 10) : (uerror.start + 10)
+                                ],
+                                declared_contenttype=res.headers.get("content-type"),
+                            ),
+                        )
+                        res.encoding = None
+                        return res.text
             else:
                 log.info(
                     "Retrying due to retriable status",
