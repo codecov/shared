@@ -51,7 +51,7 @@ END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
 
 
 class ReportFile(object):
-    __slot__ = (
+    __slots__ = [
         "name",
         "_details",
         "_lines",
@@ -59,7 +59,7 @@ class ReportFile(object):
         "_ignore",
         "_totals",
         "_session_totals",
-    )
+    ]
 
     def __init__(
         self,

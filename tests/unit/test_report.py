@@ -11,8 +11,7 @@ END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
 
 
 @pytest.mark.unit
-def test_report_repr(patch):
-    patch.init(Report)
+def test_report_repr(mocker):
     r = Report()
     r._files = []
     assert repr(Report()) == "<Report files=0>"
@@ -54,7 +53,7 @@ def test_report_repr(patch):
         ),
     ],
 )
-def test_network(files, mocker, chunks, path_filter, network, patch):
+def test_network(files, mocker, chunks, path_filter, network):
     r = Report(files=files)
     r._chunks = chunks
     r._path_filter = path_filter
@@ -70,14 +69,14 @@ def test_network(files, mocker, chunks, path_filter, network, patch):
         ({"py.py": [0, ReportTotals(1)]}, lambda filename: match(["py.py"], filename)),
     ],
 )
-def test_files(files, path_filter, patch):
+def test_files(files, path_filter):
     r = Report(files=files)
     r._path_filter = path_filter
     assert r.files == ["py.py"]
 
 
 @pytest.mark.unit
-def test_resolve_paths(patch):
+def test_resolve_paths(mocker):
     r = Report(files={"py.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
@@ -111,8 +110,7 @@ def test_append(r, _file, joined, boolean, lines, hits):
 
 
 @pytest.mark.unit
-def test_append_error(patch):
-    patch.init(Report)
+def test_append_error(mocker):
     r = Report()
     with pytest.raises(Exception) as e_info:
         r.append("str")
@@ -152,7 +150,7 @@ def test_append_error(patch):
         ),
     ],
 )
-def test_get(files, chunks, file_repr, lines, patch):
+def test_get(files, chunks, file_repr, lines):
     r = Report(files=files)
     r._chunks = chunks
     r._line_modifier = None
@@ -163,7 +161,7 @@ def test_get(files, chunks, file_repr, lines, patch):
 
 
 @pytest.mark.unit
-def test_rename(patch):
+def test_rename(mocker):
     r = Report(files={"file.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._line_modifier = None
@@ -178,8 +176,7 @@ def test_rename(patch):
 
 
 @pytest.mark.unit
-def test_get_item(patch):
-    patch.init(Report)
+def test_get_item(mocker):
     r = Report()
     r._files = PropertyMock(return_value={"file.py": [0, ReportTotals(1)]})
     r._chunks = None
@@ -189,8 +186,7 @@ def test_get_item(patch):
 
 
 @pytest.mark.unit
-def test_get_item_exception(patch):
-    patch.init(Report)
+def test_get_item_exception(mocker):
     r = Report()
     r._files = {"file.py": [0, ReportTotals(1)]}
     r._path_filter = None
@@ -202,7 +198,7 @@ def test_get_item_exception(patch):
 
 
 @pytest.mark.unit
-def test_del_item(patch):
+def test_del_item(mocker):
     r = Report(files={"file.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._line_modifier = None
@@ -224,8 +220,7 @@ def test_del_item(patch):
         ),
     ],
 )
-def test_manifest(files, manifest, patch):
-    patch.init(Report)
+def test_manifest(files, manifest):
     r = Report()
     r._files = files
     r._chunks = None
@@ -234,7 +229,7 @@ def test_manifest(files, manifest, patch):
 
 
 @pytest.mark.unit
-def test_get_folder_totals(patch):
+def test_get_folder_totals(mocker):
     r = Report(
         files={
             "path/file1.py": [0, ReportTotals(1)],
@@ -254,8 +249,7 @@ def test_get_folder_totals(patch):
 
 
 @pytest.mark.unit
-def test_flags(patch):
-    patch.init(Report)
+def test_flags(mocker):
     r = Report()
     r._files = {"py.py": [0, ReportTotals(1)]}
     r._chunks = None
@@ -276,7 +270,7 @@ def test_flags(patch):
 
 
 @pytest.mark.unit
-def test_iter(patch):
+def test_iter(mocker):
     r = Report(
         files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)],}
     )
@@ -293,8 +287,7 @@ def test_iter(patch):
 
 
 @pytest.mark.unit
-def test_contains(patch):
-    patch.init(Report)
+def test_contains(mocker):
     r = Report()
     r._files = {
         "file1.py": [0, ReportTotals(1)],
@@ -320,7 +313,7 @@ def test_contains(patch):
         ),
     ],
 )
-def test_merge(files, chunks, new_report, manifest, patch):
+def test_merge(files, chunks, new_report, manifest):
     r = Report(files=files)
     r._chunks = chunks
     r._path_filter = None
@@ -336,8 +329,7 @@ def test_merge(files, chunks, new_report, manifest, patch):
 @pytest.mark.parametrize(
     "files, boolean", [({}, True), ({"file.py": [0, ReportTotals(1)]}, False),],
 )
-def test_is_empty(files, boolean, patch):
-    patch.init(Report)
+def test_is_empty(files, boolean):
     r = Report()
     r._files = files
     r._chunks = None
@@ -348,8 +340,7 @@ def test_is_empty(files, boolean, patch):
 @pytest.mark.parametrize(
     "files, boolean", [({}, False), ({"file.py": [0, ReportTotals(1)]}, True),]
 )
-def test_non_zero(files, boolean, patch):
-    patch.init(Report)
+def test_non_zero(files, boolean):
     r = Report()
     r._files = files
     r._chunks = None
@@ -358,8 +349,7 @@ def test_non_zero(files, boolean, patch):
 
 
 @pytest.mark.unit
-def test_to_archive(patch):
-    patch.init(Report)
+def test_to_archive(mocker):
     r = Report()
     r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
@@ -372,7 +362,7 @@ def test_to_archive(patch):
 
 
 @pytest.mark.unit
-def test_to_database(patch):
+def test_to_database(mocker):
     r = Report(files={"file.py": [0, ReportTotals()]})
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
         END_OF_CHUNK
@@ -490,7 +480,7 @@ def test_to_database(patch):
         ),  # lines not tracked`
     ],
 )
-def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res, patch):
+def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
     v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 1}}}}})
     r = Report(files=v3["files"])
     r.sessions = v3["sessions"]
@@ -625,7 +615,7 @@ def test_apply_diff_no_diff():
 
 
 @pytest.mark.unit
-def test_apply_diff_no_append(patch):
+def test_apply_diff_no_append(mocker):
     v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}})
     r = Report(files=v3["files"])
     r.sessions = v3["sessions"]
@@ -651,8 +641,7 @@ def test_apply_diff_no_append(patch):
 
 
 @pytest.mark.unit
-def test_report_has_flag(patch):
-    patch.init(Report)
+def test_report_has_flag(mocker):
     r = Report()
     r.sessions = {1: Session(flags=["a"])}
     assert r.has_flag("a")
@@ -660,8 +649,7 @@ def test_report_has_flag(patch):
 
 
 @pytest.mark.unit
-def test_add_session(patch):
-    patch.init(Report)
+def test_add_session(mocker):
     r = Report()
     s = Session(5)
     r._files = {"file.py": [0, ReportTotals(0)]}
@@ -737,7 +725,7 @@ def test_add_session(patch):
         ),
     ],
 )
-def test_flare(files, chunks, params, flare, patch):
+def test_flare(files, chunks, params, flare):
     r = Report(files=files)
     r._chunks = chunks
     r._path_filter = None
@@ -756,9 +744,8 @@ def test_flare(files, chunks, params, flare, patch):
 #     }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]').filter(flags='test')
 
 
-def test_test(patch):
-    patch.init(ReportFile)
-    patch.object(ReportFile, "ignore_lines", return_value=None)
+def test_test(mocker):
+    mocker.patch.object(ReportFile, "ignore_lines", return_value=None)
     r = Report(files={"py.py": [0, ReportTotals(1)]})
     r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
         END_OF_CHUNK
@@ -770,8 +757,7 @@ def test_test(patch):
 
 
 @pytest.mark.unit
-def test_filter_exception(patch):
-    patch.init(Report)
+def test_filter_exception(mocker):
     Report._filter_cache = (None, None)
     with pytest.raises(Exception) as e_info:
         Report().filter(paths="str")

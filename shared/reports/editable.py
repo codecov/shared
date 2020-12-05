@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 
 
 class EditableReportFile(ReportFile):
+
+    __slots__ = ("_details",)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self._details is None:
