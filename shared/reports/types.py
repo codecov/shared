@@ -64,11 +64,19 @@ class NetworkFile(object):
 
 @dataclass
 class LineSession(object):
+    __slots__ = ("id", "coverage", "branches", "partials", "complexity")
     id: int
     coverage: Decimal
-    branches: int = None
-    partials: Sequence[int] = None
-    complexity: int = None
+    branches: int
+    partials: Sequence[int]
+    complexity: int
+
+    def __init__(self, id, coverage, branches=None, partials=None, complexity=None):
+        self.id = id
+        self.coverage = coverage
+        self.branches = branches
+        self.partials = partials
+        self.complexity = complexity
 
     def astuple(self):
         return (self.id, self.coverage, self.branches, self.partials, self.complexity)
