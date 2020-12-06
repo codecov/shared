@@ -493,19 +493,28 @@ class TestReadOnly(object):
         some_file = ReportFile("somefile.cpp")
         some_file.append(
             1,
-            ReportLine(
+            ReportLine.create(
                 coverage=1,
                 sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
             ),
         )
         some_file.append(
-            2, ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)])
+            2,
+            ReportLine.create(
+                coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+            ),
         )
         some_file.append(
-            3, ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)])
+            3,
+            ReportLine.create(
+                coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+            ),
         )
         some_file.append(
-            5, ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)])
+            5,
+            ReportLine.create(
+                coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
+            ),
         )
         sample_rust_report.append(some_file)
         assert sample_rust_report.totals.asdict() == dict(

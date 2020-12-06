@@ -31,23 +31,32 @@ class TestFilteredReportFile(object):
         first_file = ReportFile("file_1.go")
         first_file.append(
             1,
-            ReportLine(
+            ReportLine.create(
                 coverage=1,
                 sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
             ),
         )
         first_file.append(
-            2, ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)])
+            2,
+            ReportLine.create(
+                coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+            ),
         )
         first_file.append(
-            3, ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)])
+            3,
+            ReportLine.create(
+                coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+            ),
         )
         first_file.append(
-            5, ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)])
+            5,
+            ReportLine.create(
+                coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
+            ),
         )
         first_file.append(
             6,
-            ReportLine(
+            ReportLine.create(
                 coverage="1/2",
                 sessions=[
                     LineSession(0, "1/2"),
@@ -78,12 +87,15 @@ class TestFilteredReportFile(object):
         assert f._totals == expected_result
 
     def test_calculate_totals_from_lines(self):
-        line_1 = (1, ReportLine(coverage=1, sessions=[[0, 1]], complexity=[1, 3]))
+        line_1 = (
+            1,
+            ReportLine.create(coverage=1, sessions=[[0, 1]], complexity=[1, 3]),
+        )
         line_2 = (
             2,
-            ReportLine(coverage=1, sessions=[[0, 1], [1, 1]], complexity=1),
+            ReportLine.create(coverage=1, sessions=[[0, 1], [1, 1]], complexity=1),
         )
-        line_3 = (3, ReportLine(coverage=0, sessions=[[0, 0]]))
+        line_3 = (3, ReportLine.create(coverage=0, sessions=[[0, 0]]))
         expected_result = ReportTotals(
             files=0,
             lines=3,

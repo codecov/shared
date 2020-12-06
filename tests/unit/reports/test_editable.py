@@ -24,11 +24,11 @@ def test_merge_coverage():
 
 class TestEditableReportHelpers(object):
     def test_line_without_session(self):
-        line = ReportLine(1, None, [LineSession(1, 0), LineSession(0, 1)])
-        assert EditableReportFile.line_without_session(line, 1) == ReportLine(
+        line = ReportLine.create(1, None, [LineSession(1, 0), LineSession(0, 1)])
+        assert EditableReportFile.line_without_session(line, 1) == ReportLine.create(
             1, None, [LineSession(0, 1)]
         )
-        assert EditableReportFile.line_without_session(line, 0) == ReportLine(
+        assert EditableReportFile.line_without_session(line, 0) == ReportLine.create(
             0, None, [LineSession(1, 0)]
         )
         assert (
@@ -66,43 +66,51 @@ class TestEditableReportFile(object):
         expected_result = [
             (
                 1,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+                ),
             ),
             (
                 4,
-                ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
+                ),
             ),
             (
                 5,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]
+                ),
             ),
             (
                 6,
-                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+                ),
             ),
             (
                 9,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
                 ),
             ),
             (
                 10,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
                 ),
             ),
-            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)])),
             (
                 15,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
                 ),
             ),
             (
                 16,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
                 ),
             ),
@@ -240,43 +248,51 @@ class TestEditableReportFile(object):
         original_lines = [
             (
                 1,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+                ),
             ),
             (
                 4,
-                ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
+                ),
             ),
             (
                 5,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]
+                ),
             ),
             (
                 6,
-                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+                ),
             ),
             (
                 9,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
                 ),
             ),
             (
                 10,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
                 ),
             ),
-            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)])),
             (
                 15,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
                 ),
             ),
             (
                 16,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
                 ),
             ),
@@ -299,21 +315,21 @@ class TestEditableReportFile(object):
         )
         report_file.delete_session(1)
         expected_result = [
-            (1, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (4, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
-            (5, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (6, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
-            (9, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (10, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
-            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (15, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
-            (16, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+            (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (4, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
+            (5, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (6, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
+            (9, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (10, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (15, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (16, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
         ]
         assert list(report_file.lines) == expected_result
-        assert report_file.get(1) == ReportLine(
+        assert report_file.get(1) == ReportLine.create(
             coverage=1, sessions=[LineSession(0, 1)]
         )
-        assert report_file.get(13) == ReportLine(
+        assert report_file.get(13) == ReportLine.create(
             coverage=1, sessions=[LineSession(0, 1)]
         )
         assert report_file.get(14) is None
@@ -360,43 +376,51 @@ class TestEditableReportFile(object):
         original_lines = [
             (
                 1,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+                ),
             ),
             (
                 4,
-                ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
+                ),
             ),
             (
                 5,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]
+                ),
             ),
             (
                 6,
-                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+                ),
             ),
             (
                 9,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
                 ),
             ),
             (
                 10,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
                 ),
             ),
-            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)])),
             (
                 15,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
                 ),
             ),
             (
                 16,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
                 ),
             ),
@@ -432,23 +456,31 @@ class TestEditableReportFile(object):
         original_lines = [
             (
                 1,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+                ),
             ),
             (
                 4,
-                ReportLine(coverage=0, sessions=[LineSession(2, 0), LineSession(1, 0)]),
+                ReportLine.create(
+                    coverage=0, sessions=[LineSession(2, 0), LineSession(1, 0)]
+                ),
             ),
             (
                 5,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(3, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(3, 1)]
+                ),
             ),
             (
                 6,
-                ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+                ),
             ),
             (
                 9,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     sessions=[
                         LineSession(0, 1),
@@ -460,21 +492,21 @@ class TestEditableReportFile(object):
             ),
             (
                 10,
-                ReportLine(
+                ReportLine.create(
                     coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
                 ),
             ),
-            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (14, ReportLine(coverage=1, sessions=[LineSession(1, 1)])),
+            (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (14, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)])),
             (
                 15,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
                 ),
             ),
             (
                 16,
-                ReportLine(
+                ReportLine.create(
                     coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
                 ),
             ),
@@ -482,18 +514,20 @@ class TestEditableReportFile(object):
         assert list(report_file.lines) == original_lines
         report_file.delete_multiple_sessions([1, 3, 5])
         expected_result = [
-            (1, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (4, ReportLine(coverage=0, sessions=[LineSession(2, 0)])),
-            (5, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (6, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+            (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (4, ReportLine.create(coverage=0, sessions=[LineSession(2, 0)])),
+            (5, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (6, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
             (
                 9,
-                ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(2, 1)]),
+                ReportLine.create(
+                    coverage=1, sessions=[LineSession(0, 1), LineSession(2, 1)]
+                ),
             ),
-            (10, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
-            (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-            (15, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
-            (16, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+            (10, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+            (15, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+            (16, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
         ]
         res = list(report_file.lines)
         assert res[0] == expected_result[0]
@@ -507,7 +541,7 @@ def sample_report():
     first_file = EditableReportFile("file_1.go")
     first_file.append(
         1,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
             complexity=(10, 2),
@@ -515,24 +549,33 @@ def sample_report():
     )
     first_file.append(
         2,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(0, 1), LineSession(1, "1/2"), LineSession(2, 1)],
             complexity=(10, 2),
         ),
     )
     first_file.append(
-        3, ReportLine(coverage=1, sessions=[LineSession(0, 1)], complexity=(10, 2),),
+        3,
+        ReportLine.create(
+            coverage=1, sessions=[LineSession(0, 1)], complexity=(10, 2),
+        ),
     )
     first_file.append(
-        4, ReportLine(coverage=1, sessions=[LineSession(1, 1)], complexity=(10, 2),),
+        4,
+        ReportLine.create(
+            coverage=1, sessions=[LineSession(1, 1)], complexity=(10, 2),
+        ),
     )
     first_file.append(
-        5, ReportLine(coverage=1, sessions=[LineSession(2, 1)], complexity=(10, 2),),
+        5,
+        ReportLine.create(
+            coverage=1, sessions=[LineSession(2, 1)], complexity=(10, 2),
+        ),
     )
     first_file.append(
         6,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(0, 1), LineSession(1, 1)],
             complexity=(10, 2),
@@ -540,7 +583,7 @@ def sample_report():
     )
     first_file.append(
         7,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(1, 1), LineSession(2, 1)],
             complexity=(10, 2),
@@ -548,7 +591,7 @@ def sample_report():
     )
     first_file.append(
         8,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(2, 1), LineSession(0, 1)],
             complexity=(10, 2),
@@ -557,14 +600,14 @@ def sample_report():
     second_file = EditableReportFile("file_2.py")
     second_file.append(
         12,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(0, 1), LineSession(1, "1/2"), LineSession(2, 0)],
         ),
     )
     second_file.append(
         51,
-        ReportLine(
+        ReportLine.create(
             coverage="1/2",
             type="b",
             sessions=[LineSession(0, "1/3"), LineSession(1, "1/2")],
@@ -572,13 +615,13 @@ def sample_report():
     )
     single_session_file = EditableReportFile("single_session_file.c")
     single_session_file.append(
-        101, ReportLine(coverage="1/2", sessions=[LineSession(1, "1/2")],),
+        101, ReportLine.create(coverage="1/2", sessions=[LineSession(1, "1/2")],),
     )
     single_session_file.append(
-        110, ReportLine(coverage=1, sessions=[LineSession(1, 1)],),
+        110, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)],),
     )
     single_session_file.append(
-        111, ReportLine(coverage=0, sessions=[LineSession(1, 0)],),
+        111, ReportLine.create(coverage=0, sessions=[LineSession(1, 0)],),
     )
     report.append(first_file)
     report.append(second_file)
@@ -731,7 +774,7 @@ class TestEditableReport(object):
         assert list(report._chunks[0].lines) == [
             (
                 1,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -749,7 +792,7 @@ class TestEditableReport(object):
             ),
             (
                 3,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -767,7 +810,7 @@ class TestEditableReport(object):
             ),
             (
                 5,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -785,7 +828,7 @@ class TestEditableReport(object):
             ),
             (
                 6,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -803,7 +846,7 @@ class TestEditableReport(object):
             ),
             (
                 8,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -821,7 +864,7 @@ class TestEditableReport(object):
             ),
             (
                 10,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -839,7 +882,7 @@ class TestEditableReport(object):
             ),
             (
                 12,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -859,7 +902,7 @@ class TestEditableReport(object):
         assert list(report._chunks[2].lines) == [
             (
                 1,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -877,7 +920,7 @@ class TestEditableReport(object):
             ),
             (
                 2,
-                ReportLine(
+                ReportLine.create(
                     coverage=1,
                     type=None,
                     sessions=[
@@ -895,7 +938,7 @@ class TestEditableReport(object):
             ),
             (
                 5,
-                ReportLine(
+                ReportLine.create(
                     coverage=0,
                     type=None,
                     sessions=[
