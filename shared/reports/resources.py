@@ -128,8 +128,8 @@ class ReportFile(object):
             return line
         elif type(line) is list:
             # line needs to be mapped to ReportLine
-            # line = [1, 'b', [], null, null] = ReportLine()
-            return ReportLine(*line)
+            # line = [1, 'b', [], null, null] = ReportLine.create()
+            return ReportLine.create(*line)
         else:
             # these are old versions
             line = loads(line)
@@ -137,7 +137,7 @@ class ReportFile(object):
                 line[2] = [
                     LineSession(*tuple(session)) for session in line[2] if session
                 ]
-            return ReportLine(*line)
+            return ReportLine.create(*line)
 
     @property
     def lines(self):

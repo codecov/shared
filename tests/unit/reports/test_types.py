@@ -74,7 +74,7 @@ def test_changes_init_no_internal_types():
 
 
 def test_reportline_as_tuple():
-    report_line = ReportLine(
+    report_line = ReportLine.create(
         coverage=Decimal("10"),
         type="b",
         sessions=[LineSession(1, 0), LineSession(2, "1/2")],

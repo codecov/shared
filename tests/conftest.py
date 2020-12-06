@@ -74,32 +74,40 @@ def sample_report():
     third_file = ReportFile("location/file_1.py")
     first_file.append(
         1,
-        ReportLine(
+        ReportLine.create(
             coverage=1,
             sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
         ),
     )
     first_file.append(
-        2, ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)])
+        2,
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
     )
     first_file.append(
-        3, ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)])
+        3,
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
     )
     first_file.append(
-        5, ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)])
+        5,
+        ReportLine.create(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
     )
     first_file.append(
         6,
-        ReportLine(
+        ReportLine.create(
             coverage="1/2",
             sessions=[LineSession(0, "1/2"), LineSession(1, 0), LineSession(2, "1/4")],
         ),
     )
-    second_file.append(12, ReportLine(coverage=1, sessions=[[0, 1]]))
-    second_file.append(51, ReportLine(coverage="1/2", type="b", sessions=[[0, "1/2"]]))
-    third_file.append(100, ReportLine(coverage="1/2", type="b", sessions=[[3, "1/2"]]))
+    second_file.append(12, ReportLine.create(coverage=1, sessions=[[0, 1]]))
+    second_file.append(
+        51, ReportLine.create(coverage="1/2", type="b", sessions=[[0, "1/2"]])
+    )
     third_file.append(
-        101, ReportLine(coverage="1/2", type="b", sessions=[[2, "1/2"], [3, "1/2"]])
+        100, ReportLine.create(coverage="1/2", type="b", sessions=[[3, "1/2"]])
+    )
+    third_file.append(
+        101,
+        ReportLine.create(coverage="1/2", type="b", sessions=[[2, "1/2"], [3, "1/2"]]),
     )
     report.append(first_file)
     report.append(second_file)

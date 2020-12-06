@@ -22,24 +22,32 @@ def sample_report():
     report = Report()
     first_file = ReportFile("file_1.go")
     first_file.append(
-        1, ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)])
+        1,
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
     )
     first_file.append(
-        2, ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)])
+        2,
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
     )
     first_file.append(
-        3, ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)])
+        3,
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
     )
     first_file.append(
-        5, ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)])
+        5,
+        ReportLine.create(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
     )
     first_file.append(
         6,
-        ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]),
+        ReportLine.create(
+            coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+        ),
     )
     second_file = ReportFile("file_2.py")
-    second_file.append(12, ReportLine(coverage=1, sessions=[[0, 1]]))
-    second_file.append(51, ReportLine(coverage="1/2", type="b", sessions=[[0, "1/2"]]))
+    second_file.append(12, ReportLine.create(coverage=1, sessions=[[0, 1]]))
+    second_file.append(
+        51, ReportLine.create(coverage="1/2", type="b", sessions=[[0, "1/2"]])
+    )
     report.append(first_file)
     report.append(second_file)
     report.add_session(Session(id=0, flags=["simple"]))

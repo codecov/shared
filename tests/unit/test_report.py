@@ -93,7 +93,9 @@ def test_resolve_paths(mocker):
     [
         (
             Report(),
-            ReportFile("a", totals=ReportTotals(1, 50, 10), lines=[ReportLine(1)]),
+            ReportFile(
+                "a", totals=ReportTotals(1, 50, 10), lines=[ReportLine.create(1)]
+            ),
             False,
             True,
             50,
@@ -134,7 +136,11 @@ def test_append_error(mocker):
                 END_OF_CHUNK
             ),
             "<ReportFile name=file.py lines=3>",
-            [(1, ReportLine(1)), (2, ReportLine(1)), (3, ReportLine(1))],
+            [
+                (1, ReportLine.create(1)),
+                (2, ReportLine.create(1)),
+                (3, ReportLine.create(1)),
+            ],
         ),
         (
             {"file.py": [0, ReportTotals(1)]},
@@ -771,7 +777,7 @@ def test_filter_exception(mocker):
         (None, "null"),
         (ReportFile(name="name.ply"), "{}\n"),
         (
-            [ReportLine(2), ReportLine(1)],
+            [ReportLine.create(2), ReportLine.create(1)],
             "[[2,null,null,null,null],[1,null,null,null,null]]",
         ),
     ],
@@ -804,22 +810,30 @@ def test_delete_session():
     )
     report_file = ReportFile(name="file.py", lines=chunks)
     original_lines = [
-        ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
         "",
         "",
-        ReportLine(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
-        ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
-        ReportLine(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
+        ReportLine.create(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
         "",
         "",
-        ReportLine(coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]),
-        ReportLine(coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]),
+        ReportLine.create(
+            coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
+        ),
+        ReportLine.create(
+            coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
+        ),
         "",
         "",
-        ReportLine(coverage=1, sessions=[LineSession(0, 1)]),
-        ReportLine(coverage=1, sessions=[LineSession(1, 1)]),
-        ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]),
-        ReportLine(coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]),
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1)]),
+        ReportLine.create(coverage=1, sessions=[LineSession(1, 1)]),
+        ReportLine.create(
+            coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
+        ),
+        ReportLine.create(
+            coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
+        ),
     ]
     assert report_file._lines == chunks.split("\n")[1:]
     assert report_file.totals == ReportTotals(
@@ -839,19 +853,23 @@ def test_delete_session():
     )
     report_file.delete_session(1)
     expected_result = [
-        (1, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-        (4, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
-        (5, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-        (6, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
-        (9, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-        (10, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
-        (13, ReportLine(coverage=1, sessions=[LineSession(0, 1)])),
-        (15, ReportLine(coverage="1/2", sessions=[LineSession(0, "1/2")])),
-        (16, ReportLine(coverage=0, sessions=[LineSession(0, 0)])),
+        (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+        (4, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
+        (5, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+        (6, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
+        (9, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+        (10, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+        (13, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
+        (15, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
+        (16, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
     ]
     assert list(report_file.lines) == expected_result
-    assert report_file.get(1) == ReportLine(coverage=1, sessions=[LineSession(0, 1)])
-    assert report_file.get(13) == ReportLine(coverage=1, sessions=[LineSession(0, 1)])
+    assert report_file.get(1) == ReportLine.create(
+        coverage=1, sessions=[LineSession(0, 1)]
+    )
+    assert report_file.get(13) == ReportLine.create(
+        coverage=1, sessions=[LineSession(0, 1)]
+    )
     assert report_file.get(14) is None
     assert report_file.totals == ReportTotals(
         files=0,

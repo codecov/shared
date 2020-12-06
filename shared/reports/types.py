@@ -76,11 +76,24 @@ class LineSession(object):
 
 @dataclass
 class ReportLine(object):
-    coverage: Decimal = None
-    type: str = None
-    sessions: Sequence[LineSession] = None
-    messages: int = None
-    complexity: Union[int, Tuple[int, int]] = None
+    __slots__ = ("coverage", "type", "sessions", "messages", "complexity")
+    coverage: Decimal
+    type: str
+    sessions: Sequence[LineSession]
+    messages: int
+    complexity: Union[int, Tuple[int, int]]
+
+    @classmethod
+    def create(
+        cls, coverage=None, type=None, sessions=None, messages=None, complexity=None
+    ):
+        return cls(
+            coverage=coverage,
+            type=type,
+            sessions=sessions,
+            messages=messages,
+            complexity=complexity,
+        )
 
     def astuple(self):
         return (
