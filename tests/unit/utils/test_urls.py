@@ -33,8 +33,8 @@ class TestUrlsUtil(BaseTestCase):
         assert u"\xa3" not in res
         assert "%C2%A3" in res
 
-    def test_make_url(self, magic, mock_configuration):
-        repo = magic(service="github", slug="owner/repo",)
+    def test_make_url(self, mocker, mock_configuration):
+        repo = mocker.MagicMock(service="github", slug="owner/repo",)
         assert (
             make_url(repo, "path", "to", "somewhere")
             == "https://codecov.io/gh/owner/repo/path/to/somewhere"
