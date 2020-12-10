@@ -223,11 +223,11 @@ pub fn parse_report_from_str(
         .enumerate()
         .filter_map(|(current_count, value)| match value {
             Some(file) => {
-                let filename = number_to_filename
-                    .get(&(current_count as i32))
-                    .unwrap()
-                    .to_string();
-                Some((filename, file))
+                let filename = number_to_filename.get(&(current_count as i32));
+                match filename {
+                    Some(val) => Some((val.to_string(), file)),
+                    None => None,
+                }
             }
             None => None,
         })
@@ -342,7 +342,10 @@ null
         .into_iter()
         .collect();
         let flags: HashMap<i32, Vec<String>> = vec![
-            (0, ["flag_three".to_string(), "flag_two".to_string()].to_vec()),
+            (
+                0,
+                ["flag_three".to_string(), "flag_two".to_string()].to_vec(),
+            ),
             (1, vec!["flag_one".to_string()]),
         ]
         .into_iter()
@@ -354,8 +357,37 @@ null
         assert_eq!(calc_2.files, 2);
         assert_eq!(calc_2.hits, 11);
         assert_eq!(calc_2.lines, 13);
-        let involved_filenames: Vec<String> = res.report_files.keys().map(|x| x.to_string()).collect();
+        let involved_filenames: Vec<String> =
+            res.report_files.keys().map(|x| x.to_string()).collect();
         assert_eq!(involved_filenames.len(), 2);
+        assert_eq!(
+            res.report_files.get("file1.go").unwrap().get_totals().hits,
+            2
+        );
+        assert_eq!(
+            res.report_files
+                .get("file1.go")
+                .unwrap()
+                .get_totals()
+                .misses,
+            1
+        );
+        assert_eq!(
+            res.report_files
+                .get("file_iii.go")
+                .unwrap()
+                .get_totals()
+                .hits,
+            9
+        );
+        assert_eq!(
+            res.report_files
+                .get("file_iii.go")
+                .unwrap()
+                .get_totals()
+                .misses,
+            1
+        );
         assert!(involved_filenames.contains(&"file1.go".to_string()));
         assert!(involved_filenames.contains(&"file_iii.go".to_string()));
     }
