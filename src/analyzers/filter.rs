@@ -36,8 +36,7 @@ impl FilterAnalyzer {
                     .report_files
                     .par_iter()
                     .filter(|(x, _)| self.should_include(x))
-                    .filter_map(|(_, y)| Some(y))
-                    .map(|v| v.get_filtered_totals(sess))
+                    .map(|(_, y)| y.get_filtered_totals(sess))
                     .collect();
                 for t in filtered_totals {
                     initial.add_up(&t);
@@ -48,8 +47,7 @@ impl FilterAnalyzer {
                     .report_files
                     .par_iter()
                     .filter(|(x, _)| self.should_include(x))
-                    .filter_map(|(_, y)| Some(y))
-                    .map(|v| v.get_totals())
+                    .map(|(_, y)| y.get_totals())
                     .collect();
                 for t in filtered_totals {
                     initial.add_up(&t);

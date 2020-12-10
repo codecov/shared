@@ -96,8 +96,7 @@ impl ReportFile {
         let all_lines: Vec<line::ReportLine> = self
             .lines
             .values()
-            .map(|x| x.filter_by_session_ids(session_ids))
-            .filter_map(|x| x)
+            .filter_map(|x| x.filter_by_session_ids(session_ids))
             .collect();
         return FileTotals::from_lines(all_lines.iter().collect());
     }
