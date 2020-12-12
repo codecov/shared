@@ -79,6 +79,8 @@ class LineSession(object):
         self.complexity = complexity
 
     def astuple(self):
+        if self.branches is None and self.partials is None and self.complexity is None:
+            return (self.id, self.coverage)
         return (self.id, self.coverage, self.branches, self.partials, self.complexity)
 
 

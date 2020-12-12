@@ -77,18 +77,17 @@ def test_reportline_as_tuple():
     report_line = ReportLine.create(
         coverage=Decimal("10"),
         type="b",
-        sessions=[LineSession(1, 0), LineSession(2, "1/2")],
+        sessions=[LineSession(1, 0), LineSession(2, "1/2", 1)],
         messages=None,
         complexity="10",
     )
     assert report_line.astuple() == (
         Decimal("10"),
         "b",
-        [(1, 0, None, None, None), (2, "1/2", None, None, None)],
+        [(1, 0), (2, "1/2", 1, None, None)],
         None,
         "10",
     )
-    assert report_line.astuple() == astuple(report_line)
 
 
 def test_networkfile_as_tuple():

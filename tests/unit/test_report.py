@@ -901,3 +901,23 @@ def test_get_flag_names_sessions_no_flags():
     r = Report()
     r.add_session(s)
     assert r.get_flag_names() == []
+
+
+def test_repack(sample_report):
+    f = ReportFile("hahafile.txt")
+    f.append(1, ReportLine.create(1))
+    sample_report.append(f)
+    del sample_report["file_2.go"]
+    del sample_report["hahafile.txt"]
+    old_totals = sample_report.totals
+    assert len(sample_report._chunks) == 4
+    assert len(sample_report._files) == 2
+    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 2]
+    old_line_count = sum(len(list(file.lines)) for file in sample_report)
+    sample_report.repack()
+    sample_report._totals = None
+    assert sample_report.totals == old_totals
+    assert sorted(sample_report.files) == ["file_1.go", "location/file_1.py"]
+    assert len(sample_report._chunks) == len(sample_report._files)
+    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1]
+    assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
