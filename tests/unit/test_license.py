@@ -41,6 +41,7 @@ def test_sample_license_pr_billing():
         expires=datetime(2030, 12, 20, 0, 0),
     )
 
+
 def test_sample_license_checking_with_users_and_repos():
     encrypted_license = "0dRbhbzp8TVFQp7P4e2ES9lSfyQlTo8J7LQ/N51yeAE/KcRBCnU+QsVvVMDuLL4xNGXGGk9p4ZTmIl0II3cMr0tIoPHe9Re2UjommalyFYuP8JjjnNR/Ql2DnjOzEnTzsE2Poq9xlNHcIU4F9gC2WOYPnazR6U+t4CelcvIAbEpbOMOiw34nVyd3OEmWusquMNrwkNkk/lwjwCJmj6bTXQ=="
     expected_result = LicenseInformation(
