@@ -27,7 +27,7 @@ LICENSE_ERRORS_MESSAGES = {
     "demo-mode": "Currently in demo mode. No license key provided. Application restrictions apply.",
     "url-mismatch": "License url mismatch. If you have changed your codecov_url please contact staff to generate a new license key.",
     "users-exceeded": "Number of users exceeds license limit.",
-    "repos-exceeded": "Number of repositories exceeds license limit."
+    "repos-exceeded": "Number of repositories exceeds license limit.",
 }
 
 
@@ -51,7 +51,9 @@ def parse_license(raw_license):
     try:
         license_dict = load_raw_license_into_dict(raw_license)
     except (binascii.Error, ValueError):
-        return LicenseInformation(is_valid=False,)
+        return LicenseInformation(
+            is_valid=False,
+        )
     number_allowed_users, number_allowed_repos = None, None
     if license_dict.get("users"):
         number_allowed_users = int(license_dict.get("users"))
@@ -69,5 +71,5 @@ def parse_license(raw_license):
         number_allowed_repos=number_allowed_repos,
         expires=datetime.strptime(license_dict["expires"], "%Y-%m-%d %H:%M:%S"),
         is_trial=license_dict.get("trial"),
-        is_pr_billing = is_pr_billing
+        is_pr_billing=is_pr_billing,
     )

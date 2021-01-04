@@ -297,7 +297,7 @@ def test_partials_to_line(partials, res):
     assert res == partials_to_line(partials)
 
 
-@pytest.mark.unir
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "sessions, complexity",
     [([[1, 2, 3, 4, 5]], 5), ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]], (5, 6)),],
