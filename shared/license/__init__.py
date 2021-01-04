@@ -51,9 +51,7 @@ def parse_license(raw_license):
     try:
         license_dict = load_raw_license_into_dict(raw_license)
     except (binascii.Error, ValueError):
-        return LicenseInformation(
-            is_valid=False,
-        )
+        return LicenseInformation(is_valid=False,)
     number_allowed_users, number_allowed_repos = None, None
     if license_dict.get("users"):
         number_allowed_users = int(license_dict.get("users"))
