@@ -16,6 +16,7 @@ class LicenseInformation(object):
     number_allowed_users: int = None
     number_allowed_repos: int = None
     expires: datetime = None
+    is_pr_billing: bool = False
 
 
 LICENSE_ERRORS_MESSAGES = {
@@ -26,7 +27,7 @@ LICENSE_ERRORS_MESSAGES = {
     "demo-mode": "Currently in demo mode. No license key provided. Application restrictions apply.",
     "url-mismatch": "License url mismatch. If you have changed your codecov_url please contact staff to generate a new license key.",
     "users-exceeded": "Number of users exceeds license limit.",
-    "repos-exceeded": "Number of repositories exceeds license limit.",
+    "repos-exceeded": "Number of repositories exceeds license limit."
 }
 
 
@@ -56,6 +57,10 @@ def parse_license(raw_license):
         number_allowed_users = int(license_dict.get("users"))
     if license_dict.get("repos"):
         number_allowed_repos = int(license_dict.get("repos"))
+    if license_dict.get("pr_billing"):
+        is_pr_billing = bool(license_dict.get("pr_billing"))
+    else:
+        is_pr_billing = False
     return LicenseInformation(
         is_valid=True,
         message=None,
@@ -64,4 +69,5 @@ def parse_license(raw_license):
         number_allowed_repos=number_allowed_repos,
         expires=datetime.strptime(license_dict["expires"], "%Y-%m-%d %H:%M:%S"),
         is_trial=license_dict.get("trial"),
+        is_pr_billing = is_pr_billing
     )
