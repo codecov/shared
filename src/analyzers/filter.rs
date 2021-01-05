@@ -34,7 +34,7 @@ impl FilterAnalyzer {
             Some(sess) => {
                 let filtered_totals: Vec<file::FileTotals> = report
                     .report_files
-                    .par_iter()
+                    .iter()
                     .filter(|(x, _)| self.should_include(x))
                     .map(|(_, y)| y.get_filtered_totals(sess))
                     .collect();
@@ -45,7 +45,7 @@ impl FilterAnalyzer {
             None => {
                 let filtered_totals: Vec<file::FileTotals> = report
                     .report_files
-                    .par_iter()
+                    .iter()
                     .filter(|(x, _)| self.should_include(x))
                     .map(|(_, y)| y.get_totals())
                     .collect();
