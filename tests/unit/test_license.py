@@ -22,24 +22,23 @@ def test_sample_license_checking():
 
 def test_sample_license_pr_billing():
     """
-    VivRuqf1FbgGHz3U20Fz/LT0gJX5UDdywX+rorp6uFCWjt4iq12gBtVeYqFtyS4qSu+CTZ8BI5pvgp/ggsqYXueyq7v/NDSY9VKePyLT0504QrSNGEr//S8kCZCWtK+7+FrUh6HYmvfDRnOFFp5eOQes+SmM1zwrD5lSw/F//VJlTftKqiQOvWrdaJ2LDcyCjLLhuzRYBP6vd1vjqa/M43ztSFcHEVJ6nsPqfO3eOBNIm/Vx6bRU+S/KVgVif/Ug
-
-    License expires on 2030-12-20
-
+    wxWEJyYgIcFpi6nBSyKQZQeaQ9Eqpo3SXyUomAqQOzOFjdYB3A8fFM1rm+kOt2ehy9w95AzrQqrqfxi9HJIb2zLOMOB9tSy52OykVCzFtKPBNsXU/y5pQKOfV7iI3w9CHFh3tDwSwgjg8UsMXwQPOhrpvl2GdHpwEhFdaM2O3vY7iElFgZfk5D9E7qEnp+WysQwHKxDeKLI7jWCnBCBJLDjBJRSz0H7AfU55RQDqtTrnR+rsLDHOzJ80/VxwVYhb
+    License expires on 2021-01-01
     ---- Internal purposes only ----
-    {'company': 'Codecov Test', 'expires': '2030-12-20 00:00:00', 'url': 'https://codecov.mysite.com', 'trial': False, 'users': 20, 'repos': None, 'pr_billing': True}
+    {'company': 'Test Company', 'expires': '2021-01-01 00:00:00', 'url': 'https://codecov.mysite.com', 'trial': False, 'users': 10, 'repos': None, 'pr_billing': True}
     """
-    encrypted_license = "VivRuqf1FbgGHz3U20Fz/LT0gJX5UDdywX+rorp6uFCWjt4iq12gBtVeYqFtyS4qSu+CTZ8BI5pvgp/ggsqYXueyq7v/NDSY9VKePyLT0504QrSNGEr//S8kCZCWtK+7+FrUh6HYmvfDRnOFFp5eOQes+SmM1zwrD5lSw/F//VJlTftKqiQOvWrdaJ2LDcyCjLLhuzRYBP6vd1vjqa/M43ztSFcHEVJ6nsPqfO3eOBNIm/Vx6bRU+S/KVgVif/Ug"
+    encrypted_license = "wxWEJyYgIcFpi6nBSyKQZQeaQ9Eqpo3SXyUomAqQOzOFjdYB3A8fFM1rm+kOt2ehy9w95AzrQqrqfxi9HJIb2zLOMOB9tSy52OykVCzFtKPBNsXU/y5pQKOfV7iI3w9CHFh3tDwSwgjg8UsMXwQPOhrpvl2GdHpwEhFdaM2O3vY7iElFgZfk5D9E7qEnp+WysQwHKxDeKLI7jWCnBCBJLDjBJRSz0H7AfU55RQDqtTrnR+rsLDHOzJ80/VxwVYhb"
     expected_result = LicenseInformation(
         is_valid=True,
         is_trial=False,
         message=None,
         url="https://codeov.mysite.com",
-        number_allowed_users=20,
+        number_allowed_users=10,
         is_pr_billing=True,
         number_allowed_repos=None,
-        expires=datetime(2030, 12, 20, 0, 0),
+        expires=datetime(2021, 1, 1, 0, 0),
     )
+    assert parse_license(encrypted_license) == expected_result
 
 
 def test_sample_license_checking_with_users_and_repos():
