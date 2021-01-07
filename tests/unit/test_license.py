@@ -32,7 +32,7 @@ def test_sample_license_pr_billing():
         is_valid=True,
         is_trial=False,
         message=None,
-        url="https://codeov.mysite.com",
+        url="https://codecov.mysite.com",
         number_allowed_users=10,
         is_pr_billing=True,
         number_allowed_repos=None,
