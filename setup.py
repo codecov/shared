@@ -9,7 +9,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.4.8",
+    version="0.4.9",
     description="Shared Codecov",
     long_description=long_description,
     url="https://github.com/codecov/shared",
@@ -34,6 +34,6 @@ setup(
         "analytics-python~=1.3.0b1",
         "voluptuous~=0.11.7",
         "httpx~=0.16.0",
-        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.5#egg=ribs",
+        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.6#egg=ribs",
     ],
 )
