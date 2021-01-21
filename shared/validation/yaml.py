@@ -356,7 +356,6 @@ def get_schema(show_secrets):
                         Optional("ignore"): Or(None, [path_structure]),
                         Optional("paths"): Or(None, [path_structure]),
                         Optional("statuses"): [new_statuses_attributes],
-                        Optional("extra_statuses"): [new_statuses_attributes],
                     }
                 ],
             },

@@ -638,6 +638,14 @@ class Report(object):
                     )
         return flags_dict
 
+    def get_flag_names(self):
+        all_flags = set()
+        for _, session in self.sessions.items():
+            if session and session.flags:
+                for flag in session.flags:
+                    all_flags.add(flag)
+        return sorted(all_flags)
+
     def append(self, _file, joined=True):
         """adds or merged a file into the report
         """

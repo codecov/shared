@@ -26,7 +26,7 @@ class UserYaml(object):
     def to_dict(self):
         return deepcopy(self.inner_dict)
 
-    def read_yaml_field(self, keys, _else=None) -> Any:
+    def read_yaml_field(self, *keys, _else=None) -> Any:
         log.debug("Field %s requested", keys)
         yaml_dict = self.inner_dict
         try:
@@ -35,6 +35,47 @@ class UserYaml(object):
             return yaml_dict
         except (AttributeError, KeyError):
             return _else
+
+    def flag_has_carryfoward(self, flag_name):
+        legacy_flag = self.inner_dict.get("flags", {}).get(flag_name)
+        if legacy_flag:
+            return legacy_flag.get("carryforward")
+        flag_management = self.inner_dict.get("flag_management", {})
+        for flag_info in flag_management.get("individual_flags", []):
+            if flag_info["name"] == flag_name:
+                if flag_info.get("carryforward") is not None:
+                    return flag_info.get("carryforward")
+        return flag_management.get("default_rules", {}).get("carryforward", False)
+
+    def has_any_carryforward(self):
+        all_flags = self.inner_dict.get("flags")
+        if all_flags:
+            for flag_name, flag_info in all_flags.items():
+                if flag_info.get("carryforward"):
+                    return True
+        flag_management = self.inner_dict.get("flag_management", {})
+        if flag_management.get("default_rules", {}).get("carryforward"):
+            return True
+        for flag_info in flag_management.get("individual_flags", []):
+            if flag_info.get("carryforward"):
+                return True
+        return False
+
+    def get_flag_configuration(self, flag_name):
+        old_dict = self.inner_dict.get("flags", {})
+        if flag_name in old_dict:
+            return old_dict[flag_name]
+        flag_management_dict = self.inner_dict.get("flag_management")
+        if flag_management_dict is None:
+            return None
+        general_dict = flag_management_dict.get("default_rules", {})
+        individual_flags = flag_management_dict.get("individual_flags", [])
+        for f_dict in individual_flags:
+            if f_dict["name"] == flag_name:
+                res = deepcopy(general_dict)
+                res.update(f_dict)
+                return res
+        return deepcopy(general_dict)
 
     def __eq__(self, other):
         if not isinstance(other, UserYaml):

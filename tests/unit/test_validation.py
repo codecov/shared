@@ -372,7 +372,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "individual_flags": [
                     {
                         "name": "flag_banana",
-                        "extra_statuses": [
+                        "statuses": [
                             {
                                 "type": "patch",
                                 "name_prefix": "alliance",
@@ -388,7 +388,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "individual_flags": [
                     {
                         "name": "flag_banana",
-                        "extra_statuses": [
+                        "statuses": [
                             {
                                 "type": "patch",
                                 "name_prefix": "alliance",
@@ -429,7 +429,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "individual_flags": [
                     {
                         "name": "flag_banana",
-                        "extra_statuses": [
+                        "statuses": [
                             {
                                 "type": "patch",
                                 "name_prefix": "alliance",
@@ -438,32 +438,6 @@ class TestUserYamlValidation(BaseTestCase):
                         ],
                     }
                 ],
-            }
-        }
-        expected_result = {
-            "flag_management": {
-                "individual_flags": [
-                    {
-                        "name": "flag_banana",
-                        "extra_statuses": [
-                            {
-                                "type": "patch",
-                                "name_prefix": "alliance",
-                                "flag_coverage_not_uploaded_behavior": "include",
-                            }
-                        ],
-                    }
-                ],
-                "default_rules": {
-                    "carryforward": True,
-                    "statuses": [
-                        {
-                            "type": "project",
-                            "name_prefix": "healthcare",
-                            "threshold": 80.0,
-                        }
-                    ],
-                },
             }
         }
         with pytest.raises(InvalidYamlException) as exc:
