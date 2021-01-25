@@ -351,10 +351,126 @@ class TestUserYamlValidation(BaseTestCase):
                 "range": [70.0, 100.0],
                 "status": {"project": {"default": {"base": "auto",}}},
             },
-            "ignore": ["Pods/.*",],
+            "ignore": ["Pods/.*"],
         }
         result = validate_yaml(user_input)
         assert result == expected_result
+
+    def test_yaml_with_flag_management(self):
+        user_input = {
+            "flag_management": {
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80,
+                        }
+                    ],
+                },
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "extra_statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        expected_result = {
+            "flag_management": {
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "extra_statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80.0,
+                        }
+                    ],
+                },
+            }
+        }
+        result = validate_yaml(user_input)
+        assert result == expected_result
+
+    def test_yaml_with_flag_management_statuses_with_flags(self):
+        user_input = {
+            "flag_management": {
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80,
+                            "flags": ["hahaha"],
+                        }
+                    ],
+                },
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "extra_statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        expected_result = {
+            "flag_management": {
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "extra_statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80.0,
+                        }
+                    ],
+                },
+            }
+        }
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+        assert (
+            exc.value.error_location == "Path: flag_management->default_rules->statuses"
+        )
 
     def test_show_secret_case(self):
         value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
