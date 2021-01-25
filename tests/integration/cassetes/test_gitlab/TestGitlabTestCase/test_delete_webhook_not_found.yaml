@@ -1,56 +1,30 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: DELETE
-    uri: https://gitlab.com/api/v4/projects/187725/hooks/422507987
-  response:
-    body: {string: '{"message":"404 Not found"}'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Tue, 06 Nov 2018 05:02:30 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['27']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - [no-cache]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Request-Id
-      - [48077c9c-ee79-4e03-bc54-adf26d45685c]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.052297']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['1']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['599']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1541480610']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Wed, 06 Nov 2018 05:03:30 GMT']
-    status: {code: 404, message: Not Found}
-    url: https://gitlab.com/api/v4/projects/187725/hooks/422507987
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: DELETE
+      uri: https://gitlab.com/api/v4/projects/187725/hooks/422507987
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/hooks/422507987
+      content: '{"message":"404 Not found"}'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:02:30 GMT
+        Content-Type: application/json
+        Content-Length: '27'
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Request-Id: 48077c9c-ee79-4e03-bc54-adf26d45685c
+        X-Runtime: '0.052297'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541480610'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:03:30 GMT
+      status_code: 404
 version: 1

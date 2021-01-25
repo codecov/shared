@@ -1,193 +1,97 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/user
-  response:
-    body:
-      string: !!python/unicode '{"id":3124507,"name":"Thiago Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov","created_at":"2018-11-12T19:05:01.723Z","bio":null,"location":null,"public_email":"","skype":"","linkedin":"","twitter":"","website_url":"","organization":null,"last_sign_in_at":"2019-07-16T21:18:29.703Z","confirmed_at":"2018-11-12T19:05:01.249Z","last_activity_on":"2019-08-28","email":"thiago@codecov.io","theme_id":1,"color_scheme_id":1,"projects_limit":100000,"current_sign_in_at":"2019-08-28T10:01:43.462Z","identities":[{"provider":"google_oauth2","extern_uid":"114705562456763720684","saml_provider_id":null}],"can_create_group":true,"can_create_project":true,"two_factor_enabled":false,"external":false,"private_profile":false,"shared_runners_minutes_limit":null,"extra_shared_runners_minutes_limit":null}'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '943'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '599'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - X-Request-Id
-      - - kaHmyPgvSV2
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990971'
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Etag
-      - - W/"8dffae120254dc912037c596c7c61bcf"
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:11 GMT
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - X-Runtime
-      - - '0.030201'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:11 GMT
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '1'
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/user
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/groups?per_page=100
-  response:
-    body:
-      string: !!python/unicode '[{"id":4037482,"web_url":"https://gitlab.com/groups/codecov-organization","name":"Codecov
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/user
+    response:
+      url: https://gitlab.com/api/v4/user
+      content: '{"id":3124507,"name":"Thiago Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov","created_at":"2018-11-12T19:05:01.723Z","bio":null,"location":null,"public_email":"","skype":"","linkedin":"","twitter":"","website_url":"","organization":null,"last_sign_in_at":"2019-07-16T21:18:29.703Z","confirmed_at":"2018-11-12T19:05:01.249Z","last_activity_on":"2019-08-28","email":"thiago@codecov.io","theme_id":1,"color_scheme_id":1,"projects_limit":100000,"current_sign_in_at":"2019-08-28T10:01:43.462Z","identities":[{"provider":"google_oauth2","extern_uid":"114705562456763720684","saml_provider_id":null}],"can_create_group":true,"can_create_project":true,"two_factor_enabled":false,"external":false,"private_profile":false,"shared_runners_minutes_limit":null,"extra_shared_runners_minutes_limit":null}'
+      headers:
+        Content-Length: '943'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Content-Type-Options: nosniff
+        Ratelimit-Remaining: '599'
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: kaHmyPgvSV2
+        Ratelimit-Reset: '1566990971'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Connection: close
+        Etag: W/"8dffae120254dc912037c596c7c61bcf"
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Wed, 28 Aug 2019 11:15:11 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.030201'
+        Content-Type: application/json
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:11 GMT
+        Ratelimit-Observed: '1'
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups?per_page=100
+    response:
+      url: https://gitlab.com/api/v4/groups?per_page=100
+      content: '[{"id":4037482,"web_url":"https://gitlab.com/groups/codecov-organization","name":"Codecov
         Organization","path":"codecov-organization","description":"Codecov organizational
         and private repos group. ","visibility":"private","lfs_enabled":true,"avatar_url":"https://gitlab.com/uploads/-/system/group/avatar/4037482/codecov_avatar.png","request_access_enabled":false,"full_name":"Codecov
         Organization","full_path":"codecov-organization","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":5938762,"web_url":"https://gitlab.com/groups/thiagocodecovtestgroup","name":"ThiagoCodecovTestGroup","path":"thiagocodecovtestgroup","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"ThiagoCodecovTestGroup","full_path":"thiagocodecovtestgroup","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":5938764,"web_url":"https://gitlab.com/groups/thiagocodecovtestgroup/test-subgroup","name":"test-subgroup","path":"test-subgroup","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"ThiagoCodecovTestGroup
         / test-subgroup","full_path":"thiagocodecovtestgroup/test-subgroup","parent_id":5938762,"ldap_cn":null,"ldap_access":null}]'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '1260'
-    - !!python/tuple
-      - X-Request-Id
-      - - iFoQMaOTqu7
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990972'
-    - !!python/tuple
-      - Etag
-      - - W/"51a52180f552780ac9834c841a2092f6"
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '598'
-    - !!python/tuple
-      - X-Total
-      - - '3'
-    - !!python/tuple
-      - X-Runtime
-      - - '0.058890'
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+      headers:
+        Content-Length: '1260'
+        X-Request-Id: iFoQMaOTqu7
+        Ratelimit-Reset: '1566990972'
+        Etag: W/"51a52180f552780ac9834c841a2092f6"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '598'
+        X-Total: '3'
+        X-Runtime: '0.058890'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
           rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
           rel="last"
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:12 GMT
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '2'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Per-Page
-      - - '100'
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:12 GMT
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/groups?per_page=100
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/groups/4037482/projects?per_page=50&page=1
-  response:
-    body:
-      string: !!python/unicode '[{"id":12060694,"description":" A GitLab demo for
-        codecov, showing CI, flags, etc.","name":"demo-gitlab","name_with_namespace":"Codecov
-        Organization / demo-gitlab","path":"demo-gitlab","path_with_namespace":"codecov-organization/demo-gitlab","created_at":"2019-04-27T15:56:21.542Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:codecov-organization/demo-gitlab.git","http_url_to_repo":"https://gitlab.com/codecov-organization/demo-gitlab.git","web_url":"https://gitlab.com/codecov-organization/demo-gitlab","readme_url":"https://gitlab.com/codecov-organization/demo-gitlab/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-04-29T10:57:12.799Z","namespace":{"id":4037482,"name":"Codecov
+        X-Next-Page: ''
+        Date: Wed, 28 Aug 2019 11:15:12 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '2'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Per-Page: '100'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:12 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/4037482/projects?per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/groups/4037482/projects?per_page=50&page=1
+      content: '[{"id":12060694,"description":" A GitLab demo for codecov, showing
+        CI, flags, etc.","name":"demo-gitlab","name_with_namespace":"Codecov Organization
+        / demo-gitlab","path":"demo-gitlab","path_with_namespace":"codecov-organization/demo-gitlab","created_at":"2019-04-27T15:56:21.542Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:codecov-organization/demo-gitlab.git","http_url_to_repo":"https://gitlab.com/codecov-organization/demo-gitlab.git","web_url":"https://gitlab.com/codecov-organization/demo-gitlab","readme_url":"https://gitlab.com/codecov-organization/demo-gitlab/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-04-29T10:57:12.799Z","namespace":{"id":4037482,"name":"Codecov
         Organization","path":"codecov-organization","kind":"group","full_path":"codecov-organization","parent_id":null,"avatar_url":"https://gitlab.com/uploads/-/system/group/avatar/4037482/codecov_avatar.png","web_url":"https://gitlab.com/groups/codecov-organization"},"_links":{"self":"https://gitlab.com/api/v4/projects/12060694","issues":"https://gitlab.com/api/v4/projects/12060694/issues","merge_requests":"https://gitlab.com/api/v4/projects/12060694/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/12060694/repository/branches","labels":"https://gitlab.com/api/v4/projects/12060694/labels","events":"https://gitlab.com/api/v4/projects/12060694/events","members":"https://gitlab.com/api/v4/projects/12060694/members"},"empty_repo":false,"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"enabled","builds_access_level":"enabled","snippets_access_level":"enabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3108129,"import_status":"none","open_issues_count":0,"ci_default_git_depth":null,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","mirror":false,"external_authorization_classification_label":""},{"id":10575601,"description":"Tests
         for codecov assume flags","name":"codecov-assume-flag-test","name_with_namespace":"Codecov
         Organization / codecov-assume-flag-test","path":"codecov-assume-flag-test","path_with_namespace":"codecov-organization/codecov-assume-flag-test","created_at":"2019-01-28T15:12:11.654Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:codecov-organization/codecov-assume-flag-test.git","http_url_to_repo":"https://gitlab.com/codecov-organization/codecov-assume-flag-test.git","web_url":"https://gitlab.com/codecov-organization/codecov-assume-flag-test","readme_url":"https://gitlab.com/codecov-organization/codecov-assume-flag-test/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-03-15T01:15:24.777Z","namespace":{"id":4037482,"name":"Codecov
@@ -195,544 +99,242 @@ interactions:
         for migrating from Codecov Enterprise 4.3.9 to 4.4.0","name":"migration-tests","name_with_namespace":"Codecov
         Organization / migration-tests","path":"migration-tests","path_with_namespace":"codecov-organization/migration-tests","created_at":"2018-11-15T16:15:30.347Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:codecov-organization/migration-tests.git","http_url_to_repo":"https://gitlab.com/codecov-organization/migration-tests.git","web_url":"https://gitlab.com/codecov-organization/migration-tests","readme_url":"https://gitlab.com/codecov-organization/migration-tests/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":1,"last_activity_at":"2018-11-15T16:15:30.347Z","namespace":{"id":4037482,"name":"Codecov
         Organization","path":"codecov-organization","kind":"group","full_path":"codecov-organization","parent_id":null,"avatar_url":"https://gitlab.com/uploads/-/system/group/avatar/4037482/codecov_avatar.png","web_url":"https://gitlab.com/groups/codecov-organization"},"_links":{"self":"https://gitlab.com/api/v4/projects/9422435","issues":"https://gitlab.com/api/v4/projects/9422435/issues","merge_requests":"https://gitlab.com/api/v4/projects/9422435/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9422435/repository/branches","labels":"https://gitlab.com/api/v4/projects/9422435/labels","events":"https://gitlab.com/api/v4/projects/9422435/events","members":"https://gitlab.com/api/v4/projects/9422435/members"},"empty_repo":false,"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"enabled","builds_access_level":"enabled","snippets_access_level":"enabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3108129,"import_status":"finished","open_issues_count":0,"ci_default_git_depth":null,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","mirror":false,"external_authorization_classification_label":""}]'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '7877'
-    - !!python/tuple
-      - X-Request-Id
-      - - lRYxFxyY5X7
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990973'
-    - !!python/tuple
-      - Etag
-      - - W/"b3bb989e2735df4bb70650f38d81c7f8"
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '597'
-    - !!python/tuple
-      - X-Total
-      - - '3'
-    - !!python/tuple
-      - X-Runtime
-      - - '0.150274'
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/groups/4037482/projects?archived=false&id=4037482&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
+      headers:
+        Content-Length: '7877'
+        X-Request-Id: lRYxFxyY5X7
+        Ratelimit-Reset: '1566990973'
+        Etag: W/"b3bb989e2735df4bb70650f38d81c7f8"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '597'
+        X-Total: '3'
+        X-Runtime: '0.150274'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups/4037482/projects?archived=false&id=4037482&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
           rel="first", <https://gitlab.com/api/v4/groups/4037482/projects?archived=false&id=4037482&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
           rel="last"
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:13 GMT
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '3'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Per-Page
-      - - '50'
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:13 GMT
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/groups/4037482/projects?per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/groups/5938762/projects?per_page=50&page=1
-  response:
-    body:
-      string: !!python/unicode '[]'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '2'
-    - !!python/tuple
-      - X-Request-Id
-      - - vryAo9niej3
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990973'
-    - !!python/tuple
-      - Etag
-      - - W/"4f53cda18c2baa0c0354bb5f9a3ecbe5"
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '597'
-    - !!python/tuple
-      - X-Total
-      - - '0'
-    - !!python/tuple
-      - X-Runtime
-      - - '0.044881'
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/groups/5938762/projects?archived=false&id=5938762&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
+        X-Next-Page: ''
+        Date: Wed, 28 Aug 2019 11:15:13 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '3'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:13 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/5938762/projects?per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/groups/5938762/projects?per_page=50&page=1
+      content: '[]'
+      headers:
+        Content-Length: '2'
+        X-Request-Id: vryAo9niej3
+        Ratelimit-Reset: '1566990973'
+        Etag: W/"4f53cda18c2baa0c0354bb5f9a3ecbe5"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '597'
+        X-Total: '0'
+        X-Runtime: '0.044881'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups/5938762/projects?archived=false&id=5938762&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
           rel="first", <https://gitlab.com/api/v4/groups/5938762/projects?archived=false&id=5938762&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
           rel="last"
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:13 GMT
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '3'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Per-Page
-      - - '50'
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:13 GMT
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/groups/5938762/projects?per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/groups/5938764/projects?per_page=50&page=1
-  response:
-    body:
-      string: !!python/unicode '[{"id":14027433,"description":"GitLab release tasks
-        project, release managers issue tracker","name":"tasks","name_with_namespace":"ThiagoCodecovTestGroup
+        X-Next-Page: ''
+        Date: Wed, 28 Aug 2019 11:15:13 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '3'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:13 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/5938764/projects?per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/groups/5938764/projects?per_page=50&page=1
+      content: '[{"id":14027433,"description":"GitLab release tasks project, release
+        managers issue tracker","name":"tasks","name_with_namespace":"ThiagoCodecovTestGroup
         / test-subgroup / tasks","path":"tasks","path_with_namespace":"thiagocodecovtestgroup/test-subgroup/tasks","created_at":"2019-08-28T11:14:45.905Z","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:thiagocodecovtestgroup/test-subgroup/tasks.git","http_url_to_repo":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/tasks.git","web_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/tasks","readme_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/tasks/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-08-28T11:14:45.905Z","namespace":{"id":5938764,"name":"test-subgroup","path":"test-subgroup","kind":"group","full_path":"thiagocodecovtestgroup/test-subgroup","parent_id":5938762,"avatar_url":null,"web_url":"https://gitlab.com/groups/thiagocodecovtestgroup/test-subgroup"},"_links":{"self":"https://gitlab.com/api/v4/projects/14027433","issues":"https://gitlab.com/api/v4/projects/14027433/issues","merge_requests":"https://gitlab.com/api/v4/projects/14027433/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/14027433/repository/branches","labels":"https://gitlab.com/api/v4/projects/14027433/labels","events":"https://gitlab.com/api/v4/projects/14027433/events","members":"https://gitlab.com/api/v4/projects/14027433/members"},"empty_repo":false,"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":false,"snippets_enabled":true,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"enabled","builds_access_level":"disabled","snippets_access_level":"enabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3124507,"forked_from_project":{"id":5064907,"description":"GitLab
         release tasks project, release managers issue tracker","name":"tasks","name_with_namespace":"GitLab.org
         / release / tasks","path":"tasks","path_with_namespace":"gitlab-org/release/tasks","created_at":"2018-01-05T11:51:22.955Z","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:gitlab-org/release/tasks.git","http_url_to_repo":"https://gitlab.com/gitlab-org/release/tasks.git","web_url":"https://gitlab.com/gitlab-org/release/tasks","readme_url":"https://gitlab.com/gitlab-org/release/tasks/blob/master/README.md","avatar_url":null,"star_count":68,"forks_count":101,"last_activity_at":"2019-08-28T10:20:29.513Z","namespace":{"id":2351283,"name":"release","path":"release","kind":"group","full_path":"gitlab-org/release","parent_id":9970,"avatar_url":null,"web_url":"https://gitlab.com/groups/gitlab-org/release"}},"import_status":"finished","open_issues_count":0,"ci_default_git_depth":0,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","mirror":false,"external_authorization_classification_label":""},{"id":14026543,"description":"Testing
         this project","name":"GroupTestProjectTRR","name_with_namespace":"ThiagoCodecovTestGroup
         / test-subgroup / GroupTestProjectTRR","path":"grouptestprojecttrr","path_with_namespace":"thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr","created_at":"2019-08-28T10:05:20.838Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr.git","http_url_to_repo":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr.git","web_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr","readme_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-08-28T10:05:20.838Z","namespace":{"id":5938764,"name":"test-subgroup","path":"test-subgroup","kind":"group","full_path":"thiagocodecovtestgroup/test-subgroup","parent_id":5938762,"avatar_url":null,"web_url":"https://gitlab.com/groups/thiagocodecovtestgroup/test-subgroup"},"_links":{"self":"https://gitlab.com/api/v4/projects/14026543","issues":"https://gitlab.com/api/v4/projects/14026543/issues","merge_requests":"https://gitlab.com/api/v4/projects/14026543/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/14026543/repository/branches","labels":"https://gitlab.com/api/v4/projects/14026543/labels","events":"https://gitlab.com/api/v4/projects/14026543/events","members":"https://gitlab.com/api/v4/projects/14026543/members"},"empty_repo":false,"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"enabled","builds_access_level":"enabled","snippets_access_level":"enabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3124507,"import_status":"finished","open_issues_count":0,"ci_default_git_depth":50,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","mirror":false,"external_authorization_classification_label":""}]'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '6159'
-    - !!python/tuple
-      - X-Request-Id
-      - - ZcUs2dRMfq4
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990974'
-    - !!python/tuple
-      - Etag
-      - - W/"24259f8c01b8a9ffb9f48bcf2649b717"
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '596'
-    - !!python/tuple
-      - X-Total
-      - - '2'
-    - !!python/tuple
-      - X-Runtime
-      - - '0.188782'
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/groups/5938764/projects?archived=false&id=5938764&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
+      headers:
+        Content-Length: '6159'
+        X-Request-Id: ZcUs2dRMfq4
+        Ratelimit-Reset: '1566990974'
+        Etag: W/"24259f8c01b8a9ffb9f48bcf2649b717"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '596'
+        X-Total: '2'
+        X-Runtime: '0.188782'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups/5938764/projects?archived=false&id=5938764&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
           rel="first", <https://gitlab.com/api/v4/groups/5938764/projects?archived=false&id=5938764&include_subgroups=false&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false&with_shared=true>;
           rel="last"
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:14 GMT
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '4'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Per-Page
-      - - '50'
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:14 GMT
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/groups/5938764/projects?per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/5064907
-  response:
-    body:
-      string: !!python/unicode '{"id":5064907,"description":"GitLab release tasks
-        project, release managers issue tracker","name":"tasks","name_with_namespace":"GitLab.org
-        / release / tasks","path":"tasks","path_with_namespace":"gitlab-org/release/tasks","created_at":"2018-01-05T11:51:22.955Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:gitlab-org/release/tasks.git","http_url_to_repo":"https://gitlab.com/gitlab-org/release/tasks.git","web_url":"https://gitlab.com/gitlab-org/release/tasks","readme_url":"https://gitlab.com/gitlab-org/release/tasks/blob/master/README.md","avatar_url":null,"star_count":68,"forks_count":101,"last_activity_at":"2019-08-28T10:20:29.513Z","namespace":{"id":2351283,"name":"release","path":"release","kind":"group","full_path":"gitlab-org/release","parent_id":9970,"avatar_url":null,"web_url":"https://gitlab.com/groups/gitlab-org/release"},"_links":{"self":"https://gitlab.com/api/v4/projects/5064907","issues":"https://gitlab.com/api/v4/projects/5064907/issues","merge_requests":"https://gitlab.com/api/v4/projects/5064907/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/5064907/repository/branches","labels":"https://gitlab.com/api/v4/projects/5064907/labels","events":"https://gitlab.com/api/v4/projects/5064907/events","members":"https://gitlab.com/api/v4/projects/5064907/members"},"empty_repo":false,"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":false,"snippets_enabled":false,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"disabled","builds_access_level":"disabled","snippets_access_level":"disabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":116,"import_status":"none","open_issues_count":1,"ci_default_git_depth":null,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":"","packages_enabled":null}'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '2539'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '595'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - X-Request-Id
-      - - IxcfLM2HEf1
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990975'
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Etag
-      - - W/"6cad7f9483dcc4076ac485f90fe39068"
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:15 GMT
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - X-Runtime
-      - - '0.091134'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:15 GMT
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '5'
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/projects/5064907
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
-  response:
-    body:
-      string: !!python/unicode '[{"id":14027433,"description":"GitLab release tasks
-        project, release managers issue tracker","name":"tasks","name_with_namespace":"ThiagoCodecovTestGroup
+        X-Next-Page: ''
+        Date: Wed, 28 Aug 2019 11:15:14 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '4'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:14 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/5064907
+    response:
+      url: https://gitlab.com/api/v4/projects/5064907
+      content: '{"id":5064907,"description":"GitLab release tasks project, release
+        managers issue tracker","name":"tasks","name_with_namespace":"GitLab.org /
+        release / tasks","path":"tasks","path_with_namespace":"gitlab-org/release/tasks","created_at":"2018-01-05T11:51:22.955Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:gitlab-org/release/tasks.git","http_url_to_repo":"https://gitlab.com/gitlab-org/release/tasks.git","web_url":"https://gitlab.com/gitlab-org/release/tasks","readme_url":"https://gitlab.com/gitlab-org/release/tasks/blob/master/README.md","avatar_url":null,"star_count":68,"forks_count":101,"last_activity_at":"2019-08-28T10:20:29.513Z","namespace":{"id":2351283,"name":"release","path":"release","kind":"group","full_path":"gitlab-org/release","parent_id":9970,"avatar_url":null,"web_url":"https://gitlab.com/groups/gitlab-org/release"},"_links":{"self":"https://gitlab.com/api/v4/projects/5064907","issues":"https://gitlab.com/api/v4/projects/5064907/issues","merge_requests":"https://gitlab.com/api/v4/projects/5064907/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/5064907/repository/branches","labels":"https://gitlab.com/api/v4/projects/5064907/labels","events":"https://gitlab.com/api/v4/projects/5064907/events","members":"https://gitlab.com/api/v4/projects/5064907/members"},"empty_repo":false,"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":false,"snippets_enabled":false,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"disabled","builds_access_level":"disabled","snippets_access_level":"disabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":116,"import_status":"none","open_issues_count":1,"ci_default_git_depth":null,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":"","packages_enabled":null}'
+      headers:
+        Content-Length: '2539'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Content-Type-Options: nosniff
+        Ratelimit-Remaining: '595'
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: IxcfLM2HEf1
+        Ratelimit-Reset: '1566990975'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Connection: close
+        Etag: W/"6cad7f9483dcc4076ac485f90fe39068"
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Wed, 28 Aug 2019 11:15:15 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.091134'
+        Content-Type: application/json
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:15 GMT
+        Ratelimit-Observed: '5'
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
+      content: '[{"id":14027433,"description":"GitLab release tasks project, release
+        managers issue tracker","name":"tasks","name_with_namespace":"ThiagoCodecovTestGroup
         / test-subgroup / tasks","path":"tasks","path_with_namespace":"thiagocodecovtestgroup/test-subgroup/tasks","created_at":"2019-08-28T11:14:45.905Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:thiagocodecovtestgroup/test-subgroup/tasks.git","http_url_to_repo":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/tasks.git","web_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/tasks","readme_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/tasks/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-08-28T11:14:45.905Z","namespace":{"id":5938764,"name":"test-subgroup","path":"test-subgroup","kind":"group","full_path":"thiagocodecovtestgroup/test-subgroup","parent_id":5938762,"avatar_url":null,"web_url":"https://gitlab.com/groups/thiagocodecovtestgroup/test-subgroup"},"_links":{"self":"https://gitlab.com/api/v4/projects/14027433","issues":"https://gitlab.com/api/v4/projects/14027433/issues","merge_requests":"https://gitlab.com/api/v4/projects/14027433/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/14027433/repository/branches","labels":"https://gitlab.com/api/v4/projects/14027433/labels","events":"https://gitlab.com/api/v4/projects/14027433/events","members":"https://gitlab.com/api/v4/projects/14027433/members"},"empty_repo":false,"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":false,"snippets_enabled":true,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"enabled","builds_access_level":"disabled","snippets_access_level":"enabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3124507,"forked_from_project":{"id":5064907,"description":"GitLab
         release tasks project, release managers issue tracker","name":"tasks","name_with_namespace":"GitLab.org
         / release / tasks","path":"tasks","path_with_namespace":"gitlab-org/release/tasks","created_at":"2018-01-05T11:51:22.955Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:gitlab-org/release/tasks.git","http_url_to_repo":"https://gitlab.com/gitlab-org/release/tasks.git","web_url":"https://gitlab.com/gitlab-org/release/tasks","readme_url":"https://gitlab.com/gitlab-org/release/tasks/blob/master/README.md","avatar_url":null,"star_count":68,"forks_count":101,"last_activity_at":"2019-08-28T10:20:29.513Z","namespace":{"id":2351283,"name":"release","path":"release","kind":"group","full_path":"gitlab-org/release","parent_id":9970,"avatar_url":null,"web_url":"https://gitlab.com/groups/gitlab-org/release"}},"import_status":"finished","open_issues_count":0,"ci_default_git_depth":0,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","permissions":{"project_access":null,"group_access":{"access_level":50,"notification_level":3}},"mirror":false,"external_authorization_classification_label":""},{"id":14026543,"description":"Testing
         this project","name":"GroupTestProjectTRR","name_with_namespace":"ThiagoCodecovTestGroup
         / test-subgroup / GroupTestProjectTRR","path":"grouptestprojecttrr","path_with_namespace":"thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr","created_at":"2019-08-28T10:05:20.838Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr.git","http_url_to_repo":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr.git","web_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr","readme_url":"https://gitlab.com/thiagocodecovtestgroup/test-subgroup/grouptestprojecttrr/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2019-08-28T10:05:20.838Z","namespace":{"id":5938764,"name":"test-subgroup","path":"test-subgroup","kind":"group","full_path":"thiagocodecovtestgroup/test-subgroup","parent_id":5938762,"avatar_url":null,"web_url":"https://gitlab.com/groups/thiagocodecovtestgroup/test-subgroup"},"_links":{"self":"https://gitlab.com/api/v4/projects/14026543","issues":"https://gitlab.com/api/v4/projects/14026543/issues","merge_requests":"https://gitlab.com/api/v4/projects/14026543/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/14026543/repository/branches","labels":"https://gitlab.com/api/v4/projects/14026543/labels","events":"https://gitlab.com/api/v4/projects/14026543/events","members":"https://gitlab.com/api/v4/projects/14026543/members"},"empty_repo":false,"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"enabled","builds_access_level":"enabled","snippets_access_level":"enabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3124507,"import_status":"finished","open_issues_count":0,"ci_default_git_depth":50,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","permissions":{"project_access":{"access_level":40,"notification_level":null},"group_access":{"access_level":50,"notification_level":3}},"mirror":false,"external_authorization_classification_label":""}]'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '6392'
-    - !!python/tuple
-      - X-Request-Id
-      - - zpRjTs9axsa
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990975'
-    - !!python/tuple
-      - Etag
-      - - W/"adf241023ec462e9083ae4e31e37e3ac"
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '595'
-    - !!python/tuple
-      - X-Total
-      - - '2'
-    - !!python/tuple
-      - X-Runtime
-      - - '0.168679'
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/projects?membership=false&order_by=created_at&owned=true&page=1&per_page=50&repository_checksum_failed=false&simple=false&sort=desc&starred=false&statistics=false&wiki_checksum_failed=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
+      headers:
+        Content-Length: '6392'
+        X-Request-Id: zpRjTs9axsa
+        Ratelimit-Reset: '1566990975'
+        Etag: W/"adf241023ec462e9083ae4e31e37e3ac"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '595'
+        X-Total: '2'
+        X-Runtime: '0.168679'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/projects?membership=false&order_by=created_at&owned=true&page=1&per_page=50&repository_checksum_failed=false&simple=false&sort=desc&starred=false&statistics=false&wiki_checksum_failed=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
           rel="first", <https://gitlab.com/api/v4/projects?membership=false&order_by=created_at&owned=true&page=1&per_page=50&repository_checksum_failed=false&simple=false&sort=desc&starred=false&statistics=false&wiki_checksum_failed=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
           rel="last"
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:15 GMT
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '5'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Per-Page
-      - - '50'
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:15 GMT
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/5064907
-  response:
-    body:
-      string: !!python/unicode '{"id":5064907,"description":"GitLab release tasks
-        project, release managers issue tracker","name":"tasks","name_with_namespace":"GitLab.org
-        / release / tasks","path":"tasks","path_with_namespace":"gitlab-org/release/tasks","created_at":"2018-01-05T11:51:22.955Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:gitlab-org/release/tasks.git","http_url_to_repo":"https://gitlab.com/gitlab-org/release/tasks.git","web_url":"https://gitlab.com/gitlab-org/release/tasks","readme_url":"https://gitlab.com/gitlab-org/release/tasks/blob/master/README.md","avatar_url":null,"star_count":68,"forks_count":101,"last_activity_at":"2019-08-28T10:20:29.513Z","namespace":{"id":2351283,"name":"release","path":"release","kind":"group","full_path":"gitlab-org/release","parent_id":9970,"avatar_url":null,"web_url":"https://gitlab.com/groups/gitlab-org/release"},"_links":{"self":"https://gitlab.com/api/v4/projects/5064907","issues":"https://gitlab.com/api/v4/projects/5064907/issues","merge_requests":"https://gitlab.com/api/v4/projects/5064907/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/5064907/repository/branches","labels":"https://gitlab.com/api/v4/projects/5064907/labels","events":"https://gitlab.com/api/v4/projects/5064907/events","members":"https://gitlab.com/api/v4/projects/5064907/members"},"empty_repo":false,"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":false,"snippets_enabled":false,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"disabled","builds_access_level":"disabled","snippets_access_level":"disabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":116,"import_status":"none","open_issues_count":1,"ci_default_git_depth":null,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":"","packages_enabled":null}'
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - - '2539'
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '594'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - X-Request-Id
-      - - CE1n0735eH7
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1566990976'
-    - !!python/tuple
-      - Server
-      - - nginx
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Connection
-      - - close
-    - !!python/tuple
-      - Etag
-      - - W/"6cad7f9483dcc4076ac485f90fe39068"
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - Date
-      - - Wed, 28 Aug 2019 11:15:16 GMT
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - X-Runtime
-      - - '0.101784'
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 28 Aug 2019 11:16:16 GMT
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '6'
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/projects/5064907
+        X-Next-Page: ''
+        Date: Wed, 28 Aug 2019 11:15:15 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '5'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:15 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/5064907
+    response:
+      url: https://gitlab.com/api/v4/projects/5064907
+      content: '{"id":5064907,"description":"GitLab release tasks project, release
+        managers issue tracker","name":"tasks","name_with_namespace":"GitLab.org /
+        release / tasks","path":"tasks","path_with_namespace":"gitlab-org/release/tasks","created_at":"2018-01-05T11:51:22.955Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:gitlab-org/release/tasks.git","http_url_to_repo":"https://gitlab.com/gitlab-org/release/tasks.git","web_url":"https://gitlab.com/gitlab-org/release/tasks","readme_url":"https://gitlab.com/gitlab-org/release/tasks/blob/master/README.md","avatar_url":null,"star_count":68,"forks_count":101,"last_activity_at":"2019-08-28T10:20:29.513Z","namespace":{"id":2351283,"name":"release","path":"release","kind":"group","full_path":"gitlab-org/release","parent_id":9970,"avatar_url":null,"web_url":"https://gitlab.com/groups/gitlab-org/release"},"_links":{"self":"https://gitlab.com/api/v4/projects/5064907","issues":"https://gitlab.com/api/v4/projects/5064907/issues","merge_requests":"https://gitlab.com/api/v4/projects/5064907/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/5064907/repository/branches","labels":"https://gitlab.com/api/v4/projects/5064907/labels","events":"https://gitlab.com/api/v4/projects/5064907/events","members":"https://gitlab.com/api/v4/projects/5064907/members"},"empty_repo":false,"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":false,"snippets_enabled":false,"issues_access_level":"enabled","repository_access_level":"enabled","merge_requests_access_level":"enabled","wiki_access_level":"disabled","builds_access_level":"disabled","snippets_access_level":"disabled","shared_runners_enabled":true,"lfs_enabled":true,"creator_id":116,"import_status":"none","open_issues_count":1,"ci_default_git_depth":null,"public_jobs":true,"build_timeout":3600,"auto_cancel_pending_pipelines":"enabled","build_coverage_regex":null,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","auto_devops_enabled":false,"auto_devops_deploy_strategy":"continuous","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":"","packages_enabled":null}'
+      headers:
+        Content-Length: '2539'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Content-Type-Options: nosniff
+        Ratelimit-Remaining: '594'
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: CE1n0735eH7
+        Ratelimit-Reset: '1566990976'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Connection: close
+        Etag: W/"6cad7f9483dcc4076ac485f90fe39068"
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Wed, 28 Aug 2019 11:15:16 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.101784'
+        Content-Type: application/json
+        Ratelimit-Resettime: Wed, 28 Aug 2019 11:16:16 GMT
+        Ratelimit-Observed: '6'
+      status_code: 200
 version: 1

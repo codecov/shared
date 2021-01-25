@@ -18,38 +18,27 @@ def valid_handler():
 
 class TestUnitGitlab(object):
     @pytest.mark.asyncio
-    async def test_socker_gaierror(self, mocker, valid_handler):
-        mocker.patch.object(Gitlab, "fetch", side_effect=socket.gaierror)
-        with pytest.raises(TorngitServerUnreachableError):
-            await valid_handler.api("get", "url")
-
-    @pytest.mark.asyncio
     async def test_get_commit_statuses(self, mocker, valid_handler):
         mocked_fetch = mocker.patch.object(
             Gitlab,
-            "fetch",
-            return_value=mocker.MagicMock(
-                headers={"Content-Type": "application/json"},
-                body=dumps(
-                    [
-                        {
-                            "status": "success",
-                            "description": "Successful status",
-                            "target_url": "url",
-                            "name": "name",
-                            "finished_at": None,
-                            "created_at": None,
-                        },
-                        {
-                            "status": None,
-                            "description": "None status",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                    ]
-                ),
-            ),
+            "api",
+            return_value=[
+                {
+                    "status": "success",
+                    "description": "Successful status",
+                    "target_url": "url",
+                    "name": "name",
+                    "finished_at": None,
+                    "created_at": None,
+                },
+                {
+                    "status": None,
+                    "description": "None status",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+            ]
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -60,35 +49,30 @@ class TestUnitGitlab(object):
     async def test_get_commit_statuses_success(self, mocker, valid_handler):
         mocked_fetch = mocker.patch.object(
             Gitlab,
-            "fetch",
-            return_value=mocker.MagicMock(
-                headers={"Content-Type": "application/json"},
-                body=dumps(
-                    [
-                        {
-                            "status": "success",
-                            "description": "Successful status",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                        {
-                            "status": "success",
-                            "description": "Another successful status",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                        {
-                            "status": "skipped",
-                            "description": "This was skipped so still counts as success",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                    ]
-                ),
-            ),
+            "api",
+            return_value=[
+                {
+                    "status": "success",
+                    "description": "Successful status",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+                {
+                    "status": "success",
+                    "description": "Another successful status",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+                {
+                    "status": "skipped",
+                    "description": "This was skipped so still counts as success",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+            ]
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -99,35 +83,30 @@ class TestUnitGitlab(object):
     async def test_get_commit_statuses_pending(self, mocker, valid_handler):
         mocked_fetch = mocker.patch.object(
             Gitlab,
-            "fetch",
-            return_value=mocker.MagicMock(
-                headers={"Content-Type": "application/json"},
-                body=dumps(
-                    [
-                        {
-                            "status": "created",
-                            "description": "Created means still pending",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                        {
-                            "status": "manual",
-                            "description": "This requires a manual run so we'll consider it pending until then",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                        {
-                            "status": "waiting_for_resource",
-                            "description": "Waiting for a resource",
-                            "target_url": "url",
-                            "name": "name",
-                            "created_at": "not none",
-                        },
-                    ]
-                ),
-            ),
+            "api",
+            return_value=[
+                {
+                    "status": "created",
+                    "description": "Created means still pending",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+                {
+                    "status": "manual",
+                    "description": "This requires a manual run so we'll consider it pending until then",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+                {
+                    "status": "waiting_for_resource",
+                    "description": "Waiting for a resource",
+                    "target_url": "url",
+                    "name": "name",
+                    "created_at": "not none",
+                },
+            ]
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -139,15 +118,10 @@ class TestUnitGitlab(object):
         self, mocker, valid_handler
     ):
         commit_sha = "c739768fcac68144a3a6d82305b9c4106934d31a"
-        first_result = mocker.MagicMock(
-            headers={"Content-Type": "application/json"}, body=dumps([]),
-        )
-        second_result = mocker.MagicMock(
-            headers={"Content-Type": "application/json"},
-            body=dumps([{"sha": "aaaa", "iid": 123}, {"sha": commit_sha, "iid": 986}]),
-        )
+        first_result = []
+        second_result = [{"sha": "aaaa", "iid": 123}, {"sha": commit_sha, "iid": 986}]
         results = [first_result, second_result]
-        mocker.patch.object(Gitlab, "fetch", side_effect=results)
+        mocker.patch.object(Gitlab, "api", side_effect=results)
         res = await valid_handler.find_pull_request(commit_sha)
         assert res == 986
 
