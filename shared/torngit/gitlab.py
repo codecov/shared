@@ -78,7 +78,9 @@ class Gitlab(TorngitBaseAdapter):
 
         try:
             with metrics.timer(f"{METRICS_PREFIX}.api.run"):
-                res = await client.request(method.upper(), url, headers=headers, data=body_data)
+                res = await client.request(
+                    method.upper(), url, headers=headers, data=body_data
+                )
             log.info("GitLab HTTP %s" % res.status_code, extra=dict(**_log))
             if res.status_code == 599:
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
@@ -133,8 +135,13 @@ class Gitlab(TorngitBaseAdapter):
                     client, "GET", base_url, **current_kwargs
                 )
                 count_so_far += 1
-                yield None if current_result.status_code == 204 else loads(current_result.text)
-                if max_number_of_pages is not None and count_so_far >= max_number_of_pages:
+                yield None if current_result.status_code == 204 else loads(
+                    current_result.text
+                )
+                if (
+                    max_number_of_pages is not None
+                    and count_so_far >= max_number_of_pages
+                ):
                     has_more = False
                 elif "X-Next-Page" in current_result.headers:
                     current_page, has_more = current_result.headers["X-Next-Page"], True
@@ -872,7 +879,10 @@ class Gitlab(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async_generator = self.make_paginated_call(
             f"/projects/{self.data['repo']['service_id']}/repository/tree",
-            default_kwargs=dict(ref=ref, path=dir_path,),
+            default_kwargs=dict(
+                ref=ref,
+                path=dir_path,
+            ),
             max_per_page=100,
             token=token,
         )

@@ -38,7 +38,7 @@ class TestUnitGitlab(object):
                     "name": "name",
                     "created_at": "not none",
                 },
-            ]
+            ],
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -72,7 +72,7 @@ class TestUnitGitlab(object):
                     "name": "name",
                     "created_at": "not none",
                 },
-            ]
+            ],
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -106,7 +106,7 @@ class TestUnitGitlab(object):
                     "name": "name",
                     "created_at": "not none",
                 },
-            ]
+            ],
         )
         res = await valid_handler.get_commit_statuses(
             "c739768fcac68144a3a6d82305b9c4106934d31a"

@@ -31,9 +31,7 @@ class TestGitlabEnterprise(object):
 
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):
-        mocked_fetch = mocker.patch.object(
-            GitlabEnterprise, "api", return_value={}
-        )
+        mocked_fetch = mocker.patch.object(GitlabEnterprise, "api", return_value={})
         mock_configuration._params["gitlab_enterprise"] = {
             "url": "https://gitlab-enterprise.codecov.dev",
             "api_url": "https://api.gitlab.dev",
@@ -49,5 +47,5 @@ class TestGitlabEnterprise(object):
             "post",
             "/projects/187725/merge_requests/pullid/notes",
             body={"body": "body"},
-            token={'key': 'fake_token'},
+            token={"key": "fake_token"},
         )
