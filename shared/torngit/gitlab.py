@@ -879,10 +879,7 @@ class Gitlab(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async_generator = self.make_paginated_call(
             f"/projects/{self.data['repo']['service_id']}/repository/tree",
-            default_kwargs=dict(
-                ref=ref,
-                path=dir_path,
-            ),
+            default_kwargs=dict(ref=ref, path=dir_path,),
             max_per_page=100,
             token=token,
         )
