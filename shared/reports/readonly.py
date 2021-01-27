@@ -117,6 +117,28 @@ class ReadOnlyReport(object):
     def get(self, *args, **kwargs):
         return self.inner_report.get(*args, **kwargs)
 
+    def _log_rust_differences(self, metric_python_ms, metric_rust_ms):
+        if metric_python_ms > 20 * metric_rust_ms:
+            metrics.incr("shared.reports.readonly._process_totals.twentyfold")
+        elif metric_python_ms > 5 * metric_rust_ms:
+            metrics.incr("shared.reports.readonly._process_totals.fivefold")
+        elif metric_python_ms > 2 * metric_rust_ms:
+            metrics.incr("shared.reports.readonly._process_totals.twofold")
+        elif metric_python_ms > metric_rust_ms:
+            metrics.incr("shared.reports.readonly._process_totals.better")
+        else:
+            metrics.incr("shared.reports.readonly._process_totals.worse")
+            log.info(
+                "Rust was worse than python on the metrics calculation",
+                extra=dict(rust_timer=metric_rust_ms, python_timer=metric_python_ms,),
+            )
+        RUST_TIMER_THRESHOLD = 1000
+        if metric_rust_ms > RUST_TIMER_THRESHOLD:
+            log.info(
+                "Processing totals in rust took longer than %d ms",
+                RUST_TIMER_THRESHOLD,
+            )
+
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
         metric_name = "cached" if self.inner_report._totals else "python"
@@ -131,30 +153,7 @@ class ReadOnlyReport(object):
                 ) as timer:
                     rust_totals = self.rust_analyzer.get_totals(self.rust_report)
                 if metric_name == "python":
-                    if metric_python.ms > 20 * timer.ms:
-                        metrics.incr(
-                            "shared.reports.readonly._process_totals.twentyfold"
-                        )
-                    elif metric_python.ms > 5 * timer.ms:
-                        metrics.incr("shared.reports.readonly._process_totals.fivefold")
-                    elif metric_python.ms > 2 * timer.ms:
-                        metrics.incr("shared.reports.readonly._process_totals.twofold")
-                    elif metric_python.ms > timer.ms:
-                        metrics.incr("shared.reports.readonly._process_totals.better")
-                    elif metric_python.ms <= timer.ms:
-                        metrics.incr("shared.reports.readonly._process_totals.worse")
-                        log.info(
-                            "Rust was worse than python on the metrics calculation",
-                            extra=dict(
-                                rust_timer=timer.ms, python_timer=metric_python.ms,
-                            ),
-                        )
-                RUST_TIMER_THRESHOLD = 1000
-                if timer.ms > RUST_TIMER_THRESHOLD:
-                    log.info(
-                        "Processing totals in rust took longer than %d ms",
-                        RUST_TIMER_THRESHOLD,
-                    )
+                    self._log_rust_differences(metric_python.ms, timer.ms)
                 if (
                     rust_totals.lines != res.lines
                     or rust_totals.hits != res.hits
