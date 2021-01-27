@@ -4,7 +4,6 @@ from enum import Enum, auto
 
 import httpx
 from tornado.escape import url_escape
-from tornado.httpclient import AsyncHTTPClient
 
 from shared.torngit.enums import Endpoints
 
@@ -87,7 +86,6 @@ class TorngitBaseAdapter(object):
         verify_ssl=None,
         **kwargs,
     ):
-        self._client = None
         self._timeouts = timeouts or [10, 30]
         self._token = token
         self._token_type_mapping = token_type_mapping or {}
@@ -104,16 +102,6 @@ class TorngitBaseAdapter(object):
             self.data["owner"].get("ownerid"),
             self.data["repo"].get("repoid"),
         )
-
-    @property
-    def client(self):
-        if self._client is None:
-            AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
-            self._client = AsyncHTTPClient()
-        return self._client
-
-    async def fetch(self, *args, **kwargs):
-        return await self.client.fetch(*args, **kwargs)
 
     def _validate_language(self, language):
         if language:
