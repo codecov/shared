@@ -1,7 +1,6 @@
 import os
-import socket
 from base64 import b64decode
-from json import loads, dumps
+import json
 import logging
 from typing import Optional, List
 
@@ -48,40 +47,41 @@ class Gitlab(TorngitBaseAdapter):
     async def fetch_and_handle_errors(
         self, client, method, url_path, *, body=None, token=None, version=4, **args
     ):
-        if url_path[0] == "/":
+        if url_path.startswith("/"):
             _log = dict(
                 event="api",
                 endpoint=url_path,
                 method=method,
                 bot=(token or self.token).get("username"),
             )
+            url_path = self.api_url.format(version) + url_path
         else:
             _log = {}
-        url_path = (
-            (self.api_url.format(version) + url_path)
-            if url_path[0] == "/"
-            else url_path
-        )
+
         headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
-        if type(body) is dict:
+        if isinstance(body, dict):
             headers["Content-Type"] = "application/json"
+            body = json.dumps(body)
+
+        _log["body"] = body
 
         if token or self.token:
             headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
         url = url_concat(url_path, args).replace(" ", "%20")
-        body_data = dumps(body) if type(body) is dict else body
 
         try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
+            with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                 res = await client.request(
-                    method.upper(), url, headers=headers, data=body_data
+                    method.upper(), url, headers=headers, data=body
                 )
-            log.info("GitLab HTTP %s" % res.status_code, extra=dict(**_log))
+                _log["time_taken"] = timer.ms
+            log_level = logging.WARNING if res.status_code >= 300 else logging.INFO
+            log.log(log_level, "GitLab HTTP %s", res.status_code, extra=_log)
             if res.status_code == 599:
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
@@ -91,10 +91,6 @@ class Gitlab(TorngitBaseAdapter):
                 metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                 raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
             elif res.status_code >= 400:
-                log.warning(
-                    "Gitlab HTTP %s" % res.status_code,
-                    extra=dict(url=url, body=res.text),
-                )
                 message = f"Gitlab API: {res.status_code}"
                 metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
                 raise TorngitClientError(res.status_code, res, message)
@@ -110,7 +106,7 @@ class Gitlab(TorngitBaseAdapter):
             res = await self.fetch_and_handle_errors(
                 client, method, url_path, body=body, token=token, version=4, **args
             )
-            return None if res.status_code == 204 else loads(res.text)
+            return None if res.status_code == 204 else res.json()
 
     async def make_paginated_call(
         self,
@@ -135,9 +131,7 @@ class Gitlab(TorngitBaseAdapter):
                     client, "GET", base_url, **current_kwargs
                 )
                 count_so_far += 1
-                yield None if current_result.status_code == 204 else loads(
-                    current_result.text
-                )
+                yield None if current_result.status_code == 204 else current_result.json()
                 if (
                     max_number_of_pages is not None
                     and count_so_far >= max_number_of_pages
@@ -491,7 +485,7 @@ class Gitlab(TorngitBaseAdapter):
                 ),
                 token=token,
             )
-        except TorngitClientError as ce:
+        except TorngitClientError:
             raise
 
         if merge_commit:
