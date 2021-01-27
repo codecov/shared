@@ -124,6 +124,9 @@ class TestUserYaml(object):
         assert not subject_2.flag_has_carryfoward("pineapple")
 
     def test_get_flag_configuration(self):
+        old_style = UserYaml({"flags": {"banana": {"key_one": True}}})
+        assert old_style.get_flag_configuration("banana") == {"key_one": True}
+        assert old_style.get_flag_configuration("pineapple") is None
         assert UserYaml(
             {"flags": {"banana": {"key_one": True}}, "flag_management": {}}
         ).get_flag_configuration("banana") == {"key_one": True}

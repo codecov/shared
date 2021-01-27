@@ -642,8 +642,7 @@ class Report(object):
         all_flags = set()
         for _, session in self.sessions.items():
             if session and session.flags:
-                for flag in session.flags:
-                    all_flags.add(flag)
+                all_flags.update(session.flags)
         return sorted(all_flags)
 
     def append(self, _file, joined=True):
