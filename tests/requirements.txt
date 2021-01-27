@@ -4,37 +4,86 @@
 #
 #    pip-compile tests/requirements.in
 #
-attrs==20.2.0             # via pytest
-beautifulsoup4==4.9.3     # via -r tests/requirements.in
-certifi==2020.6.20        # via httpx, requests
-chardet==3.0.4            # via requests
-codecov==2.1.10           # via -r tests/requirements.in
-coverage==5.3             # via codecov, pytest-cov
-ddt==1.4.1                # via -r tests/requirements.in
-h11==0.11.0               # via httpcore
-httpcore==0.12.2          # via httpx
-httpx==0.16.1             # via respx
-idna==2.10                # via requests, rfc3986, yarl
-iniconfig==1.1.1          # via pytest
-mock==4.0.2               # via -r tests/requirements.in
-multidict==5.0.0          # via yarl
-packaging==20.4           # via pytest
-pluggy==0.13.1            # via pytest
-py==1.9.0                 # via pytest
-pyparsing==2.4.7          # via packaging
-pytest-asyncio==0.14.0    # via -r tests/requirements.in
-pytest-cov==2.10.1        # via -r tests/requirements.in
-pytest-mock==3.3.1        # via -r tests/requirements.in
-pytest==6.1.1             # via -r tests/requirements.in, pytest-asyncio, pytest-cov, pytest-mock
-pyyaml==5.3.1             # via vcrpy
-requests==2.24.0          # via codecov
-respx==0.16.2             # via -r tests/requirements.in
-rfc3986[idna2008]==1.4.0  # via httpx
-six==1.15.0               # via packaging, vcrpy
-sniffio==1.2.0            # via httpcore, httpx
-soupsieve==2.0.1          # via beautifulsoup4
-toml==0.10.1              # via pytest
-urllib3==1.25.10          # via requests
-vcrpy==4.1.1              # via -r tests/requirements.in
-wrapt==1.12.1             # via vcrpy
-yarl==1.6.2               # via vcrpy
+attrs==20.2.0
+    # via pytest
+beautifulsoup4==4.9.3
+    # via -r tests/requirements.in
+certifi==2020.6.20
+    # via
+    #   httpx
+    #   requests
+chardet==3.0.4
+    # via requests
+codecov==2.1.10
+    # via -r tests/requirements.in
+coverage==5.3
+    # via
+    #   codecov
+    #   pytest-cov
+ddt==1.4.1
+    # via -r tests/requirements.in
+h11==0.11.0
+    # via httpcore
+httpcore==0.12.2
+    # via httpx
+httpx==0.16.1
+    # via respx
+idna==2.10
+    # via
+    #   requests
+    #   rfc3986
+    #   yarl
+iniconfig==1.1.1
+    # via pytest
+mock==4.0.2
+    # via -r tests/requirements.in
+multidict==5.0.0
+    # via yarl
+packaging==20.4
+    # via pytest
+pluggy==0.13.1
+    # via pytest
+py==1.9.0
+    # via pytest
+pyparsing==2.4.7
+    # via packaging
+pytest-asyncio==0.14.0
+    # via -r tests/requirements.in
+pytest-cov==2.10.1
+    # via -r tests/requirements.in
+pytest-mock==3.3.1
+    # via -r tests/requirements.in
+pytest==6.1.1
+    # via
+    #   -r tests/requirements.in
+    #   pytest-asyncio
+    #   pytest-cov
+    #   pytest-mock
+pyyaml==5.3.1
+    # via vcrpy
+requests==2.24.0
+    # via codecov
+respx==0.16.2
+    # via -r tests/requirements.in
+rfc3986[idna2008]==1.4.0
+    # via httpx
+six==1.15.0
+    # via
+    #   packaging
+    #   vcrpy
+sniffio==1.2.0
+    # via
+    #   httpcore
+    #   httpx
+soupsieve==2.0.1
+    # via beautifulsoup4
+toml==0.10.1
+    # via pytest
+urllib3==1.25.10
+    # via requests
+vcrpy==4.1.1
+    # via -r tests/requirements.in
+wrapt==1.12.1
+    # via vcrpy
+yarl==1.6.2
+    # via vcrpy
