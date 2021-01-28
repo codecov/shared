@@ -1,62 +1,32 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/repository/commits/none
-  response:
-    body: {string: '{"message":"404 Commit Not Found"}'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Fri, 02 Nov 2018 05:32:21 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['34']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - [no-cache]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Request-Id
-      - [117a9399-d538-4d56-bb76-823b5319ab69]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.030542']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['6']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['594']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1541136801']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sat, 02 Nov 2018 05:33:21 GMT']
-    status: {code: 404, message: Not Found}
-    url: https://gitlab.com/api/v4/projects/187725/repository/commits/none
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/commits/none
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/commits/none
+      content: '{"message":"404 Commit Not Found"}'
+      headers:
+        Server: nginx
+        Date: Fri, 02 Nov 2018 05:32:21 GMT
+        Content-Type: application/json
+        Content-Length: '34'
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: 117a9399-d538-4d56-bb76-823b5319ab69
+        X-Runtime: '0.030542'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '6'
+        Ratelimit-Remaining: '594'
+        Ratelimit-Reset: '1541136801'
+        Ratelimit-Resettime: Sat, 02 Nov 2018 05:33:21 GMT
+      status_code: 404
 version: 1

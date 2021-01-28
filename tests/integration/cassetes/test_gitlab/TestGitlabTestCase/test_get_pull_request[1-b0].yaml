@@ -1,227 +1,111 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1
-  response:
-    body: {string: '{"id":59639,"iid":1,"project_id":187725,"title":"Other branch","description":"","state":"opened","created_at":"2015-03-12T04:40:38.680Z","updated_at":"2018-11-02T05:25:53.623Z","target_branch":"master","source_branch":"other-branch","upvotes":0,"downvotes":0,"author":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80\u0026d=identicon","web_url":"https://gitlab.com/codecov"},"assignee":null,"source_project_id":187725,"target_project_id":187725,"labels":[],"work_in_progress":false,"milestone":null,"merge_when_pipeline_succeeds":false,"merge_status":"can_be_merged","sha":"dd798926730aad14aadf72281204bdb85734fe67","merge_commit_sha":null,"user_notes_count":89,"discussion_locked":null,"should_remove_source_branch":null,"force_remove_source_branch":null,"web_url":"https://gitlab.com/codecov/ci-repo/merge_requests/1","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"squash":false,"subscribed":true,"changes_count":null,"merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"latest_build_started_at":null,"latest_build_finished_at":null,"first_deployed_to_production_at":null,"pipeline":null,"diff_refs":null,"approvals_before_merge":null}'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Mon, 05 Nov 2018 19:12:30 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['1324']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Etag
-      - [W/"d1b5dae30cb71053b0d2d4ff868d79c2"]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Request-Id
-      - [95fb67bd-dc8f-4ff2-a91d-e5fc69121ff4]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.134720']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['2']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['598']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1541445210']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Tue, 05 Nov 2018 19:13:30 GMT']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/187725/merge_requests/1
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits
-  response:
-    body: {string: '[{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests/1
+      content: '{"id":59639,"iid":1,"project_id":187725,"title":"Other branch","description":"","state":"opened","created_at":"2015-03-12T04:40:38.680Z","updated_at":"2018-11-02T05:25:53.623Z","target_branch":"master","source_branch":"other-branch","upvotes":0,"downvotes":0,"author":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80\u0026d=identicon","web_url":"https://gitlab.com/codecov"},"assignee":null,"source_project_id":187725,"target_project_id":187725,"labels":[],"work_in_progress":false,"milestone":null,"merge_when_pipeline_succeeds":false,"merge_status":"can_be_merged","sha":"dd798926730aad14aadf72281204bdb85734fe67","merge_commit_sha":null,"user_notes_count":89,"discussion_locked":null,"should_remove_source_branch":null,"force_remove_source_branch":null,"web_url":"https://gitlab.com/codecov/ci-repo/merge_requests/1","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"squash":false,"subscribed":true,"changes_count":null,"merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"latest_build_started_at":null,"latest_build_finished_at":null,"first_deployed_to_production_at":null,"pipeline":null,"diff_refs":null,"approvals_before_merge":null}'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 19:12:30 GMT
+        Content-Type: application/json
+        Content-Length: '1324'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"d1b5dae30cb71053b0d2d4ff868d79c2"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: 95fb67bd-dc8f-4ff2-a91d-e5fc69121ff4
+        X-Runtime: '0.134720'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '2'
+        Ratelimit-Remaining: '598'
+        Ratelimit-Reset: '1541445210'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 19:13:30 GMT
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits
+      content: '[{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
         blank","created_at":"2014-09-04T16:13:44.000Z","parent_ids":[],"message":"left
-        blank\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-09-04T16:13:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-09-04T16:13:44.000Z"}]'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Mon, 05 Nov 2018 19:12:31 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['394']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Etag
-      - [W/"774a263b0b93e422d9976f357f1ce079"]
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits?id=187725&merge_request_iid=1&page=1&per_page=20>;
+        blank\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-09-04T16:13:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-09-04T16:13:44.000Z"}]'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 19:12:31 GMT
+        Content-Type: application/json
+        Content-Length: '394'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"774a263b0b93e422d9976f357f1ce079"
+        Link: <https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits?id=187725&merge_request_iid=1&page=1&per_page=20>;
           rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits?id=187725&merge_request_iid=1&page=1&per_page=20>;
-          rel="last"']
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Per-Page
-      - ['20']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - X-Request-Id
-      - [51b58ee7-d084-4024-8139-34ad70d7827e]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.053195']
-    - !!python/tuple
-      - X-Total
-      - ['1']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['3']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['597']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1541445211']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Tue, 05 Nov 2018 19:13:31 GMT']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/repository/commits/dd798926730aad14aadf72281204bdb85734fe67
-  response:
-    body: {string: '{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: 51b58ee7-d084-4024-8139-34ad70d7827e
+        X-Runtime: '0.053195'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '3'
+        Ratelimit-Remaining: '597'
+        Ratelimit-Reset: '1541445211'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 19:13:31 GMT
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/commits/dd798926730aad14aadf72281204bdb85734fe67
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/commits/dd798926730aad14aadf72281204bdb85734fe67
+      content: '{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
         blank","created_at":"2014-09-04T16:13:44.000Z","parent_ids":["5716de23b27020419d1a40dd93b469c041a1eeef"],"message":"left
-        blank\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-09-04T16:13:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-09-04T16:13:44.000Z","stats":{"additions":1,"deletions":0,"total":1},"status":null,"last_pipeline":null,"project_id":187725}'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Mon, 05 Nov 2018 19:12:31 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['537']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Etag
-      - [W/"90b7515c6a40ac4fa89b2b0105bc3a81"]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Request-Id
-      - [dfece622-b55e-4cf4-ae38-8d0ef9630612]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.051297']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['4']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['596']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1541445211']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Tue, 05 Nov 2018 19:13:31 GMT']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/187725/repository/commits/dd798926730aad14aadf72281204bdb85734fe67
+        blank\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-09-04T16:13:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-09-04T16:13:44.000Z","stats":{"additions":1,"deletions":0,"total":1},"status":null,"last_pipeline":null,"project_id":187725}'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 19:12:31 GMT
+        Content-Type: application/json
+        Content-Length: '537'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"90b7515c6a40ac4fa89b2b0105bc3a81"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: dfece622-b55e-4cf4-ae38-8d0ef9630612
+        X-Runtime: '0.051297'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '4'
+        Ratelimit-Remaining: '596'
+        Ratelimit-Reset: '1541445211'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 19:13:31 GMT
+      status_code: 200
 version: 1

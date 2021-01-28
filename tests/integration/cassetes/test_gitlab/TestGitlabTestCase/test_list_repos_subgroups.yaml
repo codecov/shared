@@ -1,520 +1,262 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/user
-  response:
-    body: {string: !!python/unicode '{"id":3215137,"name":"Infinite Loop","username":"1nf1n1t3l00p","state":"active","avatar_url":"https://secure.gravatar.com/avatar/45037396c3928e53057931410b918291?s=80\u0026d=identicon","web_url":"https://gitlab.com/1nf1n1t3l00p","created_at":"2018-12-01T19:43:16.121Z","bio":null,"location":null,"public_email":"","skype":"","linkedin":"","twitter":"","website_url":"","organization":null,"last_sign_in_at":"2018-12-01T19:44:00.908Z","confirmed_at":"2018-12-01T19:43:33.397Z","last_activity_on":"2018-12-01","email":"tjbiii.photo@gmail.com","theme_id":1,"color_scheme_id":1,"projects_limit":100000,"current_sign_in_at":"2018-12-01T19:44:00.908Z","identities":[],"can_create_group":true,"can_create_project":true,"two_factor_enabled":false,"external":false,"private_profile":null,"shared_runners_minutes_limit":null}'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['813']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['599']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Request-Id
-      - [d8uC2McQpm4]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694484']
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Etag
-      - [W/"3e22b9679d0652f77389486f025a01dc"]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:24 GMT']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.021925']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:24 GMT']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['1']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/user
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/groups?per_page=100
-  response:
-    body: {string: !!python/unicode '[{"id":4165904,"web_url":"https://gitlab.com/groups/l00p_group_1","name":"My
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/user
+    response:
+      url: https://gitlab.com/api/v4/user
+      content: '{"id":3215137,"name":"Infinite Loop","username":"1nf1n1t3l00p","state":"active","avatar_url":"https://secure.gravatar.com/avatar/45037396c3928e53057931410b918291?s=80\u0026d=identicon","web_url":"https://gitlab.com/1nf1n1t3l00p","created_at":"2018-12-01T19:43:16.121Z","bio":null,"location":null,"public_email":"","skype":"","linkedin":"","twitter":"","website_url":"","organization":null,"last_sign_in_at":"2018-12-01T19:44:00.908Z","confirmed_at":"2018-12-01T19:43:33.397Z","last_activity_on":"2018-12-01","email":"tjbiii.photo@gmail.com","theme_id":1,"color_scheme_id":1,"projects_limit":100000,"current_sign_in_at":"2018-12-01T19:44:00.908Z","identities":[],"can_create_group":true,"can_create_project":true,"two_factor_enabled":false,"external":false,"private_profile":null,"shared_runners_minutes_limit":null}'
+      headers:
+        Content-Length: '813'
+        Ratelimit-Remaining: '599'
+        X-Content-Type-Options: nosniff
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: d8uC2McQpm4
+        Ratelimit-Reset: '1543694484'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Connection: close
+        Etag: W/"3e22b9679d0652f77389486f025a01dc"
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Sat, 01 Dec 2018 20:00:24 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.021925'
+        Content-Type: application/json
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:24 GMT
+        Ratelimit-Observed: '1'
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups?per_page=100
+    response:
+      url: https://gitlab.com/api/v4/groups?per_page=100
+      content: '[{"id":4165904,"web_url":"https://gitlab.com/groups/l00p_group_1","name":"My
         Awesome Group","path":"l00p_group_1","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
         Awesome Group","full_path":"l00p_group_1","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4165905,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup1","name":"subgroup1","path":"subgroup1","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
         Awesome Group / subgroup1","full_path":"l00p_group_1/subgroup1","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4165907,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2","name":"subgroup2","path":"subgroup2","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
-        Awesome Group / subgroup2","full_path":"l00p_group_1/subgroup2","parent_id":4165904,"ldap_cn":null,"ldap_access":null}]'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['1044']
-    - !!python/tuple
-      - X-Request-Id
-      - [ashLilhc1n5]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694484']
-    - !!python/tuple
-      - Etag
-      - [W/"5f4cb15d470d686b54f5cf0b6e3acf56"]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['598']
-    - !!python/tuple
-      - X-Total
-      - ['3']
-    - !!python/tuple
-      - X-Runtime
-      - ['0.068277']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+        Awesome Group / subgroup2","full_path":"l00p_group_1/subgroup2","parent_id":4165904,"ldap_cn":null,"ldap_access":null}]'
+      headers:
+        Content-Length: '1044'
+        X-Request-Id: ashLilhc1n5
+        Ratelimit-Reset: '1543694484'
+        Etag: W/"5f4cb15d470d686b54f5cf0b6e3acf56"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '598'
+        X-Total: '3'
+        X-Runtime: '0.068277'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
           rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
-          rel="last"']
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:24 GMT']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['2']
-    - !!python/tuple
-      - X-Per-Page
-      - ['100']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:24 GMT']
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/groups?per_page=100
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/groups/4165904/projects?per_page=50&page=1
-  response:
-    body: {string: !!python/unicode '[{"id":9715859,"description":"","name":"loop
-        proj","name_with_namespace":"My Awesome Group / loop proj","path":"loop-proj","path_with_namespace":"l00p_group_1/loop-proj","created_at":"2018-12-01T19:48:07.749Z","default_branch":null,"tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/loop-proj.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/loop-proj.git","web_url":"https://gitlab.com/l00p_group_1/loop-proj","readme_url":null,"avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:48:07.749Z","namespace":{"id":4165904,"name":"My
-        Awesome Group","path":"l00p_group_1","kind":"group","full_path":"l00p_group_1","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/9715859","issues":"https://gitlab.com/api/v4/projects/9715859/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715859/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715859/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715859/labels","events":"https://gitlab.com/api/v4/projects/9715859/events","members":"https://gitlab.com/api/v4/projects/9715859/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","mirror":false,"external_authorization_classification_label":""}]'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['1820']
-    - !!python/tuple
-      - X-Request-Id
-      - [sahQFoVEyr3]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694484']
-    - !!python/tuple
-      - Etag
-      - [W/"b98d36443ddf2b24c29a6320bbac5876"]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['597']
-    - !!python/tuple
-      - X-Total
-      - ['1']
-    - !!python/tuple
-      - X-Runtime
-      - ['0.075727']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/groups/4165904/projects?archived=false&id=4165904&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
+          rel="last"
+        X-Next-Page: ''
+        Date: Sat, 01 Dec 2018 20:00:24 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '2'
+        X-Per-Page: '100'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:24 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/4165904/projects?per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/groups/4165904/projects?per_page=50&page=1
+      content: '[{"id":9715859,"description":"","name":"loop proj","name_with_namespace":"My
+        Awesome Group / loop proj","path":"loop-proj","path_with_namespace":"l00p_group_1/loop-proj","created_at":"2018-12-01T19:48:07.749Z","default_branch":null,"tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/loop-proj.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/loop-proj.git","web_url":"https://gitlab.com/l00p_group_1/loop-proj","readme_url":null,"avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:48:07.749Z","namespace":{"id":4165904,"name":"My
+        Awesome Group","path":"l00p_group_1","kind":"group","full_path":"l00p_group_1","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/9715859","issues":"https://gitlab.com/api/v4/projects/9715859/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715859/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715859/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715859/labels","events":"https://gitlab.com/api/v4/projects/9715859/events","members":"https://gitlab.com/api/v4/projects/9715859/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","mirror":false,"external_authorization_classification_label":""}]'
+      headers:
+        Content-Length: '1820'
+        X-Request-Id: sahQFoVEyr3
+        Ratelimit-Reset: '1543694484'
+        Etag: W/"b98d36443ddf2b24c29a6320bbac5876"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '597'
+        X-Total: '1'
+        X-Runtime: '0.075727'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups/4165904/projects?archived=false&id=4165904&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
           rel="first", <https://gitlab.com/api/v4/groups/4165904/projects?archived=false&id=4165904&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
-          rel="last"']
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:24 GMT']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['3']
-    - !!python/tuple
-      - X-Per-Page
-      - ['50']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:24 GMT']
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/groups/4165904/projects?per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/groups/4165905/projects?per_page=50&page=1
-  response:
-    body: {string: !!python/unicode '[{"id":9715852,"description":"","name":"proj-A","name_with_namespace":"My
-        Awesome Group / subgroup1 / proj-A","path":"proj-a","path_with_namespace":"l00p_group_1/subgroup1/proj-a","created_at":"2018-12-01T19:47:18.634Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup1/proj-a.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup1/proj-a.git","web_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a","readme_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:47:18.634Z","namespace":{"id":4165905,"name":"subgroup1","path":"subgroup1","kind":"group","full_path":"l00p_group_1/subgroup1","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715852","issues":"https://gitlab.com/api/v4/projects/9715852/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715852/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715852/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715852/labels","events":"https://gitlab.com/api/v4/projects/9715852/events","members":"https://gitlab.com/api/v4/projects/9715852/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","mirror":false,"external_authorization_classification_label":""}]'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['1926']
-    - !!python/tuple
-      - X-Request-Id
-      - [Gd2fXcZ51S9]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694484']
-    - !!python/tuple
-      - Etag
-      - [W/"f00c61e95b12249c70a00c5f4fc3af86"]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['596']
-    - !!python/tuple
-      - X-Total
-      - ['1']
-    - !!python/tuple
-      - X-Runtime
-      - ['0.104565']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/groups/4165905/projects?archived=false&id=4165905&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
+          rel="last"
+        X-Next-Page: ''
+        Date: Sat, 01 Dec 2018 20:00:24 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '3'
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:24 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/4165905/projects?per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/groups/4165905/projects?per_page=50&page=1
+      content: '[{"id":9715852,"description":"","name":"proj-A","name_with_namespace":"My
+        Awesome Group / subgroup1 / proj-A","path":"proj-a","path_with_namespace":"l00p_group_1/subgroup1/proj-a","created_at":"2018-12-01T19:47:18.634Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup1/proj-a.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup1/proj-a.git","web_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a","readme_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:47:18.634Z","namespace":{"id":4165905,"name":"subgroup1","path":"subgroup1","kind":"group","full_path":"l00p_group_1/subgroup1","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715852","issues":"https://gitlab.com/api/v4/projects/9715852/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715852/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715852/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715852/labels","events":"https://gitlab.com/api/v4/projects/9715852/events","members":"https://gitlab.com/api/v4/projects/9715852/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","mirror":false,"external_authorization_classification_label":""}]'
+      headers:
+        Content-Length: '1926'
+        X-Request-Id: Gd2fXcZ51S9
+        Ratelimit-Reset: '1543694484'
+        Etag: W/"f00c61e95b12249c70a00c5f4fc3af86"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '596'
+        X-Total: '1'
+        X-Runtime: '0.104565'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups/4165905/projects?archived=false&id=4165905&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
           rel="first", <https://gitlab.com/api/v4/groups/4165905/projects?archived=false&id=4165905&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
-          rel="last"']
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:24 GMT']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['4']
-    - !!python/tuple
-      - X-Per-Page
-      - ['50']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:24 GMT']
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/groups/4165905/projects?per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/groups/4165907/projects?per_page=50&page=1
-  response:
-    body: {string: !!python/unicode '[{"id":9715886,"description":"flake8 is a python
-        tool that glues together pep8, pyflakes, mccabe, and third-party plugins to
-        check the style and quality of some python code.","name":"flake8","name_with_namespace":"My
-        Awesome Group / subgroup2 / flake8","path":"flake8","path_with_namespace":"l00p_group_1/subgroup2/flake8","created_at":"2018-12-01T19:52:43.980Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup2/flake8.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup2/flake8.git","web_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8","readme_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8/blob/master/README.rst","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:52:43.980Z","namespace":{"id":4165907,"name":"subgroup2","path":"subgroup2","kind":"group","full_path":"l00p_group_1/subgroup2","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715886","issues":"https://gitlab.com/api/v4/projects/9715886/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715886/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715886/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715886/labels","events":"https://gitlab.com/api/v4/projects/9715886/events","members":"https://gitlab.com/api/v4/projects/9715886/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"forked_from_project":{"id":88891,"description":"flake8
+          rel="last"
+        X-Next-Page: ''
+        Date: Sat, 01 Dec 2018 20:00:24 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '4'
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:24 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/4165907/projects?per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/groups/4165907/projects?per_page=50&page=1
+      content: '[{"id":9715886,"description":"flake8 is a python tool that glues together
+        pep8, pyflakes, mccabe, and third-party plugins to check the style and quality
+        of some python code.","name":"flake8","name_with_namespace":"My Awesome Group
+        / subgroup2 / flake8","path":"flake8","path_with_namespace":"l00p_group_1/subgroup2/flake8","created_at":"2018-12-01T19:52:43.980Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup2/flake8.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup2/flake8.git","web_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8","readme_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8/blob/master/README.rst","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:52:43.980Z","namespace":{"id":4165907,"name":"subgroup2","path":"subgroup2","kind":"group","full_path":"l00p_group_1/subgroup2","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715886","issues":"https://gitlab.com/api/v4/projects/9715886/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715886/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715886/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715886/labels","events":"https://gitlab.com/api/v4/projects/9715886/events","members":"https://gitlab.com/api/v4/projects/9715886/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"forked_from_project":{"id":88891,"description":"flake8
         is a python tool that glues together pep8, pyflakes, mccabe, and third-party
         plugins to check the style and quality of some python code.","name":"flake8","name_with_namespace":"PyCQA
-        / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null}},"import_status":"finished","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","mirror":false,"external_authorization_classification_label":""}]'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['2974']
-    - !!python/tuple
-      - X-Request-Id
-      - [P8z7p3Ajij9]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694485']
-    - !!python/tuple
-      - Etag
-      - [W/"1a7515b1004bca40f148c84e3b92cdc4"]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['595']
-    - !!python/tuple
-      - X-Total
-      - ['1']
-    - !!python/tuple
-      - X-Runtime
-      - ['0.197040']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/groups/4165907/projects?archived=false&id=4165907&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
+        / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null}},"import_status":"finished","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","mirror":false,"external_authorization_classification_label":""}]'
+      headers:
+        Content-Length: '2974'
+        X-Request-Id: P8z7p3Ajij9
+        Ratelimit-Reset: '1543694485'
+        Etag: W/"1a7515b1004bca40f148c84e3b92cdc4"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '595'
+        X-Total: '1'
+        X-Runtime: '0.197040'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups/4165907/projects?archived=false&id=4165907&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
           rel="first", <https://gitlab.com/api/v4/groups/4165907/projects?archived=false&id=4165907&order_by=created_at&owned=false&page=1&per_page=50&simple=false&sort=desc&starred=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
-          rel="last"']
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:25 GMT']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['5']
-    - !!python/tuple
-      - X-Per-Page
-      - ['50']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:25 GMT']
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/groups/4165907/projects?per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/88891
-  response:
-    body: {string: !!python/unicode '{"id":88891,"description":"flake8 is a python
-        tool that glues together pep8, pyflakes, mccabe, and third-party plugins to
-        check the style and quality of some python code.","name":"flake8","name_with_namespace":"PyCQA
-        / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/88891","issues":"https://gitlab.com/api/v4/projects/88891/issues","merge_requests":"https://gitlab.com/api/v4/projects/88891/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/88891/repository/branches","labels":"https://gitlab.com/api/v4/projects/88891/labels","events":"https://gitlab.com/api/v4/projects/88891/events","members":"https://gitlab.com/api/v4/projects/88891/members"},"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":6325,"import_status":"none","open_issues_count":50,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":true,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":""}'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['2089']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['594']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Request-Id
-      - [uU8QWEOHl38]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694485']
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Etag
-      - [W/"392248e461e996375f71eda12eae7de7"]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:25 GMT']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.110194']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:25 GMT']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['6']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/88891
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
-  response:
-    body: {string: !!python/unicode '[{"id":9715886,"description":"flake8 is a python
-        tool that glues together pep8, pyflakes, mccabe, and third-party plugins to
-        check the style and quality of some python code.","name":"flake8","name_with_namespace":"My
-        Awesome Group / subgroup2 / flake8","path":"flake8","path_with_namespace":"l00p_group_1/subgroup2/flake8","created_at":"2018-12-01T19:52:43.980Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup2/flake8.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup2/flake8.git","web_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8","readme_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8/blob/master/README.rst","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:52:43.980Z","namespace":{"id":4165907,"name":"subgroup2","path":"subgroup2","kind":"group","full_path":"l00p_group_1/subgroup2","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715886","issues":"https://gitlab.com/api/v4/projects/9715886/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715886/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715886/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715886/labels","events":"https://gitlab.com/api/v4/projects/9715886/events","members":"https://gitlab.com/api/v4/projects/9715886/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"forked_from_project":{"id":88891,"description":"flake8
+          rel="last"
+        X-Next-Page: ''
+        Date: Sat, 01 Dec 2018 20:00:25 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '5'
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:25 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/88891
+    response:
+      url: https://gitlab.com/api/v4/projects/88891
+      content: '{"id":88891,"description":"flake8 is a python tool that glues together
+        pep8, pyflakes, mccabe, and third-party plugins to check the style and quality
+        of some python code.","name":"flake8","name_with_namespace":"PyCQA / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/88891","issues":"https://gitlab.com/api/v4/projects/88891/issues","merge_requests":"https://gitlab.com/api/v4/projects/88891/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/88891/repository/branches","labels":"https://gitlab.com/api/v4/projects/88891/labels","events":"https://gitlab.com/api/v4/projects/88891/events","members":"https://gitlab.com/api/v4/projects/88891/members"},"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":6325,"import_status":"none","open_issues_count":50,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":true,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":""}'
+      headers:
+        Content-Length: '2089'
+        Ratelimit-Remaining: '594'
+        X-Content-Type-Options: nosniff
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: uU8QWEOHl38
+        Ratelimit-Reset: '1543694485'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Connection: close
+        Etag: W/"392248e461e996375f71eda12eae7de7"
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Sat, 01 Dec 2018 20:00:25 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.110194'
+        Content-Type: application/json
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:25 GMT
+        Ratelimit-Observed: '6'
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
+    response:
+      url: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
+      content: '[{"id":9715886,"description":"flake8 is a python tool that glues together
+        pep8, pyflakes, mccabe, and third-party plugins to check the style and quality
+        of some python code.","name":"flake8","name_with_namespace":"My Awesome Group
+        / subgroup2 / flake8","path":"flake8","path_with_namespace":"l00p_group_1/subgroup2/flake8","created_at":"2018-12-01T19:52:43.980Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup2/flake8.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup2/flake8.git","web_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8","readme_url":"https://gitlab.com/l00p_group_1/subgroup2/flake8/blob/master/README.rst","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:52:43.980Z","namespace":{"id":4165907,"name":"subgroup2","path":"subgroup2","kind":"group","full_path":"l00p_group_1/subgroup2","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715886","issues":"https://gitlab.com/api/v4/projects/9715886/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715886/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715886/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715886/labels","events":"https://gitlab.com/api/v4/projects/9715886/events","members":"https://gitlab.com/api/v4/projects/9715886/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"forked_from_project":{"id":88891,"description":"flake8
         is a python tool that glues together pep8, pyflakes, mccabe, and third-party
         plugins to check the style and quality of some python code.","name":"flake8","name_with_namespace":"PyCQA
         / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null}},"import_status":"finished","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":{"access_level":50,"notification_level":3}},"mirror":false,"external_authorization_classification_label":""},{"id":9715862,"description":"","name":"inf
@@ -522,154 +264,68 @@ interactions:
         Loop","username":"1nf1n1t3l00p","state":"active","avatar_url":"https://secure.gravatar.com/avatar/45037396c3928e53057931410b918291?s=80\u0026d=identicon","web_url":"https://gitlab.com/1nf1n1t3l00p"},"resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":{"access_level":40,"notification_level":3},"group_access":null},"mirror":false,"external_authorization_classification_label":""},{"id":9715859,"description":"","name":"loop
         proj","name_with_namespace":"My Awesome Group / loop proj","path":"loop-proj","path_with_namespace":"l00p_group_1/loop-proj","created_at":"2018-12-01T19:48:07.749Z","default_branch":null,"tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/loop-proj.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/loop-proj.git","web_url":"https://gitlab.com/l00p_group_1/loop-proj","readme_url":null,"avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:48:07.749Z","namespace":{"id":4165904,"name":"My
         Awesome Group","path":"l00p_group_1","kind":"group","full_path":"l00p_group_1","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/9715859","issues":"https://gitlab.com/api/v4/projects/9715859/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715859/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715859/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715859/labels","events":"https://gitlab.com/api/v4/projects/9715859/events","members":"https://gitlab.com/api/v4/projects/9715859/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":{"access_level":50,"notification_level":3}},"mirror":false,"external_authorization_classification_label":""},{"id":9715852,"description":"","name":"proj-A","name_with_namespace":"My
-        Awesome Group / subgroup1 / proj-A","path":"proj-a","path_with_namespace":"l00p_group_1/subgroup1/proj-a","created_at":"2018-12-01T19:47:18.634Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup1/proj-a.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup1/proj-a.git","web_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a","readme_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:47:18.634Z","namespace":{"id":4165905,"name":"subgroup1","path":"subgroup1","kind":"group","full_path":"l00p_group_1/subgroup1","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715852","issues":"https://gitlab.com/api/v4/projects/9715852/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715852/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715852/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715852/labels","events":"https://gitlab.com/api/v4/projects/9715852/events","members":"https://gitlab.com/api/v4/projects/9715852/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":{"access_level":50,"notification_level":3}},"mirror":false,"external_authorization_classification_label":""}]'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['9198']
-    - !!python/tuple
-      - X-Request-Id
-      - [SvwjEHyRaa]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694485']
-    - !!python/tuple
-      - Etag
-      - [W/"f00d17b10de7a7ea9875c8332d0ba7ea"]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['599']
-    - !!python/tuple
-      - X-Total
-      - ['4']
-    - !!python/tuple
-      - X-Runtime
-      - ['0.299171']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/projects?membership=false&order_by=created_at&owned=true&page=1&per_page=50&repository_checksum_failed=false&simple=false&sort=desc&starred=false&statistics=false&wiki_checksum_failed=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
+        Awesome Group / subgroup1 / proj-A","path":"proj-a","path_with_namespace":"l00p_group_1/subgroup1/proj-a","created_at":"2018-12-01T19:47:18.634Z","default_branch":"master","tag_list":[],"ssh_url_to_repo":"git@gitlab.com:l00p_group_1/subgroup1/proj-a.git","http_url_to_repo":"https://gitlab.com/l00p_group_1/subgroup1/proj-a.git","web_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a","readme_url":"https://gitlab.com/l00p_group_1/subgroup1/proj-a/blob/master/README.md","avatar_url":null,"star_count":0,"forks_count":0,"last_activity_at":"2018-12-01T19:47:18.634Z","namespace":{"id":4165905,"name":"subgroup1","path":"subgroup1","kind":"group","full_path":"l00p_group_1/subgroup1","parent_id":4165904},"_links":{"self":"https://gitlab.com/api/v4/projects/9715852","issues":"https://gitlab.com/api/v4/projects/9715852/issues","merge_requests":"https://gitlab.com/api/v4/projects/9715852/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/9715852/repository/branches","labels":"https://gitlab.com/api/v4/projects/9715852/labels","events":"https://gitlab.com/api/v4/projects/9715852/events","members":"https://gitlab.com/api/v4/projects/9715852/members"},"archived":false,"visibility":"private","resolve_outdated_diff_discussions":false,"container_registry_enabled":true,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":true,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":3215137,"import_status":"none","open_issues_count":0,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":false,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":{"access_level":50,"notification_level":3}},"mirror":false,"external_authorization_classification_label":""}]'
+      headers:
+        Content-Length: '9198'
+        X-Request-Id: SvwjEHyRaa
+        Ratelimit-Reset: '1543694485'
+        Etag: W/"f00d17b10de7a7ea9875c8332d0ba7ea"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '599'
+        X-Total: '4'
+        X-Runtime: '0.299171'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/projects?membership=false&order_by=created_at&owned=true&page=1&per_page=50&repository_checksum_failed=false&simple=false&sort=desc&starred=false&statistics=false&wiki_checksum_failed=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
           rel="first", <https://gitlab.com/api/v4/projects?membership=false&order_by=created_at&owned=true&page=1&per_page=50&repository_checksum_failed=false&simple=false&sort=desc&starred=false&statistics=false&wiki_checksum_failed=false&with_custom_attributes=false&with_issues_enabled=false&with_merge_requests_enabled=false>;
-          rel="last"']
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:25 GMT']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['1']
-    - !!python/tuple
-      - X-Per-Page
-      - ['50']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:25 GMT']
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects?owned=true&per_page=50&page=1
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/88891
-  response:
-    body: {string: !!python/unicode '{"id":88891,"description":"flake8 is a python
-        tool that glues together pep8, pyflakes, mccabe, and third-party plugins to
-        check the style and quality of some python code.","name":"flake8","name_with_namespace":"PyCQA
-        / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/88891","issues":"https://gitlab.com/api/v4/projects/88891/issues","merge_requests":"https://gitlab.com/api/v4/projects/88891/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/88891/repository/branches","labels":"https://gitlab.com/api/v4/projects/88891/labels","events":"https://gitlab.com/api/v4/projects/88891/events","members":"https://gitlab.com/api/v4/projects/88891/members"},"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":6325,"import_status":"none","open_issues_count":50,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":true,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":""}'}
-    headers:
-    - !!python/tuple
-      - Content-Length
-      - ['2089']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['598']
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Request-Id
-      - [OUY7zMBTBya]
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1543694486']
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Etag
-      - [W/"392248e461e996375f71eda12eae7de7"]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Date
-      - ['Sat, 01 Dec 2018 20:00:26 GMT']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.094113']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Sun, 01 Dec 2018 20:01:26 GMT']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['2']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/88891
+          rel="last"
+        X-Next-Page: ''
+        Date: Sat, 01 Dec 2018 20:00:25 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '1'
+        X-Per-Page: '50'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:25 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/88891
+    response:
+      url: https://gitlab.com/api/v4/projects/88891
+      content: '{"id":88891,"description":"flake8 is a python tool that glues together
+        pep8, pyflakes, mccabe, and third-party plugins to check the style and quality
+        of some python code.","name":"flake8","name_with_namespace":"PyCQA / flake8","path":"flake8","path_with_namespace":"pycqa/flake8","created_at":"2014-09-13T13:30:20.102Z","default_branch":"master","tag_list":["analysis","mccabe","pep8","plugins","pycodestyle","pyflakes","python","quality","style"],"ssh_url_to_repo":"git@gitlab.com:pycqa/flake8.git","http_url_to_repo":"https://gitlab.com/pycqa/flake8.git","web_url":"https://gitlab.com/pycqa/flake8","readme_url":"https://gitlab.com/pycqa/flake8/blob/master/README.rst","avatar_url":null,"star_count":218,"forks_count":133,"last_activity_at":"2018-12-01T03:24:09.875Z","namespace":{"id":61704,"name":"PyCQA","path":"pycqa","kind":"group","full_path":"pycqa","parent_id":null},"_links":{"self":"https://gitlab.com/api/v4/projects/88891","issues":"https://gitlab.com/api/v4/projects/88891/issues","merge_requests":"https://gitlab.com/api/v4/projects/88891/merge_requests","repo_branches":"https://gitlab.com/api/v4/projects/88891/repository/branches","labels":"https://gitlab.com/api/v4/projects/88891/labels","events":"https://gitlab.com/api/v4/projects/88891/events","members":"https://gitlab.com/api/v4/projects/88891/members"},"archived":false,"visibility":"public","resolve_outdated_diff_discussions":false,"container_registry_enabled":false,"issues_enabled":true,"merge_requests_enabled":true,"wiki_enabled":false,"jobs_enabled":true,"snippets_enabled":true,"shared_runners_enabled":true,"lfs_enabled":true,"creator_id":6325,"import_status":"none","open_issues_count":50,"public_jobs":true,"ci_config_path":null,"shared_with_groups":[],"only_allow_merge_if_pipeline_succeeds":false,"request_access_enabled":false,"only_allow_merge_if_all_discussions_are_resolved":true,"printing_merge_request_link_enabled":true,"merge_method":"merge","permissions":{"project_access":null,"group_access":null},"approvals_before_merge":0,"mirror":false,"external_authorization_classification_label":""}'
+      headers:
+        Content-Length: '2089'
+        Ratelimit-Remaining: '598'
+        X-Content-Type-Options: nosniff
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: OUY7zMBTBya
+        Ratelimit-Reset: '1543694486'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Connection: close
+        Etag: W/"392248e461e996375f71eda12eae7de7"
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Sat, 01 Dec 2018 20:00:26 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.094113'
+        Content-Type: application/json
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:01:26 GMT
+        Ratelimit-Observed: '2'
+      status_code: 200
 version: 1

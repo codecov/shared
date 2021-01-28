@@ -1,94 +1,44 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master
-  response:
-    body: {string: '[{"id":"1da1ddbfe1ed846f7493964bf489754e464eef64","name":"folder","type":"tree","path":"folder","mode":"040000"},{"id":"c77cff04774d6debf9f8f645323fbe1cea368692","name":".gitignore","type":"blob","path":".gitignore","mode":"100644"},{"id":"321cc67810818865affe8f6bac28f50d3c0a761c","name":".travis.yml","type":"blob","path":".travis.yml","mode":"100644"},{"id":"7974a2260a70aab9ce8ae581fba307c6d448c468","name":"README.md","type":"blob","path":"README.md","mode":"100644"},{"id":"c6b04a8c4a6bd3f8c12e65c7ad3ac759166298dd","name":"large.md","type":"blob","path":"large.md","mode":"100644"},{"id":"478e1519b72ffd69712d77c5f50dd45b203846c4","name":"my_package.py","type":"blob","path":"my_package.py","mode":"100644"},{"id":"20642e5c79ebd16b1c87ca300ff8b1afd478be5e","name":"tests.py","type":"blob","path":"tests.py","mode":"100644"}]'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Thu, 29 Aug 2019 13:15:00 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['831']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Etag
-      - [W/"feac3762d9937f4d8568f69c70f52d51"]
-    - !!python/tuple
-      - Link
-      - ['<https://gitlab.com/api/v4/projects/187725/repository/tree?id=187725&page=1&per_page=20&recursive=false&ref=master>;
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master
+      content: '[{"id":"1da1ddbfe1ed846f7493964bf489754e464eef64","name":"folder","type":"tree","path":"folder","mode":"040000"},{"id":"c77cff04774d6debf9f8f645323fbe1cea368692","name":".gitignore","type":"blob","path":".gitignore","mode":"100644"},{"id":"321cc67810818865affe8f6bac28f50d3c0a761c","name":".travis.yml","type":"blob","path":".travis.yml","mode":"100644"},{"id":"7974a2260a70aab9ce8ae581fba307c6d448c468","name":"README.md","type":"blob","path":"README.md","mode":"100644"},{"id":"c6b04a8c4a6bd3f8c12e65c7ad3ac759166298dd","name":"large.md","type":"blob","path":"large.md","mode":"100644"},{"id":"478e1519b72ffd69712d77c5f50dd45b203846c4","name":"my_package.py","type":"blob","path":"my_package.py","mode":"100644"},{"id":"20642e5c79ebd16b1c87ca300ff8b1afd478be5e","name":"tests.py","type":"blob","path":"tests.py","mode":"100644"}]'
+      headers:
+        Server: nginx
+        Date: Thu, 29 Aug 2019 13:15:00 GMT
+        Content-Type: application/json
+        Content-Length: '831'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"feac3762d9937f4d8568f69c70f52d51"
+        Link: <https://gitlab.com/api/v4/projects/187725/repository/tree?id=187725&page=1&per_page=20&recursive=false&ref=master>;
           rel="first", <https://gitlab.com/api/v4/projects/187725/repository/tree?id=187725&page=1&per_page=20&recursive=false&ref=master>;
-          rel="last"']
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Next-Page
-      - ['']
-    - !!python/tuple
-      - X-Page
-      - ['1']
-    - !!python/tuple
-      - X-Per-Page
-      - ['20']
-    - !!python/tuple
-      - X-Prev-Page
-      - ['']
-    - !!python/tuple
-      - X-Request-Id
-      - [Yn0Y11Cgoe3]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.042339']
-    - !!python/tuple
-      - X-Total
-      - ['7']
-    - !!python/tuple
-      - X-Total-Pages
-      - ['1']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Referrer-Policy
-      - [strict-origin-when-cross-origin]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['1']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['599']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1567084560']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Thu, 29 Aug 2019 13:16:00 GMT']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: Yn0Y11Cgoe3
+        X-Runtime: '0.042339'
+        X-Total: '7'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1567084560'
+        Ratelimit-Resettime: Thu, 29 Aug 2019 13:16:00 GMT
+      status_code: 200
 version: 1

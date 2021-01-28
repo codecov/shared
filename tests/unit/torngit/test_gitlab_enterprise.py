@@ -31,9 +31,7 @@ class TestGitlabEnterprise(object):
 
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):
-        mocked_fetch = mocker.patch.object(
-            GitlabEnterprise, "fetch", return_value=mocker.MagicMock(body="{}")
-        )
+        mocked_fetch = mocker.patch.object(GitlabEnterprise, "api", return_value={})
         mock_configuration._params["gitlab_enterprise"] = {
             "url": "https://gitlab-enterprise.codecov.dev",
             "api_url": "https://api.gitlab.dev",
@@ -46,17 +44,8 @@ class TestGitlabEnterprise(object):
         res = await gl.post_comment("pullid", "body")
         assert res == {}
         mocked_fetch.assert_called_with(
-            "https://api.gitlab.dev/projects/187725/merge_requests/pullid/notes",
-            body='{"body": "body"}',
-            ca_certs=None,
-            connect_timeout=10,
-            headers={
-                "Accept": "application/json",
-                "Authorization": "Bearer fake_token",
-                "Content-Type": "application/json",
-                "User-Agent": "Default",
-            },
-            method="POST",
-            request_timeout=30,
-            validate_cert=None,
+            "post",
+            "/projects/187725/merge_requests/pullid/notes",
+            body={"body": "body"},
+            token={"key": "fake_token"},
         )
