@@ -886,3 +886,18 @@ def test_delete_session():
         complexity_total=0,
         diff=0,
     )
+
+
+def test_get_flag_names(sample_report):
+    assert sample_report.get_flag_names() == ["complex", "simple"]
+
+
+def test_get_flag_names_no_sessions():
+    assert Report().get_flag_names() == []
+
+
+def test_get_flag_names_sessions_no_flags():
+    s = Session()
+    r = Report()
+    r.add_session(s)
+    assert r.get_flag_names() == []

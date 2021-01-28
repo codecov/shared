@@ -69,8 +69,113 @@ class TestUserYaml(object):
             "key_four": "pro",
         }
         subject = UserYaml(my_dict)
-        assert subject.read_yaml_field(("key_two", "sub")) == "p"
-        assert subject.read_yaml_field(("key_two", "kowabunga"), _else=23) == 23
+        assert subject.read_yaml_field("key_two", "sub") == "p"
+        assert subject.read_yaml_field("key_two", "kowabunga", _else=23) == 23
+
+    def test_has_any_carryforward(self):
+        assert UserYaml(
+            {"flags": {"banana": {"carryforward": True}}, "flag_management": {}}
+        ).has_any_carryforward()
+        assert not UserYaml(
+            {"flags": {"banana": {"carryforward": False}}, "flag_management": {}}
+        ).has_any_carryforward()
+        assert UserYaml(
+            {
+                "flags": {"banana": {"carryforward": False}},
+                "flag_management": {"default_rules": {"carryforward": True}},
+            }
+        ).has_any_carryforward()
+        assert UserYaml(
+            {
+                "flags": {"banana": {"carryforward": False}},
+                "flag_management": {
+                    "default_rules": {"carryforward": False},
+                    "individual_flags": [{"name": "strawberry", "carryforward": True}],
+                },
+            }
+        ).has_any_carryforward()
+
+    def test_flag_has_carryfoward(self):
+        assert UserYaml(
+            {"flags": {"banana": {"carryforward": True}}, "flag_management": {}}
+        ).flag_has_carryfoward("banana")
+        assert not UserYaml(
+            {"flags": {"banana": {"carryforward": False}}, "flag_management": {}}
+        ).flag_has_carryfoward("banana")
+        subject = UserYaml(
+            {
+                "flags": {"banana": {"carryforward": False}},
+                "flag_management": {"default_rules": {"carryforward": True}},
+            }
+        )
+        assert not subject.flag_has_carryfoward("banana")
+        assert subject.flag_has_carryfoward("strawberry")
+        subject_2 = UserYaml(
+            {
+                "flags": {"banana": {"carryforward": False}},
+                "flag_management": {
+                    "default_rules": {"carryforward": False},
+                    "individual_flags": [{"name": "strawberry", "carryforward": True}],
+                },
+            }
+        )
+        assert not subject_2.flag_has_carryfoward("banana")
+        assert subject_2.flag_has_carryfoward("strawberry")
+        assert not subject_2.flag_has_carryfoward("pineapple")
+
+    def test_get_flag_configuration(self):
+        old_style = UserYaml({"flags": {"banana": {"key_one": True}}})
+        assert old_style.get_flag_configuration("banana") == {"key_one": True}
+        assert old_style.get_flag_configuration("pineapple") is None
+        assert UserYaml(
+            {"flags": {"banana": {"key_one": True}}, "flag_management": {}}
+        ).get_flag_configuration("banana") == {"key_one": True}
+        assert UserYaml(
+            {
+                "flag_management": {
+                    "default_rules": {"key_one": False, "key_two": "something"}
+                }
+            }
+        ).get_flag_configuration("banana") == {"key_one": False, "key_two": "something"}
+        subject = UserYaml(
+            {
+                "flags": {"banana": {"carryforward": False}},
+                "flag_management": {
+                    "default_rules": {"key_one": False, "key_two": "something"}
+                },
+            }
+        )
+        assert subject.get_flag_configuration("banana") == {"carryforward": False}
+        assert subject.get_flag_configuration("strawberry") == {
+            "key_one": False,
+            "key_two": "something",
+        }
+        subject_2 = UserYaml(
+            {
+                "flags": {"banana": {"carryforward": False}},
+                "flag_management": {
+                    "default_rules": {"key_one": False, "key_two": "something"},
+                    "individual_flags": [
+                        {
+                            "name": "strawberry",
+                            "key_one": True,
+                            "key_three": ["array", "values"],
+                        }
+                    ],
+                },
+            }
+        )
+        assert subject_2.get_flag_configuration("banana") == {"carryforward": False}
+        assert subject_2.get_flag_configuration("strawberry") == {
+            "key_one": True,
+            "key_three": ["array", "values"],
+            "key_two": "something",
+            "name": "strawberry",
+        }
+        assert subject_2.get_flag_configuration("pineapple") == {
+            "key_one": False,
+            "key_two": "something",
+        }
 
     def test_get_final_yaml(self, mock_configuration):
         mock_configuration._params["site"] = {"codecov": {"max_report_age": 86400}}
