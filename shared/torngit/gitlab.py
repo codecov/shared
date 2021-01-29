@@ -137,7 +137,7 @@ class Gitlab(TorngitBaseAdapter):
                     and count_so_far >= max_number_of_pages
                 ):
                     has_more = False
-                elif "X-Next-Page" in current_result.headers:
+                elif current_result.headers.get("X-Next-Page"):
                     current_page, has_more = current_result.headers["X-Next-Page"], True
                 else:
                     current_page, has_more = None, False
