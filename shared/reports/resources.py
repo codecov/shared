@@ -1211,6 +1211,21 @@ class Report(object):
                 return True
         return False
 
+    def repack(self):
+        """Repacks in a more compact format to avoid deleted files and such"""
+        new_chunks = [x for x in self._chunks if x is not None]
+        notnull_chunks_new_location = list(
+            enumerate(
+                origin_ind
+                for (origin_ind, x) in enumerate(self._chunks)
+                if x is not None
+            )
+        )
+        chunks_mapping = {b: a for (a, b) in notnull_chunks_new_location}
+        for filename, summary in self._files.items():
+            summary.file_index = chunks_mapping.get(summary.file_index)
+        self._chunks = new_chunks
+
 
 def _ignore_to_func(ignore):
     """Returns a function to determine whether a a line should be saved to the ReportFile
