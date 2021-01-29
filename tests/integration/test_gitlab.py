@@ -966,10 +966,11 @@ class TestGitlabTestCase(object):
                 key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
             ),
         )
-        res = handler.make_paginated_call("/groups", max_per_page=3, default_kwargs={})
+        res = handler.make_paginated_call("/groups", max_per_page=4, default_kwargs={})
         res = [i async for i in res]
         assert len(res) == 3
-        assert list(len(p) for p in res) == [3, 3, 2]
+        assert list(len(p) for p in res) == [4, 4, 1]
+        assert codecov_vcr.play_count == 3
 
     @pytest.mark.asyncio
     async def test_make_paginated_call_max_number_of_pages(self, codecov_vcr):
