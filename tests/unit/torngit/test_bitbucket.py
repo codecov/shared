@@ -1,5 +1,5 @@
 import httpx
-
+import respx
 import pytest
 
 from shared.torngit.bitbucket import Bitbucket
@@ -67,3 +67,44 @@ class TestUnitBitbucket(object):
         url = "random_url"
         with pytest.raises(TorngitClientError):
             await valid_handler.api(client, "2", method, url)
+
+    def test_generate_request_token(self, valid_handler):
+        with respx.mock:
+            my_route = respx.get(
+                "https://bitbucket.org/api/1.0/oauth/request_token"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    content="oauth_token_secret=test7f35jt40fnbz5xanwn9tlsi5ci10&oauth_token=testh3xen5q215b9ex&oauth_callback_confirmed=true",
+                )
+            )
+            v = valid_handler.generate_request_token("127.0.0.1/bb")
+            assert v == {
+                "oauth_token": "testh3xen5q215b9ex",
+                "oauth_token_secret": "test7f35jt40fnbz5xanwn9tlsi5ci10",
+            }
+            assert my_route.call_count == 1
+
+    def test_generate_access_token(self, valid_handler):
+        with respx.mock:
+            my_route = respx.get(
+                "https://bitbucket.org/api/1.0/oauth/access_token"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    content="oauth_token_secret=test3j3wxslwkw2j27ncbntpcwq50kzh&oauth_token=testss3hxhcfqf1h6g",
+                )
+            )
+            cookie_key, cookie_secret, oauth_verifier = (
+                "rz5RKUeSbag6eeGrYj",
+                "WG8RYGfhMggdj6aKVhHq4qtSUJq4paDX",
+                "7403692316",
+            )
+            v = valid_handler.generate_access_token(
+                cookie_key, cookie_secret, oauth_verifier
+            )
+            assert v == {
+                "key": "testss3hxhcfqf1h6g",
+                "secret": "test3j3wxslwkw2j27ncbntpcwq50kzh",
+            }
+            assert my_route.call_count == 1

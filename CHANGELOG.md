@@ -7,6 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Implemented Bitbucket Oauth1 functions
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [v0.4.10]
+
+### Added
 - Added `flag_management` field and subfields to user YAML
 
 ### Changed
@@ -20,4 +35,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Security
 
 
-[unreleased]: https://github.com/codecov/shared/compare/v0.4.9...HEAD
+[unreleased]: https://github.com/codecov/shared/compare/v0.4.10...HEAD
+[v0.4.10]: https://github.com/codecov/shared/compare/v0.4.9...v0.4.10
