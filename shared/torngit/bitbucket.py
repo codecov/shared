@@ -1,5 +1,3 @@
-from json import dumps
-from json import loads
 from typing import List
 import os
 import urllib.parse as urllib_parse
@@ -8,7 +6,9 @@ import logging
 import httpx
 from tornado.auth import OAuthMixin
 from tornado.httputil import url_concat
+from oauthlib import oauth1
 
+# from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
@@ -116,6 +116,40 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
             return res.json()
         else:
             return res.text
+
+    def generate_request_token(self, redirect_url):
+        client = oauth1.Client(
+            self._oauth["key"],
+            client_secret=self._oauth["secret"],
+            callback_uri=redirect_url,
+        )
+        uri, headers, body = client.sign(self._OAUTH_REQUEST_TOKEN_URL)
+        r = httpx.get(uri, headers=headers)
+        oauth_token = urllib_parse.parse_qs(r.text)["oauth_token"][0]
+        oauth_token_secret = urllib_parse.parse_qs(r.text)["oauth_token_secret"][0]
+        return dict(oauth_token=oauth_token, oauth_token_secret=oauth_token_secret)
+
+    def generate_access_token(
+        self, resource_owner_key, resource_owner_secret, verifier
+    ):
+        client = oauth1.Client(
+            self._oauth["key"],
+            client_secret=self._oauth["secret"],
+            resource_owner_key=resource_owner_key,
+            resource_owner_secret=resource_owner_secret,
+            verifier=verifier,
+        )
+        uri, headers, body = client.sign(self._OAUTH_ACCESS_TOKEN_URL)
+        r = httpx.get(uri, headers=headers)
+        resp_args = urllib_parse.parse_qs(r.text)
+        return {
+            "key": resp_args["oauth_token"][0],
+            "secret": resp_args["oauth_token_secret"][0],
+        }
+
+    async def get_authenticated_user(self):
+        async with self.get_client() as client:
+            return await self.api(client, "2", "get", "/user")
 
     async def post_webhook(self, name, url, events, secret, token=None):
         # https://confluence.atlassian.com/bitbucket/webhooks-resource-735642279.html
