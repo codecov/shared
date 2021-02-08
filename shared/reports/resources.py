@@ -576,6 +576,10 @@ class Report(object):
             return copy(sess)
         return Session.parse_session(**sess)
 
+    def file_reports(self):
+        for f in self.files:
+            yield self.get(f)
+
     @property
     def network(self):
         if self._path_filter:

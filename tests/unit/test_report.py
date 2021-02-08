@@ -921,3 +921,13 @@ def test_repack(sample_report):
     assert len(sample_report._chunks) == len(sample_report._files)
     assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1]
     assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
+
+
+def test_file_reports(sample_report):
+    res = list(sample_report.file_reports())
+    assert len(res) == 3
+    assert sorted(x.name for x in res) == [
+        "file_1.go",
+        "file_2.go",
+        "location/file_1.py",
+    ]
