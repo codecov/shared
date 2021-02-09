@@ -211,12 +211,6 @@ class TestPreprocess(BaseTestCase):
         pre_process_yaml(user_input)
         assert expected_result == user_input
 
-    def test_preprocess_bot_none(self):
-        user_input = {"codecov": {"bot": None}}
-        expected_result = {"codecov": {"bot": None}}
-        pre_process_yaml(user_input)
-        assert expected_result == user_input
-
 
 class TestUserYamlValidation(BaseTestCase):
     def test_empty_case(self):
@@ -357,6 +351,63 @@ class TestUserYamlValidation(BaseTestCase):
                 "range": [70.0, 100.0],
                 "status": {"project": {"default": {"base": "auto",}}},
             },
+            "ignore": ["Pods/.*"],
+        }
+        result = validate_yaml(user_input)
+        assert result == expected_result
+
+    def test_yaml_with_flag_management(self):
+        user_input = {
+            "flag_management": {
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80,
+                        }
+                    ],
+                },
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        expected_result = {
+            "flag_management": {
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80.0,
+                        }
+                    ],
+                },
+            }
         }
         result = validate_yaml(user_input)
         assert result == expected_result
