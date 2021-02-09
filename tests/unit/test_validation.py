@@ -218,6 +218,12 @@ class TestUserYamlValidation(BaseTestCase):
         expected_result = {}
         assert validate_yaml(user_input) == expected_result
 
+    def test_validate_bot_none(self):
+        user_input = {"codecov": {"bot": None}}
+        expected_result = {"codecov": {"bot": None}}
+        result = validate_yaml(user_input)
+        assert result == expected_result
+
     def test_simple_case(self):
         value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
         encoded_value = UserGivenSecret.encode(value)
