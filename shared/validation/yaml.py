@@ -148,12 +148,11 @@ def get_schema(show_secrets):
         Optional("paths"): Or(None, [path_structure]),
     }
 
-    status_standard_attributes = {
+    status_base_attributes = {
         Optional("base"): base_structure,
         Optional("branches"): Or(None, [user_given_regex]),
         Optional("disable_approx"): bool,
         Optional("enabled"): bool,
-        Optional("flags"): Or(None, [flag_name]),
         Optional("if_ci_failed"): Or("success", "failure", "error", "ignore"),
         Optional("if_no_uploads"): Or("success", "failure", "error", "ignore"),
         Optional("if_not_found"): Or("success", "failure", "error", "ignore"),
@@ -168,6 +167,19 @@ def get_schema(show_secrets):
         Optional("flag_coverage_not_uploaded_behavior"): Or(
             "include", "exclude", "pass"
         ),
+    }
+
+    status_standard_attributes = {
+        Optional("flags"): Or(None, [flag_name]),
+        **status_base_attributes,
+    }
+    new_statuses_attributes = {
+        "name_prefix": user_given_title,
+        "type": Or("project", "patch", "changes"),
+        Optional("target"): Or("auto", percent_type),
+        Optional("include_changes"): Or("auto", percent_type),
+        Optional("threshold"): percent_type,
+        **status_base_attributes,
     }
 
     return Schema(
@@ -329,6 +341,23 @@ def get_schema(show_secrets):
                         bool, {"branches": Or(None, [user_given_regex])}
                     ),
                 }
+            },
+            Optional("flag_management"): {
+                Optional("default_rules"): {
+                    Optional("carryforward"): bool,
+                    Optional("ignore"): Or(None, [path_structure]),
+                    Optional("paths"): Or(None, [path_structure]),
+                    Optional("statuses"): [new_statuses_attributes],
+                },
+                Optional("individual_flags"): [
+                    {
+                        Optional("name"): flag_name,
+                        Optional("carryforward"): bool,
+                        Optional("ignore"): Or(None, [path_structure]),
+                        Optional("paths"): Or(None, [path_structure]),
+                        Optional("statuses"): [new_statuses_attributes],
+                    }
+                ],
             },
             Optional("comment"): Or(
                 bool,

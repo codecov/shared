@@ -1,100 +1,75 @@
 interactions:
 - request:
-    body: null
+    body: ''
     headers:
-      Accept:
+      accept:
       - application/vnd.github.groot-preview+json
-      User-Agent:
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
       - Default
     method: GET
-    uri: https://api.github.com/repos/ThiagoCodecov/example-python/commits/2dabe97a4a207053e02e82c6632000e9f1be7cea/branches-where-head
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/commits/75f355d8d14ba3d7761c728b4d2607cde0eef065/branches-where-head
   response:
-    body:
-      string: '[{"name":"thiago/base-no-base","commit":{"sha":"2dabe97a4a207053e02e82c6632000e9f1be7cea","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/2dabe97a4a207053e02e82c6632000e9f1be7cea"},"protected":false}]'
+    content: '[{"name":"thiago/base-no-base","commit":{"sha":"75f355d8d14ba3d7761c728b4d2607cde0eef065","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/75f355d8d14ba3d7761c728b4d2607cde0eef065"},"protected":false}]'
     headers:
-    - !!python/tuple
-      - X-Http-Reason
-      - - OK
-    - !!python/tuple
-      - Server
-      - - GitHub.com
-    - !!python/tuple
-      - Date
-      - - Fri, 18 Sep 2020 05:46:10 GMT
-    - !!python/tuple
-      - Content-Type
-      - - application/json; charset=utf-8
-    - !!python/tuple
-      - Transfer-Encoding
-      - - chunked
-    - !!python/tuple
-      - Status
-      - - 200 OK
-    - !!python/tuple
-      - Cache-Control
-      - - private, max-age=60, s-maxage=60
-    - !!python/tuple
-      - Vary
-      - - Accept, Authorization, Cookie, X-GitHub-OTP
-        - Accept-Encoding, Accept, X-Requested-With
-    - !!python/tuple
-      - Etag
-      - - W/"473487da41d9098f71c230c4f7b429c9"
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - - ''
-    - !!python/tuple
-      - X-Github-Media-Type
-      - - github.groot-preview; format=json
-    - !!python/tuple
-      - X-Ratelimit-Limit
-      - - '5000'
-    - !!python/tuple
-      - X-Ratelimit-Remaining
-      - - '4993'
-    - !!python/tuple
-      - X-Ratelimit-Reset
-      - - '1600409089'
-    - !!python/tuple
-      - X-Ratelimit-Used
-      - - '7'
-    - !!python/tuple
-      - Access-Control-Expose-Headers
-      - - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-          X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-          X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
-    - !!python/tuple
-      - Access-Control-Allow-Origin
-      - - '*'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000; includeSubdomains; preload
-    - !!python/tuple
-      - X-Frame-Options
-      - - deny
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - X-Xss-Protection
-      - - 1; mode=block
-    - !!python/tuple
-      - Referrer-Policy
-      - - origin-when-cross-origin, strict-origin-when-cross-origin
-    - !!python/tuple
-      - Content-Security-Policy
-      - - default-src 'none'
-    - !!python/tuple
-      - Content-Encoding
-      - - gzip
-    - !!python/tuple
-      - X-Github-Request-Id
-      - - 3AAB:7A14:265508F:57728BD:5F6449A1
-    status:
-      code: 200
-      message: OK
-    url: https://api.github.com/repos/ThiagoCodecov/example-python/commits/2dabe97a4a207053e02e82c6632000e9f1be7cea/branches-where-head
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 22:41:09 GMT
+      ETag:
+      - W/"cba07981f12c7f723ba1ee3adb1cc867eb06b174da9165f37dbefc2dafe7cff6"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.groot-preview; format=json
+      X-GitHub-Request-Id:
+      - D990:592E:411E4FB:6BCC43E:5F877E85
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4996'
+      X-RateLimit-Reset:
+      - '1602718640'
+      X-RateLimit-Used:
+      - '4'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
 version: 1

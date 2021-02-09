@@ -94,7 +94,9 @@ def test_resolve_paths_duplicate_paths():
     [
         (
             Report(),
-            ReportFile("a", totals=ReportTotals(1, 50, 10), lines=[ReportLine(1)]),
+            ReportFile(
+                "a", totals=ReportTotals(1, 50, 10), lines=[ReportLine.create(1)]
+            ),
             False,
             True,
             50,
@@ -114,18 +116,18 @@ def test_append_already_exists():
     report = Report()
     first_file = ReportFile("path.py")
     second_file = ReportFile("path.py")
-    first_file.append(1, ReportLine(1, sessions=[LineSession(1, 1)]))
-    first_file.append(2, ReportLine(1, sessions=[LineSession(1, 1)]))
-    first_file.append(3, ReportLine(0, sessions=[LineSession(1, 0)]))
-    first_file.append(4, ReportLine(0, sessions=[LineSession(1, 0)]))
-    first_file.append(5, ReportLine("1/2", sessions=[LineSession(1, "1/2")]))
-    first_file.append(6, ReportLine("1/2", sessions=[LineSession(1, "1/2")]))
-    second_file.append(2, ReportLine(0, sessions=[LineSession(1, 0)]))
-    second_file.append(3, ReportLine("1/2", sessions=[LineSession(1, "1/2")]))
-    second_file.append(4, ReportLine(1, sessions=[LineSession(1, 1)]))
-    second_file.append(5, ReportLine(0, sessions=[LineSession(1, 0)]))
-    second_file.append(6, ReportLine("3/4", sessions=[LineSession(1, "3/4")]))
-    second_file.append(7, ReportLine(1, sessions=[LineSession(1, 1)]))
+    first_file.append(1, ReportLine.create(1, sessions=[LineSession(1, 1)]))
+    first_file.append(2, ReportLine.create(1, sessions=[LineSession(1, 1)]))
+    first_file.append(3, ReportLine.create(0, sessions=[LineSession(1, 0)]))
+    first_file.append(4, ReportLine.create(0, sessions=[LineSession(1, 0)]))
+    first_file.append(5, ReportLine.create("1/2", sessions=[LineSession(1, "1/2")]))
+    first_file.append(6, ReportLine.create("1/2", sessions=[LineSession(1, "1/2")]))
+    second_file.append(2, ReportLine.create(0, sessions=[LineSession(1, 0)]))
+    second_file.append(3, ReportLine.create("1/2", sessions=[LineSession(1, "1/2")]))
+    second_file.append(4, ReportLine.create(1, sessions=[LineSession(1, 1)]))
+    second_file.append(5, ReportLine.create(0, sessions=[LineSession(1, 0)]))
+    second_file.append(6, ReportLine.create("3/4", sessions=[LineSession(1, "3/4")]))
+    second_file.append(7, ReportLine.create(1, sessions=[LineSession(1, 1)]))
     report.append(first_file)
     assert report.totals == ReportTotals(
         files=1,
@@ -218,7 +220,11 @@ def test_append_error():
                 chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
             ),
             "<ReportFile name=file.py lines=3>",
-            [(1, ReportLine(1)), (2, ReportLine(1)), (3, ReportLine(1))],
+            [
+                (1, ReportLine.create(1)),
+                (2, ReportLine.create(1)),
+                (3, ReportLine.create(1)),
+            ],
         ),
         (
             Report(
@@ -381,32 +387,6 @@ def test_merge(r, new_report, manifest):
     assert r.manifest == ["file.py"]
     r.merge(new_report)
     assert r.manifest == manifest
-
-
-@pytest.mark.integration
-def test_assume_flags():
-    prev_r = Report(
-        files={"file.py": [0, ReportTotals(1)]},
-        chunks=[
-            ReportFile(
-                name="file.py", totals=[1, 2, 1], lines=[ReportLine(1), ReportLine(2)]
-            )
-        ],
-        sessions={1: {"id": "id", "f": ["int"],}},
-    )
-
-    r = Report(
-        files={"py.py": [0, ReportTotals(1)]},
-        chunks=[ReportFile(name="py.py", totals=[1, 2, 1])],
-    )
-
-    assert repr(r) == "<Report files=1>"
-    assert list(r.sessions.keys()) == []
-    r.assume_flags("int", prev_r)
-    assert repr(r) == "<Report files=2>"
-    assert list(r.sessions.keys()) == [
-        0
-    ]  # TODO filter should work but does not because of the issue with filter
 
 
 @pytest.mark.integration
@@ -805,7 +785,7 @@ def test_filter_exception():
         (None, "null"),
         (ReportFile(name="name.ply"), "{}\n"),
         (
-            [ReportLine(2), ReportLine(1)],
+            [ReportLine.create(2), ReportLine.create(1)],
             "[[2,null,null,null,null],[1,null,null,null,null]]",
         ),
     ],

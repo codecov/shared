@@ -183,7 +183,7 @@ def merge_line(l1, l2, joined=True):
     # merge sessions
     sessions = _merge_sessions(list(l1.sessions or []), list(l2.sessions or []))
 
-    return ReportLine(
+    return ReportLine.create(
         type=l1.type or l2.type,
         coverage=get_coverage_from_sessions(sessions) if joined else l1.coverage,
         complexity=get_complexity_from_sessions(sessions) if joined else l1.complexity,

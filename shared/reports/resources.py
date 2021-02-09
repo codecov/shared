@@ -23,6 +23,7 @@ from shared.utils.merge import (
 )
 from shared.utils.migrate import migrate_totals
 from shared.utils.sessions import Session, SessionType
+from shared.reports.filtered import FilteredReport
 from shared.reports.types import (
     ReportTotals,
     ReportLine,
@@ -50,7 +51,7 @@ END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
 
 
 class ReportFile(object):
-    __slot__ = (
+    __slots__ = [
         "name",
         "_details",
         "_lines",
@@ -58,7 +59,7 @@ class ReportFile(object):
         "_ignore",
         "_totals",
         "_session_totals",
-    )
+    ]
 
     def __init__(
         self,
@@ -127,8 +128,8 @@ class ReportFile(object):
             return line
         elif type(line) is list:
             # line needs to be mapped to ReportLine
-            # line = [1, 'b', [], null, null] = ReportLine()
-            return ReportLine(*line)
+            # line = [1, 'b', [], null, null] = ReportLine.create()
+            return ReportLine.create(*line)
         else:
             # these are old versions
             line = loads(line)
@@ -136,7 +137,7 @@ class ReportFile(object):
                 line[2] = [
                     LineSession(*tuple(session)) for session in line[2] if session
                 ]
-            return ReportLine(*line)
+            return ReportLine.create(*line)
 
     @property
     def lines(self):
@@ -153,6 +154,26 @@ class ReportFile(object):
                     if not line:
                         continue
                 yield ln, line
+
+    def calculate_diff(self, all_file_segments):
+        fg = self.get
+        lines = []
+        le = lines.extend
+        # add all new lines data to a new file to get totals
+        [
+            le(
+                [
+                    fg(i)
+                    for i, line in enumerate(
+                        [l for l in segment["lines"] if l[0] != "-"],
+                        start=int(segment["header"][2]) or 1,
+                    )
+                    if line[0] == "+"
+                ]
+            )
+            for segment in all_file_segments
+        ]
+        return ReportFile(name=None, totals=None, lines=lines).totals
 
     def delete_session(self, sessionid: int):
         self.delete_multiple_sessions([sessionid])
@@ -546,6 +567,10 @@ class Report(object):
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
 
+    @classmethod
+    def from_chunks(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
+
     def get_session_from_session(self, sess):
         if isinstance(sess, Session):
             return copy(sess)
@@ -577,7 +602,7 @@ class Report(object):
     def files(self):
         """returns a list of files in the report
         """
-        path_filter = self._path_filter
+        path_filter = None
         if path_filter:
             # return filtered list of filenames
             return [
@@ -612,6 +637,13 @@ class Report(object):
                         carriedforward_from=session_carriedforward_from,
                     )
         return flags_dict
+
+    def get_flag_names(self):
+        all_flags = set()
+        for _, session in self.sessions.items():
+            if session and session.flags:
+                all_flags.update(session.flags)
+        return sorted(all_flags)
 
     def append(self, _file, joined=True):
         """adds or merged a file into the report
@@ -788,7 +820,7 @@ class Report(object):
         """Runs through the file network to aggregate totals
         returns <ReportTotals>
         """
-        _path_filter = self._path_filter or bool
+        _path_filter = None or bool
         _line_modifier = self._line_modifier
 
         def _iter_totals():
@@ -890,10 +922,7 @@ class Report(object):
     def is_empty(self):
         """returns boolean if the report has no content
         """
-        if self._path_filter:
-            return len(list(filter(self._path_filter, list(self._files.keys())))) == 0
-        else:
-            return len(self._files) == 0
+        return len(self._files) == 0
 
     def __bool__(self):
         return self.is_empty() is False
@@ -986,83 +1015,15 @@ class Report(object):
 
         return report_to_flare(network, color, classes)
 
-    def reset(self):
-        # remove my totals
-        self._totals = None
-        self._path_filter = None
-        self._line_modifier = None
-        self._filter_cache = None
-
     def filter(self, paths=None, flags=None):
-        """Usage: with report.filter(repository, paths, flags) as report: ...
-        """
-        if self._filter_cache == (paths or None, flags or None):
-            # same same
-            return self
-
-        self._filter_cache = (paths, flags)
-        self.reset()
-
-        if paths or flags:
-            # reset all totals
-            if paths:
-                if not isinstance(paths, (list, set, tuple)):
-                    raise TypeError(
-                        "expecting list for argument paths got %s" % type(paths)
-                    )
-
-                def _pf(filename):
-                    return match(paths, filename)
-
-                self._path_filter = _pf
-
-            # flags: filter them out
-            if flags:
-                if not isinstance(flags, (list, set, tuple)):
-                    flags = [flags]
-
-                # get all session ids that have this falg
-                sessions = set(
-                    [
-                        int(sid)
-                        for sid, session in self.sessions.items()
-                        if match_any(flags, session.flags)
-                    ]
+        if paths:
+            if not isinstance(paths, (list, set, tuple)):
+                raise TypeError(
+                    "expecting list for argument paths got %s" % type(paths)
                 )
-
-                # the line has data from this session
-                def adjust_line(line):
-                    new_sessions = [
-                        LineSession(*s) if not isinstance(s, LineSession) else s
-                        for s in (line.sessions or [])
-                        if int(s.id) in sessions
-                    ]
-                    # check if line is applicable
-                    if not new_sessions:
-                        return False
-                    return ReportLine(
-                        coverage=get_coverage_from_sessions(new_sessions),
-                        complexity=get_complexity_from_sessions(new_sessions),
-                        type=line.type,
-                        sessions=new_sessions,
-                        messages=line.messages,
-                    )
-
-                self._line_modifier = adjust_line
-
-        return self
-
-    def __enter__(self):
-        """see self.filter
-        Usage: with report.filter() as report: ...
-        """
-        return self
-
-    def __exit__(self, *args):
-        """remove filtering
-        """
-        # removes all filters
-        self.reset()
+        if paths is None and flags is None:
+            return self
+        return FilteredReport(self, path_patterns=paths, flags=flags)
 
     def does_diff_adjust_tracked_lines(self, diff, future_report, future_diff):
         """
@@ -1203,27 +1164,7 @@ class Report(object):
                 if data["type"] in ("modified", "new"):
                     _file = self.get(path)
                     if _file:
-                        fg = _file.get
-                        lines = []
-                        le = lines.extend
-                        # add all new lines data to a new file to get totals
-                        [
-                            le(
-                                [
-                                    fg(i)
-                                    for i, line in enumerate(
-                                        [l for l in segment["lines"] if l[0] != "-"],
-                                        start=int(segment["header"][2]) or 1,
-                                    )
-                                    if line[0] == "+"
-                                ]
-                            )
-                            for segment in data["segments"]
-                        ]
-
-                        file_totals = ReportFile(
-                            name=None, totals=None, lines=lines
-                        ).totals
+                        file_totals = _file.calculate_diff(data["segments"])
                         file_dict[path] = file_totals
                         list_of_file_totals.append(file_totals)
 
@@ -1270,14 +1211,20 @@ class Report(object):
                 return True
         return False
 
-    def assume_flags(self, flags, prev_report, name=None):
-        with prev_report.filter(flags=flags) as filtered:
-            # add the "assumed session"
-            self.add_session(
-                Session(flags=flags, totals=filtered.totals, name=name or "Assumed")
+    def repack(self):
+        """Repacks in a more compact format to avoid deleted files and such"""
+        new_chunks = [x for x in self._chunks if x is not None]
+        notnull_chunks_new_location = list(
+            enumerate(
+                origin_ind
+                for (origin_ind, x) in enumerate(self._chunks)
+                if x is not None
             )
-            # merge the results
-            self.merge(filtered)
+        )
+        chunks_mapping = {b: a for (a, b) in notnull_chunks_new_location}
+        for filename, summary in self._files.items():
+            summary.file_index = chunks_mapping.get(summary.file_index)
+        self._chunks = new_chunks
 
 
 def _ignore_to_func(ignore):

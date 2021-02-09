@@ -18,7 +18,7 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="testgpf4l63k9hz1d41i1cmfl9lyl11nbadhi4za"),
+        token=dict(key="testfkj5qjd8am23247xas87spi6nhtirm3p7oy6"),
     )
 
 
@@ -27,7 +27,9 @@ def valid_but_no_permissions_handler():
     return Github(
         repo=dict(name="worker"),
         owner=dict(username="codecov"),
-        token=dict(key="testyh3jmxkprygtinopr800pbmakt5j86ymqh33"),
+        token=dict(
+            key="testb13y6ynymub6ib8dy2kec5unvir9y7hwhiid"
+        ),  # ThiagoCodecovTester
     )
 
 
@@ -36,7 +38,7 @@ def repo_doesnt_exist_handler():
     return Github(
         repo=dict(name="badrepo"),
         owner=dict(username="codecov"),
-        token=dict(key="testao8tozi4d6k1rfn8chelvsq766tkycauxmja"),
+        token=dict(key="testgpf4l63k9hz1d41i1cmfl9lyl11nbadhi4za"),
     )
 
 
@@ -45,7 +47,7 @@ def more_complex_handler():
     return Github(
         repo=dict(name="worker"),
         owner=dict(username="codecov"),
-        token=dict(key="testnvebxku3hfiwi16ka7hff42y0jtf5fithlij"),
+        token=dict(key="testgpf4l63k9hz1d41i1cmfl9lyl11nbadhi4za"),
     )
 
 
@@ -71,20 +73,29 @@ def student_app_capable_yes_student_handler():
     )
 
 
+@pytest.fixture
+def integration_installed_handler():
+    return Github(
+        repo=dict(name="example-python"),
+        owner=dict(username="ThiagoCodecov"),
+        token=dict(key="v1.testfa2yxpxi79hyhqctum1vscqtaiy2dtv3d23e"),
+    )
+
+
 class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_post_comment(self, valid_handler, codecov_vcr):
         expected_result = {
-            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/436811257",
-            "html_url": "https://github.com/ThiagoCodecov/example-python/pull/1#issuecomment-436811257",
+            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/708550750",
+            "html_url": "https://github.com/ThiagoCodecov/example-python/pull/1#issuecomment-708550750",
             "issue_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/1",
-            "id": 436811257,
-            "node_id": "MDEyOklzc3VlQ29tbWVudDQzNjgxMTI1Nw==",
+            "id": 708550750,
+            "node_id": "MDEyOklzc3VlQ29tbWVudDcwODU1MDc1MA==",
             "user": {
                 "login": "ThiagoCodecov",
                 "id": 44376991,
                 "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
-                "avatar_url": "https://avatars3.githubusercontent.com/u/44376991?v=4",
+                "avatar_url": "https://avatars1.githubusercontent.com/u/44376991?u=d50e43da66b2dbe47099d854ebd3b489f1162d48&v=4",
                 "gravatar_id": "",
                 "url": "https://api.github.com/users/ThiagoCodecov",
                 "html_url": "https://github.com/ThiagoCodecov",
@@ -100,26 +111,30 @@ class TestGithubTestCase(object):
                 "type": "User",
                 "site_admin": False,
             },
-            "created_at": "2018-11-07T23:08:03Z",
-            "updated_at": "2018-11-07T23:08:03Z",
+            "created_at": "2020-10-14T17:32:01Z",
+            "updated_at": "2020-10-14T17:32:01Z",
             "author_association": "OWNER",
             "body": "Hello world",
+            "performed_via_github_app": None,
         }
-
         res = await valid_handler.post_comment("1", "Hello world")
         print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_authenticated_user(self, codecov_vcr):
-        code = "a8d0f143cd8a98498773"
+        # To regenerate this test, go to
+        # https://github.com/login/oauth/authorize?response_type=code&scope=user%3Aemail%2Cread%3Aorg%2Crepo%3Astatus%2Cwrite%3Arepo_hook&client_id=999247146557c3ba045c
+        # get the code and paste it here below
+        code = "dc38acf492b071cc4dce"
         handler = Github(
             oauth_consumer_token=dict(
                 key="999247146557c3ba045c",
-                secret="test6q9im2vau3pom1w4zkcm8zqbrkhqcaodsbce",
+                secret="testo8lnq6ihj7zsf896r15yxujnl06og9o0fqiu",
             )
         )
         res = await handler.get_authenticated_user(code)
+        print(res)
         assert res == {
             "login": "ThiagoCodecov",
             "id": 44376991,
@@ -152,8 +167,8 @@ class TestGithubTestCase(object):
             "followers": 0,
             "following": 0,
             "created_at": "2018-10-22T17:51:44Z",
-            "updated_at": "2020-08-27T23:16:04Z",
-            "access_token": "testvhzseisglamvo88u0zo7zp4js3hlpoit20kg",
+            "updated_at": "2020-10-14T17:58:13Z",
+            "access_token": "testw5efy5qccduniyucsk5tesu08s4640xtoymv",
             "token_type": "bearer",
             "scope": "read:org,repo:status,user:email,write:repo_hook",
         }
@@ -174,7 +189,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_delete_comment(self, valid_handler, codecov_vcr):
-        assert await valid_handler.delete_comment("1", "436805577") is True
+        assert await valid_handler.delete_comment("1", "708545249") is True
 
     @pytest.mark.asyncio
     async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
@@ -241,51 +256,37 @@ class TestGithubTestCase(object):
         assert res == b
 
     @pytest.mark.asyncio
-    async def test_api_client_error_unreachable(self, valid_handler, mocker):
-        mocked_fetch = mocker.patch.object(Github, "fetch")
-        mocked_fetch.side_effect = HTTPError(599, "message")
-        method = "GET"
-        url = "random_url"
-        with pytest.raises(TorngitServerUnreachableError):
-            await valid_handler.api(method, url)
-
-    @pytest.mark.asyncio
-    async def test_api_client_error_server_error(self, valid_handler, mocker):
-        mocked_fetch = mocker.patch.object(Github, "fetch")
-        mocked_fetch.side_effect = HTTPError(503, "message")
-        method = "GET"
-        url = "random_url"
-        with pytest.raises(TorngitServer5xxCodeError):
-            await valid_handler.api(method, url)
-
-    @pytest.mark.asyncio
-    async def test_api_client_error_client_error(self, valid_handler, mocker):
-        mocked_fetch = mocker.patch.object(Github, "fetch")
-        mock_response = mocker.MagicMock()
-        mocked_fetch.side_effect = HTTPError(404, "message", mock_response)
-        method = "GET"
-        url = "random_url"
-        with pytest.raises(TorngitClientError):
-            await valid_handler.api(method, url)
-
-    @pytest.mark.asyncio
     async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
-        expected_result = ["a06aef4356ca35b34c5486269585288489e578db"]
+        expected_result = [
+            "587662b6e5403ae0d126e0c7839a8d98382c4760",
+            "03a8b737cb9d8585076ebdbac7b7235c8da0620d",
+            "bf9b57cf7b169806ae2d18d7671aba3825b99203",
+            "cede19cb310cd4cddfb5d8921cb8d0cc7c7c1503",
+            "ea3ada938db123368d62b0133e7c5bb54b5292b9",
+            "2048b277dd6542f184c6a30c3e2b0f3ee5eeaf4b",
+            "119de54e3cfdf8227a8556b9f5730c328a1390cd",
+            "2d55e8501b058b6f25382c4e287f022e8938461f",
+            "364bdfbc72d5e05b520f0320b0d8b39fd9ea692b",
+            "119c1907fb266f374b8440bbd70dccbea54daf8f",
+        ]
         res = await valid_handler.get_pull_request_commits("1")
+        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_pull_requests(self, valid_handler, codecov_vcr):
-        expected_result = [1]
+        expected_result = [18, 16]
         res = await valid_handler.get_pull_requests()
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_commit(self, valid_handler, codecov_vcr):
+        # Looks like that jerrod@fundersclub.com doesn't seem to have a username anymore
+        # Maybe this account was removed from the org?
         expected_result = {
             "author": {
-                "id": "8398772",
-                "username": "jerrode",
+                "id": None,
+                "username": None,
                 "email": "jerrod@fundersclub.com",
                 "name": "Jerrod",
             },
@@ -296,6 +297,29 @@ class TestGithubTestCase(object):
         }
 
         commit = await valid_handler.get_commit("6895b64")
+        print(commit)
+        assert commit["author"] == expected_result["author"]
+        assert commit == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_commit_with_proper_author(self, valid_handler, codecov_vcr):
+        expected_result = {
+            "author": {
+                "id": "44376991",
+                "username": "ThiagoCodecov",
+                "email": "thiago@codecov.io",
+                "name": "Thiago Ramos",
+            },
+            "commitid": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
+            "parents": ["f0895290dc26668faeeb20ee5ccd4cc995925775"],
+            "message": "Adding README\n\nsurpriseaAKDS\n\nddkokgfnskfds\n\nBanana\n\nYallow\n\nABG",
+            "timestamp": "2020-05-18T03:16:22Z",
+        }
+
+        commit = await valid_handler.get_commit(
+            "75f355d8d14ba3d7761c728b4d2607cde0eef065"
+        )
+        print(commit)
         assert commit["author"] == expected_result["author"]
         assert commit == expected_result
 
@@ -315,12 +339,12 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_repo_doesnt_exist(
-        self, valid_but_no_permissions_handler, codecov_vcr
+        self, repo_doesnt_exist_handler, codecov_vcr
     ):
         commitid = "bbe3e94949d11471cc4e054f822d222254a4a4f8"
         with pytest.raises(TorngitRepoNotFoundError) as ex:
-            await valid_but_no_permissions_handler.get_commit(commitid)
-        expected_response = '{"message":"Not Found","documentation_url":"https://developer.github.com/v3/repos/commits/#get-a-single-commit"}'
+            await repo_doesnt_exist_handler.get_commit(commitid)
+        expected_response = '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/repos#get-a-commit"}'
         exc = ex.value
         assert exc.response == expected_response
 
@@ -399,7 +423,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_set_commit_statuses_then_get(self, valid_handler, codecov_vcr):
-        commit_sha = "e999aac5b33acbca52601d2a655ab0ac46a1ffdf"
+        commit_sha = "702d05fd3e57a1d7d1e4a5e3e3a0017fe2571382"
         target_url = "https://localhost:50036/github/codecov"
         statuses_to_set = [
             ("turtle", "success"),
@@ -420,37 +444,38 @@ class TestGithubTestCase(object):
                 commit_sha, status, context, f"{status} - {i} - {context}", target_url,
             )
         res = await valid_handler.get_commit_statuses(commit_sha)
+        print(res._statuses)
         assert res._statuses == [
             {
-                "time": "2020-04-08T20:51:26Z",
+                "time": "2020-10-14T21:43:30Z",
                 "state": "pending",
                 "description": "pending - 4 - turtle",
                 "url": "https://localhost:50036/github/codecov",
                 "context": "turtle",
             },
             {
-                "time": "2020-04-08T20:51:27Z",
+                "time": "2020-10-14T21:43:31Z",
                 "state": "failure",
                 "description": "failure - 5 - bird",
                 "url": "https://localhost:50036/github/codecov",
                 "context": "bird",
             },
             {
-                "time": "2020-04-08T20:51:27Z",
+                "time": "2020-10-14T21:43:31Z",
                 "state": "error",
                 "description": "error - 6 - pig",
                 "url": "https://localhost:50036/github/codecov",
                 "context": "pig",
             },
             {
-                "time": "2020-04-08T20:51:29Z",
+                "time": "2020-10-14T21:43:33Z",
                 "state": "success",
                 "description": "success - 9 - giant",
                 "url": "https://localhost:50036/github/codecov",
                 "context": "giant",
             },
             {
-                "time": "2020-04-08T20:51:29Z",
+                "time": "2020-10-14T21:43:34Z",
                 "state": "success",
                 "description": "success - 10 - capybara",
                 "url": "https://localhost:50036/github/codecov",
@@ -464,15 +489,15 @@ class TestGithubTestCase(object):
         target_url = "https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67"
         expected_result = {
             "url": "https://api.github.com/repos/ThiagoCodecov/example-python/statuses/a06aef4356ca35b34c5486269585288489e578db",
-            "avatar_url": "https://avatars0.githubusercontent.com/oa/930123?v=4",
-            "id": 5770593059,
-            "node_id": "MDEzOlN0YXR1c0NvbnRleHQ1NzcwNTkzMDU5",
+            "avatar_url": "https://avatars3.githubusercontent.com/u/44376991?v=4",
+            "id": 11050927805,
+            "node_id": "MDEzOlN0YXR1c0NvbnRleHQxMTA1MDkyNzgwNQ==",
             "state": "success",
             "description": "aaaaaaaaaa",
             "target_url": "https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67",
             "context": "context",
-            "created_at": "2018-11-07T22:57:42Z",
-            "updated_at": "2018-11-07T22:57:42Z",
+            "created_at": "2020-10-14T17:32:28Z",
+            "updated_at": "2020-10-14T17:32:28Z",
             "creator": {
                 "login": "ThiagoCodecov",
                 "id": 44376991,
@@ -506,9 +531,17 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_branches(self, valid_handler, codecov_vcr):
-        expected_result = ["example", "future", "master", "reason/some-testing"]
+        expected_result = [
+            "master",
+            "random-branch",
+            "thiago/base-no-base",
+            "thiago/f/big-pt",
+            "thiago/f/something",
+            "thiago/test-1",
+        ]
         branches = sorted(await valid_handler.get_branches())
-        assert list(map(lambda a: a[0], branches)) == expected_result
+        print(sorted(map(lambda a: a[0], branches)))
+        assert sorted(map(lambda a: a[0], branches)) == expected_result
 
     @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
@@ -520,7 +553,7 @@ class TestGithubTestCase(object):
         name, secret = "a", "d"
         expected_result = {
             "type": "Repository",
-            "id": 61813206,
+            "id": 255680134,
             "name": "web",
             "active": True,
             "events": ["pull_request", "push"],
@@ -530,11 +563,11 @@ class TestGithubTestCase(object):
                 "url": "http://requestbin.net/r/1ecyaj51",
                 "insecure_ssl": "0",
             },
-            "updated_at": "2018-11-07T23:03:28Z",
-            "created_at": "2018-11-07T23:03:28Z",
-            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206",
-            "test_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206/test",
-            "ping_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206/pings",
+            "updated_at": "2020-10-14T17:32:29Z",
+            "created_at": "2020-10-14T17:32:29Z",
+            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134",
+            "test_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/test",
+            "ping_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/pings",
             "last_response": {"code": None, "status": "unused", "message": None},
         }
         res = await valid_handler.post_webhook(name, url, events, secret)
@@ -543,36 +576,41 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_edit_webhook(self, valid_handler, codecov_vcr):
-        url = "http://requestbin.net/r/1ecyaj51"
+        url = "https://enfehm3qrtj5u.x.pipedream.net"
         events = ["project", "pull_request", "release"]
         new_name, secret = "new_name", "new_secret"
         expected_result = {
             "type": "Repository",
-            "id": 61813206,
+            "id": 255680134,
             "name": "web",
             "active": True,
-            "events": ["pull_request", "project", "release"],
+            "events": ["project", "pull_request", "release"],
             "config": {
                 "content_type": "json",
                 "secret": "********",
-                "url": "http://requestbin.net/r/1ecyaj51",
+                "url": "https://enfehm3qrtj5u.x.pipedream.net",
                 "insecure_ssl": "0",
             },
-            "updated_at": "2018-11-07T23:10:09Z",
-            "created_at": "2018-11-07T23:03:28Z",
-            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206",
-            "test_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206/test",
-            "ping_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/61813206/pings",
-            "last_response": {"code": 200, "message": "OK", "status": "active"},
+            "updated_at": "2020-10-14T21:51:05Z",
+            "created_at": "2020-10-14T17:32:29Z",
+            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134",
+            "test_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/test",
+            "ping_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/pings",
+            "last_response": {
+                "code": 404,
+                "status": "missing",
+                "message": "Invalid HTTP Response: 404",
+            },
         }
         res = await valid_handler.edit_webhook(
-            "61813206", new_name, url, events, secret
+            "255680134", new_name, url, events, secret
         )
+        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_delete_webhook(self, valid_handler, codecov_vcr):
-        res = await valid_handler.delete_webhook("61813206")
+        res = await valid_handler.delete_webhook("255680134")
         assert res is True
 
     @pytest.mark.asyncio
@@ -656,8 +694,8 @@ class TestGithubTestCase(object):
                     "message": "Update README.rst",
                     "timestamp": "2018-07-09T23:51:16Z",
                     "author": {
-                        "id": 8398772,
-                        "username": "jerrode",
+                        "id": None,
+                        "username": None,
                         "name": "Jerrod",
                         "email": "jerrod@fundersclub.com",
                     },
@@ -667,8 +705,8 @@ class TestGithubTestCase(object):
                     "message": "Update README.rst",
                     "timestamp": "2018-07-09T23:48:34Z",
                     "author": {
-                        "id": 8398772,
-                        "username": "jerrode",
+                        "id": None,
+                        "username": None,
                         "name": "Jerrod",
                         "email": "jerrod@fundersclub.com",
                     },
@@ -678,8 +716,8 @@ class TestGithubTestCase(object):
                     "message": "Adding 'include' term if multiple sources\n\nbased on a support ticket around multiple sources\r\n\r\nhttps://codecov.freshdesk.com/a/tickets/87",
                     "timestamp": "2018-07-09T23:39:20Z",
                     "author": {
-                        "id": 8398772,
-                        "username": "jerrode",
+                        "id": None,
+                        "username": None,
                         "name": "Jerrod",
                         "email": "jerrod@fundersclub.com",
                     },
@@ -744,24 +782,25 @@ class TestGithubTestCase(object):
         expected_result = {
             "owner": {"service_id": 44376991, "username": "ThiagoCodecov"},
             "repo": {
-                "branch": "master",
-                "language": "python",
-                "name": "example-python",
-                "private": False,
                 "service_id": 156617777,
+                "name": "example-python",
+                "language": "shell",
+                "private": False,
                 "fork": {
                     "owner": {"service_id": 8226205, "username": "codecov"},
                     "repo": {
-                        "branch": "master",
-                        "language": "python",
-                        "name": "example-python",
-                        "private": False,
                         "service_id": 24344106,
+                        "name": "example-python",
+                        "language": "python",
+                        "private": False,
+                        "branch": "master",
                     },
                 },
+                "branch": "master",
             },
         }
         res = await valid_handler.get_repository()
+        print(res)
         assert res["owner"] == expected_result["owner"]
         assert res["repo"] == expected_result["repo"]
         assert res == expected_result
@@ -769,22 +808,39 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
-            "commitid": "92aa2034f5283ff318a294116fe585e521d9f6d0",
-            "content": b"import unittest\n\nimport awesome\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(awesome.smile(), \":)\")\n\n\nif __name__ == '__main__':\n    unittest.main()\n",
+            "content": b"\n".join(
+                [
+                    b"def fib(n):",
+                    b"    if n < 0:",
+                    b"        return 0",
+                    b"    if n <= 1:",
+                    b"        return 1",
+                    b"    return fib(n - 1) + fib(n - 2)",
+                    b"",
+                    b"",
+                    b"def untested_code(a):",
+                    b"    raise Exception()",
+                    b"",
+                ]
+            ),
+            "commitid": "7fb3c3fbd71a6d3f4b98964c0130f7e083505fcd",
         }
-        path, ref = "tests.py", "master"
+
+        path, ref = "awesome/code_fib.py", "master"
         res = await valid_handler.get_source(path, ref)
-        print(res)
+        assert res["content"].split(b"\n") == expected_result["content"].split(b"\n")
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_source_random_commit(self, valid_handler, codecov_vcr):
         expected_result = {
-            "commitid": "4d34acc61e7abe5536c84fec4fe9fd9b26311cc7",
             "content": b'def smile():\n    return ":)"\n\ndef frown():\n    return ":("\n',
+            "commitid": "4d34acc61e7abe5536c84fec4fe9fd9b26311cc7",
         }
         path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
         res = await valid_handler.get_source(path, ref)
+        print(res)
+        assert res["content"].split(b"\n") == expected_result["content"].split(b"\n")
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -799,16 +855,15 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):
         res = await valid_handler.list_repos()
-        assert len(res) == 49
-        print(res[-1])
+        assert len(res) == 115
+        assert all(x["owner"]["service_id"] in [8226205, 44376991] for x in res)
         one_expected_result = {
             "owner": {"service_id": 44376991, "username": "ThiagoCodecov"},
             "repo": {
                 "service_id": 156617777,
                 "name": "example-python",
-                "language": "python",
+                "language": "shell",
                 "private": False,
-                "branch": "master",
                 "fork": {
                     "owner": {"service_id": 8226205, "username": "codecov"},
                     "repo": {
@@ -819,6 +874,7 @@ class TestGithubTestCase(object):
                         "branch": "master",
                     },
                 },
+                "branch": "master",
             },
         }
 
@@ -827,12 +883,13 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, codecov_vcr):
         expected_result = [
+            {"email": None, "id": "8226205", "name": "codecov", "username": "codecov",},
             {
-                "email": "hello@codecov.io",
-                "id": "8226205",
-                "name": "Codecov",
-                "username": "codecov",
-            }
+                "email": None,
+                "id": "57222756",
+                "name": "ThiagoCodecovTeam",
+                "username": "ThiagoCodecovTeam",
+            },
         ]
         res = await valid_handler.list_teams()
         assert res == expected_result
@@ -841,14 +898,32 @@ class TestGithubTestCase(object):
     async def test_list_top_level_files(self, valid_handler, codecov_vcr):
         expected_result = [
             {"name": ".gitignore", "path": ".gitignore", "type": "file"},
-            {"name": ".travis.yml", "path": ".travis.yml", "type": "file"},
-            {"name": "README.rst", "path": "README.rst", "type": "file"},
+            {"name": "Makefile", "path": "Makefile", "type": "file"},
+            {"name": "README.md", "path": "README.md", "type": "file"},
             {"name": "awesome", "path": "awesome", "type": "folder"},
-            {"name": "codecov", "path": "codecov", "type": "file"},
+            {
+                "name": "changed_production.sh",
+                "path": "changed_production.sh",
+                "type": "file",
+            },
             {"name": "codecov.yaml", "path": "codecov.yaml", "type": "file"},
+            {"name": "dev.sh", "path": "dev.sh", "type": "file"},
+            {
+                "name": "flagone.coverage.xml",
+                "path": "flagone.coverage.xml",
+                "type": "file",
+            },
+            {
+                "name": "flagtwo.coverage.xml",
+                "path": "flagtwo.coverage.xml",
+                "type": "file",
+            },
+            {"name": "requirements.txt", "path": "requirements.txt", "type": "file"},
             {"name": "tests", "path": "tests", "type": "folder"},
+            {"name": "unit.coverage.xml", "path": "unit.coverage.xml", "type": "file"},
         ]
         res = await valid_handler.list_top_level_files("master")
+        print(sorted(res, key=lambda x: x["path"]))
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -894,7 +969,7 @@ class TestGithubTestCase(object):
             },
             "number": "15",
             "id": "15",
-            "state": "open",
+            "state": "closed",
             "title": "Thiago/test 1",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
         }
@@ -902,11 +977,13 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_base_partially_differs(self, codecov_vcr):
+    async def test_get_pull_request_base_partially_differs(
+        self, valid_handler, codecov_vcr
+    ):
         handler = Github(
             repo=dict(name="codecov-api"),
             owner=dict(username="codecov"),
-            token=dict(key="testdp7skub8zsbdcdyem0z9wt00zhbnibu2uyjb"),
+            token=valid_handler.token,
         )
         pull_id = "110"
         expected_result = {
@@ -916,11 +993,11 @@ class TestGithubTestCase(object):
             },
             "head": {
                 "branch": "ce-1314/gh-status-handler",
-                "commitid": "b68cdcbf6cc1b270a16d8a82b67027bdbc087452",
+                "commitid": "a178a13c65f44d5b81c807f3c0fa2cb4922f020f",
             },
             "number": "110",
             "id": "110",
-            "state": "open",
+            "state": "merged",
             "title": "CE-1314 GitHub Status Event Handler",
             "author": {"id": "5767537", "username": "pierce-m"},
         }
@@ -947,47 +1024,48 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_create_github_check(self, more_complex_handler, codecov_vcr):
-        res = await more_complex_handler.create_check_run(
+    async def test_create_github_check(
+        self, integration_installed_handler, codecov_vcr
+    ):
+        res = await integration_installed_handler.create_check_run(
             "Test check",
-            "0c71264642a03372df1534704f34d6a2242fdf2c",
+            "75f355d8d14ba3d7761c728b4d2607cde0eef065",
             status="in_progress",
-            token={"key": "v1.test7plgcp94kp45aqvz1zr1crhganpdm9t6u52i"},
         )
-        assert res == 751486637
+        assert res == 1256232357
 
     @pytest.mark.asyncio
-    async def test_update_github_check(self, more_complex_handler, codecov_vcr):
-        res = await more_complex_handler.update_check_run(
-            751486637,
-            "success",
-            token={"key": "v1.test7plgcp94kp45aqvz1zr1crhganpdm9t6u52i"},
+    async def test_update_github_check(
+        self, integration_installed_handler, codecov_vcr
+    ):
+        res = await integration_installed_handler.update_check_run(
+            1256232357, "success",
         )
         expected_result = {
-            "id": 751486637,
-            "node_id": "MDg6Q2hlY2tSdW43NTE0ODY2Mzc=",
-            "head_sha": "0c71264642a03372df1534704f34d6a2242fdf2c",
+            "id": 1256232357,
+            "node_id": "MDg6Q2hlY2tSdW4xMjU2MjMyMzU3",
+            "head_sha": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
             "external_id": "",
-            "url": "https://api.github.com/repos/codecov/worker/check-runs/751486637",
-            "html_url": "https://github.com/codecov/worker/runs/751486637",
-            "details_url": "https://stage-web.codecov.dev",
+            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
+            "html_url": "https://github.com/ThiagoCodecov/example-python/runs/1256232357",
+            "details_url": "https://codecov.io",
             "status": "completed",
             "conclusion": "success",
-            "started_at": "2020-06-08T20:38:11Z",
-            "completed_at": "2020-06-08T21:07:39Z",
+            "started_at": "2020-10-14T23:00:59Z",
+            "completed_at": "2020-10-14T23:01:14Z",
             "output": {
                 "title": None,
                 "summary": None,
                 "text": None,
                 "annotations_count": 0,
-                "annotations_url": "https://api.github.com/repos/codecov/worker/check-runs/751486637/annotations",
+                "annotations_url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357/annotations",
             },
             "name": "Test check",
-            "check_suite": {"id": 772837618},
+            "check_suite": {"id": 1341719124},
             "app": {
-                "id": 67788,
-                "slug": "codecov-app-integration-testing",
-                "node_id": "MDM6QXBwNjc3ODg=",
+                "id": 254,
+                "slug": "codecov",
+                "node_id": "MDM6QXBwMjU0",
                 "owner": {
                     "login": "codecov",
                     "id": 8226205,
@@ -1008,12 +1086,12 @@ class TestGithubTestCase(object):
                     "type": "Organization",
                     "site_admin": False,
                 },
-                "name": "Codecov App Integration - Testing",
-                "description": "An app used for the github app integration in test envrionments",
-                "external_url": "https://stage-web.codecov.dev",
-                "html_url": "https://github.com/apps/codecov-app-integration-testing",
-                "created_at": "2020-06-06T01:35:43Z",
-                "updated_at": "2020-06-06T01:35:43Z",
+                "name": "Codecov",
+                "description": "Codecov provides highly integrated tools to group, merge, archive and compare coverage reports. Whether your team is comparing changes in a pull request or reviewing a single commit, Codecov will improve the code review workflow and quality.\r\n\r\n## Code coverage done right.®\r\n\r\n1. Upload coverage reports from your CI builds.\r\n2. Codecov merges all builds and languages into one beautiful coherent report.\r\n3. Get commit statuses, pull request comments and coverage overlay via our browser extension.\r\n\r\nWhen Codecov merges your uploads it keeps track of the CI provider (inc. build details) and user specified context, e.g. `#unittest` ~ `#smoketest` or `#oldcode` ~ `#newcode`. You can track the `#unittest` coverage independently of other groups. [Learn more here](\r\nhttp://docs.codecov.io/docs/flags)\r\n\r\nThrough **Codecov's Browser Extension** reports overlay directly in GitHub UI to assist in code review. [Watch here](https://docs.codecov.io/docs/browser-extension)\r\n\r\n*Highly detailed* **pull request comments** and *customizable* **commit statuses** will improve your team's workflow and code coverage incrementally.\r\n\r\n**File backed configuration** all through the `codecov.yml`. \r\n\r\n## FAQ\r\n- Do you **merge multiple uploads** to the same commit? **Yes**\r\n- Do you **support multiple languages** in the same project? **Yes**\r\n- Can you **group coverage reports** by project and/or test type? **Yes**\r\n- How does **pricing** work? Only paid users can view reports and post statuses/comments. ",
+                "external_url": "https://codecov.io",
+                "html_url": "https://github.com/apps/codecov",
+                "created_at": "2016-09-25T14:18:27Z",
+                "updated_at": "2020-08-27T18:10:18Z",
                 "permissions": {
                     "administration": "read",
                     "checks": "write",
@@ -1042,30 +1120,31 @@ class TestGithubTestCase(object):
             },
             "pull_requests": [
                 {
-                    "url": "https://api.github.com/repos/codecov/worker/pulls/336",
-                    "id": 425229535,
-                    "number": 336,
+                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python/pulls/18",
+                    "id": 383348775,
+                    "number": 18,
                     "head": {
-                        "ref": "fb_message_mixin",
-                        "sha": "0c71264642a03372df1534704f34d6a2242fdf2c",
+                        "ref": "thiago/base-no-base",
+                        "sha": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
                         "repo": {
-                            "id": 157271496,
-                            "url": "https://api.github.com/repos/codecov/worker",
-                            "name": "worker",
+                            "id": 156617777,
+                            "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                            "name": "example-python",
                         },
                     },
                     "base": {
                         "ref": "master",
-                        "sha": "2a5a8741a8fd0d9180f9e8b907442ac4b7a37c67",
+                        "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                         "repo": {
-                            "id": 157271496,
-                            "url": "https://api.github.com/repos/codecov/worker",
-                            "name": "worker",
+                            "id": 156617777,
+                            "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                            "name": "example-python",
                         },
                     },
                 }
             ],
         }
+        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -1079,40 +1158,40 @@ class TestGithubTestCase(object):
             )
 
     @pytest.mark.asyncio
-    async def test_get_github_check_runs(self, more_complex_handler, codecov_vcr):
-        res = await more_complex_handler.get_check_runs(
-            name="Test check",
-            head_sha="0c71264642a03372df1534704f34d6a2242fdf2c",
-            token={"key": "v1.test7plgcp94kp45aqvz1zr1crhganpdm9t6u52i"},
+    async def test_get_github_check_runs(
+        self, integration_installed_handler, codecov_vcr
+    ):
+        res = await integration_installed_handler.get_check_runs(
+            name="Test check", head_sha="75f355d8d14ba3d7761c728b4d2607cde0eef065",
         )
         expected_result = {
             "total_count": 1,
             "check_runs": [
                 {
-                    "id": 751486637,
-                    "node_id": "MDg6Q2hlY2tSdW43NTE0ODY2Mzc=",
-                    "head_sha": "0c71264642a03372df1534704f34d6a2242fdf2c",
+                    "id": 1256232357,
+                    "node_id": "MDg6Q2hlY2tSdW4xMjU2MjMyMzU3",
+                    "head_sha": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
                     "external_id": "",
-                    "url": "https://api.github.com/repos/codecov/worker/check-runs/751486637",
-                    "html_url": "https://github.com/codecov/worker/runs/751486637",
-                    "details_url": "https://stage-web.codecov.dev",
-                    "status": "in_progress",
-                    "conclusion": None,
-                    "started_at": "2020-06-08T20:38:11Z",
-                    "completed_at": None,
+                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
+                    "html_url": "https://github.com/ThiagoCodecov/example-python/runs/1256232357",
+                    "details_url": "https://codecov.io",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "started_at": "2020-10-14T23:00:59Z",
+                    "completed_at": "2020-10-14T23:01:14Z",
                     "output": {
                         "title": None,
                         "summary": None,
                         "text": None,
                         "annotations_count": 0,
-                        "annotations_url": "https://api.github.com/repos/codecov/worker/check-runs/751486637/annotations",
+                        "annotations_url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357/annotations",
                     },
                     "name": "Test check",
-                    "check_suite": {"id": 772837618},
+                    "check_suite": {"id": 1341719124},
                     "app": {
-                        "id": 67788,
-                        "slug": "codecov-app-integration-testing",
-                        "node_id": "MDM6QXBwNjc3ODg=",
+                        "id": 254,
+                        "slug": "codecov",
+                        "node_id": "MDM6QXBwMjU0",
                         "owner": {
                             "login": "codecov",
                             "id": 8226205,
@@ -1133,12 +1212,12 @@ class TestGithubTestCase(object):
                             "type": "Organization",
                             "site_admin": False,
                         },
-                        "name": "Codecov App Integration - Testing",
-                        "description": "An app used for the github app integration in test envrionments",
-                        "external_url": "https://stage-web.codecov.dev",
-                        "html_url": "https://github.com/apps/codecov-app-integration-testing",
-                        "created_at": "2020-06-06T01:35:43Z",
-                        "updated_at": "2020-06-06T01:35:43Z",
+                        "name": "Codecov",
+                        "description": "Codecov provides highly integrated tools to group, merge, archive and compare coverage reports. Whether your team is comparing changes in a pull request or reviewing a single commit, Codecov will improve the code review workflow and quality.\r\n\r\n## Code coverage done right.®\r\n\r\n1. Upload coverage reports from your CI builds.\r\n2. Codecov merges all builds and languages into one beautiful coherent report.\r\n3. Get commit statuses, pull request comments and coverage overlay via our browser extension.\r\n\r\nWhen Codecov merges your uploads it keeps track of the CI provider (inc. build details) and user specified context, e.g. `#unittest` ~ `#smoketest` or `#oldcode` ~ `#newcode`. You can track the `#unittest` coverage independently of other groups. [Learn more here](\r\nhttp://docs.codecov.io/docs/flags)\r\n\r\nThrough **Codecov's Browser Extension** reports overlay directly in GitHub UI to assist in code review. [Watch here](https://docs.codecov.io/docs/browser-extension)\r\n\r\n*Highly detailed* **pull request comments** and *customizable* **commit statuses** will improve your team's workflow and code coverage incrementally.\r\n\r\n**File backed configuration** all through the `codecov.yml`. \r\n\r\n## FAQ\r\n- Do you **merge multiple uploads** to the same commit? **Yes**\r\n- Do you **support multiple languages** in the same project? **Yes**\r\n- Can you **group coverage reports** by project and/or test type? **Yes**\r\n- How does **pricing** work? Only paid users can view reports and post statuses/comments. ",
+                        "external_url": "https://codecov.io",
+                        "html_url": "https://github.com/apps/codecov",
+                        "created_at": "2016-09-25T14:18:27Z",
+                        "updated_at": "2020-08-27T18:10:18Z",
                         "permissions": {
                             "administration": "read",
                             "checks": "write",
@@ -1167,25 +1246,25 @@ class TestGithubTestCase(object):
                     },
                     "pull_requests": [
                         {
-                            "url": "https://api.github.com/repos/codecov/worker/pulls/336",
-                            "id": 425229535,
-                            "number": 336,
+                            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/pulls/18",
+                            "id": 383348775,
+                            "number": 18,
                             "head": {
-                                "ref": "fb_message_mixin",
-                                "sha": "0c71264642a03372df1534704f34d6a2242fdf2c",
+                                "ref": "thiago/base-no-base",
+                                "sha": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
                                 "repo": {
-                                    "id": 157271496,
-                                    "url": "https://api.github.com/repos/codecov/worker",
-                                    "name": "worker",
+                                    "id": 156617777,
+                                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                                    "name": "example-python",
                                 },
                             },
                             "base": {
                                 "ref": "master",
-                                "sha": "2a5a8741a8fd0d9180f9e8b907442ac4b7a37c67",
+                                "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                                 "repo": {
-                                    "id": 157271496,
-                                    "url": "https://api.github.com/repos/codecov/worker",
-                                    "name": "worker",
+                                    "id": 156617777,
+                                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                                    "name": "example-python",
                                 },
                             },
                         }
@@ -1193,11 +1272,12 @@ class TestGithubTestCase(object):
                 }
             ],
         }
+        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_best_effort_branches(self, valid_handler, codecov_vcr):
-        commit_sha = "2dabe97a4a207053e02e82c6632000e9f1be7cea"
+        commit_sha = "75f355d8d14ba3d7761c728b4d2607cde0eef065"
         res = await valid_handler.get_best_effort_branches(commit_sha)
         assert res == ["thiago/base-no-base"]
 
@@ -1216,29 +1296,54 @@ class TestGithubTestCase(object):
         assert result
 
     @pytest.mark.asyncio
-    async def test_get_github_check_suite(self, more_complex_handler, codecov_vcr):
-        res = await more_complex_handler.get_check_suites(
-            "0c71264642a03372df1534704f34d6a2242fdf2c",
-            token={"key": "v1.test7plgcp94kp45aqvz1zr1crhganpdm9t6u52i"},
+    async def test_get_github_check_suite(
+        self, integration_installed_handler, codecov_vcr
+    ):
+        res = await integration_installed_handler.get_check_suites(
+            "75f355d8d14ba3d7761c728b4d2607cde0eef065",
         )
         expected_result = {
             "total_count": 1,
             "check_suites": [
                 {
-                    "id": 734165241,
-                    "node_id": "MDEwOkNoZWNrU3VpdGU3MzQxNjUyNDE=",
-                    "head_branch": "fb_message_mixin",
-                    "head_sha": "0c71264642a03372df1534704f34d6a2242fdf2c",
-                    "status": "queued",
-                    "conclusion": None,
-                    "url": "https://api.github.com/repos/codecov/worker/check-suites/734165241",
-                    "before": "0000000000000000000000000000000000000000",
-                    "after": "0c71264642a03372df1534704f34d6a2242fdf2c",
-                    "pull_requests": [],
+                    "id": 1341719124,
+                    "node_id": "MDEwOkNoZWNrU3VpdGUxMzQxNzE5MTI0",
+                    "head_branch": "thiago/base-no-base",
+                    "head_sha": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-suites/1341719124",
+                    "before": "f0fe310b54d2b944a1d16b79958d9d3add7c902c",
+                    "after": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
+                    "pull_requests": [
+                        {
+                            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/pulls/18",
+                            "id": 383348775,
+                            "number": 18,
+                            "head": {
+                                "ref": "thiago/base-no-base",
+                                "sha": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
+                                "repo": {
+                                    "id": 156617777,
+                                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                                    "name": "example-python",
+                                },
+                            },
+                            "base": {
+                                "ref": "master",
+                                "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
+                                "repo": {
+                                    "id": 156617777,
+                                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                                    "name": "example-python",
+                                },
+                            },
+                        }
+                    ],
                     "app": {
-                        "id": 9795,
-                        "slug": "codecov-development",
-                        "node_id": "MDM6QXBwOTc5NQ==",
+                        "id": 254,
+                        "slug": "codecov",
+                        "node_id": "MDM6QXBwMjU0",
                         "owner": {
                             "login": "codecov",
                             "id": 8226205,
@@ -1259,115 +1364,125 @@ class TestGithubTestCase(object):
                             "type": "Organization",
                             "site_admin": False,
                         },
-                        "name": "Codecov - Development",
-                        "description": "",
+                        "name": "Codecov",
+                        "description": "Codecov provides highly integrated tools to group, merge, archive and compare coverage reports. Whether your team is comparing changes in a pull request or reviewing a single commit, Codecov will improve the code review workflow and quality.\r\n\r\n## Code coverage done right.®\r\n\r\n1. Upload coverage reports from your CI builds.\r\n2. Codecov merges all builds and languages into one beautiful coherent report.\r\n3. Get commit statuses, pull request comments and coverage overlay via our browser extension.\r\n\r\nWhen Codecov merges your uploads it keeps track of the CI provider (inc. build details) and user specified context, e.g. `#unittest` ~ `#smoketest` or `#oldcode` ~ `#newcode`. You can track the `#unittest` coverage independently of other groups. [Learn more here](\r\nhttp://docs.codecov.io/docs/flags)\r\n\r\nThrough **Codecov's Browser Extension** reports overlay directly in GitHub UI to assist in code review. [Watch here](https://docs.codecov.io/docs/browser-extension)\r\n\r\n*Highly detailed* **pull request comments** and *customizable* **commit statuses** will improve your team's workflow and code coverage incrementally.\r\n\r\n**File backed configuration** all through the `codecov.yml`. \r\n\r\n## FAQ\r\n- Do you **merge multiple uploads** to the same commit? **Yes**\r\n- Do you **support multiple languages** in the same project? **Yes**\r\n- Can you **group coverage reports** by project and/or test type? **Yes**\r\n- How does **pricing** work? Only paid users can view reports and post statuses/comments. ",
                         "external_url": "https://codecov.io",
-                        "html_url": "https://github.com/apps/codecov-development",
-                        "created_at": "2018-03-07T16:53:38Z",
-                        "updated_at": "2019-05-13T23:46:55Z",
+                        "html_url": "https://github.com/apps/codecov",
+                        "created_at": "2016-09-25T14:18:27Z",
+                        "updated_at": "2020-08-27T18:10:18Z",
                         "permissions": {
-                            "administration": "write",
+                            "administration": "read",
                             "checks": "write",
-                            "contents": "write",
-                            "deployments": "write",
-                            "issues": "write",
-                            "members": "write",
+                            "contents": "read",
+                            "issues": "read",
+                            "members": "read",
                             "metadata": "read",
-                            "organization_projects": "write",
-                            "pages": "write",
                             "pull_requests": "write",
-                            "repository_projects": "write",
                             "statuses": "write",
-                            "team_discussions": "write",
                         },
-                        "events": [],
+                        "events": [
+                            "check_run",
+                            "check_suite",
+                            "create",
+                            "delete",
+                            "fork",
+                            "membership",
+                            "public",
+                            "pull_request",
+                            "push",
+                            "release",
+                            "repository",
+                            "status",
+                            "team_add",
+                        ],
                     },
-                    "created_at": "2020-05-29T17:19:34Z",
-                    "updated_at": "2020-05-29T17:19:34Z",
-                    "latest_check_runs_count": 0,
-                    "check_runs_url": "https://api.github.com/repos/codecov/worker/check-suites/734165241/check-runs",
+                    "created_at": "2020-10-14T23:00:59Z",
+                    "updated_at": "2020-10-14T23:01:14Z",
+                    "latest_check_runs_count": 1,
+                    "check_runs_url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-suites/1341719124/check-runs",
                     "head_commit": {
-                        "id": "0c71264642a03372df1534704f34d6a2242fdf2c",
-                        "tree_id": "d11e0eb1647a4459d9b441ac23be9acf55ea10a1",
-                        "message": "Added Message Mixin",
-                        "timestamp": "2020-05-29T17:19:21Z",
+                        "id": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
+                        "tree_id": "b737740a931a34f5be73f553ea87a1161c917be0",
+                        "message": "Adding README\n\nsurpriseaAKDS\n\nddkokgfnskfds\n\nBanana\n\nYallow\n\nABG",
+                        "timestamp": "2020-10-13T15:15:31Z",
                         "author": {
-                            "name": "Felipe Ballesteros",
-                            "email": "felipe@codecov.io",
+                            "name": "Thiago Ramos",
+                            "email": "thiago@codecov.io",
                         },
                         "committer": {
-                            "name": "Felipe Ballesteros",
-                            "email": "felipe@codecov.io",
+                            "name": "Thiago Ramos",
+                            "email": "thiago@codecov.io",
                         },
                     },
                     "repository": {
-                        "id": 157271496,
-                        "node_id": "MDEwOlJlcG9zaXRvcnkxNTcyNzE0OTY=",
-                        "name": "worker",
-                        "full_name": "codecov/worker",
-                        "private": True,
+                        "id": 156617777,
+                        "node_id": "MDEwOlJlcG9zaXRvcnkxNTY2MTc3Nzc=",
+                        "name": "example-python",
+                        "full_name": "ThiagoCodecov/example-python",
+                        "private": False,
                         "owner": {
-                            "login": "codecov",
-                            "id": 8226205,
-                            "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
-                            "avatar_url": "https://avatars3.githubusercontent.com/u/8226205?v=4",
+                            "login": "ThiagoCodecov",
+                            "id": 44376991,
+                            "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                            "avatar_url": "https://avatars3.githubusercontent.com/u/44376991?v=4",
                             "gravatar_id": "",
-                            "url": "https://api.github.com/users/codecov",
-                            "html_url": "https://github.com/codecov",
-                            "followers_url": "https://api.github.com/users/codecov/followers",
-                            "following_url": "https://api.github.com/users/codecov/following{/other_user}",
-                            "gists_url": "https://api.github.com/users/codecov/gists{/gist_id}",
-                            "starred_url": "https://api.github.com/users/codecov/starred{/owner}{/repo}",
-                            "subscriptions_url": "https://api.github.com/users/codecov/subscriptions",
-                            "organizations_url": "https://api.github.com/users/codecov/orgs",
-                            "repos_url": "https://api.github.com/users/codecov/repos",
-                            "events_url": "https://api.github.com/users/codecov/events{/privacy}",
-                            "received_events_url": "https://api.github.com/users/codecov/received_events",
-                            "type": "Organization",
+                            "url": "https://api.github.com/users/ThiagoCodecov",
+                            "html_url": "https://github.com/ThiagoCodecov",
+                            "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                            "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                            "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                            "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                            "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                            "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                            "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                            "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                            "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                            "type": "User",
                             "site_admin": False,
                         },
-                        "html_url": "https://github.com/codecov/worker",
-                        "description": "Code for Background Workers of Codecov",
-                        "fork": False,
-                        "url": "https://api.github.com/repos/codecov/worker",
-                        "forks_url": "https://api.github.com/repos/codecov/worker/forks",
-                        "keys_url": "https://api.github.com/repos/codecov/worker/keys{/key_id}",
-                        "collaborators_url": "https://api.github.com/repos/codecov/worker/collaborators{/collaborator}",
-                        "teams_url": "https://api.github.com/repos/codecov/worker/teams",
-                        "hooks_url": "https://api.github.com/repos/codecov/worker/hooks",
-                        "issue_events_url": "https://api.github.com/repos/codecov/worker/issues/events{/number}",
-                        "events_url": "https://api.github.com/repos/codecov/worker/events",
-                        "assignees_url": "https://api.github.com/repos/codecov/worker/assignees{/user}",
-                        "branches_url": "https://api.github.com/repos/codecov/worker/branches{/branch}",
-                        "tags_url": "https://api.github.com/repos/codecov/worker/tags",
-                        "blobs_url": "https://api.github.com/repos/codecov/worker/git/blobs{/sha}",
-                        "git_tags_url": "https://api.github.com/repos/codecov/worker/git/tags{/sha}",
-                        "git_refs_url": "https://api.github.com/repos/codecov/worker/git/refs{/sha}",
-                        "trees_url": "https://api.github.com/repos/codecov/worker/git/trees{/sha}",
-                        "statuses_url": "https://api.github.com/repos/codecov/worker/statuses/{sha}",
-                        "languages_url": "https://api.github.com/repos/codecov/worker/languages",
-                        "stargazers_url": "https://api.github.com/repos/codecov/worker/stargazers",
-                        "contributors_url": "https://api.github.com/repos/codecov/worker/contributors",
-                        "subscribers_url": "https://api.github.com/repos/codecov/worker/subscribers",
-                        "subscription_url": "https://api.github.com/repos/codecov/worker/subscription",
-                        "commits_url": "https://api.github.com/repos/codecov/worker/commits{/sha}",
-                        "git_commits_url": "https://api.github.com/repos/codecov/worker/git/commits{/sha}",
-                        "comments_url": "https://api.github.com/repos/codecov/worker/comments{/number}",
-                        "issue_comment_url": "https://api.github.com/repos/codecov/worker/issues/comments{/number}",
-                        "contents_url": "https://api.github.com/repos/codecov/worker/contents/{+path}",
-                        "compare_url": "https://api.github.com/repos/codecov/worker/compare/{base}...{head}",
-                        "merges_url": "https://api.github.com/repos/codecov/worker/merges",
-                        "archive_url": "https://api.github.com/repos/codecov/worker/{archive_format}{/ref}",
-                        "downloads_url": "https://api.github.com/repos/codecov/worker/downloads",
-                        "issues_url": "https://api.github.com/repos/codecov/worker/issues{/number}",
-                        "pulls_url": "https://api.github.com/repos/codecov/worker/pulls{/number}",
-                        "milestones_url": "https://api.github.com/repos/codecov/worker/milestones{/number}",
-                        "notifications_url": "https://api.github.com/repos/codecov/worker/notifications{?since,all,participating}",
-                        "labels_url": "https://api.github.com/repos/codecov/worker/labels{/name}",
-                        "releases_url": "https://api.github.com/repos/codecov/worker/releases{/id}",
-                        "deployments_url": "https://api.github.com/repos/codecov/worker/deployments",
+                        "html_url": "https://github.com/ThiagoCodecov/example-python",
+                        "description": "Python coverage example",
+                        "fork": True,
+                        "url": "https://api.github.com/repos/ThiagoCodecov/example-python",
+                        "forks_url": "https://api.github.com/repos/ThiagoCodecov/example-python/forks",
+                        "keys_url": "https://api.github.com/repos/ThiagoCodecov/example-python/keys{/key_id}",
+                        "collaborators_url": "https://api.github.com/repos/ThiagoCodecov/example-python/collaborators{/collaborator}",
+                        "teams_url": "https://api.github.com/repos/ThiagoCodecov/example-python/teams",
+                        "hooks_url": "https://api.github.com/repos/ThiagoCodecov/example-python/hooks",
+                        "issue_events_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/events{/number}",
+                        "events_url": "https://api.github.com/repos/ThiagoCodecov/example-python/events",
+                        "assignees_url": "https://api.github.com/repos/ThiagoCodecov/example-python/assignees{/user}",
+                        "branches_url": "https://api.github.com/repos/ThiagoCodecov/example-python/branches{/branch}",
+                        "tags_url": "https://api.github.com/repos/ThiagoCodecov/example-python/tags",
+                        "blobs_url": "https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs{/sha}",
+                        "git_tags_url": "https://api.github.com/repos/ThiagoCodecov/example-python/git/tags{/sha}",
+                        "git_refs_url": "https://api.github.com/repos/ThiagoCodecov/example-python/git/refs{/sha}",
+                        "trees_url": "https://api.github.com/repos/ThiagoCodecov/example-python/git/trees{/sha}",
+                        "statuses_url": "https://api.github.com/repos/ThiagoCodecov/example-python/statuses/{sha}",
+                        "languages_url": "https://api.github.com/repos/ThiagoCodecov/example-python/languages",
+                        "stargazers_url": "https://api.github.com/repos/ThiagoCodecov/example-python/stargazers",
+                        "contributors_url": "https://api.github.com/repos/ThiagoCodecov/example-python/contributors",
+                        "subscribers_url": "https://api.github.com/repos/ThiagoCodecov/example-python/subscribers",
+                        "subscription_url": "https://api.github.com/repos/ThiagoCodecov/example-python/subscription",
+                        "commits_url": "https://api.github.com/repos/ThiagoCodecov/example-python/commits{/sha}",
+                        "git_commits_url": "https://api.github.com/repos/ThiagoCodecov/example-python/git/commits{/sha}",
+                        "comments_url": "https://api.github.com/repos/ThiagoCodecov/example-python/comments{/number}",
+                        "issue_comment_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments{/number}",
+                        "contents_url": "https://api.github.com/repos/ThiagoCodecov/example-python/contents/{+path}",
+                        "compare_url": "https://api.github.com/repos/ThiagoCodecov/example-python/compare/{base}...{head}",
+                        "merges_url": "https://api.github.com/repos/ThiagoCodecov/example-python/merges",
+                        "archive_url": "https://api.github.com/repos/ThiagoCodecov/example-python/{archive_format}{/ref}",
+                        "downloads_url": "https://api.github.com/repos/ThiagoCodecov/example-python/downloads",
+                        "issues_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues{/number}",
+                        "pulls_url": "https://api.github.com/repos/ThiagoCodecov/example-python/pulls{/number}",
+                        "milestones_url": "https://api.github.com/repos/ThiagoCodecov/example-python/milestones{/number}",
+                        "notifications_url": "https://api.github.com/repos/ThiagoCodecov/example-python/notifications{?since,all,participating}",
+                        "labels_url": "https://api.github.com/repos/ThiagoCodecov/example-python/labels{/name}",
+                        "releases_url": "https://api.github.com/repos/ThiagoCodecov/example-python/releases{/id}",
+                        "deployments_url": "https://api.github.com/repos/ThiagoCodecov/example-python/deployments",
                     },
                 }
             ],
         }
+        print(res)
         assert res == expected_result

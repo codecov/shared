@@ -1,95 +1,43 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/repository/files/tests.py?ref=master
-  response:
-    body: {string: '{"file_name":"tests.py","file_path":"tests.py","size":195,"encoding":"base64","content_sha256":"311b6ae18bee76f263ddbaa75daf776a3d16a40e613e3476170b98e24f5ae46e","ref":"master","blob_id":"20642e5c79ebd16b1c87ca300ff8b1afd478be5e","commit_id":"0028015f7fa260f5fd68f78c0deffc15183d955e","last_commit_id":"b33e12816cc3f386dae8add4968cedeff5155021","content":"aW1wb3J0IHVuaXR0ZXN0CmltcG9ydCBteV9wYWNrYWdlCgoKY2xhc3MgVGVzdE1ldGhvZHModW5pdHRlc3QuVGVzdENhc2UpOgogICAgZGVmIHRlc3RfYWRkKHNlbGYpOgogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwobXlfcGFja2FnZS5hZGQoMTApLCAyMCkKCmlmIF9fbmFtZV9fID09ICdfX21haW5fXyc6CiAgICB1bml0dGVzdC5tYWluKCkK"}'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Tue, 06 Nov 2018 05:33:12 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['618']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - ['max-age=0, private, must-revalidate']
-    - !!python/tuple
-      - Etag
-      - [W/"646eb491d3af4b6508678d3abeeeb6e5"]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Gitlab-Blob-Id
-      - [20642e5c79ebd16b1c87ca300ff8b1afd478be5e]
-    - !!python/tuple
-      - X-Gitlab-Commit-Id
-      - [0028015f7fa260f5fd68f78c0deffc15183d955e]
-    - !!python/tuple
-      - X-Gitlab-Content-Sha256
-      - [311b6ae18bee76f263ddbaa75daf776a3d16a40e613e3476170b98e24f5ae46e]
-    - !!python/tuple
-      - X-Gitlab-Encoding
-      - [base64]
-    - !!python/tuple
-      - X-Gitlab-File-Name
-      - [tests.py]
-    - !!python/tuple
-      - X-Gitlab-File-Path
-      - [tests.py]
-    - !!python/tuple
-      - X-Gitlab-Last-Commit-Id
-      - [b33e12816cc3f386dae8add4968cedeff5155021]
-    - !!python/tuple
-      - X-Gitlab-Ref
-      - [master]
-    - !!python/tuple
-      - X-Gitlab-Size
-      - ['195']
-    - !!python/tuple
-      - X-Request-Id
-      - [d5392c7f-1396-4fef-94ec-8f2d0dd36070]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.056949']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000]
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['1']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['599']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1541482452']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Wed, 06 Nov 2018 05:34:12 GMT']
-    status: {code: 200, message: OK}
-    url: https://gitlab.com/api/v4/projects/187725/repository/files/tests.py?ref=master
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/files/tests.py?ref=master
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/files/tests.py?ref=master
+      content: '{"file_name":"tests.py","file_path":"tests.py","size":195,"encoding":"base64","content_sha256":"311b6ae18bee76f263ddbaa75daf776a3d16a40e613e3476170b98e24f5ae46e","ref":"master","blob_id":"20642e5c79ebd16b1c87ca300ff8b1afd478be5e","commit_id":"0028015f7fa260f5fd68f78c0deffc15183d955e","last_commit_id":"b33e12816cc3f386dae8add4968cedeff5155021","content":"aW1wb3J0IHVuaXR0ZXN0CmltcG9ydCBteV9wYWNrYWdlCgoKY2xhc3MgVGVzdE1ldGhvZHModW5pdHRlc3QuVGVzdENhc2UpOgogICAgZGVmIHRlc3RfYWRkKHNlbGYpOgogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwobXlfcGFja2FnZS5hZGQoMTApLCAyMCkKCmlmIF9fbmFtZV9fID09ICdfX21haW5fXyc6CiAgICB1bml0dGVzdC5tYWluKCkK"}'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:33:12 GMT
+        Content-Type: application/json
+        Content-Length: '618'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"646eb491d3af4b6508678d3abeeeb6e5"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Gitlab-Blob-Id: 20642e5c79ebd16b1c87ca300ff8b1afd478be5e
+        X-Gitlab-Commit-Id: 0028015f7fa260f5fd68f78c0deffc15183d955e
+        X-Gitlab-Content-Sha256: 311b6ae18bee76f263ddbaa75daf776a3d16a40e613e3476170b98e24f5ae46e
+        X-Gitlab-Encoding: base64
+        X-Gitlab-File-Name: tests.py
+        X-Gitlab-File-Path: tests.py
+        X-Gitlab-Last-Commit-Id: b33e12816cc3f386dae8add4968cedeff5155021
+        X-Gitlab-Ref: master
+        X-Gitlab-Size: '195'
+        X-Request-Id: d5392c7f-1396-4fef-94ec-8f2d0dd36070
+        X-Runtime: '0.056949'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541482452'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:34:12 GMT
+      status_code: 200
 version: 1

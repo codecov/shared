@@ -1,13 +1,13 @@
 import os
-import socket
 from base64 import b64decode
-from json import loads, dumps
+import json
 import logging
 from typing import Optional, List
 
+import httpx
+
 from tornado.httputil import urlencode
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPError
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
@@ -45,77 +45,68 @@ class Gitlab(TorngitBaseAdapter):
     )
 
     async def fetch_and_handle_errors(
-        self, method, url_path, *, body=None, token=None, version=4, **args
+        self, client, method, url_path, *, body=None, token=None, version=4, **args
     ):
-        if url_path[0] == "/":
+        if url_path.startswith("/"):
             _log = dict(
                 event="api",
                 endpoint=url_path,
                 method=method,
                 bot=(token or self.token).get("username"),
             )
+            url_path = self.api_url.format(version) + url_path
         else:
             _log = {}
-        url_path = (
-            (self.api_url.format(version) + url_path)
-            if url_path[0] == "/"
-            else url_path
-        )
+
         headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
-        if type(body) is dict:
+        if isinstance(body, dict):
             headers["Content-Type"] = "application/json"
+            body = json.dumps(body)
+
+        _log["body"] = body
 
         if token or self.token:
             headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
         url = url_concat(url_path, args).replace(" ", "%20")
-        kwargs = dict(
-            method=method.upper(),
-            body=dumps(body) if type(body) is dict else body,
-            headers=headers,
-            ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
-            validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-            connect_timeout=self._timeouts[0],
-            request_timeout=self._timeouts[1],
-        )
 
         try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
-                res = await self.fetch(url, **kwargs)
-            log.info("GitLab HTTP %s" % res.code, extra=dict(**_log))
-            return res
-        except HTTPError as e:
-            if e.code == 599:
+            with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
+                res = await client.request(
+                    method.upper(), url, headers=headers, data=body
+                )
+                _log["time_taken"] = timer.ms
+            log_level = logging.WARNING if res.status_code >= 300 else logging.INFO
+            log.log(log_level, "GitLab HTTP %s", res.status_code, extra=_log)
+            if res.status_code == 599:
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "Gitlab was not able to be reached, server timed out."
                 )
-            elif e.code >= 500:
+            elif res.status_code >= 500:
                 metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                 raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
-            log.warning(
-                "Gitlab HTTP %s" % e.response.code,
-                extra=dict(url=url, body=e.response.body),
-            )
-            message = f"Gitlab API: {e.message}"
-            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-            raise TorngitClientError(e.code, e.response, message)
-
-        except socket.gaierror:
+            elif res.status_code >= 400:
+                message = f"Gitlab API: {res.status_code}"
+                metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
+                raise TorngitClientError(res.status_code, res, message)
+            return res
+        except (httpx.TimeoutException, httpx.NetworkError):
             metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
             raise TorngitServerUnreachableError(
                 "GitLab was not able to be reached. Gateway 502. Please try again."
             )
 
     async def api(self, method, url_path, *, body=None, token=None, version=4, **args):
-        res = await self.fetch_and_handle_errors(
-            method, url_path, body=body, token=token, version=4, **args
-        )
-        return None if res.code == 204 else loads(res.body)
+        async with self.get_client() as client:
+            res = await self.fetch_and_handle_errors(
+                client, method, url_path, body=body, token=token, version=4, **args
+            )
+            return None if res.status_code == 204 else res.json()
 
     async def make_paginated_call(
         self,
@@ -128,23 +119,28 @@ class Gitlab(TorngitBaseAdapter):
         current_page = None
         has_more = True
         count_so_far = 0
-        while has_more and (
-            max_number_of_pages is None or count_so_far < max_number_of_pages
-        ):
-            current_kwargs = dict(per_page=max_per_page, **default_kwargs)
-            if current_page is not None:
-                current_kwargs["page"] = current_page
-            current_result = await self.fetch_and_handle_errors(
-                "GET", base_url, **current_kwargs
-            )
-            count_so_far += 1
-            yield None if current_result.code == 204 else loads(current_result.body)
-            if max_number_of_pages is not None and count_so_far >= max_number_of_pages:
-                has_more = False
-            elif current_result.headers["X-Next-Page"]:
-                current_page, has_more = current_result.headers["X-Next-Page"], True
-            else:
-                current_page, has_more = None, False
+
+        async with self.get_client() as client:
+            while has_more and (
+                max_number_of_pages is None or count_so_far < max_number_of_pages
+            ):
+                current_kwargs = dict(per_page=max_per_page, **default_kwargs)
+                if current_page is not None:
+                    current_kwargs["page"] = current_page
+                current_result = await self.fetch_and_handle_errors(
+                    client, "GET", base_url, **current_kwargs
+                )
+                count_so_far += 1
+                yield None if current_result.status_code == 204 else current_result.json()
+                if (
+                    max_number_of_pages is not None
+                    and count_so_far >= max_number_of_pages
+                ):
+                    has_more = False
+                elif current_result.headers.get("X-Next-Page"):
+                    current_page, has_more = current_result.headers["X-Next-Page"], True
+                else:
+                    current_page, has_more = None, False
 
     async def get_authenticated_user(self, code, redirect_uri):
         creds = self._oauth_consumer_token()
@@ -489,7 +485,7 @@ class Gitlab(TorngitBaseAdapter):
                 ),
                 token=token,
             )
-        except TorngitClientError as ce:
+        except TorngitClientError:
             raise
 
         if merge_commit:

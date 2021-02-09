@@ -209,14 +209,16 @@ def test_merge_missed_branches(sessions, res):
 )
 def test_merge_line(l1, l2, expected_res):
     assert merge_line(
-        ReportLine(*l1) if l1 else None, ReportLine(*l2) if l2 else None
-    ) == ReportLine(*expected_res)
-    res = merge_line(ReportLine(*l2) if l2 else None, ReportLine(*l1) if l1 else None)
+        ReportLine.create(*l1) if l1 else None, ReportLine.create(*l2) if l2 else None
+    ) == ReportLine.create(*expected_res)
+    res = merge_line(
+        ReportLine.create(*l2) if l2 else None, ReportLine.create(*l1) if l1 else None
+    )
     try:
-        assert res == ReportLine(*expected_res)
+        assert res == ReportLine.create(*expected_res)
     except:
         res.sessions.reverse()
-        assert res == ReportLine(*expected_res)
+        assert res == ReportLine.create(*expected_res)
 
 
 @pytest.mark.unit
@@ -295,7 +297,7 @@ def test_partials_to_line(partials, res):
     assert res == partials_to_line(partials)
 
 
-@pytest.mark.unir
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "sessions, complexity",
     [([[1, 2, 3, 4, 5]], 5), ([[[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]], (5, 6)),],

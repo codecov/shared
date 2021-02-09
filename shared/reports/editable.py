@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 
 
 class EditableReportFile(ReportFile):
+
+    __slots__ = ("_details",)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self._details is None:
@@ -110,7 +113,7 @@ class EditableReport(Report):
 
     @metrics.timer("services.report.EditableReport.delete_multiple_sessions")
     def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
-        self.reset()
+        self._totals = None
         deleted_sessions = []
         for sessionid in session_ids_to_delete:
             deleted_sessions.append(self.sessions.pop(sessionid))

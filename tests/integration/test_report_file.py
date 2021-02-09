@@ -9,7 +9,10 @@ def test_report_file_constructor():
     r1 = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None, None)
     assert r1.name == "folder/file.py"
     r2 = ReportFile(name="file.py", lines="\n[1,2]\n[1,1]")
-    assert list(r2.lines) == [(1, ReportLine(1, 2)), (2, ReportLine(1, 1))]
+    assert list(r2.lines) == [
+        (1, ReportLine.create(1, 2)),
+        (2, ReportLine.create(1, 1)),
+    ]
     assert r2.name == "file.py"
 
 
@@ -28,7 +31,11 @@ def test_repr():
             "totals",
             ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         ),
-        (ReportFile("file.py", lines=[ReportLine(), ReportLine()]), 1, ReportLine()),
+        (
+            ReportFile("file.py", lines=[ReportLine.create(), ReportLine.create()]),
+            1,
+            ReportLine.create(),
+        ),
     ],
 )
 def test_get_item(r, get_val, res):
@@ -58,17 +65,20 @@ def test_get_item_exception(get_val, error_message):
         (
             ReportFile(
                 name="folder/file.py",
-                lines=[ReportLine(1)],
+                lines=[ReportLine.create(1)],
                 ignore={"eof": "N", "lines": [1, 10]},
             ),
-            ReportLine(1),
+            ReportLine.create(1),
         ),
-        (ReportFile(name="folder/file.py", lines=[ReportLine(1)]), ReportLine(0)),
+        (
+            ReportFile(name="folder/file.py", lines=[ReportLine.create(1)]),
+            ReportLine.create(0),
+        ),
     ],
 )
 def test_set_item(r, get_val):
-    assert r[1] == ReportLine(1)
-    r[1] = ReportLine(0)
+    assert r[1] == ReportLine.create(1)
+    r[1] = ReportLine.create(0)
     assert r[1] == get_val
 
 
@@ -76,20 +86,20 @@ def test_set_item_with_ignore_lines():
     ignore_lines = {"eof": 41, "lines": {40, 33, 37, 38}}
     filename = "folder/file.java"
     r = ReportFile(filename, ignore=ignore_lines)
-    r[1] = ReportLine(0)
-    r[2] = ReportLine(1)
-    r[33] = ReportLine(0)
-    r[37] = ReportLine("1/2")
-    r[38] = ReportLine(1)
-    r[39] = ReportLine("2/3")
-    r[40] = ReportLine(0)
-    r[41] = ReportLine(1)
-    r[42] = ReportLine("1/8")
+    r[1] = ReportLine.create(0)
+    r[2] = ReportLine.create(1)
+    r[33] = ReportLine.create(0)
+    r[37] = ReportLine.create("1/2")
+    r[38] = ReportLine.create(1)
+    r[39] = ReportLine.create("2/3")
+    r[40] = ReportLine.create(0)
+    r[41] = ReportLine.create(1)
+    r[42] = ReportLine.create("1/8")
     assert list(r.lines) == [
-        (1, ReportLine(0)),
-        (2, ReportLine(1)),
-        (39, ReportLine("2/3")),
-        (41, ReportLine(1)),
+        (1, ReportLine.create(0)),
+        (2, ReportLine.create(1)),
+        (39, ReportLine.create("2/3")),
+        (41, ReportLine.create(1)),
     ]
 
 
@@ -99,7 +109,7 @@ def test_set_item_with_ignore_lines():
     [
         ("str", 1, "expecting type int got <class 'str'>"),
         (1, "str", "expecting type ReportLine got <class 'str'>"),
-        (-1, ReportLine(), "Line number must be greater then 0. Got -1"),
+        (-1, ReportLine.create(), "Line number must be greater then 0. Got -1"),
     ],
 )
 def test_set_item_exception(index, set_val, error_message):
@@ -111,13 +121,17 @@ def test_set_item_exception(index, set_val, error_message):
 
 @pytest.mark.integration
 def test_len():
-    r = ReportFile(name="folder/file.py", lines=[ReportLine(1), ReportLine(), None])
+    r = ReportFile(
+        name="folder/file.py", lines=[ReportLine.create(1), ReportLine.create(), None]
+    )
     assert len(r) == 2
 
 
 @pytest.mark.integration
 def test_eol():
-    r = ReportFile(name="folder/file.py", lines=[ReportLine(1), ReportLine(), None])
+    r = ReportFile(
+        name="folder/file.py", lines=[ReportLine.create(1), ReportLine.create(), None]
+    )
     assert r.eof == 4
 
 
@@ -130,13 +144,18 @@ def test_get_slice():
 
     r = ReportFile(
         name="folder/file.py",
-        lines=[ReportLine(1), ReportLine(2), ReportLine(3), ReportLine(4)],
+        lines=[
+            ReportLine.create(1),
+            ReportLine.create(2),
+            ReportLine.create(3),
+            ReportLine.create(4),
+        ],
         line_modifier=filter_lines,
     )
     assert list(r[2:4]) == [
         (
             2,
-            ReportLine(
+            ReportLine.create(
                 coverage=2, type=None, sessions=None, messages=None, complexity=None
             ),
         )
@@ -148,7 +167,7 @@ def test_get_slice():
     "r, boolean",
     [
         (ReportFile(name="name.py"), False),
-        (ReportFile(name="name.py", lines=[ReportLine(1)]), True),
+        (ReportFile(name="name.py", lines=[ReportLine.create(1)]), True),
     ],
 )
 def test_non_zero(r, boolean):
@@ -157,7 +176,7 @@ def test_non_zero(r, boolean):
 
 @pytest.mark.integration
 def test_contains():
-    r = ReportFile("file.py", lines=[ReportLine(1), ReportLine(2)])
+    r = ReportFile("file.py", lines=[ReportLine.create(1), ReportLine.create(2)])
     assert (2 in r) is True
     assert (7 in r) is False
 
@@ -172,25 +191,27 @@ def test_contains_exception():
 
 @pytest.mark.integration
 def test_report_file_get():
-    r = ReportFile(name="folder/file.py", lines=[ReportLine(), ReportLine()])
-    assert r.get(1) == ReportLine()
+    r = ReportFile(
+        name="folder/file.py", lines=[ReportLine.create(), ReportLine.create()]
+    )
+    assert r.get(1) == ReportLine.create()
 
 
 @pytest.mark.integration
 def test_report_file_get_filter():
     r = ReportFile(
         name="folder/file.py",
-        lines=[ReportLine(), ReportLine()],
+        lines=[ReportLine.create(), ReportLine.create()],
         line_modifier=lambda l: l,
     )
-    assert r.get(1) == ReportLine()
+    assert r.get(1) == ReportLine.create()
 
 
 @pytest.mark.integration
 def test_report_file_get_filter_none():
     r = ReportFile(
         name="folder/file.py",
-        lines=[ReportLine(), ReportLine()],
+        lines=[ReportLine.create(), ReportLine.create()],
         line_modifier=lambda l: None,
     )
     assert r.get(1) is None
@@ -221,11 +242,11 @@ def test_report_file_get_exception(get_val, error_message):
             False,
             [],
         ),
-        (ReportFile(name="file.py"), True, [(1, ReportLine(1))]),
+        (ReportFile(name="file.py"), True, [(1, ReportLine.create(1))]),
     ],
 )
 def test_append(r, boolean, lines):
-    assert r.append(1, ReportLine(1)) is boolean
+    assert r.append(1, ReportLine.create(1)) is boolean
     assert list(r.lines) == lines
 
 
@@ -233,9 +254,9 @@ def test_append(r, boolean, lines):
 @pytest.mark.parametrize(
     "key, val, error_message",
     [
-        ("str", ReportLine(), "expecting type int got <class 'str'>"),
+        ("str", ReportLine.create(), "expecting type int got <class 'str'>"),
         (1, "str", "expecting type ReportLine got <class 'str'>"),
-        (-1, ReportLine(), "Line number must be greater then 0. Got -1"),
+        (-1, ReportLine.create(), "Line number must be greater then 0. Got -1"),
     ],
 )
 def test_report_file_append_exception(key, val, error_message):
@@ -254,9 +275,9 @@ def test_report_file_append_exception(key, val, error_message):
         (
             ReportFile(name="file.rb"),
             [],
-            ReportFile(name="file.rb", lines=[ReportLine(2)]),
+            ReportFile(name="file.rb", lines=[ReportLine.create(2)]),
             True,
-            [(1, ReportLine(2))],
+            [(1, ReportLine.create(2))],
         ),
         (
             ReportFile(name="file.rb", totals=[1, 2, 3]),
@@ -301,15 +322,15 @@ def test_totals(r, totals):
     "lines_before, line_modifier, lines_after",
     [
         (
-            [(1, ReportLine(1)), (2, ReportLine(2))],
+            [(1, ReportLine.create(1)), (2, ReportLine.create(2))],
             None,
-            [(1, ReportLine(1)), (2, ReportLine(2))],
+            [(1, ReportLine.create(1)), (2, ReportLine.create(2))],
         ),
-        ([(1, ReportLine(1)), (2, ReportLine(2))], lambda l: None, []),
+        ([(1, ReportLine.create(1)), (2, ReportLine.create(2))], lambda l: None, []),
     ],
 )
 def test_apply_line_modifier(lines_before, line_modifier, lines_after):
-    r = ReportFile("files", lines=[ReportLine(1), ReportLine(2)])
+    r = ReportFile("files", lines=[ReportLine.create(1), ReportLine.create(2)])
     assert list(r.lines) == lines_before
     r.apply_line_modifier(line_modifier)
     assert list(r.lines) == lines_after
@@ -322,12 +343,12 @@ def test_apply_line_modifier(lines_before, line_modifier, lines_after):
         (
             ReportFile(
                 name="folder/file.py",
-                lines=[ReportLine(1), ReportLine(0)],
+                lines=[ReportLine.create(1), ReportLine.create(0)],
                 line_modifier=lambda l: None,
             ),
             [],
         ),
-        (ReportFile(name="asd", lines=[[1]]), [(1, ReportLine(1))]),
+        (ReportFile(name="asd", lines=[[1]]), [(1, ReportLine.create(1))]),
     ],
 )
 def test_report_file_lines(r, lines):
@@ -343,13 +364,13 @@ def test_report_iter():
 
     r = ReportFile(
         name="folder/file.py",
-        lines=[ReportLine(coverage=1), ReportLine(coverage=0)],
+        lines=[ReportLine.create(coverage=1), ReportLine.create(coverage=0)],
         line_modifier=filter_lines,
     )
     lines = []
     for ln in r:
         lines.append(ln)
-    assert lines == [ReportLine(coverage=1), None, None]
+    assert lines == [ReportLine.create(coverage=1), None, None]
 
 
 @pytest.mark.integration
@@ -368,7 +389,7 @@ def test_report_iter():
             False,
         ),
         (
-            ReportFile("file.py", lines=[ReportLine(1), ReportLine(2)]),
+            ReportFile("file.py", lines=[ReportLine.create(1), ReportLine.create(2)]),
             {
                 "segments": [
                     {"header": [1, 1, 1, 1], "lines": ["- afefe", "+ fefe", "="]}
@@ -384,7 +405,7 @@ def test_report_iter():
                     {"header": [1, 1, 1, 1], "lines": ["- afefe", "+ fefe", "="]}
                 ]
             },
-            ReportFile("new.py", lines=[ReportLine(1), ReportLine(2)]),
+            ReportFile("new.py", lines=[ReportLine.create(1), ReportLine.create(2)]),
             True,
         ),
     ],
@@ -395,7 +416,9 @@ def test_does_diff_adjust_tracked_lines(r, diff, new_file, boolean):
 
 @pytest.mark.integration
 def test_shift_lines_by_diff():
-    r = ReportFile(name="folder/file.py", lines=[ReportLine(), ReportLine()])
+    r = ReportFile(
+        name="folder/file.py", lines=[ReportLine.create(), ReportLine.create()]
+    )
     assert len(list(r.lines)) == 2
     r.shift_lines_by_diff(
         {
@@ -416,7 +439,10 @@ def test_shift_lines_by_diff():
     "r, encoded_val",
     [
         (ReportFile("name.py"), "{}\n"),
-        (ReportFile("name.py", lines=[ReportLine(1), ReportLine(2)]), "null\n[1]\n[2]"),
+        (
+            ReportFile("name.py", lines=[ReportLine.create(1), ReportLine.create(2)]),
+            "null\n[1]\n[2]",
+        ),
     ],
 )
 def test_encode(r, encoded_val):
@@ -428,22 +454,44 @@ def test_encode(r, encoded_val):
     "r, lines_before, ignore_options, lines_after",
     [
         (
-            ReportFile("file.py", lines=[ReportLine(0)]),
-            [(1, ReportLine(0))],
+            ReportFile("file.py", lines=[ReportLine.create(0)]),
+            [(1, ReportLine.create(0))],
             {},
-            [(1, ReportLine(0))],
+            [(1, ReportLine.create(0))],
         ),
         (
-            ReportFile("file.py", lines=[ReportLine(0), ReportLine(1), ReportLine(2)]),
-            [(1, ReportLine(0)), (2, ReportLine(1)), (3, ReportLine(2))],
+            ReportFile(
+                "file.py",
+                lines=[
+                    ReportLine.create(0),
+                    ReportLine.create(1),
+                    ReportLine.create(2),
+                ],
+            ),
+            [
+                (1, ReportLine.create(0)),
+                (2, ReportLine.create(1)),
+                (3, ReportLine.create(2)),
+            ],
             {"eof": 1},
-            [(1, ReportLine(0))],
+            [(1, ReportLine.create(0))],
         ),
         (
-            ReportFile("file.py", lines=[ReportLine(0), ReportLine(1), ReportLine(2)]),
-            [(1, ReportLine(0)), (2, ReportLine(1)), (3, ReportLine(2))],
+            ReportFile(
+                "file.py",
+                lines=[
+                    ReportLine.create(0),
+                    ReportLine.create(1),
+                    ReportLine.create(2),
+                ],
+            ),
+            [
+                (1, ReportLine.create(0)),
+                (2, ReportLine.create(1)),
+                (3, ReportLine.create(2)),
+            ],
             {"lines": [1, 2]},
-            [(3, ReportLine(2))],
+            [(3, ReportLine.create(2))],
         ),
     ],
 )

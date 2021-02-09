@@ -47,34 +47,6 @@ def admin_handler():
 
 class TestGitlabTestCase(object):
     @pytest.mark.asyncio
-    async def test_api_client_error_unreachable(self, valid_handler, mocker):
-        mocked_fetch = mocker.patch.object(Gitlab, "fetch")
-        mocked_fetch.side_effect = HTTPError(599, "message")
-        method = "GET"
-        url = "random_url"
-        with pytest.raises(TorngitServerUnreachableError):
-            await valid_handler.api(method, url)
-
-    @pytest.mark.asyncio
-    async def test_api_client_error_server_error(self, valid_handler, mocker):
-        mocked_fetch = mocker.patch.object(Gitlab, "fetch")
-        mocked_fetch.side_effect = HTTPError(503, "message")
-        method = "GET"
-        url = "random_url"
-        with pytest.raises(TorngitServer5xxCodeError):
-            await valid_handler.api(method, url)
-
-    @pytest.mark.asyncio
-    async def test_api_client_error_client_error(self, valid_handler, mocker):
-        mocked_fetch = mocker.patch.object(Gitlab, "fetch")
-        mock_response = mocker.MagicMock()
-        mocked_fetch.side_effect = HTTPError(404, "message", mock_response)
-        method = "GET"
-        url = "random_url"
-        with pytest.raises(TorngitClientError):
-            await valid_handler.api(method, url)
-
-    @pytest.mark.asyncio
     async def test_get_is_admin(self, admin_handler):
         user = dict(service_id="3108129")
         owner = (dict(username="hootener"),)
@@ -994,10 +966,11 @@ class TestGitlabTestCase(object):
                 key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
             ),
         )
-        res = handler.make_paginated_call("/groups", max_per_page=3, default_kwargs={})
+        res = handler.make_paginated_call("/groups", max_per_page=4, default_kwargs={})
         res = [i async for i in res]
         assert len(res) == 3
-        assert list(len(p) for p in res) == [3, 3, 2]
+        assert list(len(p) for p in res) == [4, 4, 1]
+        assert codecov_vcr.play_count == 3
 
     @pytest.mark.asyncio
     async def test_make_paginated_call_max_number_of_pages(self, codecov_vcr):

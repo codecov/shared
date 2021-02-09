@@ -2,92 +2,78 @@ interactions:
 - request:
     body: '{"content": {"raw": "Hello world"}}'
     headers:
-      Accept: [application/json]
-      Content-Type: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Default
     method: POST
     uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
   response:
-    body: {string: '{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127"}},
-        "deleted": false, "pullrequest": {"type": "pullrequest", "id": 1, "links":
-        {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1"},
-        "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1"}},
-        "title": "Hahaa That is a PR"}, "content": {"raw": "Hello world", "markup":
-        "markdown", "html": "<p>Hello world</p>", "type": "rendered"}, "created_on":
-        "2019-08-24T07:22:19.710114+00:00", "user": {"display_name": "Thiago Ramos",
-        "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href":
-        "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
-        "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
-        "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
-        "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
-        "updated_on": "2019-08-24T07:22:19.719805+00:00", "type": "pullrequest_comment",
-        "id": 114320127}'}
+    content: '{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127"}},
+      "deleted": false, "pullrequest": {"type": "pullrequest", "id": 1, "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1"}},
+      "title": "Hahaa That is a PR"}, "content": {"raw": "Hello world", "markup":
+      "markdown", "html": "<p>Hello world</p>", "type": "rendered"}, "created_on":
+      "2019-08-24T07:22:19.710114+00:00", "user": {"display_name": "Thiago Ramos",
+      "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "updated_on": "2019-08-24T07:22:19.719805+00:00", "type": "pullrequest_comment",
+      "id": 114320127}'
     headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - [Authorization, Accept-Encoding]
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Sat, 24 Aug 2019 07:22:19 GMT']
-    - !!python/tuple
-      - Location
-      - ['https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127']
-    - !!python/tuple
-      - X-Served-By
-      - [app-146]
-    - !!python/tuple
-      - Etag
-      - ['"gz[18e862913e8cea383d83bfaadb5d8482]"']
-    - !!python/tuple
-      - X-Static-Version
-      - [4973dbe55bef]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [pullrequest]
-    - !!python/tuple
-      - X-Credential-Type
-      - [oauth1]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.294704914093']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Reads-Before-Write-From
-      - [default]
-    - !!python/tuple
-      - X-Request-Count
-      - ['59']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Version
-      - [4973dbe55bef]
-    - !!python/tuple
-      - X-Cache-Info
-      - [not cacheable; request wasn't a GET or HEAD]
-    - !!python/tuple
-      - X-Consumed-Content-Encoding
-      - [gzip]
-    status: {code: 201, message: CREATED}
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 24 Aug 2019 07:22:19 GMT
+      Etag:
+      - '"gz[18e862913e8cea383d83bfaadb5d8482]"'
+      Location:
+      - https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      - Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.294704914093'
+      X-Request-Count:
+      - '59'
+      X-Served-By:
+      - app-146
+      X-Static-Version:
+      - 4973dbe55bef
+      X-Version:
+      - 4973dbe55bef
+    status:
+      code: 201
+      message: CREATED
+    status_code: 201
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
 version: 1

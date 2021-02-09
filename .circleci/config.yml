@@ -19,7 +19,7 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.7.7
+      - image: circleci/python:3.7.9
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -34,22 +34,25 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v3-dependencies-{{ checksum "setup.py" }}
+          - v02-dependencies-{{ checksum "setup.py" }}
           # fallback to using the latest cache if no exact match is found
-          - v3-dependencies-
+          - v02-dependencies-
 
       - run:
           name: install dependencies
           command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            source $HOME/.cargo/env
             python3 -m venv venv
             . venv/bin/activate
+            pip uninstall ribs -y
             pip install -r requirements.txt
             pip install -r tests/requirements.txt
 
       - save_cache:
           paths:
             - ./venv
-          key: v3-dependencies-{{ checksum "setup.py" }}
+          key: v02-dependencies-{{ checksum "setup.py" }}
         
       - run:
           name: run tests
@@ -73,8 +76,6 @@ workflows:
             tags:
               only: /.*/
       - build:
-          requires:
-            - linter
           filters:
             tags:
               only: /.*/

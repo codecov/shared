@@ -1,253 +1,109 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=closed
-  response:
-    body:
-      string: '[{"id":181852,"iid":2,"project_id":187725,"title":"Other branch","description":"sadfsadf","state":"closed","created_at":"2015-10-20T10:07:15.430Z","updated_at":"2015-10-20T10:47:25.003Z","merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"target_branch":"master","source_branch":"other-branch","user_notes_count":1,"upvotes":0,"downvotes":0,"assignee":null,"author":{"id":256075,"name":"Mahmut
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=closed
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=closed
+      content: '[{"id":181852,"iid":2,"project_id":187725,"title":"Other branch","description":"sadfsadf","state":"closed","created_at":"2015-10-20T10:07:15.430Z","updated_at":"2015-10-20T10:47:25.003Z","merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"target_branch":"master","source_branch":"other-branch","user_notes_count":1,"upvotes":0,"downvotes":0,"assignee":null,"author":{"id":256075,"name":"Mahmut
         Bayri","username":"mahmutbayri","state":"active","avatar_url":"https://secure.gravatar.com/avatar/d28ee7e15f316b46fd6904449c22188f?s=80\u0026d=identicon","web_url":"https://gitlab.com/mahmutbayri"},"assignees":[],"source_project_id":482893,"target_project_id":187725,"labels":[],"work_in_progress":false,"milestone":null,"merge_when_pipeline_succeeds":false,"merge_status":"can_be_merged","sha":"02f639e9edeec1ddaf8029ebc047707a53bc5c18","merge_commit_sha":null,"squash_commit_sha":null,"discussion_locked":null,"should_remove_source_branch":null,"force_remove_source_branch":null,"allow_collaboration":null,"allow_maintainer_to_push":null,"reference":"!2","references":{"short":"!2","relative":"!2","full":"codecov/ci-repo!2"},"web_url":"https://gitlab.com/codecov/ci-repo/-/merge_requests/2","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"squash":false,"task_completion_status":{"count":0,"completed_count":0},"has_conflicts":false,"blocking_discussions_resolved":true,"approvals_before_merge":null}]'
-    headers:
-    - !!python/tuple
-      - X-Http-Reason
-      - - OK
-    - !!python/tuple
-      - Date
-      - - Wed, 17 Jun 2020 22:58:09 GMT
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    - !!python/tuple
-      - Transfer-Encoding
-      - - chunked
-    - !!python/tuple
-      - Connection
-      - - keep-alive
-    - !!python/tuple
-      - Set-Cookie
-      - - __cfduid=d008249b67a70a8bafae10ae4d5822b981592434689; expires=Fri, 17-Jul-20
-          22:58:09 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax; Secure
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - Etag
-      - - W/"c4b9048e8f53b6ebd3896cf4e5944a77"
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=closed&with_labels_details=false&with_merge_status_recheck=false>;
+      headers:
+        X-Http-Reason: OK
+        Date: Wed, 17 Jun 2020 22:58:09 GMT
+        Content-Type: application/json
+        Transfer-Encoding: chunked
+        Connection: keep-alive
+        Set-Cookie: __cfduid=d008249b67a70a8bafae10ae4d5822b981592434689; expires=Fri,
+          17-Jul-20 22:58:09 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"c4b9048e8f53b6ebd3896cf4e5944a77"
+        Link: <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=closed&with_labels_details=false&with_merge_status_recheck=false>;
           rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=closed&with_labels_details=false&with_merge_status_recheck=false>;
           rel="last"
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Per-Page
-      - - '20'
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - X-Request-Id
-      - - rZDjDPw54C7
-    - !!python/tuple
-      - X-Runtime
-      - - '0.077213'
-    - !!python/tuple
-      - X-Total
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '4'
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '596'
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1592434749'
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 17 Jun 2020 22:59:09 GMT
-    - !!python/tuple
-      - Gitlab-Lb
-      - - fe-09-lb-gprd
-    - !!python/tuple
-      - Gitlab-Sv
-      - - localhost
-    - !!python/tuple
-      - Cf-Cache-Status
-      - - DYNAMIC
-    - !!python/tuple
-      - Cf-Request-Id
-      - - 03661a1d000000f6e82eb18200000001
-    - !!python/tuple
-      - Expect-Ct
-      - - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
-    - !!python/tuple
-      - Server
-      - - cloudflare
-    - !!python/tuple
-      - Cf-Ray
-      - - 5a505fa80938f6e8-GRU
-    - !!python/tuple
-      - Content-Encoding
-      - - gzip
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=closed
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
-  response:
-    body:
-      string: '[{"id":59639,"iid":1,"project_id":187725,"title":"Other branch","description":"","state":"opened","created_at":"2015-03-12T04:40:38.680Z","updated_at":"2020-04-24T02:53:32.995Z","merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"target_branch":"master","source_branch":"other-branch","user_notes_count":91,"upvotes":0,"downvotes":0,"assignee":null,"author":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://assets.gitlab-static.net/uploads/-/system/user/avatar/109640/avatar.png","web_url":"https://gitlab.com/codecov"},"assignees":[],"source_project_id":187725,"target_project_id":187725,"labels":[],"work_in_progress":false,"milestone":null,"merge_when_pipeline_succeeds":false,"merge_status":"can_be_merged","sha":"dd798926730aad14aadf72281204bdb85734fe67","merge_commit_sha":null,"squash_commit_sha":null,"discussion_locked":null,"should_remove_source_branch":null,"force_remove_source_branch":null,"reference":"!1","references":{"short":"!1","relative":"!1","full":"codecov/ci-repo!1"},"web_url":"https://gitlab.com/codecov/ci-repo/-/merge_requests/1","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"squash":false,"task_completion_status":{"count":0,"completed_count":0},"has_conflicts":false,"blocking_discussions_resolved":true,"approvals_before_merge":null}]'
-    headers:
-    - !!python/tuple
-      - X-Http-Reason
-      - - OK
-    - !!python/tuple
-      - Date
-      - - Wed, 17 Jun 2020 22:58:09 GMT
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    - !!python/tuple
-      - Transfer-Encoding
-      - - chunked
-    - !!python/tuple
-      - Connection
-      - - keep-alive
-    - !!python/tuple
-      - Set-Cookie
-      - - __cfduid=d008249b67a70a8bafae10ae4d5822b981592434689; expires=Fri, 17-Jul-20
-          22:58:09 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax; Secure
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - Etag
-      - - W/"a73070a70ef694691570e4dae7aa39e0"
-    - !!python/tuple
-      - Link
-      - - <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened&with_labels_details=false&with_merge_status_recheck=false>;
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: rZDjDPw54C7
+        X-Runtime: '0.077213'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '4'
+        Ratelimit-Remaining: '596'
+        Ratelimit-Reset: '1592434749'
+        Ratelimit-Resettime: Wed, 17 Jun 2020 22:59:09 GMT
+        Gitlab-Lb: fe-09-lb-gprd
+        Gitlab-Sv: localhost
+        Cf-Cache-Status: DYNAMIC
+        Cf-Request-Id: 03661a1d000000f6e82eb18200000001
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 5a505fa80938f6e8-GRU
+        Content-Encoding: gzip
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+      content: '[{"id":59639,"iid":1,"project_id":187725,"title":"Other branch","description":"","state":"opened","created_at":"2015-03-12T04:40:38.680Z","updated_at":"2020-04-24T02:53:32.995Z","merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"target_branch":"master","source_branch":"other-branch","user_notes_count":91,"upvotes":0,"downvotes":0,"assignee":null,"author":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://assets.gitlab-static.net/uploads/-/system/user/avatar/109640/avatar.png","web_url":"https://gitlab.com/codecov"},"assignees":[],"source_project_id":187725,"target_project_id":187725,"labels":[],"work_in_progress":false,"milestone":null,"merge_when_pipeline_succeeds":false,"merge_status":"can_be_merged","sha":"dd798926730aad14aadf72281204bdb85734fe67","merge_commit_sha":null,"squash_commit_sha":null,"discussion_locked":null,"should_remove_source_branch":null,"force_remove_source_branch":null,"reference":"!1","references":{"short":"!1","relative":"!1","full":"codecov/ci-repo!1"},"web_url":"https://gitlab.com/codecov/ci-repo/-/merge_requests/1","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"squash":false,"task_completion_status":{"count":0,"completed_count":0},"has_conflicts":false,"blocking_discussions_resolved":true,"approvals_before_merge":null}]'
+      headers:
+        X-Http-Reason: OK
+        Date: Wed, 17 Jun 2020 22:58:09 GMT
+        Content-Type: application/json
+        Transfer-Encoding: chunked
+        Connection: keep-alive
+        Set-Cookie: __cfduid=d008249b67a70a8bafae10ae4d5822b981592434689; expires=Fri,
+          17-Jul-20 22:58:09 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"a73070a70ef694691570e4dae7aa39e0"
+        Link: <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened&with_labels_details=false&with_merge_status_recheck=false>;
           rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened&with_labels_details=false&with_merge_status_recheck=false>;
           rel="last"
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - X-Next-Page
-      - - ''
-    - !!python/tuple
-      - X-Page
-      - - '1'
-    - !!python/tuple
-      - X-Per-Page
-      - - '20'
-    - !!python/tuple
-      - X-Prev-Page
-      - - ''
-    - !!python/tuple
-      - X-Request-Id
-      - - RAvSJfd7wN6
-    - !!python/tuple
-      - X-Runtime
-      - - '0.085442'
-    - !!python/tuple
-      - X-Total
-      - - '1'
-    - !!python/tuple
-      - X-Total-Pages
-      - - '1'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '5'
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '595'
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1592434749'
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Wed, 17 Jun 2020 22:59:09 GMT
-    - !!python/tuple
-      - Gitlab-Lb
-      - - fe-05-lb-gprd
-    - !!python/tuple
-      - Gitlab-Sv
-      - - localhost
-    - !!python/tuple
-      - Cf-Cache-Status
-      - - DYNAMIC
-    - !!python/tuple
-      - Cf-Request-Id
-      - - 03661a1e2a0000f6e82eb33200000001
-    - !!python/tuple
-      - Expect-Ct
-      - - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
-    - !!python/tuple
-      - Server
-      - - cloudflare
-    - !!python/tuple
-      - Cf-Ray
-      - - 5a505fa9dcaaf6e8-GRU
-    - !!python/tuple
-      - Content-Encoding
-      - - gzip
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: RAvSJfd7wN6
+        X-Runtime: '0.085442'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '5'
+        Ratelimit-Remaining: '595'
+        Ratelimit-Reset: '1592434749'
+        Ratelimit-Resettime: Wed, 17 Jun 2020 22:59:09 GMT
+        Gitlab-Lb: fe-05-lb-gprd
+        Gitlab-Sv: localhost
+        Cf-Cache-Status: DYNAMIC
+        Cf-Request-Id: 03661a1e2a0000f6e82eb33200000001
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 5a505fa9dcaaf6e8-GRU
+        Content-Encoding: gzip
+      status_code: 200
 version: 1

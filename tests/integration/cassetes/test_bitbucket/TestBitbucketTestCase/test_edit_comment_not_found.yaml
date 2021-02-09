@@ -2,72 +2,59 @@ interactions:
 - request:
     body: '{"content": {"raw": "Hello world number 2"}}'
     headers:
-      Accept: [application/json]
-      Content-Type: [application/json]
-      User-Agent: [Default]
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Default
     method: PUT
     uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113979999?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631150&oauth_nonce=5aeac543acea436d9f0594d750a98dd3&oauth_version=1.0&oauth_signature=16DIGrfTGyeo8k90tViVI%2BcqBPw%3D
   response:
-    body: {string: '{"type": "error", "error": {"message": "113979999"}}'}
+    content: '{"type": "error", "error": {"message": "113979999"}}'
     headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Vary
-      - [Authorization]
-    - !!python/tuple
-      - Content-Type
-      - [application/json; charset=utf-8]
-    - !!python/tuple
-      - X-Oauth-Scopes
-      - ['pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-          repository:delete, repository:admin, project:write, team:write, account:write']
-    - !!python/tuple
-      - Strict-Transport-Security
-      - [max-age=31536000; includeSubDomains; preload]
-    - !!python/tuple
-      - Date
-      - ['Sat, 24 Aug 2019 07:19:11 GMT']
-    - !!python/tuple
-      - X-Served-By
-      - [app-159]
-    - !!python/tuple
-      - Etag
-      - ['"f30cdf4645cc1f60db842d167b97cab5"']
-    - !!python/tuple
-      - X-Static-Version
-      - [4973dbe55bef]
-    - !!python/tuple
-      - X-Accepted-Oauth-Scopes
-      - [pullrequest]
-    - !!python/tuple
-      - X-Credential-Type
-      - [oauth1]
-    - !!python/tuple
-      - X-Render-Time
-      - ['0.0458209514618']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - X-Reads-Before-Write-From
-      - [default]
-    - !!python/tuple
-      - X-Request-Count
-      - ['614']
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Version
-      - [4973dbe55bef]
-    - !!python/tuple
-      - X-Cache-Info
-      - [not cacheable; request wasn't a GET or HEAD]
-    - !!python/tuple
-      - Content-Length
-      - ['52']
-    status: {code: 404, message: Not Found}
+      Connection:
+      - close
+      Content-Length:
+      - '52'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 24 Aug 2019 07:19:11 GMT
+      Etag:
+      - '"f30cdf4645cc1f60db842d167b97cab5"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.0458209514618'
+      X-Request-Count:
+      - '614'
+      X-Served-By:
+      - app-159
+      X-Static-Version:
+      - 4973dbe55bef
+      X-Version:
+      - 4973dbe55bef
+    status:
+      code: 404
+      message: Not Found
+    status_code: 404
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113979999?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631150&oauth_nonce=5aeac543acea436d9f0594d750a98dd3&oauth_version=1.0&oauth_signature=16DIGrfTGyeo8k90tViVI%2BcqBPw%3D
 version: 1

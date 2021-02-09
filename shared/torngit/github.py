@@ -1,15 +1,14 @@
 import os
-import socket
 import hashlib
 import base64
 from base64 import b64decode
 from typing import Optional, List
 import logging
 
-from tornado.auth import OAuth2Mixin
+import httpx
+
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPError as ClientError
-from tornado.escape import json_decode, json_encode, url_escape
+from tornado.escape import url_escape
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
@@ -28,7 +27,7 @@ log = logging.getLogger(__name__)
 METRICS_PREFIX = "services.torngit.github"
 
 
-class Github(TorngitBaseAdapter, OAuth2Mixin):
+class Github(TorngitBaseAdapter):
     service = "github"
     service_url = "https://github.com"
     api_url = "https://api.github.com"
@@ -49,7 +48,17 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         author="{username}/{name}/commits?author=%(author)s",
     )
 
-    async def api(self, method, url, body=None, headers=None, token=None, **args):
+    async def api(
+        self,
+        client,
+        method,
+        url,
+        body=None,
+        headers=None,
+        token=None,
+        statuses_to_retry=None,
+        **args,
+    ):
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -76,138 +85,163 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         url = url_concat(url, args).replace(" ", "%20")
 
         kwargs = dict(
-            method=method,
-            body=json_encode(body) if body else None,
-            headers=_headers,
-            ca_certs=self.verify_ssl if type(self.verify_ssl) is not bool else None,
-            validate_cert=self.verify_ssl if type(self.verify_ssl) is bool else None,
-            follow_redirects=False,
-            connect_timeout=self._timeouts[0],
-            request_timeout=self._timeouts[1],
+            json=body if body else None, headers=_headers, allow_redirects=False,
         )
-        try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run"):
-                res = await self.fetch(url, **kwargs)
-        except ClientError as e:
-            if e.code == 599:
+        max_number_retries = 3
+        for current_retry in range(1, max_number_retries + 1):
+            try:
+                with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
+                    res = await client.request(method, url, **kwargs)
+                logged_body = None
+                if res.status_code >= 300 and res.text is not None:
+                    logged_body = res.text
+                log.log(
+                    logging.WARNING if res.status_code >= 300 else logging.INFO,
+                    "Github HTTP %s",
+                    res.status_code,
+                    extra=dict(
+                        current_retry=current_retry,
+                        time_taken=timer.ms,
+                        body=logged_body,
+                        rlx=res.headers.get("X-RateLimit-Remaining"),
+                        rly=res.headers.get("X-RateLimit-Limit"),
+                        rlr=res.headers.get("X-RateLimit-Reset"),
+                        **log_dict,
+                    ),
+                )
+            except (httpx.TimeoutException, httpx.NetworkError):
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
-                    "Github was not able to be reached, server timed out."
+                    "GitHub was not able to be reached."
                 )
-            elif e.code >= 500:
-                metrics.incr(f"{METRICS_PREFIX}.api.5xx")
-                raise TorngitServer5xxCodeError("Github is having 5xx issues")
-            log.warning(
-                "Github HTTP %s" % e.response.code,
-                extra=dict(
-                    url=url,
-                    body=e.response.body.decode()
-                    if e.response.body is not None
-                    else "NORESPONSE",
-                    rlx=e.response.headers.get("X-RateLimit-Remaining"),
-                    rly=e.response.headers.get("X-RateLimit-Limit"),
-                    rlr=e.response.headers.get("X-RateLimit-Reset"),
-                    **log_dict,
-                ),
-            )
-            message = f"Github API: {e.message}"
-            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-            raise TorngitClientError(e.code, e.response, message)
-
-        except socket.gaierror:
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
-            raise TorngitServerUnreachableError("GitHub was not able to be reached.")
-
-        else:
-            log.info(
-                "GitHub HTTP %s" % res.code,
-                extra=dict(
-                    rlx=res.headers.get("X-RateLimit-Remaining"),
-                    rly=res.headers.get("X-RateLimit-Limit"),
-                    rlr=res.headers.get("X-RateLimit-Reset"),
-                    **log_dict,
-                ),
-            )
-            if res.code == 204:
-                return None
-
-            elif res.headers.get("Content-Type")[:16] == "application/json":
-                return json_decode(res.body)
-
+            if (
+                not statuses_to_retry
+                or res.status_code not in statuses_to_retry
+                or current_retry >= max_number_retries  # Last retry
+            ):
+                if res.status_code == 599:
+                    metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
+                    raise TorngitServerUnreachableError(
+                        "Github was not able to be reached, server timed out."
+                    )
+                elif res.status_code >= 500:
+                    metrics.incr(f"{METRICS_PREFIX}.api.5xx")
+                    raise TorngitServer5xxCodeError("Github is having 5xx issues")
+                elif res.status_code >= 300:
+                    message = f"Github API: {res.reason_phrase}"
+                    metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
+                    raise TorngitClientError(res.status_code, res, message)
+                if res.status_code == 204:
+                    return None
+                elif res.headers.get("Content-Type")[:16] == "application/json":
+                    return res.json()
+                else:
+                    try:
+                        return res.text
+                    except UnicodeDecodeError as uerror:
+                        log.warning(
+                            "Unable to parse Github response",
+                            extra=dict(
+                                first_bytes=res.content[:100],
+                                final_bytes=res.content[-100:],
+                                errored_bytes=res.content[
+                                    (uerror.start - 10) : (uerror.start + 10)
+                                ],
+                                declared_contenttype=res.headers.get("content-type"),
+                            ),
+                        )
+                        res.encoding = None
+                        return res.text
             else:
-                return res.body
+                log.info(
+                    "Retrying due to retriable status",
+                    extra=dict(status=res.status_code, **log_dict),
+                )
 
     # Generic
     # -------
     async def get_branches(self, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
-        # https://developer.github.com/v3/repos/#list-branches
-        page = 0
-        branches = []
-        while True:
-            page += 1
-            res = await self.api(
-                "get",
-                "/repos/%s/branches" % self.slug,
-                per_page=100,
-                page=page,
-                token=token,
-            )
-            if len(res) == 0:
-                break
-            branches.extend([(b["name"], b["commit"]["sha"]) for b in res])
-            if len(res) < 100:
-                break
-        return branches
+        async with self.get_client() as client:
+            token = self.get_token_by_type_if_none(token, TokenType.read)
+            # https://developer.github.com/v3/repos/#list-branches
+            page = 0
+            branches = []
+            while True:
+                page += 1
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/branches" % self.slug,
+                    per_page=100,
+                    page=page,
+                    token=token,
+                )
+                if len(res) == 0:
+                    break
+                branches.extend([(b["name"], b["commit"]["sha"]) for b in res])
+                if len(res) < 100:
+                    break
+            return branches
 
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
-        session = await self.api(
-            "get",
-            self.service_url + "/login/oauth/access_token",
-            code=code,
-            client_id=creds["key"],
-            client_secret=creds["secret"],
-        )
+        async with self.get_client() as client:
+            session = await self.api(
+                client,
+                "get",
+                self.service_url + "/login/oauth/access_token",
+                code=code,
+                client_id=creds["key"],
+                client_secret=creds["secret"],
+            )
 
-        if session.get("access_token"):
-            # set current token
-            self.set_token(dict(key=session["access_token"]))
+            if session.get("access_token"):
+                # set current token
+                self.set_token(dict(key=session["access_token"]))
 
-            user = await self.api("get", "/user")
-            user.update(session or {})
+                user = await self.api(client, "get", "/user")
+                user.update(session or {})
 
-            return user
+                return user
 
-        else:
-            return None
+            else:
+                return None
 
     async def get_is_admin(self, user, token=None):
-        # https://developer.github.com/v3/orgs/members/#get-organization-membership
-        res = await self.api(
-            "get",
-            "/orgs/%s/memberships/%s"
-            % (self.data["owner"]["username"], user["username"]),
-            token=token,
-        )
-        return res["state"] == "active" and res["role"] == "admin"
+        async with self.get_client() as client:
+            # https://developer.github.com/v3/orgs/members/#get-organization-membership
+            res = await self.api(
+                client,
+                "get",
+                "/orgs/%s/memberships/%s"
+                % (self.data["owner"]["username"], user["username"]),
+                token=token,
+            )
+            return res["state"] == "active" and res["role"] == "admin"
 
     async def get_authenticated(self, token=None):
         """Returns (can_view, can_edit)"""
         # https://developer.github.com/v3/repos/#get
-        r = await self.api("get", "/repos/%s" % self.slug, token=token)
-        ok = r["permissions"]["admin"] or r["permissions"]["push"]
-        return (True, ok)
+        async with self.get_client() as client:
+            r = await self.api(client, "get", "/repos/%s" % self.slug, token=token)
+            ok = r["permissions"]["admin"] or r["permissions"]["push"]
+            return (True, ok)
 
     async def get_repository(self, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        if self.data["repo"].get("service_id") is None:
-            # https://developer.github.com/v3/repos/#get
-            res = await self.api("get", "/repos/%s" % self.slug, token=token)
-        else:
-            res = await self.api(
-                "get", "/repositories/%s" % self.data["repo"]["service_id"], token=token
-            )
+        async with self.get_client() as client:
+            if self.data["repo"].get("service_id") is None:
+                # https://developer.github.com/v3/repos/#get
+                res = await self.api(
+                    client, "get", "/repos/%s" % self.slug, token=token
+                )
+            else:
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repositories/%s" % self.data["repo"]["service_id"],
+                    token=token,
+                )
 
         username, repo = tuple(res["full_name"].split("/", 1))
         parent = res.get("parent")
@@ -246,21 +280,25 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         """
         repos = []
         page = 0
-        while True:
-            page += 1
-            # https://developer.github.com/v3/repos/#list-your-repositories
-            res = await self.api(
-                "get",
-                "/installation/repositories?per_page=100&page=%d" % page,
-                headers={"Accept": "application/vnd.github.machine-man-preview+json"},
-            )
-            if len(res["repositories"]) == 0:
-                break
-            repos.extend([repo["id"] for repo in res["repositories"]])
-            if len(res["repositories"]) <= 100:
-                break
+        async with self.get_client() as client:
+            while True:
+                page += 1
+                # https://developer.github.com/v3/repos/#list-your-repositories
+                res = await self.api(
+                    client,
+                    "get",
+                    "/installation/repositories?per_page=100&page=%d" % page,
+                    headers={
+                        "Accept": "application/vnd.github.machine-man-preview+json"
+                    },
+                )
+                if len(res["repositories"]) == 0:
+                    break
+                repos.extend([repo["id"] for repo in res["repositories"]])
+                if len(res["repositories"]) < 100:
+                    break
 
-        return repos
+            return repos
 
     async def list_repos(self, username=None, token=None):
         """
@@ -270,93 +308,108 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         page = 0
         data = []
-        while True:
-            page += 1
-            # https://developer.github.com/v3/repos/#list-your-repositories
-            if username is None:
-                repos = await self.api(
-                    "get", "/user/repos?per_page=100&page=%d" % page, token=token
-                )
-            else:
-                repos = await self.api(
-                    "get",
-                    "/users/%s/repos?per_page=100&page=%d" % (username, page),
-                    token=token,
-                )
-
-            for repo in repos:
-                _o, _r, parent = repo["owner"]["login"], repo["name"], None
-                if repo["fork"]:
-                    # need to get its source
-                    # https://developer.github.com/v3/repos/#get
-                    try:
-                        parent = await self.api(
-                            "get", "/repos/%s/%s" % (_o, _r), token=token
-                        )
-                        parent = parent["source"]
-                    except Exception:
-                        parent = None
-
-                if parent:
-                    fork = dict(
-                        owner=dict(
-                            service_id=parent["owner"]["id"],
-                            username=parent["owner"]["login"],
-                        ),
-                        repo=dict(
-                            service_id=parent["id"],
-                            name=parent["name"],
-                            language=self._validate_language(parent["language"]),
-                            private=parent["private"],
-                            branch=parent["default_branch"],
-                        ),
+        async with self.get_client() as client:
+            while True:
+                page += 1
+                # https://developer.github.com/v3/repos/#list-your-repositories
+                if username is None:
+                    repos = await self.api(
+                        client,
+                        "get",
+                        "/user/repos?per_page=100&page=%d" % page,
+                        token=token,
                     )
                 else:
-                    fork = None
-
-                data.append(
-                    dict(
-                        owner=dict(service_id=repo["owner"]["id"], username=_o),
-                        repo=dict(
-                            service_id=repo["id"],
-                            name=_r,
-                            language=self._validate_language(repo["language"]),
-                            private=repo["private"],
-                            branch=repo["default_branch"],
-                            fork=fork,
-                        ),
+                    repos = await self.api(
+                        client,
+                        "get",
+                        "/users/%s/repos?per_page=100&page=%d" % (username, page),
+                        token=token,
                     )
-                )
 
-            if len(repos) < 100:
-                break
+                for repo in repos:
+                    _o, _r, parent = repo["owner"]["login"], repo["name"], None
+                    if repo["fork"]:
+                        # need to get its source
+                        # https://developer.github.com/v3/repos/#get
+                        try:
+                            parent = await self.api(
+                                client, "get", "/repos/%s/%s" % (_o, _r), token=token
+                            )
+                            parent = parent["source"]
+                        except Exception:
+                            parent = None
 
-        return data
+                    if parent:
+                        fork = dict(
+                            owner=dict(
+                                service_id=parent["owner"]["id"],
+                                username=parent["owner"]["login"],
+                            ),
+                            repo=dict(
+                                service_id=parent["id"],
+                                name=parent["name"],
+                                language=self._validate_language(parent["language"]),
+                                private=parent["private"],
+                                branch=parent["default_branch"],
+                            ),
+                        )
+                    else:
+                        fork = None
+
+                    data.append(
+                        dict(
+                            owner=dict(service_id=repo["owner"]["id"], username=_o),
+                            repo=dict(
+                                service_id=repo["id"],
+                                name=_r,
+                                language=self._validate_language(repo["language"]),
+                                private=repo["private"],
+                                branch=repo["default_branch"],
+                                fork=fork,
+                            ),
+                        )
+                    )
+
+                if len(repos) < 100:
+                    break
+
+            return data
 
     async def list_teams(self, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/orgs/#list-your-organizations
         page, data = 0, []
-        while True:
-            page += 1
-            orgs = await self.api("get", "/user/orgs", page=page, token=token)
-            if len(orgs) == 0:
-                break
-            # organization names
-            for org in orgs:
-                org = await self.api("get", "/users/%s" % org["login"], token=token)
-                data.append(
-                    dict(
-                        name=org["name"] or org["login"],
-                        id=str(org["id"]),
-                        email=org["email"],
-                        username=org["login"],
-                    )
+        async with self.get_client() as client:
+            while True:
+                page += 1
+                orgs = await self.api(
+                    client,
+                    "get",
+                    "/user/memberships/orgs?state=active",
+                    page=page,
+                    token=token,
                 )
-            if len(orgs) < 30:
-                break
+                if len(orgs) == 0:
+                    break
+                # organization names
+                for org in orgs:
+                    organization = org["organization"]
+                    org = await self.api(
+                        client, "get", "/users/%s" % organization["login"], token=token
+                    )
+                    data.append(
+                        dict(
+                            name=organization.get("name", org["login"]),
+                            id=str(organization["id"]),
+                            email=organization.get("email"),
+                            username=organization["login"],
+                        )
+                    )
+                if len(orgs) < 30:
+                    break
 
-        return data
+            return data
 
     # Commits
     # -------
@@ -364,36 +417,25 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/pulls/#list-commits-on-a-pull-request
         # NOTE limited to 250 commits
-        res = await self.api(
-            "get", "/repos/%s/pulls/%s/commits" % (self.slug, pullid), token=token
-        )
-        return [c["sha"] for c in res]
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                "/repos/%s/pulls/%s/commits" % (self.slug, pullid),
+                token=token,
+            )
+            return [c["sha"] for c in res]
 
     # Webhook
     # -------
     async def post_webhook(self, name, url, events, secret, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
-        res = await self.api(
-            "post",
-            "/repos/%s/hooks" % self.slug,
-            body=dict(
-                name="web",
-                active=True,
-                events=events,
-                config=dict(url=url, secret=secret, content_type="json"),
-            ),
-            token=token,
-        )
-        return res
-
-    async def edit_webhook(self, hookid, name, url, events, secret, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.admin)
-        # https://developer.github.com/v3/repos/hooks/#edit-a-hook
-        try:
-            return await self.api(
-                "patch",
-                "/repos/%s/hooks/%s" % (self.slug, hookid),
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "post",
+                "/repos/%s/hooks" % self.slug,
                 body=dict(
                     name="web",
                     active=True,
@@ -402,10 +444,29 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
                 ),
                 token=token,
             )
+            return res
+
+    async def edit_webhook(self, hookid, name, url, events, secret, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
+        # https://developer.github.com/v3/repos/hooks/#edit-a-hook
+        try:
+            async with self.get_client() as client:
+                return await self.api(
+                    client,
+                    "patch",
+                    "/repos/%s/hooks/%s" % (self.slug, hookid),
+                    body=dict(
+                        name="web",
+                        active=True,
+                        events=events,
+                        config=dict(url=url, secret=secret, content_type="json"),
+                    ),
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(), f"Cannot find webhook {hookid}"
+                    ce.response.text, f"Cannot find webhook {hookid}"
                 )
             raise
 
@@ -413,13 +474,17 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#delete-a-hook
         try:
-            await self.api(
-                "delete", "/repos/%s/hooks/%s" % (self.slug, hookid), token=token
-            )
+            async with self.get_client() as client:
+                await self.api(
+                    client,
+                    "delete",
+                    "/repos/%s/hooks/%s" % (self.slug, hookid),
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(), f"Cannot find webhook {hookid}"
+                    ce.response.text, f"Cannot find webhook {hookid}"
                 )
             raise
         return True
@@ -429,28 +494,32 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
     async def post_comment(self, issueid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
-        res = await self.api(
-            "post",
-            "/repos/%s/issues/%s/comments" % (self.slug, issueid),
-            body=dict(body=body),
-            token=token,
-        )
-        return res
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "post",
+                "/repos/%s/issues/%s/comments" % (self.slug, issueid),
+                body=dict(body=body),
+                token=token,
+            )
+            return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
-            return await self.api(
-                "patch",
-                "/repos/%s/issues/comments/%s" % (self.slug, commentid),
-                body=dict(body=body),
-                token=token,
-            )
+            async with self.get_client() as client:
+                return await self.api(
+                    client,
+                    "patch",
+                    "/repos/%s/issues/comments/%s" % (self.slug, commentid),
+                    body=dict(body=body),
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(),
+                    ce.response.text,
                     f"Cannot find comment {commentid} from PR {issueid}",
                 )
             raise
@@ -459,15 +528,17 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#delete-a-comment
         try:
-            await self.api(
-                "delete",
-                "/repos/%s/issues/comments/%s" % (self.slug, commentid),
-                token=token,
-            )
+            async with self.get_client() as client:
+                await self.api(
+                    client,
+                    "delete",
+                    "/repos/%s/issues/comments/%s" % (self.slug, commentid),
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(),
+                    ce.response.text,
                     f"Cannot find comment {commentid} from PR {issueid}",
                 )
             raise
@@ -489,63 +560,68 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         # https://developer.github.com/v3/repos/statuses
         token = self.get_token_by_type_if_none(token, TokenType.status)
         assert status in ("pending", "success", "error", "failure"), "status not valid"
-        try:
-            res = await self.api(
-                "post",
-                "/repos/%s/statuses/%s" % (self.slug, commit),
-                body=dict(
-                    state=status,
-                    target_url=url,
-                    context=context,
-                    description=description,
-                ),
-                token=token,
-            )
-        except TorngitClientError as ce:
-            raise
-        if merge_commit:
-            await self.api(
-                "post",
-                "/repos/%s/statuses/%s" % (self.slug, merge_commit[0]),
-                body=dict(
-                    state=status,
-                    target_url=url,
-                    context=merge_commit[1],
-                    description=description,
-                ),
-                token=token,
-            )
-        return res
+        async with self.get_client() as client:
+            try:
+                res = await self.api(
+                    client,
+                    "post",
+                    "/repos/%s/statuses/%s" % (self.slug, commit),
+                    body=dict(
+                        state=status,
+                        target_url=url,
+                        context=context,
+                        description=description,
+                    ),
+                    token=token,
+                )
+            except TorngitClientError as ce:
+                raise
+            if merge_commit:
+                await self.api(
+                    client,
+                    "post",
+                    "/repos/%s/statuses/%s" % (self.slug, merge_commit[0]),
+                    body=dict(
+                        state=status,
+                        target_url=url,
+                        context=merge_commit[1],
+                        description=description,
+                    ),
+                    token=token,
+                )
+            return res
 
     async def get_commit_statuses(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.status)
         page = 0
         statuses = []
-        while True:
-            page += 1
-            # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
-            res = await self.api(
-                "get",
-                "/repos/%s/commits/%s/status" % (self.slug, commit),
-                page=page,
-                per_page=100,
-                token=token,
-            )
-            provided_statuses = res.get("statuses", [])
-            statuses.extend(
-                [
-                    {
-                        "time": s["updated_at"],
-                        "state": s["state"],
-                        "description": s["description"],
-                        "url": s["target_url"],
-                        "context": s["context"],
-                    }
-                    for s in provided_statuses
-                ]
-            )
-            if len(provided_statuses) < 100:
-                break
+        async with self.get_client() as client:
+            while True:
+                page += 1
+                # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/commits/%s/status" % (self.slug, commit),
+                    page=page,
+                    per_page=100,
+                    token=token,
+                )
+                provided_statuses = res.get("statuses", [])
+                statuses.extend(
+                    [
+                        {
+                            "time": s["updated_at"],
+                            "state": s["state"],
+                            "description": s["description"],
+                            "url": s["target_url"],
+                            "context": s["context"],
+                        }
+                        for s in provided_statuses
+                    ]
+                )
+                if len(provided_statuses) < 100:
+                    break
 
         return Status(statuses)
 
@@ -555,16 +631,20 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
         try:
-            content = await self.api(
-                "get",
-                "/repos/{0}/contents/{1}".format(self.slug, path.replace(" ", "%20")),
-                ref=ref,
-                token=token,
-            )
+            async with self.get_client() as client:
+                content = await self.api(
+                    client,
+                    "get",
+                    "/repos/{0}/contents/{1}".format(
+                        self.slug, path.replace(" ", "%20")
+                    ),
+                    ref=ref,
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(), f"Path {path} not found at {ref}"
+                    ce.response.text, f"Path {path} not found at {ref}"
                 )
             raise
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
@@ -573,28 +653,34 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
-            res = await self.api(
-                "get",
-                "/repos/%s/commits/%s" % (self.slug, commit),
-                headers={"Accept": "application/vnd.github.v3.diff"},
-                token=token,
-            )
+            async with self.get_client() as client:
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/commits/%s" % (self.slug, commit),
+                    headers={"Accept": "application/vnd.github.v3.diff"},
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 422:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(), f"Commit with id {commit} does not exist"
+                    ce.response.text, f"Commit with id {commit} does not exist"
                 )
             raise
-        return self.diff_to_json(res.decode("utf-8"))
+        return self.diff_to_json(res)
 
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
-        res = await self.api(
-            "get", "/repos/%s/compare/%s...%s" % (self.slug, base, head), token=token
-        )
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                "/repos/%s/compare/%s...%s" % (self.slug, base, head),
+                token=token,
+            )
         files = {}
         for f in res["files"]:
             diff = self.diff_to_json(
@@ -647,18 +733,22 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
-            res = await self.api(
-                "get", "/repos/%s/commits/%s" % (self.slug, commit), token=token
-            )
+            async with self.get_client() as client:
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/commits/%s" % (self.slug, commit),
+                    statuses_to_retry=[401],
+                    token=token,
+                )
         except TorngitClientError as ce:
             if ce.code == 422:
                 raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(), f"Commit with id {commit} does not exist"
+                    ce.response.text, f"Commit with id {commit} does not exist"
                 )
             if ce.code == 404:
                 raise TorngitRepoNotFoundError(
-                    ce.response.body.decode(),
-                    f"Repo {self.slug} cannot be found by this user",
+                    ce.response.text, f"Repo {self.slug} cannot be found by this user",
                 )
             raise
         return dict(
@@ -693,76 +783,85 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
     async def get_pull_request(self, pullid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
-        try:
-            res = await self.api(
-                "get", "/repos/%s/pulls/%s" % (self.slug, pullid), token=token,
-            )
-        except TorngitClientError as ce:
-            if ce.code == 404:
-                raise TorngitObjectNotFoundError(
-                    ce.response.body.decode(), f"Pull Request {pullid} not found"
+        async with self.get_client() as client:
+            try:
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/pulls/%s" % (self.slug, pullid),
+                    token=token,
                 )
-            raise
-        commits = await self.api(
-            "get",
-            "/repos/%s/pulls/%s/commits" % (self.slug, pullid),
-            token=token,
-            per_page=250,
-        )
-        commit_mapping = {
-            val["sha"]: [k["sha"] for k in val["parents"]] for val in commits
-        }
-        all_commits_in_pr = set([val["sha"] for val in commits])
-        current_level = [res["head"]["sha"]]
-        while current_level and all(x in all_commits_in_pr for x in current_level):
-            new_level = []
-            for x in current_level:
-                new_level.extend(commit_mapping[x])
-            current_level = new_level
-        result = self._pull(res)
-        if current_level == [res["head"]["sha"]]:
-            log.warning(
-                "Head not found in PR. PR has probably too many commits to list all of them",
-                extra=dict(number_commits=len(commits), pullid=pullid),
+            except TorngitClientError as ce:
+                if ce.code == 404:
+                    raise TorngitObjectNotFoundError(
+                        ce.response.text, f"Pull Request {pullid} not found"
+                    )
+                raise
+            commits = await self.api(
+                client,
+                "get",
+                "/repos/%s/pulls/%s/commits" % (self.slug, pullid),
+                token=token,
+                per_page=250,
             )
-        else:
-            possible_bases = [x for x in current_level if x not in all_commits_in_pr]
-            if possible_bases and result["base"]["commitid"] not in possible_bases:
-                log.info(
-                    "Github base differs from original base",
-                    extra=dict(
-                        current_level=current_level,
-                        github_base=result["base"]["commitid"],
-                        possible_bases=possible_bases,
-                        pullid=pullid,
-                    ),
+            commit_mapping = {
+                val["sha"]: [k["sha"] for k in val["parents"]] for val in commits
+            }
+            all_commits_in_pr = set([val["sha"] for val in commits])
+            current_level = [res["head"]["sha"]]
+            while current_level and all(x in all_commits_in_pr for x in current_level):
+                new_level = []
+                for x in current_level:
+                    new_level.extend(commit_mapping[x])
+                current_level = new_level
+            result = self._pull(res)
+            if current_level == [res["head"]["sha"]]:
+                log.warning(
+                    "Head not found in PR. PR has probably too many commits to list all of them",
+                    extra=dict(number_commits=len(commits), pullid=pullid),
                 )
-                result["base"]["commitid"] = possible_bases[0]
-        return result
+            else:
+                possible_bases = [
+                    x for x in current_level if x not in all_commits_in_pr
+                ]
+                if possible_bases and result["base"]["commitid"] not in possible_bases:
+                    log.info(
+                        "Github base differs from original base",
+                        extra=dict(
+                            current_level=current_level,
+                            github_base=result["base"]["commitid"],
+                            possible_bases=possible_bases,
+                            pullid=pullid,
+                        ),
+                    )
+                    result["base"]["commitid"] = possible_bases[0]
+            return result
 
     async def get_pull_requests(self, state="open", token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/pulls/#list-pull-requests
         page, pulls = 0, []
-        while True:
-            page += 1
-            res = await self.api(
-                "get",
-                "/repos/%s/pulls" % self.slug,
-                page=page,
-                per_page=25,
-                state=state,
-                token=token,
-            )
-            if len(res) == 0:
-                break
+        async with self.get_client() as client:
+            while True:
+                page += 1
+                res = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/pulls" % self.slug,
+                    page=page,
+                    per_page=25,
+                    state=state,
+                    token=token,
+                )
+                if len(res) == 0:
+                    break
 
-            pulls.extend([pull["number"] for pull in res])
+                pulls.extend([pull["number"] for pull in res])
 
-            if len(pulls) < 25:
-                break
+                if len(pulls) < 25:
+                    break
 
-        return pulls
+            return pulls
 
     async def find_pull_request(
         self, commit=None, branch=None, state="open", token=None
@@ -775,7 +874,10 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         )
 
         # https://developer.github.com/v3/search/#search-issues
-        res = await self.api("get", "/search/issues?q=%s" % query, token=token)
+        async with self.get_client() as client:
+            res = await self.api(
+                client, "get", "/search/issues?q=%s" % query, token=token
+            )
         if res["items"]:
             return res["items"][0]["number"]
 
@@ -789,7 +891,8 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
             url = f"/repos/{self.slug}/contents/{dir_path}"
         else:
             url = f"/repos/{self.slug}/contents"
-        content = await self.api("get", url, ref=ref, token=token)
+        async with self.get_client() as client:
+            content = await self.api(client, "get", url, ref=ref, token=token)
         return [
             {
                 "name": f["name"],
@@ -808,9 +911,14 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
 
     async def get_ancestors_tree(self, commitid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        res = await self.api(
-            "get", "/repos/%s/commits" % self.slug, token=token, sha=commitid
-        )
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                "/repos/%s/commits" % self.slug,
+                token=token,
+                sha=commitid,
+            )
         start = res[0]["sha"]
         commit_mapping = {val["sha"]: [k["sha"] for k in val["parents"]] for val in res}
         return self.build_tree_from_commits(start, commit_mapping)
@@ -835,14 +943,16 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
     async def create_check_run(
         self, check_name, head_sha, status="in_progress", token=None
     ):
-        res = await self.api(
-            "post",
-            "/repos/{}/check-runs".format(self.slug),
-            body=dict(name=check_name, head_sha=head_sha, status=status),
-            headers={"Accept": "application/vnd.github.antiope-preview+json"},
-            token=token,
-        )
-        return res["id"]
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "post",
+                "/repos/{}/check-runs".format(self.slug),
+                body=dict(name=check_name, head_sha=head_sha, status=status),
+                headers={"Accept": "application/vnd.github.antiope-preview+json"},
+                token=token,
+            )
+            return res["id"]
 
     async def get_check_runs(
         self, check_suite_id=None, head_sha=None, name=None, token=None
@@ -862,34 +972,40 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
             url = "/repos/{}/commits/{}/check-runs".format(self.slug, head_sha)
         if name is not None:
             url += "?check_name={}".format(name)
-        res = await self.api(
-            "get",
-            url,
-            headers={"Accept": "application/vnd.github.antiope-preview+json"},
-            token=token,
-        )
-        return res
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                url,
+                headers={"Accept": "application/vnd.github.antiope-preview+json"},
+                token=token,
+            )
+            return res
 
     async def get_check_suites(self, git_sha, token=None):
-        res = await self.api(
-            "get",
-            "/repos/{}/commits/{}/check-suites".format(self.slug, git_sha),
-            headers={"Accept": "application/vnd.github.antiope-preview+json"},
-            token=token,
-        )
-        return res
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                "/repos/{}/commits/{}/check-suites".format(self.slug, git_sha),
+                headers={"Accept": "application/vnd.github.antiope-preview+json"},
+                token=token,
+            )
+            return res
 
     async def update_check_run(
         self, check_run_id, conclusion, status="completed", output=None, token=None
     ):
-        res = await self.api(
-            "patch",
-            "/repos/{}/check-runs/{}".format(self.slug, check_run_id),
-            body=dict(conclusion=conclusion, status=status, output=output),
-            headers={"Accept": "application/vnd.github.antiope-preview+json"},
-            token=token,
-        )
-        return res
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "patch",
+                "/repos/{}/check-runs/{}".format(self.slug, check_run_id),
+                body=dict(conclusion=conclusion, status=status, output=output),
+                headers={"Accept": "application/vnd.github.antiope-preview+json"},
+                token=token,
+            )
+            return res
 
     # Get information for a GitHub Actions build/workflow run
     # -------------
@@ -917,9 +1033,13 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         Workflow = yaml with build configuration options
         Run = one instance when the workflow was triggered
         """
-        res = await self.api(
-            "get", "/repos/%s/actions/runs/%s" % (self.slug, run_id), token=token
-        )
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                "/repos/%s/actions/runs/%s" % (self.slug, run_id),
+                token=token,
+            )
         return self.actions_run_info(res)
 
     def loggable_token(self, token) -> str:
@@ -974,14 +1094,17 @@ class Github(TorngitBaseAdapter, OAuth2Mixin):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         url = f"/repos/{self.slug}/commits/{commit_sha}/branches-where-head"
-        res = await self.api(
-            "get",
-            url,
-            token=token,
-            headers={"Accept": "application/vnd.github.groot-preview+json"},
-        )
-        return [r["name"] for r in res]
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                url,
+                token=token,
+                headers={"Accept": "application/vnd.github.groot-preview+json"},
+            )
+            return [r["name"] for r in res]
 
     async def is_student(self):
-        res = await self.api("get", "https://education.github.com/api/user")
-        return res["student"]
+        async with self.get_client() as client:
+            res = await self.api(client, "get", "https://education.github.com/api/user")
+            return res["student"]

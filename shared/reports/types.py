@@ -1,5 +1,5 @@
 from decimal import Decimal
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Union, Tuple, Sequence, Any
 
 
@@ -39,6 +39,9 @@ class ReportTotals(object):
             self.diff,
         )
 
+    def asdict(self):
+        return asdict(self)
+
     @classmethod
     def default_totals(cls):
         args = (0,) * 13
@@ -61,23 +64,46 @@ class NetworkFile(object):
 
 @dataclass
 class LineSession(object):
+    __slots__ = ("id", "coverage", "branches", "partials", "complexity")
     id: int
     coverage: Decimal
-    branches: int = None
-    partials: Sequence[int] = None
-    complexity: int = None
+    branches: int
+    partials: Sequence[int]
+    complexity: int
+
+    def __init__(self, id, coverage, branches=None, partials=None, complexity=None):
+        self.id = id
+        self.coverage = coverage
+        self.branches = branches
+        self.partials = partials
+        self.complexity = complexity
 
     def astuple(self):
+        if self.branches is None and self.partials is None and self.complexity is None:
+            return (self.id, self.coverage)
         return (self.id, self.coverage, self.branches, self.partials, self.complexity)
 
 
 @dataclass
 class ReportLine(object):
-    coverage: Decimal = None
-    type: str = None
-    sessions: Sequence[LineSession] = None
-    messages: int = None
-    complexity: Union[int, Tuple[int, int]] = None
+    __slots__ = ("coverage", "type", "sessions", "messages", "complexity")
+    coverage: Decimal
+    type: str
+    sessions: Sequence[LineSession]
+    messages: int
+    complexity: Union[int, Tuple[int, int]]
+
+    @classmethod
+    def create(
+        cls, coverage=None, type=None, sessions=None, messages=None, complexity=None
+    ):
+        return cls(
+            coverage=coverage,
+            type=type,
+            sessions=sessions,
+            messages=messages,
+            complexity=complexity,
+        )
 
     def astuple(self):
         return (

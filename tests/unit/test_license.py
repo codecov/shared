@@ -20,6 +20,27 @@ def test_sample_license_checking():
     assert parse_license(encrypted_license) == expected_result
 
 
+def test_sample_license_pr_billing():
+    """
+    wxWEJyYgIcFpi6nBSyKQZQeaQ9Eqpo3SXyUomAqQOzOFjdYB3A8fFM1rm+kOt2ehy9w95AzrQqrqfxi9HJIb2zLOMOB9tSy52OykVCzFtKPBNsXU/y5pQKOfV7iI3w9CHFh3tDwSwgjg8UsMXwQPOhrpvl2GdHpwEhFdaM2O3vY7iElFgZfk5D9E7qEnp+WysQwHKxDeKLI7jWCnBCBJLDjBJRSz0H7AfU55RQDqtTrnR+rsLDHOzJ80/VxwVYhb
+    License expires on 2021-01-01
+    ---- Internal purposes only ----
+    {'company': 'Test Company', 'expires': '2021-01-01 00:00:00', 'url': 'https://codecov.mysite.com', 'trial': False, 'users': 10, 'repos': None, 'pr_billing': True}
+    """
+    encrypted_license = "wxWEJyYgIcFpi6nBSyKQZQeaQ9Eqpo3SXyUomAqQOzOFjdYB3A8fFM1rm+kOt2ehy9w95AzrQqrqfxi9HJIb2zLOMOB9tSy52OykVCzFtKPBNsXU/y5pQKOfV7iI3w9CHFh3tDwSwgjg8UsMXwQPOhrpvl2GdHpwEhFdaM2O3vY7iElFgZfk5D9E7qEnp+WysQwHKxDeKLI7jWCnBCBJLDjBJRSz0H7AfU55RQDqtTrnR+rsLDHOzJ80/VxwVYhb"
+    expected_result = LicenseInformation(
+        is_valid=True,
+        is_trial=False,
+        message=None,
+        url="https://codecov.mysite.com",
+        number_allowed_users=10,
+        is_pr_billing=True,
+        number_allowed_repos=None,
+        expires=datetime(2021, 1, 1, 0, 0),
+    )
+    assert parse_license(encrypted_license) == expected_result
+
+
 def test_sample_license_checking_with_users_and_repos():
     encrypted_license = "0dRbhbzp8TVFQp7P4e2ES9lSfyQlTo8J7LQ/N51yeAE/KcRBCnU+QsVvVMDuLL4xNGXGGk9p4ZTmIl0II3cMr0tIoPHe9Re2UjommalyFYuP8JjjnNR/Ql2DnjOzEnTzsE2Poq9xlNHcIU4F9gC2WOYPnazR6U+t4CelcvIAbEpbOMOiw34nVyd3OEmWusquMNrwkNkk/lwjwCJmj6bTXQ=="
     expected_result = LicenseInformation(

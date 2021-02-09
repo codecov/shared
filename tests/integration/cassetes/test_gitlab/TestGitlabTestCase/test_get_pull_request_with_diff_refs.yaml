@@ -1,109 +1,51 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept:
-      - application/json
-      User-Agent:
-      - Default
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/18347774/merge_requests/1
-  response:
-    body:
-      string: '{"id":57043208,"iid":1,"project_id":18347774,"title":"Thiago/base no
-        base","description":"Some test","state":"opened","created_at":"2020-04-27T14:38:42.926Z","updated_at":"2020-04-28T16:11:38.429Z","merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"target_branch":"master","source_branch":"thiago/base-no-base","user_notes_count":1,"upvotes":0,"downvotes":0,"assignee":{"id":3124507,"name":"Thiago
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/18347774/merge_requests/1
+    response:
+      url: https://gitlab.com/api/v4/projects/18347774/merge_requests/1
+      content: '{"id":57043208,"iid":1,"project_id":18347774,"title":"Thiago/base
+        no base","description":"Some test","state":"opened","created_at":"2020-04-27T14:38:42.926Z","updated_at":"2020-04-28T16:11:38.429Z","merged_by":null,"merged_at":null,"closed_by":null,"closed_at":null,"target_branch":"master","source_branch":"thiago/base-no-base","user_notes_count":1,"upvotes":0,"downvotes":0,"assignee":{"id":3124507,"name":"Thiago
         Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov"},"author":{"id":3124507,"name":"Thiago
         Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov"},"assignees":[{"id":3124507,"name":"Thiago
         Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov"}],"source_project_id":18347774,"target_project_id":18347774,"labels":[],"work_in_progress":false,"milestone":null,"merge_when_pipeline_succeeds":false,"merge_status":"can_be_merged","sha":"b34b00d0872d129943b634693fd8f19f5f37acf9","merge_commit_sha":null,"squash_commit_sha":null,"discussion_locked":null,"should_remove_source_branch":null,"force_remove_source_branch":true,"reference":"!1","references":{"short":"!1","relative":"!1","full":"ThiagoCodecov/example-python!1"},"web_url":"https://gitlab.com/ThiagoCodecov/example-python/-/merge_requests/1","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"squash":false,"task_completion_status":{"count":0,"completed_count":0},"has_conflicts":false,"blocking_discussions_resolved":true,"approvals_before_merge":null,"subscribed":false,"changes_count":"8","head_pipeline":{"id":140727691,"sha":"b34b00d0872d129943b634693fd8f19f5f37acf9","ref":"thiago/base-no-base","status":"success","created_at":"2020-04-28T16:11:56.392Z","updated_at":"2020-04-28T16:11:56.535Z","web_url":"https://gitlab.com/ThiagoCodecov/example-python/pipelines/140727691","before_sha":"0000000000000000000000000000000000000000","tag":false,"yaml_errors":null,"user":{"id":3124507,"name":"Thiago
         Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov"},"started_at":null,"finished_at":"2020-04-28T16:11:56.534Z","committed_at":null,"duration":null,"coverage":"86.36","detailed_status":{"icon":"status_success","text":"passed","label":"passed","group":"success","tooltip":"passed","has_details":true,"details_path":"/ThiagoCodecov/example-python/pipelines/140727691","illustration":null,"favicon":"https://gitlab.com/assets/ci_favicons/favicon_status_success-8451333011eee8ce9f2ab25dc487fe24a8758c694827a582f17f42b0a90446a2.png"}},"diff_refs":{"base_sha":"081d91921f05a8a39d39aef667eddb88e96300c7","head_sha":"b34b00d0872d129943b634693fd8f19f5f37acf9","start_sha":"f0895290dc26668faeeb20ee5ccd4cc995925775"},"merge_error":null,"first_contribution":false,"user":{"can_merge":false}}'
-    headers:
-    - !!python/tuple
-      - X-Http-Reason
-      - - OK
-    - !!python/tuple
-      - Date
-      - - Tue, 28 Apr 2020 23:57:07 GMT
-    - !!python/tuple
-      - Content-Type
-      - - application/json
-    - !!python/tuple
-      - Transfer-Encoding
-      - - chunked
-    - !!python/tuple
-      - Connection
-      - - keep-alive
-    - !!python/tuple
-      - Set-Cookie
-      - - __cfduid=d7a146a02bed4121701bdf130aab2de861588118227; expires=Thu, 28-May-20
-          23:57:07 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax; Secure
-    - !!python/tuple
-      - Cache-Control
-      - - max-age=0, private, must-revalidate
-    - !!python/tuple
-      - Etag
-      - - W/"b99d4b518f82db547ffe63c3a10f6821"
-    - !!python/tuple
-      - Vary
-      - - Origin
-    - !!python/tuple
-      - X-Content-Type-Options
-      - - nosniff
-    - !!python/tuple
-      - X-Frame-Options
-      - - SAMEORIGIN
-    - !!python/tuple
-      - X-Request-Id
-      - - aEEWmHD8F92
-    - !!python/tuple
-      - X-Runtime
-      - - '0.092363'
-    - !!python/tuple
-      - Strict-Transport-Security
-      - - max-age=31536000
-    - !!python/tuple
-      - Referrer-Policy
-      - - strict-origin-when-cross-origin
-    - !!python/tuple
-      - Ratelimit-Limit
-      - - '600'
-    - !!python/tuple
-      - Ratelimit-Observed
-      - - '2'
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - - '598'
-    - !!python/tuple
-      - Ratelimit-Reset
-      - - '1588118287'
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - - Tue, 28 Apr 2020 23:58:07 GMT
-    - !!python/tuple
-      - Gitlab-Lb
-      - - fe-09-lb-gprd
-    - !!python/tuple
-      - Gitlab-Sv
-      - - localhost
-    - !!python/tuple
-      - Cf-Cache-Status
-      - - DYNAMIC
-    - !!python/tuple
-      - Expect-Ct
-      - - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
-    - !!python/tuple
-      - Server
-      - - cloudflare
-    - !!python/tuple
-      - Cf-Ray
-      - - 58b4b947ea32f663-GRU
-    - !!python/tuple
-      - Content-Encoding
-      - - gzip
-    - !!python/tuple
-      - Cf-Request-Id
-      - - 0264d220ee0000f66365ba1200000001
-    status:
-      code: 200
-      message: OK
-    url: https://gitlab.com/api/v4/projects/18347774/merge_requests/1
+      headers:
+        X-Http-Reason: OK
+        Date: Tue, 28 Apr 2020 23:57:07 GMT
+        Content-Type: application/json
+        Transfer-Encoding: chunked
+        Connection: keep-alive
+        Set-Cookie: __cfduid=d7a146a02bed4121701bdf130aab2de861588118227; expires=Thu,
+          28-May-20 23:57:07 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"b99d4b518f82db547ffe63c3a10f6821"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: aEEWmHD8F92
+        X-Runtime: '0.092363'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '2'
+        Ratelimit-Remaining: '598'
+        Ratelimit-Reset: '1588118287'
+        Ratelimit-Resettime: Tue, 28 Apr 2020 23:58:07 GMT
+        Gitlab-Lb: fe-09-lb-gprd
+        Gitlab-Sv: localhost
+        Cf-Cache-Status: DYNAMIC
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 58b4b947ea32f663-GRU
+        Content-Encoding: gzip
+        Cf-Request-Id: 0264d220ee0000f66365ba1200000001
+      status_code: 200
 version: 1

@@ -2,8 +2,8 @@ import re
 from typing import Tuple, List
 from enum import Enum, auto
 
+import httpx
 from tornado.escape import url_escape
-from tornado.httpclient import AsyncHTTPClient
 
 from shared.torngit.enums import Endpoints
 
@@ -58,6 +58,15 @@ class TorngitBaseAdapter(object):
         "xtend",
     )
 
+    def get_client(self):
+        timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
+        return httpx.AsyncClient(
+            verify=self.verify_ssl
+            if not isinstance(self.verify_ssl, bool)
+            else self.verify_ssl,
+            timeout=timeout,
+        )
+
     def get_token_by_type(self, token_type: TokenType):
         if self._token_type_mapping.get(token_type) is not None:
             return self._token_type_mapping.get(token_type)
@@ -77,7 +86,6 @@ class TorngitBaseAdapter(object):
         verify_ssl=None,
         **kwargs,
     ):
-        self._client = None
         self._timeouts = timeouts or [10, 30]
         self._token = token
         self._token_type_mapping = token_type_mapping or {}
@@ -94,16 +102,6 @@ class TorngitBaseAdapter(object):
             self.data["owner"].get("ownerid"),
             self.data["repo"].get("repoid"),
         )
-
-    @property
-    def client(self):
-        if self._client is None:
-            AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
-            self._client = AsyncHTTPClient()
-        return self._client
-
-    async def fetch(self, *args, **kwargs):
-        return await self.client.fetch(*args, **kwargs)
 
     def _validate_language(self, language):
         if language:
@@ -122,7 +120,7 @@ class TorngitBaseAdapter(object):
 
     @property
     def slug(self):
-        if self.data["owner"] and self.data["repo"]:
+        if self.data.get("owner") and self.data.get("repo"):
             if self.data["owner"].get("username") and self.data["repo"].get("name"):
                 return "%s/%s" % (
                     self.data["owner"]["username"],

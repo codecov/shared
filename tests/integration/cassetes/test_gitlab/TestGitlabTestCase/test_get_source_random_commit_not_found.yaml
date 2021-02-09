@@ -1,62 +1,32 @@
 interactions:
-- request:
-    body: null
-    headers:
-      Accept: [application/json]
-      User-Agent: [Default]
-    method: GET
-    uri: https://gitlab.com/api/v4/projects/187725/repository/files/awesome%2Fnon_exising_file.py?ref=5716de23
-  response:
-    body: {string: '{"message":"404 File Not Found"}'}
-    headers:
-    - !!python/tuple
-      - Server
-      - [nginx]
-    - !!python/tuple
-      - Date
-      - ['Thu, 08 Aug 2019 15:31:54 GMT']
-    - !!python/tuple
-      - Content-Type
-      - [application/json]
-    - !!python/tuple
-      - Content-Length
-      - ['32']
-    - !!python/tuple
-      - Connection
-      - [close]
-    - !!python/tuple
-      - Cache-Control
-      - [no-cache]
-    - !!python/tuple
-      - Vary
-      - [Origin]
-    - !!python/tuple
-      - X-Content-Type-Options
-      - [nosniff]
-    - !!python/tuple
-      - X-Frame-Options
-      - [SAMEORIGIN]
-    - !!python/tuple
-      - X-Request-Id
-      - [GVjsH4M4AW3]
-    - !!python/tuple
-      - X-Runtime
-      - ['0.052322']
-    - !!python/tuple
-      - Ratelimit-Limit
-      - ['600']
-    - !!python/tuple
-      - Ratelimit-Observed
-      - ['1']
-    - !!python/tuple
-      - Ratelimit-Remaining
-      - ['599']
-    - !!python/tuple
-      - Ratelimit-Reset
-      - ['1565278374']
-    - !!python/tuple
-      - Ratelimit-Resettime
-      - ['Thu, 08 Aug 2019 15:32:54 GMT']
-    status: {code: 404, message: Not Found}
-    url: https://gitlab.com/api/v4/projects/187725/repository/files/awesome%2Fnon_exising_file.py?ref=5716de23
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/files/awesome%2Fnon_exising_file.py?ref=5716de23
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/files/awesome%2Fnon_exising_file.py?ref=5716de23
+      content: '{"message":"404 File Not Found"}'
+      headers:
+        Server: nginx
+        Date: Thu, 08 Aug 2019 15:31:54 GMT
+        Content-Type: application/json
+        Content-Length: '32'
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: GVjsH4M4AW3
+        X-Runtime: '0.052322'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1565278374'
+        Ratelimit-Resettime: Thu, 08 Aug 2019 15:32:54 GMT
+      status_code: 404
 version: 1

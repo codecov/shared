@@ -333,11 +333,19 @@ class LayoutStructure(object):
 
     def validate(self, value):
         values = value.split(",")
-        actual_values = [x.strip() for x in values]
+        actual_values = [x.strip().split(":")[0] for x in values]
         if not set(actual_values) <= self.acceptable_objects:
             extra_objects = set(actual_values) - self.acceptable_objects
             extra_objects = ",".join(extra_objects)
             raise SchemaError(f"Unexpected values on layout: {extra_objects}")
+        for val in values:
+            if ":" in val:
+                try:
+                    int(val.strip().split(":")[1])
+                except ValueError:
+                    raise SchemaError(
+                        f"Improper pattern for value on layout: {val.strip()}"
+                    )
         return value
 
 
