@@ -250,6 +250,7 @@ def get_new_schema(show_secrets):
                     Optional("show_carryforward_flags"): bool,
                     Optional("flags"): Or(None, [flag_name]),  # DEPRECATED
                     Optional("paths"): Or(None, [path_structure]),  # DEPRECATED
+                    Optional("hide_comment_details"): bool,
                 },
             ),
             Optional("github_checks"): Or(bool, {Optional("annotations"): bool}),
