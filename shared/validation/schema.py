@@ -78,7 +78,7 @@ def get_new_schema(show_secrets):
                 Optional("url"): url,
                 Optional("token"): str,
                 Optional("slug"): str,
-                Optional("bot"): Or(str, None),
+                Optional("bot"): Or(None, str),
                 Optional("branch"): branch,
                 Optional("ci"): [str],
                 Optional("assume_all_flags"): bool,
