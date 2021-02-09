@@ -217,6 +217,7 @@ class TestPreprocess(BaseTestCase):
         pre_process_yaml(user_input)
         assert expected_result == user_input
 
+
 class TestUserYamlValidation(BaseTestCase):
     def test_empty_case(self):
         user_input = {}
