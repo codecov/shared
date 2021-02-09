@@ -698,3 +698,10 @@ class TestFilteredReport(object):
             complexity_total=0,
             diff=0,
         )
+
+    def test_file_reports(self, sample_report):
+        res = list(
+            sample_report.filter(paths=[".*go"], flags=["simple"]).file_reports()
+        )
+        assert len(res) == 2
+        assert sorted(x.name for x in res) == ["file_1.go", "file_2.go"]

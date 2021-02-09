@@ -139,6 +139,10 @@ class FilteredReport(object):
         self._totals = None
         self._sessions_to_include = None
 
+    def file_reports(self):
+        for f in self.files:
+            yield self.get(f)
+
     @property
     def session_ids_to_include(self):
         if self._sessions_to_include is None:
