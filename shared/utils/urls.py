@@ -34,12 +34,5 @@ def make_url(repository, *args, **kwargs):
         args = [services_short[repository.service], repository.slug] + args
     path = "/".join(args)
     return urlunparse(
-        (
-            parsed_service.scheme,
-            parsed_service.netloc,
-            path,
-            "",
-            urlencode(kwargs),
-            "",
-        )
+        (parsed_service.scheme, parsed_service.netloc, path, "", urlencode(kwargs), "")
     )
