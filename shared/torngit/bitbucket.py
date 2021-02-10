@@ -1,11 +1,10 @@
 from typing import List
 import os
-import urllib.parse as urllib_parse
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 import logging
 
 import httpx
 from tornado.auth import OAuthMixin
-from tornado.httputil import url_concat
 from oauthlib import oauth1
 
 # from shared.config import get_config
@@ -51,7 +50,8 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
     async def api(
         self, client, version, method, path, json=False, body=None, token=None, **kwargs
     ):
-        url = "https://bitbucket.org/api/%s.0%s" % (version, path)
+        urlpath = "/api/%s.0%s" % (version, path)
+        url = urlunparse(("https", "bitbucket.org", urlpath, "", urlencode(kwargs), ""))
         headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -70,7 +70,6 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         )
         kwargs.update(oauth)
 
-        url = url_concat(url, kwargs)
         kwargs = dict(
             json=body if body is not None and json else None,
             data=body if not json else None,
@@ -125,8 +124,8 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         )
         uri, headers, body = client.sign(self._OAUTH_REQUEST_TOKEN_URL)
         r = httpx.get(uri, headers=headers)
-        oauth_token = urllib_parse.parse_qs(r.text)["oauth_token"][0]
-        oauth_token_secret = urllib_parse.parse_qs(r.text)["oauth_token_secret"][0]
+        oauth_token = parse_qs(r.text)["oauth_token"][0]
+        oauth_token_secret = parse_qs(r.text)["oauth_token_secret"][0]
         return dict(oauth_token=oauth_token, oauth_token_secret=oauth_token_secret)
 
     def generate_access_token(
@@ -141,7 +140,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         )
         uri, headers, body = client.sign(self._OAUTH_ACCESS_TOKEN_URL)
         r = httpx.get(uri, headers=headers)
-        resp_args = urllib_parse.parse_qs(r.text)
+        resp_args = parse_qs(r.text)
         return {
             "key": resp_args["oauth_token"][0],
             "secret": resp_args["oauth_token_secret"][0],
@@ -274,8 +273,8 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 if not res.get("next"):
                     break
                 url = res["next"]
-                parsed = urllib_parse.urlparse(url)
-                page = urllib_parse.parse_qs(parsed.query)["page"][0]
+                parsed = urlparse(url)
+                page = parse_qs(parsed.query)["page"][0]
         return commits
 
     async def list_repos(self, username=None, token=None):
@@ -703,7 +702,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         self, commit=None, branch=None, state="open", token=None
     ):
         state = {"open": "OPEN", "merged": "MERGED", "close": "DECLINED"}.get(state, "")
-        pulls, page = [], 0
+        page = 0
         async with self.get_client() as client:
             if commit or branch:
                 while True:
@@ -876,8 +875,8 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 files.extend(results["values"])
                 if "next" in results:
                     url = results["next"]
-                    parsed = urllib_parse.urlparse(url)
-                    page = urllib_parse.parse_qs(parsed.query)["page"][0]
+                    parsed = urlparse(url)
+                    page = parse_qs(parsed.query)["page"][0]
                 else:
                     has_more = False
         return [

@@ -1,6 +1,5 @@
-from urllib.parse import urlencode, urlparse, urlunparse, parse_qsl, quote_plus
+from urllib.parse import urlencode, urlparse, urlunparse, quote_plus
 from shared.config import get_config
-from typing import Union, Dict, List, Tuple
 
 services_short = dict(
     github="gh",
@@ -26,83 +25,21 @@ def escape(string, escape=False):
 
 
 def make_url(repository, *args, **kwargs):
-    args = list(map(lambda a: escape(a, True), list(args)))
-    kwargs = dict([(k, escape(v)) for k, v in kwargs.items() if v is not None])
+    args = [escape(arg, True) for arg in args]
+    kwargs = {k: escape(v) for k, v in kwargs.items() if v is not None}
+
+    # Codecov URL combines protocol and host, so we split.
+    parsed_service = urlparse(get_config("setup", "codecov_url"))
     if repository:
-        return _url_concat(
-            "/".join(
-                [
-                    get_config("setup", "codecov_url"),
-                    services_short[repository.service],
-                    repository.slug,
-                ]
-                + args
-            ),
-            kwargs,
-        )
-    else:
-        return _url_concat(
-            "/".join([get_config("setup", "codecov_url")] + args), kwargs
-        )
-
-
-def _url_concat(
-    url: str,
-    args: Union[
-        None, Dict[str, str], List[Tuple[str, str]], Tuple[Tuple[str, str], ...]
-    ],
-) -> str:
-    """Concatenate url and arguments regardless of whether
-    url has existing query parameters.
-
-    ``args`` may be either a dictionary or a list of key-value pairs
-    (the latter allows for multiple values with the same key.
-
-    >>> url_concat("http://example.com/foo", dict(c="d"))
-    'http://example.com/foo?c=d'
-    >>> url_concat("http://example.com/foo?a=b", dict(c="d"))
-    'http://example.com/foo?a=b&c=d'
-    >>> url_concat("http://example.com/foo?a=b", [("c", "d"), ("c", "d2")])
-    'http://example.com/foo?a=b&c=d&c=d2'
-    """
-    if args is None:
-        return url
-    parsed_url = urlparse(url)
-    if isinstance(args, dict):
-        parsed_query = parse_qsl(parsed_url.query, keep_blank_values=True)
-        parsed_query.extend(args.items())
-    elif isinstance(args, list) or isinstance(args, tuple):
-        parsed_query = parse_qsl(parsed_url.query, keep_blank_values=True)
-        parsed_query.extend(args)
-    else:
-        err = "'args' parameter should be dict, list or tuple. Not {0}".format(
-            type(args)
-        )
-        raise TypeError(err)
-    final_query = urlencode(parsed_query)
-    url = urlunparse(
+        args = [services_short[repository.service], repository.slug] + args
+    path = "/".join(args)
+    return urlunparse(
         (
-            parsed_url[0],
-            parsed_url[1],
-            parsed_url[2],
-            parsed_url[3],
-            final_query,
-            parsed_url[5],
+            parsed_service.scheme,
+            parsed_service.netloc,
+            path,
+            "",
+            urlencode(kwargs),
+            "",
         )
     )
-    return url
-
-
-_UTF8_TYPES = (bytes, type(None))
-
-
-def utf8(value):
-    """Converts a string argument to a byte string.
-
-    If the argument is already a byte string or None, it is returned unchanged.
-    Otherwise it must be a unicode string and is encoded as utf8.
-    """
-    if isinstance(value, _UTF8_TYPES):
-        return value
-    assert isinstance(value, str)
-    return value.encode("utf-8")
