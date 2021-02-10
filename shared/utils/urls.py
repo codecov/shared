@@ -13,10 +13,12 @@ services_short = dict(
 
 
 def escape(string, escape=False):
+    """Returns a valid URL-encoded version of the given value."""
     if isinstance(string, str):
+        string = string.encode("utf-8", "replace")
         if escape:
-            return _url_escape(string).replace("%2F", "/")
-        return string.encode("utf-8", "replace")
+            string = quote_plus(string).replace("%2F", "/")
+        return string
     elif escape:
         return str(string)
     else:
@@ -42,11 +44,6 @@ def make_url(repository, *args, **kwargs):
         return _url_concat(
             "/".join([get_config("setup", "codecov_url")] + args), kwargs
         )
-
-
-def _url_escape(value):
-    """Returns a valid URL-encoded version of the given value."""
-    return quote_plus(utf8(value))
 
 
 def _url_concat(

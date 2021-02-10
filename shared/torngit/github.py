@@ -3,12 +3,12 @@ import hashlib
 import base64
 from base64 import b64decode
 from typing import Optional, List
+from urllib.parse import quote_plus
 import logging
 
 import httpx
 
 from tornado.httputil import url_concat
-from tornado.escape import url_escape
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
@@ -869,7 +869,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         query = "%srepo:%s+type:pr%s" % (
             (("%s+" % commit) if commit else ""),
-            url_escape(self.slug),
+            quote_plus(self.slug.encode("utf-8")),
             (("+state:%s" % state) if state else ""),
         )
 
