@@ -3,22 +3,10 @@ from typing import Tuple, List
 from enum import Enum, auto
 
 import httpx
-from tornado.escape import url_escape
 
 from shared.torngit.enums import Endpoints
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
-
-
-def unicode_escape(string, escape=True):
-    if isinstance(string, str):
-        if escape:
-            return url_escape(string, plus=False).replace("%2F", "/")
-        elif isinstance(string, str):
-            return string.encode("utf-8", "replace")
-        return string
-    else:
-        return str(string)
 
 
 class TokenType(Enum):
