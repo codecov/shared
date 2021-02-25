@@ -68,10 +68,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -128,18 +128,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT00ODMxNDI5OTEwNTU4
         NDkyNjM3PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/test_write_then_append_then_read_file/result/1581337070379144\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
         ,\n \"name\": \"test_write_then_append_then_read_file/result\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337070379144\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:17:50.378Z\",\n \"updated\": \"2020-02-10T12:17:50.378Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:17:50.378Z\"\
         ,\n \"size\": \"46\",\n \"md5Hash\": \"NwIf46EiCcnfaot9N+GaBQ==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337070379144&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337070379144&alt=media\"\
         ,\n \"crc32c\": \"fChI7w==\",\n \"etag\": \"CIjB5tL7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -184,10 +184,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -237,12 +237,12 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive20190210001/test_write_then_append_then_read_file/result/1581337070379144\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337070379144&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337070379144&alt=media\"\
         ,\n  \"name\": \"test_write_then_append_then_read_file/result\",\n  \"bucket\"\
         : \"testingarchive20190210001\",\n  \"generation\": \"1581337070379144\",\n\
         \  \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\"\
@@ -289,7 +289,7 @@ interactions:
       accept-encoding:
       - gzip
     method: GET
-    uri: https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337070379144&alt=media
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337070379144&alt=media
   response:
     body:
       string: "lorem ipsum dolor test_write_then_read_file \xE1"
@@ -346,10 +346,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -407,12 +407,12 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0wMjczMzA5OTcwNDk0
         MTU3OTI0PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive20190210001/test_write_then_append_then_read_file/result/1581337071325068\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337071325068&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337071325068&alt=media\"\
         ,\n  \"name\": \"test_write_then_append_then_read_file/result\",\n  \"bucket\"\
         : \"testingarchive20190210001\",\n  \"generation\": \"1581337071325068\",\n\
         \  \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\"\
@@ -463,10 +463,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -516,12 +516,12 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive20190210001/test_write_then_append_then_read_file/result/1581337071325068\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337071325068&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337071325068&alt=media\"\
         ,\n  \"name\": \"test_write_then_append_then_read_file/result\",\n  \"bucket\"\
         : \"testingarchive20190210001\",\n  \"generation\": \"1581337071325068\",\n\
         \  \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\"\
@@ -568,7 +568,7 @@ interactions:
       accept-encoding:
       - gzip
     method: GET
-    uri: https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337071325068&alt=media
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?generation=1581337071325068&alt=media
   response:
     body:
       string: "lorem ipsum dolor test_write_then_read_file \xE1\nmom, look at me,\

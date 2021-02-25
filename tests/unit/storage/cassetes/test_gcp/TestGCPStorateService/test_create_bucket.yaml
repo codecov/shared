@@ -72,11 +72,11 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: POST
-    uri: https://www.googleapis.com/storage/v1/b?project=genuine-polymer-165712
+    uri: https://storage.googleapis.com/storage/v1/b?project=genuine-polymer-165712
   response:
     body:
       string: "{\n \"kind\": \"storage#bucket\",\n \"id\": \"testingarchive004\",\n\
-        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+        \ \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n \"projectNumber\": \"582817289294\",\n \"name\": \"testingarchive004\"\
         ,\n \"timeCreated\": \"2020-02-10T12:12:27.090Z\",\n \"updated\": \"2020-02-10T12:12:27.090Z\"\
         ,\n \"metageneration\": \"1\",\n \"iamConfiguration\": {\n  \"bucketPolicyOnly\"\

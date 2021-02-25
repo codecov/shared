@@ -21,7 +21,7 @@ setup(
         "boto3>=1.9.218",
         "colour>=0.1.5",
         "cryptography>=2.7",
-        "google-cloud-storage>=1.18.0,<1.21",
+        "google-cloud-storage>=1.21",
         "htmldom",
         "minio~=6.0",
         "oauth2",

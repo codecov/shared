@@ -68,10 +68,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
         \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
         location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
@@ -130,18 +130,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0xNjQ3NjYxNTQ1NzQ4
         MTQ2NjQ2PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive004/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive004/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt\"\
         ,\n \"name\": \"gzipped_file/test_006.txt\",\n \"bucket\": \"testingarchive004\"\
         ,\n \"generation\": \"1581336765856877\",\n \"metageneration\": \"1\",\n \"\
         contentType\": \"application/x-gzip\",\n \"timeCreated\": \"2020-02-10T12:12:45.856Z\"\
         ,\n \"updated\": \"2020-02-10T12:12:45.856Z\",\n \"storageClass\": \"STANDARD\"\
         ,\n \"timeStorageClassUpdated\": \"2020-02-10T12:12:45.856Z\",\n \"size\"\
         : \"65\",\n \"md5Hash\": \"VAdWnLmeVe67Tgo6PJqzLw==\",\n \"mediaLink\": \"\
-        https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media\"\
+        https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media\"\
         ,\n \"contentEncoding\": \"gzip\",\n \"crc32c\": \"GE333g==\",\n \"etag\"\
         : \"CO34y8H6xucCEAE=\"\n}\n"
     headers:
@@ -187,10 +187,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
         \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
         location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
@@ -239,12 +239,12 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?projection=noAcl
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media\"\
         ,\n  \"name\": \"gzipped_file/test_006.txt\",\n  \"bucket\": \"testingarchive004\"\
         ,\n  \"generation\": \"1581336765856877\",\n  \"metageneration\": \"1\",\n\
         \  \"contentType\": \"application/x-gzip\",\n  \"storageClass\": \"STANDARD\"\
@@ -298,12 +298,12 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: PATCH
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&projection=full
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&projection=full
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media\"\
         ,\n  \"name\": \"gzipped_file/test_006.txt\",\n  \"bucket\": \"testingarchive004\"\
         ,\n  \"generation\": \"1581336765856877\",\n  \"metageneration\": \"2\",\n\
         \  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n \
@@ -314,28 +314,28 @@ interactions:
         : [\n    {\n      \"kind\": \"storage#objectAccessControl\",\n      \"object\"\
         : \"gzipped_file/test_006.txt\",\n      \"generation\": \"1581336765856877\"\
         ,\n      \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877/project-owners-582817289294\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/project-owners-582817289294\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/project-owners-582817289294\"\
         ,\n      \"bucket\": \"testingarchive004\",\n      \"entity\": \"project-owners-582817289294\"\
         ,\n      \"role\": \"OWNER\",\n      \"etag\": \"CO34y8H6xucCEAI=\",\n   \
         \   \"projectTeam\": {\n        \"projectNumber\": \"582817289294\",\n   \
         \     \"team\": \"owners\"\n      }\n    },\n    {\n      \"kind\": \"storage#objectAccessControl\"\
         ,\n      \"object\": \"gzipped_file/test_006.txt\",\n      \"generation\"\
         : \"1581336765856877\",\n      \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877/project-editors-582817289294\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/project-editors-582817289294\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/project-editors-582817289294\"\
         ,\n      \"bucket\": \"testingarchive004\",\n      \"entity\": \"project-editors-582817289294\"\
         ,\n      \"role\": \"OWNER\",\n      \"etag\": \"CO34y8H6xucCEAI=\",\n   \
         \   \"projectTeam\": {\n        \"projectNumber\": \"582817289294\",\n   \
         \     \"team\": \"editors\"\n      }\n    },\n    {\n      \"kind\": \"storage#objectAccessControl\"\
         ,\n      \"object\": \"gzipped_file/test_006.txt\",\n      \"generation\"\
         : \"1581336765856877\",\n      \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877/project-viewers-582817289294\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/project-viewers-582817289294\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/project-viewers-582817289294\"\
         ,\n      \"bucket\": \"testingarchive004\",\n      \"entity\": \"project-viewers-582817289294\"\
         ,\n      \"role\": \"READER\",\n      \"etag\": \"CO34y8H6xucCEAI=\",\n  \
         \    \"projectTeam\": {\n        \"projectNumber\": \"582817289294\",\n  \
         \      \"team\": \"viewers\"\n      }\n    },\n    {\n      \"kind\": \"storage#objectAccessControl\"\
         ,\n      \"object\": \"gzipped_file/test_006.txt\",\n      \"generation\"\
         : \"1581336765856877\",\n      \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877/user-codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/user-codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt/acl/user-codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com\"\
         ,\n      \"bucket\": \"testingarchive004\",\n      \"entity\": \"user-codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com\"\
         ,\n      \"role\": \"OWNER\",\n      \"email\": \"codecov-marketing-deployment@genuine-polymer-165712.iam.gserviceaccount.com\"\
         ,\n      \"etag\": \"CO34y8H6xucCEAI=\"\n    }\n  ],\n  \"owner\": {\n   \
@@ -382,7 +382,7 @@ interactions:
       accept-encoding:
       - gzip
     method: GET
-    uri: https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&alt=media
   response:
     body:
       string: !!binary |
