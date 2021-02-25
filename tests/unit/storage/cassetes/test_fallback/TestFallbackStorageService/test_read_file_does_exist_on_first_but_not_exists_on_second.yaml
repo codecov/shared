@@ -68,10 +68,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -128,18 +128,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT01NTg1NDA5NTkwODU0
         MzMyNDY1PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/test_read_file_does_exist_on_first_but_not_exists_on_second/does_exist_on_first_but_not_exists_on_second.txt/1581337077545464\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt\"\
         ,\n \"name\": \"test_read_file_does_exist_on_first_but_not_exists_on_second/does_exist_on_first_but_not_exists_on_second.txt\"\
         ,\n \"bucket\": \"testingarchive20190210001\",\n \"generation\": \"1581337077545464\"\
         ,\n \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:17:57.545Z\",\n \"updated\": \"2020-02-10T12:17:57.545Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:17:57.545Z\"\
         ,\n \"size\": \"19\",\n \"md5Hash\": \"A94boGwjJexuZLZmMberHQ==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?generation=1581337077545464&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?generation=1581337077545464&alt=media\"\
         ,\n \"crc32c\": \"4mcrRA==\",\n \"etag\": \"CPjzm9b7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -184,10 +184,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -237,12 +237,12 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?projection=noAcl
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive20190210001/test_read_file_does_exist_on_first_but_not_exists_on_second/does_exist_on_first_but_not_exists_on_second.txt/1581337077545464\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?generation=1581337077545464&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?generation=1581337077545464&alt=media\"\
         ,\n  \"name\": \"test_read_file_does_exist_on_first_but_not_exists_on_second/does_exist_on_first_but_not_exists_on_second.txt\"\
         ,\n  \"bucket\": \"testingarchive20190210001\",\n  \"generation\": \"1581337077545464\"\
         ,\n  \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n  \"\
@@ -289,7 +289,7 @@ interactions:
       accept-encoding:
       - gzip
     method: GET
-    uri: https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?generation=1581337077545464&alt=media
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/test_read_file_does_exist_on_first_but_not_exists_on_second%2Fdoes_exist_on_first_but_not_exists_on_second.txt?generation=1581337077545464&alt=media
   response:
     body:
       string: some_different_data

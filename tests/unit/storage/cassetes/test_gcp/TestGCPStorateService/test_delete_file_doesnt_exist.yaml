@@ -68,10 +68,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
         \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
         location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
@@ -122,7 +122,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: DELETE
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004/o/test_delete_file_doesnt_exist%2Fresult.txt
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_delete_file_doesnt_exist%2Fresult.txt
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\

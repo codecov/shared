@@ -68,10 +68,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
         \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
         location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
@@ -120,7 +120,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?projection=noAcl
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\
@@ -169,10 +169,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
         \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
         location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
@@ -228,18 +228,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0wNzg0Mzg0NTA1NTYx
         NjA0ODYxPT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive004/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive004/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive004/test_append_to_non_existing_file/result.txt/1581336763818205\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt\"\
         ,\n \"name\": \"test_append_to_non_existing_file/result.txt\",\n \"bucket\"\
         : \"testingarchive004\",\n \"generation\": \"1581336763818205\",\n \"metageneration\"\
         : \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\": \"2020-02-10T12:12:43.818Z\"\
         ,\n \"updated\": \"2020-02-10T12:12:43.818Z\",\n \"storageClass\": \"STANDARD\"\
         ,\n \"timeStorageClassUpdated\": \"2020-02-10T12:12:43.818Z\",\n \"size\"\
         : \"31\",\n \"md5Hash\": \"0KezyzGusHDoY2IpCrO+Gg==\",\n \"mediaLink\": \"\
-        https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?generation=1581336763818205&alt=media\"\
+        https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?generation=1581336763818205&alt=media\"\
         ,\n \"crc32c\": \"hqY4xg==\",\n \"etag\": \"CN3Bz8D6xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -284,10 +284,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
         ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
         \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
         location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
@@ -336,12 +336,12 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?projection=noAcl
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive004/test_append_to_non_existing_file/result.txt/1581336763818205\"\
-        ,\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt\"\
-        ,\n  \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?generation=1581336763818205&alt=media\"\
+        ,\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt\"\
+        ,\n  \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?generation=1581336763818205&alt=media\"\
         ,\n  \"name\": \"test_append_to_non_existing_file/result.txt\",\n  \"bucket\"\
         : \"testingarchive004\",\n  \"generation\": \"1581336763818205\",\n  \"metageneration\"\
         : \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\"\
@@ -388,7 +388,7 @@ interactions:
       accept-encoding:
       - gzip
     method: GET
-    uri: https://www.googleapis.com/download/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?generation=1581336763818205&alt=media
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive004/o/test_append_to_non_existing_file%2Fresult.txt?generation=1581336763818205&alt=media
   response:
     body:
       string: mom, look at me, appending data

@@ -68,10 +68,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -129,18 +129,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT04NTIwOTI1ODAyODQw
         NjYyODE3PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/result_1.txt/1581337087477423\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\"\
         ,\n \"name\": \"thiago/test_list_folder_contents/result_1.txt\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337087477423\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:18:07.477Z\",\n \"updated\": \"2020-02-10T12:18:07.477Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:18:07.477Z\"\
         ,\n \"size\": \"70\",\n \"md5Hash\": \"+oc+ZMF8EfvX6IEFIKTGMQ==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1581337087477423&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1581337087477423&alt=media\"\
         ,\n \"crc32c\": \"EYy6eg==\",\n \"etag\": \"CK+N+tr7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -185,10 +185,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -246,18 +246,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0wMDg4NDgxMDQwMjY4
         ODU5MzU1PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/result_2.txt/1581337087947499\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\"\
         ,\n \"name\": \"thiago/test_list_folder_contents/result_2.txt\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337087947499\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:18:07.947Z\",\n \"updated\": \"2020-02-10T12:18:07.947Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:18:07.947Z\"\
         ,\n \"size\": \"72\",\n \"md5Hash\": \"X50KTg0h5WFDz++++xlHVQ==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1581337087947499&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1581337087947499&alt=media\"\
         ,\n \"crc32c\": \"/oAc7w==\",\n \"etag\": \"COvlltv7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -302,10 +302,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -363,18 +363,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT04MTQ0OTQ0ODEzNTQx
         OTM3Mzk5PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/result_3.txt/1581337088395941\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\"\
         ,\n \"name\": \"thiago/test_list_folder_contents/result_3.txt\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337088395941\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:18:08.395Z\",\n \"updated\": \"2020-02-10T12:18:08.395Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:18:08.395Z\"\
         ,\n \"size\": \"74\",\n \"md5Hash\": \"V1d54/o8qfT4IzUII/xlHQ==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1581337088395941&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1581337088395941&alt=media\"\
         ,\n \"crc32c\": \"5NF6aA==\",\n \"etag\": \"CKWVstv7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -419,10 +419,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -480,18 +480,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT04NzAxMzY3NDk1MzE4
         OTYzNzI5PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_1.txt/1581337088847483\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
         ,\n \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337088847483\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:18:08.847Z\",\n \"updated\": \"2020-02-10T12:18:08.847Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:18:08.847Z\"\
         ,\n \"size\": \"79\",\n \"md5Hash\": \"uH/WEvd9AEhJiwNDJ9BViw==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1581337088847483&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1581337088847483&alt=media\"\
         ,\n \"crc32c\": \"VZRjgw==\",\n \"etag\": \"CPvczdv7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -536,10 +536,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -597,18 +597,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT0wNTIxMjU4NTQ3OTg1
         MTMwMjg5PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_2.txt/1581337089351681\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
         ,\n \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337089351681\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:18:09.351Z\",\n \"updated\": \"2020-02-10T12:18:09.351Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:18:09.351Z\"\
         ,\n \"size\": \"81\",\n \"md5Hash\": \"Jr8OUyCi116ViSldYgsEcg==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1581337089351681&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1581337089351681&alt=media\"\
         ,\n \"crc32c\": \"3eRtDA==\",\n \"etag\": \"CIHA7Nv7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -653,10 +653,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -714,18 +714,18 @@ interactions:
         bXVsdGlwYXJ0L3JlbGF0ZWQ7IGJvdW5kYXJ5PSI9PT09PT09PT09PT09PT03MjY3Njg2Njc5NDA1
         NDE3NDk3PT0i
     method: POST
-    uri: https://www.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive20190210001/o?uploadType=multipart
   response:
     body:
       string: "{\n \"kind\": \"storage#object\",\n \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_3.txt/1581337089800620\"\
-        ,\n \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
+        ,\n \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
         ,\n \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n \"bucket\"\
         : \"testingarchive20190210001\",\n \"generation\": \"1581337089800620\",\n\
         \ \"metageneration\": \"1\",\n \"contentType\": \"text/plain\",\n \"timeCreated\"\
         : \"2020-02-10T12:18:09.800Z\",\n \"updated\": \"2020-02-10T12:18:09.800Z\"\
         ,\n \"storageClass\": \"STANDARD\",\n \"timeStorageClassUpdated\": \"2020-02-10T12:18:09.800Z\"\
         ,\n \"size\": \"83\",\n \"md5Hash\": \"bc1LtFH2tfPxtmrDZ++bpg==\",\n \"mediaLink\"\
-        : \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1581337089800620&alt=media\"\
+        : \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1581337089800620&alt=media\"\
         ,\n \"crc32c\": \"S95bnw==\",\n \"etag\": \"CKzzh9z7xucCEAE=\"\n}\n"
     headers:
       Alt-Svc:
@@ -770,10 +770,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -823,13 +823,13 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o?projection=noAcl&prefix=thiago%2Ftest_list_folder_contents
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o?projection=noAcl&prefix=thiago%2Ftest_list_folder_contents
   response:
     body:
       string: "{\n  \"kind\": \"storage#objects\",\n  \"items\": [\n    {\n      \"\
         kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_1.txt/1581337088847483\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1581337088847483&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1581337088847483&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n\
         \      \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337088847483\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -839,8 +839,8 @@ interactions:
         : \"2020-02-10T12:18:08.847Z\",\n      \"updated\": \"2020-02-10T12:18:08.847Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:08.847Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_2.txt/1581337089351681\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1581337089351681&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1581337089351681&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n\
         \      \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337089351681\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -850,8 +850,8 @@ interactions:
         : \"2020-02-10T12:18:09.351Z\",\n      \"updated\": \"2020-02-10T12:18:09.351Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:09.351Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_3.txt/1581337089800620\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1581337089800620&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1581337089800620&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n\
         \      \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337089800620\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -861,8 +861,8 @@ interactions:
         : \"2020-02-10T12:18:09.800Z\",\n      \"updated\": \"2020-02-10T12:18:09.800Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:09.800Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/result_1.txt/1581337087477423\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1581337087477423&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1581337087477423&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/result_1.txt\",\n  \
         \    \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337087477423\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -872,8 +872,8 @@ interactions:
         : \"2020-02-10T12:18:07.477Z\",\n      \"updated\": \"2020-02-10T12:18:07.477Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:07.477Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/result_2.txt/1581337087947499\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1581337087947499&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1581337087947499&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/result_2.txt\",\n  \
         \    \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337087947499\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -883,8 +883,8 @@ interactions:
         : \"2020-02-10T12:18:07.947Z\",\n      \"updated\": \"2020-02-10T12:18:07.947Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:07.947Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/result_3.txt/1581337088395941\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1581337088395941&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1581337088395941&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/result_3.txt\",\n  \
         \    \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337088395941\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -933,10 +933,10 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
   response:
     body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001\"\
+      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
         ,\n  \"id\": \"testingarchive20190210001\",\n  \"name\": \"testingarchive20190210001\"\
         ,\n  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n\
         \  \"location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"\
@@ -986,13 +986,13 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o?projection=noAcl&prefix=thiago%2Ftest_list_folder_contents%2Ff1
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o?projection=noAcl&prefix=thiago%2Ftest_list_folder_contents%2Ff1
   response:
     body:
       string: "{\n  \"kind\": \"storage#objects\",\n  \"items\": [\n    {\n      \"\
         kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_1.txt/1581337088847483\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1581337088847483&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1581337088847483&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n\
         \      \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337088847483\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -1002,8 +1002,8 @@ interactions:
         : \"2020-02-10T12:18:08.847Z\",\n      \"updated\": \"2020-02-10T12:18:08.847Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:08.847Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_2.txt/1581337089351681\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1581337089351681&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1581337089351681&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n\
         \      \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337089351681\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
@@ -1013,8 +1013,8 @@ interactions:
         : \"2020-02-10T12:18:09.351Z\",\n      \"updated\": \"2020-02-10T12:18:09.351Z\"\
         ,\n      \"timeStorageClassUpdated\": \"2020-02-10T12:18:09.351Z\"\n    },\n\
         \    {\n      \"kind\": \"storage#object\",\n      \"id\": \"testingarchive20190210001/thiago/test_list_folder_contents/f1/result_3.txt/1581337089800620\"\
-        ,\n      \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
-        ,\n      \"mediaLink\": \"https://www.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1581337089800620&alt=media\"\
+        ,\n      \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\"\
+        ,\n      \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive20190210001/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1581337089800620&alt=media\"\
         ,\n      \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n\
         \      \"bucket\": \"testingarchive20190210001\",\n      \"generation\": \"\
         1581337089800620\",\n      \"metageneration\": \"1\",\n      \"contentType\"\
