@@ -923,6 +923,12 @@ def test_repack(sample_report):
     assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
 
 
+def test_repack_no_change(sample_report):
+    assert len(sample_report._chunks) == len(sample_report._files)
+    sample_report.repack()
+    assert len(sample_report._chunks) == len(sample_report._files)
+
+
 def test_file_reports(sample_report):
     res = list(sample_report.file_reports())
     assert len(res) == 3

@@ -1218,6 +1218,8 @@ class Report(object):
     def repack(self):
         """Repacks in a more compact format to avoid deleted files and such"""
         new_chunks = [x for x in self._chunks if x is not None]
+        if len(new_chunks) == len(self._chunks):
+            return
         notnull_chunks_new_location = list(
             enumerate(
                 origin_ind
