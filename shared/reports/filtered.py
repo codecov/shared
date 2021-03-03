@@ -1,11 +1,18 @@
 import dataclasses
 
-from shared.utils.totals import agg_totals, sum_totals
+from shared.config import get_config
+from shared.helpers.numeric import ratio
+from shared.reports.types import ReportTotals, EMPTY
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
-from shared.reports.types import ReportTotals, EMPTY
-from shared.helpers.numeric import ratio
 from shared.utils.merge import line_type, merge_all
+from shared.utils.totals import agg_totals, sum_totals
+
+
+def _contain_any_of_the_flags(expected_flags, actual_flags):
+    if expected_flags is None or actual_flags is None:
+        return False
+    return len(set(expected_flags) & set(actual_flags)) > 0
 
 
 class FilteredReportFile(object):
@@ -148,11 +155,17 @@ class FilteredReport(object):
         if self._sessions_to_include is None:
             if not self.flags:
                 self._sessions_to_include = set(self.report.sessions.keys())
-            else:
+            elif get_config("compatibility", "flag_pattern_matching", default=False):
                 self._sessions_to_include = set(
                     sid
                     for (sid, session) in self.report.sessions.items()
                     if match_any(self.flags, session.flags)
+                )
+            else:
+                self._sessions_to_include = set(
+                    sid
+                    for (sid, session) in self.report.sessions.items()
+                    if _contain_any_of_the_flags(self.flags, session.flags)
                 )
         return self._sessions_to_include
 

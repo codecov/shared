@@ -13,7 +13,6 @@ from shared.utils.ReportEncoder import ReportEncoder
 from shared.utils.totals import agg_totals, sum_totals
 from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
-from shared.utils.match import match, match_any
 from shared.utils.merge import (
     merge_all,
     merge_line,
