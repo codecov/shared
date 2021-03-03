@@ -159,7 +159,7 @@ class ReadOnlyReport(object):
                     or rust_totals.hits != res.hits
                     or (
                         rust_totals.coverage != res.coverage
-                        and not (rust_totals.coverage is None and res.coverage == 0)
+                        and not (rust_totals.coverage is None and res.coverage in [0, 100])
                     )
                 ):
                     log.warning(
