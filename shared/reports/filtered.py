@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 
 from shared.config import get_config
 from shared.helpers.numeric import ratio
@@ -7,6 +8,8 @@ from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
 from shared.utils.merge import line_type, merge_all
 from shared.utils.totals import agg_totals, sum_totals
+
+log = logging.getLogger(__name__)
 
 
 def _contain_any_of_the_flags(expected_flags, actual_flags):
@@ -217,8 +220,33 @@ class FilteredReport(object):
         """
         totals = agg_totals(self._iter_totals())
         totals.sessions = len(self.session_ids_to_include)
-
-        return ReportTotals(*tuple(totals))
+        res = ReportTotals(*tuple(totals))
+        if len(self.session_ids_to_include) == 1 and not self.path_patterns:
+            try:
+                only_session_id = list(self.session_ids_to_include)[0]
+                if self.report.sessions.get(only_session_id):
+                    session_totals = self.report.sessions[only_session_id].totals
+                    if session_totals == res:
+                        log.info("Could have used the original sessions totals")
+                    else:
+                        log.info(
+                            "There is a difference between original session and calculated totals",
+                            extra=dict(
+                                original_totals=session_totals.asdict()
+                                if session_totals is not None
+                                else None,
+                                calculated_totals=res.asdict()
+                                if res is not None
+                                else None,
+                            ),
+                        )
+            except Exception:
+                log.warning(
+                    "Unable to calculate single-session totals",
+                    extra=dict(flags=self.flags, path_patterns=self.path_patterns),
+                    exc_info=True,
+                )
+        return res
 
     def calculate_diff(self, diff):
         file_dict = {}
