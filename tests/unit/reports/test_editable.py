@@ -167,11 +167,50 @@ class TestEditableReportFile(object):
         assert report_file.details == {"present_sessions": [0, 1, 2, 3]}
 
     def test_details(self):
-        chunks = "\n".join(
-            ['{"some_field": "nah"}', "[1, null, [[0, 1], [1, 0]]]", "",]
-        )
+        chunks = "\n".join(['{"some_field": "nah"}', "[1, null, [[0, 1], [1, 0]]]", ""])
         report_file = EditableReportFile(name="file.py", lines=chunks)
         assert report_file.details == {"some_field": "nah"}
+
+    def test_encode_with_details_with_present_sessions_as_set(self):
+        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        report_file._details = {"present_sessions": set([1, 2, 4])}
+        expected_result = "\n".join(
+            ['{"present_sessions":[1,2,4]}', "[1, null, [[0, 1], [1, 0]]]"]
+        )
+        assert report_file._encode() == expected_result
+
+    def test_encode_with_details_with_present_sessions_as_empty_set(self):
+        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        report_file._details = {"present_sessions": set()}
+        expected_result = "\n".join(
+            ['{"present_sessions":[]}', "[1, null, [[0, 1], [1, 0]]]"]
+        )
+        assert report_file._encode() == expected_result
+
+    def test_encode_with_details_with_present_sessions_as_list(self):
+        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        report_file._details = {"present_sessions": [10, 2, 4]}
+        expected_result = "\n".join(
+            ['{"present_sessions":[2,4,10]}', "[1, null, [[0, 1], [1, 0]]]"]
+        )
+        assert report_file._encode() == expected_result
+
+    def test_encode_with_details_with_nothing(self):
+        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        report_file._details = {}
+        expected_result = "\n".join(["{}", "[1, null, [[0, 1], [1, 0]]]"])
+        assert report_file._encode() == expected_result
+
+    def test_encode_with_details_with_none(self):
+        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
+        report_file = EditableReportFile(name="file.py", lines=chunks)
+        report_file._details = None
+        expected_result = "\n".join(["null", "[1, null, [[0, 1], [1, 0]]]"])
+        assert report_file._encode() == expected_result
 
     def test_merge_already_previously_set_sessions_header(self):
         chunks = "\n".join(

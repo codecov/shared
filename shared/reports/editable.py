@@ -28,7 +28,7 @@ class EditableReportFile(ReportFile):
     def details(self):
         if not self._details:
             return self._details
-        if not self._details.get("present_sessions"):
+        if self._details.get("present_sessions") is None:
             return self._details
         res = copy(self._details)
         res["present_sessions"] = sorted(self._details.get("present_sessions"))
@@ -144,6 +144,9 @@ class EditableReport(Report):
                     if any(f in session.flags for f in curr_sess.flags):
                         sessions_to_delete.append(sess_id)
         if sessions_to_delete:
-            log.info("Deleted multiple sessions due to carriedforward overwrite")
+            log.info(
+                "Deleted multiple sessions due to carriedforward overwrite",
+                extra=dict(deleted_sessions=sessions_to_delete),
+            )
             self.delete_multiple_sessions(sessions_to_delete)
         return super().add_session(session)
