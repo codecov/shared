@@ -1,6 +1,7 @@
 import httpx
 import respx
 import pytest
+from urllib.parse import urlparse, parse_qsl
 
 from shared.torngit.bitbucket import Bitbucket
 
@@ -67,6 +68,47 @@ class TestUnitBitbucket(object):
         url = "random_url"
         with pytest.raises(TorngitClientError):
             await valid_handler.api(client, "2", method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_proper_params(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                return_value=mocker.MagicMock(text="kowabunga", status_code=200)
+            )
+        )
+        method = "GET"
+        url = "/random_url"
+        res = await valid_handler.api(client, "2", method, url)
+        assert res == "kowabunga"
+        assert client.request.call_count == 1
+        args, kwargs = client.request.call_args
+        assert len(args) == 2
+        assert args[0] == "GET"
+        built_url = args[1]
+        parsed_url = urlparse(built_url)
+        assert parsed_url.scheme == "https"
+        assert parsed_url.netloc == "bitbucket.org"
+        assert parsed_url.path == "/api/2.0/random_url"
+        assert parsed_url.params == ""
+        assert parsed_url.fragment == ""
+        query = dict(parse_qsl(parsed_url.query, keep_blank_values=True))
+        assert sorted(query.keys()) == [
+            "oauth_consumer_key",
+            "oauth_nonce",
+            "oauth_signature",
+            "oauth_signature_method",
+            "oauth_timestamp",
+            "oauth_token",
+            "oauth_version",
+        ]
+        assert (
+            query["oauth_consumer_key"] == "test51hdmhalc053rb"
+        )  # defined on `valid_handler`
+        assert query["oauth_signature_method"] == "HMAC-SHA1"
+        assert (
+            query["oauth_token"] == "testm0141jl7b6ux9l"
+        )  # defined on `valid_handler`
+        assert query["oauth_version"] == "1.0"  # our class uses
 
     def test_generate_request_token(self, valid_handler):
         with respx.mock:
