@@ -13,7 +13,7 @@ class Flag(object):
     def report(self):
         """returns the report filtered by this flag
         """
-        return self._report.filter(paths=[], flags=[self.name])
+        return self._report.filter(paths=None, flags=[self.name])
 
     @property
     def totals(self):

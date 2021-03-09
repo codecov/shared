@@ -13,6 +13,7 @@ from shared.reports.resources import (
 )
 from shared.reports.types import NetworkFile
 from shared.reports.filtered import FilteredReportFile
+from shared.utils.sessions import SessionType
 
 
 class TestFilteredReportFile(object):
@@ -250,6 +251,121 @@ class TestFilteredReport(object):
             methods=0,
             messages=0,
             sessions=3,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
+
+    def test_flag_filtered_totals_flag_single_session(self, mocker):
+        report = Report()
+        first_file = ReportFile("file_1.go")
+        first_file.append(
+            1,
+            ReportLine.create(
+                coverage=1,
+                sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
+            ),
+        )
+        first_file.append(
+            2,
+            ReportLine.create(
+                coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
+            ),
+        )
+        first_file.append(
+            3,
+            ReportLine.create(
+                coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
+            ),
+        )
+        first_file.append(
+            5,
+            ReportLine.create(
+                coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
+            ),
+        )
+        first_file.append(
+            6,
+            ReportLine.create(
+                coverage="1/2",
+                sessions=[
+                    LineSession(0, "1/2"),
+                    LineSession(1, 0),
+                    LineSession(2, "1/4"),
+                ],
+            ),
+        )
+        report.append(first_file)
+        report.add_session(Session(id=0, flags=["unit"]))
+        report.add_session(
+            Session(
+                id=1,
+                totals=ReportTotals(
+                    files=1,
+                    lines=5,
+                    hits=2,
+                    misses=3,
+                    partials=0,
+                    coverage="40.00000",
+                    branches=0,
+                    methods=0,
+                    messages=0,
+                    sessions=1,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                flags=["banana"],
+            )
+        )
+        trouble_session = mocker.Mock(
+            spec=[],
+            flags=["poultry"],
+            session_type=SessionType.uploaded,
+            asdict=mocker.MagicMock(return_value={}),
+        )
+        report.add_session(trouble_session)
+        assert report.flags["unit"].totals == ReportTotals(
+            files=1,
+            lines=5,
+            hits=2,
+            misses=2,
+            partials=1,
+            coverage="40.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
+        assert report.flags["banana"].totals == ReportTotals(
+            files=1,
+            lines=5,
+            hits=2,
+            misses=3,
+            partials=0,
+            coverage="40.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
+        assert report.flags["poultry"].totals == ReportTotals(
+            files=1,
+            lines=2,
+            hits=1,
+            misses=0,
+            partials=1,
+            coverage="50.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
             complexity=0,
             complexity_total=0,
             diff=0,
