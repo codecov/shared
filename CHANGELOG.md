@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
-## [v0.4.14]
+## [v0.4.15]
 
 ### Added
 
