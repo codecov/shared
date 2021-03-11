@@ -2,11 +2,13 @@ import os
 import base64
 from json import loads, dumps
 from datetime import datetime
-from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qsl
 
 import oauth2 as oauth
 from tornado.web import HTTPError
 from tlslite.utils import keyfactory
+import urllib.parse as urllib_parse
+from tornado.httputil import url_concat
 from tornado.httpclient import HTTPError as ClientError
 
 
@@ -144,20 +146,13 @@ class BitbucketServer(TorngitBaseAdapter):
             return dict(files=[])
 
     async def api(self, method, url, body=None, token=None, **kwargs):
-        # Service URL combines scheme and netloc, so we split.
-        parsed_service = urlparse(self.service_url)
+        # process desired api path
+        if not url.startswith("http"):
+            url = "%s/rest/api/1.0%s" % (self.service_url, url)
 
-        # Build our desired API path and URL, including inline kwargs.
-        url = urlunparse(
-            (
-                parsed_service.scheme,
-                parsed_service.netloc,
-                "/rest/api/1.0" + url,
-                "",
-                urlencode(kwargs),
-                "",
-            )
-        )
+        # process inline arguments
+        if kwargs:
+            url = url_concat(url, kwargs)
 
         # get accessing token
         if token:
@@ -195,7 +190,7 @@ class BitbucketServer(TorngitBaseAdapter):
                 return loads(content)
             else:
                 try:
-                    content = parse_qs(content) or content
+                    content = dict(parse_qsl(content)) or content
                 except Exception:
                     pass
 

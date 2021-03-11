@@ -3,9 +3,11 @@ from base64 import b64decode
 import json
 import logging
 from typing import Optional, List
-from urllib.parse import urlencode, urlparse, urlunparse
 
 import httpx
+
+from tornado.httputil import urlencode
+from tornado.httputil import url_concat
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
@@ -43,26 +45,16 @@ class Gitlab(TorngitBaseAdapter):
     )
 
     async def fetch_and_handle_errors(
-        self,
-        client,
-        method,
-        url_path,
-        *,
-        host=None,
-        body=None,
-        token=None,
-        version=4,
-        **args,
+        self, client, method, url_path, *, body=None, token=None, version=4, **args
     ):
-        # host is typically None, but will be customized for OAuth logins.
-        if host is None:
-            host = self.api_url.format(version)
+        if url_path.startswith("/"):
             _log = dict(
                 event="api",
                 endpoint=url_path,
                 method=method,
                 bot=(token or self.token).get("username"),
             )
+            url_path = self.api_url.format(version) + url_path
         else:
             _log = {}
 
@@ -71,7 +63,6 @@ class Gitlab(TorngitBaseAdapter):
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
-        # body is typically a JSON dict, but will be URL-encoded params for OAuth logins.
         if isinstance(body, dict):
             headers["Content-Type"] = "application/json"
             body = json.dumps(body)
@@ -81,19 +72,7 @@ class Gitlab(TorngitBaseAdapter):
         if token or self.token:
             headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
-        parsed_url = urlparse(host)
-        url = urlunparse(
-            (
-                parsed_url.scheme,
-                parsed_url.netloc,
-                parsed_url.path + url_path,
-                "",
-                urlencode(args),
-                "",
-            )
-        )
-        # XXX how can this happen?
-        url = url.replace(" ", "%20")
+        url = url_concat(url_path, args).replace(" ", "%20")
 
         try:
             with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
@@ -165,19 +144,18 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_authenticated_user(self, code, redirect_uri):
         creds = self._oauth_consumer_token()
+        creds = dict(client_id=creds["key"], client_secret=creds["secret"])
 
         # http://doc.gitlab.com/ce/api/oauth2.html
         res = await self.api(
             "post",
-            "/oauth/token",
-            host=self.service_url,
+            self.service_url + "/oauth/token",
             body=urlencode(
                 dict(
                     code=code,
                     grant_type="authorization_code",
                     redirect_uri=redirect_uri,
-                    client_id=creds["key"],
-                    client_secret=creds["secret"],
+                    **creds,
                 )
             ),
         )
