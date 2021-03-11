@@ -226,7 +226,7 @@ class TestFilteredReport(object):
             diff=0,
         )
         assert sample_report.filter(flags=["complex"]).totals == ReportTotals(
-            files=3,
+            files=2,
             lines=6,
             hits=2,
             misses=2,
@@ -263,7 +263,12 @@ class TestFilteredReport(object):
             1,
             ReportLine.create(
                 coverage=1,
-                sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
+                sessions=[
+                    LineSession(0, 1),
+                    LineSession(1, 1),
+                    LineSession(2, 1),
+                    LineSession(4, 1),
+                ],
             ),
         )
         first_file.append(
@@ -292,11 +297,33 @@ class TestFilteredReport(object):
                     LineSession(0, "1/2"),
                     LineSession(1, 0),
                     LineSession(2, "1/4"),
+                    LineSession(3, 0),
+                    LineSession(4, 0),
                 ],
             ),
         )
         report.append(first_file)
-        report.add_session(Session(id=0, flags=["unit"]))
+        report.add_session(
+            Session(
+                id=0,
+                flags=["unit"],
+                totals=ReportTotals(
+                    files=1,
+                    lines=5,
+                    hits=2,
+                    misses=2,
+                    partials=1,
+                    coverage="40.00000",
+                    branches=0,
+                    methods=0,
+                    messages=3,
+                    sessions=1,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+            )
+        )
         report.add_session(
             Session(
                 id=1,
@@ -325,6 +352,27 @@ class TestFilteredReport(object):
             asdict=mocker.MagicMock(return_value={}),
         )
         report.add_session(trouble_session)
+        report.add_session(
+            Session(
+                id=3,
+                totals=ReportTotals(
+                    files=1,
+                    lines=5,
+                    hits=2,
+                    misses=3,
+                    partials=0,
+                    coverage="80.00000",
+                    branches=0,
+                    methods=0,
+                    messages=0,
+                    sessions=1,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                flags=["super"],
+            )
+        )
         assert report.flags["unit"].totals == ReportTotals(
             files=1,
             lines=5,
@@ -362,6 +410,21 @@ class TestFilteredReport(object):
             misses=0,
             partials=1,
             coverage="50.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
+        assert report.flags["super"].totals == ReportTotals(
+            files=1,
+            lines=1,
+            hits=0,
+            misses=1,
+            partials=0,
+            coverage="0",
             branches=0,
             methods=0,
             messages=0,
