@@ -22,3 +22,21 @@ To release a new version, you need to:
 - Change https://github.com/codecov/shared/blob/master/CHANGELOG.md  unreleased header name to that version, and create a new _unreleased_ section with the same subsections.
 3) Merge that PR
 4) Create a new release on https://github.com/codecov/shared/releases/new
+
+## Running tests
+
+In order to run tests, from inside the virtualenv this repo is in:
+
+```
+make test
+```
+
+## Managing shared dependencies
+
+As a normal python package, `shared` can include dependencies of its own.
+
+Updating them should be done at the `setup.py` file.
+
+Remember to add dependencies as loosely as possible. Only make sure to include what the minimum version is, and only include a maximum version if you do know that higher versions will break.
+
+Remember that multiple packages, on different contexts of their own requirements, will have to install this. So keeping the requirements loose allow them to avoid version clashes and eases upgrades whenever they need to.
