@@ -51,6 +51,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         self, client, version, method, path, json=False, body=None, token=None, **kwargs
     ):
         urlpath = "/api/%s.0%s" % (version, path)
+        url = urlunparse(("https", "bitbucket.org", urlpath, "", urlencode(kwargs), ""))
         headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -64,12 +65,11 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         else:
             all_args.update(body or {})
         token_to_use = token or self.token
-        oauth_url = urlunparse(("https", "bitbucket.org", urlpath, "", "", ""))
         oauth = self._oauth_request_parameters(
-            oauth_url, token_to_use, all_args, method=method.upper()
+            url, token_to_use, all_args, method=method.upper()
         )
         kwargs.update(oauth)
-        url = urlunparse(("https", "bitbucket.org", urlpath, "", urlencode(kwargs), ""))
+
         kwargs = dict(
             json=body if body is not None and json else None,
             data=body if not json else None,
