@@ -9,7 +9,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.4.13",
+    version="0.4.14",
     description="Shared Codecov",
     long_description=long_description,
     url="https://github.com/codecov/shared",
