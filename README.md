@@ -4,11 +4,11 @@ Shared is a place for code that is common to multiple python repositories on `co
 
 ## How does shared get into production
 
-`shared` is a repository of its own, so it needs to be installed as a dependency on the reporitories that might use it.
+`shared` is a repository of its own, so it needs to be installed as a dependency on the repositories that might use it.
 
 The current repositories using `shared` are `codecov/worker` and `codecov/codecov-api`.
 
-Whenever getting new code into `shared`, one needs to wait for a new version to be release (or release it themselves, see below), and put such version on worker and api `requirements.in`
+Whenever getting new code into `shared`, one needs to wait for a new version to be released (or release it themselves, see below), and update the `requirements.in` file in `codecov/worker` and `codecov/codecov-api` to use the newly released version of `shared`.
 
 ## Releasing a new version on shared
 
