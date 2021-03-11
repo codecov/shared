@@ -188,3 +188,38 @@ class TestUnitGithub(object):
             async with handler.get_client() as client:
                 res = await handler.api(client, "get", "/endpoint")
             assert res == "Äpple"
+
+    @pytest.mark.asyncio
+    async def test_find_pull_request_uses_proper_query(self, mocker):
+        with respx.mock:
+            respx.get(
+                url="https://api.github.com/search/issues?q=abcdef+repo%3Ausername%2Frepo_name+type%3Apr+state%3Aopen"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # shortened version of the response
+                    json={
+                        "total_count": 1,
+                        "incomplete_results": False,
+                        "items": [
+                            {
+                                "id": 575148804,
+                                "node_id": "MDExOlB1bGxSZXF1ZXN0MzgzMzQ4Nzc1",
+                                "number": 18,
+                                "title": "Thiago/base no base",
+                                "labels": [],
+                                "state": "open",
+                                "locked": False,
+                            }
+                        ],
+                    },
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            handler = Github(
+                repo=dict(name="repo_name"),
+                owner=dict(username="username"),
+                token=dict(key="aaaaa"),
+            )
+            res = await handler.find_pull_request(commit="abcdef")
+            assert res == 18
