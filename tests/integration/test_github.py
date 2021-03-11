@@ -201,11 +201,6 @@ class TestGithubTestCase(object):
         assert await valid_handler.find_pull_request("a" * 40, "no-branch") is None
 
     @pytest.mark.asyncio
-    async def test_find_pull_request_one_found(self, valid_handler, codecov_vcr):
-        commitid = "bbd20d8f42ac7cfa0b5b91087847d0b3620ac3ee"
-        assert await valid_handler.find_pull_request(commitid) == 18
-
-    @pytest.mark.asyncio
     async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
         with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_pull_request("100")

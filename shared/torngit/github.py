@@ -4,13 +4,9 @@ import base64
 from base64 import b64decode
 from typing import Optional, List
 from urllib.parse import quote_plus, urlencode, urlparse, urlunparse
-
 import logging
 
 import httpx
-
-from tornado.httputil import url_concat
-from tornado.escape import url_escape
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
@@ -84,7 +80,19 @@ class Github(TorngitBaseAdapter):
             )
             url = self.api_url + url
 
-        url = url_concat(url, args).replace(" ", "%20")
+        parsed_url = urlparse(url)
+        url = urlunparse(
+            (
+                parsed_url.scheme,
+                parsed_url.netloc,
+                parsed_url.path,
+                "",
+                urlencode(args),
+                "",
+            )
+        )
+        # XXX how can this happen?
+        url = url.replace(" ", "%20")
 
         kwargs = dict(
             json=body if body else None, headers=_headers, allow_redirects=False,
