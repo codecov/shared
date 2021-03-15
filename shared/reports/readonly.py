@@ -160,7 +160,8 @@ class ReadOnlyReport(object):
                     or (
                         rust_totals.coverage != res.coverage
                         and not (
-                            rust_totals.coverage is None and res.coverage in [0, 100]
+                            rust_totals.coverage is None
+                            and res.coverage in [0, 100, "100"]
                         )
                     )
                 ):
