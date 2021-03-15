@@ -107,7 +107,7 @@ class TestReadOnly(object):
         assert r.sessions == sample_report.sessions
         assert sorted(r.flags.keys()) == ["complex", "simple"]
         assert r.flags["complex"].totals.asdict() == {
-            "files": 3,
+            "files": 2,
             "lines": 6,
             "hits": 2,
             "misses": 2,
