@@ -153,23 +153,37 @@ class FilteredReport(object):
         for f in self.files:
             yield self.get(f)
 
+    def _calculate_sessionids_to_include(self):
+        if not self.flags:
+            return set(self.report.sessions.keys())
+        old_style_sessions = set(
+            sid
+            for (sid, session) in self.report.sessions.items()
+            if match_any(self.flags, session.flags)
+        )
+        new_style_sessions = set(
+            sid
+            for (sid, session) in self.report.sessions.items()
+            if _contain_any_of_the_flags(self.flags, session.flags)
+        )
+        if old_style_sessions != new_style_sessions:
+            log.info(
+                "New result would differ from old result",
+                extra=dict(
+                    old_result=sorted(old_style_sessions),
+                    new_result=sorted(new_style_sessions),
+                    filter_flags=sorted(self.flags),
+                    report_flags=sorted(self.report.flags.keys()),
+                ),
+            )
+        if get_config("compatibility", "flag_pattern_matching", default=False):
+            return old_style_sessions
+        return new_style_sessions
+
     @property
     def session_ids_to_include(self):
         if self._sessions_to_include is None:
-            if not self.flags:
-                self._sessions_to_include = set(self.report.sessions.keys())
-            elif get_config("compatibility", "flag_pattern_matching", default=False):
-                self._sessions_to_include = set(
-                    sid
-                    for (sid, session) in self.report.sessions.items()
-                    if match_any(self.flags, session.flags)
-                )
-            else:
-                self._sessions_to_include = set(
-                    sid
-                    for (sid, session) in self.report.sessions.items()
-                    if _contain_any_of_the_flags(self.flags, session.flags)
-                )
+            self._sessions_to_include = self._calculate_sessionids_to_include()
         return self._sessions_to_include
 
     def should_include(self, filename):
