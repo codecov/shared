@@ -56,8 +56,10 @@ def track_event(user_id, event_name, event_data={}, is_enterprise=False):
     if not event_name_validator.is_valid(event_name):
         log.debug("Invalid event name: " + event_name)
         return
-
-    analytics.track(user_id, event_name, event_data)
+    try:
+        analytics.track(user_id, event_name, event_data)
+    except Exception:
+        log.exception("Unable to track event", extra=dict(event_name=event_name))
 
 
 def track_user(user_id, user_data={}, is_enterprise=False):
