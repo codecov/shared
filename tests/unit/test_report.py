@@ -382,7 +382,7 @@ def test_to_database(mocker):
     assert r.to_database() == (
         {
             "M": 0,
-            "c": "100",
+            "c": None,
             "b": 0,
             "d": 0,
             "f": 1,

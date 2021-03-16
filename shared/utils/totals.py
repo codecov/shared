@@ -12,14 +12,14 @@ def agg_totals(totals):
         return ReportTotals.default_totals()
     totals = ReportTotals(*totals)
     totals.files = n_files
-    totals.coverage = ratio(totals.hits, totals.lines)
+    totals.coverage = ratio(totals.hits, totals.lines) if totals.lines else None
     return totals
 
 
 def sum_totals(totals):
     totals = [_f for _f in totals if _f]
     if not totals:
-        return ReportTotals()
+        return ReportTotals.default_totals()
 
     sessions = totals[0].sessions
     lines = sum(map(attrgetter("lines"), totals))
@@ -33,7 +33,7 @@ def sum_totals(totals):
         branches=sum(map(attrgetter("branches"), totals)),
         methods=sum(map(attrgetter("methods"), totals)),
         messages=sum(map(attrgetter("messages"), totals)),
-        coverage=ratio(hits, lines),
+        coverage=ratio(hits, lines) if lines else None,
         sessions=sessions,
         complexity=sum(map(attrgetter("complexity"), totals)),
         complexity_total=sum(map(attrgetter("complexity_total"), totals)),

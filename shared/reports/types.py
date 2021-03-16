@@ -44,8 +44,21 @@ class ReportTotals(object):
 
     @classmethod
     def default_totals(cls):
-        args = (0,) * 13
-        return cls(*args)
+        return cls(
+            files=0,
+            lines=0,
+            hits=0,
+            misses=0,
+            partials=0,
+            coverage=None,
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
 
 
 @dataclass

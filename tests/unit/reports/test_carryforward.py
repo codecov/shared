@@ -334,7 +334,7 @@ class TestCarryfowardFlag(object):
                 "M": 0,
                 "N": 0,
                 "b": 0,
-                "c": 0,
+                "c": None,
                 "d": 0,
                 "diff": None,
                 "f": 0,
