@@ -432,7 +432,7 @@ def test_to_database():
     expected_result = (
         {
             "M": 0,
-            "c": "100",
+            "c": None,
             "b": 0,
             "d": 0,
             "f": 1,
@@ -451,6 +451,8 @@ def test_to_database():
         files={"file.py": [0, ReportTotals()]},
         chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
     ).to_database()
+    assert res[0] == expected_result[0]
+    assert res[1] == expected_result[1]
     assert res == expected_result
 
 

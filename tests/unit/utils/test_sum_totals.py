@@ -11,8 +11,8 @@ from shared.utils.totals import sum_totals, agg_totals
             [ReportTotals(), ReportTotals(3, 3, 3, 3), ReportTotals()],
             ReportTotals(3, 3, 3, 3, 0, "100"),
         ),
-        ([ReportTotals()], ReportTotals(1, 0, 0, 0, 0, "100")),
-        ([], ReportTotals()),
+        ([ReportTotals()], ReportTotals(1, 0, 0, 0, 0, coverage=None)),
+        ([], ReportTotals(coverage=None)),
     ],
 )
 def test_sum_totals(totals, res):
