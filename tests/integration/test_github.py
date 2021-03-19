@@ -158,7 +158,7 @@ class TestGithubTestCase(object):
             "company": "@codecov ",
             "blog": "",
             "location": None,
-            "email": None,
+            "email": "thiago@codecov.io",
             "hireable": None,
             "bio": None,
             "twitter_username": None,

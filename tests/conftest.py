@@ -53,6 +53,7 @@ def codecov_vcr(request):
     with vcr.use_cassette(
         casset_file_path,
         filter_headers=["authorization"],
+        record_mode="once",
         match_on=["method", "scheme", "host", "port", "path"],
     ) as cassete_maker:
         yield cassete_maker

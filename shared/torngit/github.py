@@ -201,7 +201,11 @@ class Github(TorngitBaseAdapter):
 
                 user = await self.api(client, "get", "/user")
                 user.update(session or {})
-
+                email = user.get("email")
+                if not email:
+                    emails = await self.api(client, "get", "/user/emails")
+                    emails = [e["email"] for e in emails if e["primary"]]
+                    user["email"] = emails[0] if emails else None
                 return user
 
             else:
