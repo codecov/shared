@@ -142,4 +142,77 @@ interactions:
       - 1; mode=block
     http_version: HTTP/1.1
     status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/user/emails
+  response:
+    content: '[{"email":"thiago@codecov.io","primary":true,"verified":true,"visibility":"private"},{"email":"44376991+ThiagoCodecov@users.noreply.github.com","primary":false,"verified":true,"visibility":null},{"email":"abcdefg@domain.qwertyuiopas.com","primary":false,"verified":true,"visibility":null}]'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 18 Mar 2021 23:58:18 GMT
+      ETag:
+      - W/"1ede8842545047586cb0de28048ca55b6f90555a35fdd69e0237830f407fb408"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - user, user:email
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - C29D:7BB6:5422A0B:898EB76:6053E91A
+      X-OAuth-Scopes:
+      - read:org, repo:status, user:email, write:repo_hook
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4999'
+      X-RateLimit-Reset:
+      - '1616115498'
+      X-RateLimit-Used:
+      - '1'
+      X-XSS-Protection:
+      - '0'
+      x-oauth-client-id:
+      - 999247146557c3ba045c
+    http_version: HTTP/1.1
+    status_code: 200
 version: 1
