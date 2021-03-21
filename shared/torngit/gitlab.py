@@ -377,6 +377,7 @@ class Gitlab(TorngitBaseAdapter):
                         username=(g["full_path"].replace("/", ":")),
                         avatar_url=g["avatar_url"],
                         parent_id=g["parent_id"],
+                        created_at=g.get("created_at"),
                     )
                     for g in groups
                 ]

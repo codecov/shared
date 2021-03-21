@@ -408,6 +408,7 @@ class Github(TorngitBaseAdapter):
                             id=str(organization["id"]),
                             email=organization.get("email"),
                             username=organization["login"],
+                            created_at=org.get("created_at")
                         )
                     )
                 if len(orgs) < 30:

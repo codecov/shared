@@ -1028,6 +1028,7 @@ class TestBitbucketTestCase(object):
                 "id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
                 "name": "Codecov",
                 "username": "codecov",
+                "created_at": "2014-08-17T16:14:26Z"
             }
         ]
         res = await valid_handler.list_teams()

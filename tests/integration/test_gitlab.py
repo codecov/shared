@@ -787,12 +787,37 @@ class TestGitlabTestCase(object):
     async def test_list_teams(self, valid_handler, codecov_vcr):
         expected_result = [
             {
+                "username": "codecov-organization",
+                "avatar_url": "https://gitlab.com/uploads/-/system/group/avatar/4037482/codecov_avatar.png",
+                "id": 4037482,
+                "name": "Codecov Organization",
+                "parent_id": None,
+                "created_at": "2018-11-15T15:58:42.306Z",
+            },
+            {
                 "id": 726800,
                 "name": "delectamentum-mud",
                 "username": "delectamentum-mud",
                 "avatar_url": None,
                 "parent_id": None,
-            }
+                "created_at": "2016-07-09T18:15:14.897Z",
+            },
+            {
+                "username": "codecov-organization:test-subgroup",
+                "avatar_url": None,
+                "id": 6364610,
+                "name": "test-subgroup",
+                "parent_id": 4037482,
+                "created_at": "2019-10-23T15:05:59.708Z",
+            },
+            {
+                "username": "codecov-organization:test-subgroup-2",
+                "avatar_url": None,
+                "id": 6571432,
+                "name": "test-subgroup-2",
+                "parent_id": 4037482,
+                "created_at": "2019-11-20T18:13:04.288Z",
+            },
         ]
         res = await valid_handler.list_teams()
         assert res == expected_result
@@ -801,11 +826,36 @@ class TestGitlabTestCase(object):
     async def test_list_teams_subgroups(self, valid_handler, codecov_vcr):
         expected_result = [
             {
+                "username": "bevera",
+                "avatar_url": None,
+                "id": 5608536,
+                "name": "Bevera",
+                "parent_id": None,
+                "created_at": "2019-07-10T15:34:43.654Z",
+            },
+            {
+                "username": "codecov-organization",
+                "avatar_url": "https://gitlab.com/uploads/-/system/group/avatar/4037482/codecov_avatar.png",
+                "id": 4037482,
+                "name": "Codecov Organization",
+                "parent_id": None,
+                "created_at": "2018-11-15T15:58:42.306Z",
+            },
+            {
                 "username": "l00p_group_1",
-                "avatar_url": "https://assets.gitlab-static.net/uploads/-/system/user/avatar/4165904/avatar.png",
+                "avatar_url": None,
                 "id": 4165904,
                 "name": "My Awesome Group",
                 "parent_id": None,
+                "created_at": "2018-12-01T19:44:36.005Z",
+            },
+            {
+                "username": "sm-package-zen",
+                "avatar_url": None,
+                "id": 5542118,
+                "name": "Package Zen",
+                "parent_id": None,
+                "created_at": "2019-07-01T19:57:39.988Z",
             },
             {
                 "username": "l00p_group_1:subgroup1",
@@ -813,6 +863,7 @@ class TestGitlabTestCase(object):
                 "id": 4165905,
                 "name": "subgroup1",
                 "parent_id": 4165904,
+                "created_at": "2018-12-01T19:44:50.074Z",
             },
             {
                 "username": "l00p_group_1:subgroup2",
@@ -820,6 +871,31 @@ class TestGitlabTestCase(object):
                 "id": 4165907,
                 "name": "subgroup2",
                 "parent_id": 4165904,
+                "created_at": "2018-12-01T19:44:59.453Z",
+            },
+            {
+                "username": "l00p_group_1:subgroup2:subsub",
+                "avatar_url": None,
+                "id": 4255344,
+                "name": "subsub",
+                "parent_id": 4165907,
+                "created_at": "2018-12-16T17:02:35.644Z",
+            },
+            {
+                "username": "codecov-organization:test-subgroup",
+                "avatar_url": None,
+                "id": 6364610,
+                "name": "test-subgroup",
+                "parent_id": 4037482,
+                "created_at": "2019-10-23T15:05:59.708Z",
+            },
+            {
+                "username": "codecov-organization:test-subgroup-2",
+                "avatar_url": None,
+                "id": 6571432,
+                "name": "test-subgroup-2",
+                "parent_id": 4037482,
+                "created_at": "2019-11-20T18:13:04.288Z",
             },
         ]
         res = await Gitlab(

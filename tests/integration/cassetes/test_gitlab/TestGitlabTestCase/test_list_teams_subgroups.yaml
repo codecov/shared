@@ -1,47 +1,101 @@
 interactions:
-  - request:
-      body: null
-      headers:
-        Accept:
-          - application/json
-        User-Agent:
-          - Default
-      method: GET
-      uri: https://gitlab.com/api/v4/groups?per_page=100
-    response:
-      url: https://gitlab.com/api/v4/groups?per_page=100
-      content: '[{"id":4165904,"web_url":"https://gitlab.com/groups/l00p_group_1","name":"My
-        Awesome Group","path":"l00p_group_1","description":"","visibility":"private","lfs_enabled":true,"avatar_url":"https://assets.gitlab-static.net/uploads/-/system/user/avatar/4165904/avatar.png","request_access_enabled":false,"full_name":"My
-        Awesome Group","full_path":"l00p_group_1","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4165905,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup1","name":"subgroup1","path":"subgroup1","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
-        Awesome Group / subgroup1","full_path":"l00p_group_1/subgroup1","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4165907,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2","name":"subgroup2","path":"subgroup2","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
-        Awesome Group / subgroup2","full_path":"l00p_group_1/subgroup2","parent_id":4165904,"ldap_cn":null,"ldap_access":null}]'
-      headers:
-        Content-Length: '1044'
-        X-Request-Id: Nz6MzfYGM56
-        Ratelimit-Reset: '1543694666'
-        Etag: W/"5f4cb15d470d686b54f5cf0b6e3acf56"
-        X-Frame-Options: SAMEORIGIN
-        Ratelimit-Remaining: '599'
-        X-Total: '3'
-        X-Runtime: '0.042099'
-        Ratelimit-Limit: '600'
-        Link: <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
-          rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
-          rel="last"
-        X-Next-Page: ''
-        Date: Sat, 01 Dec 2018 20:03:26 GMT
-        X-Prev-Page: ''
-        Strict-Transport-Security: max-age=31536000
-        Server: nginx
-        Connection: close
-        Ratelimit-Observed: '1'
-        X-Per-Page: '100'
-        X-Content-Type-Options: nosniff
-        Vary: Origin
-        Ratelimit-Resettime: Sun, 01 Dec 2018 20:04:26 GMT
-        Cache-Control: max-age=0, private, must-revalidate
-        X-Page: '1'
-        X-Total-Pages: '1'
-        Content-Type: application/json
-      status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - gitlab.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/groups?per_page=100
+  response:
+    content: '[{"id":5608536,"web_url":"https://gitlab.com/groups/bevera","name":"Bevera","path":"bevera","description":"Bevera
+      Code and Issues.","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"Bevera","full_path":"bevera","created_at":"2019-07-10T15:34:43.654Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4037482,"web_url":"https://gitlab.com/groups/codecov-organization","name":"Codecov
+      Organization","path":"codecov-organization","description":"Codecov organizational
+      and private repos group. ","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":"https://gitlab.com/uploads/-/system/group/avatar/4037482/codecov_avatar.png","request_access_enabled":false,"full_name":"Codecov
+      Organization","full_path":"codecov-organization","created_at":"2018-11-15T15:58:42.306Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4165904,"web_url":"https://gitlab.com/groups/l00p_group_1","name":"My
+      Awesome Group","path":"l00p_group_1","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+      Awesome Group","full_path":"l00p_group_1","created_at":"2018-12-01T19:44:36.005Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":5542118,"web_url":"https://gitlab.com/groups/sm-package-zen","name":"Package
+      Zen","path":"sm-package-zen","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"Package
+      Zen","full_path":"sm-package-zen","created_at":"2019-07-01T19:57:39.988Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4165905,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup1","name":"subgroup1","path":"subgroup1","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+      Awesome Group / subgroup1","full_path":"l00p_group_1/subgroup1","created_at":"2018-12-01T19:44:50.074Z","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4165907,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2","name":"subgroup2","path":"subgroup2","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+      Awesome Group / subgroup2","full_path":"l00p_group_1/subgroup2","created_at":"2018-12-01T19:44:59.453Z","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4255344,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2/subsub","name":"subsub","path":"subsub","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+      Awesome Group / subgroup2 / subsub","full_path":"l00p_group_1/subgroup2/subsub","created_at":"2018-12-16T17:02:35.644Z","parent_id":4165907,"ldap_cn":null,"ldap_access":null},{"id":6364610,"web_url":"https://gitlab.com/groups/codecov-organization/test-subgroup","name":"test-subgroup","path":"test-subgroup","description":"A
+      private subgroup for testing api calls etc in codecov.","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"maintainer","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":true,"full_name":"Codecov
+      Organization / test-subgroup","full_path":"codecov-organization/test-subgroup","created_at":"2019-10-23T15:05:59.708Z","parent_id":4037482,"ldap_cn":null,"ldap_access":null},{"id":6571432,"web_url":"https://gitlab.com/groups/codecov-organization/test-subgroup-2","name":"test-subgroup-2","path":"test-subgroup-2","description":"Another
+      test subgroup to ensure codecov''s API integration works properly. ","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"maintainer","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":true,"full_name":"Codecov
+      Organization / test-subgroup-2","full_path":"codecov-organization/test-subgroup-2","created_at":"2019-11-20T18:13:04.288Z","parent_id":4037482,"ldap_cn":null,"ldap_access":null}]'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 633926b08ac9187f-ATL
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 21 Mar 2021 18:12:54 GMT
+      Etag:
+      - W/"3f64f118cbd64f38858fadf7dca06839"
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      GitLab-LB:
+      - fe-01-lb-gprd
+      GitLab-SV:
+      - api-04-sv-gprd
+      Link:
+      - <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+        rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+        rel="last"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cfduid=dd698f962468abed661b58ebe45c5a9ce1616350374; expires=Tue, 20-Apr-21
+        18:12:54 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax; Secure
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Gitlab-Feature-Category:
+      - subgroups
+      X-Next-Page:
+      - ''
+      X-Page:
+      - '1'
+      X-Per-Page:
+      - '100'
+      X-Prev-Page:
+      - ''
+      X-Request-Id:
+      - 01F1AZTTM7MH86G8M1WBYR3MVZ
+      X-Runtime:
+      - '0.162970'
+      X-Total:
+      - '9'
+      X-Total-Pages:
+      - '1'
+      cf-request-id:
+      - 08f796825a0000187f3e1e6000000001
+    http_version: HTTP/1.1
+    status_code: 200
 version: 1

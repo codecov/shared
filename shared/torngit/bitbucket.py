@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 import os
 import urllib.parse as urllib_parse
 import logging
@@ -237,12 +238,16 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 # teams.extend([group['team']['username'] for group in res['values']])
                 for groups in res["values"]:
                     team = groups["team"]
+                    team_details = await self.api(
+                        client, "2", "get", "/teams/%s" % team["uuid"], token=token
+                    )
                     teams.append(
                         dict(
                             name=team["display_name"],
                             id=team["uuid"][1:-1],
                             email=None,
                             username=team["username"],
+                            created_at=datetime.fromisoformat(team_details["created_on"]).strftime("%Y-%m-%dT%H:%M:%SZ"),
                         )
                     )
 

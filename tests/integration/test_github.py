@@ -888,12 +888,13 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, codecov_vcr):
         expected_result = [
-            {"email": None, "id": "8226205", "name": "codecov", "username": "codecov",},
+            {"email": None, "id": "8226205", "name": "codecov", "username": "codecov", "created_at": "2014-07-21T16:22:31Z"},
             {
                 "email": None,
                 "id": "57222756",
                 "name": "ThiagoCodecovTeam",
                 "username": "ThiagoCodecovTeam",
+                "created_at": "2019-10-31T13:07:24Z",
             },
         ]
         res = await valid_handler.list_teams()
