@@ -18,6 +18,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
+## [v0.5.0]
+
+### Changed
+- Now `totals.coverage` can be None if the totals have no lines
+- `totals.files` will only count files that have at least some coverage in them under that given analysis
+
+### Fixed
+- `emails` are properly collected using `get_authenticated_user`
+- Issues on `analytics` call will no longer crash the rest of the code if they crash
+
 ## [v0.4.15]
 
 ### Added
