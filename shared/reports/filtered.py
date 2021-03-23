@@ -242,36 +242,37 @@ class FilteredReport(object):
                 only_session_id = list(self.session_ids_to_include)[0]
                 if self.report.sessions.get(only_session_id):
                     session_totals = self.report.sessions[only_session_id].totals
-                    session_totals.sessions = 1
-                    if session_totals == res:
-                        log.info("Could have used the original sessions totals")
-                    elif (
-                        session_totals.coverage != res.coverage
-                        or session_totals.hits != res.hits
-                    ):
-                        log.info(
-                            "There is a coverage difference between original session and calculated totals",
-                            extra=dict(
-                                original_totals=session_totals.asdict()
-                                if session_totals is not None
-                                else None,
-                                calculated_totals=res.asdict()
-                                if res is not None
-                                else None,
-                            ),
-                        )
-                    else:
-                        log.info(
-                            "There is a general difference between original session and calculated totals",
-                            extra=dict(
-                                original_totals=session_totals.asdict()
-                                if session_totals is not None
-                                else None,
-                                calculated_totals=res.asdict()
-                                if res is not None
-                                else None,
-                            ),
-                        )
+                    if session_totals is not None:
+                        session_totals.sessions = 1
+                        if session_totals == res:
+                            log.info("Could have used the original sessions totals")
+                        elif (
+                            session_totals.coverage != res.coverage
+                            or session_totals.hits != res.hits
+                        ):
+                            log.info(
+                                "There is a coverage difference between original session and calculated totals",
+                                extra=dict(
+                                    original_totals=session_totals.asdict()
+                                    if session_totals is not None
+                                    else None,
+                                    calculated_totals=res.asdict()
+                                    if res is not None
+                                    else None,
+                                ),
+                            )
+                        else:
+                            log.info(
+                                "There is a general difference between original session and calculated totals",
+                                extra=dict(
+                                    original_totals=session_totals.asdict()
+                                    if session_totals is not None
+                                    else None,
+                                    calculated_totals=res.asdict()
+                                    if res is not None
+                                    else None,
+                                ),
+                            )
             except Exception:
                 log.warning(
                     "Unable to calculate single-session totals",
