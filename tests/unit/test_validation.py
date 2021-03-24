@@ -312,7 +312,10 @@ class TestUserYamlValidation(BaseTestCase):
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         exception = exc.value
-        assert exception.error_location == "Path: codecov->notify->after_n_builds"
+        assert (
+            str(exc.value.error_location) == "['codecov', 'notify', 'after_n_builds']"
+        )
+        assert exc.value.error_message == "value must be at least 0"
 
     def test_positive_notify_after_n_builds(self):
         user_input = {"codecov": {"notify": {"after_n_builds": 1}}}
@@ -324,7 +327,8 @@ class TestUserYamlValidation(BaseTestCase):
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         exception = exc.value
-        assert exception.error_location == "Path: comment->after_n_builds"
+        assert str(exc.value.error_location) == "['comment', 'after_n_builds']"
+        assert exc.value.error_message == "value must be at least 0"
 
     def test_invalid_yaml_case(self):
         user_input = {
@@ -338,7 +342,10 @@ class TestUserYamlValidation(BaseTestCase):
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        assert exc.value.error_location == "Path: coverage->status->project->base"
+        assert (
+            str(exc.value.error_location) == "['coverage', 'status', 'project', 'base']"
+        )
+        assert exc.value.error_message == "not a valid value"
 
     def test_yaml_with_status_case(self):
         user_input = {
@@ -448,9 +455,11 @@ class TestUserYamlValidation(BaseTestCase):
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        assert (
-            exc.value.error_location == "Path: flag_management->default_rules->statuses"
-        )
+            assert (
+                str(exc.value.error_location)
+                == "['flag_management', 'default_rules', 'statuses', 0, 'flags']"
+            )
+            assert exc.value.error_message == "extra keys not allowed"
 
     def test_show_secret_case(self):
         value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
@@ -526,17 +535,13 @@ class TestUserYamlValidation(BaseTestCase):
                 "parsers": {"gcov": {"branch_detection": {"conditional": True}}}
             }
             validate_yaml(user_input)
-        assert exc.value.error_location == "Path: parsers->gcov->branch_detection"
-
-    def test_new_schema_exception_handling(self, mocker):
-        # raise an exception during new schema validation
-        mocker.patch(
-            "shared.validation.yaml.get_new_schema",
-            return_value=mocker.MagicMock(side_effect=TypeError()),
+        assert (
+            str(exc.value.error_location) == "['parsers', 'gcov', 'branch_detection']"
         )
-
-        # call should complete successfully and not raise any errors when handlin the exception
-        assert validate_yaml({}) == {}
+        assert (
+            exc.value.error_message
+            == "All subfields (conditional, loop, method, macro) are required when specifying branch detection"
+        )
 
 
 class TestGlobToRegexTranslation(BaseTestCase):
