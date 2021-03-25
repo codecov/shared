@@ -937,3 +937,46 @@ def test_file_reports(sample_report):
         "file_2.go",
         "location/file_1.py",
     ]
+
+
+def test_ignore_lines():
+    r = Report()
+    r.append(
+        ReportFile(
+            "a", lines=[ReportLine.create(coverage=1), ReportLine.create(coverage=1)]
+        )
+    )
+    r.ignore_lines({"a": {"lines": set((1, 20))}})
+    with pytest.raises(IndexError):
+        r["a"][1]
+    assert r["a"][2].coverage == 1
+    assert r.get("a").totals == ReportTotals(
+        files=0,
+        lines=1,
+        hits=1,
+        misses=0,
+        partials=0,
+        coverage="100",
+        branches=0,
+        methods=0,
+        messages=0,
+        sessions=0,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )
+    assert r._files.get("a").file_totals == ReportTotals(
+        files=0,
+        lines=1,
+        hits=1,
+        misses=0,
+        partials=0,
+        coverage="100",
+        branches=0,
+        methods=0,
+        messages=0,
+        sessions=0,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )
