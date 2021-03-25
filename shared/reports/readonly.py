@@ -157,13 +157,8 @@ class ReadOnlyReport(object):
                 if (
                     rust_totals.lines != res.lines
                     or rust_totals.hits != res.hits
-                    or (
-                        rust_totals.coverage != res.coverage
-                        and not (
-                            rust_totals.coverage is None
-                            and res.coverage in [0, 100, "100"]
-                        )
-                    )
+                    or rust_totals.misses != res.misses
+                    or (rust_totals.coverage != res.coverage)
                 ):
                     log.warning(
                         "Got unexpected result from rust on totals calculation",
