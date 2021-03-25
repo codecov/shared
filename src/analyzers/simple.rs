@@ -355,7 +355,7 @@ mod tests {
         };
         let analyzer_unit = SimpleAnalyzer {};
         let unit_res = analyzer_unit.get_totals(&report).unwrap();
-        assert_eq!(unit_res.files, 3);
+        assert_eq!(unit_res.files, 1);
         assert_eq!(unit_res.lines, 2);
         assert_eq!(unit_res.hits, 2);
         assert_eq!(unit_res.misses, 0);

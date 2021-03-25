@@ -39,6 +39,10 @@ impl FileTotals {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        return self.lines == 0;
+    }
+
     pub fn from_lines(lines: Vec<&line::ReportLine>) -> FileTotals {
         let mut res: FileTotals = FileTotals {
             lines: 0,
