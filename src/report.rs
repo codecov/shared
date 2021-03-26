@@ -92,15 +92,17 @@ impl ReportTotals {
 
 impl ReportTotals {
     pub fn add_up(&mut self, other: &file::FileTotals) {
-        self.files += 1;
-        self.lines += other.lines;
-        self.hits += other.hits;
-        self.misses += other.misses;
-        self.partials += other.partials;
-        self.branches += other.branches;
-        self.sessions += other.sessions;
-        self.complexity += other.complexity;
-        self.complexity_total += other.complexity_total;
+        if (!other.is_empty()) {
+            self.files += 1;
+            self.lines += other.lines;
+            self.hits += other.hits;
+            self.misses += other.misses;
+            self.partials += other.partials;
+            self.branches += other.branches;
+            self.sessions += other.sessions;
+            self.complexity += other.complexity;
+            self.complexity_total += other.complexity_total;
+        }
     }
 }
 
