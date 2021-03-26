@@ -754,6 +754,7 @@ class Report(object):
             _file = self.get(path)
             if _file is not None:
                 _file.ignore_lines(**data)
+                self._files[path].file_totals = _file.totals
 
     def resolve_paths(self, paths):
         """
