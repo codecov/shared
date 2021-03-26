@@ -30,7 +30,6 @@ setup(
         "tlslite-ng",
         "tornado",
         "statsd>=3.3.0",
-        "pycurl>=7.43.0.5",
         "analytics-python==1.3.0b1",
         "voluptuous>=0.11.7",
         "httpx>=0.16.0",
