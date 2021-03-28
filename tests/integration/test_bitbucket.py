@@ -154,6 +154,7 @@ class TestBitbucketTestCase(object):
                     "id": "9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645",
                     "username": "ThiagoCodecov",
                 },
+                "created_at": "2018-11-06T15:43:55.296636+00:00",
             },
         ),
     ]
@@ -584,6 +585,7 @@ class TestBitbucketTestCase(object):
                     "branch": "master",
                     "service_id": "a980e378-088f-48a8-9850-98923f497546",
                     "private": False,
+                    "created_at": "2014-09-22T00:31:02.553308+00:00",
                 },
                 "owner": {
                     "username": "codecov",
@@ -598,6 +600,7 @@ class TestBitbucketTestCase(object):
                     "branch": "master",
                     "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
                     "private": True,
+                    "created_at": "2015-02-27T03:35:28.555210+00:00",
                 },
                 "owner": {
                     "username": "codecov",
@@ -612,6 +615,7 @@ class TestBitbucketTestCase(object):
                     "branch": "master",
                     "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
                     "private": False,
+                    "created_at": "2015-05-17T22:59:41.300232+00:00",
                 },
                 "owner": {
                     "username": "codecov",
@@ -626,6 +630,7 @@ class TestBitbucketTestCase(object):
                     "branch": "master",
                     "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
                     "private": True,
+                    "created_at": "2019-10-02T02:24:47.121351+00:00",
                 },
                 "owner": {
                     "username": "codecov",
@@ -640,6 +645,7 @@ class TestBitbucketTestCase(object):
                     "branch": "master",
                     "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
                     "private": False,
+                    "created_at": "2019-10-04T14:47:42.067409+00:00",
                 },
                 "owner": {
                     "username": "codecov",

@@ -324,6 +324,7 @@ class Gitlab(TorngitBaseAdapter):
                                 branch=parent.get("default_branch", "master").encode(
                                     "utf-8", "replace"
                                 ),
+                                created_at=parent.get("created_at"),
                             ),
                         )
                     else:
@@ -351,6 +352,7 @@ class Gitlab(TorngitBaseAdapter):
                                 private=(repo["visibility"] != "public"),
                                 language=None,
                                 branch=branch.encode("utf-8", "replace"),
+                                created_at=repo.get("created_at"),
                             ),
                         )
                     )
@@ -458,6 +460,7 @@ class Gitlab(TorngitBaseAdapter):
                 title=pull["title"],
                 id=str(pull["iid"]),
                 number=str(pull["iid"]),
+                created_at=pull.get("created_at"),
             )
 
     async def set_commit_status(

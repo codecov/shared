@@ -170,6 +170,7 @@ class TestGitlabTestCase(object):
                 "state": "open",
                 "title": "Other branch",
                 "author": {"id": "109640", "username": "codecov"},
+                "created_at": "2015-03-12T04:40:38.680Z",
             },
         ),
     ]
@@ -204,6 +205,7 @@ class TestGitlabTestCase(object):
             "title": "Thiago/base no base",
             "id": "1",
             "number": "1",
+            "created_at": "2020-04-27T14:38:42.926Z",
         }
 
     @pytest.mark.asyncio
@@ -592,6 +594,7 @@ class TestGitlabTestCase(object):
                     "name": "delectamentum-mud-server",
                     "private": False,
                     "service_id": 1384844,
+                    "created_at": "2016-07-09T18:16:53.481Z",
                 },
             },
             {
@@ -603,6 +606,7 @@ class TestGitlabTestCase(object):
                     "name": "example-python",
                     "private": False,
                     "service_id": 580838,
+                    "created_at": "2015-11-07T13:26:29.369Z",
                 },
             },
             {
@@ -614,6 +618,7 @@ class TestGitlabTestCase(object):
                     "name": "ci-private",
                     "private": True,
                     "service_id": 190307,
+                    "created_at": "2015-03-12T10:14:49.641Z",
                 },
             },
             {
@@ -625,6 +630,7 @@ class TestGitlabTestCase(object):
                     "name": "ci-repo",
                     "private": False,
                     "service_id": 187725,
+                    "created_at": "2015-03-10T10:25:37.701Z",
                 },
             },
         ]
@@ -647,11 +653,13 @@ class TestGitlabTestCase(object):
                             "language": None,
                             "private": False,
                             "branch": b"master",
+                            "created_at": "2014-09-13T13:30:20.102Z",
                         },
                     },
                     "private": True,
                     "language": None,
                     "branch": b"master",
+                    "created_at": "2018-12-01T19:52:43.980Z",
                 },
             },
             {
@@ -663,6 +671,7 @@ class TestGitlabTestCase(object):
                     "private": True,
                     "language": None,
                     "branch": b"master",
+                    "created_at": "2018-12-01T19:48:26.216Z",
                 },
             },
             {
@@ -674,6 +683,7 @@ class TestGitlabTestCase(object):
                     "private": True,
                     "language": None,
                     "branch": b"master",
+                    "created_at": "2018-12-01T19:48:07.749Z",
                 },
             },
             {
@@ -685,6 +695,7 @@ class TestGitlabTestCase(object):
                     "private": True,
                     "language": None,
                     "branch": b"master",
+                    "created_at": "2018-12-01T19:47:18.634Z",
                 },
             },
         ]
@@ -711,6 +722,7 @@ class TestGitlabTestCase(object):
                     "name": "demo-gitlab",
                     "private": True,
                     "service_id": 12060694,
+                    "created_at": "2019-04-27T15:56:21.542Z",
                 },
             },
             {
@@ -722,6 +734,7 @@ class TestGitlabTestCase(object):
                     "name": "codecov-assume-flag-test",
                     "private": True,
                     "service_id": 10575601,
+                    "created_at": "2019-01-28T15:12:11.654Z",
                 },
             },
             {
@@ -733,6 +746,7 @@ class TestGitlabTestCase(object):
                     "name": "migration-tests",
                     "private": True,
                     "service_id": 9422435,
+                    "created_at": "2018-11-15T16:15:30.347Z",
                 },
             },
             {
@@ -753,12 +767,14 @@ class TestGitlabTestCase(object):
                             "name": "tasks",
                             "private": False,
                             "service_id": 5064907,
+                            "created_at": "2018-01-05T11:51:22.955Z",
                         },
                     },
                     "language": None,
                     "name": "tasks",
                     "private": True,
                     "service_id": 14027433,
+                    "created_at": "2019-08-28T11:14:45.905Z",
                 },
             },
             {
@@ -773,6 +789,7 @@ class TestGitlabTestCase(object):
                     "name": "grouptestprojecttrr",
                     "private": True,
                     "service_id": 14026543,
+                    "created_at": "2019-08-28T10:05:20.838Z",
                 },
             },
         ]

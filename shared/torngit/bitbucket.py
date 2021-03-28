@@ -350,6 +350,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                                     private=repo["is_private"],
                                     branch="master",
                                     fork=None,
+                                    created_at=repo.get("created_on"),
                                 ),
                             )
                         )
@@ -433,6 +434,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
             title=res["title"],
             id=str(pullid),
             number=str(pullid),
+            created_at=res.get("created_on"),
         )
 
     async def post_comment(self, issueid, body, token=None):

@@ -356,6 +356,7 @@ class Github(TorngitBaseAdapter):
                                 language=self._validate_language(parent["language"]),
                                 private=parent["private"],
                                 branch=parent["default_branch"],
+                                created_at=parent["created_at"],
                             ),
                         )
                     else:
@@ -370,6 +371,7 @@ class Github(TorngitBaseAdapter):
                                 language=self._validate_language(repo["language"]),
                                 private=repo["private"],
                                 branch=repo["default_branch"],
+                                created_at=repo["created_at"],
                                 fork=fork,
                             ),
                         )
@@ -782,6 +784,7 @@ class Github(TorngitBaseAdapter):
             state="merged" if pull["merged"] else pull["state"],
             title=pull["title"],
             id=str(pull["number"]),
+            created_at=pull.get("created_at"),
             number=str(pull["number"]),
         )
 
