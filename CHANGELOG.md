@@ -18,6 +18,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
+## [v0.5.1]
+
+### Added
+
+### Changed
+- Replaced library for validating YAMLs
+
+### Deprecated
+
+### Removed
+- [INTERNAL] Removed pycurl
+
+### Fixed
+- Fixed small cache discrepancy for when ignore-lines was used
+
+### Security
+
 ## [v0.5.0]
 
 ### Changed
