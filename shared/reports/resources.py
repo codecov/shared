@@ -1217,6 +1217,11 @@ class Report(object):
 
     def repack(self):
         """Repacks in a more compact format to avoid deleted files and such"""
+        if not self._passes_integrity_analysis():
+            log.warning(
+                "There was some integrity issus, not repacking to not accidentally damage it more"
+            )
+            return
         new_chunks = [x for x in self._chunks if x is not None]
         if len(new_chunks) == len(self._chunks):
             return
@@ -1231,6 +1236,27 @@ class Report(object):
         for filename, summary in self._files.items():
             summary.file_index = chunks_mapping.get(summary.file_index)
         self._chunks = new_chunks
+        log.info("Repacked files in report")
+
+    def _passes_integrity_analysis(self):
+        declared_files_in_db = {f.file_index for f in self._files.values()}
+        declared_files_in_chunks = {
+            i for (i, j) in enumerate(self._chunks) if j is not None
+        }
+        if declared_files_in_db != declared_files_in_chunks:
+            log.warning(
+                "File has integrity issues",
+                extra=dict(
+                    files_only_in_db=sorted(
+                        declared_files_in_db - declared_files_in_chunks
+                    ),
+                    files_only_in_chunks=sorted(
+                        declared_files_in_chunks - declared_files_in_db
+                    ),
+                ),
+            )
+            return False
+        return True
 
 
 def _ignore_to_func(ignore):

@@ -923,6 +923,34 @@ def test_repack(sample_report):
     assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
 
 
+def test_repack_bad_data(sample_report):
+    f = ReportFile("hahafile.txt")
+    f.append(1, ReportLine.create(1))
+    sample_report.append(f)
+    assert len(sample_report._chunks) == 4
+    assert len(sample_report._files) == 4
+    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1, 2, 3]
+    del sample_report._files["hahafile.txt"]
+    sample_report._chunks[0] = None
+    assert len(sample_report._chunks) == 4
+    assert len(sample_report._files) == 3
+    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1, 2]
+    old_totals = sample_report.totals
+    old_line_count = sum(len(list(file.lines)) for file in sample_report)
+    sample_report.repack()
+    sample_report._totals = None
+    assert sample_report.totals == old_totals
+    assert sorted(sample_report.files) == [
+        "file_1.go",
+        "file_2.go",
+        "location/file_1.py",
+    ]
+    assert len(sample_report._chunks) == 4
+    assert len(sample_report._files) == 3
+    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1, 2]
+    assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
+
+
 def test_repack_no_change(sample_report):
     assert len(sample_report._chunks) == len(sample_report._files)
     sample_report.repack()
