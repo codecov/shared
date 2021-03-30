@@ -3,12 +3,11 @@ from itertools import zip_longest, filterfalse
 import logging
 from json import loads, dumps, JSONEncoder
 import dataclasses
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from shared.helpers.yaml import walk
 from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
-from shared.helpers.zfill import zfill
 from shared.utils.ReportEncoder import ReportEncoder
 from shared.utils.totals import agg_totals, sum_totals
 from shared.utils.flare import report_to_flare
@@ -17,8 +16,6 @@ from shared.utils.merge import (
     merge_all,
     merge_line,
     line_type,
-    get_coverage_from_sessions,
-    get_complexity_from_sessions,
 )
 from shared.utils.migrate import migrate_totals
 from shared.utils.sessions import Session, SessionType
@@ -206,15 +203,20 @@ class ReportFile(object):
             else:
                 yield None
 
-    def ignore_lines(self, lines=None, eof=None):
+    def ignore_lines(self, lines=None, eof: Optional[int] = None) -> bool:
+        changed = False
         if lines:
             _len = len(self._lines)
             for ln in lines:
-                if ln <= _len:
+                if ln <= _len and self._lines[ln - 1] is not None:
+                    changed = True
                     self._lines[ln - 1] = None
-        if eof:
+        if eof and len(self._lines) > eof:
+            changed = True
             self._lines = self._lines[:eof]
-        self._totals = None
+        if changed:
+            self._totals = None
+        return changed
 
     def __getitem__(self, ln):
         """Return a single line or None
@@ -753,8 +755,9 @@ class Report(object):
         for path, data in ignore_lines.items():
             _file = self.get(path)
             if _file is not None:
-                _file.ignore_lines(**data)
-                self._files[path].file_totals = _file.totals
+                file_was_changed = _file.ignore_lines(**data)
+                if file_was_changed:
+                    self._files[path].file_totals = _file.totals
 
     def resolve_paths(self, paths):
         """

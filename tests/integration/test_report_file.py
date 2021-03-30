@@ -451,12 +451,13 @@ def test_encode(r, encoded_val):
 
 @pytest.mark.integration
 @pytest.mark.parametrize(
-    "r, lines_before, ignore_options, lines_after",
+    "r, lines_before, ignore_options, function_result, lines_after",
     [
         (
             ReportFile("file.py", lines=[ReportLine.create(0)]),
             [(1, ReportLine.create(0))],
             {},
+            False,
             [(1, ReportLine.create(0))],
         ),
         (
@@ -474,6 +475,7 @@ def test_encode(r, encoded_val):
                 (3, ReportLine.create(2)),
             ],
             {"eof": 1},
+            True,
             [(1, ReportLine.create(0))],
         ),
         (
@@ -491,11 +493,57 @@ def test_encode(r, encoded_val):
                 (3, ReportLine.create(2)),
             ],
             {"lines": [1, 2]},
+            True,
             [(3, ReportLine.create(2))],
+        ),
+        (
+            ReportFile(
+                "file.py",
+                lines=[
+                    ReportLine.create(0),
+                    ReportLine.create(1),
+                    None,
+                    ReportLine.create(2),
+                ],
+            ),
+            [
+                (1, ReportLine.create(0)),
+                (2, ReportLine.create(1)),
+                (4, ReportLine.create(2)),
+            ],
+            {"lines": [3, 5]},
+            False,
+            [
+                (1, ReportLine.create(0)),
+                (2, ReportLine.create(1)),
+                (4, ReportLine.create(2)),
+            ],
+        ),
+        (
+            ReportFile(
+                "file.py",
+                lines=[
+                    ReportLine.create(0),
+                    ReportLine.create(1),
+                    ReportLine.create(2),
+                ],
+            ),
+            [
+                (1, ReportLine.create(0)),
+                (2, ReportLine.create(1)),
+                (3, ReportLine.create(2)),
+            ],
+            {"eof": 100},
+            False,
+            [
+                (1, ReportLine.create(0)),
+                (2, ReportLine.create(1)),
+                (3, ReportLine.create(2)),
+            ],
         ),
     ],
 )
-def test_ignore_lines(r, lines_before, ignore_options, lines_after):
+def test_ignore_lines(r, lines_before, ignore_options, function_result, lines_after):
     assert list(r.lines) == lines_before
-    r.ignore_lines(**ignore_options)
+    assert r.ignore_lines(**ignore_options) == function_result
     assert list(r.lines) == lines_after
