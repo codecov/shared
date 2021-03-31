@@ -335,6 +335,23 @@ class TestUserYamlValidation(BaseTestCase):
             "coverage": {
                 "round": "down",
                 "precision": 2,
+                "range": "70...100",
+                "status": {"project": {"base": "auto", "aa": True}},
+            },
+            "ignore": ["Pods/.*",],
+        }
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+        assert (
+            str(exc.value.error_location) == "['coverage', 'status', 'project', 'base']"
+        )
+        assert exc.value.error_message == "not a valid value"
+
+    def test_invalid_yaml_case_custom_validator(self):
+        user_input = {
+            "coverage": {
+                "round": "down",
+                "precision": 2,
                 "range": "70...5000",
                 "status": {"project": {"percent": "abc"}},
             },
