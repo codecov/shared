@@ -315,9 +315,7 @@ class TestUserYamlValidation(BaseTestCase):
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         exception = exc.value
-        assert (
-            str(exc.value.error_location) == "['codecov', 'notify', 'after_n_builds']"
-        )
+        assert exc.value.error_location == ["codecov", "notify", "after_n_builds"]
         assert exc.value.error_message == "value must be at least 0"
 
     def test_positive_notify_after_n_builds(self):
@@ -330,7 +328,7 @@ class TestUserYamlValidation(BaseTestCase):
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         exception = exc.value
-        assert str(exc.value.error_location) == "['comment', 'after_n_builds']"
+        assert exc.value.error_location == ["comment", "after_n_builds"]
         assert exc.value.error_message == "value must be at least 0"
 
     def test_invalid_yaml_case(self):
@@ -345,9 +343,7 @@ class TestUserYamlValidation(BaseTestCase):
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        assert (
-            str(exc.value.error_location) == "['coverage', 'status', 'project', 'base']"
-        )
+        assert exc.value.error_location == ["coverage", "status", "project", "base"]
         assert exc.value.error_message == "not a valid value"
 
     def test_invalid_yaml_case_custom_validator(self):
@@ -362,7 +358,7 @@ class TestUserYamlValidation(BaseTestCase):
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        assert str(exc.value.error_location) == "['coverage', 'range']"
+        assert exc.value.error_location == ["coverage", "range"]
         assert (
             exc.value.error_message == "Upper bound 5000.0 should be between 0 and 100"
         )
@@ -475,10 +471,13 @@ class TestUserYamlValidation(BaseTestCase):
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-            assert (
-                str(exc.value.error_location)
-                == "['flag_management', 'default_rules', 'statuses', 0, 'flags']"
-            )
+            assert exc.value.error_location == [
+                "flag_management",
+                "default_rules",
+                "statuses",
+                0,
+                "flags",
+            ]
             assert exc.value.error_message == "extra keys not allowed"
 
     def test_show_secret_case(self):
@@ -555,9 +554,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "parsers": {"gcov": {"branch_detection": {"conditional": True}}}
             }
             validate_yaml(user_input)
-        assert (
-            str(exc.value.error_location) == "['parsers', 'gcov', 'branch_detection']"
-        )
+        assert exc.value.error_location == ["parsers", "gcov", "branch_detection"]
         assert (
             exc.value.error_message
             == "All subfields (conditional, loop, method, macro) are required when specifying branch detection"
