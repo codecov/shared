@@ -3,7 +3,7 @@ import os
 from base64 import b64encode
 
 import pytest
-from schema import SchemaError
+from voluptuous import Invalid
 from mock import patch
 
 from tests.base import BaseTestCase
@@ -127,16 +127,19 @@ class TestLayoutStructure(BaseTestCase):
     def test_simple_layout_with_improper_number(self):
         schema = LayoutStructure()
         result = "reach, diff, flags, files:twenty, footer"
-        with pytest.raises(SchemaError) as exc:
+        with pytest.raises(Invalid) as exc:
             schema.validate(result)
-        assert exc.value.code == "Improper pattern for value on layout: files:twenty"
+        assert (
+            exc.value.error_message
+            == "Improper pattern for value on layout: files:twenty"
+        )
 
     def test_simple_layout_bad_name(self):
         schema = LayoutStructure()
         result = "reach, diff, flags, love, files, footer"
-        with pytest.raises(SchemaError) as exc:
+        with pytest.raises(Invalid) as exc:
             schema.validate(result)
-        assert exc.value.code == "Unexpected values on layout: love"
+        assert exc.value.error_message == "Unexpected values on layout: love"
 
 
 class TestCoverageRangeSchemaField(BaseTestCase):
@@ -162,7 +165,7 @@ class TestCoverageRangeSchemaField(BaseTestCase):
             ["infinity", 90],
         ]
         for invalid in invalid_cases:
-            with pytest.raises(SchemaError):
+            with pytest.raises(Invalid):
                 crsf.validate(invalid)
 
 
@@ -175,15 +178,15 @@ class TestPercentSchemaField(BaseTestCase):
         assert crsf.validate("80") == 80.0
         assert crsf.validate("0") == 0.0
         assert crsf.validate("150%") == 150.0
-        with pytest.raises(SchemaError):
+        with pytest.raises(Invalid):
             crsf.validate("nana")
-        with pytest.raises(SchemaError):
+        with pytest.raises(Invalid):
             crsf.validate("%80")
-        with pytest.raises(SchemaError):
+        with pytest.raises(Invalid):
             crsf.validate("8%0%")
-        with pytest.raises(SchemaError):
+        with pytest.raises(Invalid):
             crsf.validate("infinity")
-        with pytest.raises(SchemaError):
+        with pytest.raises(Invalid):
             crsf.validate("nan")
 
 
@@ -604,7 +607,7 @@ class TestCustomFixPathSchemaField(BaseTestCase):
     def test_custom_fixpath_invalid_input(self):
         cfpsf = CustomFixPathSchemaField()
         # No "::" separator
-        with pytest.raises(SchemaError):
+        with pytest.raises(Invalid):
             cfpsf.validate("beforeafter")
 
 
