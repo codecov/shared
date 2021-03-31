@@ -132,7 +132,7 @@ def get_schema(show_secrets):
         Optional("name_prefix"): user_given_title,
         "type": Or("project", "patch", "changes"),
         Optional("target"): Or("auto", percent_type),
-        Optional("threshold"): percent_type,
+        Optional("threshold"): Or(None, percent_type),
         **status_base_attributes,
     }
 
@@ -241,7 +241,7 @@ def get_schema(show_secrets):
                                         Optional("include_changes"): Or(
                                             "auto", percent_type
                                         ),
-                                        Optional("threshold"): percent_type,
+                                        Optional("threshold"): Or(None, percent_type),
                                         **status_standard_attributes,
                                     },
                                 )
@@ -258,7 +258,7 @@ def get_schema(show_secrets):
                                         Optional("include_changes"): Or(
                                             "auto", percent_type
                                         ),
-                                        Optional("threshold"): percent_type,
+                                        Optional("threshold"): Or(None, percent_type),
                                         **status_standard_attributes,
                                     },
                                 )
