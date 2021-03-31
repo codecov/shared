@@ -2,7 +2,7 @@ import re
 import numbers
 import binascii
 
-from schema import SchemaError
+from voluptuous import Invalid
 from shared.encryption import EncryptorWithAlreadyGeneratedKey
 
 
@@ -20,11 +20,11 @@ class CoverageRangeSchemaField(object):
 
     def validate_bounds(self, lower_bound, upper_bound):
         if not 0 <= lower_bound <= 100:
-            raise SchemaError(f"Lower bound {lower_bound} should be between 0 and 100")
+            raise Invalid(f"Lower bound {lower_bound} should be between 0 and 100")
         if not 0 <= upper_bound <= 100:
-            raise SchemaError(f"Upper bound {upper_bound} should be between 0 and 100")
+            raise Invalid(f"Upper bound {upper_bound} should be between 0 and 100")
         if lower_bound > upper_bound:
-            raise SchemaError(
+            raise Invalid(
                 f"Upper bound {upper_bound} should be bigger than {lower_bound}"
             )
         return [lower_bound, upper_bound]
@@ -32,29 +32,29 @@ class CoverageRangeSchemaField(object):
     def validate(self, data):
         if isinstance(data, list):
             if len(data) != 2:
-                raise SchemaError(f"{data} should have only two elements")
+                raise Invalid(f"{data} should have only two elements")
             try:
                 lower_bound, upper_bound = sorted(float(el) for el in data)
                 return self.validate_bounds(lower_bound, upper_bound)
             except ValueError:
-                raise SchemaError(f"{data} should have numbers as the range limits")
+                raise Invalid(f"{data} should have numbers as the range limits")
         if "...." in data:
-            raise SchemaError(f"{data} should have two or three dots, not four")
+            raise Invalid(f"{data} should have two or three dots, not four")
         elif "..." in data:
             splitter = "..."
         elif ".." in data:
             splitter = ".."
         else:
-            raise SchemaError(f"{data} does not have the correct format")
+            raise Invalid(f"{data} does not have the correct format")
         split_value = data.split(splitter)
         if len(split_value) != 2:
-            raise SchemaError(f"{data} should have only two numbers")
+            raise Invalid(f"{data} should have only two numbers")
         try:
             lower_bound = float(split_value[0])
             upper_bound = float(split_value[1])
             return self.validate_bounds(lower_bound, upper_bound)
         except ValueError:
-            raise SchemaError(f"{data} should have numbers as the range limits")
+            raise Invalid(f"{data} should have numbers as the range limits")
 
 
 class PercentSchemaField(object):
@@ -71,13 +71,13 @@ class PercentSchemaField(object):
         if isinstance(value, numbers.Number):
             return float(value)
         if not self.field_regex.match(value):
-            raise SchemaError(f"{value} should be a number")
+            raise Invalid(f"{value} should be a number")
         if value.endswith("%"):
             value = value.rstrip("%")
         try:
             return float(value)
         except ValueError:
-            raise SchemaError(f"{value} should be a number")
+            raise Invalid(f"{value} should be a number")
 
 
 def determine_path_pattern_type(filepath_pattern):
@@ -254,13 +254,13 @@ class PathPatternSchemaField(object):
                 re.compile(value)
                 return value
             except re.error:
-                raise SchemaError(f"{value} does not work as a regex")
+                raise Invalid(f"{value} does not work as a regex")
         elif input_type == "glob":
             return self.validate_glob(value)
         elif input_type == "path_prefix":
             return self.validate_path_prefix(value)
         else:
-            raise SchemaError(f"We did not detect what {value} is")
+            raise Invalid(f"We did not detect what {value} is")
 
 
 class CustomFixPathSchemaField(object):
@@ -269,7 +269,7 @@ class CustomFixPathSchemaField(object):
 
     def validate(self, value):
         if "::" not in value:
-            raise SchemaError("Pathfix must split before and after with a ::")
+            raise Invalid("Pathfix must split before and after with a ::")
         before, after = value.split("::", 1)
         if before == "" or after == "":
             return value
@@ -283,13 +283,13 @@ class CustomFixPathSchemaField(object):
                 re.compile(value)
                 return value
             except re.error:
-                raise SchemaError(f"{value} does not work as a regex")
+                raise Invalid(f"{value} does not work as a regex")
         elif input_type == "glob":
             return translate_glob_to_regex(value, end_of_string=False)
         elif input_type == "path_prefix":
             return f"^{value}"
         else:
-            raise SchemaError(f"We did not detect what {value} is")
+            raise Invalid(f"We did not detect what {value} is")
 
 
 class UserGivenBranchRegex(object):
@@ -337,13 +337,13 @@ class LayoutStructure(object):
         if not set(actual_values) <= self.acceptable_objects:
             extra_objects = set(actual_values) - self.acceptable_objects
             extra_objects = ",".join(extra_objects)
-            raise SchemaError(f"Unexpected values on layout: {extra_objects}")
+            raise Invalid(f"Unexpected values on layout: {extra_objects}")
         for val in values:
             if ":" in val:
                 try:
                     int(val.strip().split(":")[1])
                 except ValueError:
-                    raise SchemaError(
+                    raise Invalid(
                         f"Improper pattern for value on layout: {val.strip()}"
                     )
         return value
@@ -352,7 +352,7 @@ class LayoutStructure(object):
 class BranchSchemaField(object):
     def validate(self, value):
         if not isinstance(value, str):
-            raise SchemaError(f"Branch must be {str}, was {type(value)} ({value})")
+            raise Invalid(f"Branch must be {str}, was {type(value)} ({value})")
         if value[:7] == "origin/":
             return value[7:]
         elif value[:11] == "refs/heads/":
