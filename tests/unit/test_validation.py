@@ -335,17 +335,17 @@ class TestUserYamlValidation(BaseTestCase):
             "coverage": {
                 "round": "down",
                 "precision": 2,
-                "range": "70...100",
-                "status": {"project": {"base": "auto", "aa": True}},
+                "range": "70...5000",
+                "status": {"project": {"percent": "abc"}},
             },
             "ignore": ["Pods/.*",],
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
+        assert str(exc.value.error_location) == "['coverage', 'range']"
         assert (
-            str(exc.value.error_location) == "['coverage', 'status', 'project', 'base']"
+            exc.value.error_message == "Upper bound 5000.0 should be between 0 and 100"
         )
-        assert exc.value.error_message == "not a valid value"
 
     def test_yaml_with_status_case(self):
         user_input = {
