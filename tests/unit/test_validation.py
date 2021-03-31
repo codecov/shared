@@ -363,6 +363,56 @@ class TestUserYamlValidation(BaseTestCase):
             exc.value.error_message == "Upper bound 5000.0 should be between 0 and 100"
         )
 
+    def test_yaml_with_null_threshold(self):
+        user_input = {
+            "codecov": {"notify": {}, "require_ci_to_pass": True},
+            "comment": {
+                "behavior": "default",
+                "branches": None,
+                "layout": "reach, diff, flags, files",
+                "require_base": False,
+                "require_changes": False,
+                "require_head": False,
+            },
+            "coverage": {
+                "precision": 2,
+                "range": "50...80",
+                "round": "down",
+                "status": {
+                    "changes": False,
+                    "patch": True,
+                    "project": {
+                        "default": {"target": "auto", "threshold": None, "base": "auto"}
+                    },
+                },
+            },
+        }
+        res = validate_yaml(user_input)
+        expected_result = {
+            "codecov": {"notify": {}, "require_ci_to_pass": True},
+            "comment": {
+                "behavior": "default",
+                "branches": None,
+                "layout": "reach, diff, flags, files",
+                "require_base": False,
+                "require_changes": False,
+                "require_head": False,
+            },
+            "coverage": {
+                "precision": 2,
+                "range": [50.0, 80.0],
+                "round": "down",
+                "status": {
+                    "changes": False,
+                    "patch": True,
+                    "project": {
+                        "default": {"target": "auto", "threshold": None, "base": "auto"}
+                    },
+                },
+            },
+        }
+        assert res == expected_result
+
     def test_yaml_with_status_case(self):
         user_input = {
             "coverage": {
