@@ -9,13 +9,13 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.5.1",
+    version="0.5.2",
     description="Shared Codecov",
     long_description=long_description,
     url="https://github.com/codecov/shared",
     author="Codecov",
     author_email="support@codecov.io",
-    packages=find_packages(exclude=["contrib", "docs", "tests"]),
+    packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     install_requires=[
         "attrs>=17.4.0",
         "boto3>=1.9.218",
