@@ -1,72 +1,82 @@
 interactions:
 - request:
-    body: null
+    body: ''
     headers:
-      Accept:
+      accept:
       - application/json
-      User-Agent:
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/teams?oauth_nonce=846a3fc8b7b7466bb8f94a473bd4dcfc&oauth_timestamp=1561677194&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&q=team.uuid%3D%22%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D%22&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=1tzkPOkBx4tlnWFfdwVoRR8eLTo%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22ThiagoCodecov%2Fexample-python%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377623&oauth_nonce=ac91652521bc4867af3ec36b448a016c&oauth_version=1.0&oauth_signature=BQrCWoBGobnzvY0aRJ51OBJqyPk%3D
   response:
-    content: '{"pagelen": 10, "values": [{"permission": "admin", "type": "team_permission",
-      "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+    content: '{"pagelen": 10, "values": [{"type": "repository_permission", "user":
+      {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
       "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
       "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
-      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5bce04c759d0e84f8c7555e9/83eddf7b-6307-4b37-a193-a855cc683bc5/128"}},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
       "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
-      "team": {"username": "codecov", "display_name": "Codecov", "type": "team", "uuid":
-      "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
-      "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
-      "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}}], "page":
-      1}'
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "permission": "admin"}],
+      "page": 1}'
     headers:
-      Accept-Ranges:
-      - bytes
       Cache-Control:
-      - max-age=900
+      - private
       Connection:
-      - close
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
       Content-Type:
       - application/json; charset=utf-8
+      DC-Location:
+      - ash2
       Date:
-      - Thu, 27 Jun 2019 23:13:15 GMT
-      Etag:
-      - '"gz[865c8f863378f373153c089e4a0f25c9]"'
+      - Fri, 02 Apr 2021 15:33:44 GMT
+      ETag:
+      - '"gz[c9c7af06f5a4a68dbe39014c421666a3]"'
       Server:
       - nginx
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
       Vary:
-      - Authorization, Accept-Encoding
-      X-Accepted-Oauth-Scopes:
-      - account
+      - Authorization, cookie, user-context, Accept-Encoding
+      X-Accepted-OAuth-Scopes:
+      - account, repository
+      X-B3-TraceId:
+      - 9607fb3be8240ce6
       X-Cache-Info:
-      - caching
-      X-Consumed-Content-Encoding:
-      - gzip
+      - 'not cacheable; response specified "Cache-Control: private"'
       X-Content-Type-Options:
       - nosniff
       X-Credential-Type:
       - oauth1
+      X-Dc-Location:
+      - ash2
       X-Frame-Options:
       - SAMEORIGIN
-      X-Oauth-Scopes:
-      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-        repository:delete, repository:admin, project:write, team:write, account:write
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
       X-Render-Time:
-      - '0.0571191310883'
+      - '0.0605049133301'
       X-Request-Count:
-      - '40'
+      - '23'
       X-Served-By:
-      - app-146
+      - app-3022
       X-Static-Version:
-      - d664982621c0
+      - 937e1df6c57f
       X-Version:
-      - d664982621c0
-    status:
-      code: 200
-      message: OK
+      - 937e1df6c57f
+    http_version: HTTP/1.1
     status_code: 200
-    url: https://bitbucket.org/api/2.0/user/permissions/teams?oauth_nonce=846a3fc8b7b7466bb8f94a473bd4dcfc&oauth_timestamp=1561677194&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&q=team.uuid%3D%22%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D%22&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=1tzkPOkBx4tlnWFfdwVoRR8eLTo%3D
 version: 1

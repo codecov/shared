@@ -13,24 +13,24 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?q=workspace.uuid%3D%22%7Bd7c73e87-90ab-450f-bb5f-39e6a5870456%7D%22+AND+permission%3D%22owner%22+AND+user.uuid%3D%22%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D%22&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617375478&oauth_nonce=8b0fd629f5e64e5b8f766823188eef76&oauth_version=1.0&oauth_signature=8Glsiw6nKT4h3FPXQeSDj8hQU%2Bo%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22atlassian%2Fstash-example-plugin%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377940&oauth_nonce=54b366ce70c843e38c6f5e2d08b7d25b&oauth_version=1.0&oauth_signature=lihQwQ9cT1CJGybvYG1NAYvWuYw%3D
   response:
-    content: '{"pagelen": 50, "values": [], "page": 1, "size": 0}'
+    content: '{"pagelen": 10, "values": [], "page": 1}'
     headers:
       Cache-Control:
       - private
       Connection:
       - Keep-Alive
       Content-Length:
-      - '51'
+      - '40'
       Content-Type:
       - application/json; charset=utf-8
       DC-Location:
       - ash2
       Date:
-      - Fri, 02 Apr 2021 14:57:58 GMT
+      - Fri, 02 Apr 2021 15:39:00 GMT
       ETag:
-      - '"d42f8757ef1abf01e68f5601c2c0eb4b"'
+      - '"c03c6bf133039c14a77d00c2b9d7e1c3"'
       Server:
       - nginx
       Strict-Transport-Security:
@@ -38,9 +38,9 @@ interactions:
       Vary:
       - Authorization, cookie, user-context
       X-Accepted-OAuth-Scopes:
-      - account
+      - account, repository
       X-B3-TraceId:
-      - 21325741ffc43f02
+      - c38a09d6a8b0bc85
       X-Cache-Info:
       - 'not cacheable; response specified "Cache-Control: private"'
       X-Content-Type-Options:
@@ -55,9 +55,9 @@ interactions:
       - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
         project, team, account
       X-Render-Time:
-      - '0.0363488197327'
+      - '0.0483520030975'
       X-Request-Count:
-      - '2234'
+      - '4458'
       X-Served-By:
       - app-3016
       X-Static-Version:

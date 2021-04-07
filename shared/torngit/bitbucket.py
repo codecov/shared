@@ -202,24 +202,21 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
             return True
 
     async def get_is_admin(self, user, token=None):
-        # https://confluence.atlassian.com/bitbucket/user-endpoint-296092264.html#userEndpoint-GETalistofuserprivileges
+        user_uuid = "{" + user["service_id"] + "}"
+        query = f'workspace.uuid="{{{self.data["owner"]["service_id"]}}}" AND permission="owner" AND user.uuid="{user_uuid}"'
         async with self.get_client() as client:
             groups = await self.api(
-                client,
-                "2",
-                "get",
-                "/user/permissions/teams",
-                token=token,
-                q='team.uuid="{' + self.data["owner"]["service_id"] + '}"',
+                client, "2", "get", "/user/permissions/workspaces", token=token, q=query
             )
         if groups["values"]:
             for group in groups["values"]:
-                if (
-                    self.data["owner"]["username"] == group["team"]["username"]
-                    and group["permission"] == "admin"
-                ):
-                    return True
-
+                assert group["permission"] == "owner"
+                assert (
+                    group["workspace"]["uuid"]
+                    == f'{{{self.data["owner"]["service_id"]}}}'
+                )
+                assert group["user"]["uuid"] == user_uuid
+                return True
         return False
 
     async def list_teams(self, token=None):
@@ -230,27 +227,25 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                     kwargs = dict(page=page, token=token)
                 else:
                     kwargs = dict(token=token)
-                # https://confluence.atlassian.com/bitbucket/pullrequests-resource-423626332.html#pullrequestsResource-GETthecommitsforapullrequest
                 res = await self.api(
-                    client, "2", "get", "/user/permissions/teams", **kwargs
+                    client, "2", "get", "/user/permissions/workspaces", **kwargs
                 )
-                # teams.extend([group['team']['username'] for group in res['values']])
                 for groups in res["values"]:
-                    team = groups["team"]
+                    team = groups["workspace"]
                     teams.append(
                         dict(
-                            name=team["display_name"],
+                            name=team["name"],
                             id=team["uuid"][1:-1],
                             email=None,
-                            username=team["username"],
+                            username=team["slug"],
                         )
                     )
 
                 if not res.get("next"):
                     break
                 url = res["next"]
-                parsed = urlparse.urlparse(url)
-                page = urlparse.parse_qs(parsed.query)["page"][0]
+                parsed = urllib_parse.urlparse(url)
+                page = urllib_parse.parse_qs(parsed.query)["page"][0]
 
             return teams
 
@@ -774,21 +769,22 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 )
                 return (True, True)
             else:
-                # https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/teams
+                # https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/repositories
+                # I (Thiago) don't undestand why this is not done everywhere
+                # I am also confident sure the code above is giving can_edit to users
+                # who shouldn't have it
                 groups = await self.api(
                     client,
                     "2",
                     "get",
-                    "/user/permissions/teams",
+                    "/user/permissions/repositories",
                     token=token,
-                    q='team.uuid="{' + self.data["owner"]["service_id"] + '}"',
+                    q=f'repository.full_name="{self.slug}" AND (permission="admin" OR permission="write")',
                 )
-
                 if groups["values"]:
                     for group in groups["values"]:
-                        if self.data["owner"]["username"] == group["team"]["username"]:
-                            return (True, True)
-
+                        assert group["permission"] in ("admin", "write")
+                        return (True, True)
                 return (True, False)
 
     async def get_source(self, path, ref, token=None):

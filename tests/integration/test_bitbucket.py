@@ -20,12 +20,12 @@ def valid_handler():
     return Bitbucket(
         repo=dict(name="example-python"),
         owner=dict(
-            username="ThiagoCodecov", service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+            username="ThiagoCodecov", service_id="9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645"
         ),
         oauth_consumer_token=dict(
             key="test51hdmhalc053rb", secret="testrgj6ezg5b4zc5z8t2rspg90rw6dp"
         ),
-        token=dict(secret="test3spp3gm9db4f43y0zfm2jvvkpnd6", key="testm0141jl7b6ux9l"),
+        token=dict(secret="testpnilpfmyehw45pa7rvtkvtm7bhcx", key="testss3hxhcfqf1h6g"),
     )
 
 
@@ -270,16 +270,23 @@ class TestBitbucketTestCase(object):
     async def test_get_is_admin(self, valid_handler, codecov_vcr):
         valid_handler.data = dict(
             owner=dict(
-                username="codecov", service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+                username="ThiagoRRamosworkspace",
+                service_id="727d78e8-7431-4532-9519-1e5fe2b61d4b",
             )
         )
-        user = dict(ownerid="1")
+        user = dict(service_id="9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645")
         res = await valid_handler.get_is_admin(user)
         assert res is True
 
     @pytest.mark.asyncio
     async def test_get_is_admin_not_admin(self, valid_handler, codecov_vcr):
-        user = dict(ownerid="2")
+        valid_handler.data = dict(
+            owner=dict(
+                username="thiagorramostestnumbar3",
+                service_id="d7c73e87-90ab-450f-bb5f-39e6a5870456",
+            )
+        )
+        user = dict(service_id="9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645")
         res = await valid_handler.get_is_admin(user)
         assert res is False
 
@@ -456,6 +463,17 @@ class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_get_authenticated(self, valid_handler, codecov_vcr):
         res = await valid_handler.get_authenticated()
+        # This needs to be True/True because ThiagoCodecov owns the repo ThiagoCodecov/example-python
+        assert res == (True, True)
+
+    @pytest.mark.asyncio
+    async def test_get_authenticated_no_edit_permission(
+        self, valid_handler, codecov_vcr
+    ):
+        valid_handler.data["repo"] = {"name": "stash-example-plugin"}
+        valid_handler.data["owner"]["username"] = "atlassian"
+        res = await valid_handler.get_authenticated()
+        # This needs to be True/False because ThiagoCodecov has nothing to do with this repo
         assert res == (True, False)
 
     @pytest.mark.asyncio
@@ -943,79 +961,10 @@ class TestBitbucketTestCase(object):
                     "username": "ThiagoCodecov",
                     "service_id": "9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645",
                 },
-            },
-            {
-                "repo": {
-                    "fork": None,
-                    "name": "ci-repo",
-                    "language": None,
-                    "branch": "master",
-                    "service_id": "a980e378-088f-48a8-9850-98923f497546",
-                    "private": False,
-                },
-                "owner": {
-                    "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
-                },
-            },
-            {
-                "repo": {
-                    "fork": None,
-                    "name": "private",
-                    "language": "python",
-                    "branch": "master",
-                    "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
-                    "private": True,
-                },
-                "owner": {
-                    "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
-                },
-            },
-            {
-                "repo": {
-                    "fork": None,
-                    "name": "coverage.py",
-                    "language": "python",
-                    "branch": "master",
-                    "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
-                    "private": False,
-                },
-                "owner": {
-                    "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
-                },
-            },
-            {
-                "repo": {
-                    "fork": None,
-                    "name": "integration-test-repo",
-                    "language": "python",
-                    "branch": "master",
-                    "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
-                    "private": True,
-                },
-                "owner": {
-                    "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
-                },
-            },
-            {
-                "repo": {
-                    "fork": None,
-                    "name": "test-bb-integration-public",
-                    "language": None,
-                    "branch": "master",
-                    "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
-                    "private": False,
-                },
-                "owner": {
-                    "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
-                },
-            },
+            }
         ]
         res = await valid_handler.list_repos()
+        print(res)
         assert sorted(res, key=lambda x: x["repo"]["service_id"]) == sorted(
             expected_result, key=lambda x: x["repo"]["service_id"]
         )
@@ -1024,13 +973,44 @@ class TestBitbucketTestCase(object):
     async def test_list_teams(self, valid_handler, codecov_vcr):
         expected_result = [
             {
+                "name": "thiagorramostestnumbar3",
+                "id": "d7c73e87-90ab-450f-bb5f-39e6a5870456",
                 "email": None,
-                "id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
-                "name": "Codecov",
-                "username": "codecov",
-            }
+                "username": "thiagorramostestnumbar3",
+            },
+            {
+                "name": "ThiagoRRamostest2",
+                "id": "33b5f87a-bda0-40c2-ba1b-9eb892492290",
+                "email": None,
+                "username": "thiagorramostest2",
+            },
+            {
+                "name": "ThiagoRRamosanotherw",
+                "id": "11e04628-2c7b-4d89-9319-e7eed8818e56",
+                "email": None,
+                "username": "thiagorramosanotherw",
+            },
+            {
+                "name": "ThiagoRRamosworkspace",
+                "id": "727d78e8-7431-4532-9519-1e5fe2b61d4b",
+                "email": None,
+                "username": "thiagorramosworkspace",
+            },
+            {
+                "name": "ThiagoCodecovbanana",
+                "id": "68f2da06-b2f8-4f00-92fa-32bd60df9d27",
+                "email": None,
+                "username": "thiagocodecovbanana",
+            },
+            {
+                "name": "Thiago Ramos",
+                "id": "9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645",
+                "email": None,
+                "username": "ThiagoCodecov",
+            },
         ]
         res = await valid_handler.list_teams()
+        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio

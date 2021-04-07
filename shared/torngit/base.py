@@ -317,6 +317,19 @@ class TorngitBaseAdapter(object):
     # OTHERS
 
     async def get_authenticated(self, token=None) -> Tuple[bool, bool]:
+        """Finds the user permissions about about whether the user on
+            `self.data["user"]` can access the repo from `self.data["repo"]`
+            Returns a `can_view` and a `can_edit` permission tuple
+
+        Args:
+            token (None, optional): Description
+
+        Returns:`
+            Tuple[bool, bool]: A tuple telling:
+
+                can_view, can_edit
+
+        """
         raise NotImplementedError()
 
     async def get_authenticated_user(self, **kwargs):
@@ -330,7 +343,13 @@ class TorngitBaseAdapter(object):
     ):
         raise NotImplementedError()
 
-    async def get_is_admin(self, user: dict, token=None):
+    async def get_is_admin(self, user: dict, token=None) -> bool:
+        """Tells whether `user` is an admin of the organization described on `self.data`
+
+        Args:
+            user (dict): Description
+            token (None, optional): Description
+        """
         raise NotImplementedError()
 
     async def get_repository(self, token=None):
