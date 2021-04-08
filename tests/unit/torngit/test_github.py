@@ -13,6 +13,12 @@ from shared.torngit.exceptions import (
 
 
 @pytest.fixture
+def respx_vcr():
+    with respx.mock as v:
+        yield v
+
+
+@pytest.fixture
 def valid_handler():
     return Github(
         repo=dict(name="example-python"),
@@ -223,3 +229,267 @@ class TestUnitGithub(object):
             )
             res = await handler.find_pull_request(commit="abcdef")
             assert res == 18
+
+    @pytest.mark.asyncio
+    async def test_post_comment(self, respx_vcr, valid_handler):
+        mocked_response = respx_vcr.post(
+            url="https://api.github.com/repos/ThiagoCodecov/example-python/issues/1/comments",
+            json={"body": "Hello world"},
+        ).mock(
+            return_value=httpx.Response(
+                status_code=201,
+                json={
+                    "url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/708550750",
+                    "html_url": "https://github.com/ThiagoCodecov/example-python/pull/1#issuecomment-708550750",
+                    "issue_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/1",
+                    "id": 708550750,
+                    "node_id": "MDEyOklzc3VlQ29tbWVudDcwODU1MDc1MA==",
+                    "user": {
+                        "login": "ThiagoCodecov",
+                        "id": 44379999,
+                        "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                        "avatar_url": "https://avatars1.githubusercontent.com/u/44379999?u=d50e43da66b2dbe47099d854ebd3b489f1162d48&v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/ThiagoCodecov",
+                        "html_url": "https://github.com/ThiagoCodecov",
+                        "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                        "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                        "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                        "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                        "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                        "type": "User",
+                        "site_admin": False,
+                    },
+                    "created_at": "2020-10-14T17:32:01Z",
+                    "updated_at": "2020-10-14T17:32:01Z",
+                    "author_association": "OWNER",
+                    "body": "Hello world",
+                    "performed_via_github_app": None,
+                },
+                headers={"Content-Type": "application/json; charset=utf-8"},
+            )
+        )
+        expected_result = {
+            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/708550750",
+            "html_url": "https://github.com/ThiagoCodecov/example-python/pull/1#issuecomment-708550750",
+            "issue_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/1",
+            "id": 708550750,
+            "node_id": "MDEyOklzc3VlQ29tbWVudDcwODU1MDc1MA==",
+            "user": {
+                "login": "ThiagoCodecov",
+                "id": 44379999,
+                "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                "avatar_url": "https://avatars1.githubusercontent.com/u/44379999?u=d50e43da66b2dbe47099d854ebd3b489f1162d48&v=4",
+                "gravatar_id": "",
+                "url": "https://api.github.com/users/ThiagoCodecov",
+                "html_url": "https://github.com/ThiagoCodecov",
+                "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                "type": "User",
+                "site_admin": False,
+            },
+            "created_at": "2020-10-14T17:32:01Z",
+            "updated_at": "2020-10-14T17:32:01Z",
+            "author_association": "OWNER",
+            "body": "Hello world",
+            "performed_via_github_app": None,
+        }
+        res = await valid_handler.post_comment("1", "Hello world")
+        assert res == expected_result
+        assert mocked_response.called is True
+
+    @pytest.mark.asyncio
+    async def test_list_teams(self, valid_handler, respx_vcr):
+        mocked_response = respx_vcr.get(
+            url="https://api.github.com/user/memberships/orgs?state=active&page=1",
+        ).respond(
+            status_code=200,
+            json=[
+                {
+                    "url": "https://api.github.com/orgs/codecov/memberships/ThiagoCodecov",
+                    "state": "active",
+                    "role": "member",
+                    "organization_url": "https://api.github.com/orgs/codecov",
+                    "user": {
+                        "login": "ThiagoCodecov",
+                        "id": 44379999,
+                        "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/44379999?v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/ThiagoCodecov",
+                        "html_url": "https://github.com/ThiagoCodecov",
+                        "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                        "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                        "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                        "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                        "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                        "type": "User",
+                        "site_admin": False,
+                    },
+                    "organization": {
+                        "login": "codecov",
+                        "id": 8226999,
+                        "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                        "url": "https://api.github.com/orgs/codecov",
+                        "repos_url": "https://api.github.com/orgs/codecov/repos",
+                        "events_url": "https://api.github.com/orgs/codecov/events",
+                        "hooks_url": "https://api.github.com/orgs/codecov/hooks",
+                        "issues_url": "https://api.github.com/orgs/codecov/issues",
+                        "members_url": "https://api.github.com/orgs/codecov/members{/member}",
+                        "public_members_url": "https://api.github.com/orgs/codecov/public_members{/member}",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/8226999?v=4",
+                        "description": "Empower developers with tools to improve code quality and testing.",
+                    },
+                },
+                {
+                    "url": "https://api.github.com/orgs/ThiagoCodecovTeam/memberships/ThiagoCodecov",
+                    "state": "active",
+                    "role": "admin",
+                    "organization_url": "https://api.github.com/orgs/ThiagoCodecovTeam",
+                    "user": {
+                        "login": "ThiagoCodecov",
+                        "id": 44379999,
+                        "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/44379999?v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/ThiagoCodecov",
+                        "html_url": "https://github.com/ThiagoCodecov",
+                        "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                        "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                        "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                        "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                        "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                        "type": "User",
+                        "site_admin": False,
+                    },
+                    "organization": {
+                        "login": "ThiagoCodecovTeam",
+                        "id": 57222756,
+                        "node_id": "MDEyOk9yZ2FuaXphdGlvbjU3MjIyNzU2",
+                        "url": "https://api.github.com/orgs/ThiagoCodecovTeam",
+                        "repos_url": "https://api.github.com/orgs/ThiagoCodecovTeam/repos",
+                        "events_url": "https://api.github.com/orgs/ThiagoCodecovTeam/events",
+                        "hooks_url": "https://api.github.com/orgs/ThiagoCodecovTeam/hooks",
+                        "issues_url": "https://api.github.com/orgs/ThiagoCodecovTeam/issues",
+                        "members_url": "https://api.github.com/orgs/ThiagoCodecovTeam/members{/member}",
+                        "public_members_url": "https://api.github.com/orgs/ThiagoCodecovTeam/public_members{/member}",
+                        "avatar_url": "https://avatars0.githubusercontent.com/u/57222756?v=4",
+                        "description": False,
+                    },
+                },
+            ],
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+        team_dicts = [
+            (
+                "https://api.github.com/users/codecov",
+                {
+                    "login": "codecov",
+                    "id": 8226999,
+                    "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                    "avatar_url": "https://avatars3.githubusercontent.com/u/8226999?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/codecov",
+                    "html_url": "https://github.com/codecov",
+                    "followers_url": "https://api.github.com/users/codecov/followers",
+                    "following_url": "https://api.github.com/users/codecov/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/codecov/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/codecov/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/codecov/subscriptions",
+                    "organizations_url": "https://api.github.com/users/codecov/orgs",
+                    "repos_url": "https://api.github.com/users/codecov/repos",
+                    "events_url": "https://api.github.com/users/codecov/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/codecov/received_events",
+                    "type": "Organization",
+                    "site_admin": False,
+                    "name": "Codecov",
+                    "company": None,
+                    "blog": "https://codecov.io/",
+                    "location": None,
+                    "email": "hello@codecov.io",
+                    "hireable": None,
+                    "bio": "Empower developers with tools to improve code quality and testing.",
+                    "twitter_username": None,
+                    "public_repos": 97,
+                    "public_gists": 0,
+                    "followers": 0,
+                    "following": 0,
+                    "created_at": "2014-07-21T16:22:31Z",
+                    "updated_at": "2020-10-28T19:29:26Z",
+                },
+            ),
+            (
+                "https://api.github.com/users/ThiagoCodecovTeam",
+                {
+                    "login": "ThiagoCodecovTeam",
+                    "id": 57222756,
+                    "node_id": "MDEyOk9yZ2FuaXphdGlvbjU3MjIyNzU2",
+                    "avatar_url": "https://avatars0.githubusercontent.com/u/57222756?v=4",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/ThiagoCodecovTeam",
+                    "html_url": "https://github.com/ThiagoCodecovTeam",
+                    "followers_url": "https://api.github.com/users/ThiagoCodecovTeam/followers",
+                    "following_url": "https://api.github.com/users/ThiagoCodecovTeam/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/ThiagoCodecovTeam/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/ThiagoCodecovTeam/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/ThiagoCodecovTeam/subscriptions",
+                    "organizations_url": "https://api.github.com/users/ThiagoCodecovTeam/orgs",
+                    "repos_url": "https://api.github.com/users/ThiagoCodecovTeam/repos",
+                    "events_url": "https://api.github.com/users/ThiagoCodecovTeam/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/ThiagoCodecovTeam/received_events",
+                    "type": "Organization",
+                    "site_admin": False,
+                    "name": None,
+                    "company": None,
+                    "blog": "",
+                    "location": None,
+                    "email": None,
+                    "hireable": None,
+                    "bio": None,
+                    "twitter_username": None,
+                    "public_repos": 0,
+                    "public_gists": 0,
+                    "followers": 0,
+                    "following": 0,
+                    "created_at": "2019-10-31T13:07:24Z",
+                    "updated_at": "2019-10-31T13:07:24Z",
+                },
+            ),
+        ]
+        for url, data in team_dicts:
+            respx_vcr.get(url=url,).respond(
+                status_code=200,
+                json=data,
+                headers={"Content-Type": "application/json; charset=utf-8"},
+            )
+        expected_result = [
+            {"email": None, "id": "8226999", "name": "codecov", "username": "codecov",},
+            {
+                "email": None,
+                "id": "57222756",
+                "name": "ThiagoCodecovTeam",
+                "username": "ThiagoCodecovTeam",
+            },
+        ]
+        res = await valid_handler.list_teams()
+        assert res == expected_result
+        assert mocked_response.called is True

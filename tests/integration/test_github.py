@@ -84,44 +84,6 @@ def integration_installed_handler():
 
 class TestGithubTestCase(object):
     @pytest.mark.asyncio
-    async def test_post_comment(self, valid_handler, codecov_vcr):
-        expected_result = {
-            "url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/708550750",
-            "html_url": "https://github.com/ThiagoCodecov/example-python/pull/1#issuecomment-708550750",
-            "issue_url": "https://api.github.com/repos/ThiagoCodecov/example-python/issues/1",
-            "id": 708550750,
-            "node_id": "MDEyOklzc3VlQ29tbWVudDcwODU1MDc1MA==",
-            "user": {
-                "login": "ThiagoCodecov",
-                "id": 44376991,
-                "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
-                "avatar_url": "https://avatars1.githubusercontent.com/u/44376991?u=d50e43da66b2dbe47099d854ebd3b489f1162d48&v=4",
-                "gravatar_id": "",
-                "url": "https://api.github.com/users/ThiagoCodecov",
-                "html_url": "https://github.com/ThiagoCodecov",
-                "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
-                "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
-                "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
-                "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
-                "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
-                "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
-                "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
-                "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
-                "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
-                "type": "User",
-                "site_admin": False,
-            },
-            "created_at": "2020-10-14T17:32:01Z",
-            "updated_at": "2020-10-14T17:32:01Z",
-            "author_association": "OWNER",
-            "body": "Hello world",
-            "performed_via_github_app": None,
-        }
-        res = await valid_handler.post_comment("1", "Hello world")
-        print(res)
-        assert res == expected_result
-
-    @pytest.mark.asyncio
     async def test_get_authenticated_user(self, codecov_vcr):
         # To regenerate this test, go to
         # https://github.com/login/oauth/authorize?response_type=code&scope=user%3Aemail%2Cread%3Aorg%2Crepo%3Astatus%2Cwrite%3Arepo_hook&client_id=999247146557c3ba045c
@@ -884,20 +846,6 @@ class TestGithubTestCase(object):
         }
 
         assert one_expected_result in res
-
-    @pytest.mark.asyncio
-    async def test_list_teams(self, valid_handler, codecov_vcr):
-        expected_result = [
-            {"email": None, "id": "8226205", "name": "codecov", "username": "codecov",},
-            {
-                "email": None,
-                "id": "57222756",
-                "name": "ThiagoCodecovTeam",
-                "username": "ThiagoCodecovTeam",
-            },
-        ]
-        res = await valid_handler.list_teams()
-        assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_list_top_level_files(self, valid_handler, codecov_vcr):
