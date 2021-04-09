@@ -780,6 +780,10 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                     perm["permission"] in ("admin", "write")
                     for perm in repo_permissions
                 )
+                if not can_edit:
+                    # Temporary log to track this down more easily
+                    # If you see this, just remove it
+                    log.info("New logic is disallowing customer from editing Bitbucket")
                 return (True, can_edit)
             else:
                 # https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/repositories
