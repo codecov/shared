@@ -221,6 +221,15 @@ class TestUserYamlValidation(BaseTestCase):
         expected_result = {}
         assert validate_yaml(user_input) == expected_result
 
+    @pytest.mark.parametrize("input_value", ["", 10, [], tuple(), set()])
+    def test_wrong_object_type(self, input_value):
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(input_value)
+        exception = exc.value
+        assert exception.error_location == []
+        assert exception.error_message == "Yaml needs to be a dict"
+        assert exception.original_exc is None
+
     def test_validate_bot_none(self):
         user_input = {"codecov": {"bot": None}}
         expected_result = {"codecov": {"bot": None}}
