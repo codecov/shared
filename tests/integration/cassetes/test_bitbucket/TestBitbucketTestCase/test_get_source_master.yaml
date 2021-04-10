@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
   response:
     content: "from kaploft import smile, fib\n\n\ndef test_something():\n    assert\
       \ smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n\
@@ -60,5 +60,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
 version: 1

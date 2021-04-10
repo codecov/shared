@@ -17,9 +17,7 @@ def valid_handler():
     return Gitlab(
         repo=dict(service_id="187725", name="ci-repo"),
         owner=dict(username="codecov", service_id="109479"),
-        token=dict(
-            key="testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w"
-        ),
+        token=dict(key=16 * "f882"),
     )
 
 
@@ -28,9 +26,7 @@ def subgroup_handler():
     return Gitlab(
         repo=dict(service_id="187725", name="codecov-test"),
         owner=dict(username="group:subgroup1:subgroup2", service_id="7983213"),
-        token=dict(
-            key="testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w"
-        ),
+        token=dict(key=16 * "f882"),
     )
 
 
@@ -39,23 +35,17 @@ def admin_handler():
     return Gitlab(
         repo=dict(service_id="12060694"),
         owner=dict(username="codecov-organization", service_id="4037482"),
-        token=dict(
-            key="testre918s7u09o4trx2agj1x634onz33eq89tucbz8lqvhqzibc9mh6pgtcokjk"
-        ),
+        token=dict(key=16 * "f882"),
     )
 
 
 class TestGitlabTestCase(object):
     @pytest.mark.asyncio
-    async def test_get_is_admin(self, admin_handler):
+    async def test_get_is_admin(self, admin_handler, codecov_vcr):
         user = dict(service_id="3108129")
         owner = (dict(username="hootener"),)
         is_admin = await admin_handler.get_is_admin(
-            user=user,
-            token=dict(
-                key="testre918s7u09o4trx2agj1x634onz33eq89tucbz8lqvhqzibc9mh6pgtcokjk",
-                username="hootener",
-            ),
+            user=user, token=dict(key=16 * "f882", username="hootener",),
         )
         assert is_admin
 
@@ -185,9 +175,7 @@ class TestGitlabTestCase(object):
         recent_handler = Gitlab(
             repo=dict(service_id="18347774", name="codecov-example"),
             owner=dict(username="ThiagoCodecov", service_id="_meaningless_"),
-            token=dict(
-                key="testff3hzs8z959lb15xji4gudqt1ab2n3pnzgbnkxk9ie5ipg82ku2hmet78i5w"
-            ),
+            token=dict(key=16 * "f882"),
         )
         res = await recent_handler.get_pull_request("1")
         assert res == {
@@ -528,9 +516,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         ).get_repository()
         assert res == expected_result
 
@@ -551,9 +537,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(name="proj-a"),
             owner=dict(username="l00p_group_1:subgroup1"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         ).get_repository()
         assert res == expected_result
 
@@ -691,9 +675,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         ).list_repos()
         assert res == expected_result
 
@@ -779,7 +761,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="5938764"),
             owner=dict(username="thiagocodecovtestgroup:test-subgroup"),
-            token=dict(key="test0lqdb1uyolqgc71u"),
+            token=dict(key=16 * "f882"),
         ).list_repos()
         assert res == expected_result
 
@@ -825,9 +807,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         ).list_teams()
         assert res == expected_result
 
@@ -945,9 +925,7 @@ class TestGitlabTestCase(object):
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         )
 
         res = handler.make_paginated_call(
@@ -962,9 +940,7 @@ class TestGitlabTestCase(object):
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         )
         res = handler.make_paginated_call("/groups", max_per_page=4, default_kwargs={})
         res = [i async for i in res]
@@ -977,9 +953,7 @@ class TestGitlabTestCase(object):
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(
-                key="test49iijw2prbij6d3c4ggbt836pj401bol219u09j9zas0lep5d5ojyin0g2ex"
-            ),
+            token=dict(key=16 * "f882",),
         )
         res = handler.make_paginated_call(
             "/groups", max_per_page=3, max_number_of_pages=2, default_kwargs={}
@@ -992,10 +966,7 @@ class TestGitlabTestCase(object):
     async def test_get_authenticated_user(self, codecov_vcr):
         code = "7c005cbb342626fffe4f24e5eedac28d9e8fa1c8592808dd294bfe0d39ea084d"
         handler = Gitlab(
-            oauth_consumer_token=dict(
-                key="testsb4ooxhwdveqlkv2gpoqq1n2tf54kzwv3q9xvsqfq45c33lx0jxp4j8a0och",
-                secret="testux56mx9le9kn3cf0p8j8s1qpuurxk6wqebni1vm3slvbpuhmblgefp6yyoam",
-            )
+            oauth_consumer_token=dict(key=16 * "f882", secret=16 * "f882",)
         )
         res = await handler.get_authenticated_user(
             code, "http://localhost:8000/login/gl"

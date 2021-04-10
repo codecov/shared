@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?include=6ae5f17&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1568980339&oauth_nonce=1dcb7a2eedd544b395184b18231388a8&oauth_version=1.0&oauth_signature=XdUUtgGHNy2XcsbYlW%2Ftq3Od4qo%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?include=6ae5f17&oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1568980339&oauth_nonce=1dcb7a2eedd544b395184b18231388a8&oauth_version=1.0&oauth_signature=XdUUtgGHNy2XcsbYlW%2Ftq3Od4qo%3D
   response:
     content: "{\"pagelen\": 30, \"values\": [{\"rendered\": {\"message\": {\"raw\"\
       : \"Update README.rst\", \"markup\": \"markdown\", \"html\": \"<p>Update README.rst</p>\"\
@@ -827,5 +827,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?include=6ae5f17&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1568980339&oauth_nonce=1dcb7a2eedd544b395184b18231388a8&oauth_version=1.0&oauth_signature=XdUUtgGHNy2XcsbYlW%2Ftq3Od4qo%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commits?include=6ae5f17&oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1568980339&oauth_nonce=1dcb7a2eedd544b395184b18231388a8&oauth_version=1.0&oauth_signature=XdUUtgGHNy2XcsbYlW%2Ftq3Od4qo%3D
 version: 1

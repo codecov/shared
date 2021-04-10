@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/100?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516647&oauth_nonce=49da357ab8e640c4b33e8c255d21dc26&oauth_version=1.0&oauth_signature=BfuFRNVYccJ6bMxHMf0QiIfrqaw%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/100?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516647&oauth_nonce=49da357ab8e640c4b33e8c255d21dc26&oauth_version=1.0&oauth_signature=BfuFRNVYccJ6bMxHMf0QiIfrqaw%3D
   response:
     content: Not Found
     headers:
@@ -54,5 +54,5 @@ interactions:
       code: 404
       message: Not Found
     status_code: 404
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/100?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516647&oauth_nonce=49da357ab8e640c4b33e8c255d21dc26&oauth_version=1.0&oauth_signature=BfuFRNVYccJ6bMxHMf0QiIfrqaw%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/100?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516647&oauth_nonce=49da357ab8e640c4b33e8c255d21dc26&oauth_version=1.0&oauth_signature=BfuFRNVYccJ6bMxHMf0QiIfrqaw%3D
 version: 1

@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22atlassian%2Fstash-example-plugin%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377940&oauth_nonce=54b366ce70c843e38c6f5e2d08b7d25b&oauth_version=1.0&oauth_signature=lihQwQ9cT1CJGybvYG1NAYvWuYw%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22atlassian%2Fstash-example-plugin%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377940&oauth_nonce=54b366ce70c843e38c6f5e2d08b7d25b&oauth_version=1.0&oauth_signature=lihQwQ9cT1CJGybvYG1NAYvWuYw%3D
   response:
     content: '{"pagelen": 10, "values": [], "page": 1}'
     headers:

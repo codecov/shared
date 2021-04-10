@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
+    uri: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=waydowntokokomo&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
   response:
     content: '{"pagelen": 10, "values": [{"scm": "git", "website": "", "has_wiki":
       false, "uuid": "{a980e378-088f-48a8-9850-98923f497546}", "links": {"watchers":
@@ -34,9 +34,9 @@ interactions:
       "name": "Untitled project"}, "language": "", "created_on": "2014-09-22T00:31:02.553308+00:00",
       "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/ci-repo",
       "has_issues": true, "owner": {"username": "codecov", "display_name": "Codecov",
-      "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self":
-      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
-      "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+      "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
+      "html": {"href": "https://bitbucket.org/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D/"},
       "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
       "2016-08-22T13:01:12.956929+00:00", "size": 161832, "type": "repository", "slug":
       "ci-repo", "is_private": false, "description": "for ci testing"}, {"scm": "git",
@@ -63,9 +63,9 @@ interactions:
       "name": "Untitled project"}, "language": "python", "created_on": "2015-02-27T03:35:28.555210+00:00",
       "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/private",
       "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
-      "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self":
-      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
-      "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+      "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
+      "html": {"href": "https://bitbucket.org/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D/"},
       "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
       "2015-02-27T03:44:45.906783+00:00", "size": 144782, "type": "repository", "slug":
       "private", "is_private": true, "description": ""}, {"scm": "hg", "website":
@@ -98,9 +98,9 @@ interactions:
       "{480ce285-de3f-4eff-9e9c-8eccf8f07e99}"}, "mainbranch": {"type": "named_branch",
       "name": "default"}, "full_name": "codecov/coverage.py", "has_issues": true,
       "owner": {"username": "codecov", "display_name": "Codecov", "type": "team",
-      "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self": {"href":
-      "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
-      "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+      "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
+      "html": {"href": "https://bitbucket.org/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D/"},
       "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
       "2015-05-18T14:03:10.877986+00:00", "size": 4182791, "type": "repository", "slug":
       "coverage.py", "is_private": false, "description": ""}, {"scm": "git", "website":
@@ -127,9 +127,9 @@ interactions:
       "name": "Untitled project"}, "language": "python", "created_on": "2019-10-02T02:24:47.121351+00:00",
       "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/integration-test-repo",
       "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
-      "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self":
-      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
-      "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+      "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
+      "html": {"href": "https://bitbucket.org/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D/"},
       "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
       "2019-10-02T02:24:47.827791+00:00", "size": 59667, "type": "repository", "slug":
       "integration-test-repo", "is_private": true, "description": "A repo for testing
@@ -157,9 +157,9 @@ interactions:
       "name": "Untitled project"}, "language": "markdown", "created_on": "2019-10-04T14:47:42.067409+00:00",
       "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/test-bb-integration-public",
       "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
-      "type": "team", "uuid": "{6ef29b63-1288-4ceb-8dfc-af2c03f5cd49}", "links": {"self":
-      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D"},
-      "html": {"href": "https://bitbucket.org/%7B6ef29b63-1288-4ceb-8dfc-af2c03f5cd49%7D/"},
+      "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
+      "html": {"href": "https://bitbucket.org/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D/"},
       "avatar": {"href": "https://bitbucket.org/account/codecov/avatar/"}}}, "updated_on":
       "2019-10-04T14:47:43.490833+00:00", "size": 59625, "type": "repository", "slug":
       "test-bb-integration-public", "is_private": false, "description": ""}], "page":
@@ -214,5 +214,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
+    url: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=waydowntokokomo&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
 version: 1

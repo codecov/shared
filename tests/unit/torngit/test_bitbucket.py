@@ -23,7 +23,7 @@ def valid_handler():
     return Bitbucket(
         repo=dict(name="example-python"),
         owner=dict(
-            username="ThiagoCodecov", service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
+            username="ThiagoCodecov", service_id="6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49"
         ),
         oauth_consumer_token=dict(
             key="oauth_consumer_key_value", secret="oauth_consumer_token_secret_value"
@@ -202,7 +202,7 @@ class TestUnitBitbucket(object):
             repo=dict(name="example-python", private=True),
             owner=dict(
                 username="ThiagoCodecov",
-                service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                service_id="6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
             ),
             oauth_consumer_token=dict(
                 key="oauth_consumer_key_value",
@@ -231,7 +231,7 @@ class TestUnitBitbucket(object):
             repo=dict(name="example-python", private=True),
             owner=dict(
                 username="ThiagoCodecov",
-                service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                service_id="6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
             ),
             oauth_consumer_token=dict(
                 key="oauth_consumer_key_value",
@@ -259,7 +259,7 @@ class TestUnitBitbucket(object):
             repo=dict(name="example-python", private=True),
             owner=dict(
                 username="ThiagoCodecov",
-                service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                service_id="6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
             ),
             oauth_consumer_token=dict(
                 key="oauth_consumer_key_value",

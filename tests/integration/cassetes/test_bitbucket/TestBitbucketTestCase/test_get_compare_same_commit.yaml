@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?context=0&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602630&oauth_nonce=69777a85af7a4e6c92ed07ad43565f60&oauth_version=1.0&oauth_signature=oQqIAXcqTiOzOz32CC9l2L8xazk%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602630&oauth_nonce=69777a85af7a4e6c92ed07ad43565f60&oauth_version=1.0&oauth_signature=oQqIAXcqTiOzOz32CC9l2L8xazk%3D
   response:
     content: ''
     headers:
@@ -56,5 +56,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?context=0&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602630&oauth_nonce=69777a85af7a4e6c92ed07ad43565f60&oauth_version=1.0&oauth_signature=oQqIAXcqTiOzOz32CC9l2L8xazk%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602630&oauth_nonce=69777a85af7a4e6c92ed07ad43565f60&oauth_version=1.0&oauth_signature=oQqIAXcqTiOzOz32CC9l2L8xazk%3D
 version: 1

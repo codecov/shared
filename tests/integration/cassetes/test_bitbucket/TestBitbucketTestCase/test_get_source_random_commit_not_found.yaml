@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
   response:
     content: '{"type":"error","error":{"message":"No such file or directory: awesome/non_exising_file.py"}}'
     headers:
@@ -56,5 +56,5 @@ interactions:
       code: 404
       message: NOT FOUND
     status_code: 404
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
 version: 1

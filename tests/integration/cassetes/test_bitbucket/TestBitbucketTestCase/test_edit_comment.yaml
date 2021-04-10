@@ -9,7 +9,7 @@ interactions:
       User-Agent:
       - Default
     method: PUT
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631440&oauth_nonce=5aa764bebf044e64beb9d9df2912cc08&oauth_version=1.0&oauth_signature=2mI6UpQrKaN8s0sL9N%2F9ItZaF7o%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631440&oauth_nonce=5aa764bebf044e64beb9d9df2912cc08&oauth_version=1.0&oauth_signature=2mI6UpQrKaN8s0sL9N%2F9ItZaF7o%3D
   response:
     content: '{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127"},
       "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127"}},
@@ -73,5 +73,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631440&oauth_nonce=5aa764bebf044e64beb9d9df2912cc08&oauth_version=1.0&oauth_signature=2mI6UpQrKaN8s0sL9N%2F9ItZaF7o%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631440&oauth_nonce=5aa764bebf044e64beb9d9df2912cc08&oauth_version=1.0&oauth_signature=2mI6UpQrKaN8s0sL9N%2F9ItZaF7o%3D
 version: 1

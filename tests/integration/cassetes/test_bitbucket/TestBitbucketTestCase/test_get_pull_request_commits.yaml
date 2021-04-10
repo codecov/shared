@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557329523&oauth_nonce=8a1e01a50d7a4652b0fb66154494e464&oauth_version=1.0&oauth_signature=8Owtyk%2B%2BfFJ9ZcOdPBnT1OCgN%2Bo%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557329523&oauth_nonce=8a1e01a50d7a4652b0fb66154494e464&oauth_version=1.0&oauth_signature=8Owtyk%2B%2BfFJ9ZcOdPBnT1OCgN%2Bo%3D
   response:
     content: '{"pagelen": 10, "values": [{"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b",
       "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
@@ -78,5 +78,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557329523&oauth_nonce=8a1e01a50d7a4652b0fb66154494e464&oauth_version=1.0&oauth_signature=8Owtyk%2B%2BfFJ9ZcOdPBnT1OCgN%2Bo%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557329523&oauth_nonce=8a1e01a50d7a4652b0fb66154494e464&oauth_version=1.0&oauth_signature=8Owtyk%2B%2BfFJ9ZcOdPBnT1OCgN%2Bo%3D
 version: 1

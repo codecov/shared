@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378454&oauth_nonce=d5ecf457da8d41be901fbc20c12fa5ff&oauth_version=1.0&oauth_signature=e%2BxL5oewcKsMyDq%2Fxf8v3F6LyC8%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378454&oauth_nonce=d5ecf457da8d41be901fbc20c12fa5ff&oauth_version=1.0&oauth_signature=e%2BxL5oewcKsMyDq%2Fxf8v3F6LyC8%3D
   response:
     content: '{"pagelen": 50, "values": [{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostestnumbar3/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
       "permission": "member", "last_accessed": null, "user": {"display_name": "Thiago

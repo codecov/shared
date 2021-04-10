@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378448&oauth_nonce=2cef59817b2d4705a17bedc4487b96b9&oauth_version=1.0&oauth_signature=G2N3hnpWZCOuMvtlb6qLWTLuFKE%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378448&oauth_nonce=2cef59817b2d4705a17bedc4487b96b9&oauth_version=1.0&oauth_signature=G2N3hnpWZCOuMvtlb6qLWTLuFKE%3D
   response:
     content: '{"pagelen": 50, "values": [{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostestnumbar3/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
       "permission": "member", "last_accessed": null, "user": {"display_name": "Thiago
@@ -154,7 +154,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378449&oauth_nonce=eb97637399e84b20a7264e406819042a&oauth_version=1.0&oauth_signature=iZhZfWro9xk5WBZ3BOFEuKTo1UQ%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378449&oauth_nonce=eb97637399e84b20a7264e406819042a&oauth_version=1.0&oauth_signature=iZhZfWro9xk5WBZ3BOFEuKTo1UQ%3D
   response:
     content: '{"pagelen": 10, "values": [{"type": "repository_permission", "user":
       {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
@@ -234,7 +234,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/thiagocodecovbanana?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378450&oauth_nonce=f1d27bd9905a4dd99aca4506db3f4075&oauth_version=1.0&oauth_signature=8t9863CqUO2M1MMz5XWVlIYo%2BTI%3D
+    uri: https://bitbucket.org/api/2.0/repositories/thiagocodecovbanana?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378450&oauth_nonce=f1d27bd9905a4dd99aca4506db3f4075&oauth_version=1.0&oauth_signature=8t9863CqUO2M1MMz5XWVlIYo%2BTI%3D
   response:
     content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
     headers:
@@ -301,7 +301,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378452&oauth_nonce=fa0d9bc2cae04dbcacdc760cc5d5e690&oauth_version=1.0&oauth_signature=dMe8TMVDfX7dOtf5UAIcl9Cr63s%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378452&oauth_nonce=fa0d9bc2cae04dbcacdc760cc5d5e690&oauth_version=1.0&oauth_signature=dMe8TMVDfX7dOtf5UAIcl9Cr63s%3D
   response:
     content: '{"pagelen": 10, "values": [{"scm": "git", "website": "", "has_wiki":
       false, "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}", "links": {"watchers":
@@ -404,7 +404,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/thiagorramosworkspace?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=067cb97417664c3dafbf917b3ba3745d&oauth_version=1.0&oauth_signature=WsTLv5PDCxwVfhLJB4W53He0%2FaA%3D
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramosworkspace?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=067cb97417664c3dafbf917b3ba3745d&oauth_version=1.0&oauth_signature=WsTLv5PDCxwVfhLJB4W53He0%2FaA%3D
   response:
     content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
     headers:
@@ -471,7 +471,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/thiagorramostestnumbar3?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=f8ebea66b7e049ff936758f26a3a0ad8&oauth_version=1.0&oauth_signature=aGF%2B4V%2BFx2xJwREQSGU1Kv5PWzc%3D
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramostestnumbar3?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=f8ebea66b7e049ff936758f26a3a0ad8&oauth_version=1.0&oauth_signature=aGF%2B4V%2BFx2xJwREQSGU1Kv5PWzc%3D
   response:
     content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
     headers:
@@ -538,7 +538,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/thiagorramostest2?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=84ccc86d7ea74e02af5dd0b21f5ea801&oauth_version=1.0&oauth_signature=amtp59yTXrSlESDa4BuGcP026HU%3D
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramostest2?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=84ccc86d7ea74e02af5dd0b21f5ea801&oauth_version=1.0&oauth_signature=amtp59yTXrSlESDa4BuGcP026HU%3D
   response:
     content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
     headers:
@@ -605,7 +605,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/thiagorramosanotherw?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378454&oauth_nonce=c002378141da4fca846c268291c16291&oauth_version=1.0&oauth_signature=0eCiphpxhul4G%2BB0dfwka0tjf8c%3D
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramosanotherw?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378454&oauth_nonce=c002378141da4fca846c268291c16291&oauth_version=1.0&oauth_signature=0eCiphpxhul4G%2BB0dfwka0tjf8c%3D
   response:
     content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
     headers:

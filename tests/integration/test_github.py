@@ -18,7 +18,7 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="testfkj5qjd8am23247xas87spi6nhtirm3p7oy6"),
+        token=dict(key=10 * "a280"),
     )
 
 
@@ -27,9 +27,7 @@ def valid_but_no_permissions_handler():
     return Github(
         repo=dict(name="worker"),
         owner=dict(username="codecov"),
-        token=dict(
-            key="testb13y6ynymub6ib8dy2kec5unvir9y7hwhiid"
-        ),  # ThiagoCodecovTester
+        token=dict(key=10 * "fdaa"),  # ThiagoCodecovTester
     )
 
 
@@ -38,7 +36,7 @@ def repo_doesnt_exist_handler():
     return Github(
         repo=dict(name="badrepo"),
         owner=dict(username="codecov"),
-        token=dict(key="testgpf4l63k9hz1d41i1cmfl9lyl11nbadhi4za"),
+        token=dict(key=10 * "8a85"),
     )
 
 
@@ -47,7 +45,7 @@ def more_complex_handler():
     return Github(
         repo=dict(name="worker"),
         owner=dict(username="codecov"),
-        token=dict(key="testgpf4l63k9hz1d41i1cmfl9lyl11nbadhi4za"),
+        token=dict(key=10 * "8a85"),
     )
 
 
@@ -90,10 +88,7 @@ class TestGithubTestCase(object):
         # get the code and paste it here below
         code = "dc38acf492b071cc4dce"
         handler = Github(
-            oauth_consumer_token=dict(
-                key="999247146557c3ba045c",
-                secret="testo8lnq6ihj7zsf896r15yxujnl06og9o0fqiu",
-            )
+            oauth_consumer_token=dict(key="999247146557c3ba045c", secret=10 * "21b1",)
         )
         res = await handler.get_authenticated_user(code)
         print(res)
