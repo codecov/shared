@@ -767,12 +767,26 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
                 await self.api(
                     client, "2", "get", "/repositories/" + self.slug, token=token
                 )
-                return (True, True)
+                response = await self.api(
+                    client,
+                    "2",
+                    "get",
+                    "/user/permissions/repositories",
+                    token=token,
+                    q=f'repository.full_name="{self.slug}"',
+                )
+                repo_permissions = response["values"] or []
+                can_edit = any(
+                    perm["permission"] in ("admin", "write")
+                    for perm in repo_permissions
+                )
+                if not can_edit:
+                    # Temporary log to track this down more easily
+                    # If you see this, just remove it
+                    log.info("New logic is disallowing customer from editing Bitbucket")
+                return (True, can_edit)
             else:
                 # https://developer.atlassian.com/bitbucket/api/2/reference/resource/user/permissions/repositories
-                # I (Thiago) don't undestand why this is not done everywhere
-                # I am also confident sure the code above is giving can_edit to users
-                # who shouldn't have it
                 groups = await self.api(
                     client,
                     "2",

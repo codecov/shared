@@ -13,6 +13,12 @@ from shared.torngit.exceptions import (
 
 
 @pytest.fixture
+def respx_vcr():
+    with respx.mock as v:
+        yield v
+
+
+@pytest.fixture
 def valid_handler():
     return Bitbucket(
         repo=dict(name="example-python"),
@@ -20,9 +26,9 @@ def valid_handler():
             username="ThiagoCodecov", service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49"
         ),
         oauth_consumer_token=dict(
-            key="test51hdmhalc053rb", secret="testrgj6ezg5b4zc5z8t2rspg90rw6dp"
+            key="oauth_consumer_key_value", secret="oauth_consumer_token_secret_value"
         ),
-        token=dict(secret="test3spp3gm9db4f43y0zfm2jvvkpnd6", key="testm0141jl7b6ux9l"),
+        token=dict(secret="somesecret", key="somekey"),
     )
 
 
@@ -102,12 +108,10 @@ class TestUnitBitbucket(object):
             "oauth_version",
         ]
         assert (
-            query["oauth_consumer_key"] == "test51hdmhalc053rb"
+            query["oauth_consumer_key"] == "oauth_consumer_key_value"
         )  # defined on `valid_handler`
         assert query["oauth_signature_method"] == "HMAC-SHA1"
-        assert (
-            query["oauth_token"] == "testm0141jl7b6ux9l"
-        )  # defined on `valid_handler`
+        assert query["oauth_token"] == "somekey"  # defined on `valid_handler`
         assert query["oauth_version"] == "1.0"  # our class uses
 
     def test_generate_request_token(self, valid_handler):
@@ -150,3 +154,118 @@ class TestUnitBitbucket(object):
                 "secret": "test3j3wxslwkw2j27ncbntpcwq50kzh",
             }
             assert my_route.call_count == 1
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "permission_name, expected_result",
+        [("read", (True, False)), ("write", (True, True)), ("admin", (True, True))],
+    )
+    async def test_get_authenticated_private_200_status_some_permissions(
+        self, mocker, respx_vcr, permission_name, expected_result
+    ):
+        respx.get(
+            "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python"
+        ).respond(
+            status_code=200, json={},
+        )
+        respx.get(
+            "https://bitbucket.org/api/2.0/user/permissions/repositories"
+        ).respond(
+            status_code=200,
+            json={
+                "pagelen": 10,
+                "values": [
+                    {
+                        "type": "repository_permission",
+                        "user": {
+                            "display_name": "Thiago Ramos",
+                            "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+                            "links": {},
+                            "nickname": "thiago",
+                            "type": "user",
+                            "account_id": "5bce04c759d0e84f8c7555e9",
+                        },
+                        "repository": {
+                            "links": {},
+                            "type": "repository",
+                            "name": "example-python",
+                            "full_name": "ThiagoCodecov/example-python",
+                            "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}",
+                        },
+                        "permission": permission_name,
+                    }
+                ],
+                "page": 1,
+            },
+        )
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+            owner=dict(
+                username="ThiagoCodecov",
+                service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+            ),
+            oauth_consumer_token=dict(
+                key="oauth_consumer_key_value",
+                secret="oauth_consumer_token_secret_value",
+            ),
+            token=dict(secret="somesecret", key="somekey"),
+        )
+        res = await handler.get_authenticated()
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_authenticated_private_200_status_no_permission(
+        self, mocker, respx_vcr
+    ):
+        respx.get(
+            "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python"
+        ).respond(
+            status_code=200, json={},
+        )
+        respx.get(
+            "https://bitbucket.org/api/2.0/user/permissions/repositories"
+        ).respond(
+            status_code=200, json={"pagelen": 10, "values": [], "page": 1},
+        )
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+            owner=dict(
+                username="ThiagoCodecov",
+                service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+            ),
+            oauth_consumer_token=dict(
+                key="oauth_consumer_key_value",
+                secret="oauth_consumer_token_secret_value",
+            ),
+            token=dict(secret="somesecret", key="somekey"),
+        )
+        res = await handler.get_authenticated()
+        assert res == (True, False)
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "permission_name, expected_result",
+        [("read", (True, False)), ("write", (True, True)), ("admin", (True, True))],
+    )
+    async def test_get_authenticated_private_404_status(
+        self, mocker, respx_vcr, permission_name, expected_result
+    ):
+        respx.get(
+            "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python"
+        ).respond(
+            status_code=404, json={},
+        )
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+            owner=dict(
+                username="ThiagoCodecov",
+                service_id="6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+            ),
+            oauth_consumer_token=dict(
+                key="oauth_consumer_key_value",
+                secret="oauth_consumer_token_secret_value",
+            ),
+            token=dict(secret="secret", key="key"),
+        )
+        with pytest.raises(TorngitClientError):
+            await handler.get_authenticated()

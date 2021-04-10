@@ -321,6 +321,12 @@ class TorngitBaseAdapter(object):
             `self.data["user"]` can access the repo from `self.data["repo"]`
             Returns a `can_view` and a `can_edit` permission tuple
 
+            IMPORTANT NOTE: As it is right now, this function will never return can_view=False
+            It is either can_view=True, or raise 404 because from the user perspective, that
+            repo does not exist.
+
+            This kind of makes the first value of the result a bit useless
+
         Args:
             token (None, optional): Description
 
