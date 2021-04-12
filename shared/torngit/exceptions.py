@@ -4,7 +4,7 @@ class TorngitError(Exception):
 
 class TorngitClientError(TorngitError):
     def __init__(self, code, response, message):
-        super().__init__(code, response)
+        super().__init__(code, response, message)
         self.code = code
         self.response = response
         self.message = message
