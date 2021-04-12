@@ -53,11 +53,14 @@ fn parse_coverage(line: &Value) -> Result<cov::Coverage, ParsingError> {
         }
         Value::String(s) => match s.rfind("/") {
             Some(_) => {
-                let v: Vec<&str> = s.rsplit('/').collect();
+                let v: Vec<&str> = s.split('/').collect();
                 let num: i32 = v[0].parse().unwrap();
                 let den: i32 = v[1].parse().unwrap();
                 if num == den {
                     return Ok(cov::Coverage::Hit);
+                }
+                if num == 0 {
+                    return Ok(cov::Coverage::Miss);
                 }
                 let f: GenericFraction<i32> = GenericFraction::new(num, den);
                 return Ok(cov::Coverage::Partial(f));
@@ -445,5 +448,20 @@ null
     fn parse_line_bad_line() {
         let res = parse_line("[null, \"b\", [[null, true, null, null, null]]]")
             .expect_err("Line should have thrown an error");
+    }
+    #[test]
+    fn parse_coverage_sample_differant_fractions() {
+        let actual_partial = parse_coverage(&serde_json::from_str("\"1/2\"").unwrap())
+            .expect("should have parsed correctly");
+        assert_eq!(
+            actual_partial,
+            cov::Coverage::Partial(GenericFraction::new(1, 2))
+        );
+        let actual_hit = parse_coverage(&serde_json::from_str("\"3/3\"").unwrap())
+            .expect("should have parsed correctly");
+        assert_eq!(actual_hit, cov::Coverage::Hit);
+        let actual_miss = parse_coverage(&serde_json::from_str("\"0/4\"").unwrap())
+            .expect("should have parsed correctly");
+        assert_eq!(actual_miss, cov::Coverage::Miss);
     }
 }
