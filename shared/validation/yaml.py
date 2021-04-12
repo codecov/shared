@@ -47,6 +47,8 @@ def validate_yaml(inputted_yaml_dict, show_secrets=False):
     Raises:
         InvalidYamlException: If the yaml inputted by the user is not valid
     """
+    if not isinstance(inputted_yaml_dict, dict):
+        raise InvalidYamlException([], "Yaml needs to be a dict")
     pre_process_yaml(inputted_yaml_dict)
     user_yaml_schema = get_schema(show_secrets)
 
