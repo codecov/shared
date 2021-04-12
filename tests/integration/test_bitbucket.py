@@ -23,7 +23,7 @@ def valid_handler():
             username="ThiagoCodecov", service_id="9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645"
         ),
         oauth_consumer_token=dict(
-            key="test51hdmhalc053rb", secret="testrgj6ezg5b4zc5z8t2rspg90rw6dp"
+            key="arubajamaicaohiwan", secret="natakeyoubermudabahamacomeonpret"
         ),
         token=dict(secret="testpnilpfmyehw45pa7rvtkvtm7bhcx", key="testss3hxhcfqf1h6g"),
     )
@@ -35,9 +35,9 @@ def valid_codecov_handler():
         repo=dict(name="private"),
         owner=dict(username="codecov"),
         oauth_consumer_token=dict(
-            key="test51hdmhalc053rb", secret="testrgj6ezg5b4zc5z8t2rspg90rw6dp"
+            key="arubajamaicaohiwan", secret="natakeyoubermudabahamacomeonpret"
         ),
-        token=dict(secret="test3spp3gm9db4f43y0zfm2jvvkpnd6", key="testm0141jl7b6ux9l"),
+        token=dict(secret="KeyLargoMontegobabywhydontwego", key="waydowntokokomo"),
     )
 
 
@@ -605,7 +605,7 @@ class TestBitbucketTestCase(object):
                 },
                 "owner": {
                     "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
                 },
             },
             {
@@ -619,7 +619,7 @@ class TestBitbucketTestCase(object):
                 },
                 "owner": {
                     "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
                 },
             },
             {
@@ -633,7 +633,7 @@ class TestBitbucketTestCase(object):
                 },
                 "owner": {
                     "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
                 },
             },
             {
@@ -647,7 +647,7 @@ class TestBitbucketTestCase(object):
                 },
                 "owner": {
                     "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
                 },
             },
             {
@@ -661,7 +661,7 @@ class TestBitbucketTestCase(object):
                 },
                 "owner": {
                     "username": "codecov",
-                    "service_id": "6ef29b63-1288-4ceb-8dfc-af2c03f5cd49",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
                 },
             },
         ]

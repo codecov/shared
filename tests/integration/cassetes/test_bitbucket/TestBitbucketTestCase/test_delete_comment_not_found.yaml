@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: DELETE
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=331c6e3852554f5497b04e564dc673c2&oauth_timestamp=1561668838&oauth_signature=Z9fmZ6u%2FG%2Bimv4BHN1PNy7v3WkE%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_version=1.0&oauth_token=waydowntokokomo&oauth_nonce=331c6e3852554f5497b04e564dc673c2&oauth_timestamp=1561668838&oauth_signature=Z9fmZ6u%2FG%2Bimv4BHN1PNy7v3WkE%3D&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1
   response:
     content: '{"type": "error", "error": {"message": "113977999"}}'
     headers:
@@ -52,5 +52,5 @@ interactions:
       code: 404
       message: Not Found
     status_code: 404
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_version=1.0&oauth_token=testm0141jl7b6ux9l&oauth_nonce=331c6e3852554f5497b04e564dc673c2&oauth_timestamp=1561668838&oauth_signature=Z9fmZ6u%2FG%2Bimv4BHN1PNy7v3WkE%3D&oauth_consumer_key=test51hdmhalc053rb&oauth_signature_method=HMAC-SHA1
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_version=1.0&oauth_token=waydowntokokomo&oauth_nonce=331c6e3852554f5497b04e564dc673c2&oauth_timestamp=1561668838&oauth_signature=Z9fmZ6u%2FG%2Bimv4BHN1PNy7v3WkE%3D&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1
 version: 1

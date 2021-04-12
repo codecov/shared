@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/none?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516650&oauth_nonce=c540a957a26c4efa8c99d95b3559ec24&oauth_version=1.0&oauth_signature=1lAqnWwUkGv4ivSZ3G%2BGByd7Alo%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/none?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516650&oauth_nonce=c540a957a26c4efa8c99d95b3559ec24&oauth_version=1.0&oauth_signature=1lAqnWwUkGv4ivSZ3G%2BGByd7Alo%3D
   response:
     content: '{"type": "error", "error": {"message": "Changeset not found."}}'
     headers:
@@ -56,5 +56,5 @@ interactions:
       code: 404
       message: Not Found
     status_code: 404
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/none?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516650&oauth_nonce=c540a957a26c4efa8c99d95b3559ec24&oauth_version=1.0&oauth_signature=1lAqnWwUkGv4ivSZ3G%2BGByd7Alo%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/none?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516650&oauth_nonce=c540a957a26c4efa8c99d95b3559ec24&oauth_version=1.0&oauth_signature=1lAqnWwUkGv4ivSZ3G%2BGByd7Alo%3D
 version: 1

@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: POST
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d53/statuses/build?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541600749&oauth_nonce=35d6156376c04962a22bd881dcb34677&oauth_version=1.0&oauth_signature=2xxB%2FTlEr319N%2Fr4HfezaS%2FZqfM%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d53/statuses/build?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541600749&oauth_nonce=35d6156376c04962a22bd881dcb34677&oauth_version=1.0&oauth_signature=2xxB%2FTlEr319N%2Fr4HfezaS%2FZqfM%3D
   response:
     content: '{"key": "codecov-context", "description": "aaaaaaaaaa", "repository":
       {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
@@ -70,5 +70,5 @@ interactions:
       code: 201
       message: Created
     status_code: 201
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d53/statuses/build?oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541600749&oauth_nonce=35d6156376c04962a22bd881dcb34677&oauth_version=1.0&oauth_signature=2xxB%2FTlEr319N%2Fr4HfezaS%2FZqfM%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d53/statuses/build?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541600749&oauth_nonce=35d6156376c04962a22bd881dcb34677&oauth_version=1.0&oauth_signature=2xxB%2FTlEr319N%2Fr4HfezaS%2FZqfM%3D
 version: 1

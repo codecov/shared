@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574530963&oauth_nonce=61c6c9bd8ae74a28b32148ddd1297e16&oauth_version=1.0&oauth_signature=dyDNhaDGwSRnymGpVGtBJ9dl6NA%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574530963&oauth_nonce=61c6c9bd8ae74a28b32148ddd1297e16&oauth_version=1.0&oauth_signature=dyDNhaDGwSRnymGpVGtBJ9dl6NA%3D
   response:
     content: '{"pagelen": 10, "values": [{"type": "repository_permission", "user":
       {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
@@ -131,5 +131,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testm0141jl7b6ux9l&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574530963&oauth_nonce=61c6c9bd8ae74a28b32148ddd1297e16&oauth_version=1.0&oauth_signature=dyDNhaDGwSRnymGpVGtBJ9dl6NA%3D
+    url: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574530963&oauth_nonce=61c6c9bd8ae74a28b32148ddd1297e16&oauth_version=1.0&oauth_signature=dyDNhaDGwSRnymGpVGtBJ9dl6NA%3D
 version: 1

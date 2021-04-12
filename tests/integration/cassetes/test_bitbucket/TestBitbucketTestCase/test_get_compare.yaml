@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
   response:
     content: "diff --git a/README.rst b/README.rst\nindex 09c90a8..405d834 100644\n\
       --- a/README.rst\n+++ b/README.rst\n@@ -12 +12,2 @@ Overview\n-Main website:\
@@ -71,5 +71,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=test51hdmhalc053rb&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
 version: 1

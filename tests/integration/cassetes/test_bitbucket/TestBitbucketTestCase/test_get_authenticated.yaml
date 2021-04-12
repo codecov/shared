@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22ThiagoCodecov%2Fexample-python%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=test51hdmhalc053rb&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377623&oauth_nonce=ac91652521bc4867af3ec36b448a016c&oauth_version=1.0&oauth_signature=BQrCWoBGobnzvY0aRJ51OBJqyPk%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22ThiagoCodecov%2Fexample-python%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377623&oauth_nonce=ac91652521bc4867af3ec36b448a016c&oauth_version=1.0&oauth_signature=BQrCWoBGobnzvY0aRJ51OBJqyPk%3D
   response:
     content: '{"pagelen": 10, "values": [{"type": "repository_permission", "user":
       {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
