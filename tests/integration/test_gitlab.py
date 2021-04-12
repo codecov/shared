@@ -47,7 +47,7 @@ def admin_handler():
 
 class TestGitlabTestCase(object):
     @pytest.mark.asyncio
-    async def test_get_is_admin(self, admin_handler):
+    async def test_get_is_admin(self, admin_handler, codecov_vcr):
         user = dict(service_id="3108129")
         owner = (dict(username="hootener"),)
         is_admin = await admin_handler.get_is_admin(
