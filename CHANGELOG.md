@@ -9,15 +9,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-- [INTERNAL] Changed location of celery config in order to have consistent celery rules
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Fixed pickling of TorngitClientError
+- Adding proper error on YAML not being a dict
 
 ### Security
+
+## [v0.5.3]
+
+### Changed
+- [INTERNAL] Changed location of celery config in order to have consistent celery rules
+
+### Fixed
+- [CE-3240] Fixed Bitbucket API calls on what pertains to teams
+
+## [v0.5.2]
+
+### Fixed
+- Corrected some exceptions on YAML errors
+- Made ignore_lines clear less caches
+- Made `threshold` nullable on some fields
 
 ## [v0.5.1]
 

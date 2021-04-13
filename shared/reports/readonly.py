@@ -158,17 +158,12 @@ class ReadOnlyReport(object):
                     rust_totals.lines != res.lines
                     or rust_totals.hits != res.hits
                     or rust_totals.misses != res.misses
-                    or (rust_totals.coverage != res.coverage)
+                    or rust_totals.files != res.files
+                    or rust_totals.partials != res.partials
+                    or rust_totals.coverage != res.coverage
                 ):
                     log.warning(
                         "Got unexpected result from rust on totals calculation",
-                        extra=dict(
-                            totals=res.asdict(), rust_totals=rust_totals.asdict(),
-                        ),
-                    )
-                elif rust_totals.files != res.files:
-                    log.warning(
-                        "Got unexpected number of files from rust on totals calculation",
                         extra=dict(
                             totals=res.asdict(), rust_totals=rust_totals.asdict(),
                         ),
