@@ -110,6 +110,7 @@ class FilteredReportFile(object):
 
     @classmethod
     def calculate_totals_from_lines(cls, inputted_lines):
+        inputted_lines = list(inputted_lines)
         cov, types, messages = [], [], []
         _cov, _types, _messages = cov.append, types.append, messages.append
         for ln, line in inputted_lines:
