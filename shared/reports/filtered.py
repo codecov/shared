@@ -8,6 +8,7 @@ from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
 from shared.utils.merge import line_type, merge_all, get_complexity_from_sessions
 from shared.utils.totals import agg_totals, sum_totals
+from shared.metrics import metrics
 
 log = logging.getLogger(__name__)
 
@@ -236,6 +237,7 @@ class FilteredReport(object):
                 if res and res.lines > 0:
                     yield res
 
+    @metrics.timer("shared.reports.filtered._process_totals")
     def _process_totals(self):
         """Runs through the file network to aggregate totals
         returns <ReportTotals>
