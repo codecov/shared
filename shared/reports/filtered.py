@@ -6,7 +6,7 @@ from shared.helpers.numeric import ratio
 from shared.reports.types import ReportTotals, EMPTY
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
-from shared.utils.merge import line_type, merge_all
+from shared.utils.merge import line_type, merge_all, get_complexity_from_sessions
 from shared.utils.totals import agg_totals, sum_totals
 
 log = logging.getLogger(__name__)
@@ -33,7 +33,12 @@ class FilteredReportFile(object):
         if len(new_sessions) == 0:
             return EMPTY
         new_coverage = merge_all(remaining_coverages)
-        return dataclasses.replace(line, sessions=new_sessions, coverage=new_coverage)
+        return dataclasses.replace(
+            line,
+            complexity=get_complexity_from_sessions(new_sessions),
+            sessions=new_sessions,
+            coverage=new_coverage,
+        )
 
     @property
     def name(self):
