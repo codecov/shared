@@ -153,6 +153,37 @@ class TestFilteredReportFile(object):
             == expected_result
         )
 
+    def test_line_modifier(self):
+        original_file = ReportFile("file_1.py")
+        file = FilteredReportFile(original_file, [0, 1, 5])
+        res = file.line_modifier(
+            ReportLine.create(
+                1,
+                sessions=[
+                    LineSession(0, 1, complexity=5),
+                    LineSession(1, 1, complexity=4),
+                    LineSession(2, 0, complexity=4),
+                    LineSession(10, 0, complexity=3),
+                ],
+            )
+        )
+        assert res.coverage == 1
+        assert res.type is None
+        assert res.sessions == [
+            LineSession(id=0, coverage=1, branches=None, partials=None, complexity=5),
+            LineSession(id=1, coverage=1, complexity=4),
+        ]
+        assert res.messages is None
+        assert res.complexity == 5
+
+    def test_line_modifier_empty(self):
+        original_file = ReportFile("file_1.py")
+        file = FilteredReportFile(original_file, [1])
+        res = file.line_modifier(
+            ReportLine.create(1, sessions=[LineSession(0, 1, complexity=5)])
+        )
+        assert res == ""
+
 
 class TestFilteredReport(object):
     def test_no_real_filter(self, sample_report):
