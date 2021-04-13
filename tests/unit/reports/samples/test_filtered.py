@@ -117,6 +117,42 @@ class TestFilteredReportFile(object):
             == expected_result
         )
 
+    def test_calculate_totals_from_lines_iterator(self):
+        line_1 = (
+            1,
+            ReportLine.create(coverage=1, sessions=[[0, 1]], complexity=[1, 3]),
+        )
+        line_2 = (
+            2,
+            ReportLine.create(coverage=1, sessions=[[0, 1], [1, 1]], complexity=1),
+        )
+        line_3 = (3, ReportLine.create(coverage=0, sessions=[[0, 0]]))
+        expected_result = ReportTotals(
+            files=0,
+            lines=3,
+            hits=2,
+            misses=1,
+            partials=0,
+            coverage="66.66667",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=2,
+            complexity_total=3,
+            diff=0,
+        )
+
+        def iterator_to_use():
+            yield line_1
+            yield line_2
+            yield line_3
+
+        assert (
+            FilteredReportFile.calculate_totals_from_lines(iterator_to_use())
+            == expected_result
+        )
+
 
 class TestFilteredReport(object):
     def test_no_real_filter(self, sample_report):
