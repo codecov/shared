@@ -241,7 +241,8 @@ class FilteredReport(object):
             try:
                 only_session_id = list(self.session_ids_to_include)[0]
                 if self.report.sessions.get(only_session_id):
-                    session_totals = self.report.sessions[only_session_id].totals
+                    only_session_to_use = self.report.sessions[only_session_id]
+                    session_totals = only_session_to_use.totals
                     if session_totals is not None:
                         session_totals.sessions = 1
                         if session_totals == res:
@@ -259,6 +260,7 @@ class FilteredReport(object):
                                     calculated_totals=res.asdict()
                                     if res is not None
                                     else None,
+                                    session_time=only_session_to_use.time,
                                 ),
                             )
                         else:
