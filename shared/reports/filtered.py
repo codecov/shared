@@ -6,6 +6,7 @@ from shared.utils.match import match, match_any
 from shared.reports.types import ReportTotals, EMPTY
 from shared.helpers.numeric import ratio
 from shared.utils.merge import line_type, merge_all
+from shared.metrics import metrics
 
 
 class FilteredReportFile(object):
@@ -198,6 +199,7 @@ class FilteredReport(object):
             if self.should_include(filename):
                 yield self.get(filename).totals
 
+    @metrics.timer("shared.reports.filtered._process_totals")
     def _process_totals(self):
         """Runs through the file network to aggregate totals
         returns <ReportTotals>
