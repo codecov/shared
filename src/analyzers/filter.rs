@@ -170,8 +170,6 @@ mod tests {
                         sessions: vec![line::LineSession {
                             id: 0,
                             coverage: cov::Coverage::Hit,
-                            branches: 0,
-                            partials: vec![],
                             complexity: None,
                         }],
                         complexity: None,
@@ -186,15 +184,11 @@ mod tests {
                             line::LineSession {
                                 id: 0,
                                 coverage: cov::Coverage::Hit,
-                                branches: 0,
-                                partials: vec![],
                                 complexity: None,
                             },
                             line::LineSession {
                                 id: 1,
                                 coverage: cov::Coverage::Partial(GenericFraction::new(1, 2)),
-                                branches: 0,
-                                partials: vec![],
                                 complexity: None,
                             },
                         ],

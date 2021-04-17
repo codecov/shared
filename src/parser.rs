@@ -134,8 +134,6 @@ fn parse_line(line: &str) -> Result<LineType, ParsingError> {
                             .ok_or(ParsingError::UnexpectedValue)?
                             as i32,
                         coverage: parse_coverage(&el[1])?,
-                        branches: 0,
-                        partials: [0].to_vec(),
                         complexity: parse_complexity(if el_as_array.len() > 4 {
                             &el_as_array[4]
                         } else {
