@@ -22,3 +22,7 @@ version = "0.12.4"
 [features]
 extension-module = ["pyo3/extension-module"]
 default = ["extension-module"]
+
+[target.'cfg(target_env = "musl")'.dependencies.jemallocator]
+version = "0.3.0"
+features = ["disable_initial_exec_tls"]
