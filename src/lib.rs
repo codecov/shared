@@ -15,7 +15,7 @@ mod report;
 #[pyfunction]
 fn parse_report(
     filenames: HashMap<String, i32>,
-    chunks: String,
+    chunks: &str,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> PyResult<report::Report> {
     let res = parser::parse_report_from_str(filenames, chunks, session_mapping);

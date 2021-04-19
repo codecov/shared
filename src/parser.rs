@@ -167,7 +167,7 @@ fn parse_line(line: &str) -> Result<LineType, ParsingError> {
 
 pub fn parse_report_from_str(
     filenames: HashMap<String, i32>,
-    chunks: String,
+    chunks: &str,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> Result<report::Report, ParsingError> {
     let all_lines_with_errors: Vec<_> = chunks.lines().map(|line| parse_line(&line)).collect();
@@ -301,8 +301,7 @@ mod tests {
             0,
             ["flag_three".to_string(), "flag_two".to_string()].to_vec(),
         );
-        let res = parse_report_from_str(filenames, content.to_string(), flags)
-            .expect("Unable to parse report");
+        let res = parse_report_from_str(filenames, content, flags).expect("Unable to parse report");
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_simple_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), Some("90.00000".to_string()));
@@ -353,8 +352,7 @@ null
         ]
         .into_iter()
         .collect();
-        let res = parse_report_from_str(filenames, content.to_string(), flags)
-            .expect("Unable to parse report");
+        let res = parse_report_from_str(filenames, content, flags).expect("Unable to parse report");
         let calc_2 = res.get_simple_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), Some("84.61538".to_string()));
         assert_eq!(calc_2.files, 2);
@@ -404,8 +402,7 @@ null
             0,
             ["flag_three".to_string(), "flag_two".to_string()].to_vec(),
         );
-        let res = parse_report_from_str(filenames, "".to_string(), flags)
-            .expect("Unable to parse report");
+        let res = parse_report_from_str(filenames, "", flags).expect("Unable to parse report");
         assert_eq!(res.report_files.len(), 0);
         let calc = res.calculate_per_flag_totals();
         let calc_2 = res.get_simple_totals().unwrap();
