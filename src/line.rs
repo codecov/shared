@@ -17,8 +17,6 @@ pub enum Complexity {
 pub struct LineSession {
     pub id: i32,
     pub coverage: cov::Coverage,
-    pub branches: i32,
-    pub partials: Vec<i32>,
     pub complexity: Option<Complexity>,
 }
 
