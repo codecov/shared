@@ -9,16 +9,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Upgraded RIBS for performance reasons
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-- Fixed pickling of TorngitClientError
-- Adding proper error on YAML not being a dict
 
 ### Security
+
+## [v0.5.4]
+
+### Fixed
+- Fixed pickling of TorngitClientError
+- Fixed complexity calculation on filtered reports
+- Fixed bug on YAML being not a dict
 
 ## [v0.5.3]
 
