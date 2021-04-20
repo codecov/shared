@@ -51,7 +51,7 @@ impl ReportTotals {
     pub fn add_up(&mut self, other: &file::FileTotals) {
         if !other.is_empty() {
             self.files += 1;
-            self.lines += other.lines;
+            self.lines += other.get_line_count();
             self.hits += other.hits;
             self.misses += other.misses;
             self.partials += other.partials;
