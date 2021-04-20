@@ -1,3 +1,4 @@
+use fraction::GenericFraction;
 use pyo3::prelude::*;
 use std::collections::HashMap;
 
@@ -5,7 +6,7 @@ use crate::cov;
 use crate::line;
 
 #[pyclass]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct FileTotals {
     #[pyo3(get)]
     pub lines: i32,
@@ -56,11 +57,11 @@ impl FileTotals {
             complexity_total: 0,
         };
         for report_line in lines.iter() {
-            res.lines += 1;
             match report_line.coverage {
                 cov::Coverage::Hit => res.hits += 1,
                 cov::Coverage::Miss => res.misses += 1,
                 cov::Coverage::Partial(_) => res.partials += 1,
+                cov::Coverage::Ignore => {}
             }
             match &report_line.complexity {
                 Some(value) => match value {
@@ -80,6 +81,7 @@ impl FileTotals {
                 line::CoverageType::Method => res.methods += 1,
             }
         }
+        res.lines = res.hits + res.misses + res.partials;
         return res;
     }
 }
@@ -127,11 +129,20 @@ impl ReportFile {
                                     complexity_total: 0,
                                     methods: 0,
                                 });
-                            stat.lines += 1;
                             match sess.coverage {
-                                cov::Coverage::Hit => stat.hits += 1,
-                                cov::Coverage::Miss => stat.misses += 1,
-                                cov::Coverage::Partial(_) => stat.partials += 1,
+                                cov::Coverage::Hit => {
+                                    stat.lines += 1;
+                                    stat.hits += 1
+                                }
+                                cov::Coverage::Miss => {
+                                    stat.lines += 1;
+                                    stat.misses += 1
+                                }
+                                cov::Coverage::Partial(_) => {
+                                    stat.lines += 1;
+                                    stat.partials += 1
+                                }
+                                cov::Coverage::Ignore => {}
                             }
                         }
                     }
@@ -144,5 +155,69 @@ impl ReportFile {
 
     pub fn get_totals(&self) -> FileTotals {
         return FileTotals::from_lines(self.lines.values().collect());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_lines_empty() {
+        let expected_result = FileTotals {
+            lines: 0,
+            hits: 0,
+            misses: 0,
+            partials: 0,
+            branches: 0,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+            methods: 0,
+        };
+        let result = FileTotals::from_lines(vec![]);
+        assert_eq!(expected_result, result);
+    }
+
+    #[test]
+    fn from_lines_some() {
+        let expected_result = FileTotals {
+            lines: 3,
+            hits: 1,
+            misses: 1,
+            partials: 1,
+            branches: 1,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+            methods: 0,
+        };
+        let result = FileTotals::from_lines(vec![
+            &line::ReportLine {
+                coverage: cov::Coverage::Hit,
+                coverage_type: line::CoverageType::Standard,
+                sessions: vec![],
+                complexity: None,
+            },
+            &line::ReportLine {
+                coverage: cov::Coverage::Miss,
+                coverage_type: line::CoverageType::Branch,
+                sessions: vec![],
+                complexity: None,
+            },
+            &line::ReportLine {
+                coverage: cov::Coverage::Partial(GenericFraction::new(3, 10)),
+                coverage_type: line::CoverageType::Standard,
+                sessions: vec![],
+                complexity: None,
+            },
+            &line::ReportLine {
+                coverage: cov::Coverage::Ignore,
+                coverage_type: line::CoverageType::Standard,
+                sessions: vec![],
+                complexity: None,
+            },
+        ]);
+        assert_eq!(expected_result, result);
     }
 }

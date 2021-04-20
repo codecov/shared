@@ -240,6 +240,7 @@ impl SimpleAnalyzer {
                     cov::Coverage::Hit => (hits + 1, misses, partials),
                     cov::Coverage::Miss => (hits, misses + 1, partials),
                     cov::Coverage::Partial(_) => (hits, misses, partials + 1),
+                    cov::Coverage::Ignore => (hits, misses, partials),
                 });
 
         let (base_hits, base_misses, base_partials) =
@@ -249,6 +250,7 @@ impl SimpleAnalyzer {
                     cov::Coverage::Hit => (hits + 1, misses, partials),
                     cov::Coverage::Miss => (hits, misses + 1, partials),
                     cov::Coverage::Partial(_) => (hits, misses, partials + 1),
+                    cov::Coverage::Ignore => (hits, misses, partials),
                 });
         let hits = head_hits - base_hits;
         let misses = head_misses - base_misses;
