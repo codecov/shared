@@ -9,8 +9,6 @@ use crate::line;
 #[derive(Debug, Clone, PartialEq)]
 pub struct FileTotals {
     #[pyo3(get)]
-    pub lines: i32,
-    #[pyo3(get)]
     pub hits: i32,
     #[pyo3(get)]
     pub misses: i32,
@@ -25,10 +23,21 @@ pub struct FileTotals {
     methods: i32,
 }
 
+#[pymethods]
 impl FileTotals {
+    #[getter(lines)]
+    pub fn get_lines(&self) -> PyResult<i32> {
+        Ok(self.get_line_count())
+    }
+}
+
+impl FileTotals {
+    pub fn get_line_count(&self) -> i32 {
+        return self.hits + self.misses + self.partials;
+    }
+
     pub fn new() -> FileTotals {
         FileTotals {
-            lines: 0,
             hits: 0,
             misses: 0,
             partials: 0,
@@ -41,12 +50,11 @@ impl FileTotals {
     }
 
     pub fn is_empty(&self) -> bool {
-        return self.lines == 0;
+        return self.get_line_count() == 0;
     }
 
     pub fn from_lines(lines: Vec<&line::ReportLine>) -> FileTotals {
         let mut res: FileTotals = FileTotals {
-            lines: 0,
             hits: 0,
             misses: 0,
             methods: 0,
@@ -81,7 +89,6 @@ impl FileTotals {
                 line::CoverageType::Method => res.methods += 1,
             }
         }
-        res.lines = res.hits + res.misses + res.partials;
         return res;
     }
 }
@@ -119,7 +126,6 @@ impl ReportFile {
                         for f in flags {
                             let mut stat =
                                 book_reviews.entry(f.to_string()).or_insert(FileTotals {
-                                    lines: 0,
                                     hits: 0,
                                     misses: 0,
                                     partials: 0,
@@ -131,15 +137,12 @@ impl ReportFile {
                                 });
                             match sess.coverage {
                                 cov::Coverage::Hit => {
-                                    stat.lines += 1;
                                     stat.hits += 1
                                 }
                                 cov::Coverage::Miss => {
-                                    stat.lines += 1;
                                     stat.misses += 1
                                 }
                                 cov::Coverage::Partial(_) => {
-                                    stat.lines += 1;
                                     stat.partials += 1
                                 }
                                 cov::Coverage::Ignore => {}
@@ -165,7 +168,6 @@ mod tests {
     #[test]
     fn from_lines_empty() {
         let expected_result = FileTotals {
-            lines: 0,
             hits: 0,
             misses: 0,
             partials: 0,
@@ -177,12 +179,12 @@ mod tests {
         };
         let result = FileTotals::from_lines(vec![]);
         assert_eq!(expected_result, result);
+        assert_eq!(result.get_line_count(), 0);
     }
 
     #[test]
     fn from_lines_some() {
         let expected_result = FileTotals {
-            lines: 3,
             hits: 1,
             misses: 1,
             partials: 1,
@@ -219,5 +221,6 @@ mod tests {
             },
         ]);
         assert_eq!(expected_result, result);
+        assert_eq!(result.get_line_count(), 3);
     }
 }
