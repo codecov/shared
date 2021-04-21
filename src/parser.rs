@@ -77,7 +77,7 @@ fn parse_coverage(line: &Value) -> Result<cov::Coverage, ParsingError> {
         Value::Array(_) => {
             return Err(ParsingError::UnexpectedValue);
         }
-        Value::Null => return Ok(cov::Coverage::Miss),
+        Value::Null => return Ok(cov::Coverage::Ignore),
         Value::Bool(b) => {
             if *b {
                 return Ok(cov::Coverage::Partial(GenericFraction::new(1, 2)));
@@ -301,6 +301,7 @@ mod tests {
         );
         let res = parse_report_from_str(filenames, content, flags).expect("Unable to parse report");
         let calc = res.calculate_per_flag_totals();
+        assert!(calc.contains_key("flag_one"));
         let calc_2 = res.get_simple_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), Some("90.00000".to_string()));
     }
@@ -403,6 +404,7 @@ null
         let res = parse_report_from_str(filenames, "", flags).expect("Unable to parse report");
         assert_eq!(res.report_files.len(), 0);
         let calc = res.calculate_per_flag_totals();
+        assert!(calc.is_empty());
         let calc_2 = res.get_simple_totals().unwrap();
         assert_eq!(calc_2.get_coverage().unwrap(), None);
     }
@@ -440,8 +442,22 @@ null
     }
 
     #[test]
+    fn parse_line_empty_lines() {
+        let res = parse_line("[null, \"b\", [[157, null]]]").expect("Unable to parse line");
+        match res {
+            LineType::Content(l) => {
+                assert_eq!(l.coverage, cov::Coverage::Ignore);
+                assert_eq!(l.coverage_type, line::CoverageType::Branch);
+            }
+            _ => {
+                panic!("Bad res");
+            }
+        }
+    }
+
+    #[test]
     fn parse_line_bad_line() {
-        let res = parse_line("[null, \"b\", [[null, true, null, null, null]]]")
+        let _res = parse_line("[1, \"b\", [[null, true, null, null, null]]]")
             .expect_err("Line should have thrown an error");
     }
     #[test]

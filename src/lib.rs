@@ -3,11 +3,9 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::collections::HashMap;
 
-
 #[cfg(target_env = "musl")]
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
-
 
 mod analyzers;
 mod changes;

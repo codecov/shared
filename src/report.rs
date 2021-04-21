@@ -1,6 +1,4 @@
-use crate::cov;
 use crate::file;
-use crate::line;
 
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
@@ -47,52 +45,11 @@ impl ReportTotals {
             methods: 0,
         }
     }
-
-    pub fn from_lines(lines: Vec<&line::ReportLine>) -> ReportTotals {
-        let mut res: ReportTotals = ReportTotals {
-            files: 1,
-            lines: 0,
-            hits: 0,
-            misses: 0,
-            methods: 0,
-            partials: 0,
-            branches: 0,
-            sessions: 0,
-            complexity: 0,
-            complexity_total: 0,
-        };
-        for report_line in lines.iter() {
-            res.lines += 1;
-            match report_line.coverage {
-                cov::Coverage::Hit => res.hits += 1,
-                cov::Coverage::Miss => res.misses += 1,
-                cov::Coverage::Partial(_) => res.partials += 1,
-            }
-            match &report_line.complexity {
-                Some(value) => match value {
-                    line::Complexity::SingleComplexity(v) => {
-                        res.complexity += v;
-                    }
-                    line::Complexity::TotalComplexity((n, d)) => {
-                        res.complexity += n;
-                        res.complexity_total += d;
-                    }
-                },
-                None => {}
-            }
-            match report_line.coverage_type {
-                line::CoverageType::Standard => {}
-                line::CoverageType::Branch => res.branches += 1,
-                line::CoverageType::Method => res.methods += 1,
-            }
-        }
-        return res;
-    }
 }
 
 impl ReportTotals {
     pub fn add_up(&mut self, other: &file::FileTotals) {
-        if (!other.is_empty()) {
+        if !other.is_empty() {
             self.files += 1;
             self.lines += other.lines;
             self.hits += other.hits;

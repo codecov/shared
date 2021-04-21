@@ -6,6 +6,7 @@ pub enum Coverage {
     Hit,
     Miss,
     Partial(GenericFraction<i32>),
+    Ignore,
 }
 
 impl Coverage {
@@ -20,20 +21,28 @@ impl Coverage {
             Coverage::Partial(f) => {
                 return f.to_f64().unwrap();
             }
+            Coverage::Ignore => {
+                return -1.0;
+            }
         }
     }
 
     pub fn join_coverages(many_coverages: Vec<&Coverage>) -> Coverage {
-        let mut a: Coverage = Coverage::Miss;
+        let mut a: Coverage = Coverage::Ignore;
         for cov in many_coverages.iter() {
             match cov {
                 Coverage::Hit => return Coverage::Hit,
-                Coverage::Miss => {}
+                Coverage::Miss => {
+                    if let Coverage::Ignore = a {
+                        a = Coverage::Miss
+                    }
+                }
                 Coverage::Partial(f) => {
                     if f.to_f64().unwrap() > a.get_value() {
                         a = Coverage::Partial(*f);
                     }
                 }
+                Coverage::Ignore => {}
             }
         }
         return a;
@@ -57,5 +66,22 @@ mod tests {
             &Coverage::Partial(GenericFraction::new(3, 10)),
         ]);
         assert_eq!(k, Coverage::Partial(GenericFraction::new(3, 10)));
+        assert_eq!(Coverage::join_coverages(vec![]), Coverage::Ignore);
+        assert_eq!(
+            Coverage::join_coverages(vec![&Coverage::Ignore, &Coverage::Miss]),
+            Coverage::Miss
+        );
+        assert_eq!(
+            Coverage::join_coverages(vec![&Coverage::Ignore, &Coverage::Ignore]),
+            Coverage::Ignore
+        );
+        assert_eq!(
+            Coverage::join_coverages(vec![&Coverage::Miss, &Coverage::Ignore]),
+            Coverage::Miss
+        );
+        assert_eq!(
+            Coverage::join_coverages(vec![&Coverage::Miss, &Coverage::Ignore, &Coverage::Hit]),
+            Coverage::Hit
+        );
     }
 }
