@@ -168,7 +168,7 @@ pub fn parse_report_from_str(
     chunks: &str,
     session_mapping: HashMap<i32, Vec<String>>,
 ) -> Result<report::Report, ParsingError> {
-    let all_lines_with_errors: Vec<_> = chunks.lines().map(|line| parse_line(&line)).collect();
+    let all_lines_with_errors: Vec<_> = chunks.par_lines().map(|line| parse_line(&line)).collect();
     let all_lines_or_errors: Result<Vec<LineType>, _> = all_lines_with_errors.into_iter().collect();
     let all_lines = all_lines_or_errors?;
     if all_lines.len() == 0 {
