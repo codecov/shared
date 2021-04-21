@@ -1,5 +1,6 @@
 import dataclasses
 import logging
+import os
 
 from shared.config import get_config
 from shared.helpers.numeric import ratio
@@ -237,6 +238,20 @@ class FilteredReport(object):
                 if res and res.lines > 0:
                     yield res
 
+    def _can_use_session_totals(self):
+        a = os.getenv("CORRECT_SESSION_TOTALS_SINCE")
+        if a is None:
+            return False
+        if len(self.session_ids_to_include) != 1:
+            return False
+        if self.path_patterns:
+            return False
+        only_session_id = list(self.session_ids_to_include)[0]
+        only_session_to_use = self.report.sessions[only_session_id]
+        if only_session_to_use is not None and only_session_to_use.time is not None:
+            return only_session_to_use.time > int(a)
+        return False
+
     @metrics.timer("shared.reports.filtered._process_totals")
     def _process_totals(self):
         """Runs through the file network to aggregate totals
@@ -245,8 +260,8 @@ class FilteredReport(object):
         totals = agg_totals(self._iter_totals())
         totals.sessions = len(self.session_ids_to_include)
         res = ReportTotals(*tuple(totals))
-        if len(self.session_ids_to_include) == 1 and not self.path_patterns:
-            try:
+        try:
+            if self._can_use_session_totals():
                 only_session_id = list(self.session_ids_to_include)[0]
                 if self.report.sessions.get(only_session_id):
                     only_session_to_use = self.report.sessions[only_session_id]
@@ -283,12 +298,12 @@ class FilteredReport(object):
                                     else None,
                                 ),
                             )
-            except Exception:
-                log.warning(
-                    "Unable to calculate single-session totals",
-                    extra=dict(flags=self.flags, path_patterns=self.path_patterns),
-                    exc_info=True,
-                )
+        except Exception:
+            log.warning(
+                "Unable to calculate single-session totals",
+                extra=dict(flags=self.flags, path_patterns=self.path_patterns),
+                exc_info=True,
+            )
         return res
 
     def calculate_diff(self, diff):
