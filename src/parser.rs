@@ -45,11 +45,27 @@ fn parse_coverage_type(val: &Value) -> Result<line::CoverageType, ParsingError> 
 fn parse_coverage(line: &Value) -> Result<cov::Coverage, ParsingError> {
     match line {
         Value::Number(o) => {
-            return if o.as_i64().ok_or(ParsingError::UnexpectedValue)? > 0 {
-                Ok(cov::Coverage::Hit)
-            } else {
-                Ok(cov::Coverage::Miss)
-            }
+            return match o.as_i64() {
+                Some(number) => {
+                    if number > 0 {
+                        Ok(cov::Coverage::Hit)
+                    } else if number == -1 {
+                        Ok(cov::Coverage::Ignore)
+                    } else {
+                        Ok(cov::Coverage::Miss)
+                    }
+                }
+                None => match o.as_f64() {
+                    Some(alternative_number) => {
+                        if alternative_number > 0.0 {
+                            Ok(cov::Coverage::Hit)
+                        } else {
+                            Ok(cov::Coverage::Miss)
+                        }
+                    }
+                    None => Err(ParsingError::UnexpectedValue),
+                },
+            };
         }
         Value::String(s) => match s.rfind("/") {
             Some(_) => {
@@ -424,6 +440,74 @@ null
     }
 
     #[test]
+    fn parse_line_huge_number_case() {
+        // This is just a line that doesn't fit in i64. Unfortunately, the JSON library only goes up to
+        // u64. We are just parsing as a float on those cases because f64 can handle knowing
+        // if a number if higher than zero just fine, and that's what python does anyway
+        let res = parse_line("[18446744073709551615, null, [[23, 18446744073709551615]]]")
+            .expect("Unable to parse line");
+        match res {
+            LineType::Content(l) => {
+                assert_eq!(l.coverage, cov::Coverage::Hit);
+                assert_eq!(l.coverage_type, line::CoverageType::Standard);
+            }
+            _ => {
+                panic!("Bad res");
+            }
+        }
+    }
+
+    #[test]
+    fn parse_line_unusual_zero_case() {
+        // Some zero
+        let res =
+            parse_line("[0.0, null, [[23, 18446744073709551615]]]").expect("Unable to parse line");
+        match res {
+            LineType::Content(l) => {
+                assert_eq!(l.coverage, cov::Coverage::Miss);
+                assert_eq!(l.coverage_type, line::CoverageType::Standard);
+            }
+            _ => {
+                panic!("Bad res");
+            }
+        }
+    }
+
+    #[test]
+    fn parse_coverage_unusual_numbers() {
+        // Some zero
+        assert_eq!(
+            cov::Coverage::Miss,
+            parse_coverage(&serde_json::from_str("0.0").unwrap())
+                .expect("Unable to parse coverage")
+        );
+        assert_eq!(
+            cov::Coverage::Miss,
+            parse_coverage(&serde_json::from_str("0").unwrap()).expect("Unable to parse coverage")
+        );
+        assert_eq!(
+            cov::Coverage::Ignore,
+            parse_coverage(&serde_json::from_str("-1").unwrap()).expect("Unable to parse coverage")
+        );
+        assert_eq!(
+            cov::Coverage::Hit,
+            parse_coverage(&serde_json::from_str("0.5").unwrap())
+                .expect("Unable to parse coverage")
+        );
+        assert_eq!(
+            cov::Coverage::Hit,
+            parse_coverage(&serde_json::from_str("18446744073709551615").unwrap())
+                .expect("Unable to parse coverage")
+        );
+        // Slightly higher than u64 limit
+        assert_eq!(
+            cov::Coverage::Hit,
+            parse_coverage(&serde_json::from_str("18446744073709551699").unwrap())
+                .expect("Unable to parse coverage")
+        );
+    }
+
+    #[test]
     fn parse_line_boolean_case() {
         let res = parse_line("[true, \"b\", [[0, true, null, null, null]]]")
             .expect("Unable to parse line");
@@ -461,7 +545,7 @@ null
             .expect_err("Line should have thrown an error");
     }
     #[test]
-    fn parse_coverage_sample_differant_fractions() {
+    fn parse_coverage_sample_different_fractions() {
         let actual_partial = parse_coverage(&serde_json::from_str("\"1/2\"").unwrap())
             .expect("should have parsed correctly");
         assert_eq!(

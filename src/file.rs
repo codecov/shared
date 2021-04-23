@@ -136,15 +136,9 @@ impl ReportFile {
                                     methods: 0,
                                 });
                             match sess.coverage {
-                                cov::Coverage::Hit => {
-                                    stat.hits += 1
-                                }
-                                cov::Coverage::Miss => {
-                                    stat.misses += 1
-                                }
-                                cov::Coverage::Partial(_) => {
-                                    stat.partials += 1
-                                }
+                                cov::Coverage::Hit => stat.hits += 1,
+                                cov::Coverage::Miss => stat.misses += 1,
+                                cov::Coverage::Partial(_) => stat.partials += 1,
                                 cov::Coverage::Ignore => {}
                             }
                         }
