@@ -3,7 +3,7 @@ from datetime import datetime
 from json import loads
 import binascii
 
-from shared.encryption import EncryptorWithAlreadyGeneratedKey
+from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
 from shared.config import get_config
 
 

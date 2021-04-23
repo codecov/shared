@@ -3,7 +3,7 @@ from base64 import b64encode
 import json
 
 from shared.license import parse_license, LicenseInformation, get_current_license
-from shared.encryption import EncryptorWithAlreadyGeneratedKey
+from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
 
 
 def test_sample_license_checking():

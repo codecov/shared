@@ -3,7 +3,7 @@ import numbers
 import binascii
 
 from voluptuous import Invalid
-from shared.encryption import EncryptorWithAlreadyGeneratedKey
+from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
 
 
 class CoverageRangeSchemaField(object):
