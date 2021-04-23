@@ -3,6 +3,7 @@ import logging
 from copy import deepcopy
 
 from yaml import safe_load as yaml_load
+from base64 import b64decode
 import collections
 
 
@@ -119,8 +120,23 @@ class ConfigHelper(object):
 
     def load_filename_from_path(self, *args):
         if args not in self.loaded_files:
-            with open(self.get(*args), "r") as _file:
-                self.loaded_files[args] = _file.read()
+            location = self.get(*args)
+            if isinstance(location, dict):
+                if location.get("source_type") == "base64env":
+                    self.loaded_files[args] = b64decode(location.get("value")).decode()
+                    return self.loaded_files[args]
+                else:
+                    assert location.get("source_type") == "filepath"
+                    location = location.get("value")
+            try:
+                with open(location, "r") as _file:
+                    self.loaded_files[args] = _file.read()
+            except FileNotFoundError:
+                log.exception(
+                    "Unable to read filepath for install YAML",
+                    extra=dict(file_location=location, path_args=list(args)),
+                )
+                raise
         return self.loaded_files[args]
 
 

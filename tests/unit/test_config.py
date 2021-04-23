@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from shared.config import ConfigHelper, get_config
 
 
@@ -420,3 +422,78 @@ class TestConfig(object):
         )
         this_config = ConfigHelper()
         assert this_config.yaml_content() == {}
+
+    def test_load_filename_from_path_base64(self, mocker):
+        mocker.patch.dict(os.environ, {}, clear=True)
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
+        this_config = ConfigHelper()
+        this_config.set_params(
+            {
+                "some": {
+                    "githubpem": {
+                        "source_type": "base64env",
+                        "value": "bW9ua2V5YmFuYW5hc29tZXRoaW5nZGFuY2U=",
+                    }
+                }
+            }
+        )
+        res = this_config.load_filename_from_path("some", "githubpem")
+        assert res == "monkeybananasomethingdance"
+
+    def test_load_filename_from_path_inexisting_file_path(self, mocker):
+        mocker.patch.dict(os.environ, {}, clear=True)
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
+        this_config = ConfigHelper()
+        this_config.set_params(
+            {
+                "some": {
+                    "githubpem": {
+                        "source_type": "filepath",
+                        "value": "inexistent/path/on/purpose.hahaha",
+                    }
+                }
+            }
+        )
+        with pytest.raises(FileNotFoundError):
+            this_config.load_filename_from_path("some", "githubpem")
+
+    def test_load_filename_from_path_existing_file_path(self, mocker):
+        mocker.patch.dict(os.environ, {}, clear=True)
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
+        mocker.patch(
+            "shared.config.open", mocker.mock_open(read_data="I believe I can fly")
+        )
+        this_config = ConfigHelper()
+        this_config.set_params(
+            {
+                "some": {
+                    "githubpem": {
+                        "source_type": "filepath",
+                        "value": "inexistent/path/on/purpose.hahaha",
+                    }
+                }
+            }
+        )
+        res = this_config.load_filename_from_path("some", "githubpem")
+        assert res == "I believe I can fly"
+
+    def test_load_filename_from_path_just_using_string_existing_file_path(self, mocker):
+        mocker.patch.dict(os.environ, {}, clear=True)
+        mocker.patch.object(
+            ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
+        )
+        mocked_open = mocker.mock_open(read_data="I believe I can fly")
+        mocker.patch("shared.config.open", mocked_open)
+        this_config = ConfigHelper()
+        this_config.set_params(
+            {"some": {"githubpem": "inexistent/path/on/purpose.hahaha"}}
+        )
+        res = this_config.load_filename_from_path("some", "githubpem")
+        assert res == "I believe I can fly"
+        mocked_open.assert_called_with("inexistent/path/on/purpose.hahaha", "r")
