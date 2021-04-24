@@ -1,3 +1,5 @@
+from fractions import Fraction
+
 import pytest
 from shared.utils.merge import (
     branch_type,
@@ -14,6 +16,7 @@ from shared.utils.merge import (
     merge_partial_line,
     partials_to_line,
     ReportLine,
+    LineType,
 )
 
 
@@ -264,6 +267,10 @@ def test_merge_line_session(s1, s2, res):
         ("0/2", 1),
         (str("1/2"), 2),
         ("2/2", 0),
+        (Fraction(1, 1), LineType.hit),
+        (Fraction(2, 2), LineType.hit),
+        (Fraction(1, 2), LineType.partial),
+        (Fraction(0, 2), LineType.miss),
     ],
 )
 def test_line_type(line, _line_type):

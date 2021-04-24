@@ -1,5 +1,5 @@
 from collections import defaultdict
-from itertools import groupby, starmap
+from itertools import groupby
 from fractions import Fraction
 from typing import Sequence
 from enum import IntEnum
@@ -296,6 +296,12 @@ def line_type(line):
         return LineType.skipped
     if line is False:
         return None
+    if isinstance(line, Fraction):
+        if line == 0:
+            return LineType.miss
+        if line >= 1:
+            return LineType.hit
+        return LineType.partial
     if line:
         return LineType.hit
     if line is not None:
