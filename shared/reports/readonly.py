@@ -141,7 +141,9 @@ class ReadOnlyReport(object):
 
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
-        metric_name = "cached" if self.inner_report._totals else "python"
+        metric_name = (
+            "cached" if self.inner_report.has_precalculated_totals() else "python"
+        )
         with metrics.timer(
             f"shared.reports.readonly._process_totals.{metric_name}"
         ) as metric_python:
