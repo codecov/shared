@@ -7,9 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Ability to load PEMS from base64 encoded envvars
 
 ### Changed
-- Upgraded RIBS for performance reasons
 
 ### Deprecated
 
@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Security
+
+## [v0.5.5]
+
+### Changed
+- Upgraded RIBS for performance reasons
 
 ## [v0.5.4]
 
