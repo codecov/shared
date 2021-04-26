@@ -118,6 +118,12 @@ class TestLayoutStructure(BaseTestCase):
         expected_result = "reach, diff, flags, files, footer"
         assert expected_result == schema.validate(result)
 
+    def test_empty_layout(self):
+        schema = LayoutStructure()
+        layout_input = ""
+        expected_result = ""
+        assert expected_result == schema.validate(layout_input)
+
     def test_simple_layout_with_number(self):
         schema = LayoutStructure()
         result = "reach, diff, flags, files:10, footer"
