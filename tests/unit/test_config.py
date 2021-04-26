@@ -461,39 +461,30 @@ class TestConfig(object):
         with pytest.raises(FileNotFoundError):
             this_config.load_filename_from_path("some", "githubpem")
 
-    def test_load_filename_from_path_existing_file_path(self, mocker):
+    def test_load_filename_from_path_existing_file_path(self, mocker, tmpdir):
+        p = tmpdir.mkdir("sub").join("hello.txt")
+        p.write("This is not a knife")
         mocker.patch.dict(os.environ, {}, clear=True)
         mocker.patch.object(
             ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
         )
-        mocker.patch(
-            "shared.config.open", mocker.mock_open(read_data="I believe I can fly")
-        )
         this_config = ConfigHelper()
         this_config.set_params(
-            {
-                "some": {
-                    "githubpem": {
-                        "source_type": "filepath",
-                        "value": "inexistent/path/on/purpose.hahaha",
-                    }
-                }
-            }
+            {"some": {"githubpem": {"source_type": "filepath", "value": str(p)}}}
         )
         res = this_config.load_filename_from_path("some", "githubpem")
-        assert res == "I believe I can fly"
+        assert res == "This is not a knife"
 
-    def test_load_filename_from_path_just_using_string_existing_file_path(self, mocker):
+    def test_load_filename_from_path_just_using_string_existing_file_path(
+        self, mocker, tmpdir
+    ):
         mocker.patch.dict(os.environ, {}, clear=True)
         mocker.patch.object(
             ConfigHelper, "load_yaml_file", side_effect=FileNotFoundError()
         )
-        mocked_open = mocker.mock_open(read_data="I believe I can fly")
-        mocker.patch("shared.config.open", mocked_open)
+        p = tmpdir.mkdir("sub").join("hello.txt")
+        p.write("This is not a knife. This is a knife")
         this_config = ConfigHelper()
-        this_config.set_params(
-            {"some": {"githubpem": "inexistent/path/on/purpose.hahaha"}}
-        )
+        this_config.set_params({"some": {"githubpem": str(p)}})
         res = this_config.load_filename_from_path("some", "githubpem")
-        assert res == "I believe I can fly"
-        mocked_open.assert_called_with("inexistent/path/on/purpose.hahaha", "r")
+        assert res == "This is not a knife. This is a knife"
