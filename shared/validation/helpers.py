@@ -333,7 +333,7 @@ class LayoutStructure(object):
 
     def validate(self, value):
         values = value.split(",")
-        actual_values = [x.strip().split(":")[0] for x in values]
+        actual_values = [x.strip().split(":")[0] for x in values if x != ""]
         if not set(actual_values) <= self.acceptable_objects:
             extra_objects = set(actual_values) - self.acceptable_objects
             extra_objects = ",".join(extra_objects)
