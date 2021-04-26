@@ -161,6 +161,9 @@ class FilteredReport(object):
         for f in self.files:
             yield self.get(f)
 
+    def has_precalculated_totals(self):
+        return self._totals is not None
+
     def _calculate_sessionids_to_include(self):
         if not self.flags:
             return set(self.report.sessions.keys())

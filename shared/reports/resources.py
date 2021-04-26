@@ -589,6 +589,9 @@ class Report(object):
         for f in self.files:
             yield self.get(f)
 
+    def has_precalculated_totals(self):
+        return self._totals is not None
+
     @property
     def network(self):
         if self._path_filter:
