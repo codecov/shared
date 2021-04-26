@@ -1,5 +1,6 @@
 import logging
-import re
+import random
+import os
 
 from voluptuous import (
     Schema,
@@ -24,6 +25,7 @@ from shared.validation.helpers import (
     CoverageRangeSchemaField,
     CustomFixPathSchemaField,
 )
+from shared.validation.experimental import validate_experimental
 
 log = logging.getLogger(__name__)
 
@@ -50,8 +52,74 @@ def validate_yaml(inputted_yaml_dict, show_secrets=False):
     if not isinstance(inputted_yaml_dict, dict):
         raise InvalidYamlException([], "Yaml needs to be a dict")
     pre_process_yaml(inputted_yaml_dict)
-    user_yaml_schema = get_schema(show_secrets)
+    try:
+        res, error = do_dict_validation(inputted_yaml_dict, show_secrets), None
+    except InvalidYamlException as ex:
+        res, error = None, ex
+    if random.random() < float(os.getenv("CERBERUS_VALIDATOR_RATE", "0.0")):
+        compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
+    if error is None:
+        return res
+    raise error
 
+
+def compare_to_new_style(inputted_yaml_dict, res, error, show_secrets) -> bool:
+    try:
+        res_experimental, error_experimental = (
+            validate_experimental(inputted_yaml_dict, show_secrets),
+            None,
+        )
+    except InvalidYamlException as ex:
+        res_experimental, error_experimental = None, ex
+    except Exception:
+        log.exception(
+            "New validator is crashing with no reason",
+            extra=dict(
+                user_input=inputted_yaml_dict, original_res=res, original_error=error
+            ),
+        )
+        return False
+    if error_experimental is None and error is not None:
+        log.warning(
+            "New validator passes when it should fail",
+            extra=dict(
+                user_input=inputted_yaml_dict,
+                original_res=res,
+                original_error=error,
+                new_res=res_experimental,
+                new_error=error_experimental,
+            ),
+        )
+        return False
+    if error_experimental is not None and error is None:
+        log.warning(
+            "New validator fails when it should pass",
+            extra=dict(
+                user_input=inputted_yaml_dict,
+                original_res=res,
+                original_error=error,
+                new_res=res_experimental,
+                new_error=error_experimental,
+            ),
+        )
+        return False
+    if error_experimental is None and error is None and res != res_experimental:
+        log.warning(
+            "New validator got different result than expected",
+            extra=dict(
+                user_input=inputted_yaml_dict,
+                original_res=res,
+                original_error=error,
+                new_res=res_experimental,
+                new_error=error_experimental,
+            ),
+        )
+        return False
+    return True
+
+
+def do_dict_validation(inputted_yaml_dict, show_secrets):
+    user_yaml_schema = get_schema(show_secrets)
     try:
         result = user_yaml_schema(inputted_yaml_dict)
         return post_process(result)
