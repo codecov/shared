@@ -11,6 +11,33 @@ from ribs import parse_report, SimpleAnalyzer, FilterAnalyzer
 log = logging.getLogger(__name__)
 
 
+class LazyRustReport(object):
+    def __init__(self, filename_mapping, chunks, session_mapping):
+        self._chunks = chunks
+        self._filename_mapping = filename_mapping
+        self._session_mapping = session_mapping
+        self._actual_report = None
+
+    def get_report(self):
+        if self._actual_report is None:
+            try:
+                with metrics.timer("shared.reports.readonly.from_chunks.rust") as timer:
+                    self._actual_report = parse_report(
+                        self._filename_mapping, self._chunks, self._session_mapping
+                    )
+                self._chunks = None  # Free the memory
+            except Exception:
+                log.warning("Could not parse rust report", exc_info=True)
+            RUST_TIMER_THRESHOLD = 2000
+            if timer.ms > RUST_TIMER_THRESHOLD:
+                log.info(
+                    "Parsing in rust took longer than %d ms",
+                    RUST_TIMER_THRESHOLD,
+                    extra=dict(timing_ms=timer.ms),
+                )
+        return self._actual_report
+
+
 class ReadOnlyReport(object):
     @classmethod
     def should_load_rust_version(cls):
@@ -40,20 +67,7 @@ class ReadOnlyReport(object):
         }
         rust_report = None
         if cls.should_load_rust_version():
-            try:
-                with metrics.timer("shared.reports.readonly.from_chunks.rust") as timer:
-                    rust_report = parse_report(
-                        filename_mapping, chunks, session_mapping
-                    )
-                RUST_TIMER_THRESHOLD = 2000
-                if timer.ms > RUST_TIMER_THRESHOLD:
-                    log.info(
-                        "Parsing in rust took longer than %d ms",
-                        RUST_TIMER_THRESHOLD,
-                        extra=dict(timing_ms=timer.ms),
-                    )
-            except Exception:
-                log.warning("Could not parse report", exc_info=True)
+            rust_report = LazyRustReport(filename_mapping, chunks, session_mapping)
         return cls(rust_analyzer, rust_report, inner_report, totals=totals)
 
     @classmethod
@@ -141,11 +155,10 @@ class ReadOnlyReport(object):
 
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
-        metric_name = (
-            "cached" if self.inner_report.has_precalculated_totals() else "python"
-        )
+        if self.inner_report.has_precalculated_totals():
+            return self.inner_report.totals
         with metrics.timer(
-            f"shared.reports.readonly._process_totals.{metric_name}"
+            f"shared.reports.readonly._process_totals.python"
         ) as metric_python:
             res = self.inner_report.totals
         try:
@@ -153,9 +166,10 @@ class ReadOnlyReport(object):
                 with metrics.timer(
                     "shared.reports.readonly._process_totals.rust"
                 ) as timer:
-                    rust_totals = self.rust_analyzer.get_totals(self.rust_report)
-                if metric_name == "python":
-                    self._log_rust_differences(metric_python.ms, timer.ms)
+                    rust_totals = self.rust_analyzer.get_totals(
+                        self.rust_report.get_report()
+                    )
+                self._log_rust_differences(metric_python.ms, timer.ms)
                 if (
                     rust_totals.lines != res.lines
                     or rust_totals.hits != res.hits
