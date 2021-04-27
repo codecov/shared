@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 
-from shared.reports.readonly import ReadOnlyReport, rustify_diff
+from shared.reports.readonly import ReadOnlyReport, rustify_diff, LazyRustReport
 from shared.reports.types import ReportTotals, ReportLine, LineSession
 from shared.reports.resources import ReportFile
 
@@ -51,6 +51,54 @@ def sample_rust_report(mocker):
     return ReadOnlyReport.from_chunks(
         chunks=chunks, files=files_dict, sessions=sessions_dict
     )
+
+
+class TestLazyRustReport(object):
+    def test_get_report(self):
+        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
+            chunks = f.read()
+        filename_mapping = {
+            "awesome/__init__.py": 2,
+            "tests/__init__.py": 0,
+            "tests/test_sample.py": 1,
+        }
+        session_mapping = {0: ["unit"]}
+        r = LazyRustReport(filename_mapping, chunks, session_mapping)
+        assert r is not None
+        assert r.get_report() is not None
+
+    def test_get_report_is_lazy_loaded(self, mocker):
+        mocker.patch(
+            "shared.reports.readonly.metrics.timer",
+            return_value=mocker.MagicMock(
+                ms=10000,
+                __enter__=mocker.MagicMock(return_value=mocker.MagicMock(ms=10000)),
+            ),
+        )
+        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
+            chunks = f.read()
+        filename_mapping = {
+            "awesome/__init__.py": 2,
+            "tests/__init__.py": 0,
+            "tests/test_sample.py": 1,
+        }
+        session_mapping = {0: ["unit"]}
+        r = LazyRustReport(filename_mapping, chunks, session_mapping)
+        assert r is not None
+        assert r.get_report() is not None
+
+    def test_get_report_took_too_long(self):
+        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
+            chunks = f.read()
+        filename_mapping = {
+            "awesome/__init__.py": 2,
+            "tests/__init__.py": 0,
+            "tests/test_sample.py": 1,
+        }
+        session_mapping = {0: ["unit"]}
+        r = LazyRustReport(filename_mapping, chunks, session_mapping)
+        assert r is not None
+        assert r.get_report() is not None
 
 
 class TestRustifyDiff(object):
@@ -320,6 +368,7 @@ class TestReadOnly(object):
 
     def test_filter_none(self, sample_rust_report):
         assert sample_rust_report.rust_report is not None
+        assert sample_rust_report.rust_report.get_report() is not None
         assert sample_rust_report.filter() is sample_rust_report
 
     def test_init_invalid_chunks(self, mocker):
@@ -374,7 +423,7 @@ class TestReadOnly(object):
         r = ReadOnlyReport.from_chunks(
             chunks=chunks, files=files_dict, sessions=sessions_dict
         )
-        assert r.rust_report is None
+        assert r.rust_report.get_report() is None
 
     def test_init_no_loading_rust(self, mocker):
         chunks = "\n".join(
