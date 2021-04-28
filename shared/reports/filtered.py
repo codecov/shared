@@ -252,7 +252,10 @@ class FilteredReport(object):
         only_session_id = list(self.session_ids_to_include)[0]
         only_session_to_use = self.report.sessions[only_session_id]
         if only_session_to_use is not None and only_session_to_use.time is not None:
-            return only_session_to_use.time > int(a)
+            return (
+                only_session_to_use.time > int(a)
+                and only_session_to_use.totals is not None
+            )
         return False
 
     @metrics.timer("shared.reports.filtered._process_totals")
@@ -287,6 +290,7 @@ class FilteredReport(object):
                                     if res is not None
                                     else None,
                                     session_time=only_session_to_use.time,
+                                    flags=self.flags,
                                 ),
                             )
                         else:

@@ -37,6 +37,9 @@ class LazyRustReport(object):
                 )
         return self._actual_report
 
+    def has_report_already_loaded(self):
+        return self._actual_report is not None
+
 
 class ReadOnlyReport(object):
     @classmethod
@@ -131,26 +134,51 @@ class ReadOnlyReport(object):
     def get(self, *args, **kwargs):
         return self.inner_report.get(*args, **kwargs)
 
-    def _log_rust_differences(self, metric_python_ms, metric_rust_ms):
+    def _log_rust_differences(
+        self, metric_python_ms, metric_rust_ms, rust_has_loaded_report
+    ):
+        prefix = (
+            "shared.reports.readonly._process_totals.first"
+            if not rust_has_loaded_report
+            else "shared.reports.readonly._process_totals"
+        )
         if metric_python_ms > 20 * metric_rust_ms:
-            metrics.incr("shared.reports.readonly._process_totals.twentyfold")
+            metrics.incr(f"{prefix}.twentyfold")
         elif metric_python_ms > 5 * metric_rust_ms:
-            metrics.incr("shared.reports.readonly._process_totals.fivefold")
+            metrics.incr(f"{prefix}.fivefold")
         elif metric_python_ms > 2 * metric_rust_ms:
-            metrics.incr("shared.reports.readonly._process_totals.twofold")
+            metrics.incr(f"{prefix}.twofold")
         elif metric_python_ms > metric_rust_ms:
-            metrics.incr("shared.reports.readonly._process_totals.better")
+            metrics.incr(f"{prefix}.better")
         else:
-            metrics.incr("shared.reports.readonly._process_totals.worse")
+            metrics.incr(f"{prefix}.worse")
             log.info(
                 "Rust was worse than python on the metrics calculation",
-                extra=dict(rust_timer=metric_rust_ms, python_timer=metric_python_ms,),
+                extra=dict(
+                    rust_timer=metric_rust_ms,
+                    python_timer=metric_python_ms,
+                    rust_has_loaded_report=rust_has_loaded_report,
+                ),
             )
         RUST_TIMER_THRESHOLD = 1000
         if metric_rust_ms > RUST_TIMER_THRESHOLD:
             log.info(
                 "Processing totals in rust took longer than %d ms",
                 RUST_TIMER_THRESHOLD,
+                extra=dict(
+                    first_load=rust_has_loaded_report,
+                    rust_timer=metric_rust_ms,
+                    python_timer=metric_python_ms,
+                ),
+            )
+        if metric_python_ms - metric_rust_ms > 2000:
+            log.info(
+                "Rust saved more than 2000 ms",
+                extra=dict(
+                    first_load=rust_has_loaded_report,
+                    rust_timer=metric_rust_ms,
+                    python_timer=metric_python_ms,
+                ),
             )
 
     @metrics.timer("shared.reports.readonly._process_totals")
@@ -163,13 +191,16 @@ class ReadOnlyReport(object):
             res = self.inner_report.totals
         try:
             if self.rust_report:
+                rust_has_loaded_report = self.rust_report.has_report_already_loaded()
                 with metrics.timer(
                     "shared.reports.readonly._process_totals.rust"
                 ) as timer:
                     rust_totals = self.rust_analyzer.get_totals(
                         self.rust_report.get_report()
                     )
-                self._log_rust_differences(metric_python.ms, timer.ms)
+                self._log_rust_differences(
+                    metric_python.ms, timer.ms, rust_has_loaded_report
+                )
                 if (
                     rust_totals.lines != res.lines
                     or rust_totals.hits != res.hits
@@ -177,6 +208,7 @@ class ReadOnlyReport(object):
                     or rust_totals.files != res.files
                     or rust_totals.partials != res.partials
                     or rust_totals.coverage != res.coverage
+                    or rust_totals.methods != res.methods
                 ):
                     log.warning(
                         "Got unexpected result from rust on totals calculation",
