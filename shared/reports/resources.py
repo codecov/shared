@@ -372,7 +372,14 @@ class ReportFile(object):
         elif not isinstance(other_file, ReportFile):
             raise TypeError("expecting type ReportFile got %s" % type(other_file))
 
-        if self.name.endswith(".rb") and self.totals.lines == self.totals.misses:
+        if (
+            self.name.endswith(".rb")
+            and self.totals.lines == self.totals.misses
+            and (
+                other_file.totals.lines != self.totals.lines
+                or other_file.totals.misses != self.totals.misses
+            )
+        ):
             # previous file was boil-the-ocean
             # OR previous file had END issue
             self._lines = other_file._lines
@@ -384,6 +391,10 @@ class ReportFile(object):
         elif (
             self.name.endswith(".rb")
             and other_file.totals.lines == other_file.totals.misses
+            and (
+                other_file.totals.lines != self.totals.lines
+                or other_file.totals.misses != self.totals.misses
+            )
         ):
             # skip boil-the-ocean files
             # OR skip 0% coverage files because END issue
