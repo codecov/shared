@@ -686,29 +686,39 @@ class TestReadOnly(object):
 
     def test_log_rust_differences(self, sample_rust_report, mocker):
         mock_metrics = mocker.patch("shared.reports.readonly.metrics.incr")
-        sample_rust_report._log_rust_differences(100, 100)
+        sample_rust_report._log_rust_differences(100, 100, True)
         mock_metrics.assert_called_with("shared.reports.readonly._process_totals.worse")
         mock_metrics.reset_mock()
-        sample_rust_report._log_rust_differences(10000, 10000)
+        sample_rust_report._log_rust_differences(10000, 10000, True)
         mock_metrics.assert_called_with("shared.reports.readonly._process_totals.worse")
         mock_metrics.reset_mock()
-        sample_rust_report._log_rust_differences(100, 90)
+        sample_rust_report._log_rust_differences(100, 90, True)
         mock_metrics.assert_called_with(
             "shared.reports.readonly._process_totals.better"
         )
         mock_metrics.reset_mock()
-        sample_rust_report._log_rust_differences(100, 40)
+        sample_rust_report._log_rust_differences(100, 40, True)
         mock_metrics.assert_called_with(
             "shared.reports.readonly._process_totals.twofold"
         )
         mock_metrics.reset_mock()
-        sample_rust_report._log_rust_differences(100, 10)
+        sample_rust_report._log_rust_differences(100, 10, True)
         mock_metrics.assert_called_with(
             "shared.reports.readonly._process_totals.fivefold"
         )
         mock_metrics.reset_mock()
-        sample_rust_report._log_rust_differences(100, 3)
+        sample_rust_report._log_rust_differences(100, 3, True)
         mock_metrics.assert_called_with(
             "shared.reports.readonly._process_totals.twentyfold"
+        )
+        mock_metrics.reset_mock()
+        sample_rust_report._log_rust_differences(100, 3, False)
+        mock_metrics.assert_called_with(
+            "shared.reports.readonly._process_totals.first.twentyfold"
+        )
+        mock_metrics.reset_mock()
+        sample_rust_report._log_rust_differences(10000, 5000, False)
+        mock_metrics.assert_called_with(
+            "shared.reports.readonly._process_totals.first.better"
         )
         mock_metrics.reset_mock()
