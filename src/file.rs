@@ -20,7 +20,7 @@ pub struct FileTotals {
     pub complexity: i32,
     pub complexity_total: i32,
     #[pyo3(get)]
-    methods: i32,
+    pub methods: i32,
 }
 
 #[pymethods]

@@ -1,4 +1,4 @@
-from ribs import parse_report
+from ribs import parse_report, SimpleAnalyzer
 from time import time
 import random
 import string
@@ -28,3 +28,5 @@ if __name__ == "__main__":
     print("Mean", statistics.mean(took_array))
     print("Stdev", statistics.stdev(took_array))
     print("Quantiles", statistics.quantiles(took_array))
+    s = SimpleAnalyzer()
+    print(s.get_totals(res).asdict())
