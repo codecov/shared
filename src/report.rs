@@ -27,7 +27,7 @@ pub struct ReportTotals {
     pub complexity: i32,
     pub complexity_total: i32,
     #[pyo3(get)]
-    methods: i32,
+    pub methods: i32,
 }
 
 impl ReportTotals {
@@ -56,9 +56,9 @@ impl ReportTotals {
             self.misses += other.misses;
             self.partials += other.partials;
             self.branches += other.branches;
-            self.sessions += other.sessions;
             self.complexity += other.complexity;
             self.complexity_total += other.complexity_total;
+            self.methods += other.methods;
         }
     }
 }
@@ -177,6 +177,44 @@ impl Report {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn adds_up_right() {
+        let mut totals = ReportTotals {
+            files: 0,
+            lines: 2,
+            hits: 2,
+            misses: 0,
+            partials: 0,
+            branches: 9,
+            sessions: 0,
+            complexity: 0,
+            complexity_total: 0,
+            methods: 2,
+        };
+        let f = file::FileTotals {
+            hits: 2,
+            misses: 3,
+            partials: 5,
+            branches: 7,
+            sessions: 12,
+            complexity: 19,
+            complexity_total: 31,
+            methods: 50,
+        };
+        totals.add_up(&f);
+        assert_eq!(totals.files, 1);
+        assert_eq!(totals.lines, 12);
+        assert_eq!(totals.hits, 4);
+        assert_eq!(totals.misses, 3);
+        assert_eq!(totals.partials, 5);
+        assert_eq!(totals.branches, 16);
+        assert_eq!(totals.sessions, 0);
+        assert_eq!(totals.complexity, 19);
+        assert_eq!(totals.complexity_total, 31);
+        assert_eq!(totals.methods, 52);
+        assert_eq!(totals.get_coverage().unwrap(), Some("33.33333".to_string()));
+    }
 
     #[test]
     fn rounds_right() {
