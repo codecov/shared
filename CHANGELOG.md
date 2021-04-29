@@ -7,9 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- Ability to load PEMS from base64 encoded envvars
 
 ### Changed
+- [internal] Upgraded RIBS
 
 ### Deprecated
 
@@ -18,6 +18,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Security
+
+## [v0.5.10]
+
+### Changed
+- Limited the situations where the ruby-related line deleting happened
+
+## [v0.5.9]
+
+### Changed
+- [internal] Enabled Lazy loading of rust reports
+
+## [v0.5.8]
+
+### Changed
+- [internal] Upgraded RIBS
+
+### Added
+- Ability to load PEMS from base64 encoded envvars
+
+### Fixed
+- Allowed empty layout values
+- Fixed corner case in Node where some partials could have been counted as hits
+
+## [v0.5.7]
+
+### Changed
+- [internal] Upgraded RIBS
+
+## [v0.5.6]
+
+### Changed
+- [internal] Changed logic for single-session totals calculation
 
 ## [v0.5.5]
 
