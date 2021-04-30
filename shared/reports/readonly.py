@@ -52,6 +52,9 @@ class ReadOnlyReport(object):
         self.inner_report = inner_report
         self._totals = totals
         self._flags = None
+        self._rust_logging_threshold = int(
+            os.getenv("RUST_IMPROVEMENT_LOGGING_THRESHOLD", "1500")
+        )
 
     @classmethod
     @metrics.timer("shared.reports.readonly.from_chunks")
@@ -171,9 +174,10 @@ class ReadOnlyReport(object):
                     python_timer=metric_python_ms,
                 ),
             )
-        if metric_python_ms - metric_rust_ms > 2000:
+        if metric_python_ms - metric_rust_ms > self._rust_logging_threshold:
             log.info(
-                "Rust saved more than 2000 ms",
+                "Rust saved more than %d ms",
+                self._rust_logging_threshold,
                 extra=dict(
                     first_load=rust_has_loaded_report,
                     rust_timer=metric_rust_ms,
