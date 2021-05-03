@@ -41,3 +41,19 @@ def test_standard_encryptor_three_parts():
 def test_standard_encryptor_no_iv():
     se = StandardEncryptor("part1")
     assert se.decode(se.encode("mykey123456")) == "mykey123456"
+
+
+def test_decrypt_token():
+    value = "jd3ewr8cndsbc-0wr$"
+    se = StandardEncryptor("aruba", "jamaica")
+    encoded = se.encode(value)
+    res = se.decrypt_token(encoded)
+    assert res == {"key": "jd3ewr8cndsbc-0wr$", "secret": None}
+
+
+def test_decrypt_token_key_secret_pair():
+    value = "jd3ewr8cnd:sbc-0wr$"
+    se = StandardEncryptor("aruba", "jamaica")
+    encoded = se.encode(value)
+    res = se.decrypt_token(encoded)
+    assert res == {"key": "jd3ewr8cnd", "secret": "sbc-0wr$"}
