@@ -17,6 +17,12 @@ class LazyRustReport(object):
         self._filename_mapping = filename_mapping
         self._session_mapping = session_mapping
         self._actual_report = None
+        self._rust_logging_threshold = int(
+            os.getenv("RUST_IMPROVEMENT_LOGGING_THRESHOLD", "1500")
+        )
+        self._rust_timer_so_far = 0.0
+        self._python_timer_so_far = 0.0
+        self._number_times_rust_used = 0
 
     def get_report(self):
         if self._actual_report is None:
@@ -40,6 +46,60 @@ class LazyRustReport(object):
     def has_report_already_loaded(self):
         return self._actual_report is not None
 
+    def _log_rust_differences(
+        self, metric_python_ms, metric_rust_ms, rust_has_loaded_report
+    ):
+        prefix = (
+            "shared.reports.readonly._process_totals.first"
+            if not rust_has_loaded_report
+            else "shared.reports.readonly._process_totals"
+        )
+        if metric_python_ms > 20 * metric_rust_ms:
+            metrics.incr(f"{prefix}.twentyfold")
+        elif metric_python_ms > 5 * metric_rust_ms:
+            metrics.incr(f"{prefix}.fivefold")
+        elif metric_python_ms > 2 * metric_rust_ms:
+            metrics.incr(f"{prefix}.twofold")
+        elif metric_python_ms > metric_rust_ms:
+            metrics.incr(f"{prefix}.better")
+        else:
+            metrics.incr(f"{prefix}.worse")
+        metrics.incr(
+            "shared.reports.readonly.rust_improvement",
+            metric_python_ms - metric_rust_ms,
+        )
+        self._rust_timer_so_far += metric_rust_ms
+        self._python_timer_so_far += metric_python_ms
+        self._number_times_rust_used += 1
+        RUST_TIMER_THRESHOLD = 1000
+        if metric_rust_ms > RUST_TIMER_THRESHOLD:
+            log.info(
+                "Processing totals in rust took longer than %d ms",
+                RUST_TIMER_THRESHOLD,
+                extra=dict(
+                    first_load=not rust_has_loaded_report,
+                    rust_timer=metric_rust_ms,
+                    python_timer=metric_python_ms,
+                ),
+            )
+        if (
+            self._python_timer_so_far - self._rust_timer_so_far
+            > self._rust_logging_threshold
+            or self._python_timer_so_far < self._rust_timer_so_far
+        ):
+            log.info(
+                "Rust saved more than %d ms or <0",
+                self._rust_logging_threshold,
+                extra=dict(
+                    rust_timer=self._rust_timer_so_far,
+                    python_timer=self._python_timer_so_far,
+                    number_calculations=self._number_times_rust_used,
+                ),
+            )
+            self._rust_timer_so_far = 0.0
+            self._python_timer_so_far = 0.0
+            self._number_times_rust_used = 0
+
 
 class ReadOnlyReport(object):
     @classmethod
@@ -52,12 +112,6 @@ class ReadOnlyReport(object):
         self.inner_report = inner_report
         self._totals = totals
         self._flags = None
-        self._rust_logging_threshold = int(
-            os.getenv("RUST_IMPROVEMENT_LOGGING_THRESHOLD", "1500")
-        )
-        self._rust_timer_so_far = 0.0
-        self._python_timer_so_far = 0.0
-        self._number_times_rust_used = 0
 
     @classmethod
     @metrics.timer("shared.reports.readonly.from_chunks")
@@ -140,60 +194,6 @@ class ReadOnlyReport(object):
     def get(self, *args, **kwargs):
         return self.inner_report.get(*args, **kwargs)
 
-    def _log_rust_differences(
-        self, metric_python_ms, metric_rust_ms, rust_has_loaded_report
-    ):
-        prefix = (
-            "shared.reports.readonly._process_totals.first"
-            if not rust_has_loaded_report
-            else "shared.reports.readonly._process_totals"
-        )
-        if metric_python_ms > 20 * metric_rust_ms:
-            metrics.incr(f"{prefix}.twentyfold")
-        elif metric_python_ms > 5 * metric_rust_ms:
-            metrics.incr(f"{prefix}.fivefold")
-        elif metric_python_ms > 2 * metric_rust_ms:
-            metrics.incr(f"{prefix}.twofold")
-        elif metric_python_ms > metric_rust_ms:
-            metrics.incr(f"{prefix}.better")
-        else:
-            metrics.incr(f"{prefix}.worse")
-        metrics.incr(
-            "shared.reports.readonly.rust_improvement",
-            metric_python_ms - metric_rust_ms,
-        )
-        self._rust_timer_so_far += metric_rust_ms
-        self._python_timer_so_far += metric_python_ms
-        self._number_times_rust_used += 1
-        RUST_TIMER_THRESHOLD = 1000
-        if metric_rust_ms > RUST_TIMER_THRESHOLD:
-            log.info(
-                "Processing totals in rust took longer than %d ms",
-                RUST_TIMER_THRESHOLD,
-                extra=dict(
-                    first_load=not rust_has_loaded_report,
-                    rust_timer=metric_rust_ms,
-                    python_timer=metric_python_ms,
-                ),
-            )
-        if (
-            self._python_timer_so_far - self._rust_timer_so_far
-            > self._rust_logging_threshold
-            or self._python_timer_so_far < self._rust_timer_so_far
-        ):
-            log.info(
-                "Rust saved more than %d ms or <0",
-                self._rust_logging_threshold,
-                extra=dict(
-                    rust_timer=self._rust_timer_so_far,
-                    python_timer=self._python_timer_so_far,
-                    number_calculations=self._number_times_rust_used,
-                ),
-            )
-            self._rust_timer_so_far = 0.0
-            self._python_timer_so_far = 0.0
-            self._number_times_rust_used = 0
-
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
         if self.inner_report.has_precalculated_totals():
@@ -211,7 +211,7 @@ class ReadOnlyReport(object):
                     rust_totals = self.rust_analyzer.get_totals(
                         self.rust_report.get_report()
                     )
-                self._log_rust_differences(
+                self.rust_report._log_rust_differences(
                     metric_python.ms, timer.ms, rust_has_loaded_report
                 )
                 if (
