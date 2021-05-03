@@ -55,6 +55,9 @@ class ReadOnlyReport(object):
         self._rust_logging_threshold = int(
             os.getenv("RUST_IMPROVEMENT_LOGGING_THRESHOLD", "1500")
         )
+        self._rust_timer_so_far = 0.0
+        self._python_timer_so_far = 0.0
+        self._number_times_rust_used = 0
 
     @classmethod
     @metrics.timer("shared.reports.readonly.from_chunks")
@@ -163,27 +166,41 @@ class ReadOnlyReport(object):
                     rust_has_loaded_report=rust_has_loaded_report,
                 ),
             )
+        metrics.incr(
+            "shared.reports.readonly.rust_improvement",
+            metric_python_ms - metric_rust_ms,
+        )
+        self._rust_timer_so_far += metric_rust_ms
+        self._python_timer_so_far += metric_python_ms
+        self._number_times_rust_used += 1
         RUST_TIMER_THRESHOLD = 1000
         if metric_rust_ms > RUST_TIMER_THRESHOLD:
             log.info(
                 "Processing totals in rust took longer than %d ms",
                 RUST_TIMER_THRESHOLD,
                 extra=dict(
-                    first_load=rust_has_loaded_report,
+                    first_load=not rust_has_loaded_report,
                     rust_timer=metric_rust_ms,
                     python_timer=metric_python_ms,
                 ),
             )
-        if metric_python_ms - metric_rust_ms > self._rust_logging_threshold:
+        if (
+            self._python_timer_so_far - self._rust_timer_so_far
+            > self._rust_logging_threshold
+        ):
             log.info(
-                "Rust saved more than %d ms",
+                "Rust saved more than %d ms so far",
                 self._rust_logging_threshold,
                 extra=dict(
                     first_load=rust_has_loaded_report,
-                    rust_timer=metric_rust_ms,
-                    python_timer=metric_python_ms,
+                    rust_timer=self._rust_timer_so_far,
+                    python_timer=self._python_timer_so_far,
+                    number_calculations=self._number_times_rust_used,
                 ),
             )
+            self._rust_timer_so_far = 0.0
+            self._python_timer_so_far = 0.0
+            self._number_times_rust_used = 0
 
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
