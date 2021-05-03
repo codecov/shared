@@ -158,14 +158,6 @@ class ReadOnlyReport(object):
             metrics.incr(f"{prefix}.better")
         else:
             metrics.incr(f"{prefix}.worse")
-            log.info(
-                "Rust was worse than python on the metrics calculation",
-                extra=dict(
-                    rust_timer=metric_rust_ms,
-                    python_timer=metric_python_ms,
-                    rust_has_loaded_report=rust_has_loaded_report,
-                ),
-            )
         metrics.incr(
             "shared.reports.readonly.rust_improvement",
             metric_python_ms - metric_rust_ms,
@@ -187,12 +179,12 @@ class ReadOnlyReport(object):
         if (
             self._python_timer_so_far - self._rust_timer_so_far
             > self._rust_logging_threshold
+            or self._python_timer_so_far < self._rust_timer_so_far
         ):
             log.info(
-                "Rust saved more than %d ms so far",
+                "Rust saved more than %d ms or <0",
                 self._rust_logging_threshold,
                 extra=dict(
-                    first_load=rust_has_loaded_report,
                     rust_timer=self._rust_timer_so_far,
                     python_timer=self._python_timer_so_far,
                     number_calculations=self._number_times_rust_used,
