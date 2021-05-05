@@ -23,8 +23,10 @@ pub struct ReportTotals {
     pub partials: i32,
     #[pyo3(get)]
     pub branches: i32,
+    #[pyo3(get)]
     pub sessions: i32,
     pub complexity: i32,
+    #[pyo3(get)]
     pub complexity_total: i32,
     #[pyo3(get)]
     methods: i32,
