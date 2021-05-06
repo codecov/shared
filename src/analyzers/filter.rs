@@ -29,9 +29,11 @@ impl FilterAnalyzer {
             Some(actual_flags) => Some(report.get_sessions_from_flags(&actual_flags)),
             None => None,
         };
+        let mut session_count = 0;
         let mut initial = report::ReportTotals::new();
         match &sessions {
             Some(sess) => {
+                session_count = sess.len() as i32;
                 let filtered_totals: Vec<file::FileTotals> = report
                     .report_files
                     .iter()
@@ -54,7 +56,7 @@ impl FilterAnalyzer {
                 }
             }
         };
-
+        initial.sessions = session_count;
         return Ok(initial);
     }
 
@@ -234,6 +236,7 @@ mod tests {
         assert_eq!(unit_res.hits, 2);
         assert_eq!(unit_res.misses, 0);
         assert_eq!(unit_res.partials, 0);
+        assert_eq!(unit_res.sessions, 1);
         let analyzer_integration = FilterAnalyzer {
             files: Some(vec!["file1.go".to_string()].into_iter().collect()),
             flags: Some(vec!["integration".to_string()]),
@@ -244,5 +247,28 @@ mod tests {
         assert_eq!(integration_res.hits, 0);
         assert_eq!(integration_res.misses, 0);
         assert_eq!(integration_res.partials, 1);
+        assert_eq!(integration_res.sessions, 1);
+        let analyzer_unit_and_integration = FilterAnalyzer {
+            files: Some(vec!["file1.go".to_string()].into_iter().collect()),
+            flags: Some(vec!["integration".to_string(), "unit".to_string()]),
+        };
+        let integration_and_unit_res = analyzer_unit_and_integration.get_totals(&report).unwrap();
+        assert_eq!(integration_and_unit_res.files, 1);
+        assert_eq!(integration_and_unit_res.lines, 2);
+        assert_eq!(integration_and_unit_res.hits, 2);
+        assert_eq!(integration_and_unit_res.misses, 0);
+        assert_eq!(integration_and_unit_res.partials, 0);
+        assert_eq!(integration_and_unit_res.sessions, 2);
+        let analyzer_apple_and_banana = FilterAnalyzer {
+            files: Some(vec!["file1.go".to_string()].into_iter().collect()),
+            flags: Some(vec!["banana".to_string(), "apple".to_string()]),
+        };
+        let apple_and_banana_res = analyzer_apple_and_banana.get_totals(&report).unwrap();
+        assert_eq!(apple_and_banana_res.files, 0);
+        assert_eq!(apple_and_banana_res.lines, 0);
+        assert_eq!(apple_and_banana_res.hits, 0);
+        assert_eq!(apple_and_banana_res.misses, 0);
+        assert_eq!(apple_and_banana_res.partials, 0);
+        assert_eq!(apple_and_banana_res.sessions, 0);
     }
 }
