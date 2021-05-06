@@ -34,6 +34,6 @@ setup(
         "voluptuous>=0.11.7",
         "httpx>=0.16.0",
         "oauthlib",
-        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.13#egg=ribs",
+        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.14#egg=ribs",
     ],
 )

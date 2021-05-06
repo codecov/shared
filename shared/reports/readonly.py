@@ -2,7 +2,7 @@ import logging
 import random
 import os
 
-from shared.reports.resources import Report
+from shared.reports.resources import Report, ReportTotals
 from shared.helpers.flag import Flag
 from shared.utils.match import match
 from shared.metrics import metrics
@@ -26,79 +26,11 @@ class LazyRustReport(object):
 
     def get_report(self):
         if self._actual_report is None:
-            try:
-                with metrics.timer("shared.reports.readonly.from_chunks.rust") as timer:
-                    self._actual_report = parse_report(
-                        self._filename_mapping, self._chunks, self._session_mapping
-                    )
-                self._chunks = None  # Free the memory
-            except Exception:
-                log.warning("Could not parse rust report", exc_info=True)
-            RUST_TIMER_THRESHOLD = 2000
-            if timer.ms > RUST_TIMER_THRESHOLD:
-                log.info(
-                    "Parsing in rust took longer than %d ms",
-                    RUST_TIMER_THRESHOLD,
-                    extra=dict(timing_ms=timer.ms),
-                )
+            self._actual_report = parse_report(
+                self._filename_mapping, self._chunks, self._session_mapping
+            )
+            self._chunks = None  # Free the memory
         return self._actual_report
-
-    def has_report_already_loaded(self):
-        return self._actual_report is not None
-
-    def _log_rust_differences(
-        self, metric_python_ms, metric_rust_ms, rust_has_loaded_report
-    ):
-        prefix = (
-            "shared.reports.readonly._process_totals.first"
-            if not rust_has_loaded_report
-            else "shared.reports.readonly._process_totals"
-        )
-        if metric_python_ms > 20 * metric_rust_ms:
-            metrics.incr(f"{prefix}.twentyfold")
-        elif metric_python_ms > 5 * metric_rust_ms:
-            metrics.incr(f"{prefix}.fivefold")
-        elif metric_python_ms > 2 * metric_rust_ms:
-            metrics.incr(f"{prefix}.twofold")
-        elif metric_python_ms > metric_rust_ms:
-            metrics.incr(f"{prefix}.better")
-        else:
-            metrics.incr(f"{prefix}.worse")
-        metrics.incr(
-            "shared.reports.readonly.rust_improvement",
-            metric_python_ms - metric_rust_ms,
-        )
-        self._rust_timer_so_far += metric_rust_ms
-        self._python_timer_so_far += metric_python_ms
-        self._number_times_rust_used += 1
-        RUST_TIMER_THRESHOLD = 1000
-        if metric_rust_ms > RUST_TIMER_THRESHOLD:
-            log.info(
-                "Processing totals in rust took longer than %d ms",
-                RUST_TIMER_THRESHOLD,
-                extra=dict(
-                    first_load=not rust_has_loaded_report,
-                    rust_timer=metric_rust_ms,
-                    python_timer=metric_python_ms,
-                ),
-            )
-        if (
-            self._python_timer_so_far - self._rust_timer_so_far
-            > self._rust_logging_threshold
-            or self._python_timer_so_far < self._rust_timer_so_far
-        ):
-            log.info(
-                "Rust saved more than %d ms or <0",
-                self._rust_logging_threshold,
-                extra=dict(
-                    rust_timer=self._rust_timer_so_far,
-                    python_timer=self._python_timer_so_far,
-                    number_calculations=self._number_times_rust_used,
-                ),
-            )
-            self._rust_timer_so_far = 0.0
-            self._python_timer_so_far = 0.0
-            self._number_times_rust_used = 0
 
 
 class ReadOnlyReport(object):
@@ -181,7 +113,7 @@ class ReadOnlyReport(object):
             sid: (session.flags or [])
             for sid, session in self.inner_report.sessions.items()
         }
-        self.rust_report = parse_report(
+        self.rust_report = LazyRustReport(
             filename_mapping, self.inner_report.to_archive(), session_mapping
         )
         self._totals = None
@@ -198,40 +130,24 @@ class ReadOnlyReport(object):
     def _process_totals(self):
         if self.inner_report.has_precalculated_totals():
             return self.inner_report.totals
-        with metrics.timer(
-            f"shared.reports.readonly._process_totals.python"
-        ) as metric_python:
-            res = self.inner_report.totals
-        try:
-            if self.rust_report:
-                rust_has_loaded_report = self.rust_report.has_report_already_loaded()
-                with metrics.timer(
-                    "shared.reports.readonly._process_totals.rust"
-                ) as timer:
-                    rust_totals = self.rust_analyzer.get_totals(
-                        self.rust_report.get_report()
-                    )
-                self.rust_report._log_rust_differences(
-                    metric_python.ms, timer.ms, rust_has_loaded_report
-                )
-                if (
-                    rust_totals.lines != res.lines
-                    or rust_totals.hits != res.hits
-                    or rust_totals.misses != res.misses
-                    or rust_totals.files != res.files
-                    or rust_totals.partials != res.partials
-                    or rust_totals.coverage != res.coverage
-                    or rust_totals.methods != res.methods
-                ):
-                    log.warning(
-                        "Got unexpected result from rust on totals calculation",
-                        extra=dict(
-                            totals=res.asdict(), rust_totals=rust_totals.asdict(),
-                        ),
-                    )
-        except Exception:
-            log.warning("Error while calculating rust totals", exc_info=True)
-        return res
+        if self.rust_report:
+            res = self.rust_analyzer.get_totals(self.rust_report.get_report())
+            return ReportTotals(
+                files=res.files,
+                lines=res.lines,
+                hits=res.hits,
+                misses=res.misses,
+                partials=res.partials,
+                coverage=res.coverage,
+                branches=res.branches,
+                methods=res.methods,
+                messages=0,
+                sessions=res.sessions,
+                complexity=res.complexity,
+                complexity_total=res.complexity_total,
+                diff=0,
+            )
+        return self.inner_report.totals
 
     @property
     def totals(self):
