@@ -371,60 +371,6 @@ class TestReadOnly(object):
         assert sample_rust_report.rust_report.get_report() is not None
         assert sample_rust_report.filter() is sample_rust_report
 
-    def test_init_invalid_chunks(self, mocker):
-        chunks = "\n".join(
-            [
-                "{}",
-                "[true, true, [[true, 1], [1, 0]]]",
-                "",
-                "",
-                "[1, null, [[0, 1], [1, 0]]]",
-                "[0, null, [[0, 0], [1, 0]]]",
-            ]
-        )
-        files_dict = {
-            "awesome/__init__.py": [
-                2,
-                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
-                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
-            ],
-            "tests/__init__.py": [
-                0,
-                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
-                None,
-            ],
-            "tests/test_sample.py": [
-                1,
-                [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
-                None,
-            ],
-        }
-        sessions_dict = {
-            "0": {
-                "N": None,
-                "a": "v4/raw/2019-01-10/4434BC2A2EC4FCA57F77B473D83F928C/abf6d4df662c47e32460020ab14abf9303581429/9ccc55a1-8b41-4bb1-a946-ee7a33a7fb56.txt",
-                "c": None,
-                "d": 1547084427,
-                "e": None,
-                "f": ["unit"],
-                "j": None,
-                "n": None,
-                "p": None,
-                "t": [3, 20, 17, 3, 0, "85.00000", 0, 0, 0, 0, 0, 0, 0],
-                "": None,
-            }
-        }
-        mocker.patch.object(
-            ReadOnlyReport, "should_load_rust_version", return_value=True
-        )
-        r = ReadOnlyReport.from_chunks(
-            chunks=chunks, files=files_dict, sessions=sessions_dict
-        )
-        assert r.rust_report.get_report() is None
-
     def test_init_no_loading_rust(self, mocker):
         chunks = "\n".join(
             [
@@ -639,21 +585,13 @@ class TestReadOnly(object):
             diff=0,
         )
 
-    def test_failed_totals_calculation(self, mocker, sample_report):
-        rust_analyzer = mocker.MagicMock(
-            get_totals=mocker.MagicMock(side_effect=Exception())
-        )
-        rust_report = mocker.MagicMock()
-        r = ReadOnlyReport(rust_analyzer, rust_report, sample_report)
-        assert r.totals == sample_report.totals
-
     def test_differing_totals_calculation(self, mocker, sample_report):
         rust_analyzer = mocker.MagicMock(
-            get_totals=mocker.MagicMock(return_value=ReportTotals())
+            get_totals=mocker.MagicMock(return_value=ReportTotals(1, 999))
         )
         rust_report = mocker.MagicMock()
         r = ReadOnlyReport(rust_analyzer, rust_report, sample_report)
-        assert r.totals == sample_report.totals
+        assert r.totals == ReportTotals(1, 999)
 
     def test_differing_file_count_calculation(self, mocker, sample_report):
         rust_analyzer = mocker.MagicMock(
@@ -677,71 +615,65 @@ class TestReadOnly(object):
         )
         rust_report = mocker.MagicMock()
         r = ReadOnlyReport(rust_analyzer, rust_report, sample_report)
-        assert r.totals == sample_report.totals
+        assert r.totals == ReportTotals(
+            files=300,
+            lines=9,
+            hits=4,
+            misses=1,
+            partials=4,
+            coverage="44.44444",
+            branches=3,
+            methods=0,
+            messages=0,
+            sessions=4,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
 
     def test_already_done_calculation(self, mocker, sample_rust_report):
         k = mocker.MagicMock()
         sample_rust_report._totals = k
         assert sample_rust_report.totals is k
 
-    def test_log_rust_differences(self, sample_rust_report, mocker):
-        mock_metrics = mocker.patch("shared.reports.readonly.metrics.incr")
-        sample_rust_report.rust_report._log_rust_differences(100, 100, True)
-        mock_metrics.assert_any_call("shared.reports.readonly._process_totals.worse")
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(10000, 10000, True)
-        mock_metrics.assert_any_call("shared.reports.readonly._process_totals.worse")
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(100, 90, True)
-        mock_metrics.assert_any_call("shared.reports.readonly._process_totals.better")
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(100, 40, True)
-        mock_metrics.assert_any_call("shared.reports.readonly._process_totals.twofold")
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(100, 10, True)
-        mock_metrics.assert_any_call("shared.reports.readonly._process_totals.fivefold")
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(100, 3, True)
-        mock_metrics.assert_any_call(
-            "shared.reports.readonly._process_totals.twentyfold"
+    def test_inner_report_already_precalculated(self, mocker):
+        inner_totals = mocker.MagicMock()
+        rust_totals = mocker.MagicMock()
+        rust_analyzer, rust_report = (
+            mocker.MagicMock(get_totals=mocker.MagicMock(return_value=rust_totals)),
+            mocker.MagicMock(),
         )
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(100, 3, False)
-        mock_metrics.assert_any_call(
-            "shared.reports.readonly._process_totals.first.twentyfold"
+        inner_report = mocker.MagicMock(
+            has_precalculated_totals=mocker.MagicMock(return_value=True),
+            totals=inner_totals,
         )
-        mock_metrics.reset_mock()
-        sample_rust_report.rust_report._log_rust_differences(10000, 5000, False)
-        mock_metrics.assert_any_call(
-            "shared.reports.readonly._process_totals.first.better"
+        report = ReadOnlyReport(rust_analyzer, rust_report, inner_report)
+        assert report.totals is inner_totals
+
+    def test_inner_report_not_precalculated(self, mocker):
+        inner_totals = mocker.MagicMock()
+        rust_totals = mocker.MagicMock()
+        rust_analyzer, rust_report = (
+            mocker.MagicMock(get_totals=mocker.MagicMock(return_value=rust_totals)),
+            mocker.MagicMock(),
         )
-        mock_metrics.assert_called_with(
-            "shared.reports.readonly.rust_improvement", 5000
+        inner_report = mocker.MagicMock(
+            has_precalculated_totals=mocker.MagicMock(return_value=False),
+            totals=inner_totals,
         )
-        mock_metrics.reset_mock()
-        assert sample_rust_report.rust_report._rust_timer_so_far == 0.0
-        assert sample_rust_report.rust_report._python_timer_so_far == 0.0
-        assert sample_rust_report.rust_report._number_times_rust_used == 0.0
-        sample_rust_report.rust_report._log_rust_differences(20, 10, False)
-        assert sample_rust_report.rust_report._rust_timer_so_far == 10.0
-        assert sample_rust_report.rust_report._python_timer_so_far == 20.0
-        assert sample_rust_report.rust_report._number_times_rust_used == 1
-        sample_rust_report.filter(flags=["banana"]).rust_report._log_rust_differences(
-            1000, 1000, False
-        )
-        assert sample_rust_report.rust_report._rust_timer_so_far == 1010.0
-        assert sample_rust_report.rust_report._python_timer_so_far == 1020.0
-        assert sample_rust_report.rust_report._number_times_rust_used == 2
-        sample_rust_report.rust_report._log_rust_differences(4480, 3000, False)
-        assert sample_rust_report.rust_report._rust_timer_so_far == 4010.0
-        assert sample_rust_report.rust_report._python_timer_so_far == 5500.0
-        assert sample_rust_report.rust_report._number_times_rust_used == 3
-        sample_rust_report.rust_report._log_rust_differences(20, 9, False)
-        assert sample_rust_report.rust_report._rust_timer_so_far == 0
-        assert sample_rust_report.rust_report._python_timer_so_far == 0
-        assert sample_rust_report.rust_report._number_times_rust_used == 0
-        mock_metrics.assert_any_call(
-            "shared.reports.readonly._process_totals.first.better"
-        )
-        mock_metrics.assert_called_with("shared.reports.readonly.rust_improvement", 11)
-        mock_metrics.reset_mock()
+        report = ReadOnlyReport(rust_analyzer, rust_report, inner_report)
+        res = report.totals
+        assert isinstance(res, ReportTotals)
+        assert res.files is rust_totals.files
+        assert res.lines is rust_totals.lines
+        assert res.hits is rust_totals.hits
+        assert res.misses is rust_totals.misses
+        assert res.partials is rust_totals.partials
+        assert res.coverage is rust_totals.coverage
+        assert res.branches is rust_totals.branches
+        assert res.methods is rust_totals.methods
+        assert res.messages == 0
+        assert res.sessions is rust_totals.sessions
+        assert res.complexity is rust_totals.complexity
+        assert res.complexity_total is rust_totals.complexity_total
+        assert res.diff == 0
