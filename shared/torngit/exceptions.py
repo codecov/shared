@@ -22,6 +22,19 @@ class TorngitObjectNotFoundError(TorngitClientError):
         super().__init__(code, response, message)
 
 
+class TorngitRateLimitError(TorngitClientError):
+    def __init__(self, response, message, reset):
+        code = 403
+        super().__init__(code, response, message)
+        self.reset = reset
+
+
+class TorngitUnauthorizedError(TorngitClientError):
+    def __init__(self, response, message):
+        code = 401
+        super().__init__(code, response, message)
+
+
 class TorngitServerFailureError(TorngitError):
     pass
 

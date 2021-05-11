@@ -9,6 +9,8 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
     TorngitServer5xxCodeError,
     TorngitClientError,
+    TorngitRateLimitError,
+    TorngitUnauthorizedError,
 )
 
 
@@ -37,6 +39,58 @@ class TestUnitGithub(object):
         url = "random_url"
         with pytest.raises(TorngitServerUnreachableError):
             await valid_handler.api(client, method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_unauthorized(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=401))
+        )
+        method = "GET"
+        url = "random_url"
+        with pytest.raises(TorngitUnauthorizedError):
+            await valid_handler.api(client, method, url)
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_ratelimit_reached(self):
+        with respx.mock:
+            my_route = respx.get("https://api.github.com/endpoint").mock(
+                return_value=httpx.Response(
+                    status_code=403,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                )
+            )
+            handler = Github(
+                repo=dict(name="aaaaa"),
+                owner=dict(username="aaaaa"),
+                token=dict(key="aaaaa"),
+            )
+            with pytest.raises(TorngitRateLimitError) as excinfo:
+                async with handler.get_client() as client:
+                    res = await handler.api(client, "get", "/endpoint")
+            assert excinfo.value.code == 403
+            assert excinfo.value.message == "Github API rate limit error: Forbidden"
+            assert excinfo.value.reset == "1350085394"
+
+    @pytest.mark.asyncio
+    async def test_api_client_error_ratelimit_missing_header(self):
+        with respx.mock:
+            my_route = respx.get("https://api.github.com/endpoint").mock(
+                return_value=httpx.Response(
+                    status_code=403, headers={"X-RateLimit-Reset": "1350085394",},
+                )
+            )
+            handler = Github(
+                repo=dict(name="aaaaa"),
+                owner=dict(username="aaaaa"),
+                token=dict(key="aaaaa"),
+            )
+            with pytest.raises(TorngitClientError) as excinfo:
+                async with handler.get_client() as client:
+                    res = await handler.api(client, "get", "/endpoint")
+            assert excinfo.value.code == 403
 
     @pytest.mark.asyncio
     async def test_api_client_error_server_error(self, valid_handler, mocker):

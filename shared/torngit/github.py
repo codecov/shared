@@ -20,6 +20,8 @@ from shared.torngit.exceptions import (
     TorngitServer5xxCodeError,
     TorngitClientError,
     TorngitRepoNotFoundError,
+    TorngitRateLimitError,
+    TorngitUnauthorizedError,
 )
 
 log = logging.getLogger(__name__)
@@ -127,6 +129,19 @@ class Github(TorngitBaseAdapter):
                 elif res.status_code >= 500:
                     metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Github is having 5xx issues")
+                elif (
+                    res.status_code == 403
+                    and int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
+                ):
+                    message = f"Github API rate limit error: {res.reason_phrase}"
+                    metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
+                    raise TorngitRateLimitError(
+                        res, message, res.headers.get("X-RateLimit-Reset")
+                    )
+                elif res.status_code == 401:
+                    message = f"Github API unauthorized error: {res.reason_phrase}"
+                    metrics.incr(f"{METRICS_PREFIX}.api.unauthorizederror")
+                    raise TorngitUnauthorizedError(res, message)
                 elif res.status_code >= 300:
                     message = f"Github API: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
