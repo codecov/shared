@@ -242,6 +242,12 @@ class TestUserYamlValidation(BaseTestCase):
         result = validate_yaml(user_input)
         assert result == expected_result
 
+    def test_validate_parser_only_field(self):
+        user_input = {"parsers": {"go": {"partials_as_hits": True}}}
+        expected_result = {"parsers": {"go": {"partials_as_hits": True}}}
+        result = validate_yaml(user_input)
+        assert result == expected_result
+
     def test_simple_case(self):
         value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
         encoded_value = UserGivenSecret.encode(value)

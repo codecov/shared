@@ -279,6 +279,7 @@ def get_schema(show_secrets):
             },
             Optional("parsers"): {
                 Optional("javascript"): {"enable_partials": bool},
+                Optional("go"): {"partials_as_hits": bool},
                 Optional("v1"): {"include_full_missed_files": bool},  # [DEPRECATED]
                 Optional("gcov"): {
                     "branch_detection": Msg(
