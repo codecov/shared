@@ -30,6 +30,7 @@ def test_decode_legacy_value():
     res_encode = legacy_encryptor.encode("mykey123456")
     assert b"::" not in res_encode
     assert different_enc.decode(res_encode) == "mykey123456"
+    assert different_enc.decode(res_encode.decode()) == "mykey123456"
 
 
 def test_encode_decode_all_from_divider():

@@ -17,11 +17,12 @@ class EncryptorDivider(object):
         return self._encryptor_mapping[code]
 
     def decode(self, string):
-        if b"::" not in string:
+        if isinstance(string, bytes):
+            string = string.decode()
+        if "::" not in string:
             encryptor_code, code_to_decode = DEFAULT_ENCRYPTOR_CONSTANT, string
         else:
-            encryptor_code, code_to_decode = string.rsplit(b"::", 1)
-            encryptor_code = encryptor_code.decode()
+            encryptor_code, code_to_decode = string.rsplit("::", 1)
         encryptor_to_use = self.get_encryptor_from_code(encryptor_code)
         return encryptor_to_use.decode(code_to_decode)
 
