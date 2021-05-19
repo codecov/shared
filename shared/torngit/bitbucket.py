@@ -16,6 +16,7 @@ from shared.torngit.status import Status
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitServerUnreachableError,
+    TorngitClientGeneralError,
     TorngitServer5xxCodeError,
     TorngitClientError,
 )
@@ -109,7 +110,7 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         elif res.status_code >= 300:
             message = f"Bitbucket API: {res.reason_phrase}"
             metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-            raise TorngitClientError(res.status_code, res, message)
+            raise TorngitClientGeneralError(res.status_code, res, message)
         if res.status_code == 204:
             return None
         elif "application/json" in res.headers.get("Content-Type"):

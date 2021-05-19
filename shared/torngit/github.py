@@ -17,8 +17,9 @@ from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
     TorngitClientError,
+    TorngitServer5xxCodeError,
+    TorngitClientGeneralError,
     TorngitRepoNotFoundError,
     TorngitRateLimitError,
     TorngitUnauthorizedError,
@@ -145,7 +146,7 @@ class Github(TorngitBaseAdapter):
                 elif res.status_code >= 300:
                     message = f"Github API: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                    raise TorngitClientError(res.status_code, res, message)
+                    raise TorngitClientGeneralError(res.status_code, res, message)
                 if res.status_code == 204:
                     return None
                 elif res.headers.get("Content-Type")[:16] == "application/json":
