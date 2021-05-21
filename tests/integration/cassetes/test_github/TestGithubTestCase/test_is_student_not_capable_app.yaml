@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - education.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://education.github.com/api/user
+  response:
+    content: ''
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Security-Policy:
+      - 'default-src ''self'' dwa5x7aod66zk.cloudfront.net; object-src ''self''; frame-src
+        *.vimeo.com platform.twitter.com connect.facebook.net *.facebook.com speakerdeck.com
+        *.youtube.com embed.twitch.tv; connect-src ''self'' github-education-web.s3.amazonaws.com
+        *.mapbox.com *.clearbit.com www.google.com *.githubusercontent.com geoip-js.com;
+        img-src ''self'' blob: dwa5x7aod66zk.cloudfront.net data: github.com *.mapbox.com
+        *.clearbit.com avatars.githubusercontent.com user-images.githubusercontent.com
+        github-education-web.s3.amazonaws.com analytics.twitter.com t.com *.facebook.com
+        *.twitter.com *.youtube.com raw.githubusercontent.com static-cdn.jtvnw.net;
+        font-src ''self'' dwa5x7aod66zk.cloudfront.net; script-src ''self'' dwa5x7aod66zk.cloudfront.net
+        ''unsafe-eval'' ''unsafe-inline'' www.google.com api.demandbase.com speakerdeck.com
+        platform.twitter.com connect.facebook.net *.facebook.com s3-eu-west-1.amazonaws.com/share.typeform.com/*
+        *.github.com *.githubassets.com js.maxmind.com static.ads-twitter.com snap.licdn.com
+        geoip-js.com embed.twitch.tv; style-src ''self'' dwa5x7aod66zk.cloudfront.net
+        ''unsafe-inline'' www.google.com ajax.googleapis.com *.github.com'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 21 May 2021 18:04:32 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - nginx/1.15.12
+      Set-Cookie:
+      - _octo=GH1.1.282664351.1621620272; domain=.github.com; path=/; expires=Sat,
+        21 May 2022 18:04:32 GMT
+      - _education_session=ZnNualVUSGRtbFlkZkFzZXBLd254SkR3M2xZM2tOaTBYdmJQQ091Q3ExTGZqZGFCV1B6R1R1c1cwQjIxTG1zOXd3L1hiY011c0V0dlVpenZySFcvUVE9PS0tbGo2OWMxU3ZyWmNxSDFMazI5TjZodz09--665bc5b6df3bdd5d371ece9f8f778b6d0e4cc19b;
+        path=/; secure; HttpOnly
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - DENY
+      X-GitHub-Request-Id:
+      - 1874:6016:894CB:6BE870:60A7F630
+      X-Runtime:
+      - '0.040949'
+      X-XSS-Protection:
+      - 1; mode=block
+      x-download-options:
+      - noopen
+      x-github-backend:
+      - Kubernetes
+      x-permitted-cross-domain-policies:
+      - none
+      x-request-id:
+      - e943af0f-689a-4302-9ab2-34011a25d603
+    http_version: HTTP/1.1
+    status_code: 401
+version: 1

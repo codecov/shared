@@ -1126,5 +1126,10 @@ class Github(TorngitBaseAdapter):
 
     async def is_student(self):
         async with self.get_client() as client:
-            res = await self.api(client, "get", "https://education.github.com/api/user")
-            return res["student"]
+            try:
+                res = await self.api(
+                    client, "get", "https://education.github.com/api/user"
+                )
+                return res["student"]
+            except TorngitUnauthorizedError:
+                return False
