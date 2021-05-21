@@ -1,4 +1,5 @@
 import os
+import json
 
 import pytest
 
@@ -20,7 +21,7 @@ class TestConfig(object):
         assert get_config("site", "codecov", "require_ci_to_pass") is True
         assert get_config("site", "coverage", "precision") == 2
         assert get_config("site", "coverage", "round") == "down"
-        assert get_config("site", "coverage", "range") == "70...100"
+        assert get_config("site", "coverage", "range") == [70.0, 100.0]
         assert get_config("site", "coverage", "status", "project") is True
         assert get_config("site", "coverage", "status", "patch") is True
         assert get_config("site", "coverage", "status", "changes") is False
@@ -368,6 +369,9 @@ class TestConfig(object):
                 "__BAD__KEY": "GITLAB__BOT__KEY",
                 "SETUP__SEGMENT__ENABLED": "True",
                 "SETUP__SEGMENT__KEY": "abc",
+                "JSONCONFIG___SETUP__MEDIA": json.dumps(
+                    {"assets": "aaa", "dependancies": "bbb"}
+                ),
             },
         )
         expected_res = {
@@ -396,6 +400,7 @@ class TestConfig(object):
                 "redis_url": "SERVICES__REDIS_URL:11234",
             },
             "setup": {
+                "media": {"assets": "aaa", "dependancies": "bbb"},
                 "encryption_secret": "secret",
                 "tasks": {"status": {"queue": "new_tasks"}},
                 "segment": {"enabled": "True", "key": "abc"},

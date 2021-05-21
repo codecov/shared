@@ -109,9 +109,7 @@ class UserYaml(object):
         Returns:
             dict - The dict we are supposed to use when concerning that user/commit
         """
-        resulting_yaml = validate_yaml(
-            get_config("site", default={}), show_secrets=True
-        )
+        resulting_yaml = get_config("site", default={})
         if owner_yaml is not None:
             resulting_yaml = merge_yamls(resulting_yaml, owner_yaml)
         if commit_yaml is not None:
