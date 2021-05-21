@@ -16,6 +16,7 @@ from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitServerUnreachableError,
+    TorngitClientGeneralError,
     TorngitServer5xxCodeError,
     TorngitClientError,
 )
@@ -93,7 +94,7 @@ class Gitlab(TorngitBaseAdapter):
             elif res.status_code >= 400:
                 message = f"Gitlab API: {res.status_code}"
                 metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                raise TorngitClientError(res.status_code, res, message)
+                raise TorngitClientGeneralError(res.status_code, res, message)
             return res
         except (httpx.TimeoutException, httpx.NetworkError):
             metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
