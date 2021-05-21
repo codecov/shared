@@ -1237,6 +1237,11 @@ class TestGithubTestCase(object):
         assert not res
 
     @pytest.mark.asyncio
+    async def test_is_student_not_capable_app(self, valid_handler, codecov_vcr):
+        res = await valid_handler.is_student()
+        assert not res
+
+    @pytest.mark.asyncio
     async def test_is_student_yes_student(
         self, student_app_capable_yes_student_handler, codecov_vcr
     ):
