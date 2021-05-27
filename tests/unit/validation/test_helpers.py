@@ -11,6 +11,7 @@ from shared.validation.yaml import (
     CoverageRangeSchemaField,
     PercentSchemaField,
     CustomFixPathSchemaField,
+    UserGivenBranchRegex,
     pre_process_yaml,
     UserGivenSecret,
 )
@@ -170,10 +171,21 @@ class TestCoverageRangeSchemaField(BaseTestCase):
                 crsf.validate(invalid)
 
 
+class TestUserGivenBranchRegex(BaseTestCase):
+    def test_user_givne_branch(self):
+        a = UserGivenBranchRegex()
+        assert a.validate(None) is None
+        assert a.validate(".*") == ".*"
+        assert a.validate("*") == ".*"
+        assert a.validate("apple*") == "^apple.*"
+        assert a.validate("apple") == "^apple$"
+
+
 class TestPercentSchemaField(BaseTestCase):
     def test_simple_coverage_range(self):
         crsf = PercentSchemaField()
         assert crsf.validate(80) == 80.0
+        assert crsf.validate("auto") == "auto"
         assert crsf.validate(80.0) == 80.0
         assert crsf.validate("80%") == 80.0
         assert crsf.validate("80") == 80.0

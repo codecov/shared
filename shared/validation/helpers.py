@@ -68,6 +68,8 @@ class PercentSchemaField(object):
     field_regex = re.compile(r"(\d+)(\.\d+)?%?")
 
     def validate(self, value):
+        if value == "auto":
+            return value
         if isinstance(value, numbers.Number):
             return float(value)
         if not self.field_regex.match(value):
@@ -297,6 +299,8 @@ class UserGivenBranchRegex(object):
     asterisk_to_regexp = re.compile(r"(?<!\.)\*")
 
     def validate(self, value):
+        if value is None:
+            return None
         if value in ("*", "", None, ".*"):
             return ".*"
         else:

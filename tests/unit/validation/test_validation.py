@@ -4,7 +4,7 @@ import pytest
 
 from shared.validation.exceptions import InvalidYamlException
 from tests.base import BaseTestCase
-from shared.validation.yaml import validate_yaml, UserGivenSecret
+from shared.validation.yaml import validate_yaml, UserGivenSecret, compare_to_new_style
 from shared.config import get_config, ConfigHelper
 
 
@@ -105,6 +105,19 @@ class TestUserYamlValidation(BaseTestCase):
     def test_random_real_life_cases(self, user_input, expected_result):
         # Some random cases based on real world examples
         assert expected_result == validate_yaml(user_input)
+
+    def test_case_with_experimental_turned_on_valid(self, mocker):
+        mocker.patch.dict(os.environ, {"CERBERUS_VALIDATOR_RATE": "1.0"})
+        user_input = {"coverage": {"status": {"patch": True}}}
+        expected_result = {"coverage": {"status": {"patch": True}}}
+        assert expected_result == validate_yaml(user_input)
+
+    def test_case_with_experimental_turned_invalid(self, mocker):
+        mocker.patch.dict(os.environ, {"CERBERUS_VALIDATOR_RATE": "1.0"})
+        user_input = {"coverage": {"status": {"patch": "banana"}}}
+        with pytest.raises(InvalidYamlException) as ex:
+            validate_yaml(user_input)
+        assert ex.value.error_message == "expected bool"
 
     def test_many_flags_validation(self):
         user_input = {
@@ -772,3 +785,70 @@ class TestValidationConfig(object):
         }
         res = validate_yaml(get_config("site", default={}), show_secrets=True)
         assert res == expected_result
+
+
+class Testcompare_to_new_style(object):
+    def test_compare_to_new_style_success_when_should_fail(self, mocker):
+        inputted_yaml_dict, res, error, show_secrets = (
+            mocker.MagicMock(),
+            None,
+            InvalidYamlException("location", "message"),
+            False,
+        )
+        mocker.patch(
+            "shared.validation.yaml.validate_experimental",
+            return_value={"data": "banana"},
+        )
+        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
+
+    def test_compare_to_new_style_fail_when_should_pass(self, mocker):
+        inputted_yaml_dict, res, error, show_secrets = (
+            mocker.MagicMock(),
+            {"data": "apple"},
+            None,
+            False,
+        )
+        mocker.patch(
+            "shared.validation.yaml.validate_experimental",
+            side_effect=InvalidYamlException("location", "message"),
+        )
+        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
+
+    def test_compare_to_new_style_crash(self, mocker):
+        inputted_yaml_dict, res, error, show_secrets = (
+            mocker.MagicMock(),
+            {"data": "apple"},
+            None,
+            False,
+        )
+        mocker.patch(
+            "shared.validation.yaml.validate_experimental",
+            side_effect=Exception("Oops"),
+        )
+        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
+
+    def test_compare_to_new_style_different_result(self, mocker):
+        inputted_yaml_dict, res, error, show_secrets = (
+            mocker.MagicMock(),
+            {"data": "apple"},
+            None,
+            False,
+        )
+        mocker.patch(
+            "shared.validation.yaml.validate_experimental",
+            return_value={"data": "apple", "extra": "kiwi"},
+        )
+        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
+
+    def test_compare_to_new_style_same_result(self, mocker):
+        inputted_yaml_dict, res, error, show_secrets = (
+            mocker.MagicMock(),
+            {"data": "apple", "extra": "kiwi"},
+            None,
+            False,
+        )
+        mocker.patch(
+            "shared.validation.yaml.validate_experimental",
+            return_value={"data": "apple", "extra": "kiwi"},
+        )
+        assert compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
