@@ -1,4 +1,4 @@
-from shared.encryption import StandardEncryptor
+from shared.encryption.standard import StandardEncryptor
 
 
 def test_standard_encryptor():
