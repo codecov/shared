@@ -1,10 +1,14 @@
 import os
 import logging
 from copy import deepcopy
+from typing import Any, Tuple, List
+import json
 
 from yaml import safe_load as yaml_load
 from base64 import b64decode
 import collections
+
+from shared.validation.install import validate_install_configuration
 
 
 class MissingConfigException(Exception):
@@ -70,16 +74,40 @@ class ConfigHelper(object):
     def load_env_var(self):
         val = {}
         for env_var in os.environ:
-            if not env_var.startswith("__"):
-                # Split env variables on "__" to get values for nested config fields
-                # For example: ONE__TWO__THREE='value' --> { 'one': { 'two': { 'three': 'value' }}}
-                multiple_level_vars = env_var.split("__")
-                if len(multiple_level_vars) > 1:
-                    current = val
-                    for c in multiple_level_vars[:-1]:
-                        current = current.setdefault(c.lower(), {})
-                    current[multiple_level_vars[-1].lower()] = os.getenv(env_var)
+            if not env_var.startswith("__") and "__" in env_var:
+                multiple_level_vars, data = self._parse_path_and_value_from_envvar(
+                    env_var
+                )
+                current = val
+                for c in multiple_level_vars[:-1]:
+                    current = current.setdefault(c.lower(), {})
+                current[multiple_level_vars[-1].lower()] = data
         return val
+
+    def _parse_path_and_value_from_envvar(
+        self, env_var_name: str
+    ) -> Tuple[List[str], Any]:
+        """
+        Given an envvar, calculate both the data that needs to be put in the config and
+            the location in the config where it needs to be set.
+
+        For example:
+            ONE__TWO__THREE='value' --> { 'one': { 'two': { 'three': 'value' }}}
+
+        Args:
+            env_var_name (str): The envvar we want to load data from
+
+        Returns:
+            Tuple[List[str], Any]: Two elements:
+                - The path where the data needs to be set
+                - The actual data
+        """
+        # Split env variables on "__" to get values for nested config fields
+        should_load_from_json = env_var_name.startswith("JSONCONFIG___")
+        path_to_use = env_var_name if not should_load_from_json else env_var_name[13:]
+        data = os.getenv(env_var_name)
+        data = data if not should_load_from_json else json.loads(data)
+        return (path_to_use.split("__"), data)
 
     @property
     def params(self):
@@ -91,7 +119,8 @@ class ConfigHelper(object):
             content = self.yaml_content()
             env_vars = self.load_env_var()
             temp_result = update(default_config, content)
-            final_result = update(temp_result, env_vars)
+            unvalidated_final_result = update(temp_result, env_vars)
+            final_result = validate_install_configuration(unvalidated_final_result)
             self.set_params(final_result)
         return self._params
 
