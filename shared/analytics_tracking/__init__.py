@@ -1,6 +1,5 @@
 import analytics
 import logging
-from schema import Schema, Or
 
 from shared.config import get_config
 
@@ -26,7 +25,6 @@ event_names = [
     "Coverage Report Passed",
     "Coverage Report Failed",
 ]
-event_name_validator = Schema(Or(*event_names))
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
@@ -53,7 +51,7 @@ def track_event(user_id, event_name, event_data={}, is_enterprise=False):
     if is_enterprise or not segment_enabled:
         return
 
-    if not event_name_validator.is_valid(event_name):
+    if event_name not in event_names:
         log.debug("Invalid event name: " + event_name)
         return
     try:
