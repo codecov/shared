@@ -269,10 +269,8 @@ def validate_install_configuration(inputted_dict):
     validator = CodecovYamlValidator(show_secret=True)
     is_valid = validator.validate(inputted_dict, config_schema)
     if not is_valid:
-        print(validator.errors)
         log.warning(
             "Configuration considered invalid, using dict as it is",
             extra=dict(errors=validator.errors, inputted_dict=inputted_dict),
         )
-        return inputted_dict
     return validator.document
