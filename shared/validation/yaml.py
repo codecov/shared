@@ -85,9 +85,8 @@ def compare_to_new_style(inputted_yaml_dict, res, error, show_secrets) -> bool:
             extra=dict(
                 user_input=inputted_yaml_dict,
                 original_res=res,
-                original_error=error,
+                original_error=error.error_location,
                 new_res=res_experimental,
-                new_error=error_experimental,
             ),
         )
         return False
@@ -98,8 +97,7 @@ def compare_to_new_style(inputted_yaml_dict, res, error, show_secrets) -> bool:
                 user_input=inputted_yaml_dict,
                 original_res=res,
                 original_error=error,
-                new_res=res_experimental,
-                new_error=error_experimental,
+                new_error=error_experimental.error_location,
             ),
         )
         return False
@@ -107,11 +105,7 @@ def compare_to_new_style(inputted_yaml_dict, res, error, show_secrets) -> bool:
         log.warning(
             "New validator got different result than expected",
             extra=dict(
-                user_input=inputted_yaml_dict,
-                original_res=res,
-                original_error=error,
-                new_res=res_experimental,
-                new_error=error_experimental,
+                user_input=inputted_yaml_dict, original_res=res, original_error=error
             ),
         )
         return False

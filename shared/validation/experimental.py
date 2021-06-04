@@ -28,8 +28,17 @@ class CodecovYamlValidator(Validator):
     def _normalize_coerce_regexify_path_pattern(self, value):
         return PathPatternSchemaField().validate(value)
 
+    def _normalize_coerce_branch_name(self, value):
+        return UserGivenBranchRegex().validate(value)
+
 
 flag_name = {"type": "string", "minlength": 1, "maxlength": 45, "regex": r"^[\w\.\-]+$"}
+
+branches_structure = {
+    "type": "list",
+    "schema": {"type": "string", "nullable": True, "coerce": "branch_name"},
+    "nullable": True,
+}
 
 layout_structure = {
     "type": "string",
@@ -44,11 +53,7 @@ path_list_structure = {
 
 status_base_attributes = {
     "base": {"type": "string", "allowed": ("parent", "pr", "auto")},
-    "branches": {
-        "type": "string",
-        "nullable": True,
-        "coerce": UserGivenBranchRegex().validate,
-    },
+    "branches": branches_structure,
     "disable_approx": {"type": "boolean"},
     "enabled": {"type": "boolean"},
     "if_ci_failed": {
@@ -114,7 +119,7 @@ new_statuses_attributes = {
 
 notification_standard_attributes = {
     "url": {"type": "string", "coerce": "secret", "nullable": True},
-    "branches": {"type": "string", "nullable": True},
+    "branches": branches_structure,
     "threshold": {
         "type": ["string", "number"],
         "nullable": True,
@@ -413,11 +418,7 @@ schema = {
             "require_changes": {"type": "boolean"},
             "require_base": {"type": "boolean"},
             "require_head": {"type": "boolean"},
-            "branches": {
-                "type": "string",
-                "coerce": UserGivenBranchRegex().validate,
-                "nullable": True,
-            },
+            "branches": branches_structure,
             "behavior": {
                 "type": "string",
                 "allowed": ("default", "once", "new", "spammy"),

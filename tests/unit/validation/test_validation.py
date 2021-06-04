@@ -100,6 +100,56 @@ class TestUserYamlValidation(BaseTestCase):
                     ],
                 },
             ),
+            (
+                {
+                    "comment": {
+                        "require_head": True,
+                        "require_base": True,
+                        "layout": "diff",
+                        "require_changes": True,
+                        "branches": ["master"],
+                        "behavior": "once",
+                        "after_n_builds": 6,
+                    },
+                    "coverage": {
+                        "status": {
+                            "project": {"default": {"threshold": "1%"}},
+                            "patch": False,
+                        }
+                    },
+                    "github_checks": {"annotations": False},
+                    "fixes": [
+                        "/opt/conda/lib/python3.8/site-packages/::project/",
+                        "C:/Users/circleci/project/build/win_tmp/build/::project/",
+                    ],
+                    "ignore": ["coffee", "party_man", "test"],
+                    "codecov": {"notify": {"after_n_builds": 6}},
+                },
+                {
+                    "comment": {
+                        "require_head": True,
+                        "require_base": True,
+                        "layout": "diff",
+                        "require_changes": True,
+                        "branches": ["^master$"],
+                        "behavior": "once",
+                        "after_n_builds": 6,
+                    },
+                    "coverage": {
+                        "status": {
+                            "project": {"default": {"threshold": 1}},
+                            "patch": False,
+                        }
+                    },
+                    "github_checks": {"annotations": False},
+                    "fixes": [
+                        "^/opt/conda/lib/python3.8/site-packages/::project/",
+                        "^C:/Users/circleci/project/build/win_tmp/build/::project/",
+                    ],
+                    "ignore": ["^coffee.*", "^party_man.*", "^test.*"],
+                    "codecov": {"notify": {"after_n_builds": 6}},
+                },
+            ),
         ],
     )
     def test_random_real_life_cases(self, user_input, expected_result):
