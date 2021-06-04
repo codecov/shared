@@ -30,6 +30,7 @@ default_service_fields = {
             "username": {"type": "string"},
         },
     },
+    "global_upload_token": {"type": "string"},
     "organizations": {"type": "list", "schema": {"type": "string"}},
     "webhook_secret": {"type": "string"},
     "bots": {
@@ -69,7 +70,16 @@ config_schema = {
     "setup": {
         "type": "dict",
         "schema": {
-            "cache": {"type": "dict", "schema": {"uploads": {"type": "integer"}}},
+            "cache": {
+                "type": "dict",
+                "schema": {
+                    "chunks": {"type": "integer"},
+                    "diff": {"type": "integer"},
+                    "tree": {"type": "integer"},
+                    "uploads": {"type": "integer"},
+                    "yaml": {"type": "integer"},
+                },
+            },
             "loglvl": {"type": "string", "allowed": ("INFO",)},
             "max_sessions": {"type": "integer"},
             "debug": {"type": "boolean"},
@@ -271,6 +281,6 @@ def validate_install_configuration(inputted_dict):
     if not is_valid:
         log.warning(
             "Configuration considered invalid, using dict as it is",
-            extra=dict(errors=validator.errors, inputted_dict=inputted_dict),
+            extra=dict(errors=validator.errors),
         )
     return validator.document
