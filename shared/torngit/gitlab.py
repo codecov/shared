@@ -68,8 +68,6 @@ class Gitlab(TorngitBaseAdapter):
             headers["Content-Type"] = "application/json"
             body = json.dumps(body)
 
-        _log["body"] = body
-
         if token or self.token:
             headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
@@ -80,9 +78,16 @@ class Gitlab(TorngitBaseAdapter):
                 res = await client.request(
                     method.upper(), url, headers=headers, data=body
                 )
-                _log["time_taken"] = timer.ms
-            log_level = logging.WARNING if res.status_code >= 300 else logging.INFO
-            log.log(log_level, "GitLab HTTP %s", res.status_code, extra=_log)
+            logged_body = None
+            if res.status_code >= 300 and res.text is not None:
+                logged_body = res.text
+            log.log(
+                logging.WARNING if res.status_code >= 300 else logging.INFO,
+                "GitLab HTTP %s",
+                res.status_code,
+                extra=dict(time_taken=timer.ms, body=logged_body, **_log),
+            )
+
             if res.status_code == 599:
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
