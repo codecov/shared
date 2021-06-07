@@ -1,9 +1,12 @@
 import re
 import numbers
 import binascii
+import logging
 
 from voluptuous import Invalid
 from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
+
+log = logging.getLogger(__name__)
 
 
 class CoverageRangeSchemaField(object):
@@ -379,6 +382,7 @@ class UserGivenSecret(object):
         if value is not None and value.startswith("secret:"):
             try:
                 secret_value = self.decode(value)
+                log.info("Valid secret was used by customer")
             except UserGivenSecret.InvalidSecret:
                 return value
             if self.show_secret:
