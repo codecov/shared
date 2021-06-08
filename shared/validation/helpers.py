@@ -4,7 +4,7 @@ import binascii
 import logging
 
 from voluptuous import Invalid
-from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
+from shared.encryption.yaml_secret import yaml_secret_encryptor
 
 log = logging.getLogger(__name__)
 
@@ -371,9 +371,7 @@ class UserGivenSecret(object):
     class InvalidSecret(Exception):
         pass
 
-    encryptor = EncryptorWithAlreadyGeneratedKey(
-        b"]\xbb\x13\xf9}\xb3\xb7\x03)*0Kv\xb2\xcet"  # Same secret as in the main app
-    )
+    encryptor = yaml_secret_encryptor
 
     def __init__(self, show_secret):
         self.show_secret = show_secret
