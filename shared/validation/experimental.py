@@ -48,8 +48,16 @@ layout_structure = {
 
 path_list_structure = {
     "type": "list",
-    "schema": {"type": "string", "nullable": True, "coerce": "regexify_path_pattern"},
+    "nullable": True,
+    "schema": {"type": "string", "coerce": "regexify_path_pattern"},
 }
+
+flag_list_structure = {
+    "type": "list",
+    "nullable": True,
+    "schema": {"type": "string", "regex": r"^[\w\.\-]{1,45}$"},
+}
+
 
 status_base_attributes = {
     "base": {"type": "string", "allowed": ("parent", "pr", "auto")},
@@ -88,11 +96,7 @@ status_base_attributes = {
 }
 
 status_standard_attributes = {
-    "flags": {
-        "type": "list",
-        "nullable": True,
-        "schema": {"type": "string", "regex": r"^[\w\.\-]{1,45}$"},
-    },
+    "flags": flag_list_structure,
     **status_base_attributes,
 }
 
@@ -126,11 +130,7 @@ notification_standard_attributes = {
         "coerce": PercentSchemaField().validate,
     },
     "message": {"type": "string"},
-    "flags": {
-        "type": "list",
-        "nullable": True,
-        "schema": {"type": "string", "regex": r"^[\w\.\-]{1,45}$"},
-    },
+    "flags": flag_list_structure,
     "base": {"type": "string", "allowed": ("parent", "pr", "auto")},
     "only_pulls": {"type": "boolean"},
     "paths": path_list_structure,
@@ -419,6 +419,8 @@ schema = {
             "require_base": {"type": "boolean"},
             "require_head": {"type": "boolean"},
             "branches": branches_structure,
+            "paths": path_list_structure,  # DEPRECATED
+            "flags": flag_list_structure,  # DEPRECATED
             "behavior": {
                 "type": "string",
                 "allowed": ("default", "once", "new", "spammy"),
