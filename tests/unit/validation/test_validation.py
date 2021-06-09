@@ -150,6 +150,36 @@ class TestUserYamlValidation(BaseTestCase):
                     "codecov": {"notify": {"after_n_builds": 6}},
                 },
             ),
+            (
+                {
+                    "ignore": ["js/plugins", "plugins"],
+                    "coverage": {
+                        "notify": {
+                            "slack": {
+                                "default": {
+                                    "url": "https://hooks.slack.com/services/testdazzd/testrf4k6py/test72nq0j0ke3prs2fdvfuj",
+                                    "only_pulls": False,
+                                    "branches": ["master", "qa", "dev"],
+                                }
+                            }
+                        }
+                    },
+                },
+                {
+                    "ignore": ["^js/plugins.*", "^plugins.*"],
+                    "coverage": {
+                        "notify": {
+                            "slack": {
+                                "default": {
+                                    "url": "https://hooks.slack.com/services/testdazzd/testrf4k6py/test72nq0j0ke3prs2fdvfuj",
+                                    "only_pulls": False,
+                                    "branches": ["^master$", "^qa$", "^dev$"],
+                                }
+                            }
+                        }
+                    },
+                },
+            ),
         ],
     )
     def test_random_real_life_cases(self, user_input, expected_result):
