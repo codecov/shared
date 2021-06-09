@@ -158,7 +158,7 @@ def get_schema(show_secrets):
 
     notification_standard_attributes = {
         Optional("url"): Or(None, UserGivenSecret(show_secret=show_secrets).validate),
-        Optional("branches"): Or(None, [branches_regexp]),
+        Optional("branches"): Or(None, [user_given_regex]),
         Optional("threshold"): Or(None, percent_type),
         Optional("message"): str,  # TODO (Thiago): Convert this to deal with handlebars
         Optional("flags"): Or(None, [flag_name]),
