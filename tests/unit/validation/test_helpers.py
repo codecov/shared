@@ -286,6 +286,14 @@ class TestUserGivenSecret(BaseTestCase):
             == "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
         )
 
+    def test_simple_user_given_secret_rotated_key(self):
+        encoded_data = "secret:v1::zsV9A8pHadNle357DGJHbZCTyCYA+TXdUd9TN3IY2DIWcPOtgK3Pg1EgA6OZr9XJ1EsdpL765yWrN4pfR3elRdN2LUwiuv6RkNjpbiruHx45agsgxdu8fi24p5pkCLvjcW0HqdH2PTvmHauIp+ptgA=="
+        ugs = UserGivenSecret(show_secret=True)
+        assert (
+            ugs.validate(encoded_data)
+            == "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
+        )
+
     def test_pseudosecret_user_given_secret(self):
         value = "secret:arriba"
         ugs = UserGivenSecret(show_secret=True)
