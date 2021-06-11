@@ -67,3 +67,16 @@ def test_validation_with_null_on_paths():
     }
     res = validate_experimental(user_input, show_secret=False)
     assert res == expected_result
+
+
+def test_validation_with_null_on_status():
+    user_input = {
+        "coverage": {"status": {"project": {"default": None}, "patch": False}},
+        "ignore": ["coffee", "test"],
+    }
+    expected_result = {
+        "coverage": {"status": {"project": {"default": None}, "patch": False}},
+        "ignore": ["^coffee.*", "^test.*"],
+    }
+    res = validate_experimental(user_input, show_secret=False)
+    assert res == expected_result
