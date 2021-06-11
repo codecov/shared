@@ -46,3 +46,24 @@ def test_validation_with_branches():
     }
     res = validate_experimental(user_input, show_secret=False)
     assert res == expected_result
+
+
+def test_validation_with_null_on_paths():
+    user_input = {
+        "comment": {"require_head": True, "behavior": "once", "after_n_builds": 6,},
+        "coverage": {
+            "status": {"project": {"default": {"threshold": "1%"}}, "patch": False},
+            "notify": {"slack": {"default": {"paths": None}}},
+        },
+        "ignore": ["coffee", "test"],
+    }
+    expected_result = {
+        "comment": {"require_head": True, "behavior": "once", "after_n_builds": 6},
+        "coverage": {
+            "status": {"project": {"default": {"threshold": 1.0}}, "patch": False},
+            "notify": {"slack": {"default": {"paths": None}}},
+        },
+        "ignore": ["^coffee.*", "^test.*"],
+    }
+    res = validate_experimental(user_input, show_secret=False)
+    assert res == expected_result
