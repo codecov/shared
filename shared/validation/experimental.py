@@ -248,7 +248,11 @@ schema = {
                         "keysrules": {"type": "string", "regex": r"^[\w\-\.]+$"},
                         "valuesrules": {
                             "type": "dict",
-                            "schema": {**notification_standard_attributes},
+                            "schema": {
+                                "card": {"type": "boolean"},
+                                "notify": {"type": "boolean"},
+                                **notification_standard_attributes,
+                            },
                         },
                     },
                     "webhook": {
@@ -289,6 +293,7 @@ schema = {
                         "type": ["dict", "boolean"],
                         "keysrules": {"type": "string", "regex": r"^[\w\-\.]+$"},
                         "valuesrules": {
+                            "nullable": True,
                             "type": ["dict", "boolean"],
                             "schema": {
                                 "target": percent_type_or_auto,
@@ -303,6 +308,7 @@ schema = {
                         "keysrules": {"type": "string", "regex": r"^[\w\-\.]+$"},
                         "valuesrules": {
                             "type": ["dict", "boolean"],
+                            "nullable": True,
                             "schema": {
                                 "target": percent_type_or_auto,
                                 "include_changes": percent_type_or_auto,
@@ -316,6 +322,7 @@ schema = {
                         "keysrules": {"type": "string", "regex": r"^[\w\-\.]+$"},
                         "valuesrules": {
                             "type": ["dict", "boolean"],
+                            "nullable": True,
                             "schema": status_standard_attributes,
                         },
                     },
