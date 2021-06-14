@@ -1,6 +1,5 @@
 [run]
 branch = True
-source = torngit
 
 [report]
 exclude_lines =
@@ -9,11 +8,5 @@ exclude_lines =
     if __name__ == .__main__.:
 ignore_errors = True
 omit =
-    venv/*
     tests/*
-    scripts/*
-    psycopg2/*
-    app/__init__.py
-    app/**/__init__.py
-    app/worker.py
     setup.py
