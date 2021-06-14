@@ -31,6 +31,9 @@ class CodecovYamlValidator(Validator):
     def _normalize_coerce_branch_name(self, value):
         return UserGivenBranchRegex().validate(value)
 
+    def _normalize_coerce_percentage_to_number(self, value):
+        return PercentSchemaField().validate(value)
+
 
 flag_name = {"type": "string", "minlength": 1, "maxlength": 45, "regex": r"^[\w\.\-]+$"}
 
@@ -104,13 +107,13 @@ percent_type_or_auto = {
     "type": ["string", "number"],
     "anyof": [{"allowed": ["auto"]}, {"regex": r"(\d+)(\.\d+)?%?"}],
     "nullable": True,
-    "coerce": PercentSchemaField().validate,
+    "coerce": "percentage_to_number",
 }
 
 percent_type = {
     "type": ["string", "number"],
     "nullable": True,
-    "coerce": PercentSchemaField().validate,
+    "coerce": "percentage_to_number",
 }
 
 new_statuses_attributes = {
@@ -127,7 +130,7 @@ notification_standard_attributes = {
     "threshold": {
         "type": ["string", "number"],
         "nullable": True,
-        "coerce": PercentSchemaField().validate,
+        "coerce": "percentage_to_number",
     },
     "message": {"type": "string"},
     "flags": flag_list_structure,
