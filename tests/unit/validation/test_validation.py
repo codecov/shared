@@ -453,7 +453,6 @@ class TestUserYamlValidation(BaseTestCase):
             "flags",
             "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg",
         ]
-        assert exc.value.error_message == "extra keys not allowed"
 
     def test_validate_parser_only_field(self):
         user_input = {"parsers": {"go": {"partials_as_hits": True}}}
