@@ -445,6 +445,16 @@ class TestUserYamlValidation(BaseTestCase):
         result = validate_yaml(user_input)
         assert result == expected_result
 
+    def test_validate_flag_too_long(self):
+        user_input = {"flags": {"abcdefg" * 7: {"paths": ["banana"]}}}
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+        assert exc.value.error_location == [
+            "flags",
+            "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg",
+        ]
+        assert exc.value.error_message == "extra keys not allowed"
+
     def test_validate_parser_only_field(self):
         user_input = {"parsers": {"go": {"partials_as_hits": True}}}
         expected_result = {"parsers": {"go": {"partials_as_hits": True}}}
