@@ -105,7 +105,9 @@ def compare_to_new_style(inputted_yaml_dict, res, error, show_secrets) -> bool:
         log.warning(
             "New validator got different result than expected",
             extra=dict(
-                user_input=inputted_yaml_dict, original_res=res, original_error=error
+                user_input=inputted_yaml_dict,
+                original_res=res,
+                new_res=res_experimental,
             ),
         )
         return False
@@ -360,7 +362,7 @@ def get_schema(show_secrets):
             Optional("ignore"): Or(None, [path_structure]),
             Optional("fixes"): Or(None, [CustomFixPathSchemaField().validate]),
             Optional("flags"): {
-                user_given_title: {
+                flag_name: {
                     Optional("joined"): bool,
                     Optional("carryforward"): bool,
                     Optional("required"): bool,
