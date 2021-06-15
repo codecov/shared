@@ -1,4 +1,6 @@
+import pytest
 from shared.validation.experimental import validate_experimental
+from shared.validation.exceptions import InvalidYamlException
 
 
 def test_validation_with_branches():
@@ -80,3 +82,37 @@ def test_validation_with_null_on_status():
     }
     res = validate_experimental(user_input, show_secret=False)
     assert res == expected_result
+
+
+def test_improper_layout():
+    user_input = {
+        "coverage": {"status": {"project": {"default": None}, "patch": False}},
+        "comment": {"layout": "banana,apple"},
+    }
+    with pytest.raises(InvalidYamlException) as exc:
+        validate_experimental(user_input, show_secret=False)
+    assert exc.value.error_location == {
+        "comment": [{"layout": ["Unexpected values on layout: apple,banana"]}]
+    }
+
+
+def test_proper_layout():
+    user_input = {
+        "coverage": {"status": {"project": {"default": None}, "patch": False}},
+        "comment": {"layout": "files:10,footer"},
+    }
+    res = validate_experimental(user_input, show_secret=False)
+    assert res == {
+        "coverage": {"status": {"project": {"default": None}, "patch": False}},
+        "comment": {"layout": "files:10,footer"},
+    }
+
+
+def test_codecov_branch():
+    user_input = {
+        "codecov": {"branch": "origin/pterosaur"},
+    }
+    res = validate_experimental(user_input, show_secret=False)
+    assert res == {
+        "codecov": {"branch": "pterosaur"},
+    }
