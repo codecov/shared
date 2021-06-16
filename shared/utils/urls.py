@@ -39,9 +39,7 @@ def make_url(repository, *args, **kwargs):
             kwargs,
         )
     else:
-        return url_concat(
-            "/".join([get_config("setup", "codecov_url")] + args), kwargs
-        )
+        return url_concat("/".join([get_config("setup", "codecov_url")] + args), kwargs)
 
 
 def url_escape(value):
