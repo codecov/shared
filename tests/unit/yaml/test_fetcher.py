@@ -15,6 +15,7 @@ codecov:
 
 commitid = "e1ade"
 
+
 class TestYamlSavingService(object):
     @pytest.mark.asyncio
     async def test_determine_commit_yaml_location(self, mocker):
@@ -142,7 +143,9 @@ class TestYamlSavingService(object):
             list_top_level_files=mock.AsyncMock(return_value=list_files_future),
             get_source=mock.AsyncMock(return_value=contents_result_future),
         )
-        res = await fetch_current_yaml_from_provider_via_reference(commitid, valid_handler)
+        res = await fetch_current_yaml_from_provider_via_reference(
+            commitid, valid_handler
+        )
         assert res == sample_yaml
         valid_handler.list_top_level_files.assert_called_with(commitid)
         valid_handler.get_source.assert_called_with("codecov.yaml", commitid)
