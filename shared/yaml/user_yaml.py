@@ -117,3 +117,11 @@ class UserYaml(object):
         if repo_yaml is not None:
             return cls(merge_yamls(resulting_yaml, repo_yaml))
         return cls(resulting_yaml)
+
+
+def merge_yamls(d1, d2):
+    if not isinstance(d1, dict) or not isinstance(d2, dict):
+        return deepcopy(d2)
+    res = deepcopy(d1)
+    res.update(dict([(k, merge_yamls(d1.get(k, {}), v)) for k, v in d2.items()]))
+    return res
