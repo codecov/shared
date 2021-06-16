@@ -4,7 +4,7 @@ import urllib.parse as urllib_parse
 import logging
 
 import httpx
-from tornado.httputil import url_concat
+
 from oauthlib import oauth1
 
 # from shared.config import get_config
@@ -19,6 +19,8 @@ from shared.torngit.exceptions import (
     TorngitServer5xxCodeError,
     TorngitClientError,
 )
+from shared.utils.urls import url_concat
+
 
 log = logging.getLogger(__name__)
 

@@ -7,9 +7,6 @@ import logging
 
 import httpx
 
-from tornado.httputil import url_concat
-from tornado.escape import url_escape
-
 from shared.metrics import metrics
 from shared.torngit.status import Status
 from shared.torngit.base import TorngitBaseAdapter, TokenType
@@ -24,6 +21,8 @@ from shared.torngit.exceptions import (
     TorngitRateLimitError,
     TorngitUnauthorizedError,
 )
+from shared.utils.urls import url_concat, url_escape
+
 
 log = logging.getLogger(__name__)
 

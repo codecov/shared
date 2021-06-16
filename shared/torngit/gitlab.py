@@ -6,8 +6,7 @@ from typing import Optional, List
 
 import httpx
 
-from tornado.httputil import urlencode
-from tornado.httputil import url_concat
+from urllib.parse import urlencode
 
 from shared.metrics import metrics
 from shared.torngit.status import Status
@@ -20,6 +19,7 @@ from shared.torngit.exceptions import (
     TorngitServer5xxCodeError,
     TorngitClientError,
 )
+from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
 

@@ -6,7 +6,6 @@ from urllib.parse import parse_qsl
 
 import oauth2 as oauth
 from tlslite.utils import keyfactory
-from tornado.httputil import url_concat
 
 from shared.config import get_config
 from shared.torngit.base import TorngitBaseAdapter
@@ -16,6 +15,8 @@ from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
 )
 from shared.torngit.status import Status
+from shared.utils.urls import url_concat
+
 
 PEM = """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQC9d2iMTFiXglyvHmp5ExoNK2X8nxJ+1mlxgWOyTUpTrOKRiDUb
