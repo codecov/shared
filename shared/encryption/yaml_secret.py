@@ -10,5 +10,5 @@ yaml_secret_encryptor = EncryptorDivider(
             b"\xc6f\x02\xf2Tg\x1d\xfa\x19\xe6\xc3<ky\xae\x0b"
         ),
     },
-    write_encryptor_code=DEFAULT_ENCRYPTOR_CONSTANT,
+    write_encryptor_code="v1",
 )
