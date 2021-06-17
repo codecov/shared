@@ -1,4 +1,6 @@
 from cerberus import Validator
+from voluptuous import Invalid
+
 from shared.validation.helpers import (
     BranchSchemaField,
     LayoutStructure,
@@ -28,11 +30,32 @@ class CodecovYamlValidator(Validator):
     def _normalize_coerce_regexify_path_pattern(self, value):
         return PathPatternSchemaField().validate(value)
 
+    def _normalize_coerce_regexify_path_fix(self, value):
+        return CustomFixPathSchemaField().validate(value)
+
     def _normalize_coerce_branch_name(self, value):
         return UserGivenBranchRegex().validate(value)
 
     def _normalize_coerce_percentage_to_number(self, value):
         return PercentSchemaField().validate(value)
+
+    def _normalize_coerce_string_to_range(self, value):
+        return CoverageRangeSchemaField().validate(value)
+
+    def _normalize_coerce_branch_normalize(self, value):
+        return BranchSchemaField().validate(value)
+
+    def _validate_comma_separated_strings(self, constraint, field, value):
+        """ Test the oddity of a value.
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if constraint is True:
+            try:
+                LayoutStructure().validate(value)
+            except Invalid as exc:
+                self._error(field, exc.error_message)
 
 
 flag_name = {"type": "string", "minlength": 1, "maxlength": 45, "regex": r"^[\w\.\-]+$"}
@@ -45,7 +68,7 @@ branches_structure = {
 
 layout_structure = {
     "type": "string",
-    "coerce": LayoutStructure().validate,
+    "comma_separated_strings": True,
     "nullable": True,
 }
 
@@ -150,7 +173,7 @@ schema = {
             "token": {"type": "string"},
             "slug": {"type": "string"},
             "bot": {"type": "string", "nullable": True},
-            "branch": {"type": "string", "coerce": BranchSchemaField().validate},
+            "branch": {"type": "string", "coerce": "branch_normalize"},
             "ci": {"type": "list", "schema": {"type": "string"}},
             "assume_all_flags": {"type": "boolean"},
             "strict_yaml_branch": {"type": "string"},
@@ -197,11 +220,7 @@ schema = {
         "schema": {
             "precision": {"type": "integer", "min": 0, "max": 99},
             "round": {"type": "string", "allowed": ("down", "up", "nearest"),},
-            "range": {
-                "type": "list",
-                "maxlength": 2,
-                "coerce": CoverageRangeSchemaField().validate,
-            },
+            "range": {"type": "list", "maxlength": 2, "coerce": "string_to_range"},
             "notify": {
                 "type": "dict",
                 "schema": {
@@ -364,7 +383,7 @@ schema = {
     "ignore": path_list_structure,
     "fixes": {
         "type": "list",
-        "schema": {"type": "string", "coerce": CustomFixPathSchemaField().validate},
+        "schema": {"type": "string", "coerce": "regexify_path_fix"},
     },
     "flags": {
         "type": "dict",
@@ -422,7 +441,7 @@ schema = {
         "schema": {
             "layout": {
                 "type": "string",
-                "coerce": LayoutStructure().validate,
+                "comma_separated_strings": True,
                 "nullable": True,
             },
             "require_changes": {"type": "boolean"},
