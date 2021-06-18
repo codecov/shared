@@ -28,7 +28,6 @@ async def fetch_current_yaml_from_provider_via_reference(
         log.exception(
             "File not in %s for commit", extra=dict(commit=ref, location=location)
         )
-    return None
 
 
 async def determine_commit_yaml_location(
@@ -68,7 +67,6 @@ async def determine_commit_yaml_location(
         )
         if yaml_inside_folder:
             return yaml_inside_folder
-    return None
 
 
 def _search_among_files(
@@ -80,4 +78,3 @@ def _search_among_files(
             or file.get("path").split("/")[-1] in desired_filenames
         ):
             return file["path"]
-    return None
