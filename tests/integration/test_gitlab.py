@@ -4,12 +4,8 @@ from shared.torngit.gitlab import Gitlab
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
-    TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
     TorngitClientError,
 )
-
-from tornado.httpclient import HTTPError
 
 
 @pytest.fixture

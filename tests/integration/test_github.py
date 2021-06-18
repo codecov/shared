@@ -3,14 +3,10 @@ import pytest
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
-    TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
-    TorngitClientError,
     TorngitRepoNotFoundError,
 )
 
 from shared.torngit.github import Github
-from tornado.httpclient import HTTPError
 
 
 @pytest.fixture
