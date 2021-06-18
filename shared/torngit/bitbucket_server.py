@@ -1,22 +1,21 @@
-import os
 import base64
-from json import loads, dumps
+import os
 from datetime import datetime
+from json import dumps, loads
 from urllib.parse import parse_qsl
 
 import oauth2 as oauth
-from tornado.web import HTTPError
 from tlslite.utils import keyfactory
-import urllib.parse as urllib_parse
 from tornado.httputil import url_concat
-from tornado.httpclient import HTTPError as ClientError
 
-
-from shared.torngit.status import Status
-from shared.torngit.base import TorngitBaseAdapter
-from shared.torngit.exceptions import TorngitObjectNotFoundError
 from shared.config import get_config
-
+from shared.torngit.base import TorngitBaseAdapter
+from shared.torngit.exceptions import (
+    TorngitClientError,
+    TorngitClientGeneralError,
+    TorngitObjectNotFoundError,
+)
+from shared.torngit.status import Status
 
 PEM = """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQC9d2iMTFiXglyvHmp5ExoNK2X8nxJ+1mlxgWOyTUpTrOKRiDUb
@@ -199,7 +198,8 @@ class BitbucketServer(TorngitBaseAdapter):
         elif status == 204:
             return None
 
-        raise HTTPError(status)
+        message = f"BitBucket Server API: {status}"
+        raise TorngitClientGeneralError(status, response, message)
 
     async def get_authenticated(self, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
@@ -288,7 +288,7 @@ class BitbucketServer(TorngitBaseAdapter):
                     start=start,
                     token=token,
                 )
-            except ClientError as ce:
+            except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(f"Path {path} not found at {ref}")
                 raise
