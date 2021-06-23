@@ -466,11 +466,35 @@ schema = {
 }
 
 
+def _calculate_error_location_and_message_from_error_dict(error_dict):
+    current_value, location_so_far = error_dict, []
+    steps_done = 0
+    # max depth to avoid being put in a loop
+    while steps_done < 20:
+        if isinstance(current_value, list) and len(current_value) > 0:
+            current_value = current_value[0]
+        if isinstance(current_value, dict) and len(current_value) > 0:
+            first_key, first_value = next(iter((current_value.items())))
+            location_so_far.append(first_key)
+            current_value = first_value
+        if isinstance(current_value, str):
+            return location_so_far, current_value
+        steps_done += 1
+    return location_so_far, str(current_value)
+
+
 def validate_experimental(yaml_dict, show_secret):
     validator = CodecovYamlValidator(show_secret=show_secret)
     is_valid = validator.validate(yaml_dict, schema)
     if not is_valid:
+        error_dict = validator.errors
+        (
+            error_location,
+            error_message,
+        ) = _calculate_error_location_and_message_from_error_dict(error_dict)
         raise InvalidYamlException(
-            error_location=validator.errors, error_message="ERROR EXPERIMENTAL",
+            error_location=error_location,
+            error_dict=error_dict,
+            error_message=error_message,
         )
     return validator.document

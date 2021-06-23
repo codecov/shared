@@ -4,7 +4,7 @@ import pytest
 
 from shared.validation.exceptions import InvalidYamlException
 from tests.base import BaseTestCase
-from shared.validation.yaml import validate_yaml, UserGivenSecret, compare_to_new_style
+from shared.validation.yaml import validate_yaml, UserGivenSecret
 from shared.config import get_config, ConfigHelper
 
 
@@ -197,7 +197,8 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"coverage": {"status": {"patch": "banana"}}}
         with pytest.raises(InvalidYamlException) as ex:
             validate_yaml(user_input)
-        assert ex.value.error_message == "expected bool"
+        assert ex.value.error_location == ["coverage", "status", "patch"]
+        assert ex.value.error_message == "must be of ['dict', 'boolean'] type"
 
     def test_many_flags_validation(self):
         user_input = {
@@ -549,7 +550,7 @@ class TestUserYamlValidation(BaseTestCase):
             validate_yaml(user_input)
         exception = exc.value
         assert exc.value.error_location == ["codecov", "notify", "after_n_builds"]
-        assert exc.value.error_message == "value must be at least 0"
+        assert exc.value.error_message == "min value is 0"
 
     def test_positive_notify_after_n_builds(self):
         user_input = {"codecov": {"notify": {"after_n_builds": 1}}}
@@ -562,7 +563,7 @@ class TestUserYamlValidation(BaseTestCase):
             validate_yaml(user_input)
         exception = exc.value
         assert exc.value.error_location == ["comment", "after_n_builds"]
-        assert exc.value.error_message == "value must be at least 0"
+        assert exc.value.error_message == "min value is 0"
 
     def test_invalid_yaml_case(self):
         user_input = {
@@ -577,7 +578,7 @@ class TestUserYamlValidation(BaseTestCase):
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         assert exc.value.error_location == ["coverage", "status", "project", "base"]
-        assert exc.value.error_message == "not a valid value"
+        assert exc.value.error_message == "must be of ['dict', 'boolean'] type"
 
     def test_invalid_yaml_case_custom_validator(self):
         user_input = {
@@ -592,9 +593,7 @@ class TestUserYamlValidation(BaseTestCase):
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         assert exc.value.error_location == ["coverage", "range"]
-        assert (
-            exc.value.error_message == "Upper bound 5000.0 should be between 0 and 100"
-        )
+        assert exc.value.error_message == "must be of list type"
 
     def test_yaml_with_null_threshold(self):
         user_input = {
@@ -803,46 +802,6 @@ class TestUserYamlValidation(BaseTestCase):
         expected_result = {"github_checks": {"annotations": False}}
         assert validate_yaml(user_input) == expected_result
 
-    def test_required_fields(self):
-        # Valid beause it has all required sub-fields
-        user_input = {
-            "parsers": {
-                "gcov": {
-                    "branch_detection": {
-                        "conditional": True,
-                        "loop": True,
-                        "method": False,
-                        "macro": False,
-                    }
-                }
-            }
-        }
-        expected_result = {
-            "parsers": {
-                "gcov": {
-                    "branch_detection": {
-                        "conditional": True,
-                        "loop": True,
-                        "method": False,
-                        "macro": False,
-                    }
-                }
-            }
-        }
-        assert validate_yaml(user_input) == expected_result
-
-        # Invalid because it only specifies one sub-field but all are required
-        with pytest.raises(InvalidYamlException) as exc:
-            user_input = {
-                "parsers": {"gcov": {"branch_detection": {"conditional": True}}}
-            }
-            validate_yaml(user_input)
-        assert exc.value.error_location == ["parsers", "gcov", "branch_detection"]
-        assert (
-            exc.value.error_message
-            == "All subfields (conditional, loop, method, macro) are required when specifying branch detection"
-        )
-
 
 class TestValidationConfig(object):
     def test_validate_default_config_yaml(self, mocker):
@@ -874,70 +833,3 @@ class TestValidationConfig(object):
         }
         res = validate_yaml(get_config("site", default={}), show_secrets=True)
         assert res == expected_result
-
-
-class Testcompare_to_new_style(object):
-    def test_compare_to_new_style_success_when_should_fail(self, mocker):
-        inputted_yaml_dict, res, error, show_secrets = (
-            mocker.MagicMock(),
-            None,
-            InvalidYamlException("location", "message"),
-            False,
-        )
-        mocker.patch(
-            "shared.validation.yaml.validate_experimental",
-            return_value={"data": "banana"},
-        )
-        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
-
-    def test_compare_to_new_style_fail_when_should_pass(self, mocker):
-        inputted_yaml_dict, res, error, show_secrets = (
-            mocker.MagicMock(),
-            {"data": "apple"},
-            None,
-            False,
-        )
-        mocker.patch(
-            "shared.validation.yaml.validate_experimental",
-            side_effect=InvalidYamlException("location", "message"),
-        )
-        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
-
-    def test_compare_to_new_style_crash(self, mocker):
-        inputted_yaml_dict, res, error, show_secrets = (
-            mocker.MagicMock(),
-            {"data": "apple"},
-            None,
-            False,
-        )
-        mocker.patch(
-            "shared.validation.yaml.validate_experimental",
-            side_effect=Exception("Oops"),
-        )
-        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
-
-    def test_compare_to_new_style_different_result(self, mocker):
-        inputted_yaml_dict, res, error, show_secrets = (
-            mocker.MagicMock(),
-            {"data": "apple"},
-            None,
-            False,
-        )
-        mocker.patch(
-            "shared.validation.yaml.validate_experimental",
-            return_value={"data": "apple", "extra": "kiwi"},
-        )
-        assert not compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)
-
-    def test_compare_to_new_style_same_result(self, mocker):
-        inputted_yaml_dict, res, error, show_secrets = (
-            mocker.MagicMock(),
-            {"data": "apple", "extra": "kiwi"},
-            None,
-            False,
-        )
-        mocker.patch(
-            "shared.validation.yaml.validate_experimental",
-            return_value={"data": "apple", "extra": "kiwi"},
-        )
-        assert compare_to_new_style(inputted_yaml_dict, res, error, show_secrets)

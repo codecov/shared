@@ -1,5 +1,8 @@
 import pytest
-from shared.validation.experimental import validate_experimental
+from shared.validation.experimental import (
+    validate_experimental,
+    _calculate_error_location_and_message_from_error_dict,
+)
 from shared.validation.exceptions import InvalidYamlException
 
 
@@ -91,9 +94,10 @@ def test_improper_layout():
     }
     with pytest.raises(InvalidYamlException) as exc:
         validate_experimental(user_input, show_secret=False)
-    assert exc.value.error_location == {
+    assert exc.value.error_dict == {
         "comment": [{"layout": ["Unexpected values on layout: apple,banana"]}]
     }
+    assert exc.value.error_location == ["comment", "layout"]
 
 
 def test_proper_layout():
@@ -116,3 +120,22 @@ def test_codecov_branch():
     assert res == {
         "codecov": {"branch": "pterosaur"},
     }
+
+
+def test_calculate_error_location_and_message_from_error_dict():
+    error_dict = {"comment": [{"layout": {"deep": [[[[[{"inside": [["value"]]}]]]]]}}]}
+    assert (
+        ["comment", "layout", "deep", "inside"],
+        "value",
+    ) == _calculate_error_location_and_message_from_error_dict(error_dict)
+    # case where the value is just very nested.
+    # This is not a requirement of any kind. This is just so
+    # there are no cases where a customer can send some special yaml with loops
+    # and make us keep parsing this forever
+    # It might even be overkill
+    assert (
+        ["value", "some", "thing"],
+        "[[['haha']]]",
+    ) == _calculate_error_location_and_message_from_error_dict(
+        {"value": {"some": {"thing": [[[[[[[[[[[[[[[[[[[["haha"]]]]]]]]]]]]]]]]]]]]}}}
+    )
