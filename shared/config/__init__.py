@@ -28,6 +28,7 @@ default_config = {
             "iam_endpoint": None,
             "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         },
+        "database_url": "postgres://postgres:@postgres:5432/postgres",
     },
     "site": {
         "codecov": {"require_ci_to_pass": True},

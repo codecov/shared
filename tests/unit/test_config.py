@@ -36,7 +36,8 @@ class TestConfig(object):
                 "iam_auth": False,
                 "iam_endpoint": None,
                 "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-            }
+            },
+            "database_url": "postgres://postgres:@postgres:5432/postgres",
         }
         assert get_config("setup", "segment", "enabled") is False
         assert (
@@ -290,18 +291,16 @@ class TestConfig(object):
         mocker.patch.object(ConfigHelper, "load_yaml_file", return_value=yaml_content)
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
-        assert get_config("services") == {
-            "minio": {
-                "host": "s3.amazonaws.com",
-                "access_key_id": "codecov-default-key",
-                "secret_access_key": "codecov-default-secret",
-                "verify_ssl": True,
-                "iam_auth": True,
-                "iam_endpoint": None,
-                "bucket": "cce-minio-update-test",
-                "region": "us-east-2",
-                "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-            }
+        assert get_config("services", "minio") == {
+            "host": "s3.amazonaws.com",
+            "access_key_id": "codecov-default-key",
+            "secret_access_key": "codecov-default-secret",
+            "verify_ssl": True,
+            "iam_auth": True,
+            "iam_endpoint": None,
+            "bucket": "cce-minio-update-test",
+            "region": "us-east-2",
+            "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
 
     def test_get_config_minio_with_port(self, mocker):
@@ -320,19 +319,17 @@ class TestConfig(object):
         mocker.patch.object(ConfigHelper, "load_yaml_file", return_value=yaml_content)
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
-        assert get_config("services") == {
-            "minio": {
-                "host": "s3.amazonaws.com",
-                "port": 9000,
-                "access_key_id": "codecov-default-key",
-                "secret_access_key": "codecov-default-secret",
-                "verify_ssl": True,
-                "iam_auth": True,
-                "iam_endpoint": None,
-                "bucket": "cce-minio-update-test",
-                "region": "us-east-2",
-                "hash_key": "ab164bf3f7d947f2a0681b215404873e",
-            }
+        assert get_config("services", "minio") == {
+            "host": "s3.amazonaws.com",
+            "port": 9000,
+            "access_key_id": "codecov-default-key",
+            "secret_access_key": "codecov-default-secret",
+            "verify_ssl": True,
+            "iam_auth": True,
+            "iam_endpoint": None,
+            "bucket": "cce-minio-update-test",
+            "region": "us-east-2",
+            "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
 
     def test_load_env_var(self, mocker):
