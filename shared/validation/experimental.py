@@ -290,7 +290,14 @@ schema = {
                         "keysrules": {"type": "string", "regex": r"^[\w\-\.]+$"},
                         "valuesrules": {
                             "type": "dict",
-                            "schema": {**notification_standard_attributes},
+                            "schema": {
+                                "to": {
+                                    "type": "list",
+                                    "schema": {"type": "string", "coerce": "secret"},
+                                },
+                                "layout": layout_structure,
+                                **notification_standard_attributes,
+                            },
                         },
                     },
                 },

@@ -139,3 +139,60 @@ def test_calculate_error_location_and_message_from_error_dict():
     ) == _calculate_error_location_and_message_from_error_dict(
         {"value": {"some": {"thing": [[[[[[[[[[[[[[[[[[[["haha"]]]]]]]]]]]]]]]]]]]]}}}
     )
+
+
+def test_email_field_with_and_without_secret():
+    user_input = {
+        "coverage": {
+            "notify": {
+                "email": {
+                    "default": {
+                        "to": [
+                            "example@domain.com",
+                            "secret:v1::hfxSizNpugwZzYZXXRxxlszUetU8tyVG1HXCEdK5qeC9XhtxkCsb/Z5nvp70mp4zlbfcinTy9C9lSGXZAmN8uGKuhWnwrFPfYupe7jQ5KQY=",
+                        ],
+                        "threshold": "1%",
+                        "only_pulls": False,
+                        "layout": "reach, diff, flags",
+                        "flags": None,
+                        "paths": None,
+                    }
+                }
+            }
+        }
+    }
+    assert validate_experimental(user_input, show_secret=True) == {
+        "coverage": {
+            "notify": {
+                "email": {
+                    "default": {
+                        "to": ["example@domain.com", "secondexample@seconddomain.com"],
+                        "threshold": 1.0,
+                        "only_pulls": False,
+                        "layout": "reach, diff, flags",
+                        "flags": None,
+                        "paths": None,
+                    }
+                }
+            }
+        }
+    }
+    assert validate_experimental(user_input, show_secret=False) == {
+        "coverage": {
+            "notify": {
+                "email": {
+                    "default": {
+                        "to": [
+                            "example@domain.com",
+                            "secret:v1::hfxSizNpugwZzYZXXRxxlszUetU8tyVG1HXCEdK5qeC9XhtxkCsb/Z5nvp70mp4zlbfcinTy9C9lSGXZAmN8uGKuhWnwrFPfYupe7jQ5KQY=",
+                        ],
+                        "threshold": 1.0,
+                        "only_pulls": False,
+                        "layout": "reach, diff, flags",
+                        "flags": None,
+                        "paths": None,
+                    }
+                }
+            }
+        }
+    }
