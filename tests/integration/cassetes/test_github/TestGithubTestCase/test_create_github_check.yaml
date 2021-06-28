@@ -24,7 +24,7 @@ interactions:
       :\"75f355d8d14ba3d7761c728b4d2607cde0eef065\",\"external_id\":\"\",\"url\":\"\
       https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357\"\
       ,\"html_url\":\"https://github.com/ThiagoCodecov/example-python/runs/1256232357\"\
-      ,\"details_url\":\"https://codecov.io\",\"status\":\"in_progress\",\"conclusion\"\
+      ,\"details_url\":\"https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr\",\"status\":\"in_progress\",\"conclusion\"\
       :null,\"started_at\":\"2020-10-14T23:00:59Z\",\"completed_at\":null,\"output\"\
       :{\"title\":null,\"summary\":null,\"text\":null,\"annotations_count\":0,\"annotations_url\"\
       :\"https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357/annotations\"\

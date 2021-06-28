@@ -986,12 +986,7 @@ class Github(TorngitBaseAdapter):
         if name is not None:
             url += "?check_name={}".format(name)
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                url,
-                token=token,
-            )
+            res = await self.api(client, "get", url, token=token,)
             return res
 
     async def get_check_suites(self, git_sha, token=None):
@@ -1005,14 +1000,22 @@ class Github(TorngitBaseAdapter):
             return res
 
     async def update_check_run(
-        self, check_run_id, conclusion, status="completed", output=None, token=None
+        self,
+        check_run_id,
+        conclusion,
+        status="completed",
+        output=None,
+        url="https://codecov.io",
+        token=None,
     ):
         async with self.get_client() as client:
             res = await self.api(
                 client,
                 "patch",
                 "/repos/{}/check-runs/{}".format(self.slug, check_run_id),
-                body=dict(conclusion=conclusion, status=status, output=output),
+                body=dict(
+                    conclusion=conclusion, status=status, output=output, details_url=url
+                ),
                 token=token,
             )
             return res
