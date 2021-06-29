@@ -403,7 +403,10 @@ schema = {
                 "required": {"type": "boolean"},
                 "ignore": path_list_structure,
                 "paths": path_list_structure,
-                "assume": {"type": ["boolean", "string"]},
+                "assume": {
+                    "type": ["boolean", "string", "dict"],
+                    "schema": {"branches": branches_structure},
+                },
             },
         },
     },

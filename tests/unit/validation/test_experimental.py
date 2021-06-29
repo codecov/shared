@@ -196,3 +196,11 @@ def test_email_field_with_and_without_secret():
             }
         }
     }
+
+
+def test_assume_flags():
+    # It's deprecated, but still
+    user_input = {"flags": {"some_flag": {"assume": {"branches": ["master"]}}}}
+    assert validate_experimental(user_input, show_secret=True) == {
+        "flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}
+    }
