@@ -290,7 +290,9 @@ class BitbucketServer(TorngitBaseAdapter):
                 )
             except TorngitClientError as ce:
                 if ce.code == 404:
-                    raise TorngitObjectNotFoundError(f"Path {path} not found at {ref}")
+                    raise TorngitObjectNotFoundError(
+                        ce.response, f"Path {path} not found at {ref}"
+                    )
                 raise
 
             content.extend(res["lines"])

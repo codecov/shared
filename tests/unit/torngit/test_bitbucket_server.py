@@ -5,7 +5,10 @@ import oauth2 as oauth
 
 from shared.torngit.bitbucket_server import BitbucketServer
 
-from shared.torngit.exceptions import TorngitClientGeneralError
+from shared.torngit.exceptions import (
+    TorngitClientGeneralError,
+    TorngitObjectNotFoundError,
+)
 
 
 @pytest.fixture
@@ -70,3 +73,18 @@ class TestBitbucketServer(object):
         url = "random_url"
         with pytest.raises(TorngitClientGeneralError):
             await valid_handler.api(method, url)
+
+    @pytest.mark.asyncio
+    async def test_get_source_object_not_found(self, valid_handler, mocker):
+        response_dict = {"status": 404, "content-type": "application/json"}
+        content = json.dumps({})
+        mocked_fetch = mocker.patch.object(
+            oauth.Client, "request", return_value=(response_dict, content)
+        )
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=404))
+        )
+        path = "some/path/"
+        ref = "commitsha"
+        with pytest.raises(TorngitObjectNotFoundError):
+            await valid_handler.get_source(path, ref)
