@@ -987,7 +987,9 @@ class TestGithubTestCase(object):
         self, integration_installed_handler, codecov_vcr
     ):
         res = await integration_installed_handler.update_check_run(
-            1256232357, "success",
+            1256232357,
+            "success",
+            url="https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
         )
         expected_result = {
             "id": 1256232357,

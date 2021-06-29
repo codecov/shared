@@ -1005,17 +1005,18 @@ class Github(TorngitBaseAdapter):
         conclusion,
         status="completed",
         output=None,
-        url="https://codecov.io",
+        url=None,
         token=None,
     ):
+        body = dict(conclusion=conclusion, status=status, output=output)
+        if url:
+            body["details_url"] = url
         async with self.get_client() as client:
             res = await self.api(
                 client,
                 "patch",
                 "/repos/{}/check-runs/{}".format(self.slug, check_run_id),
-                body=dict(
-                    conclusion=conclusion, status=status, output=output, details_url=url
-                ),
+                body=body,
                 token=token,
             )
             return res
