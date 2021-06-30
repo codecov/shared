@@ -31,7 +31,6 @@ setup(
         "tornado",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",
-        "voluptuous>=0.11.7",
         "httpx>=0.16.0",
         "oauthlib",
         "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.14#egg=ribs",

@@ -1,31 +1,8 @@
 import logging
-import random
-import os
 
-from voluptuous import (
-    Schema,
-    Optional,
-    MultipleInvalid,
-    Or,
-    And,
-    Match,
-    Range,
-    Length,
-    Inclusive,
-    Msg,
-)
 from shared.validation.exceptions import InvalidYamlException
-from shared.validation.helpers import (
-    PercentSchemaField,
-    BranchSchemaField,
-    UserGivenBranchRegex,
-    LayoutStructure,
-    PathPatternSchemaField,
-    UserGivenSecret,
-    CoverageRangeSchemaField,
-    CustomFixPathSchemaField,
-)
-from shared.validation.experimental import validate_experimental
+from shared.validation.validator import CodecovYamlValidator
+from shared.validation.user_schema import schema
 
 log = logging.getLogger(__name__)
 
@@ -89,3 +66,37 @@ def pre_process_yaml(inputted_yaml_dict):
         if "require_ci_to_pass" in inputted_yaml_dict["codecov"]["notify"]:
             val = inputted_yaml_dict["codecov"]["notify"].pop("require_ci_to_pass")
             inputted_yaml_dict["codecov"]["require_ci_to_pass"] = val
+
+
+def _calculate_error_location_and_message_from_error_dict(error_dict):
+    current_value, location_so_far = error_dict, []
+    steps_done = 0
+    # max depth to avoid being put in a loop
+    while steps_done < 20:
+        if isinstance(current_value, list) and len(current_value) > 0:
+            current_value = current_value[0]
+        if isinstance(current_value, dict) and len(current_value) > 0:
+            first_key, first_value = next(iter((current_value.items())))
+            location_so_far.append(first_key)
+            current_value = first_value
+        if isinstance(current_value, str):
+            return location_so_far, current_value
+        steps_done += 1
+    return location_so_far, str(current_value)
+
+
+def validate_experimental(yaml_dict, show_secret):
+    validator = CodecovYamlValidator(show_secret=show_secret)
+    is_valid = validator.validate(yaml_dict, schema)
+    if not is_valid:
+        error_dict = validator.errors
+        (
+            error_location,
+            error_message,
+        ) = _calculate_error_location_and_message_from_error_dict(error_dict)
+        raise InvalidYamlException(
+            error_location=error_location,
+            error_dict=error_dict,
+            error_message=error_message,
+        )
+    return validator.document
