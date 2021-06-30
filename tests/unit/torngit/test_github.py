@@ -1,6 +1,7 @@
 import httpx
 import pytest
 import respx
+import json
 
 from shared.torngit.github import Github
 from shared.torngit.base import TokenType
@@ -547,3 +548,46 @@ class TestUnitGithub(object):
         res = await valid_handler.list_teams()
         assert res == expected_result
         assert mocked_response.called is True
+
+    @pytest.mark.asyncio
+    async def test_update_check_run_no_url(self, valid_handler):
+        with respx.mock:
+            mocked_response = respx.patch(
+                "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # response doesn't matter here
+                    json={},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+
+            res = await valid_handler.update_check_run(1256232357, "success",)
+
+        assert mocked_response.call_count == 1
+        print(mocked_response.calls[0].request.content)
+        assert (
+            "details_url"
+            not in json.loads(mocked_response.calls[0].request.content).keys()
+        )
+
+    @pytest.mark.asyncio
+    async def test_update_check_run_url(self, valid_handler):
+        url = "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"
+        with respx.mock:
+            mocked_response = respx.patch(
+                "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # response doesn't matter here
+                    json={},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            res = await valid_handler.update_check_run(1256232357, "success", url=url,)
+        assert mocked_response.call_count == 1
+        assert (
+            json.loads(mocked_response.calls[0].request.content)["details_url"] == url
+        )
