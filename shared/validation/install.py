@@ -1,9 +1,8 @@
 import logging
 
-from shared.validation.experimental import (
-    schema as user_yaml_schema,
-    CodecovYamlValidator,
-)
+from shared.validation.user_schema import schema as user_yaml_schema
+from shared.validation.validator import CodecovYamlValidator
+
 
 log = logging.getLogger(__name__)
 

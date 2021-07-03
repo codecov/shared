@@ -3,10 +3,15 @@ import numbers
 import binascii
 import logging
 
-from voluptuous import Invalid
 from shared.encryption.yaml_secret import yaml_secret_encryptor
 
 log = logging.getLogger(__name__)
+
+
+class Invalid(Exception):
+    def __init__(self, error_message):
+        super().__init__()
+        self.error_message = error_message
 
 
 class CoverageRangeSchemaField(object):
