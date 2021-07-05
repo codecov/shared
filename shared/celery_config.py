@@ -20,6 +20,7 @@ remove_webhook_task_name = "app.tasks.remove_webhook.RemoveOldHook"
 synchronize_task_name = "app.tasks.synchronize.Synchronize"
 new_user_activated_task_name = "app.tasks.new_user_activated.NewUserActivated"
 add_to_sendgrid_list_task_name = "app.tasks.add_to_sendgrid_list.AddToSendgridList"
+compute_comparison_task_name = "app.tasks.compute_comparison.ComputeComparison"
 
 
 class BaseCeleryConfig(object):
@@ -181,4 +182,13 @@ class BaseCeleryConfig(object):
             )
         },
         add_to_sendgrid_list_task_name: {"queue": task_default_queue},
+        compute_comparison_task_name: {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                "compute_comparison",
+                "queue",
+                default=task_default_queue,
+            )
+        },
     }
