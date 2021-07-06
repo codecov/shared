@@ -577,3 +577,45 @@ class TestUnitGithub(object):
         res = await valid_handler.list_teams()
         assert res == expected_result
         assert mocked_response.called is True
+
+    @pytest.mark.asyncio
+    async def test_update_check_run_no_url(self, valid_handler):
+        with respx.mock:
+            mocked_response = respx.patch(
+                url="https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
+                json={"conclusion": "success", "status": "completed", "output": None},
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # response doesn't matter here
+                    json={},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+
+            res = await valid_handler.update_check_run(1256232357, "success")
+
+        assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_update_check_run_url(self, valid_handler):
+        url = "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"
+        with respx.mock:
+            mocked_response = respx.patch(
+                url="https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
+                json={
+                    "conclusion": "success",
+                    "status": "completed",
+                    "output": None,
+                    "details_url": "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
+                },
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # response doesn't matter here
+                    json={},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            res = await valid_handler.update_check_run(1256232357, "success", url=url)
+        assert mocked_response.call_count == 1

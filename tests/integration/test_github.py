@@ -983,7 +983,9 @@ class TestGithubTestCase(object):
         self, integration_installed_handler, codecov_vcr
     ):
         res = await integration_installed_handler.update_check_run(
-            1256232357, "success",
+            1256232357,
+            "success",
+            url="https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
         )
         expected_result = {
             "id": 1256232357,
@@ -992,7 +994,7 @@ class TestGithubTestCase(object):
             "external_id": "",
             "url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
             "html_url": "https://github.com/ThiagoCodecov/example-python/runs/1256232357",
-            "details_url": "https://codecov.io",
+            "details_url": "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
             "status": "completed",
             "conclusion": "success",
             "started_at": "2020-10-14T23:00:59Z",
@@ -1118,7 +1120,7 @@ class TestGithubTestCase(object):
                     "external_id": "",
                     "url": "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
                     "html_url": "https://github.com/ThiagoCodecov/example-python/runs/1256232357",
-                    "details_url": "https://codecov.io",
+                    "details_url": "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
                     "status": "completed",
                     "conclusion": "success",
                     "started_at": "2020-10-14T23:00:59Z",
