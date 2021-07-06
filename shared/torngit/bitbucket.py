@@ -4,7 +4,6 @@ import urllib.parse as urllib_parse
 import logging
 
 import httpx
-from tornado.auth import OAuthMixin
 from tornado.httputil import url_concat
 from oauthlib import oauth1
 
@@ -26,11 +25,10 @@ log = logging.getLogger(__name__)
 METRICS_PREFIX = "services.torngit.bitbucket"
 
 
-class Bitbucket(TorngitBaseAdapter, OAuthMixin):
+class Bitbucket(TorngitBaseAdapter):
     _OAUTH_REQUEST_TOKEN_URL = "https://bitbucket.org/api/1.0/oauth/request_token"
     _OAUTH_ACCESS_TOKEN_URL = "https://bitbucket.org/api/1.0/oauth/access_token"
     _OAUTH_AUTHORIZE_URL = "https://bitbucket.org/api/1.0/oauth/authenticate"
-    _OAUTH_VERSION = "1.0a"
     service = "bitbucket"
     api_url = "https://bitbucket.org"
     service_url = "https://bitbucket.org"
@@ -61,17 +59,22 @@ class Bitbucket(TorngitBaseAdapter, OAuthMixin):
         # make oauth request
         all_args = {}
         all_args.update(kwargs)
+        url = url_concat(url, kwargs)
+
         if json:
             headers["Content-Type"] = "application/json"
         else:
             all_args.update(body or {})
         token_to_use = token or self.token
-        oauth = self._oauth_request_parameters(
-            url, token_to_use, all_args, method=method.upper()
+        oauth_client = oauth1.Client(
+            self._oauth_consumer_token()["key"],
+            client_secret=self._oauth_consumer_token()["secret"],
+            resource_owner_key=token_to_use["key"],
+            resource_owner_secret=token_to_use["secret"],
+            signature_type=oauth1.SIGNATURE_TYPE_QUERY,
         )
-        kwargs.update(oauth)
+        url, _header, _body = oauth_client.sign(url)
 
-        url = url_concat(url, kwargs)
         kwargs = dict(
             json=body if body is not None and json else None,
             data=body if not json else None,
