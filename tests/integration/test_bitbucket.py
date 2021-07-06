@@ -2,15 +2,9 @@ import pytest
 import json
 
 from unittest.mock import patch
-from tornado.httpclient import HTTPError
 
 from shared.torngit.enums import Endpoints
-from shared.torngit.exceptions import (
-    TorngitObjectNotFoundError,
-    TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
-    TorngitClientError,
-)
+from shared.torngit.exceptions import TorngitObjectNotFoundError
 
 from shared.torngit.bitbucket import Bitbucket
 

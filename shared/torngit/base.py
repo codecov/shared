@@ -249,7 +249,7 @@ class TorngitBaseAdapter(object):
         Raises:
             NotImplementedError: If the adapter does not have this ability implemented
             exceptions.ObjectNotFoundException: If this comment could not be found
-            tornado.httpclient.HTTPError: If any other HTTP error occurs
+            exceptions.TorngitClientError: If any other HTTP error occurs
         """
         raise NotImplementedError()
 
