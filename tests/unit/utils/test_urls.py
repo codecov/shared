@@ -2,7 +2,7 @@
 
 import pytest
 from tests.base import BaseTestCase
-from shared.utils.urls import escape, make_url, _url_concat
+from shared.utils.urls import escape, make_url, url_concat
 
 
 class TestUrlsUtil(BaseTestCase):
@@ -62,7 +62,7 @@ class TestUrlsUtil(BaseTestCase):
         ],
     )
     def test_url_concat(self, url, args, expected):
-        res = _url_concat(url, args)
+        res = url_concat(url, args)
         assert res == expected
 
     def test_url_concat_err(self):
@@ -70,4 +70,4 @@ class TestUrlsUtil(BaseTestCase):
             Exception, match="'args' parameter should be dict, list or tuple"
         ):
             url = "http://example.com"
-            res = _url_concat(url, "abc")
+            res = url_concat(url, "abc")

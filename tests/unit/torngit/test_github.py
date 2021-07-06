@@ -2,6 +2,8 @@ import httpx
 import pytest
 import respx
 
+from urllib.parse import urlparse, parse_qsl
+
 from shared.torngit.github import Github
 from shared.torngit.base import TokenType
 
@@ -123,6 +125,34 @@ class TestUnitGithub(object):
             await valid_handler.api(
                 client, "get", "/repos/%s/branches" % valid_handler.slug, per_page=100,
             )
+
+    @pytest.mark.asyncio
+    async def test_api_client_query_params(self, valid_handler, mocker):
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                return_value=mocker.MagicMock(text="kowabunga", status_code=200)
+            )
+        )
+        method = "GET"
+        url = "/random_url"
+        query_params = {"qparam1": "a param", "qparam2": "another param"}
+        res = await valid_handler.api(client, method, url, **query_params)
+        assert res == "kowabunga"
+        assert client.request.call_count == 1
+        args, kwargs = client.request.call_args
+        print(args)
+        assert len(args) == 2
+        built_url = args[1]
+        parsed_url = urlparse(built_url)
+        print(parsed_url)
+        assert parsed_url.scheme == "https"
+        assert parsed_url.netloc == "api.github.com"
+        assert parsed_url.path == url
+        assert parsed_url.params == ""
+        assert parsed_url.fragment == ""
+        query = dict(parse_qsl(parsed_url.query, keep_blank_values=True))
+        assert query["qparam1"] == query_params["qparam1"]
+        assert query["qparam2"] == query_params["qparam2"]
 
     def test_loggable_token(self, mocker, valid_handler):
         no_username_handler = Github(

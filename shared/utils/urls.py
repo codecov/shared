@@ -15,7 +15,7 @@ services_short = dict(
 def escape(string, escape=False):
     if isinstance(string, str):
         if escape:
-            return _url_escape(string).replace("%2F", "/")
+            return url_escape(string).replace("%2F", "/")
         return string.encode("utf-8", "replace")
     elif escape:
         return str(string)
@@ -27,7 +27,7 @@ def make_url(repository, *args, **kwargs):
     args = list(map(lambda a: escape(a, True), list(args)))
     kwargs = dict([(k, escape(v)) for k, v in kwargs.items() if v is not None])
     if repository:
-        return _url_concat(
+        return url_concat(
             "/".join(
                 [
                     get_config("setup", "codecov_url"),
@@ -39,23 +39,24 @@ def make_url(repository, *args, **kwargs):
             kwargs,
         )
     else:
-        return _url_concat(
-            "/".join([get_config("setup", "codecov_url")] + args), kwargs
-        )
+        return url_concat("/".join([get_config("setup", "codecov_url")] + args), kwargs)
 
 
-def _url_escape(value):
+def url_escape(value):
     """Returns a valid URL-encoded version of the given value."""
     return quote_plus(utf8(value))
 
 
-def _url_concat(
+def url_concat(
     url: str,
     args: Union[
         None, Dict[str, str], List[Tuple[str, str]], Tuple[Tuple[str, str], ...]
     ],
 ) -> str:
-    """Concatenate url and arguments regardless of whether
+    """Taken from Tornado.httputil
+    https://github.com/tornadoweb/tornado/blob/f059b41d18909f83610bb48eba4678f7f892f52f/tornado/httputil.py#L609
+
+    Concatenate url and arguments regardless of whether
     url has existing query parameters.
 
     ``args`` may be either a dictionary or a list of key-value pairs
@@ -100,7 +101,9 @@ _UTF8_TYPES = (bytes, type(None))
 
 
 def utf8(value):
-    """Converts a string argument to a byte string.
+    """Taken from Tornado.escape
+    https://github.com/tornadoweb/tornado/blob/1db5b45918da8303d2c6958ee03dbbd5dc2709e9/tornado/escape.py#L188
+    Converts a string argument to a byte string.
 
     If the argument is already a byte string or None, it is returned unchanged.
     Otherwise it must be a unicode string and is encoded as utf8.
