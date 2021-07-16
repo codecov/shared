@@ -279,16 +279,19 @@ class TestUserGivenSecret(BaseTestCase):
     def test_simple_user_given_secret(self):
         value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
         encoded_value = UserGivenSecret.encode(value)
-        ugs = UserGivenSecret(show_secret=True)
+        ugs = UserGivenSecret(show_secrets_for=("github", "11934774", "154468867"))
         assert ugs.validate(value) == value
         assert (
             ugs.validate(encoded_value)
             == "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
         )
+        bad_ugs = UserGivenSecret(show_secrets_for=("github", "12345", "154468867"))
+        assert bad_ugs.validate(value) == value
+        assert bad_ugs.validate(encoded_value) == encoded_value
 
     def test_simple_user_given_secret_rotated_key(self):
         encoded_data = "secret:v1::zsV9A8pHadNle357DGJHbZCTyCYA+TXdUd9TN3IY2DIWcPOtgK3Pg1EgA6OZr9XJ1EsdpL765yWrN4pfR3elRdN2LUwiuv6RkNjpbiruHx45agsgxdu8fi24p5pkCLvjcW0HqdH2PTvmHauIp+ptgA=="
-        ugs = UserGivenSecret(show_secret=True)
+        ugs = UserGivenSecret(show_secrets_for=("github", 11934774, 154468867))
         assert (
             ugs.validate(encoded_data)
             == "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
@@ -296,19 +299,19 @@ class TestUserGivenSecret(BaseTestCase):
 
     def test_pseudosecret_user_given_secret(self):
         value = "secret:arriba"
-        ugs = UserGivenSecret(show_secret=True)
+        ugs = UserGivenSecret(show_secrets_for=("github", "12", 98))
         assert ugs.validate(value) == value
 
     def test_b64encoded_pseudosecret_user_given_secret(self):
         encoded_value = b64encode("arriba".encode())
         value = b"secret:" + encoded_value
         value = value.decode()
-        ugs = UserGivenSecret(show_secret=True)
+        ugs = UserGivenSecret(show_secrets_for=("github", "12", 98))
         assert ugs.validate(value) == value
 
     def test_simple_user_dont_show_secret(self):
         value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
         encoded_value = UserGivenSecret.encode(value)
-        ugs = UserGivenSecret(show_secret=False)
+        ugs = UserGivenSecret(show_secrets_for=None)
         assert ugs.validate(value) == value
         assert ugs.validate(encoded_value) == encoded_value
