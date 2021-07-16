@@ -68,7 +68,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
@@ -184,7 +184,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
@@ -237,7 +237,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive20190210001/test_write_then_append_then_read_file/result/1581337070379144\"\
@@ -346,7 +346,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
@@ -463,7 +463,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
@@ -516,7 +516,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_write_then_append_then_read_file%2Fresult?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive20190210001/test_write_then_append_then_read_file/result/1581337071325068\"\

@@ -118,7 +118,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive20190210001\"\
@@ -171,7 +171,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_not_exist_on_first_but_exists_on_second%2Fdoes_not_exist_on_first_but_exists_on_second.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive20190210001/o/test_read_file_does_not_exist_on_first_but_exists_on_second%2Fdoes_not_exist_on_first_but_exists_on_second.txt?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\
