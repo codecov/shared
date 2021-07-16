@@ -1,3 +1,14 @@
+"""
+    Package for user yaml things
+
+    This package depends on:
+
+    - shared.config
+    - shared.validation
+
+    And therefore should not be imported by those
+"""
+
 from copy import deepcopy
 
 from .user_yaml import UserYaml, merge_yamls

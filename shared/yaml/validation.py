@@ -1,8 +1,10 @@
 import logging
+import binascii
 
 from shared.validation.exceptions import InvalidYamlException
 from shared.validation.validator import CodecovYamlValidator
 from shared.validation.user_schema import schema
+from shared.encryption.yaml_secret import yaml_secret_encryptor
 
 log = logging.getLogger(__name__)
 
@@ -85,8 +87,68 @@ def _calculate_error_location_and_message_from_error_dict(error_dict):
     return location_so_far, str(current_value)
 
 
+class CodecovUserYamlValidator(CodecovYamlValidator):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._show_secrets_for = kwargs.get("show_secrets_for", False)
+
+    def _normalize_coerce_secret(self, value: str) -> str:
+        """
+            Coerces secret to normal value
+        """
+        if self._show_secrets_for:
+            return UserGivenSecret(self._show_secrets_for).validate(value)
+        return value
+
+
+class UserGivenSecret(object):
+    class InvalidSecret(Exception):
+        pass
+
+    encryptor = yaml_secret_encryptor
+
+    def __init__(self, show_secrets_for):
+        self.required_prefix = (
+            "/".join(str(s) for s in show_secrets_for) if show_secrets_for else None
+        )
+
+    def validate(self, value):
+        if not self.required_prefix:
+            return value
+        if value is not None and value.startswith("secret:"):
+            try:
+                res = self.decode(value, self.required_prefix)
+                log.info(
+                    "Valid secret was used by customer",
+                    extra=dict(extra_data=self.required_prefix.split("/")),
+                )
+                return res
+            except UserGivenSecret.InvalidSecret:
+                return value
+        return value
+
+    @classmethod
+    def encode(cls, value):
+        return "secret:%s" % cls.encryptor.encode(value).decode()
+
+    @classmethod
+    def decode(cls, value, expected_prefix):
+        try:
+            decoded_value = cls.encryptor.decode(value[7:])
+        except binascii.Error:
+            raise UserGivenSecret.InvalidSecret()
+        except ValueError:
+            raise UserGivenSecret.InvalidSecret()
+        if expected_prefix is not None and not decoded_value.startswith(
+            expected_prefix
+        ):
+            raise UserGivenSecret.InvalidSecret()
+        service, ownerid, repoid, clean_value = decoded_value.split("/", 3)
+        return clean_value
+
+
 def validate_experimental(yaml_dict, show_secrets_for):
-    validator = CodecovYamlValidator(show_secrets_for=show_secrets_for)
+    validator = CodecovUserYamlValidator(show_secrets_for=show_secrets_for)
     is_valid = validator.validate(yaml_dict, schema)
     if not is_valid:
         error_dict = validator.errors
