@@ -47,14 +47,15 @@ def codecov_vcr(request):
     current_path = Path(request.node.fspath)
     current_path_name = current_path.name.replace(".py", "")
     cls_name = request.node.cls.__name__
-    cassete_path = current_path.parent / "cassetes" / current_path_name / cls_name
+    cassette_path = current_path.parent / "cassetes" / current_path_name / cls_name
     current_name = request.node.name
-    casset_file_path = str(cassete_path / f"{current_name}.yaml")
+    cassette_file_path = str(cassette_path / f"{current_name}.yaml")
     with vcr.use_cassette(
-        casset_file_path,
+        cassette_file_path,
         filter_headers=["authorization"],
+        filter_query_parameters=["oauth_nonce", "oauth_timestamp", "oauth_signature"],
         record_mode="once",
-        match_on=["method", "scheme", "host", "port", "path"],
+        match_on=["method", "scheme", "host", "port", "path", "query"],
     ) as cassete_maker:
         yield cassete_maker
 
