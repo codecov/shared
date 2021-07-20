@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
   response:
     content: "def smile():\n    return \":)\"\n\ndef frown():\n    return \":(\"\n"
     headers:
@@ -58,5 +58,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
 version: 1

@@ -7,9 +7,9 @@ interactions:
         User-Agent:
           - Default
       method: GET
-      uri: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master&path=folder
+      uri: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master&path=folder&per_page=100
     response:
-      url: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master&path=folder
+      url: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master&path=folder&per_page=100
       content: '[{"id":"3b18e512dba79e4c8300dd08aeb37f8e728b8dad","name":"hello-world.txt","type":"blob","path":"folder/hello-world.txt","mode":"100644"}]'
       headers:
         Server: nginx

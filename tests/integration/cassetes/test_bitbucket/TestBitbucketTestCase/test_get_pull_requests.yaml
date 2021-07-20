@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests?state=OPEN&page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519414&oauth_nonce=081105162122405c8c0492a0e5a9b8ad&oauth_version=1.0&oauth_signature=ftblvicG7qWmUdyWojB17tbwaWI%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests?state=OPEN&page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519414&oauth_nonce=081105162122405c8c0492a0e5a9b8ad&oauth_version=1.0&oauth_signature=ftblvicG7qWmUdyWojB17tbwaWI%3D
   response:
     content: "{\"pagelen\": 10, \"values\": [{\"description\": \"Maybeeeeee\\r\\n\\\
       r\\nYou\u2019re gonna be the one that saves meeee\", \"links\": {\"decline\"\
@@ -98,5 +98,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests?state=OPEN&page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519414&oauth_nonce=081105162122405c8c0492a0e5a9b8ad&oauth_version=1.0&oauth_signature=ftblvicG7qWmUdyWojB17tbwaWI%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests?state=OPEN&page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519414&oauth_nonce=081105162122405c8c0492a0e5a9b8ad&oauth_version=1.0&oauth_signature=ftblvicG7qWmUdyWojB17tbwaWI%3D
 version: 1

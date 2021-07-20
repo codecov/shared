@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=waydowntokokomo&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
+    uri: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
   response:
     content: '{"pagelen": 10, "values": [{"scm": "git", "website": "", "has_wiki":
       false, "uuid": "{a980e378-088f-48a8-9850-98923f497546}", "links": {"watchers":
@@ -214,5 +214,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=waydowntokokomo&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
+    url: https://bitbucket.org/api/2.0/repositories/codecov?oauth_nonce=4f5ef91295974e429927bc84aec888e8&oauth_timestamp=1574056637&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_signature=wJlFcH5fZCsKE9iBZi0ELNQpHAQ%3D&page=1
 version: 1

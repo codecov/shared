@@ -84,7 +84,10 @@ class TestGithubTestCase(object):
         # get the code and paste it here below
         code = "dc38acf492b071cc4dce"
         handler = Github(
-            oauth_consumer_token=dict(key="999247146557c3ba045c", secret=10 * "21b1",)
+            oauth_consumer_token=dict(
+                key="999247146557c3ba045c",
+                secret="testo8lnq6ihj7zsf896r15yxujnl06og9o0fqiu",
+            )
         )
         res = await handler.get_authenticated_user(code)
         print(res)

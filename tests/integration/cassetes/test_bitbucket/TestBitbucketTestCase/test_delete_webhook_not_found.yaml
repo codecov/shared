@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: DELETE
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f011-8397-aa77-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602198&oauth_nonce=fc8ef877776d441bab406f7a47396073&oauth_version=1.0&oauth_signature=A%2F46Dp0fgbZI9lkjovmcu4LfGiw%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f011-8397-aa77-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602198&oauth_nonce=fc8ef877776d441bab406f7a47396073&oauth_version=1.0&oauth_signature=A%2F46Dp0fgbZI9lkjovmcu4LfGiw%3D
   response:
     content: '{"type": "error", "error": {"message": "example-python is not a valid
       hook"}}'
@@ -53,5 +53,5 @@ interactions:
       code: 404
       message: Not Found
     status_code: 404
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f011-8397-aa77-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602198&oauth_nonce=fc8ef877776d441bab406f7a47396073&oauth_version=1.0&oauth_signature=A%2F46Dp0fgbZI9lkjovmcu4LfGiw%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f011-8397-aa77-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602198&oauth_nonce=fc8ef877776d441bab406f7a47396073&oauth_version=1.0&oauth_signature=A%2F46Dp0fgbZI9lkjovmcu4LfGiw%3D
 version: 1
