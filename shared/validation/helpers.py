@@ -378,19 +378,24 @@ class UserGivenSecret(object):
 
     encryptor = yaml_secret_encryptor
 
-    def __init__(self, show_secret):
-        self.show_secret = show_secret
+    def __init__(self, show_secrets_for):
+        self.required_prefix = (
+            "/".join(str(s) for s in show_secrets_for) if show_secrets_for else None
+        )
 
     def validate(self, value):
+        if not self.required_prefix:
+            return value
         if value is not None and value.startswith("secret:"):
             try:
-                secret_value = self.decode(value)
-                log.info("Valid secret was used by customer")
+                res = self.decode(value, self.required_prefix)
+                log.info(
+                    "Valid secret was used by customer",
+                    extra=dict(extra_data=self.required_prefix.split("/")),
+                )
+                return res
             except UserGivenSecret.InvalidSecret:
                 return value
-            if self.show_secret:
-                return secret_value
-            return value
         return value
 
     @classmethod
@@ -398,12 +403,16 @@ class UserGivenSecret(object):
         return "secret:%s" % cls.encryptor.encode(value).decode()
 
     @classmethod
-    def decode(cls, value):
+    def decode(cls, value, expected_prefix):
         try:
             decoded_value = cls.encryptor.decode(value[7:])
         except binascii.Error:
             raise UserGivenSecret.InvalidSecret()
         except ValueError:
+            raise UserGivenSecret.InvalidSecret()
+        if expected_prefix is not None and not decoded_value.startswith(
+            expected_prefix
+        ):
             raise UserGivenSecret.InvalidSecret()
         service, ownerid, repoid, clean_value = decoded_value.split("/", 3)
         return clean_value

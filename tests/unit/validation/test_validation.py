@@ -796,7 +796,9 @@ class TestUserYamlValidation(BaseTestCase):
             },
             "ignore": ["Pods/.*",],
         }
-        result = validate_yaml(user_input, show_secrets=True)
+        result = validate_yaml(
+            user_input, show_secrets_for=("github", "11934774", "154468867")
+        )
         assert result == expected_result
 
     def test_github_checks(self):
@@ -836,7 +838,10 @@ class TestValidationConfig(object):
             },
             "github_checks": {"annotations": True},
         }
-        res = validate_yaml(get_config("site", default={}), show_secrets=True)
+        res = validate_yaml(
+            get_config("site", default={}),
+            show_secrets_for=("github", "11934774", "154468867"),
+        )
         assert res == expected_result
 
 
@@ -883,7 +888,7 @@ def test_validation_with_branches():
         "ignore": ["^coffee.*", "^party_man.*", "^test.*"],
         "codecov": {"notify": {"after_n_builds": 6}},
     }
-    res = validate_experimental(user_input, show_secret=False)
+    res = validate_experimental(user_input, show_secrets_for=None)
     assert res == expected_result
 
 
@@ -904,7 +909,7 @@ def test_validation_with_null_on_paths():
         },
         "ignore": ["^coffee.*", "^test.*"],
     }
-    res = validate_experimental(user_input, show_secret=False)
+    res = validate_experimental(user_input, show_secrets_for=None)
     assert res == expected_result
 
 
@@ -917,7 +922,7 @@ def test_validation_with_null_on_status():
         "coverage": {"status": {"project": {"default": None}, "patch": False}},
         "ignore": ["^coffee.*", "^test.*"],
     }
-    res = validate_experimental(user_input, show_secret=False)
+    res = validate_experimental(user_input, show_secrets_for=None)
     assert res == expected_result
 
 
@@ -927,7 +932,7 @@ def test_improper_layout():
         "comment": {"layout": "banana,apple"},
     }
     with pytest.raises(InvalidYamlException) as exc:
-        validate_experimental(user_input, show_secret=False)
+        validate_experimental(user_input, show_secrets_for=None)
     assert exc.value.error_dict == {
         "comment": [{"layout": ["Unexpected values on layout: apple,banana"]}]
     }
@@ -939,7 +944,7 @@ def test_proper_layout():
         "coverage": {"status": {"project": {"default": None}, "patch": False}},
         "comment": {"layout": "files:10,footer"},
     }
-    res = validate_experimental(user_input, show_secret=False)
+    res = validate_experimental(user_input, show_secrets_for=None)
     assert res == {
         "coverage": {"status": {"project": {"default": None}, "patch": False}},
         "comment": {"layout": "files:10,footer"},
@@ -950,7 +955,7 @@ def test_codecov_branch():
     user_input = {
         "codecov": {"branch": "origin/pterosaur"},
     }
-    res = validate_experimental(user_input, show_secret=False)
+    res = validate_experimental(user_input, show_secrets_for=None)
     assert res == {
         "codecov": {"branch": "pterosaur"},
     }
@@ -995,7 +1000,9 @@ def test_email_field_with_and_without_secret():
             }
         }
     }
-    assert validate_experimental(user_input, show_secret=True) == {
+    assert validate_experimental(
+        user_input, show_secrets_for=("github", "11934774", "154468867")
+    ) == {
         "coverage": {
             "notify": {
                 "email": {
@@ -1011,7 +1018,7 @@ def test_email_field_with_and_without_secret():
             }
         }
     }
-    assert validate_experimental(user_input, show_secret=False) == {
+    assert validate_experimental(user_input, show_secrets_for=None) == {
         "coverage": {
             "notify": {
                 "email": {
@@ -1035,6 +1042,6 @@ def test_email_field_with_and_without_secret():
 def test_assume_flags():
     # It's deprecated, but still
     user_input = {"flags": {"some_flag": {"assume": {"branches": ["master"]}}}}
-    assert validate_experimental(user_input, show_secret=True) == {
-        "flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}
-    }
+    assert validate_experimental(
+        user_input, show_secrets_for=("github", "11934774", "154468867")
+    ) == {"flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}}

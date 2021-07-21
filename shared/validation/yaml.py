@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 # worker (to apply the changes) AND codecov-api (so the validate route reflects the changes) ***
 
 
-def validate_yaml(inputted_yaml_dict, show_secrets=False):
+def validate_yaml(inputted_yaml_dict, show_secrets_for=None):
     """Receives a dict containing the Codecov yaml provided by the user, validates and normalizes the fields for
         usage by other code.
 
@@ -29,7 +29,7 @@ def validate_yaml(inputted_yaml_dict, show_secrets=False):
     if not isinstance(inputted_yaml_dict, dict):
         raise InvalidYamlException([], "Yaml needs to be a dict")
     pre_process_yaml(inputted_yaml_dict)
-    return validate_experimental(inputted_yaml_dict, show_secrets)
+    return validate_experimental(inputted_yaml_dict, show_secrets_for)
 
 
 def post_process(validated_yaml_dict):
@@ -85,11 +85,12 @@ def _calculate_error_location_and_message_from_error_dict(error_dict):
     return location_so_far, str(current_value)
 
 
-def validate_experimental(yaml_dict, show_secret):
-    validator = CodecovYamlValidator(show_secret=show_secret)
+def validate_experimental(yaml_dict, show_secrets_for):
+    validator = CodecovYamlValidator(show_secrets_for=show_secrets_for)
     is_valid = validator.validate(yaml_dict, schema)
     if not is_valid:
         error_dict = validator.errors
+        print(error_dict)
         (
             error_location,
             error_message,

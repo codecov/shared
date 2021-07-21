@@ -16,14 +16,14 @@ from shared.validation.helpers import (
 class CodecovYamlValidator(Validator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._show_secret = kwargs.get("show_secret", False)
+        self._show_secrets_for = kwargs.get("show_secrets_for", False)
 
     def _normalize_coerce_secret(self, value: str) -> str:
         """
             Coerces secret to normal value
         """
-        if self._show_secret:
-            return UserGivenSecret(self._show_secret).validate(value)
+        if self._show_secrets_for:
+            return UserGivenSecret(self._show_secrets_for).validate(value)
         return value
 
     def _normalize_coerce_regexify_path_pattern(self, value):
