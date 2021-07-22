@@ -9,7 +9,7 @@ interactions:
       User-Agent:
       - Default
     method: POST
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
   response:
     content: '{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/114320127"},
       "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/pull-requests/1/_/diff#comment-114320127"}},
@@ -75,5 +75,5 @@ interactions:
       code: 201
       message: CREATED
     status_code: 201
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1566631339&oauth_nonce=df6ee48d165a45758389a71ee8e71073&oauth_version=1.0&oauth_signature=%2F7%2BobvGwMOAp3HiYcYrxkRXIx8M%3D
 version: 1

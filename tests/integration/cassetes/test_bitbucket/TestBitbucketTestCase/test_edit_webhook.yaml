@@ -10,7 +10,7 @@ interactions:
       User-Agent:
       - Default
     method: PUT
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602041&oauth_nonce=ddb0335319f246d98933af48a59371e5&oauth_version=1.0&oauth_signature=widTrBs%2BlgaUlwKjY2YTvYMpWlc%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602041&oauth_nonce=ddb0335319f246d98933af48a59371e5&oauth_version=1.0&oauth_signature=widTrBs%2BlgaUlwKjY2YTvYMpWlc%3D
   response:
     content: '{"read_only": null, "description": "new_name", "links": {"self": {"href":
       "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/hooks/%7B4742f092-8397-4677-8876-5e9a06f10f98%7D"}},
@@ -66,5 +66,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602041&oauth_nonce=ddb0335319f246d98933af48a59371e5&oauth_version=1.0&oauth_signature=widTrBs%2BlgaUlwKjY2YTvYMpWlc%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602041&oauth_nonce=ddb0335319f246d98933af48a59371e5&oauth_version=1.0&oauth_signature=widTrBs%2BlgaUlwKjY2YTvYMpWlc%3D
 version: 1

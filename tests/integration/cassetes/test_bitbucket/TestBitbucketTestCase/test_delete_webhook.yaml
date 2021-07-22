@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: DELETE
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
   response:
     content: ''
     headers:
@@ -54,5 +54,5 @@ interactions:
       code: 204
       message: No Content
     status_code: 204
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
 version: 1

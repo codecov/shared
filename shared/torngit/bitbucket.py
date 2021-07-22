@@ -58,15 +58,15 @@ class Bitbucket(TorngitBaseAdapter):
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
-        # make oauth request
-        all_args = {}
-        all_args.update(kwargs)
+        oauth_body = None
         url = url_concat(url, kwargs)
 
         if json:
             headers["Content-Type"] = "application/json"
-        else:
-            all_args.update(body or {})
+        elif body is not None:
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            oauth_body = body
+
         token_to_use = token or self.token
         oauth_client = oauth1.Client(
             self._oauth_consumer_token()["key"],
@@ -75,11 +75,13 @@ class Bitbucket(TorngitBaseAdapter):
             resource_owner_secret=token_to_use["secret"],
             signature_type=oauth1.SIGNATURE_TYPE_QUERY,
         )
-        url, _header, _body = oauth_client.sign(url)
+        url, headers, oauth_body = oauth_client.sign(
+            url, http_method=method, body=oauth_body, headers=headers
+        )
 
         kwargs = dict(
             json=body if body is not None and json else None,
-            data=body if not json else None,
+            data=oauth_body if not json else None,
             headers=headers,
         )
         log_dict = dict(

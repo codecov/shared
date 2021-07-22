@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/refs/branches?oauth_nonce=68196bfc35d5473cba07ec92748644c1&oauth_timestamp=1561674319&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=waydowntokokomo&oauth_signature=7%2BIvkm9uQV%2FozMt2tOdrE4Hf5dY%3D&pagelen=100
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/refs/branches?oauth_nonce=68196bfc35d5473cba07ec92748644c1&oauth_timestamp=1561674319&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_signature=7%2BIvkm9uQV%2FozMt2tOdrE4Hf5dY%3D&pagelen=100
   response:
     content: '{"pagelen": 100, "values": [{"name": "f/new-branch", "links": {"commits":
       {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commits/f/new-branch"},
@@ -190,5 +190,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/refs/branches?oauth_nonce=68196bfc35d5473cba07ec92748644c1&oauth_timestamp=1561674319&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=waydowntokokomo&oauth_signature=7%2BIvkm9uQV%2FozMt2tOdrE4Hf5dY%3D&pagelen=100
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/refs/branches?oauth_nonce=68196bfc35d5473cba07ec92748644c1&oauth_timestamp=1561674319&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_signature=7%2BIvkm9uQV%2FozMt2tOdrE4Hf5dY%3D&pagelen=100
 version: 1

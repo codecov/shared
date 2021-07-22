@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"conclusion": "success", "status": "completed", "output": null}'
+    body: '{"conclusion": "success", "status": "completed", "output": null, "details_url":"https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"}'
     headers:
       accept:
       - application/vnd.github.antiope-preview+json

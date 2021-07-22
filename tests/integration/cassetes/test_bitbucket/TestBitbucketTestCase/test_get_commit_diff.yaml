@@ -7,7 +7,7 @@ interactions:
       User-Agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d53?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599673&oauth_nonce=7f08d97c0f8f4826b4e9c79f9969f788&oauth_version=1.0&oauth_signature=NQpb%2B4E%2BtSRDp9XufM9d6ha1QVk%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d53?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599673&oauth_nonce=7f08d97c0f8f4826b4e9c79f9969f788&oauth_version=1.0&oauth_signature=NQpb%2B4E%2BtSRDp9XufM9d6ha1QVk%3D
   response:
     content: 'diff --git a/awesome/code_fib.py b/awesome/code_fib.py
 
@@ -76,5 +76,5 @@ interactions:
       code: 200
       message: OK
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d53?oauth_consumer_key=arubajamaicaohiwan&oauth_token=AgCFzqcDEXKjWZLPFD&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599673&oauth_nonce=7f08d97c0f8f4826b4e9c79f9969f788&oauth_version=1.0&oauth_signature=NQpb%2B4E%2BtSRDp9XufM9d6ha1QVk%3D
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d53?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599673&oauth_nonce=7f08d97c0f8f4826b4e9c79f9969f788&oauth_version=1.0&oauth_signature=NQpb%2B4E%2BtSRDp9XufM9d6ha1QVk%3D
 version: 1

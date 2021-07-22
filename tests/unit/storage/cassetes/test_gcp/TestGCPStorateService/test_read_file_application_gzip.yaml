@@ -68,7 +68,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -187,7 +187,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -239,7 +239,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877\"\
@@ -298,7 +298,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: PATCH
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&projection=full
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/gzipped_file%2Ftest_006.txt?generation=1581336765856877&projection=full&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive004/gzipped_file/test_006.txt/1581336765856877\"\

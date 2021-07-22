@@ -68,7 +68,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -183,7 +183,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -298,7 +298,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -350,7 +350,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -402,7 +402,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -454,7 +454,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -508,7 +508,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: DELETE
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_1.txt
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_1.txt?prettyPrint=false
   response:
     body:
       string: ''
@@ -555,7 +555,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: DELETE
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_2.txt
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_2.txt?prettyPrint=false
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\
@@ -606,7 +606,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: DELETE
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_3.txt
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_3.txt?prettyPrint=false
   response:
     body:
       string: ''
@@ -651,7 +651,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -703,7 +703,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_1.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_1.txt?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\
@@ -752,7 +752,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -804,7 +804,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_2.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_2.txt?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\
@@ -853,7 +853,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
@@ -905,7 +905,7 @@ interactions:
       X-Goog-API-Client:
       - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
     method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_3.txt?projection=noAcl
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004/o/test_batch_delete_files%2Fresult_3.txt?projection=noAcl&prettyPrint=false
   response:
     body:
       string: "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"No such object:\
