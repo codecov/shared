@@ -4,12 +4,11 @@ import pytest
 
 from shared.validation.exceptions import InvalidYamlException
 from tests.base import BaseTestCase
-from shared.validation.yaml import (
+from shared.yaml.validation import (
     validate_yaml,
     validate_experimental,
     _calculate_error_location_and_message_from_error_dict,
 )
-from shared.validation.helpers import UserGivenSecret
 from shared.config import get_config, ConfigHelper
 
 
@@ -467,8 +466,7 @@ class TestUserYamlValidation(BaseTestCase):
         assert result == expected_result
 
     def test_simple_case(self):
-        value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
-        encoded_value = UserGivenSecret.encode(value)
+        encoded_value = "secret:v1::zsV9A8pHadNle357DGJHbZCTyCYA+TXdUd9TN3IY2DIWcPOtgK3Pg1EgA6OZr9XJ1EsdpL765yWrN4pfR3elRdN2LUwiuv6RkNjpbiruHx45agsgxdu8fi24p5pkCLvjcW0HqdH2PTvmHauIp+ptgA=="
         user_input = {
             "coverage": {
                 "precision": 2,
@@ -766,40 +764,6 @@ class TestUserYamlValidation(BaseTestCase):
                 "flags",
             ]
             assert exc.value.error_message == "extra keys not allowed"
-
-    def test_show_secret_case(self):
-        value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
-        encoded_value = UserGivenSecret.encode(value)
-        user_input = {
-            "coverage": {
-                "round": "down",
-                "precision": 2,
-                "range": [70.0, 100.0],
-                "status": {"project": {"default": {"base": "auto",}}},
-                "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
-            },
-            "ignore": ["Pods/.*",],
-        }
-        expected_result = {
-            "coverage": {
-                "round": "down",
-                "precision": 2,
-                "range": [70.0, 100.0],
-                "status": {"project": {"default": {"base": "auto",}}},
-                "notify": {
-                    "irc": {
-                        "user_given_title": {
-                            "password": "https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
-                        }
-                    }
-                },
-            },
-            "ignore": ["Pods/.*",],
-        }
-        result = validate_yaml(
-            user_input, show_secrets_for=("github", "11934774", "154468867")
-        )
-        assert result == expected_result
 
     def test_github_checks(self):
         user_input = {"github_checks": True}

@@ -4,8 +4,6 @@ from copy import deepcopy
 from typing import Any
 from shared.config import get_config
 
-from shared.validation.yaml import validate_yaml
-
 log = logging.getLogger(__name__)
 
 

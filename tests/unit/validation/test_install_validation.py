@@ -1,4 +1,5 @@
 from shared.validation.install import validate_install_configuration
+from shared.yaml.validation import UserGivenSecret
 
 
 def test_validate_install_configuration_empty():
@@ -284,3 +285,26 @@ def test_validate_sample_production_config():
     res = validate_install_configuration(user_input)
     assert res["site"] == expected_result["site"]
     assert res == expected_result
+
+
+def test_validate_install_configuration_with_user_yaml_with_user_secret():
+    value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
+    encoded_value = UserGivenSecret.encode(value)
+    user_yaml_dict = {
+        "coverage": {
+            "round": "down",
+            "precision": 2,
+            "range": [70.0, 100.0],
+            "status": {"project": {"default": {"base": "auto",}}},
+            "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
+        },
+        "ignore": ["Pods/.*"],
+    }
+    user_input = {
+        "setup": {"codecov_url": "http://codecov.company.com"},
+        "site": user_yaml_dict,
+    }
+    assert validate_install_configuration(user_input) == {
+        "setup": {"codecov_url": "http://codecov.company.com"},
+        "site": user_yaml_dict,
+    }
