@@ -13,16 +13,19 @@ log = logging.getLogger(__name__)
 
 
 def validate_yaml(inputted_yaml_dict, show_secrets_for=None):
-    """Receives a dict containing the Codecov yaml provided by the user, validates and normalizes the fields for
-        usage by other code.
+    """
+        Receives a dict containing the Codecov yaml provided by the user, validates and normalizes
+            the fields for usage by other code.
 
     Args:
-        inputted_yaml_dict (dict): The Codecov yaml as parsed by a yaml parser and turned into a dict
-        show_secrets (boolean): indicates whether the validated yaml should show the decrypted versions of any encrypted values.
-            worker sets this to true since we need to use these values, codecov-api sets this to false since the validate route is public and we
-            don't want to unintentionally expose any sensitive user data.
+        inputted_yaml_dict (dict): The Codecov yaml as parsed by a yaml parser and turned into a
+            dict
+        show_secrets_for (tuple): indicates a prefix for which we should show the decrypted
+            versions of any encrypted values. `worker `sets this to the proper tuple since we need
+            to use these values, codecov-api sets this to false since the validate
+            route is public and we don't want to unintentionally expose any sensitive user data.
 
-    Returns: 
+    Returns:
         (dict): A deep copy of the dict with the fields normalized
 
     Raises:
@@ -31,19 +34,7 @@ def validate_yaml(inputted_yaml_dict, show_secrets_for=None):
     if not isinstance(inputted_yaml_dict, dict):
         raise InvalidYamlException([], "Yaml needs to be a dict")
     pre_process_yaml(inputted_yaml_dict)
-    return validate_experimental(inputted_yaml_dict, show_secrets_for)
-
-
-def post_process(validated_yaml_dict):
-    """Does any needed post-processings
-
-    Args:
-        validated_yaml_dict (dict): The dict after validated
-
-    Returns: 
-        (dict): the post-processed dict to be used
-    """
-    return validated_yaml_dict
+    return do_actual_validation(inputted_yaml_dict, show_secrets_for)
 
 
 def pre_process_yaml(inputted_yaml_dict):
@@ -147,12 +138,11 @@ class UserGivenSecret(object):
         return clean_value
 
 
-def validate_experimental(yaml_dict, show_secrets_for):
+def do_actual_validation(yaml_dict, show_secrets_for):
     validator = CodecovUserYamlValidator(show_secrets_for=show_secrets_for)
     is_valid = validator.validate(yaml_dict, schema)
     if not is_valid:
         error_dict = validator.errors
-        print(error_dict)
         (
             error_location,
             error_message,
