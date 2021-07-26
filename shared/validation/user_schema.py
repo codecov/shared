@@ -1,6 +1,3 @@
-from shared.validation.exceptions import InvalidYamlException
-
-
 flag_name = {"type": "string", "minlength": 1, "maxlength": 45, "regex": r"^[\w\.\-]+$"}
 
 branches_structure = {

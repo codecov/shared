@@ -6,7 +6,7 @@ from shared.validation.exceptions import InvalidYamlException
 from tests.base import BaseTestCase
 from shared.yaml.validation import (
     validate_yaml,
-    validate_experimental,
+    do_actual_validation,
     _calculate_error_location_and_message_from_error_dict,
 )
 from shared.config import get_config, ConfigHelper
@@ -852,7 +852,7 @@ def test_validation_with_branches():
         "ignore": ["^coffee.*", "^party_man.*", "^test.*"],
         "codecov": {"notify": {"after_n_builds": 6}},
     }
-    res = validate_experimental(user_input, show_secrets_for=None)
+    res = do_actual_validation(user_input, show_secrets_for=None)
     assert res == expected_result
 
 
@@ -873,7 +873,7 @@ def test_validation_with_null_on_paths():
         },
         "ignore": ["^coffee.*", "^test.*"],
     }
-    res = validate_experimental(user_input, show_secrets_for=None)
+    res = do_actual_validation(user_input, show_secrets_for=None)
     assert res == expected_result
 
 
@@ -886,7 +886,7 @@ def test_validation_with_null_on_status():
         "coverage": {"status": {"project": {"default": None}, "patch": False}},
         "ignore": ["^coffee.*", "^test.*"],
     }
-    res = validate_experimental(user_input, show_secrets_for=None)
+    res = do_actual_validation(user_input, show_secrets_for=None)
     assert res == expected_result
 
 
@@ -896,7 +896,7 @@ def test_improper_layout():
         "comment": {"layout": "banana,apple"},
     }
     with pytest.raises(InvalidYamlException) as exc:
-        validate_experimental(user_input, show_secrets_for=None)
+        do_actual_validation(user_input, show_secrets_for=None)
     assert exc.value.error_dict == {
         "comment": [{"layout": ["Unexpected values on layout: apple,banana"]}]
     }
@@ -908,7 +908,7 @@ def test_proper_layout():
         "coverage": {"status": {"project": {"default": None}, "patch": False}},
         "comment": {"layout": "files:10,footer"},
     }
-    res = validate_experimental(user_input, show_secrets_for=None)
+    res = do_actual_validation(user_input, show_secrets_for=None)
     assert res == {
         "coverage": {"status": {"project": {"default": None}, "patch": False}},
         "comment": {"layout": "files:10,footer"},
@@ -919,7 +919,7 @@ def test_codecov_branch():
     user_input = {
         "codecov": {"branch": "origin/pterosaur"},
     }
-    res = validate_experimental(user_input, show_secrets_for=None)
+    res = do_actual_validation(user_input, show_secrets_for=None)
     assert res == {
         "codecov": {"branch": "pterosaur"},
     }
@@ -964,7 +964,7 @@ def test_email_field_with_and_without_secret():
             }
         }
     }
-    assert validate_experimental(
+    assert do_actual_validation(
         user_input, show_secrets_for=("github", "11934774", "154468867")
     ) == {
         "coverage": {
@@ -982,7 +982,7 @@ def test_email_field_with_and_without_secret():
             }
         }
     }
-    assert validate_experimental(user_input, show_secrets_for=None) == {
+    assert do_actual_validation(user_input, show_secrets_for=None) == {
         "coverage": {
             "notify": {
                 "email": {
@@ -1006,6 +1006,6 @@ def test_email_field_with_and_without_secret():
 def test_assume_flags():
     # It's deprecated, but still
     user_input = {"flags": {"some_flag": {"assume": {"branches": ["master"]}}}}
-    assert validate_experimental(
+    assert do_actual_validation(
         user_input, show_secrets_for=("github", "11934774", "154468867")
     ) == {"flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}}
