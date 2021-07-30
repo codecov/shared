@@ -3,11 +3,12 @@ from time import time
 import random
 import string
 import statistics
+
 chars = string.ascii_uppercase + string.digits
 
 
 def random_string():
-    return ''.join(random.choice(chars) for _ in range(10))
+    return "".join(random.choice(chars) for _ in range(10))
 
 
 if __name__ == "__main__":

@@ -459,8 +459,7 @@ null
 
     #[test]
     fn parse_line_method_line() {
-        let res = parse_line("[1, \"m\", [[0, 1], [1, 1]]]")
-            .expect("Unable to parse line");
+        let res = parse_line("[1, \"m\", [[0, 1], [1, 1]]]").expect("Unable to parse line");
         match res {
             LineType::Content(l) => {
                 assert_eq!(l.coverage, cov::Coverage::Hit);

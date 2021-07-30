@@ -1,5 +1,6 @@
 use fraction::GenericFraction;
 use fraction::ToPrimitive;
+use serde::ser::{Serialize, SerializeMap, SerializeSeq, Serializer};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum Coverage {
@@ -7,6 +8,26 @@ pub enum Coverage {
     Miss,
     Partial(GenericFraction<i32>),
     Ignore,
+}
+
+impl Coverage {
+    fn as_char(&self) -> char {
+        return match self {
+            Coverage::Hit => 'h',
+            Coverage::Miss => 'm',
+            Coverage::Partial(_) => 'p',
+            Coverage::Ignore => 'i',
+        };
+    }
+}
+
+impl Serialize for Coverage {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_char(self.as_char())
+    }
 }
 
 impl Coverage {
