@@ -28,7 +28,6 @@ setup(
         "oauth2",
         "six>=1.11.0",
         "tlslite-ng",
-        "tornado",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",
         "httpx>=0.16.0",
