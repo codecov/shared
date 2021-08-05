@@ -383,10 +383,10 @@ class ReportFile(object):
             # previous file was boil-the-ocean
             # OR previous file had END issue
             self._lines = other_file._lines
-            log.warning(
-                "Doing something weird because of weird .rb logic",
-                extra=dict(report_filename=self.name),
-            )
+            # log.warning(
+            #     "Doing something weird because of weird .rb logic",
+            #     extra=dict(report_filename=self.name),
+            # )
 
         elif (
             self.name.endswith(".rb")
@@ -398,10 +398,10 @@ class ReportFile(object):
         ):
             # skip boil-the-ocean files
             # OR skip 0% coverage files because END issue
-            log.warning(
-                "Skipping something weird because of weird .rb logic",
-                extra=dict(report_filename=self.name),
-            )
+            # log.warning(
+            #     "Skipping something weird because of weird .rb logic",
+            #     extra=dict(report_filename=self.name),
+            # )
             return False
 
         else:
