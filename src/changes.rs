@@ -187,9 +187,7 @@ fn run_filereport_analysis(
         }
     };
     return match (old_file, new_file) {
-        (None, None) => {
-            panic!("{:?}",);
-        }
+        (None, None) => None,
         (None, Some(new)) => Some(FileChangesAnalysis {
             file_was_added_by_diff: is_new,
             file_was_removed_by_diff: was_deleted,
