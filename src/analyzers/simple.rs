@@ -1,15 +1,5 @@
-use fraction::GenericFraction;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::iter::FromIterator;
-
 use pyo3::prelude::*;
 
-use crate::changes;
-use crate::cov;
-use crate::diff;
-use crate::file;
-use crate::line;
 use crate::report;
 
 #[pyclass]
@@ -30,6 +20,11 @@ impl SimpleAnalyzer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cov;
+    use crate::diff;
+    use crate::file;
+    use crate::line;
+    use fraction::GenericFraction;
 
     #[test]
     fn get_totals_works() {

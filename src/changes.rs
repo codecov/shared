@@ -1,15 +1,12 @@
-use fraction::GenericFraction;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::iter::FromIterator;
 
-use serde::{Deserialize, Serialize};
-use serde_json::Result;
+use serde::Serialize;
 
 use crate::cov;
 use crate::diff;
 use crate::file;
-use crate::line;
 use crate::report;
 
 type LineChange = ((i32, Option<cov::Coverage>), (i32, Option<cov::Coverage>));
@@ -81,8 +78,8 @@ pub fn run_comparison_analysis(
             },
             None => filename.to_string(),
         };
-        if (!base_report.get_by_filename(&original_name).is_none()
-            || !head_report.get_by_filename(&filename).is_none())
+        if !base_report.get_by_filename(&original_name).is_none()
+            || !head_report.get_by_filename(&filename).is_none()
         {
             match run_filereport_analysis(
                 base_report.get_by_filename(&original_name),
@@ -113,7 +110,7 @@ fn produce_summary_from_changes_list(
         match &fca.added_diff_coverage {
             None => {}
             Some(cov_vec) => {
-                for (line_number, coverage) in cov_vec {
+                for (_, coverage) in cov_vec {
                     match coverage {
                         cov::Coverage::Hit => {
                             patch_totals.hits += 1;
@@ -260,8 +257,7 @@ fn run_filereport_analysis(
                 None => false,
                 Some(x) => !x.is_empty(),
             };
-            if (unexpected_vec.is_empty() && !has_removed_diff_coverage && !has_added_diff_coverage)
-            {
+            if unexpected_vec.is_empty() && !has_removed_diff_coverage && !has_added_diff_coverage {
                 return None;
             }
             return Some(FileChangesAnalysis {
@@ -282,6 +278,8 @@ fn run_filereport_analysis(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::line;
+    use fraction::GenericFraction;
 
     fn create_line_for_test(line_number: i32, coverage: cov::Coverage) -> (i32, line::ReportLine) {
         (

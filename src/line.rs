@@ -1,5 +1,4 @@
 use crate::cov;
-use fraction::GenericFraction;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum CoverageType {
@@ -85,6 +84,7 @@ impl ReportLine {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fraction::GenericFraction;
 
     #[test]
     fn filter_by_session_ids_works() {
