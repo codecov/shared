@@ -1,9 +1,7 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-use fraction::GenericFraction;
 use pyo3::prelude::*;
-use rayon::prelude::*;
 
 use crate::cov;
 use crate::diff;
@@ -159,6 +157,7 @@ impl FilterAnalyzer {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fraction::GenericFraction;
 
     #[test]
     fn filtered_totals_works() {

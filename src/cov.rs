@@ -1,6 +1,6 @@
 use fraction::GenericFraction;
 use fraction::ToPrimitive;
-use serde::ser::{Serialize, SerializeMap, SerializeSeq, Serializer};
+use serde::ser::{Serialize, Serializer};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum Coverage {

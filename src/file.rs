@@ -1,6 +1,5 @@
-use fraction::GenericFraction;
 use pyo3::prelude::*;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::collections::HashMap;
 
 use crate::cov;
@@ -159,6 +158,7 @@ impl ReportFile {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fraction::GenericFraction;
 
     #[test]
     fn from_lines_empty() {
