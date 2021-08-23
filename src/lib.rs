@@ -49,6 +49,7 @@ fn run_comparison_as_json(
 #[pymodule]
 fn rustypole(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parse_report, m)?)?;
+    m.add_function(wrap_pyfunction!(run_comparison_as_json, m)?)?;
     m.add_class::<analyzers::filter::FilterAnalyzer>()?;
     m.add_class::<analyzers::simple::SimpleAnalyzer>()?;
 
