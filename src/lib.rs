@@ -29,6 +29,22 @@ fn parse_report(
     }
 }
 
+#[pyfunction]
+fn run_comparison_as_json(
+    base_report: &report::Report,
+    head_report: &report::Report,
+    diff: diff::DiffInput,
+) -> PyResult<String> {
+    return match serde_json::to_string(&changes::run_comparison_analysis(
+        base_report,
+        head_report,
+        diff,
+    )) {
+        Ok(value) => Ok(value),
+        Err(_) => Err(PyException::new_err("Error serializing changes")),
+    };
+}
+
 /// A Python module implemented in Rust.
 #[pymodule]
 fn rustypole(_py: Python, m: &PyModule) -> PyResult<()> {

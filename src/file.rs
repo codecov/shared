@@ -1,12 +1,13 @@
 use fraction::GenericFraction;
 use pyo3::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::cov;
 use crate::line;
 
 #[pyclass]
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct FileTotals {
     #[pyo3(get)]
     pub hits: i32,
