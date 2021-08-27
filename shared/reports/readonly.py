@@ -17,12 +17,6 @@ class LazyRustReport(object):
         self._filename_mapping = filename_mapping
         self._session_mapping = session_mapping
         self._actual_report = None
-        self._rust_logging_threshold = int(
-            os.getenv("RUST_IMPROVEMENT_LOGGING_THRESHOLD", "1500")
-        )
-        self._rust_timer_so_far = 0.0
-        self._python_timer_so_far = 0.0
-        self._number_times_rust_used = 0
 
     def get_report(self):
         if self._actual_report is None:
@@ -36,7 +30,7 @@ class LazyRustReport(object):
 class ReadOnlyReport(object):
     @classmethod
     def should_load_rust_version(cls):
-        return random.random() < float(os.getenv("RUST_ENABLE_RATE", "0.0"))
+        return random.random() < float(os.getenv("RUST_ENABLE_RATE", "1.0"))
 
     def __init__(self, rust_analyzer, rust_report, inner_report, totals=None):
         self.rust_analyzer = rust_analyzer
