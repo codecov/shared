@@ -27,7 +27,7 @@ impl FilterAnalyzer {
             Some(actual_flags) => Some(report.get_sessions_from_flags(&actual_flags)),
             None => None,
         };
-        let mut session_count = 0;
+        let session_count: i32;
         let mut initial = report::ReportTotals::new();
         match &sessions {
             Some(sess) => {
@@ -43,6 +43,7 @@ impl FilterAnalyzer {
                 }
             }
             None => {
+                session_count = report.session_mapping.len() as i32;
                 let filtered_totals: Vec<file::FileTotals> = report
                     .report_files
                     .iter()
@@ -269,5 +270,84 @@ mod tests {
         assert_eq!(apple_and_banana_res.misses, 0);
         assert_eq!(apple_and_banana_res.partials, 0);
         assert_eq!(apple_and_banana_res.sessions, 0);
+    }
+
+    #[test]
+    fn filtered_totals_without_flags_works() {
+        let first_file = file::ReportFile {
+            lines: vec![
+                (
+                    1,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![line::LineSession {
+                            id: 0,
+                            coverage: cov::Coverage::Hit,
+                            complexity: None,
+                        }],
+                        complexity: None,
+                    },
+                ),
+                (
+                    2,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![
+                            line::LineSession {
+                                id: 0,
+                                coverage: cov::Coverage::Hit,
+                                complexity: None,
+                            },
+                            line::LineSession {
+                                id: 1,
+                                coverage: cov::Coverage::Partial(GenericFraction::new(1, 2)),
+                                complexity: None,
+                            },
+                        ],
+                        complexity: None,
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let report = report::Report {
+            report_files: vec![
+                ("file1.go".to_string(), first_file),
+                (
+                    "file_p.py".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
+                (
+                    "plo.c".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+            session_mapping: vec![
+                (0, vec!["unit".to_string()]),
+                (1, vec!["integration".to_string()]),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let analyzer = FilterAnalyzer {
+            files: Some(vec!["file1.go".to_string()].into_iter().collect()),
+            flags: None,
+        };
+        let unit_res = analyzer.get_totals(&report).unwrap();
+        assert_eq!(unit_res.files, 1);
+        assert_eq!(unit_res.lines, 2);
+        assert_eq!(unit_res.hits, 2);
+        assert_eq!(unit_res.misses, 0);
+        assert_eq!(unit_res.partials, 0);
+        assert_eq!(unit_res.sessions, 2);
     }
 }
