@@ -29,6 +29,6 @@ setup(
         "analytics-python==1.3.0b1",
         "httpx>=0.16.0",
         "oauthlib",
-        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.15#egg=ribs",
+        "ribs @ git+ssh://git@github.com/codecov/ribs@v0.1.16#egg=ribs",
     ],
 )

@@ -423,6 +423,21 @@ class TestReadOnly(object):
             chunks=chunks, files=files_dict, sessions=sessions_dict
         )
         assert r.rust_report is None
+        assert r.totals == ReportTotals(
+            files=3,
+            lines=20,
+            hits=17,
+            misses=3,
+            partials=0,
+            coverage="85.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
 
     def test_init(self, sample_rust_report):
         report = sample_rust_report
@@ -534,48 +549,6 @@ class TestReadOnly(object):
             misses=1,
             partials=0,
             coverage="75.00000",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
-        )
-
-    def test_from_chunks_failed(self, mocker):
-        mocker.patch("shared.reports.readonly.parse_report", side_effect=Exception())
-        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
-            chunks = f.read()
-        files_dict = {
-            "awesome/__init__.py": [
-                2,
-                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
-                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
-            ],
-            "tests/__init__.py": [
-                0,
-                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
-                None,
-            ],
-            "tests/test_sample.py": [
-                1,
-                [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
-                None,
-            ],
-        }
-        k = ReadOnlyReport.from_chunks(chunks=chunks, files=files_dict, sessions={})
-        assert k.rust_report is None
-        assert k.totals == ReportTotals(
-            files=3,
-            lines=20,
-            hits=17,
-            misses=3,
-            partials=0,
-            coverage="85.00000",
             branches=0,
             methods=0,
             messages=0,
