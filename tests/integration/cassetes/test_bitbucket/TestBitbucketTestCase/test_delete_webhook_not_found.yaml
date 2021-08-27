@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: DELETE
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f011-8397-aa77-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602198&oauth_nonce=fc8ef877776d441bab406f7a47396073&oauth_version=1.0&oauth_signature=A%2F46Dp0fgbZI9lkjovmcu4LfGiw%3D
+  response:
+    content: '{"type": "error", "error": {"message": "example-python is not a valid
+      hook"}}'
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '77'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Nov 2018 14:49:59 GMT
+      Etag:
+      - '"019115b9f80b7504bb4e084e8c750c15"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - webhook
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.0818870067596'
+      X-Request-Count:
+      - '308'
+      X-Served-By:
+      - app-139
+      X-Static-Version:
+      - 1f6d684e3c29
+      X-Version:
+      - 1f6d684e3c29
+    status:
+      code: 404
+      message: Not Found
+    status_code: 404
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f011-8397-aa77-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602198&oauth_nonce=fc8ef877776d441bab406f7a47396073&oauth_version=1.0&oauth_signature=A%2F46Dp0fgbZI9lkjovmcu4LfGiw%3D
+version: 1

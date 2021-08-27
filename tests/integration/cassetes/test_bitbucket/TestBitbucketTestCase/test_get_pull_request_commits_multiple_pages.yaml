@@ -1,0 +1,406 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557330116&oauth_nonce=3a21bf1970bd4e85830de3519e931ea1&oauth_version=1.0&oauth_signature=7kTJV1LCOK1AVDDahsDfcEgPdNs%3D
+  response:
+    content: '{"pagelen": 10, "values": [{"hash": "f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04",
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f8a26b4c1bf8eef0bc3aeeb0b23f74f4b96a7d04/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 11\n", "markup": "markdown", "html": "<p>Message
+      11</p>", "type": "rendered"}, "parents": [{"hash": "d3bedda462a79fafe4f5dfdb0ecf710f558e6aab",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab"}}}],
+      "date": "2019-05-08T15:35:56+00:00", "message": "Message 11\n", "type": "commit"},
+      {"hash": "d3bedda462a79fafe4f5dfdb0ecf710f558e6aab", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d3bedda462a79fafe4f5dfdb0ecf710f558e6aab/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 10\n", "markup": "markdown", "html": "<p>Message
+      10</p>", "type": "rendered"}, "parents": [{"hash": "bd666be433ce4123ab0674fc8eb86708d340c31b",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/bd666be433ce4123ab0674fc8eb86708d340c31b"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/bd666be433ce4123ab0674fc8eb86708d340c31b"}}}],
+      "date": "2019-05-08T15:35:49+00:00", "message": "Message 10\n", "type": "commit"},
+      {"hash": "bd666be433ce4123ab0674fc8eb86708d340c31b", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/bd666be433ce4123ab0674fc8eb86708d340c31b"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/bd666be433ce4123ab0674fc8eb86708d340c31b/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/bd666be433ce4123ab0674fc8eb86708d340c31b"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/bd666be433ce4123ab0674fc8eb86708d340c31b"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/bd666be433ce4123ab0674fc8eb86708d340c31b"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/bd666be433ce4123ab0674fc8eb86708d340c31b/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/bd666be433ce4123ab0674fc8eb86708d340c31b/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 9\n", "markup": "markdown", "html": "<p>Message
+      9</p>", "type": "rendered"}, "parents": [{"hash": "c80b02c4b65d141f0274ebb13e2a88f22a31820c",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c80b02c4b65d141f0274ebb13e2a88f22a31820c"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/c80b02c4b65d141f0274ebb13e2a88f22a31820c"}}}],
+      "date": "2019-05-08T15:35:44+00:00", "message": "Message 9\n", "type": "commit"},
+      {"hash": "c80b02c4b65d141f0274ebb13e2a88f22a31820c", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c80b02c4b65d141f0274ebb13e2a88f22a31820c"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c80b02c4b65d141f0274ebb13e2a88f22a31820c/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/c80b02c4b65d141f0274ebb13e2a88f22a31820c"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/c80b02c4b65d141f0274ebb13e2a88f22a31820c"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/c80b02c4b65d141f0274ebb13e2a88f22a31820c"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c80b02c4b65d141f0274ebb13e2a88f22a31820c/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/c80b02c4b65d141f0274ebb13e2a88f22a31820c/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 8\n", "markup": "markdown", "html": "<p>Message
+      8</p>", "type": "rendered"}, "parents": [{"hash": "b3fe71aeb1a405219f4bf58d44ba9a0057072d06",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b3fe71aeb1a405219f4bf58d44ba9a0057072d06"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b3fe71aeb1a405219f4bf58d44ba9a0057072d06"}}}],
+      "date": "2019-05-08T15:35:37+00:00", "message": "Message 8\n", "type": "commit"},
+      {"hash": "b3fe71aeb1a405219f4bf58d44ba9a0057072d06", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b3fe71aeb1a405219f4bf58d44ba9a0057072d06"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b3fe71aeb1a405219f4bf58d44ba9a0057072d06/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/b3fe71aeb1a405219f4bf58d44ba9a0057072d06"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b3fe71aeb1a405219f4bf58d44ba9a0057072d06"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/b3fe71aeb1a405219f4bf58d44ba9a0057072d06"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b3fe71aeb1a405219f4bf58d44ba9a0057072d06/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b3fe71aeb1a405219f4bf58d44ba9a0057072d06/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 7\n", "markup": "markdown", "html": "<p>Message
+      7</p>", "type": "rendered"}, "parents": [{"hash": "2909d0fae30c1d3e628cab1f549e29e1da7b385d",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2909d0fae30c1d3e628cab1f549e29e1da7b385d"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/2909d0fae30c1d3e628cab1f549e29e1da7b385d"}}}],
+      "date": "2019-05-08T15:35:33+00:00", "message": "Message 7\n", "type": "commit"},
+      {"hash": "2909d0fae30c1d3e628cab1f549e29e1da7b385d", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2909d0fae30c1d3e628cab1f549e29e1da7b385d"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2909d0fae30c1d3e628cab1f549e29e1da7b385d/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/2909d0fae30c1d3e628cab1f549e29e1da7b385d"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/2909d0fae30c1d3e628cab1f549e29e1da7b385d"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/2909d0fae30c1d3e628cab1f549e29e1da7b385d"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2909d0fae30c1d3e628cab1f549e29e1da7b385d/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/2909d0fae30c1d3e628cab1f549e29e1da7b385d/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 6\n", "markup": "markdown", "html": "<p>Message
+      6</p>", "type": "rendered"}, "parents": [{"hash": "3fe51078bb5f6000617d71e32cfde4ebed6f2052",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3fe51078bb5f6000617d71e32cfde4ebed6f2052"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3fe51078bb5f6000617d71e32cfde4ebed6f2052"}}}],
+      "date": "2019-05-08T15:35:28+00:00", "message": "Message 6\n", "type": "commit"},
+      {"hash": "3fe51078bb5f6000617d71e32cfde4ebed6f2052", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3fe51078bb5f6000617d71e32cfde4ebed6f2052"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3fe51078bb5f6000617d71e32cfde4ebed6f2052/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3fe51078bb5f6000617d71e32cfde4ebed6f2052"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3fe51078bb5f6000617d71e32cfde4ebed6f2052"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3fe51078bb5f6000617d71e32cfde4ebed6f2052"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3fe51078bb5f6000617d71e32cfde4ebed6f2052/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3fe51078bb5f6000617d71e32cfde4ebed6f2052/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 5\n", "markup": "markdown", "html": "<p>Message
+      5</p>", "type": "rendered"}, "parents": [{"hash": "974bce36e097868d6eb087656f929dd698d0507e",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/974bce36e097868d6eb087656f929dd698d0507e"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/974bce36e097868d6eb087656f929dd698d0507e"}}}],
+      "date": "2019-05-08T15:35:23+00:00", "message": "Message 5\n", "type": "commit"},
+      {"hash": "974bce36e097868d6eb087656f929dd698d0507e", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/974bce36e097868d6eb087656f929dd698d0507e"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/974bce36e097868d6eb087656f929dd698d0507e/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/974bce36e097868d6eb087656f929dd698d0507e"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/974bce36e097868d6eb087656f929dd698d0507e"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/974bce36e097868d6eb087656f929dd698d0507e"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/974bce36e097868d6eb087656f929dd698d0507e/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/974bce36e097868d6eb087656f929dd698d0507e/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 4\n", "markup": "markdown", "html": "<p>Message
+      4</p>", "type": "rendered"}, "parents": [{"hash": "3b2aa7b423369c766173121e8a8bfa2d225ee235",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3b2aa7b423369c766173121e8a8bfa2d225ee235"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3b2aa7b423369c766173121e8a8bfa2d225ee235"}}}],
+      "date": "2019-05-08T15:35:19+00:00", "message": "Message 4\n", "type": "commit"},
+      {"hash": "3b2aa7b423369c766173121e8a8bfa2d225ee235", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3b2aa7b423369c766173121e8a8bfa2d225ee235"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3b2aa7b423369c766173121e8a8bfa2d225ee235/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3b2aa7b423369c766173121e8a8bfa2d225ee235"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3b2aa7b423369c766173121e8a8bfa2d225ee235"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3b2aa7b423369c766173121e8a8bfa2d225ee235"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3b2aa7b423369c766173121e8a8bfa2d225ee235/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3b2aa7b423369c766173121e8a8bfa2d225ee235/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 3\n", "markup": "markdown", "html": "<p>Message
+      3</p>", "type": "rendered"}, "parents": [{"hash": "f1b9dc07dcd5301c215824d1884816435cf269ea",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f1b9dc07dcd5301c215824d1884816435cf269ea"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/f1b9dc07dcd5301c215824d1884816435cf269ea"}}}],
+      "date": "2019-05-08T15:35:15+00:00", "message": "Message 3\n", "type": "commit"},
+      {"hash": "f1b9dc07dcd5301c215824d1884816435cf269ea", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f1b9dc07dcd5301c215824d1884816435cf269ea"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f1b9dc07dcd5301c215824d1884816435cf269ea/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/f1b9dc07dcd5301c215824d1884816435cf269ea"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/f1b9dc07dcd5301c215824d1884816435cf269ea"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/f1b9dc07dcd5301c215824d1884816435cf269ea"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f1b9dc07dcd5301c215824d1884816435cf269ea/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/f1b9dc07dcd5301c215824d1884816435cf269ea/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 2\n", "markup": "markdown", "html": "<p>Message
+      2</p>", "type": "rendered"}, "parents": [{"hash": "266e6b98f88847c8c4b6e8cf38cf5397266211d3",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/266e6b98f88847c8c4b6e8cf38cf5397266211d3"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/266e6b98f88847c8c4b6e8cf38cf5397266211d3"}}}],
+      "date": "2019-05-08T15:35:10+00:00", "message": "Message 2\n", "type": "commit"}],
+      "page": 1, "next": "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?page=8xhd"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 08 May 2019 15:41:56 GMT
+      Etag:
+      - '"gz[bbc9e92a11bd159aa2170ed8eb65d817]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.273545980453'
+      X-Request-Count:
+      - '403'
+      X-Served-By:
+      - app-143
+      X-Static-Version:
+      - 86a24bb2f896
+      X-Version:
+      - 86a24bb2f896
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557330116&oauth_nonce=3a21bf1970bd4e85830de3519e931ea1&oauth_version=1.0&oauth_signature=7kTJV1LCOK1AVDDahsDfcEgPdNs%3D
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?page=8xhd&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557330116&oauth_nonce=09f75b95d13247bfb56fb579bcc6deab&oauth_version=1.0&oauth_signature=%2Bawwc%2F%2FfMR9Vr6YRo9rV5zZUxME%3D
+  response:
+    content: '{"pagelen": 10, "values": [{"hash": "266e6b98f88847c8c4b6e8cf38cf5397266211d3",
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/266e6b98f88847c8c4b6e8cf38cf5397266211d3"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/266e6b98f88847c8c4b6e8cf38cf5397266211d3/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/266e6b98f88847c8c4b6e8cf38cf5397266211d3"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/266e6b98f88847c8c4b6e8cf38cf5397266211d3"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/266e6b98f88847c8c4b6e8cf38cf5397266211d3"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/266e6b98f88847c8c4b6e8cf38cf5397266211d3/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/266e6b98f88847c8c4b6e8cf38cf5397266211d3/statuses"}},
+      "author": {"raw": "Thiago Ramos <thiago@codecov.io>", "type": "author", "user":
+      {"username": "ThiagoCodecov", "display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://avatar-cdn.atlassian.com/5bce04c759d0e84f8c7555e9?by=id&d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FT-6.svg"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"}},
+      "summary": {"raw": "Message 1\n", "markup": "markdown", "html": "<p>Message
+      1</p>", "type": "rendered"}, "parents": [{"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41e217bdf34d4c615fb355b0081f4b"}}}],
+      "date": "2019-05-08T15:35:04+00:00", "message": "Message 1\n", "type": "commit"},
+      {"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b", "repository": {"links":
+      {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/patch/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/statuses"}},
+      "author": {"raw": "Thiago Ribeiro Ramos <thiago@ribeiroramos.com>", "type":
+      "author"}, "summary": {"raw": "Creating second branch :happy:\n", "markup":
+      "markdown", "html": "<p>Creating second branch :happy:</p>", "type": "rendered"},
+      "parents": [{"hash": "b92edba44fdd29fcc506317cc3ddeae1a723dd08", "type": "commit",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08"}}}],
+      "date": "2018-11-06T15:42:45+00:00", "message": "Creating second branch :happy:\n",
+      "type": "commit"}], "page": 2}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 08 May 2019 15:41:57 GMT
+      Etag:
+      - '"gz[8678167429e5e3076eabd5ff26b80b46]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.18968296051'
+      X-Request-Count:
+      - '421'
+      X-Served-By:
+      - app-146
+      X-Static-Version:
+      - 86a24bb2f896
+      X-Version:
+      - 86a24bb2f896
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/commits?page=8xhd&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1557330116&oauth_nonce=09f75b95d13247bfb56fb579bcc6deab&oauth_version=1.0&oauth_signature=%2Bawwc%2F%2FfMR9Vr6YRo9rV5zZUxME%3D
+version: 1

@@ -1,0 +1,135 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574530963&oauth_nonce=61c6c9bd8ae74a28b32148ddd1297e16&oauth_version=1.0&oauth_signature=dyDNhaDGwSRnymGpVGtBJ9dl6NA%3D
+  response:
+    content: '{"pagelen": 10, "values": [{"type": "repository_permission", "user":
+      {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/ci-repo"},
+      "html": {"href": "https://bitbucket.org/codecov/ci-repo"}, "avatar": {"href":
+      "https://bytebucket.org/ravatar/%7Ba980e378-088f-48a8-9850-98923f497546%7D?ts=default"}},
+      "type": "repository", "name": "ci-repo", "full_name": "codecov/ci-repo", "uuid":
+      "{a980e378-088f-48a8-9850-98923f497546}"}, "permission": "admin"}, {"type":
+      "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private"},
+      "html": {"href": "https://bitbucket.org/codecov/private"}, "avatar": {"href":
+      "https://bytebucket.org/ravatar/%7B3edf54ab-cfe4-4049-aa70-5eb9f69f60d4%7D?ts=python"}},
+      "type": "repository", "name": "private", "full_name": "codecov/private", "uuid":
+      "{3edf54ab-cfe4-4049-aa70-5eb9f69f60d4}"}, "permission": "admin"}, {"type":
+      "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/coverage.py"},
+      "html": {"href": "https://bitbucket.org/codecov/coverage.py"}, "avatar": {"href":
+      "https://bytebucket.org/ravatar/%7Bd08f4587-489f-4b55-abad-3d4f396d9862%7D?ts=python"}},
+      "type": "repository", "name": "coverage.py", "full_name": "codecov/coverage.py",
+      "uuid": "{d08f4587-489f-4b55-abad-3d4f396d9862}"}, "permission": "admin"}, {"type":
+      "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "permission": "admin"}, {"type":
+      "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/integration-test-repo"},
+      "html": {"href": "https://bitbucket.org/codecov/integration-test-repo"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7B4fab7a33-92dd-450b-8d12-ea1ab7816300%7D?ts=python"}},
+      "type": "repository", "name": "integration-test-repo", "full_name": "codecov/integration-test-repo",
+      "uuid": "{4fab7a33-92dd-450b-8d12-ea1ab7816300}"}, "permission": "admin"}, {"type":
+      "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-bb-integration-public"},
+      "html": {"href": "https://bitbucket.org/codecov/test-bb-integration-public"},
+      "avatar": {"href": "https://bytebucket.org/ravatar/%7B2e219352-777c-4e2b-9a16-71211fbd4d93%7D?ts=markdown"}},
+      "type": "repository", "name": "test-bb-integration-public", "full_name": "codecov/test-bb-integration-public",
+      "uuid": "{2e219352-777c-4e2b-9a16-71211fbd4d93}"}, "permission": "admin"}, {"type":
+      "repository_permission", "user": {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/test-private-repo-2"},
+      "html": {"href": "https://bitbucket.org/codecov/test-private-repo-2"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Bd215b8f1-b862-4fae-9bc8-c2c8ea2e1a70%7D?ts=python"}},
+      "type": "repository", "name": "test-private-repo-2", "full_name": "codecov/test-private-repo-2",
+      "uuid": "{d215b8f1-b862-4fae-9bc8-c2c8ea2e1a70}"}, "permission": "admin"}],
+      "page": 1, "size": 7}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sat, 23 Nov 2019 17:42:43 GMT
+      Etag:
+      - '"gz[b93c8d5932e602a75da0405ad7093579]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - account
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.171509981155'
+      X-Request-Count:
+      - '1788'
+      X-Served-By:
+      - app-1131
+      X-Static-Version:
+      - f93a4a92e0ef
+      X-Version:
+      - f93a4a92e0ef
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1574530963&oauth_nonce=61c6c9bd8ae74a28b32148ddd1297e16&oauth_version=1.0&oauth_signature=dyDNhaDGwSRnymGpVGtBJ9dl6NA%3D
+version: 1

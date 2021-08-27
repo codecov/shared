@@ -1,0 +1,661 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378448&oauth_nonce=2cef59817b2d4705a17bedc4487b96b9&oauth_version=1.0&oauth_signature=G2N3hnpWZCOuMvtlb6qLWTLuFKE%3D
+  response:
+    content: '{"pagelen": 50, "values": [{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostestnumbar3/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "member", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramostestnumbar3", "type": "workspace", "name":
+      "thiagorramostestnumbar3", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostestnumbar3"},
+      "html": {"href": "https://bitbucket.org/thiagorramostestnumbar3/"}, "avatar":
+      {"href": "https://bitbucket.org/workspaces/thiagorramostestnumbar3/avatar/?ts=1617373497"}},
+      "uuid": "{d7c73e87-90ab-450f-bb5f-39e6a5870456}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:25:58.600"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostest2/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "collaborator", "last_accessed": null, "user": {"display_name":
+      "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramostest2", "type": "workspace", "name": "ThiagoRRamostest2",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostest2"},
+      "html": {"href": "https://bitbucket.org/thiagorramostest2/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/thiagorramostest2/avatar/?ts=1617373390"}},
+      "uuid": "{33b5f87a-bda0-40c2-ba1b-9eb892492290}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:24:01.106"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosanotherw/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramosanotherw", "type": "workspace", "name": "ThiagoRRamosanotherw",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosanotherw"},
+      "html": {"href": "https://bitbucket.org/thiagorramosanotherw/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/thiagorramosanotherw/avatar/?ts=1617373374"}},
+      "uuid": "{11e04628-2c7b-4d89-9319-e7eed8818e56}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:22:54.290"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosworkspace/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramosworkspace", "type": "workspace", "name":
+      "ThiagoRRamosworkspace", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosworkspace"},
+      "html": {"href": "https://bitbucket.org/thiagorramosworkspace/"}, "avatar":
+      {"href": "https://bitbucket.org/workspaces/thiagorramosworkspace/avatar/?ts=1617373144"}},
+      "uuid": "{727d78e8-7431-4532-9519-1e5fe2b61d4b}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:20:48.179"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagocodecovbanana/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagocodecovbanana", "type": "workspace", "name": "ThiagoCodecovbanana",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagocodecovbanana"},
+      "html": {"href": "https://bitbucket.org/thiagocodecovbanana/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/thiagocodecovbanana/avatar/?ts=1617370980"}},
+      "uuid": "{68f2da06-b2f8-4f00-92fa-32bd60df9d27}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T13:43:00.117"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "ThiagoCodecov", "type": "workspace", "name": "Thiago
+      Ramos", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/ThiagoCodecov/avatar/?ts=1543758107"}}, "uuid":
+      "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"}, "type": "workspace_membership", "added_on":
+      null}], "page": 1, "size": 6}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:29 GMT
+      ETag:
+      - '"gz[f9d666b4417eebda21d94a1e0f28b335]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Authorization, cookie, user-context, Accept-Encoding
+      X-Accepted-OAuth-Scopes:
+      - account
+      X-B3-TraceId:
+      - e53d48681d5beb6c
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0693681240082'
+      X-Request-Count:
+      - '929'
+      X-Served-By:
+      - app-3006
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378449&oauth_nonce=eb97637399e84b20a7264e406819042a&oauth_version=1.0&oauth_signature=iZhZfWro9xk5WBZ3BOFEuKTo1UQ%3D
+  response:
+    content: '{"pagelen": 10, "values": [{"type": "repository_permission", "user":
+      {"display_name": "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "permission": "admin"}],
+      "page": 1, "size": 1}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:30 GMT
+      ETag:
+      - '"gz[27c83aa41b14fe5489b5e008a5e89c39]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Authorization, cookie, user-context, Accept-Encoding
+      X-Accepted-OAuth-Scopes:
+      - account, repository
+      X-B3-TraceId:
+      - 26763b49ad2ff550
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0464129447937'
+      X-Request-Count:
+      - '618'
+      X-Served-By:
+      - app-3031
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/thiagocodecovbanana?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378450&oauth_nonce=f1d27bd9905a4dd99aca4506db3f4075&oauth_version=1.0&oauth_signature=8t9863CqUO2M1MMz5XWVlIYo%2BTI%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:32 GMT
+      ETag:
+      - '"e671435b14693e94f294247ac6f96b5f"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - repository
+      X-B3-TraceId:
+      - 3578dd49871be871
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0550200939178'
+      X-Request-Count:
+      - '1340'
+      X-Served-By:
+      - app-3008
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378452&oauth_nonce=fa0d9bc2cae04dbcacdc760cc5d5e690&oauth_version=1.0&oauth_signature=dMe8TMVDfX7dOtf5UAIcl9Cr63s%3D
+  response:
+    content: '{"pagelen": 10, "values": [{"scm": "git", "website": "", "has_wiki":
+      false, "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}", "links": {"watchers":
+      {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/watchers"},
+      "branches": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/refs/branches"},
+      "tags": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/refs/tags"},
+      "commits": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commits"},
+      "clone": [{"href": "https://ThiagoCodecov@bitbucket.org/ThiagoCodecov/example-python.git",
+      "name": "https"}, {"href": "git@bitbucket.org:ThiagoCodecov/example-python.git",
+      "name": "ssh"}], "self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "source": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"},
+      "hooks": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/hooks"},
+      "forks": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/forks"},
+      "downloads": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/downloads"},
+      "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests"}},
+      "fork_policy": "no_public_forks", "full_name": "ThiagoCodecov/example-python",
+      "name": "example-python", "project": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov/projects/PROJ"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/workspace/projects/PROJ"},
+      "avatar": {"href": "https://bitbucket.org/account/user/ThiagoCodecov/projects/PROJ/avatar/32?ts=1543758107"}},
+      "type": "project", "name": "Untitled project", "key": "PROJ", "uuid": "{ceb7caa9-0c9c-4391-8423-ed9dc36a2575}"},
+      "language": "", "created_on": "2018-11-06T12:53:06.587605+00:00", "mainbranch":
+      {"type": "branch", "name": "master"}, "workspace": {"slug": "ThiagoCodecov",
+      "type": "workspace", "name": "Thiago Ramos", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/ThiagoCodecov/avatar/?ts=1543758107"}}, "uuid":
+      "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"}, "has_issues": false, "owner": {"display_name":
+      "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "updated_on": "2020-12-02T12:33:17.882179+00:00", "size": 550781, "type": "repository",
+      "slug": "example-python", "is_private": true, "description": ""}], "page": 1,
+      "size": 1}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:33 GMT
+      ETag:
+      - '"gz[85f91cb12cf323880c2a4fb16c92015e]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Authorization, cookie, user-context, Accept-Encoding
+      X-Accepted-OAuth-Scopes:
+      - repository
+      X-B3-TraceId:
+      - 67791b58634c6f3f
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0602920055389'
+      X-Request-Count:
+      - '874'
+      X-Served-By:
+      - app-3013
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramosworkspace?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=067cb97417664c3dafbf917b3ba3745d&oauth_version=1.0&oauth_signature=WsTLv5PDCxwVfhLJB4W53He0%2FaA%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:33 GMT
+      ETag:
+      - '"e671435b14693e94f294247ac6f96b5f"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - repository
+      X-B3-TraceId:
+      - a627da97ccbda708
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0422210693359'
+      X-Request-Count:
+      - '1481'
+      X-Served-By:
+      - app-3024
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramostestnumbar3?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=f8ebea66b7e049ff936758f26a3a0ad8&oauth_version=1.0&oauth_signature=aGF%2B4V%2BFx2xJwREQSGU1Kv5PWzc%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:33 GMT
+      ETag:
+      - '"e671435b14693e94f294247ac6f96b5f"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - repository
+      X-B3-TraceId:
+      - 62611d8f3141204b
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0395669937134'
+      X-Request-Count:
+      - '1074'
+      X-Served-By:
+      - app-3002
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramostest2?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378453&oauth_nonce=84ccc86d7ea74e02af5dd0b21f5ea801&oauth_version=1.0&oauth_signature=amtp59yTXrSlESDa4BuGcP026HU%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:33 GMT
+      ETag:
+      - '"e671435b14693e94f294247ac6f96b5f"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - repository
+      X-B3-TraceId:
+      - 320b9ce68cc4e9a6
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0545430183411'
+      X-Request-Count:
+      - '1688'
+      X-Served-By:
+      - app-3013
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/thiagorramosanotherw?page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378454&oauth_nonce=c002378141da4fca846c268291c16291&oauth_version=1.0&oauth_signature=0eCiphpxhul4G%2BB0dfwka0tjf8c%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:34 GMT
+      ETag:
+      - '"e671435b14693e94f294247ac6f96b5f"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - repository
+      X-B3-TraceId:
+      - e684e493ea211994
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0421149730682'
+      X-Request-Count:
+      - '2539'
+      X-Served-By:
+      - app-3018
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

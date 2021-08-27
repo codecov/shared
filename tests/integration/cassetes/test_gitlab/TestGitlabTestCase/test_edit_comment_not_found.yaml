@@ -1,0 +1,32 @@
+interactions:
+  - request:
+      body: '{"body": "Hello world number 2"}'
+      headers:
+        Accept:
+          - application/json
+        Content-Type:
+          - application/json
+        User-Agent:
+          - Default
+      method: PUT
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1/notes/113979999
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests/1/notes/113979999
+      content: '{"message":"404 Not found"}'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 18:59:21 GMT
+        Content-Type: application/json
+        Content-Length: '27'
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Request-Id: dd5009dc-95d5-4ecd-9fb6-32f563119d58
+        X-Runtime: '0.044932'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '11'
+        Ratelimit-Remaining: '589'
+        Ratelimit-Reset: '1541444421'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 19:00:21 GMT
+      status_code: 404
+version: 1

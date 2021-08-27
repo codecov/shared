@@ -1,0 +1,47 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/compare/?from=b33e1281&to=5716de23
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/compare/?from=b33e1281&to=5716de23
+      content: '{"commit":{"id":"5716de23b27020419d1a40dd93b469c041a1eeef","short_id":"5716de23","title":"addd
+        folder","created_at":"2014-08-21T18:36:38.000Z","parent_ids":["c739768fcac68144a3a6d82305b9c4106934d31a"],"message":"addd
+        folder\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-08-21T18:36:38.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-08-21T18:36:38.000Z"},"commits":[{"id":"c739768fcac68144a3a6d82305b9c4106934d31a","short_id":"c739768f","title":"shhhh
+        i''m batman!","created_at":"2014-08-20T21:52:44.000Z","parent_ids":["b33e12816cc3f386dae8add4968cedeff5155021"],"message":"shhhh
+        i''m batman!\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-08-20T21:52:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-08-20T21:52:44.000Z"},{"id":"5716de23b27020419d1a40dd93b469c041a1eeef","short_id":"5716de23","title":"addd
+        folder","created_at":"2014-08-21T18:36:38.000Z","parent_ids":["c739768fcac68144a3a6d82305b9c4106934d31a"],"message":"addd
+        folder\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-08-21T18:36:38.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-08-21T18:36:38.000Z"}],"diffs":[{"old_path":"README.md","new_path":"README.md","a_mode":"100644","b_mode":"100644","new_file":false,"renamed_file":false,"deleted_file":false,"diff":"@@
+        -1,5 +1,15 @@\n-### Example\n+### CI Testing\n \n-\u003e This repo is used
+        for CI Testing. Enjoy this gif as a reward!\n+\u003e This repo is used for
+        CI Testing\n+\n+\n+| [https://codecov.io/][1] | [@codecov][2] | [hello@codecov.io][3]
+        |\n+| ------------------------ | ------------- | --------------------- |\n+\n+-----\n+\n+\n+[1]:
+        https://codecov.io/\n+[2]: https://twitter.com/codecov\n+[3]: mailto:hello@codecov.io\n
+        \n-![i can do that](http://gph.is/17cvPc4)\n"},{"old_path":"folder/hello-world.txt","new_path":"folder/hello-world.txt","a_mode":"0","b_mode":"100644","new_file":true,"renamed_file":false,"deleted_file":false,"diff":"@@
+        -0,0 +1 @@\n+hello world\n"}],"compare_timeout":false,"compare_same_ref":false}'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:43:10 GMT
+        Content-Type: application/json
+        Content-Length: '2227'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"336a3d6ff8510f0fd417c13b61113264"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: 06a19213-6145-4f5d-825c-4bc7b0f87776
+        X-Runtime: '0.068229'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541483050'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:44:10 GMT
+      status_code: 200
+version: 1

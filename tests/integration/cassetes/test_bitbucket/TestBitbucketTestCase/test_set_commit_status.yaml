@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: state=SUCCESSFUL&key=codecov-context&name=Context+Coverage&url=https%3A%2F%2Flocalhost%3A50036%2Fgitlab%2Fcodecov%2Fci-repo%3Fref%3Dad798926730aad14aadf72281204bdb85734fe67&description=aaaaaaaaaa
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: POST
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d53/statuses/build?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541600749&oauth_nonce=35d6156376c04962a22bd881dcb34677&oauth_version=1.0&oauth_signature=2xxB%2FTlEr319N%2Fr4HfezaS%2FZqfM%3D
+  response:
+    content: '{"key": "codecov-context", "description": "aaaaaaaaaa", "repository":
+      {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "url": "https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67",
+      "links": {"commit": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/statuses/build/codecov-context"}},
+      "refname": null, "state": "SUCCESSFUL", "created_on": "2018-11-07T14:25:50.103547+00:00",
+      "commit": {"hash": "3017d534ab41e217bdf34d4c615fb355b0081f4b", "type": "commit",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3017d534ab41e217bdf34d4c615fb355b0081f4b"}}},
+      "updated_on": "2018-11-07T14:25:50.103583+00:00", "type": "build", "name": "Context
+      Coverage"}'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 07 Nov 2018 14:25:50 GMT
+      Etag:
+      - '"gz[14cfdd5f86c1dac3891c5ebf9a1e370e]"'
+      Location:
+      - /!api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41e217bdf34d4c615fb355b0081f4b/statuses/build/codecov-context
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      - Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.0698249340057'
+      X-Request-Count:
+      - '517'
+      X-Served-By:
+      - app-141
+      X-Static-Version:
+      - 1f6d684e3c29
+      X-Version:
+      - 1f6d684e3c29
+    status:
+      code: 201
+      message: Created
+    status_code: 201
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d53/statuses/build?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541600749&oauth_nonce=35d6156376c04962a22bd881dcb34677&oauth_version=1.0&oauth_signature=2xxB%2FTlEr319N%2Fr4HfezaS%2FZqfM%3D
+version: 1

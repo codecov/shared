@@ -1,0 +1,188 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1567082223&oauth_nonce=a3cdc47a1ac6423e910ba2e2aeb203a4&oauth_version=1.0&oauth_signature=Rxci9EnohgZDdmquYNRnUZaQkPg%3D
+  response:
+    content: '{"pagelen":10,"values":[{"path":"awesome","type":"commit_directory","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/awesome/"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/awesome/?format=meta"}},"commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}}},{"path":"kaploft","type":"commit_directory","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/kaploft/"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/kaploft/?format=meta"}},"commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}}},{"path":"tests","type":"commit_directory","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/?format=meta"}},"commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}}},{"mimetype":null,"links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/.coverage"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/.coverage?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/.coverage"}},"path":".coverage","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":475},{"mimetype":null,"links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/.gitignore"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/.gitignore?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/.gitignore"}},"path":".gitignore","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":1346},{"mimetype":"text/prs.fallenstein.rst","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/README.rst"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/README.rst?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/README.rst"}},"path":"README.rst","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":6377},{"mimetype":"text/x-python","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/__init__.py"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/__init__.py?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/__init__.py"}},"path":"__init__.py","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":0},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a1.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a1.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a1.txt"}},"path":"a1.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a10.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a10.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a10.txt"}},"path":"a10.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a11.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a11.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a11.txt"}},"path":"a11.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5}],"page":1,"next":"https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?page=8xhd"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 29 Aug 2019 12:37:04 GMT
+      Etag:
+      - '"gz[6f4112203f82108c9d3c956ea134613e]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.266921043396'
+      X-Request-Count:
+      - '80'
+      X-Served-By:
+      - app-144
+      X-Static-Version:
+      - 2cc5a40f1b3e
+      X-Version:
+      - 2cc5a40f1b3e
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1567082223&oauth_nonce=a3cdc47a1ac6423e910ba2e2aeb203a4&oauth_version=1.0&oauth_signature=Rxci9EnohgZDdmquYNRnUZaQkPg%3D
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?page=8xhd&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1567082224&oauth_nonce=0abdb51a148a469187c215b8a045e4ba&oauth_version=1.0&oauth_signature=uwnKZsJsOYZniuIyxwY0NcJrbs8%3D
+  response:
+    content: '{"pagelen":10,"values":[{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a2.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a2.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a2.txt"}},"path":"a2.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a3.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a3.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a3.txt"}},"path":"a3.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a4.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a4.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a4.txt"}},"path":"a4.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a5.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a5.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a5.txt"}},"path":"a5.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a6.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a6.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a6.txt"}},"path":"a6.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a7.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a7.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a7.txt"}},"path":"a7.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a8.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a8.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a8.txt"}},"path":"a8.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a9.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a9.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/a9.txt"}},"path":"a9.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":5},{"mimetype":null,"links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/bitbucket-pipelines.yml"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/bitbucket-pipelines.yml?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/bitbucket-pipelines.yml"}},"path":"bitbucket-pipelines.yml","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":536},{"mimetype":"text/xml","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/coverage.xml"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/coverage.xml?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/coverage.xml"}},"path":"coverage.xml","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":2047}],"page":2,"next":"https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?page=dbtR"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 29 Aug 2019 12:37:05 GMT
+      Etag:
+      - '"gz[b85ea2c4f60742a229902a9abf9e6177]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.277836084366'
+      X-Request-Count:
+      - '220'
+      X-Served-By:
+      - app-142
+      X-Static-Version:
+      - 2cc5a40f1b3e
+      X-Version:
+      - 2cc5a40f1b3e
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?page=8xhd&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1567082224&oauth_nonce=0abdb51a148a469187c215b8a045e4ba&oauth_version=1.0&oauth_signature=uwnKZsJsOYZniuIyxwY0NcJrbs8%3D
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?page=dbtR&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1567082225&oauth_nonce=d1eab422bfb640db9fb0f7f3b01bb895&oauth_version=1.0&oauth_signature=yEmhbfkzsV8EIcmqx8kDhp51zb0%3D
+  response:
+    content: '{"pagelen":10,"values":[{"mimetype":"text/x-python","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/filet2.py"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/filet2.py?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/filet2.py"}},"path":"filet2.py","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":14},{"mimetype":"text/plain","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/requirements.txt"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/requirements.txt?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/requirements.txt"}},"path":"requirements.txt","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":32}],"page":3}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 29 Aug 2019 12:37:06 GMT
+      Etag:
+      - '"gz[690fa1f60f31b8227be600c3ad0f0e78]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.185860157013'
+      X-Request-Count:
+      - '332'
+      X-Served-By:
+      - app-162
+      X-Static-Version:
+      - 2cc5a40f1b3e
+      X-Version:
+      - 2cc5a40f1b3e
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/?page=dbtR&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1567082225&oauth_nonce=d1eab422bfb640db9fb0f7f3b01bb895&oauth_version=1.0&oauth_signature=yEmhbfkzsV8EIcmqx8kDhp51zb0%3D
+version: 1

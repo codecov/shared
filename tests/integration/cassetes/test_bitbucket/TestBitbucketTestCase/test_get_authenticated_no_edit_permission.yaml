@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/repositories?q=repository.full_name%3D%22atlassian%2Fstash-example-plugin%22+AND+%28permission%3D%22admin%22+OR+permission%3D%22write%22%29&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617377940&oauth_nonce=54b366ce70c843e38c6f5e2d08b7d25b&oauth_version=1.0&oauth_signature=lihQwQ9cT1CJGybvYG1NAYvWuYw%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:39:00 GMT
+      ETag:
+      - '"c03c6bf133039c14a77d00c2b9d7e1c3"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - account, repository
+      X-B3-TraceId:
+      - c38a09d6a8b0bc85
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0483520030975'
+      X-Request-Count:
+      - '4458'
+      X-Served-By:
+      - app-3016
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

@@ -1,0 +1,37 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups/4037482/members/all/3108129
+    response:
+      url: https://gitlab.com/api/v4/groups/4037482/members/all/3108129
+      content: '{"id":3108129,"name":"Eli Hooten","username":"hootener","state":"active","avatar_url":"https://secure.gravatar.com/avatar/ab022b5adf4e3edc9ea77fe7fd561837?s=80\u0026d=identicon","web_url":"https://gitlab.com/hootener","access_level":50,"expires_at":null}'
+      headers:
+        Content-Length: '254'
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Content-Type-Options: nosniff
+        Ratelimit-Remaining: '599'
+        Strict-Transport-Security: max-age=31536000
+        Vary: Origin
+        X-Request-Id: WMZOHYN11Q1
+        Ratelimit-Reset: '1574271035'
+        Server: nginx
+        Ratelimit-Limit: '600'
+        Gitlab-Sv: localhost
+        Connection: close
+        Etag: W/"ce7fa4ae0ad9b560bd4bb61da4f8d66f"
+        Gitlab-Lb: fe-10-lb-gprd
+        Cache-Control: max-age=0, private, must-revalidate
+        Date: Wed, 20 Nov 2019 17:29:35 GMT
+        X-Frame-Options: SAMEORIGIN
+        X-Runtime: '0.087430'
+        Content-Type: application/json
+        Ratelimit-Resettime: Wed, 20 Nov 2019 17:30:35 GMT
+        Ratelimit-Observed: '1'
+      status_code: 200
+version: 1

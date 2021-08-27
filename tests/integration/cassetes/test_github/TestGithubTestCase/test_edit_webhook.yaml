@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: '{"name": "web", "active": true, "events": ["project", "pull_request", "release"],
+      "config": {"url": "https://enfehm3qrtj5u.x.pipedream.net", "secret": "new_secret",
+      "content_type": "json"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '189'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: PATCH
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134
+  response:
+    content: '{"type":"Repository","id":255680134,"name":"web","active":true,"events":["project","pull_request","release"],"config":{"content_type":"json","secret":"********","url":"https://enfehm3qrtj5u.x.pipedream.net","insecure_ssl":"0"},"updated_at":"2020-10-14T21:51:05Z","created_at":"2020-10-14T17:32:29Z","url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134","test_url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/test","ping_url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/pings","last_response":{"code":404,"status":"missing","message":"Invalid
+      HTTP Response: 404"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 21:51:05 GMT
+      ETag:
+      - W/"fff258ee5aba7d9654ce6c6849fbcad1ab78b08c07016d94102feeef64d0afd6"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - admin:repo_hook, public_repo, repo, write:repo_hook
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - D8AB:3A6B:5FCC4:DA21F:5F8772C9
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4981'
+      X-RateLimit-Reset:
+      - '1602714521'
+      X-RateLimit-Used:
+      - '19'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

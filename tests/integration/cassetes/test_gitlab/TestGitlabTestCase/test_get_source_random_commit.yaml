@@ -1,0 +1,43 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/files/folder%2Fhello-world.txt?ref=5716de23
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/files/folder%2Fhello-world.txt?ref=5716de23
+      content: '{"file_name":"hello-world.txt","file_path":"folder/hello-world.txt","size":12,"encoding":"base64","content_sha256":"a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447","ref":"5716de23","blob_id":"3b18e512dba79e4c8300dd08aeb37f8e728b8dad","commit_id":"5716de23b27020419d1a40dd93b469c041a1eeef","last_commit_id":"5716de23b27020419d1a40dd93b469c041a1eeef","content":"aGVsbG8gd29ybGQK"}'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:37:40 GMT
+        Content-Type: application/json
+        Content-Length: '396'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"759767a41423c19cd8f76131b2ada4f8"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Gitlab-Blob-Id: 3b18e512dba79e4c8300dd08aeb37f8e728b8dad
+        X-Gitlab-Commit-Id: 5716de23b27020419d1a40dd93b469c041a1eeef
+        X-Gitlab-Content-Sha256: a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447
+        X-Gitlab-Encoding: base64
+        X-Gitlab-File-Name: hello-world.txt
+        X-Gitlab-File-Path: folder/hello-world.txt
+        X-Gitlab-Last-Commit-Id: 5716de23b27020419d1a40dd93b469c041a1eeef
+        X-Gitlab-Ref: 5716de23
+        X-Gitlab-Size: '12'
+        X-Request-Id: ec0fd6ff-5bb2-4fba-b185-90604d3853da
+        X-Runtime: '0.038130'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541482720'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:38:40 GMT
+      status_code: 200
+version: 1

@@ -1,0 +1,49 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/diff
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/diff
+      content: '[{"old_path":"README.md","new_path":"README.md","a_mode":"100644","b_mode":"100644","new_file":false,"renamed_file":false,"deleted_file":false,"diff":"@@
+        -1,5 +1,15 @@\n-### Example\n+### CI Testing\n \n-\u003e This repo is used
+        for CI Testing. Enjoy this gif as a reward!\n+\u003e This repo is used for
+        CI Testing\n+\n+\n+| [https://codecov.io/][1] | [@codecov][2] | [hello@codecov.io][3]
+        |\n+| ------------------------ | ------------- | --------------------- |\n+\n+-----\n+\n+\n+[1]:
+        https://codecov.io/\n+[2]: https://twitter.com/codecov\n+[3]: mailto:hello@codecov.io\n
+        \n-![i can do that](http://gph.is/17cvPc4)\n"}]'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 20:01:29 GMT
+        Content-Type: application/json
+        Content-Length: '622'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"bec75dff6f5bc03146f5806e4ec76721"
+        Link: <https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/diff?id=187725&page=1&per_page=20&sha=c739768fcac68144a3a6d82305b9c4106934d31a>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/repository/commits/c739768fcac68144a3a6d82305b9c4106934d31a/diff?id=187725&page=1&per_page=20&sha=c739768fcac68144a3a6d82305b9c4106934d31a>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: a1f9adc1-5e19-4670-b1c0-46db03fcb5e3
+        X-Runtime: '0.036736'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '2'
+        Ratelimit-Remaining: '598'
+        Ratelimit-Reset: '1541448149'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 20:02:29 GMT
+      status_code: 200
+version: 1

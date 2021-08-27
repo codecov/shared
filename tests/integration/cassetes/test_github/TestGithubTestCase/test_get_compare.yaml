@@ -1,0 +1,135 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/compare/6ae5f17...b92edba
+  response:
+    content: '{"url":"https://api.github.com/repos/ThiagoCodecov/example-python/compare/6ae5f17...b92edba","html_url":"https://github.com/ThiagoCodecov/example-python/compare/6ae5f17...b92edba","permalink_url":"https://github.com/ThiagoCodecov/example-python/compare/ThiagoCodecov:6ae5f17...ThiagoCodecov:b92edba","diff_url":"https://github.com/ThiagoCodecov/example-python/compare/6ae5f17...b92edba.diff","patch_url":"https://github.com/ThiagoCodecov/example-python/compare/6ae5f17...b92edba.patch","base_commit":{"sha":"6ae5f1795a441884ed2847bb31154814ac01ef38","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OjZhZTVmMTc5NWE0NDE4ODRlZDI4NDdiYjMxMTU0ODE0YWMwMWVmMzg=","commit":{"author":{"name":"Thomas
+      Pedbereznak","email":"tom@tomped.com","date":"2018-04-26T08:35:58Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-04-26T08:35:58Z"},"message":"Update
+      README.rst","tree":{"sha":"b5592410a15d7a596a8eaea6399766fbbbe0366c","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/b5592410a15d7a596a8eaea6399766fbbbe0366c"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/6ae5f1795a441884ed2847bb31154814ac01ef38","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJa4Y9uCRBK7hj4Ov3rIwAAdHIIAAyJAC1mOPnKmkDSzraV47Wq\nXma/2QidKpXnRqKgY6XFBXAH0RIpHpZ3NwGR/L2GH1l7xLjXtOMTvXOCjFBZUwRE\nLlM9IdoUFyPU2E9P0z0vfGR/nk5QC8PY9lzDwe/N8ZhR0j4M2rTM2ue97om9nJ4e\nmD+HR2ZwjKA9Z9zFeALgBjokKs44F6oN6lLuPYn06oiCnYB3ytlWJy+vpmEGLhoM\nL+a/ct2e6O5MmlpbRlKVME4FL0O4wDBMrAaFeeZgQTCl2LKfdsfYScJnypkB7X06\n6cDtC/TJ436n4PCTBRHVMDNGxzmgMgMFYbCPkJ27BeWlTuKVDcJ2msOV7ZJKqqs=\n=oGiR\n-----END
+      PGP SIGNATURE-----\n","payload":"tree b5592410a15d7a596a8eaea6399766fbbbe0366c\nparent
+      8631ea09b9b689de0a348d5abf70bdd7273d2ae3\nauthor Thomas Pedbereznak <tom@tomped.com>
+      1524731758 +0200\ncommitter GitHub <noreply@github.com> 1524731758 +0200\n\nUpdate
+      README.rst"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6ae5f1795a441884ed2847bb31154814ac01ef38","html_url":"https://github.com/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6ae5f1795a441884ed2847bb31154814ac01ef38/comments","author":{"login":"TomPed","id":11602092,"node_id":"MDQ6VXNlcjExNjAyMDky","avatar_url":"https://avatars1.githubusercontent.com/u/11602092?v=4","gravatar_id":"","url":"https://api.github.com/users/TomPed","html_url":"https://github.com/TomPed","followers_url":"https://api.github.com/users/TomPed/followers","following_url":"https://api.github.com/users/TomPed/following{/other_user}","gists_url":"https://api.github.com/users/TomPed/gists{/gist_id}","starred_url":"https://api.github.com/users/TomPed/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/TomPed/subscriptions","organizations_url":"https://api.github.com/users/TomPed/orgs","repos_url":"https://api.github.com/users/TomPed/repos","events_url":"https://api.github.com/users/TomPed/events{/privacy}","received_events_url":"https://api.github.com/users/TomPed/received_events","type":"User","site_admin":false},"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"8631ea09b9b689de0a348d5abf70bdd7273d2ae3","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/8631ea09b9b689de0a348d5abf70bdd7273d2ae3","html_url":"https://github.com/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3"}]},"merge_base_commit":{"sha":"6ae5f1795a441884ed2847bb31154814ac01ef38","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OjZhZTVmMTc5NWE0NDE4ODRlZDI4NDdiYjMxMTU0ODE0YWMwMWVmMzg=","commit":{"author":{"name":"Thomas
+      Pedbereznak","email":"tom@tomped.com","date":"2018-04-26T08:35:58Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-04-26T08:35:58Z"},"message":"Update
+      README.rst","tree":{"sha":"b5592410a15d7a596a8eaea6399766fbbbe0366c","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/b5592410a15d7a596a8eaea6399766fbbbe0366c"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/6ae5f1795a441884ed2847bb31154814ac01ef38","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJa4Y9uCRBK7hj4Ov3rIwAAdHIIAAyJAC1mOPnKmkDSzraV47Wq\nXma/2QidKpXnRqKgY6XFBXAH0RIpHpZ3NwGR/L2GH1l7xLjXtOMTvXOCjFBZUwRE\nLlM9IdoUFyPU2E9P0z0vfGR/nk5QC8PY9lzDwe/N8ZhR0j4M2rTM2ue97om9nJ4e\nmD+HR2ZwjKA9Z9zFeALgBjokKs44F6oN6lLuPYn06oiCnYB3ytlWJy+vpmEGLhoM\nL+a/ct2e6O5MmlpbRlKVME4FL0O4wDBMrAaFeeZgQTCl2LKfdsfYScJnypkB7X06\n6cDtC/TJ436n4PCTBRHVMDNGxzmgMgMFYbCPkJ27BeWlTuKVDcJ2msOV7ZJKqqs=\n=oGiR\n-----END
+      PGP SIGNATURE-----\n","payload":"tree b5592410a15d7a596a8eaea6399766fbbbe0366c\nparent
+      8631ea09b9b689de0a348d5abf70bdd7273d2ae3\nauthor Thomas Pedbereznak <tom@tomped.com>
+      1524731758 +0200\ncommitter GitHub <noreply@github.com> 1524731758 +0200\n\nUpdate
+      README.rst"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6ae5f1795a441884ed2847bb31154814ac01ef38","html_url":"https://github.com/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6ae5f1795a441884ed2847bb31154814ac01ef38/comments","author":{"login":"TomPed","id":11602092,"node_id":"MDQ6VXNlcjExNjAyMDky","avatar_url":"https://avatars1.githubusercontent.com/u/11602092?v=4","gravatar_id":"","url":"https://api.github.com/users/TomPed","html_url":"https://github.com/TomPed","followers_url":"https://api.github.com/users/TomPed/followers","following_url":"https://api.github.com/users/TomPed/following{/other_user}","gists_url":"https://api.github.com/users/TomPed/gists{/gist_id}","starred_url":"https://api.github.com/users/TomPed/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/TomPed/subscriptions","organizations_url":"https://api.github.com/users/TomPed/orgs","repos_url":"https://api.github.com/users/TomPed/repos","events_url":"https://api.github.com/users/TomPed/events{/privacy}","received_events_url":"https://api.github.com/users/TomPed/received_events","type":"User","site_admin":false},"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"8631ea09b9b689de0a348d5abf70bdd7273d2ae3","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/8631ea09b9b689de0a348d5abf70bdd7273d2ae3","html_url":"https://github.com/ThiagoCodecov/example-python/commit/8631ea09b9b689de0a348d5abf70bdd7273d2ae3"}]},"status":"ahead","ahead_by":4,"behind_by":0,"total_commits":4,"commits":[{"sha":"adb252173d2107fad86bcdcbc149884c2dd4c609","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OmFkYjI1MjE3M2QyMTA3ZmFkODZiY2RjYmMxNDk4ODRjMmRkNGM2MDk=","commit":{"author":{"name":"Thomas
+      Pedbereznak","email":"tom@tomped.com","date":"2018-04-26T08:39:32Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-04-26T08:39:32Z"},"message":"Update
+      README.rst","tree":{"sha":"26b90aa0aa92d1d873342d7b95df4ad79f7db8b9","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/26b90aa0aa92d1d873342d7b95df4ad79f7db8b9"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/adb252173d2107fad86bcdcbc149884c2dd4c609","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJa4ZBECRBK7hj4Ov3rIwAAdHIIAEoo6hDo1yVW2e9pe5R6cesa\nzQrd0cjAMvcjwvdDRAbAHkiNuJtJElO41xjyC4sAthl9zM1Wx1Jo4lc8+4CeJ2Vs\n3b3PDbwp6MLBJcwfhC/mox0PYPzTFO56r61HJI7T2CkBh9GXHAifXMHhkmYP0y5A\nGzeOE7FlP7Mz3N7NaXzlSPJbIZPD4X9swR0cqDZCFuD1R48QXi3+IbREUzO4KneM\nS4KwJQNPWRefH8pEkZBLZ8KFPL0ftXr6YuCKE7ySwoer7uQ0AXVHY5HcLSZD/js/\n9R7G+7CWkyBivTJAUFzql3j+A/ZiDTnXbEO6lty5K4LpvGD8kbkXTZB6QsIPC+g=\n=fcYU\n-----END
+      PGP SIGNATURE-----\n","payload":"tree 26b90aa0aa92d1d873342d7b95df4ad79f7db8b9\nparent
+      6ae5f1795a441884ed2847bb31154814ac01ef38\nauthor Thomas Pedbereznak <tom@tomped.com>
+      1524731972 +0200\ncommitter GitHub <noreply@github.com> 1524731972 +0200\n\nUpdate
+      README.rst"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/adb252173d2107fad86bcdcbc149884c2dd4c609","html_url":"https://github.com/ThiagoCodecov/example-python/commit/adb252173d2107fad86bcdcbc149884c2dd4c609","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/adb252173d2107fad86bcdcbc149884c2dd4c609/comments","author":{"login":"TomPed","id":11602092,"node_id":"MDQ6VXNlcjExNjAyMDky","avatar_url":"https://avatars1.githubusercontent.com/u/11602092?v=4","gravatar_id":"","url":"https://api.github.com/users/TomPed","html_url":"https://github.com/TomPed","followers_url":"https://api.github.com/users/TomPed/followers","following_url":"https://api.github.com/users/TomPed/following{/other_user}","gists_url":"https://api.github.com/users/TomPed/gists{/gist_id}","starred_url":"https://api.github.com/users/TomPed/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/TomPed/subscriptions","organizations_url":"https://api.github.com/users/TomPed/orgs","repos_url":"https://api.github.com/users/TomPed/repos","events_url":"https://api.github.com/users/TomPed/events{/privacy}","received_events_url":"https://api.github.com/users/TomPed/received_events","type":"User","site_admin":false},"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"6ae5f1795a441884ed2847bb31154814ac01ef38","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6ae5f1795a441884ed2847bb31154814ac01ef38","html_url":"https://github.com/ThiagoCodecov/example-python/commit/6ae5f1795a441884ed2847bb31154814ac01ef38"}]},{"sha":"6895b6479dbe12b5cb3baa02416c6343ddb888b4","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OjY4OTViNjQ3OWRiZTEyYjVjYjNiYWEwMjQxNmM2MzQzZGRiODg4YjQ=","commit":{"author":{"name":"Jerrod","email":"jerrod@fundersclub.com","date":"2018-07-09T23:39:20Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-07-09T23:39:20Z"},"message":"Adding
+      ''include'' term if multiple sources\n\nbased on a support ticket around multiple
+      sources\r\n\r\nhttps://codecov.freshdesk.com/a/tickets/87","tree":{"sha":"3c47e2b9d9791503b56f0e4f78e76b9d061ad529","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/3c47e2b9d9791503b56f0e4f78e76b9d061ad529"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJbQ/IoCRBK7hj4Ov3rIwAAdHIIAGm5AdlM8E0E7TyFKWgwPpjO\nsxiQswFXWosTZnJAn2NN/JF5aNqxUFLa9mo7Z+jztQuxrWsAFQsNFHf/t90iZi4w\ne0CkIHJdI8ukcae5/3eP+9h8GyqEq/RcvxYtvW6zYkWAK3Pyqwrs+qwH1MuLsl6E\n02fgD6T99Pq2V+3S1+dfgU6ot4IrMwT7aR+u9fCM8G4tF4y/5znIzuke6amVt52S\nUfjnHOHbDxdD4Mkxn8107zX1XmQ4BEzhh1kjTVd3Mean6ye7xsFxFGYHA5Zd1iyM\nCsmW5waqonRf03m1bQ9pYleufcwpr72iARLiBFhTOcAF6vpdoshO1qmTtsweFno=\n=vKnQ\n-----END
+      PGP SIGNATURE-----\n","payload":"tree 3c47e2b9d9791503b56f0e4f78e76b9d061ad529\nparent
+      adb252173d2107fad86bcdcbc149884c2dd4c609\nauthor Jerrod <jerrod@fundersclub.com>
+      1531179560 -0700\ncommitter GitHub <noreply@github.com> 1531179560 -0700\n\nAdding
+      ''include'' term if multiple sources\n\nbased on a support ticket around multiple
+      sources\r\n\r\nhttps://codecov.freshdesk.com/a/tickets/87"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4","html_url":"https://github.com/ThiagoCodecov/example-python/commit/6895b6479dbe12b5cb3baa02416c6343ddb888b4","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4/comments","author":null,"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"adb252173d2107fad86bcdcbc149884c2dd4c609","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/adb252173d2107fad86bcdcbc149884c2dd4c609","html_url":"https://github.com/ThiagoCodecov/example-python/commit/adb252173d2107fad86bcdcbc149884c2dd4c609"}]},{"sha":"c7f608036a3d2e89f8c59989ee213900c1ef39d1","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OmM3ZjYwODAzNmEzZDJlODlmOGM1OTk4OWVlMjEzOTAwYzFlZjM5ZDE=","commit":{"author":{"name":"Jerrod","email":"jerrod@fundersclub.com","date":"2018-07-09T23:48:34Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-07-09T23:48:34Z"},"message":"Update
+      README.rst","tree":{"sha":"67a425bb5cdf5dba974649a92b9bd1b332ccbada","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/67a425bb5cdf5dba974649a92b9bd1b332ccbada"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/c7f608036a3d2e89f8c59989ee213900c1ef39d1","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJbQ/RSCRBK7hj4Ov3rIwAAdHIIADaMP9S0JFvlxV7y32ytgpMy\nHHzFrThiO4KivcY0JNiTLPTD9zdKYKeczLw2fV2GLZU/3Ho/msh9gk+GB07yxJiK\nSxQxW78XRBNeXMNtN1gQHTB/1XpDMk//uZRFD4CAY3Rf9n8MxKhtLV66vmvmInsu\n/pErsBSOyZH1plHejRJFloQCbHjwzVB8/OrtoV1P/woVsX6nmX59NHWsMo5rY80W\n/AEr58FzjXV0b0mQ05q9VjHVhFZqOwh981YWHrgv0Ujxu0z9qpbTAhZx5+JOjAuX\nR9zILOWUgZ6w7YUXhAgXfqYztYfCZyPiaDPOxgl1RWMPtAh9KvYZzriKuEZgTdk=\n=utzN\n-----END
+      PGP SIGNATURE-----\n","payload":"tree 67a425bb5cdf5dba974649a92b9bd1b332ccbada\nparent
+      6895b6479dbe12b5cb3baa02416c6343ddb888b4\nauthor Jerrod <jerrod@fundersclub.com>
+      1531180114 -0700\ncommitter GitHub <noreply@github.com> 1531180114 -0700\n\nUpdate
+      README.rst"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/c7f608036a3d2e89f8c59989ee213900c1ef39d1","html_url":"https://github.com/ThiagoCodecov/example-python/commit/c7f608036a3d2e89f8c59989ee213900c1ef39d1","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/c7f608036a3d2e89f8c59989ee213900c1ef39d1/comments","author":null,"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"6895b6479dbe12b5cb3baa02416c6343ddb888b4","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4","html_url":"https://github.com/ThiagoCodecov/example-python/commit/6895b6479dbe12b5cb3baa02416c6343ddb888b4"}]},{"sha":"b92edba44fdd29fcc506317cc3ddeae1a723dd08","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OmI5MmVkYmE0NGZkZDI5ZmNjNTA2MzE3Y2MzZGRlYWUxYTcyM2RkMDg=","commit":{"author":{"name":"Jerrod","email":"jerrod@fundersclub.com","date":"2018-07-09T23:51:16Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-07-09T23:51:16Z"},"message":"Update
+      README.rst","tree":{"sha":"0cbac4b22e6b7a239338e6550a59553c9bc76eb0","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/0cbac4b22e6b7a239338e6550a59553c9bc76eb0"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJbQ/T0CRBK7hj4Ov3rIwAAdHIIAGISA3RET3zrQdUjtrsxVc8K\nGjR/6NYt0xJxRA+tJ5JuRGplJJuVECOADr52eXaRMw+3jvfsqZOt7oKAnU/Q490u\nwb8V8Y7vOo9doxqrJY6vQKCddjbiRZKD/clwAlBFFO0UJJtRWWANqeD0PHnDyzIG\nIasWMQyRb1RSMBAg7tIGsBwxzXKBaMr9Y6IVuh2HSLS/mOg124vy9hHKx5L60IyJ\nvOlcFiEQpWYtFDn9hc+BvEgdaIcKP6mkOo+AGz6uYJ8149ukTwpGZQr8NJgxl4Yx\nY+gBGy7CurVoFZ4N3JOY94H9RffoYKXJwJmZS01n0y9ar8CG2YjSniFY7x7hJNQ=\n=SnzP\n-----END
+      PGP SIGNATURE-----\n","payload":"tree 0cbac4b22e6b7a239338e6550a59553c9bc76eb0\nparent
+      c7f608036a3d2e89f8c59989ee213900c1ef39d1\nauthor Jerrod <jerrod@fundersclub.com>
+      1531180276 -0700\ncommitter GitHub <noreply@github.com> 1531180276 -0700\n\nUpdate
+      README.rst"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08","html_url":"https://github.com/ThiagoCodecov/example-python/commit/b92edba44fdd29fcc506317cc3ddeae1a723dd08","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/b92edba44fdd29fcc506317cc3ddeae1a723dd08/comments","author":null,"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"c7f608036a3d2e89f8c59989ee213900c1ef39d1","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/c7f608036a3d2e89f8c59989ee213900c1ef39d1","html_url":"https://github.com/ThiagoCodecov/example-python/commit/c7f608036a3d2e89f8c59989ee213900c1ef39d1"}]}],"files":[{"sha":"405d834472636bc2c83dd8bd6818e4b2c2871e86","filename":"README.rst","status":"modified","additions":11,"deletions":4,"changes":15,"blob_url":"https://github.com/ThiagoCodecov/example-python/blob/b92edba44fdd29fcc506317cc3ddeae1a723dd08/README.rst","raw_url":"https://github.com/ThiagoCodecov/example-python/raw/b92edba44fdd29fcc506317cc3ddeae1a723dd08/README.rst","contents_url":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/README.rst?ref=b92edba44fdd29fcc506317cc3ddeae1a723dd08","patch":"@@
+      -9,7 +9,8 @@\n Overview\n --------\n \n-Main website: `Codecov <https://codecov.io/>`_.\n+\n+website:
+      `Codecov <https://codecov.io/>`_.\n \n .. code-block:: shell-session\n \n@@
+      -46,12 +47,19 @@ Below are some examples on how to include coverage tracking
+      during your tests. C\n \n You may need to configure a ``.coveragerc`` file.
+      Learn more `here <http://coverage.readthedocs.org/en/latest/config.html>`_.
+      Start with this `generic .coveragerc <https://gist.github.com/codecov-io/bf15bde2c7db1a011b6e>`_
+      for example.\n \n-We highly suggest adding `source` to your ``.coveragerc``
+      which solves a number of issues collecting coverage.\n+We highly suggest adding
+      ``source`` to your ``.coveragerc``, which solves a number of issues collecting
+      coverage.\n \n .. code-block:: ini\n \n    [run]\n    source=your_package_name\n+   \n+If
+      there are multiple sources, you instead should add ``include`` to your ``.coveragerc``\n+\n+..
+      code-block:: ini\n+\n+   [run]\n+   include=your_package_name/*\n \n unittests\n
+      ---------\n@@ -150,5 +158,4 @@ Links\n * Twitter: `@codecov <https://twitter.com/codecov>`_.\n
+      * Email: `hello@codecov.io <hello@codecov.io>`_.\n \n-We are happy to help if
+      you have any questions. Please contact email our Support at [support@codecov.io](mailto:support@codecov.io)\n-\n+We
+      are happy to help if you have any questions. Please contact email our Support
+      at `support@codecov.io <mailto:support@codecov.io>`_."}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 17:32:32 GMT
+      ETag:
+      - W/"54a8a69ae63ce6ba5740dd3da8960e622de6a5d574a17ae56128f32270e90ab5"
+      Last-Modified:
+      - Mon, 09 Jul 2018 23:51:16 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - CFF6:0B47:40BACE5:695F631:5F873630
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4933'
+      X-RateLimit-Reset:
+      - '1602700322'
+      X-RateLimit-Used:
+      - '67'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: '{"name": "web", "active": true, "events": ["push", "pull_request"], "config":
+      {"url": "http://requestbin.net/r/1ecyaj51", "secret": "d", "content_type": "json"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '161'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: POST
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/hooks
+  response:
+    content: '{"type":"Repository","id":255680134,"name":"web","active":true,"events":["pull_request","push"],"config":{"content_type":"json","secret":"********","url":"http://requestbin.net/r/1ecyaj51","insecure_ssl":"0"},"updated_at":"2020-10-14T17:32:29Z","created_at":"2020-10-14T17:32:29Z","url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134","test_url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/test","ping_url":"https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134/pings","last_response":{"code":null,"status":"unused","message":null}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Length:
+      - '611'
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 17:32:29 GMT
+      ETag:
+      - '"89f829395d88062b2b88761648bbe80c074e16932b157176fd23eed79d26a81c"'
+      Location:
+      - https://api.github.com/repos/ThiagoCodecov/example-python/hooks/255680134
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 201 Created
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - admin:repo_hook, public_repo, repo, write:repo_hook
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - CFF1:356C:8D45E9:17589FF:5F87362D
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4938'
+      X-RateLimit-Reset:
+      - '1602700322'
+      X-RateLimit-Used:
+      - '62'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 201
+version: 1

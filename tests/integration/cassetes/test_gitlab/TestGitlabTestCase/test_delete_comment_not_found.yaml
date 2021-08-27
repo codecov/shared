@@ -1,0 +1,30 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: DELETE
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1/notes/113977999
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests/1/notes/113977999
+      content: '{"message":"404 Not found"}'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 18:58:23 GMT
+        Content-Type: application/json
+        Content-Length: '27'
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Request-Id: 66034a28-c90b-477a-92c8-75cf7811f20d
+        X-Runtime: '0.055006'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541444363'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 18:59:23 GMT
+      status_code: 404
+version: 1

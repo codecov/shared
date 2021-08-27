@@ -1,0 +1,96 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/commits/6895b64
+  response:
+    content: '{"sha":"6895b6479dbe12b5cb3baa02416c6343ddb888b4","node_id":"MDY6Q29tbWl0MTU2NjE3Nzc3OjY4OTViNjQ3OWRiZTEyYjVjYjNiYWEwMjQxNmM2MzQzZGRiODg4YjQ=","commit":{"author":{"name":"Jerrod","email":"jerrod@fundersclub.com","date":"2018-07-09T23:39:20Z"},"committer":{"name":"GitHub","email":"noreply@github.com","date":"2018-07-09T23:39:20Z"},"message":"Adding
+      ''include'' term if multiple sources\n\nbased on a support ticket around multiple
+      sources\r\n\r\nhttps://codecov.freshdesk.com/a/tickets/87","tree":{"sha":"3c47e2b9d9791503b56f0e4f78e76b9d061ad529","url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/3c47e2b9d9791503b56f0e4f78e76b9d061ad529"},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJbQ/IoCRBK7hj4Ov3rIwAAdHIIAGm5AdlM8E0E7TyFKWgwPpjO\nsxiQswFXWosTZnJAn2NN/JF5aNqxUFLa9mo7Z+jztQuxrWsAFQsNFHf/t90iZi4w\ne0CkIHJdI8ukcae5/3eP+9h8GyqEq/RcvxYtvW6zYkWAK3Pyqwrs+qwH1MuLsl6E\n02fgD6T99Pq2V+3S1+dfgU6ot4IrMwT7aR+u9fCM8G4tF4y/5znIzuke6amVt52S\nUfjnHOHbDxdD4Mkxn8107zX1XmQ4BEzhh1kjTVd3Mean6ye7xsFxFGYHA5Zd1iyM\nCsmW5waqonRf03m1bQ9pYleufcwpr72iARLiBFhTOcAF6vpdoshO1qmTtsweFno=\n=vKnQ\n-----END
+      PGP SIGNATURE-----\n","payload":"tree 3c47e2b9d9791503b56f0e4f78e76b9d061ad529\nparent
+      adb252173d2107fad86bcdcbc149884c2dd4c609\nauthor Jerrod <jerrod@fundersclub.com>
+      1531179560 -0700\ncommitter GitHub <noreply@github.com> 1531179560 -0700\n\nAdding
+      ''include'' term if multiple sources\n\nbased on a support ticket around multiple
+      sources\r\n\r\nhttps://codecov.freshdesk.com/a/tickets/87"}},"url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4","html_url":"https://github.com/ThiagoCodecov/example-python/commit/6895b6479dbe12b5cb3baa02416c6343ddb888b4","comments_url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/6895b6479dbe12b5cb3baa02416c6343ddb888b4/comments","author":null,"committer":{"login":"web-flow","id":19864447,"node_id":"MDQ6VXNlcjE5ODY0NDQ3","avatar_url":"https://avatars3.githubusercontent.com/u/19864447?v=4","gravatar_id":"","url":"https://api.github.com/users/web-flow","html_url":"https://github.com/web-flow","followers_url":"https://api.github.com/users/web-flow/followers","following_url":"https://api.github.com/users/web-flow/following{/other_user}","gists_url":"https://api.github.com/users/web-flow/gists{/gist_id}","starred_url":"https://api.github.com/users/web-flow/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/web-flow/subscriptions","organizations_url":"https://api.github.com/users/web-flow/orgs","repos_url":"https://api.github.com/users/web-flow/repos","events_url":"https://api.github.com/users/web-flow/events{/privacy}","received_events_url":"https://api.github.com/users/web-flow/received_events","type":"User","site_admin":false},"parents":[{"sha":"adb252173d2107fad86bcdcbc149884c2dd4c609","url":"https://api.github.com/repos/ThiagoCodecov/example-python/commits/adb252173d2107fad86bcdcbc149884c2dd4c609","html_url":"https://github.com/ThiagoCodecov/example-python/commit/adb252173d2107fad86bcdcbc149884c2dd4c609"}],"stats":{"total":9,"additions":8,"deletions":1},"files":[{"sha":"1fbfc366bd98e0c8df4fd297061a420b674857f4","filename":"README.rst","status":"modified","additions":8,"deletions":1,"changes":9,"blob_url":"https://github.com/ThiagoCodecov/example-python/blob/6895b6479dbe12b5cb3baa02416c6343ddb888b4/README.rst","raw_url":"https://github.com/ThiagoCodecov/example-python/raw/6895b6479dbe12b5cb3baa02416c6343ddb888b4/README.rst","contents_url":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/README.rst?ref=6895b6479dbe12b5cb3baa02416c6343ddb888b4","patch":"@@
+      -47,12 +47,19 @@ Below are some examples on how to include coverage tracking
+      during your tests. C\n \n You may need to configure a ``.coveragerc`` file.
+      Learn more `here <http://coverage.readthedocs.org/en/latest/config.html>`_.
+      Start with this `generic .coveragerc <https://gist.github.com/codecov-io/bf15bde2c7db1a011b6e>`_
+      for example.\n \n-We highly suggest adding `source` to your ``.coveragerc``
+      which solves a number of issues collecting coverage.\n+We highly suggest adding
+      `source` to your ``.coveragerc``, which solves a number of issues collecting
+      coverage.\n \n .. code-block:: ini\n \n    [run]\n    source=your_package_name\n+   \n+If
+      there are multiple sources, you instead should add ''include'' to your ``.coveragerc``\n+\n+..
+      code-block:: ini\n+\n+   [run]\n+   include=your_package_name/*\n \n unittests\n
+      ---------"}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 21:34:52 GMT
+      ETag:
+      - W/"152c76ba58a92fc047b2ce3dedfb74c42b939c33844864e0d30bd97b4c7f54dd"
+      Last-Modified:
+      - Mon, 09 Jul 2018 23:39:20 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - D7EE:13B2:46AEF:9F712:5F876EFC
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4997'
+      X-RateLimit-Reset:
+      - '1602714521'
+      X-RateLimit-Used:
+      - '3'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

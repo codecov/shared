@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests?state=OPEN&page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516646&oauth_nonce=15af96bfd6e546acaec32b3dac09fe42&oauth_version=1.0&oauth_signature=4E9qt33md6cz0B%2BnnL62C2hs7jA%3D
+  response:
+    content: '{"pagelen": 10, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Nov 2018 15:04:06 GMT
+      Etag:
+      - '"e671435b14693e94f294247ac6f96b5f"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - caching
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.292464971542'
+      X-Request-Count:
+      - '109'
+      X-Served-By:
+      - app-143
+      X-Static-Version:
+      - 4ea3c9800ace
+      X-Version:
+      - 4ea3c9800ace
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests?state=OPEN&page=1&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541516646&oauth_nonce=15af96bfd6e546acaec32b3dac09fe42&oauth_version=1.0&oauth_signature=4E9qt33md6cz0B%2BnnL62C2hs7jA%3D
+version: 1

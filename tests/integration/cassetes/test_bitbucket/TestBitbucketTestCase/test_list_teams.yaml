@@ -1,0 +1,143 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378454&oauth_nonce=d5ecf457da8d41be901fbc20c12fa5ff&oauth_version=1.0&oauth_signature=e%2BxL5oewcKsMyDq%2Fxf8v3F6LyC8%3D
+  response:
+    content: '{"pagelen": 50, "values": [{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostestnumbar3/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "member", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramostestnumbar3", "type": "workspace", "name":
+      "thiagorramostestnumbar3", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostestnumbar3"},
+      "html": {"href": "https://bitbucket.org/thiagorramostestnumbar3/"}, "avatar":
+      {"href": "https://bitbucket.org/workspaces/thiagorramostestnumbar3/avatar/?ts=1617373497"}},
+      "uuid": "{d7c73e87-90ab-450f-bb5f-39e6a5870456}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:25:58.600"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostest2/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "collaborator", "last_accessed": null, "user": {"display_name":
+      "Thiago Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramostest2", "type": "workspace", "name": "ThiagoRRamostest2",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramostest2"},
+      "html": {"href": "https://bitbucket.org/thiagorramostest2/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/thiagorramostest2/avatar/?ts=1617373390"}},
+      "uuid": "{33b5f87a-bda0-40c2-ba1b-9eb892492290}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:24:01.106"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosanotherw/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramosanotherw", "type": "workspace", "name": "ThiagoRRamosanotherw",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosanotherw"},
+      "html": {"href": "https://bitbucket.org/thiagorramosanotherw/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/thiagorramosanotherw/avatar/?ts=1617373374"}},
+      "uuid": "{11e04628-2c7b-4d89-9319-e7eed8818e56}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:22:54.290"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosworkspace/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagorramosworkspace", "type": "workspace", "name":
+      "ThiagoRRamosworkspace", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosworkspace"},
+      "html": {"href": "https://bitbucket.org/thiagorramosworkspace/"}, "avatar":
+      {"href": "https://bitbucket.org/workspaces/thiagorramosworkspace/avatar/?ts=1617373144"}},
+      "uuid": "{727d78e8-7431-4532-9519-1e5fe2b61d4b}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T14:20:48.179"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagocodecovbanana/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "thiagocodecovbanana", "type": "workspace", "name": "ThiagoCodecovbanana",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagocodecovbanana"},
+      "html": {"href": "https://bitbucket.org/thiagocodecovbanana/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/thiagocodecovbanana/avatar/?ts=1617370980"}},
+      "uuid": "{68f2da06-b2f8-4f00-92fa-32bd60df9d27}"}, "type": "workspace_membership",
+      "added_on": "2021-04-02T13:43:00.117"}, {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
+      "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
+      Ramos", "uuid": "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}", "links": {"self":
+      {"href": "https://bitbucket.org/!api/2.0/users/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"},
+      "html": {"href": "https://bitbucket.org/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/TR-6.png"}},
+      "nickname": "thiago", "type": "user", "account_id": "5bce04c759d0e84f8c7555e9"},
+      "workspace": {"slug": "ThiagoCodecov", "type": "workspace", "name": "Thiago
+      Ramos", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
+      "https://bitbucket.org/workspaces/ThiagoCodecov/avatar/?ts=1543758107"}}, "uuid":
+      "{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}"}, "type": "workspace_membership", "added_on":
+      null}], "page": 1, "size": 6}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 15:47:35 GMT
+      ETag:
+      - '"gz[f9d666b4417eebda21d94a1e0f28b335]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Authorization, cookie, user-context, Accept-Encoding
+      X-Accepted-OAuth-Scopes:
+      - account
+      X-B3-TraceId:
+      - c8373df1d238408f
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0590329170227'
+      X-Request-Count:
+      - '237'
+      X-Served-By:
+      - app-3013
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

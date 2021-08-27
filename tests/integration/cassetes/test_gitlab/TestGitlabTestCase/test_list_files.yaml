@@ -1,0 +1,46 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master&path=folder&per_page=100
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/tree?ref=master&path=folder&per_page=100
+      content: '[{"id":"3b18e512dba79e4c8300dd08aeb37f8e728b8dad","name":"hello-world.txt","type":"blob","path":"folder/hello-world.txt","mode":"100644"}]'
+      headers:
+        Server: nginx
+        Date: Fri, 06 Mar 2020 22:10:36 GMT
+        Content-Type: application/json
+        Content-Length: '138'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"46598bb942924146ec4836f29516d6f1"
+        Link: <https://gitlab.com/api/v4/projects/187725/repository/tree?id=187725&page=1&path=folder&per_page=20&recursive=false&ref=master>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/repository/tree?id=187725&page=1&path=folder&per_page=20&recursive=false&ref=master>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: FzMwgxOhEd7
+        X-Runtime: '0.042623'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '2'
+        Ratelimit-Remaining: '598'
+        Ratelimit-Reset: '1583532696'
+        Ratelimit-Resettime: Fri, 06 Mar 2020 22:11:36 GMT
+        Gitlab-Lb: fe-04-lb-gprd
+        Gitlab-Sv: localhost
+      status_code: 200
+version: 1

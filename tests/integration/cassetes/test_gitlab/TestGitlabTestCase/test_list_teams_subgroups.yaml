@@ -1,0 +1,47 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups?per_page=100
+    response:
+      url: https://gitlab.com/api/v4/groups?per_page=100
+      content: '[{"id":4165904,"web_url":"https://gitlab.com/groups/l00p_group_1","name":"My
+        Awesome Group","path":"l00p_group_1","description":"","visibility":"private","lfs_enabled":true,"avatar_url":"https://assets.gitlab-static.net/uploads/-/system/user/avatar/4165904/avatar.png","request_access_enabled":false,"full_name":"My
+        Awesome Group","full_path":"l00p_group_1","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4165905,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup1","name":"subgroup1","path":"subgroup1","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+        Awesome Group / subgroup1","full_path":"l00p_group_1/subgroup1","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4165907,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2","name":"subgroup2","path":"subgroup2","description":"","visibility":"private","lfs_enabled":true,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+        Awesome Group / subgroup2","full_path":"l00p_group_1/subgroup2","parent_id":4165904,"ldap_cn":null,"ldap_access":null}]'
+      headers:
+        Content-Length: '1044'
+        X-Request-Id: Nz6MzfYGM56
+        Ratelimit-Reset: '1543694666'
+        Etag: W/"5f4cb15d470d686b54f5cf0b6e3acf56"
+        X-Frame-Options: SAMEORIGIN
+        Ratelimit-Remaining: '599'
+        X-Total: '3'
+        X-Runtime: '0.042099'
+        Ratelimit-Limit: '600'
+        Link: <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+          rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+          rel="last"
+        X-Next-Page: ''
+        Date: Sat, 01 Dec 2018 20:03:26 GMT
+        X-Prev-Page: ''
+        Strict-Transport-Security: max-age=31536000
+        Server: nginx
+        Connection: close
+        Ratelimit-Observed: '1'
+        X-Per-Page: '100'
+        X-Content-Type-Options: nosniff
+        Vary: Origin
+        Ratelimit-Resettime: Sun, 01 Dec 2018 20:04:26 GMT
+        Cache-Control: max-age=0, private, must-revalidate
+        X-Page: '1'
+        X-Total-Pages: '1'
+        Content-Type: application/json
+      status_code: 200
+version: 1

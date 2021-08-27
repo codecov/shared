@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: DELETE
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
+  response:
+    content: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      Content-Type:
+      - text/plain
+      Date:
+      - Wed, 07 Nov 2018 14:48:36 GMT
+      Etag:
+      - '"d41d8cd98f00b204e9800998ecf8427e"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - webhook
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.100928068161'
+      X-Request-Count:
+      - '182'
+      X-Served-By:
+      - app-188
+      X-Static-Version:
+      - 1f6d684e3c29
+      X-Version:
+      - 1f6d684e3c29
+    status:
+      code: 204
+      message: No Content
+    status_code: 204
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602115&oauth_nonce=ab985dba77534c24929b8d013d2cb876&oauth_version=1.0&oauth_signature=BCk5R%2Bbn4a3MUcDiyTQ3HF2X%2BW8%3D
+version: 1

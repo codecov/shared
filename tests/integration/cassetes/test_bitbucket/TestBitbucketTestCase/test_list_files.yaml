@@ -1,0 +1,62 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/tests?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1583532942&oauth_nonce=5279ec8a149e421db80cf4e931fa7a50&oauth_version=1.0&oauth_signature=Di5RSb8vWBrh7VoUGF7%2FMOq3e%2FE%3D
+  response:
+    content: '{"pagelen":10,"values":[{"path":"tests/__pycache__","type":"commit_directory","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/__pycache__/"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/__pycache__/?format=meta"}},"commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}}},{"mimetype":"text/x-python","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/__init__.py"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/__init__.py?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/__init__.py"}},"path":"tests/__init__.py","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":0},{"mimetype":"text/x-python","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/test_k.py"},"meta":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/src/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/test_k.py?format=meta"},"history":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/filehistory/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4/tests/test_k.py"}},"path":"tests/test_k.py","commit":{"type":"commit","hash":"76e9bb63b8196a5477cd5f8af52fc28f455b3ec4","links":{"self":{"href":"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"},"html":{"href":"https://bitbucket.org/ThiagoCodecov/example-python/commits/76e9bb63b8196a5477cd5f8af52fc28f455b3ec4"}}},"attributes":[],"type":"commit_file","size":171}],"page":1}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 06 Mar 2020 22:15:42 GMT
+      Etag:
+      - '"gz[645f773bd04ccebe2c770a5eee37cb13]"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.0936629772186'
+      X-Request-Count:
+      - '4860'
+      X-Served-By:
+      - app-1131
+      X-Static-Version:
+      - a856747ae2e5
+      X-Version:
+      - a856747ae2e5
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/second-branch/tests?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1583532942&oauth_nonce=5279ec8a149e421db80cf4e931fa7a50&oauth_version=1.0&oauth_signature=Di5RSb8vWBrh7VoUGF7%2FMOq3e%2FE%3D
+version: 1

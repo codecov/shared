@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: DELETE
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/107383471?oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_nonce=0441f5ae229a4884801e97004003b6a8&oauth_timestamp=1561670312&oauth_signature=bRwiaWHiDGhoJQQuFG9%2BNwbERAg%3D&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1
+  response:
+    content: ''
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '0'
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Thu, 27 Jun 2019 21:18:34 GMT
+      Etag:
+      - '"d41d8cd98f00b204e9800998ecf8427e"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.180292129517'
+      X-Request-Count:
+      - '78'
+      X-Served-By:
+      - app-139
+      X-Static-Version:
+      - d664982621c0
+      X-Version:
+      - d664982621c0
+    status:
+      code: 204
+      message: No Content
+    status_code: 204
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/107383471?oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_nonce=0441f5ae229a4884801e97004003b6a8&oauth_timestamp=1561670312&oauth_signature=bRwiaWHiDGhoJQQuFG9%2BNwbERAg%3D&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1
+version: 1

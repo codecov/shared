@@ -1,0 +1,83 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests?state=opened
+      content: '{"message":"404 Not found"}'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 19:13:26 GMT
+        Content-Type: application/json
+        Content-Length: '1084'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"89a964567a1549306cc2fe9aa5ca23ae"
+        Link: <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests?id=187725&order_by=created_at&page=1&per_page=20&sort=desc&state=opened>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: f9101899-1557-4c8e-a461-0db681ffe5fd
+        X-Runtime: '0.060825'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '5'
+        Ratelimit-Remaining: '595'
+        Ratelimit-Reset: '1541445266'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 19:14:26 GMT
+      status_code: 404
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/merge_requests
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/merge_requests
+      content: '{"message":"404 Commit Not Found"}'
+      headers:
+        X-Http-Reason: Not Found
+        Date: Wed, 17 Jun 2020 18:28:50 GMT
+        Content-Type: application/json
+        Content-Length: '34'
+        Connection: keep-alive
+        Set-Cookie: __cfduid=dbfc65142d3a405159327b5a39321e61e1592418529; expires=Fri,
+          17-Jul-20 18:28:49 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: 4cKJfBOUbw6
+        X-Runtime: '0.166783'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1592418590'
+        Ratelimit-Resettime: Wed, 17 Jun 2020 18:29:50 GMT
+        Gitlab-Lb: fe-12-lb-gprd
+        Gitlab-Sv: localhost
+        Cf-Cache-Status: DYNAMIC
+        Cf-Request-Id: 03652389db0000f6371b2fd200000001
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 5a4ed522f864f637-GRU
+      status_code: 404
+version: 1

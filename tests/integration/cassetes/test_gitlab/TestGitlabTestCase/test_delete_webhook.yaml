@@ -1,0 +1,31 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: DELETE
+      uri: https://gitlab.com/api/v4/projects/187725/hooks/422507
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/hooks/422507
+      content: ''
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:02:13 GMT
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: f2d875ed-8876-4b72-931c-d659574d6264
+        X-Runtime: '0.049754'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541480593'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:03:13 GMT
+      status_code: 204
+version: 1

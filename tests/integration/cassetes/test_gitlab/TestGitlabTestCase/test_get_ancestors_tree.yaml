@@ -1,0 +1,49 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/commits?ref_name=c739768fcac68144a3a6d82305b9c4106934d31a
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/commits?ref_name=c739768fcac68144a3a6d82305b9c4106934d31a
+      content: '[{"id":"c739768fcac68144a3a6d82305b9c4106934d31a","short_id":"c739768f","created_at":"2014-08-20T21:52:44.000Z","parent_ids":["b33e12816cc3f386dae8add4968cedeff5155021"],"title":"shhhh
+        i''m batman!","message":"shhhh i''m batman!\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-08-20T21:52:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-08-20T21:52:44.000Z"},{"id":"b33e12816cc3f386dae8add4968cedeff5155021","short_id":"b33e1281","created_at":"2014-08-20T21:50:56.000Z","parent_ids":["743b04806ea677403aa2ff26c6bdeb85005de658"],"title":"added
+        nothing amazing","message":"added nothing amazing\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-08-20T21:50:56.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-08-20T21:50:56.000Z"},{"id":"743b04806ea677403aa2ff26c6bdeb85005de658","short_id":"743b0480","created_at":"2014-08-20T19:56:54.000Z","parent_ids":[],"title":"initial
+        commit","message":"initial commit\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-08-20T19:56:54.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-08-20T19:56:54.000Z"}]'
+      headers:
+        Server: nginx
+        Date: Fri, 20 Sep 2019 11:52:24 GMT
+        Content-Type: application/json
+        Content-Length: '1308'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"e460be25b22ed16c2939a1d590df3f3e"
+        Link: <https://gitlab.com/api/v4/projects/187725/repository/commits?id=187725&page=1&per_page=20&ref_name=c739768fcac68144a3a6d82305b9c4106934d31a>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/repository/commits?id=187725&page=1&per_page=20&ref_name=c739768fcac68144a3a6d82305b9c4106934d31a>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: iDerNhAbD03
+        X-Runtime: '0.046963'
+        X-Total: '3'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1568980404'
+        Ratelimit-Resettime: Fri, 20 Sep 2019 11:53:24 GMT
+        Gitlab-Lb: fe-09-lb-gprd
+        Gitlab-Sv: localhost
+      status_code: 200
+version: 1

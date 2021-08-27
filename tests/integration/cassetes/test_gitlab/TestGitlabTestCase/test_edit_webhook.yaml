@@ -1,0 +1,37 @@
+interactions:
+  - request:
+      body: '{"url": "http://requestbin.net/r/1ecyaj51", "enable_ssl_verification":
+        true, "tag_push_events": true, "note_events": true}'
+      headers:
+        Accept:
+          - application/json
+        Content-Type:
+          - application/json
+        User-Agent:
+          - Default
+      method: PUT
+      uri: https://gitlab.com/api/v4/projects/187725/hooks/422507
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/hooks/422507
+      content: '{"id":422507,"url":"http://requestbin.net/r/1ecyaj51","created_at":"2018-11-06T04:51:57.164Z","push_events":true,"tag_push_events":true,"merge_requests_events":false,"repository_update_events":false,"enable_ssl_verification":true,"project_id":187725,"issues_events":false,"confidential_issues_events":false,"note_events":true,"confidential_note_events":null,"pipeline_events":false,"wiki_page_events":false,"job_events":true,"push_events_branch_filter":null}'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:00:26 GMT
+        Content-Type: application/json
+        Content-Length: '458'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"9def5c5ade40d26af196eeecaf5fee6a"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: 73c95306-3e10-49f7-8f1e-6a92e7633d06
+        X-Runtime: '0.138632'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541480486'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:01:26 GMT
+      status_code: 200
+version: 1

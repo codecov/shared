@@ -1,0 +1,62 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups?per_page=100
+    response:
+      url: https://gitlab.com/api/v4/groups?per_page=100
+      content: '[{"id":5608536,"web_url":"https://gitlab.com/groups/bevera","name":"Bevera","path":"bevera","description":"Bevera
+        Code and Issues.","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"Bevera","full_path":"bevera","created_at":"2019-07-10T15:34:43.654Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4165904,"web_url":"https://gitlab.com/groups/l00p_group_1","name":"My
+        Awesome Group","path":"l00p_group_1","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+        Awesome Group","full_path":"l00p_group_1","created_at":"2018-12-01T19:44:36.005Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":5542118,"web_url":"https://gitlab.com/groups/sm-package-zen","name":"Package
+        Zen","path":"sm-package-zen","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"Package
+        Zen","full_path":"sm-package-zen","created_at":"2019-07-01T19:57:39.988Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4570068,"web_url":"https://gitlab.com/groups/falco-group-1","name":"falco-group-1","path":"falco-group-1","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"falco-group-1","full_path":"falco-group-1","created_at":"2019-02-08T15:20:51.245Z","parent_id":null,"ldap_cn":null,"ldap_access":null},{"id":4570071,"web_url":"https://gitlab.com/groups/falco-group-1/falco-subgroup-1","name":"falco-subgroup-1","path":"falco-subgroup-1","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"falco-group-1
+        / falco-subgroup-1","full_path":"falco-group-1/falco-subgroup-1","created_at":"2019-02-08T15:21:07.365Z","parent_id":4570068,"ldap_cn":null,"ldap_access":null},{"id":4165905,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup1","name":"subgroup1","path":"subgroup1","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+        Awesome Group / subgroup1","full_path":"l00p_group_1/subgroup1","created_at":"2018-12-01T19:44:50.074Z","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4165907,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2","name":"subgroup2","path":"subgroup2","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+        Awesome Group / subgroup2","full_path":"l00p_group_1/subgroup2","created_at":"2018-12-01T19:44:59.453Z","parent_id":4165904,"ldap_cn":null,"ldap_access":null},{"id":4255344,"web_url":"https://gitlab.com/groups/l00p_group_1/subgroup2/subsub","name":"subsub","path":"subsub","description":"","visibility":"private","share_with_group_lock":false,"require_two_factor_authentication":false,"two_factor_grace_period":48,"project_creation_level":"developer","auto_devops_enabled":null,"subgroup_creation_level":"owner","emails_disabled":null,"mentions_disabled":null,"lfs_enabled":true,"default_branch_protection":2,"avatar_url":null,"request_access_enabled":false,"full_name":"My
+        Awesome Group / subgroup2 / subsub","full_path":"l00p_group_1/subgroup2/subsub","created_at":"2018-12-16T17:02:35.644Z","parent_id":4165907,"ldap_cn":null,"ldap_access":null}]'
+      headers:
+        Date: Wed, 15 Apr 2020 00:59:33 GMT
+        Content-Type: application/json
+        Transfer-Encoding: chunked
+        Connection: close
+        Set-Cookie: __cfduid=d78fd070365e452861f1d41c8fae260951586912372; expires=Fri,
+          15-May-20 00:59:32 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"cda0ff5418608f5812235d5c9220d548"
+        Link: <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+          rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '100'
+        X-Prev-Page: ''
+        X-Request-Id: 5go6O2plpl3
+        X-Runtime: '0.087248'
+        X-Total: '8'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '3'
+        Ratelimit-Remaining: '597'
+        Ratelimit-Reset: '1586912433'
+        Ratelimit-Resettime: Wed, 15 Apr 2020 01:00:33 GMT
+        Gitlab-Lb: fe-19-lb-gprd
+        Gitlab-Sv: localhost
+        Cf-Cache-Status: DYNAMIC
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 5841b97b3c94d010-GRU
+        X-Consumed-Content-Encoding: gzip
+      status_code: 200
+version: 1

@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
+  response:
+    content: "from kaploft import smile, fib\n\n\ndef test_something():\n    assert\
+      \ smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n\
+      \    assert fib(3) == 3\n"
+    headers:
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Length:
+      - '171'
+      Content-Type:
+      - text/plain
+      Date:
+      - Thu, 08 Aug 2019 15:30:05 GMT
+      Etag:
+      - '-4866249612541806531'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.142271995544'
+      X-Request-Count:
+      - '369'
+      X-Served-By:
+      - app-142
+      X-Static-Version:
+      - d7eafd731394
+      X-Version:
+      - d7eafd731394
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/master/tests/test_k.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565278205&oauth_nonce=a01af83f79054905931ea31ddb0d3728&oauth_version=1.0&oauth_signature=SzP1qSAxizO%2Bn2sZFm5MYd%2FY%2Bu8%3D
+version: 1

@@ -1,0 +1,56 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: DELETE
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_nonce=331c6e3852554f5497b04e564dc673c2&oauth_timestamp=1561668838&oauth_signature=Z9fmZ6u%2FG%2Bimv4BHN1PNy7v3WkE%3D&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1
+  response:
+    content: '{"type": "error", "error": {"message": "113977999"}}'
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '52'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 27 Jun 2019 20:53:59 GMT
+      Etag:
+      - '"e24710c02940cb5198999dd1d60d6ee4"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - pullrequest
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.0523722171783'
+      X-Request-Count:
+      - '430'
+      X-Served-By:
+      - app-140
+      X-Static-Version:
+      - d664982621c0
+      X-Version:
+      - d664982621c0
+    status:
+      code: 404
+      message: Not Found
+    status_code: 404
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/pullrequests/1/comments/113977999?oauth_version=1.0&oauth_token=testss3hxhcfqf1h6g&oauth_nonce=331c6e3852554f5497b04e564dc673c2&oauth_timestamp=1561668838&oauth_signature=Z9fmZ6u%2FG%2Bimv4BHN1PNy7v3WkE%3D&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1
+version: 1

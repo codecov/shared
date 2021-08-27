@@ -1,0 +1,77 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/repository/commits/0028015f7fa260f5fd68f78c0deffc15183d955e
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/repository/commits/0028015f7fa260f5fd68f78c0deffc15183d955e
+      content: '{"id":"0028015f7fa260f5fd68f78c0deffc15183d955e","short_id":"0028015f","title":"added
+        large file","created_at":"2014-10-19T14:32:33.000Z","parent_ids":["5716de23b27020419d1a40dd93b469c041a1eeef"],"message":"added
+        large file\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-10-19T14:32:33.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-10-19T14:32:33.000Z","stats":{"additions":816,"deletions":0,"total":816},"status":"success","last_pipeline":{"id":558130,"sha":"0028015f7fa260f5fd68f78c0deffc15183d955e","ref":null,"status":"success","web_url":"https://gitlab.com/codecov/ci-repo/pipelines/558130"},"project_id":187725}'
+      headers:
+        Server: nginx
+        Date: Fri, 02 Nov 2018 05:28:33 GMT
+        Content-Type: application/json
+        Content-Length: '710'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"deec56396689c6620f247cd619830d3e"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: b506b0d6-6d0f-4a23-af81-5e720dad39b7
+        X-Runtime: '0.056148'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '3'
+        Ratelimit-Remaining: '597'
+        Ratelimit-Reset: '1541136573'
+        Ratelimit-Resettime: Sat, 02 Nov 2018 05:29:33 GMT
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/users?search=steve%40stevepeak.net
+    response:
+      url: https://gitlab.com/api/v4/users?search=steve%40stevepeak.net
+      content: '[{"id":109479,"name":"Steve Peak","username":"stevepeak","state":"active","avatar_url":"https://secure.gravatar.com/avatar/3712e9b9aee2ce5090aae58c2495cdee?s=80\u0026d=identicon","web_url":"https://gitlab.com/stevepeak"}]'
+      headers:
+        Server: nginx
+        Date: Fri, 02 Nov 2018 05:28:34 GMT
+        Content-Type: application/json
+        Content-Length: '221'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"5585a35955afb6a8cf2874f045e5569f"
+        Link: <https://gitlab.com/api/v4/users?active=false&blocked=false&external=false&page=1&per_page=20&search=steve%40stevepeak.net&skip_ldap=false&with_custom_attributes=false>;
+          rel="first", <https://gitlab.com/api/v4/users?active=false&blocked=false&external=false&page=1&per_page=20&search=steve%40stevepeak.net&skip_ldap=false&with_custom_attributes=false>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: 5ddf1c33-df01-4cdb-ad4a-789e0d49f30e
+        X-Runtime: '0.068397'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '4'
+        Ratelimit-Remaining: '596'
+        Ratelimit-Reset: '1541136574'
+        Ratelimit-Resettime: Sat, 02 Nov 2018 05:29:34 GMT
+      status_code: 200
+version: 1

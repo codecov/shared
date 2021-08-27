@@ -1,0 +1,62 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
+  response:
+    content: "def smile():\n    return \":)\"\n\ndef frown():\n    return \":(\"\n"
+    headers:
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Length:
+      - '59'
+      Content-Type:
+      - text/plain
+      Date:
+      - Thu, 08 Aug 2019 15:25:51 GMT
+      Etag:
+      - '-8639567690277796124'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.0693199634552'
+      X-Request-Count:
+      - '94'
+      X-Served-By:
+      - app-146
+      X-Static-Version:
+      - d7eafd731394
+      X-Version:
+      - d7eafd731394
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277950&oauth_nonce=a1ab9517ae334e78b4aa9d4a3396b1b9&oauth_version=1.0&oauth_signature=bW3y7DCif0TmawI%2FTv2NHRr0gDA%3D
+version: 1

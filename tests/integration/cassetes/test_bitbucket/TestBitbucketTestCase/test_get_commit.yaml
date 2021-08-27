@@ -1,0 +1,157 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/codecov/private/commit/6a45b83?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1575576386&oauth_nonce=7487fd483bfd4daaa38904b8d9feca99&oauth_version=1.0&oauth_signature=QBngQxqDm8r4CVe5UnZK6KUEF60%3D
+  response:
+    content: '{"rendered": {"message": {"raw": "wip\n", "markup": "markdown", "html":
+      "<p>wip</p>", "type": "rendered"}}, "hash": "6a45b838ae4fe22953c93aa17cc41b4b4216eb93",
+      "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private"},
+      "html": {"href": "https://bitbucket.org/codecov/private"}, "avatar": {"href":
+      "https://bytebucket.org/ravatar/%7B3edf54ab-cfe4-4049-aa70-5eb9f69f60d4%7D?ts=python"}},
+      "type": "repository", "name": "private", "full_name": "codecov/private", "uuid":
+      "{3edf54ab-cfe4-4049-aa70-5eb9f69f60d4}"}, "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/commit/6a45b838ae4fe22953c93aa17cc41b4b4216eb93"},
+      "comments": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/commit/6a45b838ae4fe22953c93aa17cc41b4b4216eb93/comments"},
+      "patch": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/patch/6a45b838ae4fe22953c93aa17cc41b4b4216eb93"},
+      "html": {"href": "https://bitbucket.org/codecov/private/commits/6a45b838ae4fe22953c93aa17cc41b4b4216eb93"},
+      "diff": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/diff/6a45b838ae4fe22953c93aa17cc41b4b4216eb93"},
+      "approve": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/commit/6a45b838ae4fe22953c93aa17cc41b4b4216eb93/approve"},
+      "statuses": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/commit/6a45b838ae4fe22953c93aa17cc41b4b4216eb93/statuses"}},
+      "author": {"raw": "stevepeak <steve@stevepeak.net>", "type": "author", "user":
+      {"display_name": "Steve Peak", "uuid": "{test6y9pl15lzivhmkgsk67k10x53n04i85o}",
+      "links": {"self": {"href": "https://bitbucket.org/!api/2.0/users/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D"},
+      "html": {"href": "https://bitbucket.org/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/SP-6.png"}},
+      "nickname": "stevepeak", "type": "user", "account_id": "557058:f66972a5-1c36-43ab-9543-cd030a0dae21"}},
+      "summary": {"raw": "wip\n", "markup": "markdown", "html": "<p>wip</p>", "type":
+      "rendered"}, "participants": [], "parents": [{"hash": "0028015f7fa260f5fd68f78c0deffc15183d955e",
+      "type": "commit", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/codecov/private/commit/0028015f7fa260f5fd68f78c0deffc15183d955e"},
+      "html": {"href": "https://bitbucket.org/codecov/private/commits/0028015f7fa260f5fd68f78c0deffc15183d955e"}}}],
+      "date": "2015-02-27T03:44:32+00:00", "message": "wip\n", "type": "commit"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 05 Dec 2019 20:06:27 GMT
+      Etag:
+      - '"gz[0b612cb1ba1520ccb7ae95109e8bb9a8]"'
+      Last-Modified:
+      - Fri, 27 Feb 2015 03:44:45 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, Accept-Encoding
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Consumed-Content-Encoding:
+      - gzip
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.741528987885'
+      X-Request-Count:
+      - '2098'
+      X-Served-By:
+      - app-1118
+      X-Static-Version:
+      - abd48467d96e
+      X-Version:
+      - abd48467d96e
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/codecov/private/commit/6a45b83?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1575576386&oauth_nonce=7487fd483bfd4daaa38904b8d9feca99&oauth_version=1.0&oauth_signature=QBngQxqDm8r4CVe5UnZK6KUEF60%3D
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/users/stevepeak?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1575576388&oauth_nonce=9b743f0720d74655a3b083aa8d756bdf&oauth_version=1.0&oauth_signature=o69UGzzNxIMf6CZ%2B1BdnMIclt5I%3D
+  response:
+    content: '{"display_name": "Steve Peak", "uuid": "{test6y9pl15lzivhmkgsk67k10x53n04i85o}",
+      "links": {"hooks": {"href": "https://bitbucket.org/!api/2.0/users/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D/hooks"},
+      "self": {"href": "https://bitbucket.org/!api/2.0/users/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D"},
+      "repositories": {"href": "https://bitbucket.org/!api/2.0/repositories/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D"},
+      "html": {"href": "https://bitbucket.org/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D/"},
+      "avatar": {"href": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/initials/SP-6.png"},
+      "snippets": {"href": "https://bitbucket.org/!api/2.0/snippets/%7Btest6y9pl15lzivhmkgsk67k10x53n04i85o%7D"}},
+      "nickname": "stevepeak", "created_on": "2012-11-25T21:15:09.146957+00:00", "is_staff":
+      false, "account_status": "active", "type": "user", "account_id": "557058:f66972a5-1c36-43ab-9543-cd030a0dae21"}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Length:
+      - '921'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 05 Dec 2019 20:06:28 GMT
+      Etag:
+      - '"501ff97fa50378e6f7f21129d531ca14"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Cache-Info:
+      - caching
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.060840845108'
+      X-Request-Count:
+      - '4932'
+      X-Served-By:
+      - app-1118
+      X-Static-Version:
+      - abd48467d96e
+      X-Version:
+      - abd48467d96e
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/users/stevepeak?oauth_consumer_key=arubajamaicaohiwan&oauth_token=waydowntokokomo&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1575576388&oauth_nonce=9b743f0720d74655a3b083aa8d756bdf&oauth_version=1.0&oauth_signature=o69UGzzNxIMf6CZ%2B1BdnMIclt5I%3D
+version: 1

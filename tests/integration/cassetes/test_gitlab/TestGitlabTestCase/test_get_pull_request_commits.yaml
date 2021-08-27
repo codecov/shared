@@ -1,0 +1,45 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits
+      content: '[{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
+        blank","created_at":"2014-09-04T16:13:44.000Z","parent_ids":[],"message":"left
+        blank\n","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-09-04T16:13:44.000Z","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-09-04T16:13:44.000Z"}]'
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 19:45:48 GMT
+        Content-Type: application/json
+        Content-Length: '394'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"774a263b0b93e422d9976f357f1ce079"
+        Link: <https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits?id=187725&merge_request_iid=1&page=1&per_page=20>;
+          rel="first", <https://gitlab.com/api/v4/projects/187725/merge_requests/1/commits?id=187725&merge_request_iid=1&page=1&per_page=20>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '20'
+        X-Prev-Page: ''
+        X-Request-Id: b2df358a-eead-4f12-9d78-e80c57ba7db0
+        X-Runtime: '0.070521'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '2'
+        Ratelimit-Remaining: '598'
+        Ratelimit-Reset: '1541447208'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 19:46:48 GMT
+      status_code: 200
+version: 1

@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"description": "new_name", "active": true, "events": ["issue:updated"],
+      "url": "http://requestbin.net/r/1ecyaj51"}'
+    headers:
+      Accept:
+      - application/json
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Default
+    method: PUT
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602041&oauth_nonce=ddb0335319f246d98933af48a59371e5&oauth_version=1.0&oauth_signature=widTrBs%2BlgaUlwKjY2YTvYMpWlc%3D
+  response:
+    content: '{"read_only": null, "description": "new_name", "links": {"self": {"href":
+      "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/hooks/%7B4742f092-8397-4677-8876-5e9a06f10f98%7D"}},
+      "url": "http://requestbin.net/r/1ecyaj51", "created_at": "2018-11-07T14:45:47.900077Z",
+      "skip_cert_verification": false, "source": null, "history_enabled": false, "active":
+      true, "subject": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python"}, "avatar":
+      {"href": "https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default"}},
+      "type": "repository", "name": "example-python", "full_name": "ThiagoCodecov/example-python",
+      "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}"}, "type": "webhook_subscription",
+      "events": ["issue:updated"], "uuid": "{4742f092-8397-4677-8876-5e9a06f10f98}"}'
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '931'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 07 Nov 2018 14:47:22 GMT
+      Etag:
+      - '"35d4c308470a7423364804ad93cfbe22"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - webhook
+      X-Cache-Info:
+      - not cacheable; request wasn't a GET or HEAD
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.140641927719'
+      X-Request-Count:
+      - '236'
+      X-Served-By:
+      - app-140
+      X-Static-Version:
+      - 1f6d684e3c29
+      X-Version:
+      - 1f6d684e3c29
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/hooks/4742f092-8397-4677-8876-5e9a06f10f98?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602041&oauth_nonce=ddb0335319f246d98933af48a59371e5&oauth_version=1.0&oauth_signature=widTrBs%2BlgaUlwKjY2YTvYMpWlc%3D
+version: 1

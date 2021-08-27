@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/codecov/worker/commits/3fb5f4700da7818e561054ec26f5657de720717f/status?page=1&per_page=100
+  response:
+    content: '{"state":"success","statuses":[{"url":"https://api.github.com/repos/codecov/worker/statuses/3fb5f4700da7818e561054ec26f5657de720717f","avatar_url":"https://avatars2.githubusercontent.com/in/254?v=4","id":9315478770,"node_id":"MDEzOlN0YXR1c0NvbnRleHQ5MzE1NDc4Nzcw","state":"success","description":"94.21%
+      (+0.18%) compared to 48775c6","target_url":"https://codecov.io/gh/codecov/worker/compare/48775c672437630c9c6f582ecfae5854a3617be2...3fb5f4700da7818e561054ec26f5657de720717f","context":"codecov/project","created_at":"2020-04-08T05:44:02Z","updated_at":"2020-04-08T05:44:02Z"},{"url":"https://api.github.com/repos/codecov/worker/statuses/3fb5f4700da7818e561054ec26f5657de720717f","avatar_url":"https://avatars2.githubusercontent.com/in/254?v=4","id":9315478783,"node_id":"MDEzOlN0YXR1c0NvbnRleHQ5MzE1NDc4Nzgz","state":"success","description":"100.00%
+      of diff hit (target 94.02%)","target_url":"https://codecov.io/gh/codecov/worker/compare/48775c672437630c9c6f582ecfae5854a3617be2...3fb5f4700da7818e561054ec26f5657de720717f","context":"codecov/patch","created_at":"2020-04-08T05:44:02Z","updated_at":"2020-04-08T05:44:02Z"},{"url":"https://api.github.com/repos/codecov/worker/statuses/3fb5f4700da7818e561054ec26f5657de720717f","avatar_url":"https://avatars2.githubusercontent.com/oa/4808?v=4","id":9324134563,"node_id":"MDEzOlN0YXR1c0NvbnRleHQ5MzI0MTM0NTYz","state":"success","description":"Your
+      tests passed on CircleCI!","target_url":"https://circleci.com/gh/codecov/worker/2619?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link","context":"ci/circleci:
+      build","created_at":"2020-04-08T20:39:33Z","updated_at":"2020-04-08T20:39:33Z"},{"url":"https://api.github.com/repos/codecov/worker/statuses/3fb5f4700da7818e561054ec26f5657de720717f","avatar_url":"https://avatars2.githubusercontent.com/oa/4808?v=4","id":9324144770,"node_id":"MDEzOlN0YXR1c0NvbnRleHQ5MzI0MTQ0Nzcw","state":"success","description":"Your
+      tests passed on CircleCI!","target_url":"https://circleci.com/gh/codecov/worker/2620?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link","context":"ci/circleci:
+      test","created_at":"2020-04-08T20:40:32Z","updated_at":"2020-04-08T20:40:32Z"}],"sha":"3fb5f4700da7818e561054ec26f5657de720717f","total_count":4,"repository":{"id":157271496,"node_id":"MDEwOlJlcG9zaXRvcnkxNTcyNzE0OTY=","name":"worker","full_name":"codecov/worker","private":true,"owner":{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","avatar_url":"https://avatars3.githubusercontent.com/u/8226205?v=4","gravatar_id":"","url":"https://api.github.com/users/codecov","html_url":"https://github.com/codecov","followers_url":"https://api.github.com/users/codecov/followers","following_url":"https://api.github.com/users/codecov/following{/other_user}","gists_url":"https://api.github.com/users/codecov/gists{/gist_id}","starred_url":"https://api.github.com/users/codecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/codecov/subscriptions","organizations_url":"https://api.github.com/users/codecov/orgs","repos_url":"https://api.github.com/users/codecov/repos","events_url":"https://api.github.com/users/codecov/events{/privacy}","received_events_url":"https://api.github.com/users/codecov/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/codecov/worker","description":"Code
+      for Background Workers of Codecov","fork":false,"url":"https://api.github.com/repos/codecov/worker","forks_url":"https://api.github.com/repos/codecov/worker/forks","keys_url":"https://api.github.com/repos/codecov/worker/keys{/key_id}","collaborators_url":"https://api.github.com/repos/codecov/worker/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/codecov/worker/teams","hooks_url":"https://api.github.com/repos/codecov/worker/hooks","issue_events_url":"https://api.github.com/repos/codecov/worker/issues/events{/number}","events_url":"https://api.github.com/repos/codecov/worker/events","assignees_url":"https://api.github.com/repos/codecov/worker/assignees{/user}","branches_url":"https://api.github.com/repos/codecov/worker/branches{/branch}","tags_url":"https://api.github.com/repos/codecov/worker/tags","blobs_url":"https://api.github.com/repos/codecov/worker/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/codecov/worker/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/codecov/worker/git/refs{/sha}","trees_url":"https://api.github.com/repos/codecov/worker/git/trees{/sha}","statuses_url":"https://api.github.com/repos/codecov/worker/statuses/{sha}","languages_url":"https://api.github.com/repos/codecov/worker/languages","stargazers_url":"https://api.github.com/repos/codecov/worker/stargazers","contributors_url":"https://api.github.com/repos/codecov/worker/contributors","subscribers_url":"https://api.github.com/repos/codecov/worker/subscribers","subscription_url":"https://api.github.com/repos/codecov/worker/subscription","commits_url":"https://api.github.com/repos/codecov/worker/commits{/sha}","git_commits_url":"https://api.github.com/repos/codecov/worker/git/commits{/sha}","comments_url":"https://api.github.com/repos/codecov/worker/comments{/number}","issue_comment_url":"https://api.github.com/repos/codecov/worker/issues/comments{/number}","contents_url":"https://api.github.com/repos/codecov/worker/contents/{+path}","compare_url":"https://api.github.com/repos/codecov/worker/compare/{base}...{head}","merges_url":"https://api.github.com/repos/codecov/worker/merges","archive_url":"https://api.github.com/repos/codecov/worker/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/codecov/worker/downloads","issues_url":"https://api.github.com/repos/codecov/worker/issues{/number}","pulls_url":"https://api.github.com/repos/codecov/worker/pulls{/number}","milestones_url":"https://api.github.com/repos/codecov/worker/milestones{/number}","notifications_url":"https://api.github.com/repos/codecov/worker/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/codecov/worker/labels{/name}","releases_url":"https://api.github.com/repos/codecov/worker/releases{/id}","deployments_url":"https://api.github.com/repos/codecov/worker/deployments"},"commit_url":"https://api.github.com/repos/codecov/worker/commits/3fb5f4700da7818e561054ec26f5657de720717f","url":"https://api.github.com/repos/codecov/worker/commits/3fb5f4700da7818e561054ec26f5657de720717f/status"}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 21:39:42 GMT
+      ETag:
+      - W/"7499cd329dea0e9538995b592bb18d02540c95888f7bd50aea4ad48671bc6bdd"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo, repo:status
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - D805:660E:42E10D:70C79A:5F87701E
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4995'
+      X-RateLimit-Reset:
+      - '1602714521'
+      X-RateLimit-Used:
+      - '5'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

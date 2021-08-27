@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d53?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599673&oauth_nonce=7f08d97c0f8f4826b4e9c79f9969f788&oauth_version=1.0&oauth_signature=NQpb%2B4E%2BtSRDp9XufM9d6ha1QVk%3D
+  response:
+    content: 'diff --git a/awesome/code_fib.py b/awesome/code_fib.py
+
+      new file mode 100644
+
+      index 0000000..eafa811
+
+      --- /dev/null
+
+      +++ b/awesome/code_fib.py
+
+      @@ -0,0 +1,4 @@
+
+      +def fib(n):
+
+      +    if n <= 1:
+
+      +        return 0
+
+      +    return fib(n - 1) + fib(n - 2)
+
+      '
+    headers:
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Length:
+      - '238'
+      Content-Type:
+      - text/plain
+      Date:
+      - Wed, 07 Nov 2018 14:07:53 GMT
+      Etag:
+      - '"87fe259700a5ff6d84edf0ff81827089"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Render-Time:
+      - '0.160104990005'
+      X-Request-Count:
+      - '441'
+      X-Served-By:
+      - app-144
+      X-Static-Version:
+      - 1f6d684e3c29
+      X-Version:
+      - 1f6d684e3c29
+    status:
+      code: 200
+      message: OK
+    status_code: 200
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/3017d53?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541599673&oauth_nonce=7f08d97c0f8f4826b4e9c79f9969f788&oauth_version=1.0&oauth_signature=NQpb%2B4E%2BtSRDp9XufM9d6ha1QVk%3D
+version: 1

@@ -1,0 +1,31 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: DELETE
+      uri: https://gitlab.com/api/v4/projects/187725/merge_requests/1/notes/113977323
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/merge_requests/1/notes/113977323
+      content: ''
+      headers:
+        Server: nginx
+        Date: Mon, 05 Nov 2018 18:56:26 GMT
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: b50eb5b8-764c-4515-8add-edb771242065
+        X-Runtime: '0.109366'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '2'
+        Ratelimit-Remaining: '598'
+        Ratelimit-Reset: '1541444246'
+        Ratelimit-Resettime: Tue, 05 Nov 2018 18:57:26 GMT
+      status_code: 204
+version: 1

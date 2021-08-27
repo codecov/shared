@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      User-Agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
+  response:
+    content: '{"type":"error","error":{"message":"No such file or directory: awesome/non_exising_file.py"}}'
+    headers:
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - close
+      Content-Length:
+      - '93'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 08 Aug 2019 15:25:52 GMT
+      Etag:
+      - '"cset:1:e91bf881850e779a3f7bcce71f838c8ec0a6aa88"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization
+      X-Accepted-Oauth-Scopes:
+      - repository
+      X-Cache-Info:
+      - caching
+      X-Credential-Type:
+      - oauth1
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Oauth-Scopes:
+      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
+        repository:delete, repository:admin, project:write, team:write, account:write
+      X-Reads-Before-Write-From:
+      - default
+      X-Render-Time:
+      - '0.055340051651'
+      X-Request-Count:
+      - '242'
+      X-Served-By:
+      - app-149
+      X-Static-Version:
+      - d7eafd731394
+      X-Version:
+      - d7eafd731394
+    status:
+      code: 404
+      message: NOT FOUND
+    status_code: 404
+    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/src/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/non_exising_file.py?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1565277951&oauth_nonce=6167bfcc119d47eab6b73f34b312ada9&oauth_version=1.0&oauth_signature=6dfFD9yUD7a%2BB%2BjJ33OKZ2nOgqw%3D
+version: 1

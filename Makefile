@@ -1,5 +1,6 @@
-chunkslocation := chunks.txt
+test:
+	python -m pytest --cov=./
 
-runalpinetest:
-	docker build . -f testing/Dockerfile -t ribs/ribs 
-	docker run -v $(chunkslocation):/chunks.txt ribs/ribs
+lint:
+	pip install black==19.10b0
+	black .

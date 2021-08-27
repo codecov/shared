@@ -1,0 +1,5 @@
+ignore:
+  - conftest.py
+  - "**/conftest.py"
+  - "**tests**/test_*.py"
+  - "tests**"

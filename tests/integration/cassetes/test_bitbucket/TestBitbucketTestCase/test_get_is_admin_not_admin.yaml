@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
+      - Default
+    method: GET
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?q=workspace.uuid%3D%22%7Bd7c73e87-90ab-450f-bb5f-39e6a5870456%7D%22+AND+permission%3D%22owner%22+AND+user.uuid%3D%22%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D%22&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617375478&oauth_nonce=8b0fd629f5e64e5b8f766823188eef76&oauth_version=1.0&oauth_signature=8Glsiw6nKT4h3FPXQeSDj8hQU%2Bo%3D
+  response:
+    content: '{"pagelen": 50, "values": [], "page": 1, "size": 0}'
+    headers:
+      Cache-Control:
+      - private
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '51'
+      Content-Type:
+      - application/json; charset=utf-8
+      DC-Location:
+      - ash2
+      Date:
+      - Fri, 02 Apr 2021 14:57:58 GMT
+      ETag:
+      - '"d42f8757ef1abf01e68f5601c2c0eb4b"'
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Authorization, cookie, user-context
+      X-Accepted-OAuth-Scopes:
+      - account
+      X-B3-TraceId:
+      - 21325741ffc43f02
+      X-Cache-Info:
+      - 'not cacheable; response specified "Cache-Control: private"'
+      X-Content-Type-Options:
+      - nosniff
+      X-Credential-Type:
+      - oauth1
+      X-Dc-Location:
+      - ash2
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-OAuth-Scopes:
+      - webhook, snippet, issue, pullrequest:write, repository:delete, repository:admin,
+        project, team, account
+      X-Render-Time:
+      - '0.0363488197327'
+      X-Request-Count:
+      - '2234'
+      X-Served-By:
+      - app-3016
+      X-Static-Version:
+      - 937e1df6c57f
+      X-Version:
+      - 937e1df6c57f
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

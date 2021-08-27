@@ -1,0 +1,30 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: DELETE
+      uri: https://gitlab.com/api/v4/projects/187725/hooks/422507987
+    response:
+      url: https://gitlab.com/api/v4/projects/187725/hooks/422507987
+      content: '{"message":"404 Not found"}'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:02:30 GMT
+        Content-Type: application/json
+        Content-Length: '27'
+        Connection: close
+        Cache-Control: no-cache
+        Vary: Origin
+        X-Request-Id: 48077c9c-ee79-4e03-bc54-adf26d45685c
+        X-Runtime: '0.052297'
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541480610'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:03:30 GMT
+      status_code: 404
+version: 1

@@ -1,0 +1,71 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - education.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://education.github.com/api/user
+  response:
+    content: '{"student":false}'
+    headers:
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Content-Security-Policy:
+      - 'default-src ''self'' dwa5x7aod66zk.cloudfront.net; object-src ''self''; frame-src
+        *.vimeo.com platform.twitter.com connect.facebook.net *.facebook.com speakerdeck.com
+        *.youtube.com; connect-src ''self'' github-education-web.s3.amazonaws.com
+        *.mapbox.com *.clearbit.com www.google.com *.githubusercontent.com; img-src
+        ''self'' blob: dwa5x7aod66zk.cloudfront.net data: github.com *.mapbox.com
+        *.clearbit.com avatars.githubusercontent.com user-images.githubusercontent.com
+        github-education-web.s3.amazonaws.com www.google-analytics.com analytics.twitter.com
+        t.com *.facebook.com *.twitter.com *.youtube.com raw.githubusercontent.com;
+        font-src ''self'' dwa5x7aod66zk.cloudfront.net; script-src ''self'' dwa5x7aod66zk.cloudfront.net
+        ''unsafe-eval'' ''unsafe-inline'' www.google.com www.google-analytics.com
+        api.demandbase.com speakerdeck.com platform.twitter.com connect.facebook.net
+        *.facebook.com s3-eu-west-1.amazonaws.com/share.typeform.com/* *.github.com
+        *.githubassets.com; style-src ''self'' dwa5x7aod66zk.cloudfront.net ''unsafe-inline''
+        www.google.com ajax.googleapis.com *.github.com'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 23:10:25 GMT
+      ETag:
+      - W/"4a8a28ca5b0f0ebcef62c74c7acd0536"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - nginx/1.15.12
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - DENY
+      X-GitHub-Backend:
+      - Kubernetes
+      X-GitHub-Request-Id:
+      - DA9A:19D3:BE2A6:1B442D:5F878561
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 23b2592c-f29f-4cd7-9a24-e17b863607f6
+      X-Runtime:
+      - '0.153347'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

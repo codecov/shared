@@ -1,0 +1,83 @@
+interactions:
+  - request:
+      body: code=7c005cbb342626fffe4f24e5eedac28d9e8fa1c8592808dd294bfe0d39ea084d&grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Flogin%2Fgl&client_id=testsb4ooxhwdveqlkv2gpoqq1n2tf54kzwv3q9xvsqfq45c33lx0jxp4j8a0och&client_secret=testux56mx9le9kn3cf0p8j8s1qpuurxk6wqebni1vm3slvbpuhmblgefp6yyoam
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: POST
+      uri: https://gitlab.com/oauth/token
+    response:
+      url: https://gitlab.com/oauth/token
+      content: '{"access_token":"testhi9nk25akajgzhudabirpz3vjau7qe8i9mavz2d9i1i0cfwjp8ggkcqavglx","token_type":"Bearer","refresh_token":"testwnoeg1a4bjhoa65vzxdn8grh4asp0b6l4idtdazw7ps5h8xx77m8gbyty7gi","scope":"api","created_at":1599149427}'
+      headers:
+        X-Http-Reason: OK
+        Date: Thu, 03 Sep 2020 16:10:27 GMT
+        Content-Type: application/json; charset=utf-8
+        Transfer-Encoding: chunked
+        Connection: keep-alive
+        Set-Cookie: __cfduid=d7a5cae25d6fcc8a717eb8ad280f9c6cf1599149427; expires=Sat,
+          03-Oct-20 16:10:27 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Cache-Control: private, no-store
+        Etag: W/"e20e24aba72dd0c24b3aab58a8bbaf2d"
+        Pragma: no-cache
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Content-Type-Options: nosniff
+        X-Download-Options: noopen
+        X-Frame-Options: SAMEORIGIN
+        X-Permitted-Cross-Domain-Policies: none
+        X-Request-Id: jMcYhcbMPH9
+        X-Runtime: '0.102941'
+        X-Xss-Protection: 1; mode=block
+        Strict-Transport-Security: max-age=31536000
+        Gitlab-Lb: fe-12-lb-gprd
+        Gitlab-Sv: web-06-sv-gprd
+        Cf-Cache-Status: DYNAMIC
+        Cf-Request-Id: 04f654e1d90000db90f898b200000001
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 5cd0bdafc840db90-GIG
+        Content-Encoding: gzip
+      status_code: 200
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/user
+    response:
+      url: https://gitlab.com/api/v4/user
+      content: '{"id":3124507,"name":"Thiago Ramos","username":"ThiagoCodecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/337420e188ca8138d4b8599d3a20ad47?s=80\u0026d=identicon","web_url":"https://gitlab.com/ThiagoCodecov","created_at":"2018-11-12T19:05:01.723Z","bio":"","bio_html":"","location":null,"public_email":"","skype":"","linkedin":"","twitter":"","website_url":"","organization":null,"job_title":"","work_information":null,"last_sign_in_at":"2020-05-28T21:29:21.563Z","confirmed_at":"2018-11-12T19:05:01.249Z","last_activity_on":"2020-09-03","email":"thiago@codecov.io","theme_id":1,"color_scheme_id":1,"projects_limit":100000,"current_sign_in_at":"2020-09-03T15:46:43.559Z","identities":[{"provider":"google_oauth2","extern_uid":"114705562456763720684","saml_provider_id":null}],"can_create_group":true,"can_create_project":true,"two_factor_enabled":false,"external":false,"private_profile":false,"shared_runners_minutes_limit":null,"extra_shared_runners_minutes_limit":null}'
+      headers:
+        X-Http-Reason: OK
+        Date: Thu, 03 Sep 2020 16:10:27 GMT
+        Content-Type: application/json
+        Transfer-Encoding: chunked
+        Connection: keep-alive
+        Set-Cookie: __cfduid=d7a5cae25d6fcc8a717eb8ad280f9c6cf1599149427; expires=Sat,
+          03-Oct-20 16:10:27 GMT; path=/; domain=.gitlab.com; HttpOnly; SameSite=Lax;
+          Secure
+        Vary: Accept-Encoding
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"17b57d5f5a096afd1f7222c273a0f640"
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Request-Id: lRxq5XnVDz3
+        X-Runtime: '0.024227'
+        Strict-Transport-Security: max-age=31536000
+        Referrer-Policy: strict-origin-when-cross-origin
+        Content-Encoding: gzip
+        Gitlab-Lb: fe-04-lb-gprd
+        Gitlab-Sv: api-01-sv-gprd
+        Cf-Cache-Status: DYNAMIC
+        Cf-Request-Id: 04f654e31f0000db90f89aa200000001
+        Expect-Ct: max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+        Server: cloudflare
+        Cf-Ray: 5cd0bdb1cd1bdb90-GIG
+      status_code: 200
+version: 1

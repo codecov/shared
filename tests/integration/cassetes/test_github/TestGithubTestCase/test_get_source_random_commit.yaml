@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/__init__.py?ref=96492d409fc86aa7ae31b214dfe6b08ae860458a
+  response:
+    content: '{"name":"__init__.py","path":"awesome/__init__.py","sha":"4d34acc61e7abe5536c84fec4fe9fd9b26311cc7","size":59,"url":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/__init__.py?ref=96492d409fc86aa7ae31b214dfe6b08ae860458a","html_url":"https://github.com/ThiagoCodecov/example-python/blob/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py","git_url":"https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs/4d34acc61e7abe5536c84fec4fe9fd9b26311cc7","download_url":"https://raw.githubusercontent.com/ThiagoCodecov/example-python/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py","type":"file","content":"ZGVmIHNtaWxlKCk6CiAgICByZXR1cm4gIjopIgoKZGVmIGZyb3duKCk6CiAg\nICByZXR1cm4gIjooIgo=\n","encoding":"base64","_links":{"self":"https://api.github.com/repos/ThiagoCodecov/example-python/contents/awesome/__init__.py?ref=96492d409fc86aa7ae31b214dfe6b08ae860458a","git":"https://api.github.com/repos/ThiagoCodecov/example-python/git/blobs/4d34acc61e7abe5536c84fec4fe9fd9b26311cc7","html":"https://github.com/ThiagoCodecov/example-python/blob/96492d409fc86aa7ae31b214dfe6b08ae860458a/awesome/__init__.py"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
+        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 14 Oct 2020 17:32:35 GMT
+      ETag:
+      - W/"4d34acc61e7abe5536c84fec4fe9fd9b26311cc7"
+      Last-Modified:
+      - Mon, 22 Sep 2014 20:24:04 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - CFFA:68FA:6DEAA4:122F1B3:5F873632
+      X-OAuth-Scopes:
+      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4929'
+      X-RateLimit-Reset:
+      - '1602700322'
+      X-RateLimit-Used:
+      - '71'
+      X-XSS-Protection:
+      - 1; mode=block
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

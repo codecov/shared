@@ -1,0 +1,44 @@
+interactions:
+  - request:
+      body: null
+      headers:
+        Accept:
+          - application/json
+        User-Agent:
+          - Default
+      method: GET
+      uri: https://gitlab.com/api/v4/groups?per_page=100
+    response:
+      url: https://gitlab.com/api/v4/groups?per_page=100
+      content: '[{"id":726800,"web_url":"https://gitlab.com/groups/delectamentum-mud","name":"delectamentum-mud","path":"delectamentum-mud","description":"Server
+        and client for the MUD built by delectamentum","visibility":"public","lfs_enabled":true,"avatar_url":null,"request_access_enabled":true,"full_name":"delectamentum-mud","full_path":"delectamentum-mud","parent_id":null,"ldap_cn":null,"ldap_access":null}]'
+      headers:
+        Server: nginx
+        Date: Tue, 06 Nov 2018 05:17:07 GMT
+        Content-Type: application/json
+        Content-Length: '398'
+        Connection: close
+        Cache-Control: max-age=0, private, must-revalidate
+        Etag: W/"48ef1f363add5151788ef2efc8bae6ae"
+        Link: <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+          rel="first", <https://gitlab.com/api/v4/groups?order_by=name&owned=false&page=1&per_page=100&sort=asc&statistics=false&with_custom_attributes=false>;
+          rel="last"
+        Vary: Origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: SAMEORIGIN
+        X-Next-Page: ''
+        X-Page: '1'
+        X-Per-Page: '100'
+        X-Prev-Page: ''
+        X-Request-Id: 9d423da9-bb28-49a8-8483-74d774e65b18
+        X-Runtime: '0.042034'
+        X-Total: '1'
+        X-Total-Pages: '1'
+        Strict-Transport-Security: max-age=31536000
+        Ratelimit-Limit: '600'
+        Ratelimit-Observed: '1'
+        Ratelimit-Remaining: '599'
+        Ratelimit-Reset: '1541481487'
+        Ratelimit-Resettime: Wed, 06 Nov 2018 05:18:07 GMT
+      status_code: 200
+version: 1
