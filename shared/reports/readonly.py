@@ -38,6 +38,7 @@ class ReadOnlyReport(object):
         self.inner_report = inner_report
         self._totals = totals
         self._flags = None
+        self._uploaded_flags = None
 
     @classmethod
     @metrics.timer("shared.reports.readonly.from_chunks")
@@ -163,6 +164,11 @@ class ReadOnlyReport(object):
             rust_report=self.rust_report,
             inner_report=self.inner_report.filter(paths=paths, flags=flags),
         )
+
+    def get_uploaded_flags(self):
+        if self._uploaded_flags is None:
+            self._uploaded_flags = self.inner_report.get_uploaded_flags()
+        return self._uploaded_flags
 
 
 def rustify_diff(diff):
