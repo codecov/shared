@@ -12,7 +12,7 @@ setup(
     name="shared",
     version="0.6.0",
     rust_extensions=[RustExtension("shared.rustyribs", binding=Binding.PyO3)],
-    packages=["shared"],
+    packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
     description="Shared Codecov",
