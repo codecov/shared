@@ -40,3 +40,12 @@ Updating them should be done at the `setup.py` file.
 Remember to add dependencies as loosely as possible. Only make sure to include what the minimum version is, and only include a maximum version if you do know that higher versions will break.
 
 Remember that multiple packages, on different contexts of their own requirements, will have to install this. So keeping the requirements loose allow them to avoid version clashes and eases upgrades whenever they need to.
+
+# ribs
+Rust Service to be called from inside python
+
+This is some rust code that is meant to be installed as a python wheel on the repository and used
+
+It uses [pyo3](https://pyo3.rs) as the binding and [setuptools-rust](https://github.com/PyO3/setuptools-rust) as the tool that turns the rust code into python
+
+We hope it provides a new level of speed to the CPU-bound parts of the code

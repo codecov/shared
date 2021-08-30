@@ -6,7 +6,7 @@ from shared.reports.resources import Report, ReportTotals
 from shared.helpers.flag import Flag
 from shared.utils.match import match
 from shared.metrics import metrics
-from ribs import parse_report, SimpleAnalyzer, FilterAnalyzer
+from shared.ribs import parse_report, SimpleAnalyzer, FilterAnalyzer
 
 log = logging.getLogger(__name__)
 

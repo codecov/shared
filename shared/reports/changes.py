@@ -1,5 +1,5 @@
 from shared.reports.types import Change
-import ribs
+from shared import ribs
 
 
 def _convert_diff_to_rust(diff):
