@@ -1240,6 +1240,17 @@ class Report(object):
                 return True
         return False
 
+    def get_uploaded_flags(self):
+        uploaded_session_flags = [
+            sess.flags
+            for sess in self.sessions.values()
+            if sess.session_type == SessionType.uploaded and sess.flags is not None
+        ]
+        flags = set()
+        for k in uploaded_session_flags:
+            flags.update(k)
+        return flags
+
     def repack(self):
         """Repacks in a more compact format to avoid deleted files and such"""
         if not self._passes_integrity_analysis():

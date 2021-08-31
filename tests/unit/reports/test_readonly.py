@@ -4,6 +4,7 @@ import pytest
 from shared.reports.readonly import ReadOnlyReport, rustify_diff, LazyRustReport
 from shared.reports.types import ReportTotals, ReportLine, LineSession
 from shared.reports.resources import ReportFile
+from shared.utils.sessions import SessionType, Session
 
 current_file = Path(__file__)
 
@@ -650,3 +651,26 @@ class TestReadOnly(object):
         assert res.complexity is rust_totals.complexity
         assert res.complexity_total is rust_totals.complexity_total
         assert res.diff == 0
+
+    def test_get_uploaded_flags_only_uploaded(self, sample_report):
+        r = ReadOnlyReport.create_from_report(sample_report)
+        assert r.get_uploaded_flags() == set(["complex", "simple"])
+
+    def test_get_uploaded_flags(self, sample_report):
+        sample_report.add_session(
+            Session(flags=["banana", "apple"], session_type=SessionType.carriedforward)
+        )
+        sample_report.add_session(
+            Session(flags=["sugar"], session_type=SessionType.carriedforward)
+        )
+        sample_report.add_session(
+            Session(flags=["chocolate", "apple"], session_type=SessionType.uploaded)
+        )
+        r = ReadOnlyReport.create_from_report(sample_report)
+        assert r.get_uploaded_flags() == set(
+            ["complex", "simple", "apple", "chocolate"]
+        )
+        # second call to use the cached value
+        assert r.get_uploaded_flags() == set(
+            ["complex", "simple", "apple", "chocolate"]
+        )
