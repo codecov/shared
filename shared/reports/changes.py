@@ -2,25 +2,34 @@ from shared.reports.types import Change
 from shared import ribs
 
 
-def _convert_diff_to_rust(diff):
-    res = {}
-    for name, data in diff["files"].items():
-        segment_data = [
+def rustify_diff(diff):
+    if diff is None or "files" not in diff:
+        return None
+    new_values = [
+        (
+            key,
             (
-                tuple([int(v) for v in seg["header"]]),
-                [li[0] if li else " " for li in seg["lines"]],
-            )
-            for seg in data["segments"]
-        ]
-        res[name] = data["type"], data["before"], segment_data
-    return res
+                value["type"],
+                value.get("before"),
+                [
+                    (
+                        tuple(int(x) if x else 0 for x in s["header"]),
+                        [l[0] if l else " " for l in s["lines"]],
+                    )
+                    for s in value.get("segments", [])
+                ],
+            ),
+        )
+        for (key, value) in diff["files"].items()
+    ]
+    return dict(new_values)
 
 
 def run_comparison_using_rust(base_report, head_report, diff):
     return ribs.run_comparison(
         base_report.rust_report.get_report(),
         head_report.rust_report.get_report(),
-        _convert_diff_to_rust(diff),
+        rustify_diff(diff),
     )
 
 
