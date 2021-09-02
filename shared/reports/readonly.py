@@ -169,26 +169,3 @@ class ReadOnlyReport(object):
         if self._uploaded_flags is None:
             self._uploaded_flags = self.inner_report.get_uploaded_flags()
         return self._uploaded_flags
-
-
-def rustify_diff(diff):
-    if diff is None or "files" not in diff:
-        return None
-    new_values = [
-        (
-            key,
-            (
-                value["type"],
-                value.get("before"),
-                [
-                    (
-                        tuple(int(x) if x else 0 for x in s["header"]),
-                        [l[0] if l else " " for l in s["lines"]],
-                    )
-                    for s in value.get("segments", [])
-                ],
-            ),
-        )
-        for (key, value) in diff["files"].items()
-    ]
-    return dict(new_values)

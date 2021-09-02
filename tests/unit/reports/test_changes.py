@@ -4,11 +4,13 @@ from pathlib import Path
 import pytest
 
 from shared.reports.types import Change
-from shared.reports.changes import get_changes_using_rust, run_comparison_using_rust
+from shared.reports.changes import (
+    get_changes_using_rust,
+    run_comparison_using_rust,
+    rustify_diff,
+)
 
-from shared.reports.readonly import ReadOnlyReport, rustify_diff, LazyRustReport
-from shared.reports.types import ReportTotals, ReportLine, LineSession
-from shared.reports.resources import ReportFile
+from shared.reports.readonly import ReadOnlyReport
 
 current_file = Path(__file__)
 
@@ -160,3 +162,87 @@ def test_get_changes_using_rust(sample_rust_report):
             totals=None,
         )
     ]
+
+
+class TestRustifyDiff(object):
+    def test_rustify_diff_empty(self):
+        assert rustify_diff({}) is None
+        assert rustify_diff(None) is None
+
+    def test_rustify_simple(self):
+        d = {
+            "files": {
+                "file_1.go": {
+                    "type": "modified",
+                    "segments": [{"header": list("1313"), "lines": list("---+++ ")}],
+                },
+                "location/file_1.py": {
+                    "type": "modified",
+                    "segments": [
+                        {
+                            "header": ["100", "3", "100", "3"],
+                            "lines": ["-lost", "+g", "-sdasdas", "+weq", "-dasda", "+"],
+                        }
+                    ],
+                },
+                "deleted.py": {"type": "deleted"},
+                "renamed.py": {"type": "modified", "before": "old_renamed.py"},
+            }
+        }
+        expected_res = {
+            "deleted.py": ("deleted", None, []),
+            "file_1.go": (
+                "modified",
+                None,
+                [((1, 3, 1, 3), ["-", "-", "-", "+", "+", "+", " "])],
+            ),
+            "location/file_1.py": (
+                "modified",
+                None,
+                [((100, 3, 100, 3), ["-", "+", "-", "+", "-", "+"])],
+            ),
+            "renamed.py": ("modified", "old_renamed.py", []),
+        }
+        assert rustify_diff(d) == expected_res
+
+    def test_rustify_diff_new_file(self):
+        user_input = {
+            "files": {
+                "a.txt": {
+                    "type": "new",
+                    "before": None,
+                    "segments": [{"header": ["0", "0", "1", ""], "lines": ["+banana"]}],
+                    "stats": {"added": 1, "removed": 0},
+                },
+                "wildwest/strings.py": {
+                    "type": "modified",
+                    "before": None,
+                    "segments": [
+                        {
+                            "header": ["43", "7", "43", "7"],
+                            "lines": [
+                                "     if len(this_string) == 20:",
+                                "         return True",
+                                "     if len(set(this_string)) == 7:",
+                                '-        print("0043")',
+                                '+        print("0044")',
+                                '         # k = b"Prè áaaaì u aáa. Ponto, dois-pontos e travessão são exemplos de sinais de pontuação que utilizamos"',
+                                "         return True",
+                                "     return False",
+                            ],
+                        }
+                    ],
+                    "stats": {"added": 1, "removed": 1},
+                },
+            }
+        }
+        expected_result = {
+            "a.txt": ("new", None, [((0, 0, 1, 0), ["+"])]),
+            "wildwest/strings.py": (
+                "modified",
+                None,
+                [((43, 7, 43, 7), [" ", " ", " ", "-", "+", " ", " ", " "])],
+            ),
+        }
+        print(rustify_diff(user_input))
+        assert rustify_diff(user_input) == expected_result
