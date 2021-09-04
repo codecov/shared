@@ -2,14 +2,14 @@ import os
 
 import pytest
 
+from shared.config import ConfigHelper, get_config
 from shared.validation.exceptions import InvalidYamlException
-from tests.base import BaseTestCase
 from shared.yaml.validation import (
-    validate_yaml,
-    do_actual_validation,
     _calculate_error_location_and_message_from_error_dict,
+    do_actual_validation,
+    validate_yaml,
 )
-from shared.config import get_config, ConfigHelper
+from tests.base import BaseTestCase
 
 
 class TestUserYamlValidation(BaseTestCase):

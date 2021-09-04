@@ -1,7 +1,8 @@
-from setuptools import setup, find_packages
-from setuptools_rust import Binding, RustExtension
 from codecs import open
 from os import path
+
+from setuptools import find_packages, setup
+from setuptools_rust import Binding, RustExtension
 
 here = path.abspath(path.dirname(__file__))
 

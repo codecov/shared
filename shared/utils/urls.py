@@ -1,6 +1,7 @@
-from urllib.parse import urlencode, urlparse, urlunparse, parse_qsl, quote_plus
+from typing import Dict, List, Tuple, Union
+from urllib.parse import parse_qsl, quote_plus, urlencode, urlparse, urlunparse
+
 from shared.config import get_config
-from typing import Union, Dict, List, Tuple
 
 services_short = dict(
     github="gh",

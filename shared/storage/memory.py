@@ -1,10 +1,7 @@
 from collections import defaultdict
 
 from shared.storage.base import BaseStorageService
-from shared.storage.exceptions import (
-    FileNotInStorageError,
-    BucketAlreadyExistsError,
-)
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 
 class MemoryStorageService(BaseStorageService):

@@ -1,5 +1,6 @@
 import pytest
-from shared.reports.types import ReportTotals, NetworkFile
+
+from shared.reports.types import NetworkFile, ReportTotals
 from shared.utils.make_network_file import make_network_file
 
 

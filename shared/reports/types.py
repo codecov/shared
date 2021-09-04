@@ -1,6 +1,6 @@
+from dataclasses import asdict, dataclass
 from decimal import Decimal
-from dataclasses import dataclass, asdict
-from typing import Union, Tuple, Sequence, Any
+from typing import Any, Sequence, Tuple, Union
 
 
 @dataclass

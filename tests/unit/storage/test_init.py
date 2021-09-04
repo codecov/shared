@@ -1,6 +1,6 @@
 from shared.storage import get_appropriate_storage_service
-from shared.storage.fallback import StorageWithFallbackService
 from shared.storage.aws import AWSStorageService
+from shared.storage.fallback import StorageWithFallbackService
 from shared.storage.gcp import GCPStorageService
 from shared.storage.minio import MinioStorageService
 

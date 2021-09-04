@@ -1,7 +1,8 @@
 import pytest
+
 from shared.reports.types import ReportTotals
-from shared.utils.sessions import Session
 from shared.utils.ReportEncoder import ReportEncoder
+from shared.utils.sessions import Session
 
 
 @pytest.mark.unit

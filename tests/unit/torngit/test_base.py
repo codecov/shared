@@ -1,4 +1,4 @@
-from shared.torngit.base import TorngitBaseAdapter, TokenType
+from shared.torngit.base import TokenType, TorngitBaseAdapter
 
 
 class TestTorngitBaseAdapter(object):

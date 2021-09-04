@@ -1,8 +1,6 @@
-from shared.encryption.selector import EncryptorDivider
-
-from shared.encryption.standard import StandardEncryptor
-
 from shared.encryption.oauth import get_encryptor_from_configuration
+from shared.encryption.selector import EncryptorDivider
+from shared.encryption.standard import StandardEncryptor
 
 
 def test_get_encryptor_from_configuration_nothing_new(mock_configuration):

@@ -1,16 +1,14 @@
 from pathlib import Path
 
-
 import pytest
 
-from shared.reports.types import Change
 from shared.reports.changes import (
     get_changes_using_rust,
     run_comparison_using_rust,
     rustify_diff,
 )
-
 from shared.reports.readonly import ReadOnlyReport
+from shared.reports.types import Change
 
 current_file = Path(__file__)
 

@@ -4,11 +4,11 @@ from shared.validation.helpers import (
     BranchSchemaField,
     CoverageRangeSchemaField,
     CustomFixPathSchemaField,
+    Invalid,
     LayoutStructure,
     PathPatternSchemaField,
     PercentSchemaField,
     UserGivenBranchRegex,
-    Invalid,
 )
 
 

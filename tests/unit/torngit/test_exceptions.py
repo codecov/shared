@@ -3,9 +3,9 @@ import pickle
 from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
-    TorngitRepoNotFoundError,
     TorngitObjectNotFoundError,
     TorngitRateLimitError,
+    TorngitRepoNotFoundError,
     TorngitUnauthorizedError,
 )
 

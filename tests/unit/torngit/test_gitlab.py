@@ -1,10 +1,11 @@
 import socket
-import pytest
 from json import dumps
 
-from shared.torngit.gitlab import Gitlab
-from shared.torngit.exceptions import TorngitServerUnreachableError
+import pytest
+
 from shared.torngit.base import TokenType
+from shared.torngit.exceptions import TorngitServerUnreachableError
+from shared.torngit.gitlab import Gitlab
 
 
 @pytest.fixture

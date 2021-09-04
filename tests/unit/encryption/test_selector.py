@@ -1,6 +1,6 @@
 import pytest
 
-from shared.encryption.selector import EncryptorDivider, DEFAULT_ENCRYPTOR_CONSTANT
+from shared.encryption.selector import DEFAULT_ENCRYPTOR_CONSTANT, EncryptorDivider
 from shared.encryption.standard import StandardEncryptor
 
 

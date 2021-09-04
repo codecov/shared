@@ -1,26 +1,24 @@
-from typing import List
+import logging
 import os
 import urllib.parse as urllib_parse
-import logging
+from typing import List
 
 import httpx
-
 from oauthlib import oauth1
 
 # from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
-from shared.torngit.status import Status
 from shared.torngit.exceptions import (
-    TorngitObjectNotFoundError,
-    TorngitServerUnreachableError,
-    TorngitClientGeneralError,
-    TorngitServer5xxCodeError,
     TorngitClientError,
+    TorngitClientGeneralError,
+    TorngitObjectNotFoundError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
 )
+from shared.torngit.status import Status
 from shared.utils.urls import url_concat
-
 
 log = logging.getLogger(__name__)
 

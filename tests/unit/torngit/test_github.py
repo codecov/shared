@@ -1,19 +1,18 @@
+from urllib.parse import parse_qsl, urlparse
+
 import httpx
 import pytest
 import respx
 
-from urllib.parse import urlparse, parse_qsl
-
-from shared.torngit.github import Github
 from shared.torngit.base import TokenType
-
 from shared.torngit.exceptions import (
-    TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
     TorngitClientError,
     TorngitRateLimitError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
+from shared.torngit.github import Github
 
 
 @pytest.fixture

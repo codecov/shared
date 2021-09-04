@@ -1,5 +1,5 @@
-from shared.reports.types import Change
 from shared import ribs
+from shared.reports.types import Change
 
 
 def rustify_diff(diff):

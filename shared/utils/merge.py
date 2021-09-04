@@ -1,11 +1,10 @@
 from collections import defaultdict
-from itertools import groupby
-from fractions import Fraction
-from typing import Sequence
 from enum import IntEnum
+from fractions import Fraction
+from itertools import groupby
+from typing import Sequence
 
-from shared.reports.types import ReportLine
-from shared.reports.types import LineSession
+from shared.reports.types import LineSession, ReportLine
 
 
 def merge_all(coverages, missing_branches=None):

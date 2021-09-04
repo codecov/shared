@@ -1,9 +1,9 @@
+from shared.torngit.bitbucket import Bitbucket
+from shared.torngit.bitbucket_server import BitbucketServer
 from shared.torngit.github import Github
 from shared.torngit.github_enterprise import GithubEnterprise
 from shared.torngit.gitlab import Gitlab
 from shared.torngit.gitlab_enterprise import GitlabEnterprise
-from shared.torngit.bitbucket import Bitbucket
-from shared.torngit.bitbucket_server import BitbucketServer
 
 
 def get(git, **data):

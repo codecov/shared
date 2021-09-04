@@ -1,5 +1,6 @@
 import pytest
-from shared.utils.sessions import Session, SessionType, ReportTotals
+
+from shared.utils.sessions import ReportTotals, Session, SessionType
 
 
 @pytest.mark.unit

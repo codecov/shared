@@ -5,7 +5,6 @@ from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitRepoNotFoundError,
 )
-
 from shared.torngit.github import Github
 
 

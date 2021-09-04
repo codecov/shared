@@ -2,22 +2,20 @@ import re
 from base64 import b64encode
 
 import pytest
-from shared.validation.helpers import Invalid
 
-from tests.base import BaseTestCase
 from shared.validation.helpers import (
+    CoverageRangeSchemaField,
+    CustomFixPathSchemaField,
+    Invalid,
     LayoutStructure,
     PathPatternSchemaField,
-    CoverageRangeSchemaField,
     PercentSchemaField,
-    CustomFixPathSchemaField,
     UserGivenBranchRegex,
-)
-from shared.yaml.validation import pre_process_yaml
-from shared.validation.helpers import (
     determine_path_pattern_type,
     translate_glob_to_regex,
 )
+from shared.yaml.validation import pre_process_yaml
+from tests.base import BaseTestCase
 
 
 class TestPathPatternSchemaField(BaseTestCase):

@@ -1,14 +1,11 @@
-import pytest
 import gzip
-
 from io import BytesIO
 
-from tests.base import BaseTestCase
+import pytest
+
 from shared.storage.aws import AWSStorageService
-from shared.storage.exceptions import (
-    BucketAlreadyExistsError,
-    FileNotInStorageError,
-)
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
+from tests.base import BaseTestCase
 
 aws_config = {
     "resource": "s3",

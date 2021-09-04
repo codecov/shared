@@ -1,11 +1,8 @@
 import pytest
 
-from shared.torngit.gitlab import Gitlab
 from shared.torngit.enums import Endpoints
-from shared.torngit.exceptions import (
-    TorngitObjectNotFoundError,
-    TorngitClientError,
-)
+from shared.torngit.exceptions import TorngitClientError, TorngitObjectNotFoundError
+from shared.torngit.gitlab import Gitlab
 
 
 @pytest.fixture

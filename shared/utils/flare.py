@@ -1,5 +1,6 @@
-from shared.helpers.color import coverage_to_color
 import collections
+
+from shared.helpers.color import coverage_to_color
 
 
 class Dict(dict):

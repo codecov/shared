@@ -1,5 +1,6 @@
-import analytics
 import logging
+
+import analytics
 
 from shared.config import get_config
 
