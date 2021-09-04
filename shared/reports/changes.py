@@ -4,7 +4,7 @@ from shared import ribs
 
 def rustify_diff(diff):
     if diff is None or "files" not in diff:
-        return None
+        return {}
     new_values = [
         (
             key,

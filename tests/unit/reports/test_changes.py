@@ -166,8 +166,8 @@ def test_get_changes_using_rust(sample_rust_report):
 
 class TestRustifyDiff(object):
     def test_rustify_diff_empty(self):
-        assert rustify_diff({}) is None
-        assert rustify_diff(None) is None
+        assert rustify_diff({}) == {}
+        assert rustify_diff(None) == {}
 
     def test_rustify_simple(self):
         d = {
