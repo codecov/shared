@@ -307,7 +307,7 @@ class TestGithubTestCase(object):
             await repo_doesnt_exist_handler.get_commit(commitid)
         expected_response = '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/repos#get-a-commit"}'
         exc = ex.value
-        assert exc.response == expected_response
+        assert exc.response_data == expected_response
 
     @pytest.mark.asyncio
     async def test_get_commit_diff(self, valid_handler, codecov_vcr):

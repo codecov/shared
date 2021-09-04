@@ -200,7 +200,7 @@ class BitbucketServer(TorngitBaseAdapter):
             return None
 
         message = f"BitBucket Server API: {status}"
-        raise TorngitClientGeneralError(status, response, message)
+        raise TorngitClientGeneralError(status, response_data=response, message=message)
 
     async def get_authenticated(self, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
@@ -292,7 +292,8 @@ class BitbucketServer(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response, f"Path {path} not found at {ref}"
+                        response_data=ce.response_data,
+                        message=f"Path {path} not found at {ref}",
                     )
                 raise
 

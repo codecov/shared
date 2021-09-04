@@ -136,16 +136,22 @@ class Github(TorngitBaseAdapter):
                     message = f"Github API rate limit error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
                     raise TorngitRateLimitError(
-                        res, message, res.headers.get("X-RateLimit-Reset")
+                        response_data=res.text,
+                        message=message,
+                        reset=res.headers.get("X-RateLimit-Reset"),
                     )
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.unauthorizederror")
-                    raise TorngitUnauthorizedError(res, message)
+                    raise TorngitUnauthorizedError(
+                        response_data=res.text, message=message
+                    )
                 elif res.status_code >= 300:
                     message = f"Github API: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                    raise TorngitClientGeneralError(res.status_code, res, message)
+                    raise TorngitClientGeneralError(
+                        res.status_code, response_data=res.text, message=message
+                    )
                 if res.status_code == 204:
                     return None
                 elif res.headers.get("Content-Type")[:16] == "application/json":
@@ -485,7 +491,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Cannot find webhook {hookid}"
+                    response_data=ce.response_data,
+                    message=f"Cannot find webhook {hookid}",
                 )
             raise
 
@@ -503,7 +510,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Cannot find webhook {hookid}"
+                    response_data=ce.response_data,
+                    message=f"Cannot find webhook {hookid}",
                 )
             raise
         return True
@@ -538,8 +546,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text,
-                    f"Cannot find comment {commentid} from PR {issueid}",
+                    response_data=ce.response_data,
+                    message=f"Cannot find comment {commentid} from PR {issueid}",
                 )
             raise
 
@@ -557,8 +565,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text,
-                    f"Cannot find comment {commentid} from PR {issueid}",
+                    response_data=ce.response_data,
+                    message=f"Cannot find comment {commentid} from PR {issueid}",
                 )
             raise
         return True
@@ -663,7 +671,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Path {path} not found at {ref}"
+                    response_data=ce.response_data,
+                    message=f"Path {path} not found at {ref}",
                 )
             raise
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
@@ -683,7 +692,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 422:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Commit with id {commit} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Commit with id {commit} does not exist",
                 )
             raise
         return self.diff_to_json(res)
@@ -763,11 +773,13 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 422:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Commit with id {commit} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Commit with id {commit} does not exist",
                 )
             if ce.code == 404:
                 raise TorngitRepoNotFoundError(
-                    ce.response.text, f"Repo {self.slug} cannot be found by this user",
+                    response_data=ce.response_data,
+                    message=f"Repo {self.slug} cannot be found by this user",
                 )
             raise
         return dict(
@@ -813,7 +825,8 @@ class Github(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response.text, f"Pull Request {pullid} not found"
+                        response_data=ce.response_data,
+                        message=f"Pull Request {pullid} not found",
                     )
                 raise
             commits = await self.api(
