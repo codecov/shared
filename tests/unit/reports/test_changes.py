@@ -123,7 +123,9 @@ def test_run_comparison_using_rust(sample_rust_report):
                 ],
             }
         ],
-        "changes_summary": {"patch_totals": {"hits": 1, "misses": 0, "partials": 0}},
+        "changes_summary": {
+            "patch_totals": {"hits": 1, "misses": 0, "partials": 0, "coverage": 1}
+        },
     }
 
 

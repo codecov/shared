@@ -29,6 +29,7 @@ pub struct ChangePatchTotals {
     hits: i32,
     misses: i32,
     partials: i32,
+    coverage: Option<f32>,
 }
 
 #[derive(Debug, Serialize, PartialEq)]
@@ -105,6 +106,7 @@ fn produce_summary_from_changes_list(
         hits: 0,
         misses: 0,
         partials: 0,
+        coverage: None,
     };
     for fca in changes_list.iter() {
         match &fca.added_diff_coverage {
@@ -127,6 +129,11 @@ fn produce_summary_from_changes_list(
             }
         }
     }
+    let loc = patch_totals.hits + patch_totals.misses + patch_totals.partials;
+    patch_totals.coverage = match loc {
+        0 => None,
+        _ => Some(patch_totals.hits as f32 / loc as f32),
+    };
     ChangeAnalysisSummary {
         patch_totals: patch_totals,
     }
@@ -819,7 +826,8 @@ mod tests {
                 patch_totals: ChangePatchTotals {
                     hits: 5,
                     misses: 3,
-                    partials: 0
+                    partials: 0,
+                    coverage: Some(0.625)
                 }
             }
         );

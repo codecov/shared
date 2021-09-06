@@ -21,7 +21,6 @@ impl SimpleAnalyzer {
 mod tests {
     use super::*;
     use crate::cov;
-    use crate::diff;
     use crate::file;
     use crate::line;
     use fraction::GenericFraction;
