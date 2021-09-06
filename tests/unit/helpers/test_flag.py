@@ -1,4 +1,5 @@
 from mock import Mock
+
 from shared.helpers.flag import Flag
 
 

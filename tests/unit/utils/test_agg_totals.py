@@ -1,4 +1,5 @@
 import pytest
+
 from shared.reports.types import ReportTotals
 from shared.utils.totals import agg_totals
 

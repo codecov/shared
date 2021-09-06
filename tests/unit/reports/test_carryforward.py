@@ -1,19 +1,20 @@
-import pytest
-from json import loads
 import dataclasses
 import pprint
+from json import loads
 
+import pytest
+
+from shared.reports.carryforward import (
+    carriedforward_session_name,
+    generate_carryforward_report,
+)
 from shared.reports.resources import (
+    LineSession,
     Report,
     ReportFile,
     ReportLine,
-    LineSession,
-    Session,
     ReportTotals,
-)
-from shared.reports.carryforward import (
-    generate_carryforward_report,
-    carriedforward_session_name,
+    Session,
 )
 
 

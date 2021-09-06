@@ -1,5 +1,6 @@
-from colour import Color
 from itertools import chain
+
+from colour import Color
 
 colors = list(
     chain(

@@ -1,6 +1,6 @@
 import re
-from typing import Tuple, List
 from enum import Enum, auto
+from typing import List, Tuple
 
 import httpx
 

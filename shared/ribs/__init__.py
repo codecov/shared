@@ -1,9 +1,9 @@
 import json
 
 from shared.rustyribs import (
-    parse_report,
     FilterAnalyzer,
     SimpleAnalyzer,
+    parse_report,
     run_comparison_as_json,
 )
 

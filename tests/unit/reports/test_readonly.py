@@ -1,10 +1,11 @@
 from pathlib import Path
+
 import pytest
 
-from shared.reports.readonly import ReadOnlyReport, LazyRustReport
-from shared.reports.types import ReportTotals, ReportLine, LineSession
+from shared.reports.readonly import LazyRustReport, ReadOnlyReport
 from shared.reports.resources import ReportFile
-from shared.utils.sessions import SessionType, Session
+from shared.reports.types import LineSession, ReportLine, ReportTotals
+from shared.utils.sessions import Session, SessionType
 
 current_file = Path(__file__)
 

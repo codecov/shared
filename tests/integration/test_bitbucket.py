@@ -1,12 +1,11 @@
-import pytest
 import json
-
 from unittest.mock import patch
 
-from shared.torngit.enums import Endpoints
-from shared.torngit.exceptions import TorngitObjectNotFoundError
+import pytest
 
 from shared.torngit.bitbucket import Bitbucket
+from shared.torngit.enums import Endpoints
+from shared.torngit.exceptions import TorngitObjectNotFoundError
 
 
 @pytest.fixture

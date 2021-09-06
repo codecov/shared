@@ -1,8 +1,9 @@
+import dataclasses
+from fractions import Fraction
 from json import JSONEncoder
 from types import GeneratorType
-from fractions import Fraction
+
 from shared.reports.types import ReportTotals
-import dataclasses
 
 
 class ReportEncoder(JSONEncoder):

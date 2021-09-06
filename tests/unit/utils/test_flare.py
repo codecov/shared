@@ -1,6 +1,7 @@
 import pytest
-from shared.utils.flare import report_to_flare
+
 from shared.reports.types import ReportTotals
+from shared.utils.flare import report_to_flare
 
 
 @pytest.mark.unit

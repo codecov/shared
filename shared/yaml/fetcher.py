@@ -1,7 +1,7 @@
 import logging
-from typing import Sequence, Mapping, Any
-import shared.torngit as torngit
+from typing import Any, Mapping, Sequence
 
+import shared.torngit as torngit
 
 log = logging.getLogger(__name__)
 

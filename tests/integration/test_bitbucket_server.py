@@ -1,7 +1,8 @@
+from asyncio import Future
+from unittest.mock import patch
+
 import pytest
 
-from unittest.mock import patch
-from asyncio import Future
 from shared.torngit.bitbucket_server import BitbucketServer
 
 

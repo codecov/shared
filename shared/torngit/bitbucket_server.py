@@ -17,7 +17,6 @@ from shared.torngit.exceptions import (
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat
 
-
 PEM = """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQC9d2iMTFiXglyvHmp5ExoNK2X8nxJ+1mlxgWOyTUpTrOKRiDUb
 ZoZID3TP8CobQ5BsqDOSawHyi+Waf9Ca+iYoTu1fa8yZUreQXAdaK1u61Mn2XCkm

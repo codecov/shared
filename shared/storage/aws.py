@@ -1,16 +1,12 @@
-import logging
-import boto3
 import gzip
-
-from botocore.exceptions import ClientError
-
+import logging
 from io import BytesIO
 
+import boto3
+from botocore.exceptions import ClientError
+
 from shared.storage.base import BaseStorageService
-from shared.storage.exceptions import (
-    BucketAlreadyExistsError,
-    FileNotInStorageError,
-)
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
 

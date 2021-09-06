@@ -2,9 +2,9 @@ import pytest
 from mock import PropertyMock
 
 from shared.reports.resources import Report, ReportFile, _encode_chunk
+from shared.reports.types import LineSession, NetworkFile, ReportLine, ReportTotals
 from shared.utils.match import match
 from shared.utils.sessions import Session, SessionType
-from shared.reports.types import ReportLine, ReportTotals, NetworkFile, LineSession
 from tests.helper import v2_to_v3
 
 END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"

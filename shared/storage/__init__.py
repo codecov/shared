@@ -1,9 +1,9 @@
-from shared.storage.base import BaseStorageService
-from shared.storage.minio import MinioStorageService
-from shared.storage.gcp import GCPStorageService
-from shared.storage.aws import AWSStorageService
-from shared.storage.fallback import StorageWithFallbackService
 from shared.config import get_config
+from shared.storage.aws import AWSStorageService
+from shared.storage.base import BaseStorageService
+from shared.storage.fallback import StorageWithFallbackService
+from shared.storage.gcp import GCPStorageService
+from shared.storage.minio import MinioStorageService
 
 
 def get_appropriate_storage_service() -> BaseStorageService:

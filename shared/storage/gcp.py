@@ -1,15 +1,11 @@
 import logging
 
+import google.cloud.exceptions
 from google.cloud import storage
 from google.oauth2.service_account import Credentials
 
-import google.cloud.exceptions
-
 from shared.storage.base import BaseStorageService
-from shared.storage.exceptions import (
-    BucketAlreadyExistsError,
-    FileNotInStorageError,
-)
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
 

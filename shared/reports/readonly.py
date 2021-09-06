@@ -1,12 +1,12 @@
 import logging
-import random
 import os
+import random
 
-from shared.reports.resources import Report, ReportTotals
 from shared.helpers.flag import Flag
-from shared.utils.match import match
 from shared.metrics import metrics
-from shared.ribs import parse_report, SimpleAnalyzer, FilterAnalyzer
+from shared.reports.resources import Report, ReportTotals
+from shared.ribs import FilterAnalyzer, SimpleAnalyzer, parse_report
+from shared.utils.match import match
 
 log = logging.getLogger(__name__)
 

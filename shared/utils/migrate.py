@@ -1,7 +1,7 @@
-from json import loads
 from itertools import zip_longest
-from shared.helpers.numeric import ratio
+from json import loads
 
+from shared.helpers.numeric import ratio
 
 TOTALS_MAP = ("f", "n", "h", "m", "p", "c", "b", "d", "M", "s", "C", "N", "diff")
 TOTALS_MAP_NAMES = (

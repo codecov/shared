@@ -1,14 +1,14 @@
+from urllib.parse import parse_qsl, urlparse
+
 import httpx
-import respx
 import pytest
-from urllib.parse import urlparse, parse_qsl
+import respx
 
 from shared.torngit.bitbucket import Bitbucket
-
 from shared.torngit.exceptions import (
-    TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
     TorngitClientError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
 )
 
 

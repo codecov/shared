@@ -1,4 +1,5 @@
 import pytest
+
 from shared.helpers.color import coverage_to_color
 
 

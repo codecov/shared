@@ -1,28 +1,27 @@
-import os
-import hashlib
 import base64
-from base64 import b64decode
-from typing import Optional, List
+import hashlib
 import logging
+import os
+from base64 import b64decode
+from typing import List, Optional
 
 import httpx
 
 from shared.metrics import metrics
-from shared.torngit.status import Status
-from shared.torngit.base import TorngitBaseAdapter, TokenType
+from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
-    TorngitObjectNotFoundError,
-    TorngitServerUnreachableError,
     TorngitClientError,
-    TorngitServer5xxCodeError,
     TorngitClientGeneralError,
-    TorngitRepoNotFoundError,
+    TorngitObjectNotFoundError,
     TorngitRateLimitError,
+    TorngitRepoNotFoundError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
+from shared.torngit.status import Status
 from shared.utils.urls import url_concat, url_escape
-
 
 log = logging.getLogger(__name__)
 

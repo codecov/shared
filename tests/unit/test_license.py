@@ -1,9 +1,9 @@
-from datetime import datetime
-from base64 import b64encode
 import json
+from base64 import b64encode
+from datetime import datetime
 
-from shared.license import parse_license, LicenseInformation, get_current_license
 from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
+from shared.license import LicenseInformation, get_current_license, parse_license
 
 
 def test_sample_license_checking():

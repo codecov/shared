@@ -1,5 +1,6 @@
 import unittest
-from ddt import ddt, data
+
+from ddt import data, ddt
 
 from shared.torngit.status import Status
 

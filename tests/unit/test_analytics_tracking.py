@@ -1,7 +1,7 @@
 from mock import patch
 
+from shared.analytics_tracking import on_error, setup_analytics, track_event, track_user
 from tests.base import BaseTestCase
-from shared.analytics_tracking import track_event, track_user, on_error, setup_analytics
 
 
 class TestAnalyticsTracking(BaseTestCase):
