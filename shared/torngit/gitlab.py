@@ -99,7 +99,9 @@ class Gitlab(TorngitBaseAdapter):
             elif res.status_code >= 400:
                 message = f"Gitlab API: {res.status_code}"
                 metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                raise TorngitClientGeneralError(res.status_code, res, message)
+                raise TorngitClientGeneralError(
+                    res.status_code, response_data=res.json(), message=message
+                )
             return res
         except (httpx.TimeoutException, httpx.NetworkError):
             metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
@@ -216,7 +218,8 @@ class Gitlab(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response, f"Webhook with id {hookid} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Webhook with id {hookid} does not exist",
                 )
             raise
         return True
@@ -402,7 +405,8 @@ class Gitlab(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response, f"PR with id {pullid} does not exist"
+                    response_data=ce.response_data,
+                    message=f"PR with id {pullid} does not exist",
                 )
             raise
 
@@ -589,7 +593,8 @@ class Gitlab(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response, f"Comment {commentid} in PR {pullid} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Comment {commentid} in PR {pullid} does not exist",
                 )
             raise
 
@@ -606,7 +611,8 @@ class Gitlab(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response, f"Comment {commentid} in PR {pullid} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Comment {commentid} in PR {pullid} does not exist",
                 )
             raise
         return True
@@ -624,7 +630,9 @@ class Gitlab(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 message = f"Commit {commit} not found in repo {self.data['repo']['service_id']}"
-                raise TorngitObjectNotFoundError(ce.response, message)
+                raise TorngitObjectNotFoundError(
+                    response_data=ce.response_data, message=message
+                )
             raise
         # http://doc.gitlab.com/ce/api/users.html
         email = res["author_email"]
@@ -839,7 +847,8 @@ class Gitlab(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response, f"Path {path} not found at {ref}"
+                    response_data=ce.response_data,
+                    message=f"Path {path} not found at {ref}",
                 )
             raise
 

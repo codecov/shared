@@ -10,7 +10,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.6.0",
+    version="0.7.2",
     rust_extensions=[RustExtension("shared.rustyribs", binding=Binding.PyO3)],
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     # rust extensions are not zip safe, just like C-extensions.

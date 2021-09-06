@@ -117,7 +117,9 @@ class Bitbucket(TorngitBaseAdapter):
         elif res.status_code >= 300:
             message = f"Bitbucket API: {res.reason_phrase}"
             metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-            raise TorngitClientGeneralError(res.status_code, res, message)
+            raise TorngitClientGeneralError(
+                res.status_code, response_data={"content": res.content}, message=message
+            )
         if res.status_code == 204:
             return None
         elif "application/json" in res.headers.get("Content-Type"):
@@ -204,7 +206,8 @@ class Bitbucket(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response, f"Webhook with id {hookid} does not exist"
+                        response_data=ce.response_data,
+                        message=f"Webhook with id {hookid} does not exist",
                     )
                 raise
             return True
@@ -394,7 +397,8 @@ class Bitbucket(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response, f"PR with id {pullid} does not exist"
+                        response_data=ce.response_data,
+                        message=f"PR with id {pullid} does not exist",
                     )
                 raise
             # the commit sha is only {12}. need to get full sha
@@ -465,8 +469,8 @@ class Bitbucket(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response,
-                        f"Comment {commentid} from PR {issueid} cannot be found",
+                        response_data=ce.response_data,
+                        message=f"Comment {commentid} from PR {issueid} cannot be found",
                     )
                 raise
             return res
@@ -486,8 +490,8 @@ class Bitbucket(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response,
-                        f"Comment {commentid} from PR {issueid} cannot be found",
+                        response_data=ce.response_data,
+                        message=f"Comment {commentid} from PR {issueid} cannot be found",
                     )
                 raise
             return True
@@ -630,7 +634,8 @@ class Bitbucket(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response, f"Commit {commit} cannot be found"
+                        response_data=ce.response_data,
+                        message=f"Commit {commit} cannot be found",
                     )
                 raise
             username = data["author"].get("user", {}).get("nickname")
@@ -825,7 +830,8 @@ class Bitbucket(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response, f"Path {path} not found at {ref}"
+                        response_data=ce.response_data,
+                        message=f"Path {path} not found at {ref}",
                     )
                 raise
             return dict(commitid=None, content=src)
