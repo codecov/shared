@@ -188,22 +188,22 @@ class BaseCeleryConfig(object):
         },
         profiling_finding_task_name: {
             "queue": get_config(
-                "setup", " tasks", "profiling", "queue", default=task_default_queue
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
             )
         },
         profiling_summarization_task_name: {
             "queue": get_config(
-                "setup", " tasks", "profiling", "queue", default=task_default_queue
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
             )
         },
         profiling_collection_task_name: {
             "queue": get_config(
-                "setup", " tasks", "profiling", "queue", default=task_default_queue
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
             )
         },
         profiling_normalization_task_name: {
             "queue": get_config(
-                "setup", " tasks", "profiling", "queue", default=task_default_queue
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
             )
         },
         add_to_sendgrid_list_task_name: {"queue": task_default_queue},
