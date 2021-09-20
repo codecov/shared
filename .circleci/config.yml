@@ -9,8 +9,9 @@ jobs:
       - run:
           name: Running linter
           command: |
-            pip3 install black==19.10b0
+            pip3 install black==19.10b0 isort
             black --check .
+            isort --profile black --check .
   build:
     docker:
       - image: circleci/python:3.7.9

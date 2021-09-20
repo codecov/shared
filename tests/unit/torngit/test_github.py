@@ -1,18 +1,18 @@
+import pickle
 from urllib.parse import parse_qsl, urlparse
 
 import httpx
 import pytest
 import respx
-import pickle
 
 from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
     TorngitClientError,
+    TorngitClientGeneralError,
     TorngitRateLimitError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
-    TorngitClientGeneralError,
 )
 from shared.torngit.github import Github
 
