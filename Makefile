@@ -3,6 +3,6 @@ test:
 
 lint:
 	pip install black==19.10b0 isort
-	black --check .
+	black .
 	isort --profile black .
 
