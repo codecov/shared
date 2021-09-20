@@ -36,23 +36,33 @@ def run_comparison_using_rust(base_report, head_report, diff):
 def get_changes_using_rust(base_report, head_report, diff):
     changes = []
     data = run_comparison_using_rust(base_report, head_report, diff)
-    for d in data["files"]:
-        if d["unexpected_line_changes"]:
+    for found_change in data["files"]:
+        if (
+            found_change["unexpected_line_changes"]
+            or (
+                not found_change["file_was_removed_by_diff"]
+                and found_change["head_coverage"] is None
+            )
+            or (
+                not found_change["file_was_added_by_diff"]
+                and found_change["base_coverage"] is None
+            )
+        ):
             changes.append(
                 Change(
-                    path=d["base_name"],
-                    in_diff=bool(d["added_diff_coverage"]),
+                    path=found_change["base_name"],
+                    in_diff=bool(found_change["added_diff_coverage"]),
                     old_path=diff.get("before") if diff else None,
                     totals=None,
                     new=(
-                        d["head_coverage"] is not None
-                        and d["base_coverage"] is None
-                        and not d["file_was_added_by_diff"]
+                        found_change["head_coverage"] is not None
+                        and found_change["base_coverage"] is None
+                        and not found_change["file_was_added_by_diff"]
                     ),
                     deleted=(
-                        d["base_coverage"] is not None
-                        and d["head_coverage"] is None
-                        and not d["file_was_removed_by_diff"]
+                        found_change["base_coverage"] is not None
+                        and found_change["head_coverage"] is None
+                        and not found_change["file_was_removed_by_diff"]
                     ),
                 )
             )
