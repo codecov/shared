@@ -397,6 +397,7 @@ schema = {
             "require_changes": {"type": "boolean"},
             "require_base": {"type": "boolean"},
             "require_head": {"type": "boolean"},
+            "show_critical_paths": {"type": "boolean"},
             "branches": branches_structure,
             "paths": path_list_structure,  # DEPRECATED
             "flags": flag_list_structure,  # DEPRECATED
