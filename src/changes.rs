@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::iter::FromIterator;
 
+use rayon::prelude::*;
 use serde::Serialize;
 
 use crate::cov;
@@ -48,7 +49,6 @@ pub fn run_comparison_analysis(
     head_report: &report::Report,
     diff: diff::DiffInput,
 ) -> ChangeAnalysis {
-    let mut changes_list: Vec<FileChangesAnalysis> = Vec::new();
     let possible_renames: HashMap<String, String> = diff
         .iter()
         .map(|(k, v)| (k, &v.1))
@@ -70,29 +70,32 @@ pub fn run_comparison_analysis(
         .union(&head_filenames)
         .map(|f| f.clone())
         .collect();
-    for filename in all_filenames.iter() {
-        let diff_data = diff.get(filename);
-        let original_name: String = match diff_data {
-            Some(x) => match &x.1 {
+    let changes_list: Vec<FileChangesAnalysis> = all_filenames
+        .par_iter()
+        .map(|filename| {
+            let diff_data = diff.get(filename);
+            let original_name: String = match diff_data {
+                Some(x) => match &x.1 {
+                    None => filename.to_string(),
+                    Some(o) => o.to_string(),
+                },
                 None => filename.to_string(),
-                Some(o) => o.to_string(),
-            },
-            None => filename.to_string(),
-        };
-        if !base_report.get_by_filename(&original_name).is_none()
-            || !head_report.get_by_filename(&filename).is_none()
-        {
-            match run_filereport_analysis(
-                base_report.get_by_filename(&original_name),
-                head_report.get_by_filename(&filename),
-                diff_data,
-                (&original_name, &filename),
-            ) {
-                Some(a) => changes_list.push(a),
-                None => {}
+            };
+            if !base_report.get_by_filename(&original_name).is_none()
+                || !head_report.get_by_filename(&filename).is_none()
+            {
+                run_filereport_analysis(
+                    base_report.get_by_filename(&original_name),
+                    head_report.get_by_filename(&filename),
+                    diff_data,
+                    (&original_name, &filename),
+                )
+            } else {
+                None
             }
-        }
-    }
+        })
+        .filter_map(|x| x)
+        .collect();
     return ChangeAnalysis {
         changes_summary: produce_summary_from_changes_list(&changes_list),
         files: changes_list,
