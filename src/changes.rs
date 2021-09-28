@@ -193,6 +193,59 @@ fn run_filereport_analysis(
             Some(a)
         }
     };
+    let mut unexpected_vec = Vec::new();
+    let mut current_base: i32 = 0;
+    let mut current_head: i32 = 0;
+    let base_eof = match new_file {
+        None => 0,
+        Some(base_report) => base_report.get_eof(),
+    };
+    let head_eof = match old_file {
+        None => 0,
+        Some(head_report) => head_report.get_eof(),
+    };
+    while current_base < base_eof || current_head < head_eof {
+        current_base += 1;
+        current_head += 1;
+        while only_on_base.contains(&current_base) {
+            current_base += 1;
+        }
+        while only_on_head.contains(&current_head) {
+            current_head += 1
+        }
+        match (
+            match old_file {
+                None => None,
+                Some(base_report) => base_report.lines.get(&current_base),
+            },
+            match new_file {
+                None => None,
+                Some(head_report) => head_report.lines.get(&current_head),
+            },
+        ) {
+            (None, None) => {}
+            (None, Some(head_line)) => {
+                unexpected_vec.push((
+                    (current_base, None),
+                    (current_head, Some(head_line.coverage.to_owned())),
+                ));
+            }
+            (Some(base_line), None) => {
+                unexpected_vec.push((
+                    (current_base, Some(base_line.coverage.to_owned())),
+                    (current_head, None),
+                ));
+            }
+            (Some(base_line), Some(head_line)) => {
+                if base_line.coverage != head_line.coverage {
+                    unexpected_vec.push((
+                        (current_base, Some(base_line.coverage.to_owned())),
+                        (current_head, Some(head_line.coverage.to_owned())),
+                    ));
+                }
+            }
+        }
+    }
     return match (old_file, new_file) {
         (None, None) => None,
         (None, Some(new)) => Some(FileChangesAnalysis {
@@ -202,7 +255,7 @@ fn run_filereport_analysis(
             base_coverage: None,
             removed_diff_coverage: removed_diff_coverage,
             added_diff_coverage: added_diff_coverage,
-            unexpected_line_changes: Vec::new(),
+            unexpected_line_changes: unexpected_vec,
             base_name: base_name.to_string(),
             head_name: head_name.to_string(),
         }),
@@ -213,52 +266,11 @@ fn run_filereport_analysis(
             base_coverage: Some(old.get_totals()),
             removed_diff_coverage: removed_diff_coverage,
             added_diff_coverage: added_diff_coverage,
-            unexpected_line_changes: Vec::new(),
+            unexpected_line_changes: unexpected_vec,
             base_name: base_name.to_string(),
             head_name: head_name.to_string(),
         }),
         (Some(base_report), Some(head_report)) => {
-            let mut unexpected_vec = Vec::new();
-            let mut current_base: i32 = 0;
-            let mut current_head: i32 = 0;
-            let base_eof = base_report.get_eof();
-            let head_eof = head_report.get_eof();
-            while current_base < base_eof || current_head < head_eof {
-                current_base += 1;
-                current_head += 1;
-                while only_on_base.contains(&current_base) {
-                    current_base += 1;
-                }
-                while only_on_head.contains(&current_head) {
-                    current_head += 1
-                }
-                match (
-                    base_report.lines.get(&current_base),
-                    head_report.lines.get(&current_head),
-                ) {
-                    (None, None) => {}
-                    (None, Some(head_line)) => {
-                        unexpected_vec.push((
-                            (current_base, None),
-                            (current_head, Some(head_line.coverage.to_owned())),
-                        ));
-                    }
-                    (Some(base_line), None) => {
-                        unexpected_vec.push((
-                            (current_base, Some(base_line.coverage.to_owned())),
-                            (current_head, None),
-                        ));
-                    }
-                    (Some(base_line), Some(head_line)) => {
-                        if base_line.coverage != head_line.coverage {
-                            unexpected_vec.push((
-                                (current_base, Some(base_line.coverage.to_owned())),
-                                (current_head, Some(head_line.coverage.to_owned())),
-                            ));
-                        }
-                    }
-                }
-            }
             let has_removed_diff_coverage = match &removed_diff_coverage {
                 None => false,
                 Some(x) => !x.is_empty(),
