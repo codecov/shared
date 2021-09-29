@@ -71,7 +71,7 @@ pub fn run_comparison_analysis(
         .map(|f| f.clone())
         .collect();
     let changes_list: Vec<FileChangesAnalysis> = all_filenames
-        .par_iter()
+        .iter()
         .map(|filename| {
             let diff_data = diff.get(filename);
             let original_name: String = match diff_data {
