@@ -194,54 +194,56 @@ fn run_filereport_analysis(
         }
     };
     let mut unexpected_vec = Vec::new();
-    let mut current_base: i32 = 0;
-    let mut current_head: i32 = 0;
-    let base_eof = match new_file {
-        None => 0,
-        Some(base_report) => base_report.get_eof(),
-    };
-    let head_eof = match old_file {
-        None => 0,
-        Some(head_report) => head_report.get_eof(),
-    };
-    while current_base < base_eof || current_head < head_eof {
-        current_base += 1;
-        current_head += 1;
-        while only_on_base.contains(&current_base) {
+    if !is_new && !was_deleted {
+        let mut current_base: i32 = 0;
+        let mut current_head: i32 = 0;
+        let base_eof = match new_file {
+            None => 0,
+            Some(base_report) => base_report.get_eof(),
+        };
+        let head_eof = match old_file {
+            None => 0,
+            Some(head_report) => head_report.get_eof(),
+        };
+        while current_base < base_eof || current_head < head_eof {
             current_base += 1;
-        }
-        while only_on_head.contains(&current_head) {
-            current_head += 1
-        }
-        match (
-            match old_file {
-                None => None,
-                Some(base_report) => base_report.lines.get(&current_base),
-            },
-            match new_file {
-                None => None,
-                Some(head_report) => head_report.lines.get(&current_head),
-            },
-        ) {
-            (None, None) => {}
-            (None, Some(head_line)) => {
-                unexpected_vec.push((
-                    (current_base, None),
-                    (current_head, Some(head_line.coverage.to_owned())),
-                ));
+            current_head += 1;
+            while only_on_base.contains(&current_base) {
+                current_base += 1;
             }
-            (Some(base_line), None) => {
-                unexpected_vec.push((
-                    (current_base, Some(base_line.coverage.to_owned())),
-                    (current_head, None),
-                ));
+            while only_on_head.contains(&current_head) {
+                current_head += 1
             }
-            (Some(base_line), Some(head_line)) => {
-                if base_line.coverage != head_line.coverage {
+            match (
+                match old_file {
+                    None => None,
+                    Some(base_report) => base_report.lines.get(&current_base),
+                },
+                match new_file {
+                    None => None,
+                    Some(head_report) => head_report.lines.get(&current_head),
+                },
+            ) {
+                (None, None) => {}
+                (None, Some(head_line)) => {
                     unexpected_vec.push((
-                        (current_base, Some(base_line.coverage.to_owned())),
+                        (current_base, None),
                         (current_head, Some(head_line.coverage.to_owned())),
                     ));
+                }
+                (Some(base_line), None) => {
+                    unexpected_vec.push((
+                        (current_base, Some(base_line.coverage.to_owned())),
+                        (current_head, None),
+                    ));
+                }
+                (Some(base_line), Some(head_line)) => {
+                    if base_line.coverage != head_line.coverage {
+                        unexpected_vec.push((
+                            (current_base, Some(base_line.coverage.to_owned())),
+                            (current_head, Some(head_line.coverage.to_owned())),
+                        ));
+                    }
                 }
             }
         }
