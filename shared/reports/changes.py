@@ -34,25 +34,22 @@ def run_comparison_using_rust(base_report, head_report, diff):
 
 
 def get_changes_using_rust(base_report, head_report, diff):
+    return _get_changes_from_comparison(
+        run_comparison_using_rust(base_report, head_report, diff)
+    )
+
+
+def _get_changes_from_comparison(data):
     changes = []
-    data = run_comparison_using_rust(base_report, head_report, diff)
     for found_change in data["files"]:
-        if (
-            found_change["unexpected_line_changes"]
-            or (
-                not found_change["file_was_removed_by_diff"]
-                and found_change["head_coverage"] is None
-            )
-            or (
-                not found_change["file_was_added_by_diff"]
-                and found_change["base_coverage"] is None
-            )
-        ):
+        if found_change["unexpected_line_changes"]:
             changes.append(
                 Change(
-                    path=found_change["base_name"],
+                    path=found_change["head_name"],
                     in_diff=bool(found_change["added_diff_coverage"]),
-                    old_path=diff.get("before") if diff else None,
+                    old_path=found_change.get("base_name")
+                    if found_change["base_name"] != found_change["head_name"]
+                    else None,
                     totals=None,
                     new=(
                         found_change["head_coverage"] is not None
