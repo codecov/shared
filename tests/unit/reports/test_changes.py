@@ -6,10 +6,10 @@ from shared.reports.changes import (
     _get_changes_from_comparison,
     get_changes_using_rust,
     run_comparison_using_rust,
-    rustify_diff,
 )
 from shared.reports.readonly import ReadOnlyReport
 from shared.reports.types import Change
+from shared.ribs import rustify_diff
 
 current_file = Path(__file__)
 
