@@ -2,6 +2,7 @@ import json
 
 from shared.rustyribs import (
     FilterAnalyzer,
+    ProfilingData,
     SimpleAnalyzer,
     parse_report,
     run_comparison_as_json,
@@ -10,6 +11,10 @@ from shared.rustyribs import (
 
 def run_comparison(*args, **kwargs):
     return json.loads(run_comparison_as_json(*args, **kwargs))
+
+
+def load_profiling_data(data_string):
+    return ProfilingData.load_from_json(data_string)
 
 
 def rustify_diff(diff):
