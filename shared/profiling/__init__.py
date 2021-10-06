@@ -30,7 +30,7 @@ class ProfilingDataFullAnalyzer(object):
 
     def find_impacted_endpoints(self, base_report, head_report, diff):
         return json.loads(
-            self._internal_analyzer.find_impacted_endpoints(
+            self._internal_analyzer.find_impacted_endpoints_json(
                 base_report, head_report, diff
             )
         )
