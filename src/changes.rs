@@ -23,6 +23,8 @@ pub struct FileChangesAnalysis {
     pub removed_diff_coverage: Option<Vec<(i32, cov::Coverage)>>,
     pub added_diff_coverage: Option<Vec<(i32, cov::Coverage)>>,
     pub unexpected_line_changes: Vec<LineChange>,
+    pub lines_only_on_base: Vec<i32>,
+    pub lines_only_on_head: Vec<i32>,
 }
 
 #[derive(Debug, Serialize, PartialEq)]
@@ -248,6 +250,10 @@ fn run_filereport_analysis(
             }
         }
     }
+    let mut lines_only_on_head: Vec<_> = only_on_head.iter().map(|k| *k).collect();
+    lines_only_on_head.sort();
+    let mut lines_only_on_base: Vec<_> = only_on_base.iter().map(|k| *k).collect();
+    lines_only_on_base.sort();
     return match (old_file, new_file) {
         (None, None) => None,
         (None, Some(new)) => Some(FileChangesAnalysis {
@@ -260,6 +266,8 @@ fn run_filereport_analysis(
             unexpected_line_changes: unexpected_vec,
             base_name: base_name.to_string(),
             head_name: head_name.to_string(),
+            lines_only_on_head: lines_only_on_head,
+            lines_only_on_base: lines_only_on_base,
         }),
         (Some(old), None) => Some(FileChangesAnalysis {
             file_was_added_by_diff: is_new,
@@ -271,6 +279,8 @@ fn run_filereport_analysis(
             unexpected_line_changes: unexpected_vec,
             base_name: base_name.to_string(),
             head_name: head_name.to_string(),
+            lines_only_on_head: lines_only_on_head,
+            lines_only_on_base: lines_only_on_base,
         }),
         (Some(base_report), Some(head_report)) => {
             let has_removed_diff_coverage = match &removed_diff_coverage {
@@ -294,6 +304,8 @@ fn run_filereport_analysis(
                 head_name: head_name.to_string(),
                 removed_diff_coverage: removed_diff_coverage,
                 unexpected_line_changes: unexpected_vec,
+                lines_only_on_head: lines_only_on_head,
+                lines_only_on_base: lines_only_on_base,
             });
         }
     };

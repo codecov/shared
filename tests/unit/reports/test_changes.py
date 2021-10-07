@@ -120,6 +120,8 @@ def test_run_comparison_using_rust(sample_rust_report):
                     [[4, "h"], [6, None]],
                     [[5, "m"], [7, None]],
                 ],
+                "lines_only_on_base": [],
+                "lines_only_on_head": [1, 2],
             }
         ],
         "changes_summary": {
