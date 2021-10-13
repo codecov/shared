@@ -40,25 +40,49 @@ jobs:
           paths:
             - ./venv
           key: v04-dependencies-{{ checksum "setup.py" }}
-        
+
       - run:
           name: run tests
           command: |
             . venv/bin/activate
             python -m pytest --cov=./
-            source $HOME/.cargo/env
-            cargo test --no-default-features
+        
       - run:
           name: codecov
           command: |
             . venv/bin/activate
             pip install codecov
-            codecov --required
+            codecov --required --flags python
           
+  rust:
+    docker:
+      - image: circleci/python:3.9
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      - run:
+          name: Rust tests
+          command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+            source $HOME/.cargo/env
+            sudo apt-get install gcc lsb-release wget software-properties-common
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh
+            RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
+            llvm-profdata-13 merge -sparse ribs-*.profraw -o ribs.profdata
+            llvm-cov-13 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+            pip install codecov
+            codecov --required --flags rust
 workflows:
   version: 2
   lint-test:
     jobs:
+      - rust:
+          filters:
+            tags:
+              only: /.*/
       - linter:
           filters:
             tags:

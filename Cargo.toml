@@ -26,3 +26,4 @@ default = ["extension-module"]
 [target.'cfg(target_env = "musl")'.dependencies.jemallocator]
 version = "0.3.0"
 features = ["disable_initial_exec_tls"]
+profiler = true
