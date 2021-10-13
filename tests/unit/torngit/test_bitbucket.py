@@ -269,3 +269,97 @@ class TestUnitBitbucket(object):
         )
         with pytest.raises(TorngitClientError):
             await handler.get_authenticated()
+
+    @pytest.mark.asyncio
+    async def test_list_repos_exception_mid_call(self, valid_handler, respx_vcr):
+        respx.get("https://bitbucket.org/api/2.0/user/permissions/workspaces").respond(
+            status_code=200,
+            json={
+                "values": [
+                    {
+                        "workspace": {
+                            "name": "banana",
+                            "uuid": "[uuid]",
+                            "slug": "specialslug",
+                        }
+                    },
+                    {
+                        "workspace": {
+                            "name": "apple",
+                            "uuid": "[abcdef]",
+                            "slug": "anotherslug",
+                        }
+                    },
+                ]
+            },
+        )
+        respx.get(
+            "https://bitbucket.org/api/2.0/user/permissions/repositories"
+        ).respond(
+            status_code=200,
+            json={
+                "values": [
+                    {
+                        "repository": {
+                            "full_name": "codecov/worker",
+                            "owner": {"username": "differentone"},
+                        }
+                    }
+                ]
+            },
+        )
+        respx.get("https://bitbucket.org/api/2.0/repositories/specialslug").respond(
+            status_code=200, json={"values": []}
+        )
+        respx.get("https://bitbucket.org/api/2.0/repositories/ThiagoCodecov").respond(
+            status_code=200, json={"values": []}
+        )
+        respx.get("https://bitbucket.org/api/2.0/repositories/anotherslug").respond(
+            status_code=200,
+            json={
+                "values": [
+                    {
+                        "is_private": True,
+                        "language": "python",
+                        "uuid": "[haja]",
+                        "full_name": "anotherslug/aaaa",
+                        "owner": {"uuid": "[poilk]"},
+                    },
+                    {
+                        "is_private": True,
+                        "language": "python",
+                        "uuid": "[haja]",
+                        "full_name": "anotherslug/qwerty",
+                        "owner": {"uuid": "[poilk]"},
+                    },
+                ]
+            },
+        )
+        respx.get("https://bitbucket.org/api/2.0/repositories/codecov").respond(
+            status_code=404, json={"values": []}
+        )
+        res = await valid_handler.list_repos()
+        assert res == [
+            {
+                "owner": {"service_id": "poilk", "username": "anotherslug"},
+                "repo": {
+                    "service_id": "haja",
+                    "name": "aaaa",
+                    "language": "python",
+                    "private": True,
+                    "branch": "master",
+                    "fork": None,
+                },
+            },
+            {
+                "owner": {"service_id": "poilk", "username": "anotherslug"},
+                "repo": {
+                    "service_id": "haja",
+                    "name": "qwerty",
+                    "language": "python",
+                    "private": True,
+                    "branch": "master",
+                    "fork": None,
+                },
+            },
+        ]
