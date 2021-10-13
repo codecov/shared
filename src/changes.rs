@@ -40,16 +40,16 @@ pub struct ChangeAnalysisSummary {
     patch_totals: ChangePatchTotals,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct ChangeAnalysis {
-    files: Vec<FileChangesAnalysis>,
+    pub files: Vec<FileChangesAnalysis>,
     changes_summary: ChangeAnalysisSummary,
 }
 
 pub fn run_comparison_analysis(
     base_report: &report::Report,
     head_report: &report::Report,
-    diff: diff::DiffInput,
+    diff: &diff::DiffInput,
 ) -> ChangeAnalysis {
     let possible_renames: HashMap<String, String> = diff
         .iter()
@@ -480,7 +480,7 @@ mod tests {
         ]
         .into_iter()
         .collect();
-        let res = run_comparison_analysis(&first_report, &second_report, diff);
+        let res = run_comparison_analysis(&first_report, &second_report, &diff);
         let mut files_array: Vec<_> = res.files;
         let present_keys: HashSet<String> =
             files_array.iter().map(|f| f.head_name.to_owned()).collect();
@@ -847,7 +847,7 @@ mod tests {
             .collect(),
             session_mapping: vec![].into_iter().collect(),
         };
-        let full_res = run_comparison_analysis(&first_report, &second_report, diff);
+        let full_res = run_comparison_analysis(&first_report, &second_report, &diff);
         println!("{}", serde_json::to_string(&full_res).unwrap());
         assert_eq!(
             full_res.changes_summary,

@@ -14,6 +14,7 @@ mod diff;
 mod file;
 mod line;
 mod parser;
+mod profiling;
 mod report;
 
 #[pyfunction]
@@ -38,7 +39,7 @@ fn run_comparison_as_json(
     return match serde_json::to_string(&changes::run_comparison_analysis(
         base_report,
         head_report,
-        diff,
+        &diff,
     )) {
         Ok(value) => Ok(value),
         Err(_) => Err(PyException::new_err("Error serializing changes")),
@@ -52,6 +53,7 @@ fn rustyribs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run_comparison_as_json, m)?)?;
     m.add_class::<analyzers::filter::FilterAnalyzer>()?;
     m.add_class::<analyzers::simple::SimpleAnalyzer>()?;
+    m.add_class::<profiling::ProfilingData>()?;
 
     Ok(())
 }
