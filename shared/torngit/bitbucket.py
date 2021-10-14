@@ -301,6 +301,7 @@ class Bitbucket(TorngitBaseAdapter):
         """
         data, page = [], 0
         # if username is not provided, list all repos
+        repos_to_log = []
         if username is None:
             # get all teams a user is member of
             teams = await self.list_teams(token)
@@ -310,7 +311,13 @@ class Bitbucket(TorngitBaseAdapter):
             # get repo owners
             for permission in permissions:
                 repo = permission["repository"]
+                repos_to_log.append(repo["full_name"])
                 name = repo["full_name"].split("/")
+                if repo.get("owner") and repo.get("owner").get("username") != name:
+                    log.warning(
+                        "Owner username different from what we think it is",
+                        extra=dict(repo_dict=repo, found_name=name),
+                    )
                 usernames.add(name[0])
             # add user's own username
             usernames.add(self.data["owner"]["username"])
@@ -319,42 +326,50 @@ class Bitbucket(TorngitBaseAdapter):
         # fetch repo information
         async with self.get_client() as client:
             for team in usernames:
-                while True:
-                    page += 1
-                    # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
-                    res = await self.api(
-                        client,
-                        "2",
-                        "get",
-                        "/repositories/%s" % (team),
-                        page=page,
-                        token=token,
-                    )
-                    if len(res["values"]) == 0:
-                        page = 0
-                        break
-                    for repo in res["values"]:
-                        repo_name_arr = repo["full_name"].split("/", 1)
-
-                        data.append(
-                            dict(
-                                owner=dict(
-                                    service_id=repo["owner"]["uuid"][1:-1],
-                                    username=repo_name_arr[0],
-                                ),
-                                repo=dict(
-                                    service_id=repo["uuid"][1:-1],
-                                    name=repo_name_arr[1],
-                                    language=self._validate_language(repo["language"]),
-                                    private=repo["is_private"],
-                                    branch="master",
-                                    fork=None,
-                                ),
-                            )
+                try:
+                    while True:
+                        page += 1
+                        # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
+                        res = await self.api(
+                            client,
+                            "2",
+                            "get",
+                            "/repositories/%s" % (team),
+                            page=page,
+                            token=token,
                         )
-                    if not res.get("next"):
-                        page = 0
-                        break
+                        if len(res["values"]) == 0:
+                            page = 0
+                            break
+                        for repo in res["values"]:
+                            repo_name_arr = repo["full_name"].split("/", 1)
+
+                            data.append(
+                                dict(
+                                    owner=dict(
+                                        service_id=repo["owner"]["uuid"][1:-1],
+                                        username=repo_name_arr[0],
+                                    ),
+                                    repo=dict(
+                                        service_id=repo["uuid"][1:-1],
+                                        name=repo_name_arr[1],
+                                        language=self._validate_language(
+                                            repo["language"]
+                                        ),
+                                        private=repo["is_private"],
+                                        branch="master",
+                                        fork=None,
+                                    ),
+                                )
+                            )
+                        if not res.get("next"):
+                            page = 0
+                            break
+                except TorngitClientError:
+                    log.warning(
+                        "Unable to fetch repos from team on Bitbucket",
+                        extra=dict(team_name=team, repository_names=repos_to_log),
+                    )
         return data
 
     async def list_permissions(self, token=None):
