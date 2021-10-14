@@ -34,6 +34,61 @@ struct SingleGroupProfilingData {
     files: Vec<SingleFileProfilingData>,
 }
 
+impl SingleGroupProfilingData {
+    fn find_impacted_endpoints(
+        &self,
+        files: &Vec<changes::FileChangesAnalysis>,
+    ) -> Option<GroupImpact> {
+        let inside_group_file_mapping: HashMap<String, &SingleFileProfilingData> = self
+            .files
+            .iter()
+            .map(|k| (k.filename.to_owned(), k))
+            .collect();
+        let files_impacts: Vec<GroupFileImpact> = files
+            .iter()
+            .map(|file_change_data| {
+                match inside_group_file_mapping.get(&file_change_data.base_name) {
+                    Some(file_profiling_data) => {
+                        let profiling_lines: HashSet<i32> = file_profiling_data
+                            .ln_ex_ct
+                            .iter()
+                            .map(|(ln, _)| *ln)
+                            .collect();
+                        let changed_lines: HashSet<i32> =
+                            match &file_change_data.removed_diff_coverage {
+                                Some(removed_lines) => {
+                                    removed_lines.iter().map(|(ln, _)| *ln).collect()
+                                }
+                                None => HashSet::new(),
+                            };
+                        let impacted_lines: Vec<i32> = profiling_lines
+                            .intersection(&changed_lines)
+                            .map(|x| *x)
+                            .collect();
+                        if !impacted_lines.is_empty() {
+                            Some(GroupFileImpact {
+                                filename: file_change_data.base_name.to_owned(),
+                                impacted_base_lines: impacted_lines,
+                            })
+                        } else {
+                            None
+                        }
+                    }
+                    None => None,
+                }
+            })
+            .filter_map(|x| x)
+            .collect();
+        if files_impacts.is_empty() {
+            return None;
+        }
+        return Some(GroupImpact {
+            group_name: self.group_name.to_owned(),
+            files: files_impacts,
+        });
+    }
+}
+
 #[pyclass]
 pub struct ProfilingData {
     groups: Vec<SingleGroupProfilingData>,
@@ -60,20 +115,46 @@ impl ProfilingData {
         }
     }
 
-    fn find_impacted_endpoints(
+    fn find_impacted_endpoints_json(
         &self,
         base_report: &report::Report,
         head_report: &report::Report,
         diff: diff::DiffInput,
-    ) {
+    ) -> PyResult<String> {
+        let res = self.find_impacted_endpoints(base_report, head_report, diff);
+        return match serde_json::to_string(&res) {
+            Ok(value) => Ok(value),
+            Err(_) => Err(PyException::new_err("Error serializing impact")),
+        };
     }
 
     fn apply_diff_changes(&mut self, _diff: diff::DiffInput) {}
 }
 
+impl ProfilingData {
+    fn find_impacted_endpoints(
+        &self,
+        base_report: &report::Report,
+        head_report: &report::Report,
+        diff: diff::DiffInput,
+    ) -> Vec<GroupImpact> {
+        let k = changes::run_comparison_analysis(base_report, head_report, &diff);
+        return self
+            .groups
+            .iter()
+            .map(|group| group.find_impacted_endpoints(&k.files))
+            .filter_map(|x| x)
+            .collect();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::cov;
+    use crate::file;
+    use crate::line;
+    use fraction::GenericFraction;
     use std::fs::File;
     use std::io::Read;
 
@@ -126,5 +207,151 @@ mod tests {
                 "tasks/upload_processor.py"
             ]
         );
+    }
+
+    #[test]
+    fn it_calculates_impacted_endpoints_correctly() {
+        let v: ProfilingData = ProfilingData {
+            groups: vec![SingleGroupProfilingData {
+                count: 10,
+                group_name: "GET /data".to_string(),
+                files: vec![SingleFileProfilingData {
+                    filename: "file1.go".to_string(),
+                    ln_ex_ct: vec![(1, 10), (2, 8)],
+                }],
+            }],
+        };
+        let first_file_head = file::ReportFile {
+            lines: vec![
+                (
+                    1,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![line::LineSession {
+                            id: 0,
+                            coverage: cov::Coverage::Hit,
+                            complexity: None,
+                        }],
+                        complexity: None,
+                    },
+                ),
+                (
+                    2,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![
+                            line::LineSession {
+                                id: 0,
+                                coverage: cov::Coverage::Hit,
+                                complexity: None,
+                            },
+                            line::LineSession {
+                                id: 1,
+                                coverage: cov::Coverage::Partial(GenericFraction::new(1, 2)),
+                                complexity: None,
+                            },
+                        ],
+                        complexity: None,
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let first_file_base = file::ReportFile {
+            lines: vec![
+                (
+                    1,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Miss,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![line::LineSession {
+                            id: 0,
+                            coverage: cov::Coverage::Miss,
+                            complexity: None,
+                        }],
+                        complexity: None,
+                    },
+                ),
+                (
+                    2,
+                    line::ReportLine {
+                        coverage: cov::Coverage::Hit,
+                        coverage_type: line::CoverageType::Standard,
+                        sessions: vec![
+                            line::LineSession {
+                                id: 0,
+                                coverage: cov::Coverage::Hit,
+                                complexity: None,
+                            },
+                            line::LineSession {
+                                id: 1,
+                                coverage: cov::Coverage::Partial(GenericFraction::new(1, 2)),
+                                complexity: None,
+                            },
+                        ],
+                        complexity: None,
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let head_report = report::Report {
+            report_files: vec![
+                ("file1.go".to_string(), first_file_head),
+                (
+                    "file_p.py".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+            session_mapping: vec![
+                (0, vec!["unit".to_string()]),
+                (1, vec!["integration".to_string()]),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let base_report = report::Report {
+            report_files: vec![
+                ("file1.go".to_string(), first_file_base),
+                (
+                    "file_p.py".to_string(),
+                    file::ReportFile {
+                        lines: vec![].into_iter().collect(),
+                    },
+                ),
+            ]
+            .into_iter()
+            .collect(),
+            session_mapping: vec![
+                (0, vec!["unit".to_string()]),
+                (1, vec!["integration".to_string()]),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        let diffinput: diff::DiffInput = vec![(
+            "file1.go".to_string(),
+            (
+                "changed".to_string(),
+                None,
+                vec![((1, 1, 1, 1), vec!["-".to_string(), "+".to_string()])],
+            ),
+        )]
+        .into_iter()
+        .collect();
+        let res = v.find_impacted_endpoints(&base_report, &head_report, diffinput);
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].group_name, "GET /data");
+        assert_eq!(res[0].files.len(), 1);
+        assert_eq!(res[0].files[0].filename, "file1.go".to_string());
+        assert_eq!(res[0].files[0].impacted_base_lines, vec![1]);
     }
 }
