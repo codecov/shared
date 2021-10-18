@@ -411,6 +411,47 @@ def test_get_changes_from_comparison(mocker):
     assert sorted(x.path for x in res) == expected_res
 
 
+def test_get_changes_from_comparison_same_line_type():
+    res = _get_changes_from_comparison(
+        {
+            "files": [
+                {
+                    "base_name": "base_name.ts",
+                    "head_name": "head_name.ts",
+                    "file_was_added_by_diff": False,
+                    "file_was_removed_by_diff": False,
+                    "base_coverage": None,
+                    "head_coverage": {
+                        "hits": 2,
+                        "misses": 0,
+                        "partials": 0,
+                        "branches": 1,
+                        "sessions": 0,
+                        "complexity": 0,
+                        "complexity_total": 0,
+                        "methods": 0,
+                    },
+                    "removed_diff_coverage": [[8, "h"]],
+                    "added_diff_coverage": [[8, "h"]],
+                    "unexpected_line_changes": [
+                        [[1, "p"], [1, "p"]],
+                        [[2, "p"], [2, "p"]],
+                    ],
+                },
+            ],
+            "changes_summary": {
+                "patch_totals": {
+                    "hits": 20,
+                    "misses": 1,
+                    "partials": 0,
+                    "coverage": 0.95238096,
+                }
+            },
+        },
+    )
+    assert res == []
+
+
 class TestRustifyDiff(object):
     def test_rustify_diff_empty(self):
         assert rustify_diff({}) == {}
