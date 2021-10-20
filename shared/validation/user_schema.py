@@ -414,4 +414,14 @@ schema = {
         "type": ["dict", "boolean"],
         "schema": {"annotations": {"type": "boolean"}},
     },
+    "profiling": {
+        "type": "dict",
+        "schema": {
+            "fixes": {
+                "type": "list",
+                "schema": {"type": "string", "coerce": "regexify_path_fix"},
+            },
+            "grouping_attributes": {"type": "list", "schema": {"type": "string"}},
+        },
+    },
 }

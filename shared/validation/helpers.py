@@ -337,6 +337,7 @@ class LayoutStructure(object):
             "header",
             "reach",
             "suggestions",
+            "betaprofiling",
             "sunburst",
             "tree",
             "uncovered",
