@@ -1,75 +1,92 @@
 interactions:
 - request:
-    body: null
+    body: ''
     headers:
-      Accept:
+      accept:
       - application/json
-      User-Agent:
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=1&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_token=testss3hxhcfqf1h6g&oauth_version=1.0
   response:
-    content: "diff --git a/README.rst b/README.rst\nindex 09c90a8..405d834 100644\n\
-      --- a/README.rst\n+++ b/README.rst\n@@ -12 +12,2 @@ Overview\n-Main website:\
-      \ `Codecov <https://codecov.io/>`_.\n+\n+website: `Codecov <https://codecov.io/>`_.\n\
-      @@ -49 +50 @@ You may need to configure a ``.coveragerc`` file. Learn more `here\
-      \ <http://cover\n-We highly suggest adding `source` to your ``.coveragerc``\
-      \ which solves a number of issues collecting coverage.\n+We highly suggest adding\
-      \ ``source`` to your ``.coveragerc``, which solves a number of issues collecting\
-      \ coverage.\n@@ -54,0 +56,7 @@ We highly suggest adding `source` to your ``.coveragerc``\
-      \ which solves a number\n+   \n+If there are multiple sources, you instead should\
-      \ add ``include`` to your ``.coveragerc``\n+\n+.. code-block:: ini\n+\n+   [run]\n\
-      +   include=your_package_name/*\n@@ -153,2 +161 @@ Links\n-We are happy to help\
-      \ if you have any questions. Please contact email our Support at [support@codecov.io](mailto:support@codecov.io)\n\
-      -\n+We are happy to help if you have any questions. Please contact email our\
-      \ Support at `support@codecov.io <mailto:support@codecov.io>`_.\n"
+    content: "diff --git a/README.rst b/README.rst\nindex 09c90a8..405d834 100644\n---
+      a/README.rst\n+++ b/README.rst\n@@ -11,3 +11,4 @@ Overview\n \n-Main website:
+      `Codecov <https://codecov.io/>`_.\n+\n+website: `Codecov <https://codecov.io/>`_.\n
+      \n@@ -48,3 +49,3 @@ You may need to configure a ``.coveragerc`` file. Learn
+      more `here <http://cover\n \n-We highly suggest adding `source` to your ``.coveragerc``
+      which solves a number of issues collecting coverage.\n+We highly suggest adding
+      ``source`` to your ``.coveragerc``, which solves a number of issues collecting
+      coverage.\n \n@@ -54,2 +55,9 @@ We highly suggest adding `source` to your ``.coveragerc``
+      which solves a number \n    source=your_package_name\n+   \n+If there are multiple
+      sources, you instead should add ``include`` to your ``.coveragerc``\n+\n+..
+      code-block:: ini\n+\n+   [run]\n+   include=your_package_name/*\n \n@@ -152,3
+      +160,2 @@ Links\n \n-We are happy to help if you have any questions. Please
+      contact email our Support at [support@codecov.io](mailto:support@codecov.io)\n-\n+We
+      are happy to help if you have any questions. Please contact email our Support
+      at `support@codecov.io <mailto:support@codecov.io>`_.\n"
     headers:
-      Accept-Ranges:
-      - bytes
       Cache-Control:
-      - max-age=900
+      - must-revalidate, max-age=0
       Connection:
-      - close
+      - keep-alive
+      Content-Encoding:
+      - gzip
       Content-Type:
       - text/plain
       Date:
-      - Wed, 07 Nov 2018 14:53:56 GMT
-      Etag:
-      - '"gz[356a192b7913b04c54574d18c28d46e6395428ab]"'
+      - Fri, 29 Oct 2021 14:32:16 GMT
+      ETag:
+      - '"gz[b6174f21649dc111a92136a8f9ab1a4b80464f41bca0fec4989119d2fa7d1a81]"'
       Server:
       - nginx
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
       Vary:
-      - Authorization, Accept-Encoding
-      X-Accepted-Oauth-Scopes:
+      - Authorization, Origin, cookie, user-context, Accept-Encoding
+      X-Accepted-OAuth-Scopes:
       - repository
+      X-B3-TraceId:
+      - 27fa68fa2b7e2251
       X-Cache-Info:
-      - caching
-      X-Consumed-Content-Encoding:
-      - gzip
-      X-Content-Type-Options:
-      - nosniff
+      - not cacheable; response specified max-age <= 0
+      X-Consumer-Client-Id:
+      - arubajamaicaohiwan
       X-Credential-Type:
       - oauth1
+      X-Dc-Location:
+      - Micros
       X-Frame-Options:
       - SAMEORIGIN
-      X-Oauth-Scopes:
-      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-        repository:delete, repository:admin, project:write, team:write, account:write
+      X-OAuth-Scopes:
+      - pullrequest, account
       X-Render-Time:
-      - '0.207107067108'
+      - '0.174722909927'
       X-Request-Count:
-      - '588'
+      - '3471'
       X-Served-By:
-      - app-139
+      - 5c41b9fa51b5
       X-Static-Version:
-      - 1f6d684e3c29
+      - 667d31475744
+      X-Usage-Input-Ops:
+      - '176'
+      X-Usage-Output-Ops:
+      - '0'
+      X-Usage-System-Time:
+      - '0.005862'
+      X-Usage-User-Time:
+      - '0.046338'
       X-Version:
-      - 1f6d684e3c29
-    status:
-      code: 200
-      message: OK
+      - 667d31475744
+      X-View-Name:
+      - bitbucket.apps.repo2.api.v20.diff.DiffHandler
+    http_version: HTTP/1.1
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602435&oauth_nonce=67f9bc27064342b9af6f76a4b834fa08&oauth_version=1.0&oauth_signature=MjpFnRRmN7v4t1L6fsK1Qv58tTw%3D
 version: 1

@@ -1,60 +1,76 @@
 interactions:
 - request:
-    body: null
+    body: ''
     headers:
-      Accept:
+      accept:
       - application/json
-      User-Agent:
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - bitbucket.org
+      user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602630&oauth_nonce=69777a85af7a4e6c92ed07ad43565f60&oauth_version=1.0&oauth_signature=oQqIAXcqTiOzOz32CC9l2L8xazk%3D&context=0
+    uri: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?context=1&oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_token=testss3hxhcfqf1h6g&oauth_version=1.0
   response:
     content: ''
     headers:
       Cache-Control:
-      - max-age=900
+      - must-revalidate, max-age=0
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '0'
       Content-Type:
       - text/plain
       Date:
-      - Wed, 07 Nov 2018 14:57:11 GMT
-      Etag:
-      - '"356a192b7913b04c54574d18c28d46e6395428ab"'
+      - Fri, 29 Oct 2021 14:34:13 GMT
+      ETag:
+      - '"12259356ef026337a111aa75503a1c1a1197ba2d451b6e10e7cd1c7577a6e028"'
       Server:
       - nginx
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Vary:
-      - Authorization
-      X-Accepted-Oauth-Scopes:
+      - Authorization, Origin, cookie, user-context
+      X-Accepted-OAuth-Scopes:
       - repository
+      X-B3-TraceId:
+      - e05f9710536c8a66
       X-Cache-Info:
-      - caching
-      X-Content-Type-Options:
-      - nosniff
+      - not cacheable; response specified max-age <= 0
+      X-Consumer-Client-Id:
+      - arubajamaicaohiwan
       X-Credential-Type:
       - oauth1
+      X-Dc-Location:
+      - Micros
       X-Frame-Options:
       - SAMEORIGIN
-      X-Oauth-Scopes:
-      - pipeline:variable, webhook, snippet:write, wiki, issue:write, pullrequest:write,
-        repository:delete, repository:admin, project:write, team:write, account:write
+      X-OAuth-Scopes:
+      - pullrequest, account
       X-Render-Time:
-      - '0.340394020081'
+      - '0.128483057022'
       X-Request-Count:
-      - '499'
+      - '461'
       X-Served-By:
-      - app-139
+      - 07909d56b1cb
       X-Static-Version:
-      - 1f6d684e3c29
+      - 667d31475744
+      X-Usage-Input-Ops:
+      - '176'
+      X-Usage-Output-Ops:
+      - '0'
+      X-Usage-System-Time:
+      - '0.006206'
+      X-Usage-User-Time:
+      - '0.042409'
       X-Version:
-      - 1f6d684e3c29
-    status:
-      code: 200
-      message: OK
+      - 667d31475744
+      X-View-Name:
+      - bitbucket.apps.repo2.api.v20.diff.DiffHandler
+    http_version: HTTP/1.1
     status_code: 200
-    url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/6ae5f17..6ae5f17?context=0&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541602630&oauth_nonce=69777a85af7a4e6c92ed07ad43565f60&oauth_version=1.0&oauth_signature=oQqIAXcqTiOzOz32CC9l2L8xazk%3D
 version: 1

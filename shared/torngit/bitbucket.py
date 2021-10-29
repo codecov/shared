@@ -861,7 +861,7 @@ class Bitbucket(TorngitBaseAdapter):
                 "2",
                 "get",
                 "/repositories/%s/diff/%s..%s" % (self.slug, head, base),
-                context=context or 0,
+                context=context or 1,
                 token=token,
             )
 
