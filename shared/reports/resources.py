@@ -394,10 +394,6 @@ class ReportFile(object):
         ):
             # skip boil-the-ocean files
             # OR skip 0% coverage files because END issue
-            log.warning(
-                "Skipping something weird because of weird .rb logic",
-                extra=dict(report_filename=self.name),
-            )
             return False
 
         else:
