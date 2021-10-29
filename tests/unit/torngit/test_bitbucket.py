@@ -363,3 +363,50 @@ class TestUnitBitbucket(object):
                 },
             },
         ]
+
+    @pytest.mark.asyncio
+    async def test_get_compare(self, valid_handler, respx_vcr):
+        diff = "\n".join(
+            [
+                "diff --git a/README.md b/README.md",
+                "index 87f9baa..51c8a2d 100644",
+                "--- a/README.md",
+                "+++ b/README.md",
+                "@@ -14,4 +14,2 @@ Truces luctuque cognovit, cum lanam ordine vereri relinquunt sit munere quidam.",
+                " Solent **torvi clamare successit** ille memores rogum; serpens egi caelo,",
+                "-moventem gelido volucrum reddidit fatalia, *in*. Abdit instant et, et hostis",
+                "-amores, nec pater formosus mortis capiat eripui: ferarum extemplo. Inmeritas",
+                " favilla qui Dauno portis Aello! Fluit inde magis vinci hastam amore, mihi fama",
+            ]
+        )
+        base, head = "6ae5f17", "b92edba"
+        respx.get(
+            "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/diff/b92edba..6ae5f17",
+            params__contains={"context": "1"},
+        ).respond(status_code=200, content=diff, headers={"Content-Type": "aaaa"})
+        expected_result = {
+            "diff": {
+                "files": {
+                    "README.md": {
+                        "type": "modified",
+                        "before": None,
+                        "segments": [
+                            {
+                                "header": ["14", "4", "14", "2"],
+                                "lines": [
+                                    " Solent **torvi clamare successit** ille memores rogum; serpens egi caelo,",
+                                    "-moventem gelido volucrum reddidit fatalia, *in*. Abdit instant et, et hostis",
+                                    "-amores, nec pater formosus mortis capiat eripui: ferarum extemplo. Inmeritas",
+                                    " favilla qui Dauno portis Aello! Fluit inde magis vinci hastam amore, mihi fama",
+                                ],
+                            }
+                        ],
+                        "stats": {"added": 0, "removed": 2},
+                    }
+                }
+            },
+            "commits": [{"commitid": "b92edba"}, {"commitid": "6ae5f17"}],
+        }
+        res = await valid_handler.get_compare(base, head)
+        assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
+        assert res == expected_result
