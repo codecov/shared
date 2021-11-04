@@ -199,11 +199,11 @@ fn run_filereport_analysis(
     if !is_new && !was_deleted {
         let mut current_base: i32 = 0;
         let mut current_head: i32 = 0;
-        let base_eof = match new_file {
+        let base_eof = match old_file {
             None => 0,
             Some(base_report) => base_report.get_eof(),
         };
-        let head_eof = match old_file {
+        let head_eof = match new_file {
             None => 0,
             Some(head_report) => head_report.get_eof(),
         };
@@ -498,6 +498,135 @@ mod tests {
         );
         assert_eq!(one_case.removed_diff_coverage, Some(vec![]));
         assert_eq!(one_case.unexpected_line_changes.len(), 2);
+    }
+
+    #[test]
+    fn last_line_near_end_case() {
+        let diff: diff::DiffInput = vec![(
+            "file1.go".to_string(),
+            (
+                "modified".to_string(),
+                None,
+                vec![(
+                    (988, 15, 988, 16),
+                    vec![
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        "-".to_string(),
+                        "-".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        "+".to_string(),
+                        "+".to_string(),
+                        "+".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                        " ".to_string(),
+                    ],
+                )],
+            ),
+        )]
+        .into_iter()
+        .collect();
+        let first_report = report::Report {
+            report_files: vec![(
+                "file1.go".to_string(),
+                file::ReportFile {
+                    lines: vec![
+                        create_line_for_test(1079, cov::Coverage::Hit),
+                        create_line_for_test(1075, cov::Coverage::Miss),
+                    ]
+                    .into_iter()
+                    .collect(),
+                },
+            )]
+            .into_iter()
+            .collect(),
+            session_mapping: vec![(0, vec!["unit".to_string()])].into_iter().collect(),
+        };
+        let second_report = report::Report {
+            report_files: vec![(
+                "file1.go".to_string(),
+                file::ReportFile {
+                    lines: vec![create_line_for_test(1076, cov::Coverage::Miss)]
+                        .into_iter()
+                        .collect(),
+                },
+            )]
+            .into_iter()
+            .collect(),
+            session_mapping: vec![(0, vec!["unit".to_string()])].into_iter().collect(),
+        };
+        let full_res = run_comparison_analysis(&first_report, &second_report, &diff);
+        println!("{:?}", full_res);
+        assert_eq!(
+            full_res.changes_summary,
+            ChangeAnalysisSummary {
+                patch_totals: ChangePatchTotals {
+                    hits: 0,
+                    misses: 0,
+                    partials: 0,
+                    coverage: None
+                }
+            }
+        );
+        assert_eq!(full_res.files.len(), 1);
+        let first_result_file = &full_res.files[0];
+        assert_eq!(first_result_file.base_name, "file1.go");
+        assert_eq!(first_result_file.head_name, "file1.go");
+        assert_eq!(first_result_file.file_was_added_by_diff, false);
+        assert_eq!(first_result_file.file_was_removed_by_diff, false);
+        assert_eq!(
+            first_result_file.base_coverage,
+            Some(file::FileTotals {
+                hits: 1,
+                misses: 1,
+                partials: 0,
+                branches: 0,
+                sessions: 0,
+                complexity: 0,
+                complexity_total: 0,
+                methods: 0
+            })
+        );
+        assert_eq!(
+            first_result_file.head_coverage,
+            Some(file::FileTotals {
+                hits: 0,
+                misses: 1,
+                partials: 0,
+                branches: 0,
+                sessions: 0,
+                complexity: 0,
+                complexity_total: 0,
+                methods: 0
+            })
+        );
+        assert_eq!(first_result_file.removed_diff_coverage, Some(vec![]));
+        assert_eq!(first_result_file.added_diff_coverage, Some(vec![]));
+        assert_eq!(
+            first_result_file.unexpected_line_changes,
+            [((1079, Some(cov::Coverage::Hit)), (1080, None))]
+        );
+        assert_eq!(first_result_file.lines_only_on_base, [991, 992]);
+        assert_eq!(first_result_file.lines_only_on_head, [998, 999, 1000]);
+        assert_eq!(
+            full_res.changes_summary,
+            ChangeAnalysisSummary {
+                patch_totals: ChangePatchTotals {
+                    hits: 0,
+                    misses: 0,
+                    partials: 0,
+                    coverage: None
+                }
+            }
+        );
     }
 
     #[test]

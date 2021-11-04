@@ -100,7 +100,7 @@ pub struct ReportFile {
 impl ReportFile {
     pub fn get_eof(&self) -> i32 {
         return match self.lines.keys().max() {
-            Some(expr) => *expr,
+            Some(expr) => *expr + 1,
             None => 0,
         };
     }
@@ -160,6 +160,22 @@ mod tests {
     use super::*;
     use fraction::GenericFraction;
 
+    fn create_line_for_test(line_number: i32, coverage: cov::Coverage) -> (i32, line::ReportLine) {
+        (
+            line_number,
+            line::ReportLine {
+                coverage: coverage.clone(),
+                coverage_type: line::CoverageType::Standard,
+                sessions: vec![line::LineSession {
+                    id: 0,
+                    coverage: coverage,
+                    complexity: None,
+                }],
+                complexity: None,
+            },
+        )
+    }
+
     #[test]
     fn from_lines_empty() {
         let expected_result = FileTotals {
@@ -217,5 +233,18 @@ mod tests {
         ]);
         assert_eq!(expected_result, result);
         assert_eq!(result.get_line_count(), 3);
+    }
+
+    #[test]
+    fn get_eof_is_correct() {
+        let file = ReportFile {
+            lines: vec![
+                create_line_for_test(101, cov::Coverage::Hit),
+                create_line_for_test(103, cov::Coverage::Miss),
+            ]
+            .into_iter()
+            .collect(),
+        };
+        assert_eq!(file.get_eof(), 104);
     }
 }
