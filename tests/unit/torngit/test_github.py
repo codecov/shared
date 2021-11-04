@@ -9,6 +9,7 @@ from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
+    TorngitMisconfiguredCredentials,
     TorngitRateLimitError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
@@ -643,3 +644,9 @@ class TestUnitGithub(object):
             assert renegerated_error.code == error.code
 
         assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_api_no_token(self):
+        c = Github()
+        with pytest.raises(TorngitMisconfiguredCredentials):
+            await c.api()
