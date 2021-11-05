@@ -2,6 +2,10 @@ class TorngitError(Exception):
     pass
 
 
+class TorngitMisconfiguredCredentials(TorngitError):
+    pass
+
+
 class TorngitClientError(TorngitError):
     @property
     def code(self):

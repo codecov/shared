@@ -13,6 +13,7 @@ from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
+    TorngitMisconfiguredCredentials,
     TorngitObjectNotFoundError,
     TorngitRateLimitError,
     TorngitRepoNotFoundError,
@@ -49,14 +50,26 @@ class Github(TorngitBaseAdapter):
         author="{username}/{name}/commits?author=%(author)s",
     )
 
+    @property
+    def token(self):
+        return self._token
+
     async def api(
+        self, *args, token=None, **kwargs,
+    ):
+        token_to_use = token or self.token
+        if not token_to_use:
+            raise TorngitMisconfiguredCredentials()
+        return await self.make_http_call(*args, token_to_use=token_to_use, **kwargs)
+
+    async def make_http_call(
         self,
         client,
         method,
         url,
         body=None,
         headers=None,
-        token=None,
+        token_to_use=None,
         statuses_to_retry=None,
         **args,
     ):
@@ -65,13 +78,12 @@ class Github(TorngitBaseAdapter):
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
-        if token or self.token:
-            _headers["Authorization"] = "token %s" % (token or self.token)["key"]
+        if token_to_use:
+            _headers["Authorization"] = "token %s" % token_to_use["key"]
         _headers.update(headers or {})
         log_dict = {}
 
         method = (method or "GET").upper()
-        token_to_use = token or self.token
         if url[0] == "/":
             log_dict = dict(
                 event="api",
@@ -206,7 +218,7 @@ class Github(TorngitBaseAdapter):
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
         async with self.get_client() as client:
-            session = await self.api(
+            session = await self.make_http_call(
                 client,
                 "get",
                 self.service_url + "/login/oauth/access_token",
