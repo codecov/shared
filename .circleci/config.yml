@@ -12,6 +12,29 @@ jobs:
             pip3 install black==19.10b0 isort
             black --check .
             isort --profile black --check .
+  mutations:
+    docker:
+      - image: circleci/python:3.7.9
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Run Mutations
+          command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            source $HOME/.cargo/env
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install setuptools_rust
+            python setup.py develop
+            git diff master $CIRCLE_SHA1 > data.patch
+            pip install mutmut[patch]
+            pip install -r tests/requirements.txt
+            mutmut run --use-patch-file data.patch || true
+            mkdir /tmp/artifacts;
+            mutmut junitxml > /tmp/artifacts/mut.xml
+      - store_test_results:
+          path: /tmp/artifacts/mut.xml
   build:
     docker:
       - image: circleci/python:3.7.9
@@ -79,6 +102,7 @@ workflows:
   version: 2
   lint-test:
     jobs:
+      - mutations
       - rust:
           filters:
             tags:
