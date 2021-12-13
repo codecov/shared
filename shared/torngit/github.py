@@ -1148,5 +1148,5 @@ class Github(TorngitBaseAdapter):
                     client, "get", "https://education.github.com/api/user"
                 )
                 return res["student"]
-            except TorngitUnauthorizedError:
+            except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
                 return False
