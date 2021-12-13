@@ -4,86 +4,93 @@
 #
 #    pip-compile tests/requirements.in
 #
-attrs==20.2.0
+anyio==3.4.0
+    # via httpcore
+attrs==21.2.0
     # via pytest
-beautifulsoup4==4.9.3
+beautifulsoup4==4.10.0
     # via -r requirements.in
-certifi==2020.6.20
+certifi==2021.10.8
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
+charset-normalizer==2.0.9
     # via
     #   httpx
     #   requests
-chardet==3.0.4
-    # via requests
-codecov==2.1.10
+codecov==2.1.12
     # via -r requirements.in
-coverage==5.3
+coverage[toml]==6.2
     # via
     #   codecov
     #   pytest-cov
-ddt==1.4.1
+ddt==1.4.4
     # via -r requirements.in
-h11==0.11.0
+h11==0.12.0
     # via httpcore
-httpcore==0.12.2
+httpcore==0.12.3
     # via httpx
 httpx==0.16.1
     # via respx
-idna==2.10
+idna==3.3
     # via
+    #   anyio
     #   requests
     #   rfc3986
     #   yarl
 iniconfig==1.1.1
     # via pytest
-mock==4.0.2
+mock==4.0.3
     # via -r requirements.in
-multidict==5.0.0
+multidict==5.2.0
     # via yarl
-packaging==20.4
+packaging==21.3
     # via pytest
-pluggy==0.13.1
+pluggy==1.0.0
     # via pytest
-py==1.10.0
+py==1.11.0
     # via pytest
 pyparsing==2.4.7
     # via packaging
-pytest==6.1.1
+pytest-asyncio==0.16.0
+    # via -r requirements.in
+pytest-cov==3.0.0
+    # via -r requirements.in
+pytest-mock==3.6.1
+    # via -r requirements.in
+pytest==6.2.5
     # via
     #   -r requirements.in
     #   pytest-asyncio
     #   pytest-cov
     #   pytest-mock
-pytest-asyncio==0.14.0
-    # via -r requirements.in
-pytest-cov==2.10.1
-    # via -r requirements.in
-pytest-mock==3.3.1
-    # via -r requirements.in
-pyyaml==5.4
+pyyaml==6.0
     # via vcrpy
-requests==2.24.0
+requests==2.26.0
     # via codecov
 respx==0.16.3
     # via -r requirements.in
-rfc3986[idna2008]==1.4.0
+rfc3986[idna2008]==1.5.0
     # via httpx
-six==1.15.0
-    # via
-    #   packaging
-    #   vcrpy
+six==1.16.0
+    # via vcrpy
 sniffio==1.2.0
     # via
+    #   anyio
     #   httpcore
     #   httpx
-soupsieve==2.0.1
+soupsieve==2.3.1
     # via beautifulsoup4
-toml==0.10.1
+toml==0.10.2
     # via pytest
-urllib3==1.25.10
+tomli==1.2.2
+    # via coverage
+urllib3==1.26.7
     # via requests
 vcrpy==4.1.1
     # via -r requirements.in
-wrapt==1.12.1
+wrapt==1.13.3
     # via vcrpy
-yarl==1.6.2
+yarl==1.7.2
     # via vcrpy
