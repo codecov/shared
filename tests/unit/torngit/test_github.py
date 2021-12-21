@@ -1,19 +1,21 @@
+import pickle
+from urllib.parse import parse_qsl, urlparse
+
 import httpx
 import pytest
 import respx
 
-from urllib.parse import urlparse, parse_qsl
-
-from shared.torngit.github import Github
 from shared.torngit.base import TokenType
-
 from shared.torngit.exceptions import (
-    TorngitServerUnreachableError,
-    TorngitServer5xxCodeError,
     TorngitClientError,
+    TorngitClientGeneralError,
+    TorngitMisconfiguredCredentials,
     TorngitRateLimitError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
+from shared.torngit.github import Github
 
 
 @pytest.fixture
@@ -619,3 +621,32 @@ class TestUnitGithub(object):
             )
             res = await valid_handler.update_check_run(1256232357, "success", url=url)
         assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_get_general_exception_pickle(self, valid_handler):
+        with respx.mock:
+            mocked_response = respx.get(
+                url="https://api.github.com/repos/ThiagoCodecov/example-python/pulls?page=1&per_page=25&state=open",
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=404,
+                    # response doesn't matter here
+                    json={},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            with pytest.raises(TorngitClientGeneralError) as ex:
+                await valid_handler.get_pull_requests()
+            error = ex.value
+            text = pickle.dumps(error)
+            renegerated_error = pickle.loads(text)
+            assert isinstance(renegerated_error, TorngitClientGeneralError)
+            assert renegerated_error.code == error.code
+
+        assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_api_no_token(self):
+        c = Github()
+        with pytest.raises(TorngitMisconfiguredCredentials):
+            await c.api()

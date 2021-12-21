@@ -1,7 +1,7 @@
 import pytest
 
 from shared.reports.resources import ReportFile
-from shared.reports.types import ReportTotals, ReportLine
+from shared.reports.types import ReportLine, ReportTotals
 
 
 @pytest.mark.integration

@@ -1,4 +1,5 @@
 import pytest
+
 from shared.helpers.numeric import maxint
 
 

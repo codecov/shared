@@ -1,10 +1,10 @@
-from typing import Sequence, Mapping
-import re
 import logging
+import re
+from typing import Mapping, Sequence
 
 from shared.metrics import metrics
-from shared.reports.resources import Report
 from shared.reports.editable import EditableReport
+from shared.reports.resources import Report
 from shared.utils.match import match
 from shared.utils.sessions import SessionType
 

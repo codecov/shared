@@ -1,7 +1,7 @@
 import logging
-
 from copy import deepcopy
 from typing import Any
+
 from shared.config import get_config
 
 log = logging.getLogger(__name__)

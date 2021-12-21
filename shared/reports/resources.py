@@ -1,33 +1,29 @@
-from copy import copy
-from itertools import zip_longest, filterfalse
-import logging
-from json import loads, dumps, JSONEncoder
 import dataclasses
+import logging
+from copy import copy
+from itertools import filterfalse, zip_longest
+from json import JSONEncoder, dumps, loads
 from typing import Dict, List, Optional
 
-from shared.helpers.yaml import walk
 from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
-from shared.utils.ReportEncoder import ReportEncoder
-from shared.utils.totals import agg_totals, sum_totals
-from shared.utils.flare import report_to_flare
-from shared.utils.make_network_file import make_network_file
-from shared.utils.merge import (
-    merge_all,
-    merge_line,
-    line_type,
-)
-from shared.utils.migrate import migrate_totals
-from shared.utils.sessions import Session, SessionType
+from shared.helpers.yaml import walk
 from shared.reports.filtered import FilteredReport
 from shared.reports.types import (
-    ReportTotals,
-    ReportLine,
-    LineSession,
     EMPTY,
     TOTALS_MAP,
+    LineSession,
     ReportFileSummary,
+    ReportLine,
+    ReportTotals,
 )
+from shared.utils.flare import report_to_flare
+from shared.utils.make_network_file import make_network_file
+from shared.utils.merge import line_type, merge_all, merge_line
+from shared.utils.migrate import migrate_totals
+from shared.utils.ReportEncoder import ReportEncoder
+from shared.utils.sessions import Session, SessionType
+from shared.utils.totals import agg_totals, sum_totals
 
 log = logging.getLogger(__name__)
 
@@ -398,10 +394,6 @@ class ReportFile(object):
         ):
             # skip boil-the-ocean files
             # OR skip 0% coverage files because END issue
-            # log.warning(
-            #     "Skipping something weird because of weird .rb logic",
-            #     extra=dict(report_filename=self.name),
-            # )
             return False
 
         else:
@@ -1239,6 +1231,17 @@ class Report(object):
             if flag_name in (data.flags or []):
                 return True
         return False
+
+    def get_uploaded_flags(self):
+        uploaded_session_flags = [
+            sess.flags
+            for sess in self.sessions.values()
+            if sess.session_type == SessionType.uploaded and sess.flags is not None
+        ]
+        flags = set()
+        for k in uploaded_session_flags:
+            flags.update(k)
+        return flags
 
     def repack(self):
         """Repacks in a more compact format to avoid deleted files and such"""

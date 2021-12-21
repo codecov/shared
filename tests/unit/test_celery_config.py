@@ -21,6 +21,7 @@ def test_celery_config():
     assert hasattr(config, "task_annotations")
     assert hasattr(config, "task_routes")
     assert sorted(config.task_routes.keys()) == [
+        "app.cron.profiling.findinguncollected",
         "app.tasks.add_to_sendgrid_list.AddToSendgridList",
         "app.tasks.archive.MigrateToArchive",
         "app.tasks.bot.VerifyBot",
@@ -31,6 +32,9 @@ def test_celery_config():
         "app.tasks.ghm_sync_plans.SyncPlans",
         "app.tasks.new_user_activated.NewUserActivated",
         "app.tasks.notify.Notify",
+        "app.tasks.profiling.collection",
+        "app.tasks.profiling.normalizer",
+        "app.tasks.profiling.summarization",
         "app.tasks.pulls.Sync",
         "app.tasks.remove_webhook.RemoveOldHook",
         "app.tasks.status.SetError",

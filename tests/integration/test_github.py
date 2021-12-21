@@ -5,7 +5,6 @@ from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitRepoNotFoundError,
 )
-
 from shared.torngit.github import Github
 
 
@@ -307,7 +306,7 @@ class TestGithubTestCase(object):
             await repo_doesnt_exist_handler.get_commit(commitid)
         expected_response = '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/repos#get-a-commit"}'
         exc = ex.value
-        assert exc.response == expected_response
+        assert exc.response_data == expected_response
 
     @pytest.mark.asyncio
     async def test_get_commit_diff(self, valid_handler, codecov_vcr):
@@ -1239,6 +1238,11 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_is_student_not_capable_app(self, valid_handler, codecov_vcr):
+        res = await valid_handler.is_student()
+        assert not res
+
+    @pytest.mark.asyncio
+    async def test_is_student_github_education_503(self, valid_handler, codecov_vcr):
         res = await valid_handler.is_student()
         assert not res
 

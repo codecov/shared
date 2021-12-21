@@ -1,7 +1,7 @@
-from shared.reports.types import ReportTotals
-from shared.helpers.numeric import ratio
-
 from operator import attrgetter
+
+from shared.helpers.numeric import ratio
+from shared.reports.types import ReportTotals
 
 
 def agg_totals(totals):

@@ -1,10 +1,10 @@
+import binascii
 from dataclasses import dataclass
 from datetime import datetime
 from json import loads
-import binascii
 
-from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
 from shared.config import get_config
+from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
 
 
 @dataclass

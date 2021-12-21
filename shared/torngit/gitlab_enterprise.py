@@ -1,8 +1,7 @@
 import os
 
-from shared.torngit.gitlab import Gitlab
-
 from shared.config import get_config
+from shared.torngit.gitlab import Gitlab
 
 
 class GitlabEnterprise(Gitlab):

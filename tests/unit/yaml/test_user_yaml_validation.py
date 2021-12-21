@@ -1,7 +1,7 @@
 from base64 import b64encode
 
-from tests.base import BaseTestCase
 from shared.yaml.validation import UserGivenSecret, validate_yaml
+from tests.base import BaseTestCase
 
 
 def test_show_secret_case():

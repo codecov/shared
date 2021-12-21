@@ -1,18 +1,15 @@
-from pathlib import Path
-from json import loads
 import dataclasses
 from fractions import Fraction
+from json import loads
+from pathlib import Path
 
 import pytest
 
-from shared.reports.types import ReportLine, LineSession, ReportTotals
-from shared.reports.resources import ReportFileSummary, Session, ReportFile
+from shared.reports.editable import EditableReport, EditableReportFile
+from shared.reports.resources import ReportFile, ReportFileSummary, Session
+from shared.reports.types import LineSession, ReportLine, ReportTotals
 from shared.utils.merge import merge_coverage
 from shared.utils.sessions import SessionType
-from shared.reports.editable import (
-    EditableReportFile,
-    EditableReport,
-)
 
 current_file = Path(__file__)
 

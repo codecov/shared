@@ -17,7 +17,6 @@ from shared.torngit.exceptions import (
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat
 
-
 PEM = """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQC9d2iMTFiXglyvHmp5ExoNK2X8nxJ+1mlxgWOyTUpTrOKRiDUb
 ZoZID3TP8CobQ5BsqDOSawHyi+Waf9Ca+iYoTu1fa8yZUreQXAdaK1u61Mn2XCkm
@@ -200,7 +199,7 @@ class BitbucketServer(TorngitBaseAdapter):
             return None
 
         message = f"BitBucket Server API: {status}"
-        raise TorngitClientGeneralError(status, response, message)
+        raise TorngitClientGeneralError(status, response_data=response, message=message)
 
     async def get_authenticated(self, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
@@ -292,7 +291,8 @@ class BitbucketServer(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response, f"Path {path} not found at {ref}"
+                        response_data=ce.response_data,
+                        message=f"Path {path} not found at {ref}",
                     )
                 raise
 

@@ -1,14 +1,14 @@
 import pytest
 
 from shared.reports.resources import Report, ReportFile, _encode_chunk
-from shared.utils.sessions import Session
 from shared.reports.types import (
-    ReportTotals,
-    ReportLine,
-    NetworkFile,
-    LineSession,
     Change,
+    LineSession,
+    NetworkFile,
+    ReportLine,
+    ReportTotals,
 )
+from shared.utils.sessions import Session
 from tests.helper import v2_to_v3
 
 

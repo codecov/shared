@@ -1,12 +1,15 @@
 from fractions import Fraction
 
 import pytest
+
 from shared.utils.merge import (
+    LineSession,
+    LineType,
+    ReportLine,
     branch_type,
     get_complexity_from_sessions,
     get_coverage_from_sessions,
     line_type,
-    LineSession,
     merge_all,
     merge_branch,
     merge_coverage,
@@ -15,8 +18,6 @@ from shared.utils.merge import (
     merge_missed_branches,
     merge_partial_line,
     partials_to_line,
-    ReportLine,
-    LineType,
 )
 
 

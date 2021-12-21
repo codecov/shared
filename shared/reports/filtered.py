@@ -4,12 +4,12 @@ import os
 
 from shared.config import get_config
 from shared.helpers.numeric import ratio
-from shared.reports.types import ReportTotals, EMPTY
+from shared.metrics import metrics
+from shared.reports.types import EMPTY, ReportTotals
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
-from shared.utils.merge import line_type, merge_all, get_complexity_from_sessions
+from shared.utils.merge import get_complexity_from_sessions, line_type, merge_all
 from shared.utils.totals import agg_totals, sum_totals
-from shared.metrics import metrics
 
 log = logging.getLogger(__name__)
 

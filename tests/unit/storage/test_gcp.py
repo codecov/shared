@@ -1,14 +1,12 @@
-import pytest
-import io
 import gzip
+import io
+
+import pytest
 from google.cloud import storage as google_storage
 
-from tests.base import BaseTestCase
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 from shared.storage.gcp import GCPStorageService
-from shared.storage.exceptions import (
-    BucketAlreadyExistsError,
-    FileNotInStorageError,
-)
+from tests.base import BaseTestCase
 
 # DONT WORRY, this is generated for the purposes of validation, and is not the real
 # one on which the code ran

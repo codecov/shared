@@ -397,6 +397,7 @@ schema = {
             "require_changes": {"type": "boolean"},
             "require_base": {"type": "boolean"},
             "require_head": {"type": "boolean"},
+            "show_critical_paths": {"type": "boolean"},
             "branches": branches_structure,
             "paths": path_list_structure,  # DEPRECATED
             "flags": flag_list_structure,  # DEPRECATED
@@ -412,5 +413,15 @@ schema = {
     "github_checks": {
         "type": ["dict", "boolean"],
         "schema": {"annotations": {"type": "boolean"}},
+    },
+    "profiling": {
+        "type": "dict",
+        "schema": {
+            "fixes": {
+                "type": "list",
+                "schema": {"type": "string", "coerce": "regexify_path_fix"},
+            },
+            "grouping_attributes": {"type": "list", "schema": {"type": "string"}},
+        },
     },
 }

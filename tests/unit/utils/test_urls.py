@@ -1,8 +1,9 @@
 # -*- coding: latin-1 -*-
 
 import pytest
-from tests.base import BaseTestCase
+
 from shared.utils.urls import escape, make_url, url_concat
+from tests.base import BaseTestCase
 
 
 class TestUrlsUtil(BaseTestCase):

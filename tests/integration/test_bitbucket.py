@@ -1,12 +1,11 @@
-import pytest
 import json
-
 from unittest.mock import patch
 
-from shared.torngit.enums import Endpoints
-from shared.torngit.exceptions import TorngitObjectNotFoundError
+import pytest
 
 from shared.torngit.bitbucket import Bitbucket
+from shared.torngit.enums import Endpoints
+from shared.torngit.exceptions import TorngitObjectNotFoundError
 
 
 @pytest.fixture
@@ -481,23 +480,28 @@ class TestBitbucketTestCase(object):
                         "before": None,
                         "segments": [
                             {
-                                "header": ["12", "", "12", "2"],
+                                "header": ["11", "3", "11", "4"],
                                 "lines": [
+                                    " ",
                                     "-Main website: `Codecov <https://codecov.io/>`_.",
                                     "+",
                                     "+website: `Codecov <https://codecov.io/>`_.",
+                                    " ",
                                 ],
                             },
                             {
-                                "header": ["49", "", "50", ""],
+                                "header": ["48", "3", "49", "3"],
                                 "lines": [
+                                    " ",
                                     "-We highly suggest adding `source` to your ``.coveragerc`` which solves a number of issues collecting coverage.",
                                     "+We highly suggest adding ``source`` to your ``.coveragerc``, which solves a number of issues collecting coverage.",
+                                    " ",
                                 ],
                             },
                             {
-                                "header": ["54", "0", "56", "7"],
+                                "header": ["54", "2", "55", "9"],
                                 "lines": [
+                                    "    source=your_package_name",
                                     "+   ",
                                     "+If there are multiple sources, you instead should add ``include`` to your ``.coveragerc``",
                                     "+",
@@ -505,11 +509,13 @@ class TestBitbucketTestCase(object):
                                     "+",
                                     "+   [run]",
                                     "+   include=your_package_name/*",
+                                    " ",
                                 ],
                             },
                             {
-                                "header": ["153", "2", "161", ""],
+                                "header": ["152", "3", "160", "2"],
                                 "lines": [
+                                    " ",
                                     "-We are happy to help if you have any questions. Please contact email our Support at [support@codecov.io](mailto:support@codecov.io)",
                                     "-",
                                     "+We are happy to help if you have any questions. Please contact email our Support at `support@codecov.io <mailto:support@codecov.io>`_.",
@@ -523,6 +529,7 @@ class TestBitbucketTestCase(object):
             "commits": [{"commitid": "b92edba"}, {"commitid": "6ae5f17"}],
         }
         res = await valid_handler.get_compare(base, head)
+        print(res)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         assert res == expected_result
 

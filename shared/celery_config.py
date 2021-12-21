@@ -22,6 +22,11 @@ new_user_activated_task_name = "app.tasks.new_user_activated.NewUserActivated"
 add_to_sendgrid_list_task_name = "app.tasks.add_to_sendgrid_list.AddToSendgridList"
 compute_comparison_task_name = "app.tasks.compute_comparison.ComputeComparison"
 
+profiling_finding_task_name = "app.cron.profiling.findinguncollected"
+profiling_summarization_task_name = "app.tasks.profiling.summarization"
+profiling_collection_task_name = "app.tasks.profiling.collection"
+profiling_normalization_task_name = "app.tasks.profiling.normalizer"
+
 
 class BaseCeleryConfig(object):
     broker_url = get_config("services", "celery_broker") or get_config(
@@ -81,11 +86,15 @@ class BaseCeleryConfig(object):
         get_config("setup", "tasks", "notify", "timeout", default=60)
     )
     task_annotations = {
+        delete_owner_task_name: {
+            "soft_time_limit": 2 * task_soft_time_limit,
+            "time_limit": 2 * task_time_limit,
+        },
         notify_task_name: {
             "soft_time_limit": notify_soft_time_limit,
             "time_limit": notify_soft_time_limit + 20,
         },
-        delete_owner_task_name: {
+        sync_repos_task_name: {
             "soft_time_limit": 2 * task_soft_time_limit,
             "time_limit": 2 * task_time_limit,
         },
@@ -179,6 +188,26 @@ class BaseCeleryConfig(object):
                 "new_user_activated",
                 "queue",
                 default=task_default_queue,
+            )
+        },
+        profiling_finding_task_name: {
+            "queue": get_config(
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
+            )
+        },
+        profiling_summarization_task_name: {
+            "queue": get_config(
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
+            )
+        },
+        profiling_collection_task_name: {
+            "queue": get_config(
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
+            )
+        },
+        profiling_normalization_task_name: {
+            "queue": get_config(
+                "setup", "tasks", "profiling", "queue", default=task_default_queue
             )
         },
         add_to_sendgrid_list_task_name: {"queue": task_default_queue},

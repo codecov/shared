@@ -1,24 +1,21 @@
-import os
-import logging
-import sys
 import gzip
 import json
-
-from minio import Minio
-from minio.error import (
-    ResponseError,
-    BucketAlreadyOwnedByYou,
-    BucketAlreadyExists,
-    NoSuchKey,
-)
-from minio.credentials import Chain, EnvAWS, EnvMinio, IAMProvider, Credentials
+import logging
+import os
+import sys
 from io import BytesIO
 
-from shared.storage.base import BaseStorageService
-from shared.storage.exceptions import (
-    BucketAlreadyExistsError,
-    FileNotInStorageError,
+from minio import Minio
+from minio.credentials import Chain, Credentials, EnvAWS, EnvMinio, IAMProvider
+from minio.error import (
+    BucketAlreadyExists,
+    BucketAlreadyOwnedByYou,
+    NoSuchKey,
+    ResponseError,
 )
+
+from shared.storage.base import BaseStorageService
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
 

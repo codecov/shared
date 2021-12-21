@@ -1,12 +1,11 @@
-import pytest
 import mock
+import pytest
 
 from shared.torngit.exceptions import TorngitObjectNotFoundError
 from shared.yaml import (
     determine_commit_yaml_location,
     fetch_current_yaml_from_provider_via_reference,
 )
-
 
 sample_yaml = """
 codecov:

@@ -1,10 +1,9 @@
 import json
-import pytest
 
 import oauth2 as oauth
+import pytest
 
 from shared.torngit.bitbucket_server import BitbucketServer
-
 from shared.torngit.exceptions import (
     TorngitClientGeneralError,
     TorngitObjectNotFoundError,

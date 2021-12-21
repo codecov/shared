@@ -1,8 +1,7 @@
 import os
 
-from shared.torngit.github import Github
-
 from shared.config import get_config
+from shared.torngit.github import Github
 
 
 class GithubEnterprise(Github):

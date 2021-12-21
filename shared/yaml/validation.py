@@ -1,10 +1,10 @@
-import logging
 import binascii
+import logging
 
-from shared.validation.exceptions import InvalidYamlException
-from shared.validation.validator import CodecovYamlValidator
-from shared.validation.user_schema import schema
 from shared.encryption.yaml_secret import yaml_secret_encryptor
+from shared.validation.exceptions import InvalidYamlException
+from shared.validation.user_schema import schema
+from shared.validation.validator import CodecovYamlValidator
 
 log = logging.getLogger(__name__)
 

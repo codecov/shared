@@ -1,12 +1,10 @@
-import pytest
 import os
 
+import pytest
+
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
+from shared.storage.minio import Minio, MinioStorageService
 from tests.base import BaseTestCase
-from shared.storage.minio import MinioStorageService, Minio
-from shared.storage.exceptions import (
-    BucketAlreadyExistsError,
-    FileNotInStorageError,
-)
 
 minio_config = {
     "access_key_id": "codecov-default-key",

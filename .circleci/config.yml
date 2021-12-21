@@ -1,7 +1,3 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
 version: 2
 jobs:
   linter:
@@ -13,21 +9,36 @@ jobs:
       - run:
           name: Running linter
           command: |
-            pip3 install black==19.10b0
+            pip3 install black==19.10b0 isort
             black --check .
+            isort --profile black --check .
+  mutations:
+    docker:
+      - image: circleci/python:3.7.9
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Run Mutations
+          command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            source $HOME/.cargo/env
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install setuptools_rust
+            python setup.py develop
+            git diff master $CIRCLE_SHA1 > data.patch
+            pip install mutmut[patch]
+            pip install -r tests/requirements.txt
+            mutmut run --use-patch-file data.patch || true
+            mkdir /tmp/artifacts;
+            mutmut junitxml > /tmp/artifacts/mut.xml
+      - store_test_results:
+          path: /tmp/artifacts/mut.xml
   build:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.7.9
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
-
     steps:
       - checkout
 
@@ -45,32 +56,57 @@ jobs:
             source $HOME/.cargo/env
             python3 -m venv venv
             . venv/bin/activate
-            pip uninstall ribs -y
-            pip install -r requirements.txt
+            pip install setuptools_rust
+            python setup.py develop
             pip install -r tests/requirements.txt
-
       - save_cache:
           paths:
             - ./venv
           key: v04-dependencies-{{ checksum "setup.py" }}
-        
+
       - run:
           name: run tests
           command: |
             . venv/bin/activate
             python -m pytest --cov=./
-
+        
       - run:
           name: codecov
           command: |
             . venv/bin/activate
             pip install codecov
-            codecov --required
+            codecov --required --flags python
           
+  rust:
+    docker:
+      - image: circleci/python:3.9
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      - run:
+          name: Rust tests
+          command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+            source $HOME/.cargo/env
+            sudo apt-get install gcc lsb-release wget software-properties-common
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh
+            RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
+            llvm-profdata-13 merge -sparse ribs-*.profraw -o ribs.profdata
+            llvm-cov-13 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+            pip install codecov
+            codecov --required --flags rust
 workflows:
   version: 2
   lint-test:
     jobs:
+      - mutations
+      - rust:
+          filters:
+            tags:
+              only: /.*/
       - linter:
           filters:
             tags:

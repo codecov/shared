@@ -1,28 +1,28 @@
-import os
-import hashlib
 import base64
-from base64 import b64decode
-from typing import Optional, List
+import hashlib
 import logging
+import os
+from base64 import b64decode
+from typing import List, Optional
 
 import httpx
 
 from shared.metrics import metrics
-from shared.torngit.status import Status
-from shared.torngit.base import TorngitBaseAdapter, TokenType
+from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
-    TorngitObjectNotFoundError,
-    TorngitServerUnreachableError,
     TorngitClientError,
-    TorngitServer5xxCodeError,
     TorngitClientGeneralError,
-    TorngitRepoNotFoundError,
+    TorngitMisconfiguredCredentials,
+    TorngitObjectNotFoundError,
     TorngitRateLimitError,
+    TorngitRepoNotFoundError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
+from shared.torngit.status import Status
 from shared.utils.urls import url_concat, url_escape
-
 
 log = logging.getLogger(__name__)
 
@@ -50,14 +50,26 @@ class Github(TorngitBaseAdapter):
         author="{username}/{name}/commits?author=%(author)s",
     )
 
+    @property
+    def token(self):
+        return self._token
+
     async def api(
+        self, *args, token=None, **kwargs,
+    ):
+        token_to_use = token or self.token
+        if not token_to_use:
+            raise TorngitMisconfiguredCredentials()
+        return await self.make_http_call(*args, token_to_use=token_to_use, **kwargs)
+
+    async def make_http_call(
         self,
         client,
         method,
         url,
         body=None,
         headers=None,
-        token=None,
+        token_to_use=None,
         statuses_to_retry=None,
         **args,
     ):
@@ -66,13 +78,12 @@ class Github(TorngitBaseAdapter):
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
 
-        if token or self.token:
-            _headers["Authorization"] = "token %s" % (token or self.token)["key"]
+        if token_to_use:
+            _headers["Authorization"] = "token %s" % token_to_use["key"]
         _headers.update(headers or {})
         log_dict = {}
 
         method = (method or "GET").upper()
-        token_to_use = token or self.token
         if url[0] == "/":
             log_dict = dict(
                 event="api",
@@ -136,16 +147,22 @@ class Github(TorngitBaseAdapter):
                     message = f"Github API rate limit error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
                     raise TorngitRateLimitError(
-                        res, message, res.headers.get("X-RateLimit-Reset")
+                        response_data=res.text,
+                        message=message,
+                        reset=res.headers.get("X-RateLimit-Reset"),
                     )
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.unauthorizederror")
-                    raise TorngitUnauthorizedError(res, message)
+                    raise TorngitUnauthorizedError(
+                        response_data=res.text, message=message
+                    )
                 elif res.status_code >= 300:
                     message = f"Github API: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                    raise TorngitClientGeneralError(res.status_code, res, message)
+                    raise TorngitClientGeneralError(
+                        res.status_code, response_data=res.text, message=message
+                    )
                 if res.status_code == 204:
                     return None
                 elif res.headers.get("Content-Type")[:16] == "application/json":
@@ -201,7 +218,7 @@ class Github(TorngitBaseAdapter):
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
         async with self.get_client() as client:
-            session = await self.api(
+            session = await self.make_http_call(
                 client,
                 "get",
                 self.service_url + "/login/oauth/access_token",
@@ -485,7 +502,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Cannot find webhook {hookid}"
+                    response_data=ce.response_data,
+                    message=f"Cannot find webhook {hookid}",
                 )
             raise
 
@@ -503,7 +521,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Cannot find webhook {hookid}"
+                    response_data=ce.response_data,
+                    message=f"Cannot find webhook {hookid}",
                 )
             raise
         return True
@@ -538,8 +557,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text,
-                    f"Cannot find comment {commentid} from PR {issueid}",
+                    response_data=ce.response_data,
+                    message=f"Cannot find comment {commentid} from PR {issueid}",
                 )
             raise
 
@@ -557,8 +576,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text,
-                    f"Cannot find comment {commentid} from PR {issueid}",
+                    response_data=ce.response_data,
+                    message=f"Cannot find comment {commentid} from PR {issueid}",
                 )
             raise
         return True
@@ -663,7 +682,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Path {path} not found at {ref}"
+                    response_data=ce.response_data,
+                    message=f"Path {path} not found at {ref}",
                 )
             raise
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
@@ -683,7 +703,8 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 422:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Commit with id {commit} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Commit with id {commit} does not exist",
                 )
             raise
         return self.diff_to_json(res)
@@ -763,11 +784,13 @@ class Github(TorngitBaseAdapter):
         except TorngitClientError as ce:
             if ce.code == 422:
                 raise TorngitObjectNotFoundError(
-                    ce.response.text, f"Commit with id {commit} does not exist"
+                    response_data=ce.response_data,
+                    message=f"Commit with id {commit} does not exist",
                 )
             if ce.code == 404:
                 raise TorngitRepoNotFoundError(
-                    ce.response.text, f"Repo {self.slug} cannot be found by this user",
+                    response_data=ce.response_data,
+                    message=f"Repo {self.slug} cannot be found by this user",
                 )
             raise
         return dict(
@@ -813,7 +836,8 @@ class Github(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
-                        ce.response.text, f"Pull Request {pullid} not found"
+                        response_data=ce.response_data,
+                        message=f"Pull Request {pullid} not found",
                     )
                 raise
             commits = await self.api(
@@ -1124,5 +1148,5 @@ class Github(TorngitBaseAdapter):
                     client, "get", "https://education.github.com/api/user"
                 )
                 return res["student"]
-            except TorngitUnauthorizedError:
+            except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
                 return False

@@ -1,6 +1,8 @@
-import pytest
-from shared.helpers.yaml import walk, default_if_true
 from types import GeneratorType
+
+import pytest
+
+from shared.helpers.yaml import default_if_true, walk
 
 
 def test_yaml_walk(mocker):

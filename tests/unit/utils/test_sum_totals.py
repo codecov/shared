@@ -1,6 +1,7 @@
 import pytest
+
 from shared.reports.types import ReportTotals
-from shared.utils.totals import sum_totals, agg_totals
+from shared.utils.totals import agg_totals, sum_totals
 
 
 @pytest.mark.unit

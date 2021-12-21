@@ -1,12 +1,12 @@
-import os
-import logging
-from copy import deepcopy
-from typing import Any, Tuple, List
+import collections
 import json
+import logging
+import os
+from base64 import b64decode
+from copy import deepcopy
+from typing import Any, List, Tuple
 
 from yaml import safe_load as yaml_load
-from base64 import b64decode
-import collections
 
 from shared.validation.install import validate_install_configuration
 

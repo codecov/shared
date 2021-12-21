@@ -1,5 +1,5 @@
+from shared.encryption.selector import DEFAULT_ENCRYPTOR_CONSTANT, EncryptorDivider
 from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
-from shared.encryption.selector import EncryptorDivider, DEFAULT_ENCRYPTOR_CONSTANT
 
 yaml_secret_encryptor = EncryptorDivider(
     encryptor_mapping={

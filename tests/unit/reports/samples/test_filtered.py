@@ -1,15 +1,15 @@
 import os
 
+from shared.reports.filtered import FilteredReport, FilteredReportFile
 from shared.reports.resources import (
+    LineSession,
     Report,
     ReportFile,
     ReportLine,
-    LineSession,
-    Session,
     ReportTotals,
+    Session,
 )
 from shared.reports.types import NetworkFile
-from shared.reports.filtered import FilteredReportFile, FilteredReport
 from shared.utils.sessions import SessionType
 
 

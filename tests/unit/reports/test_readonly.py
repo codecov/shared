@@ -1,9 +1,11 @@
 from pathlib import Path
+
 import pytest
 
-from shared.reports.readonly import ReadOnlyReport, rustify_diff, LazyRustReport
-from shared.reports.types import ReportTotals, ReportLine, LineSession
+from shared.reports.readonly import LazyRustReport, ReadOnlyReport
 from shared.reports.resources import ReportFile
+from shared.reports.types import LineSession, ReportLine, ReportTotals
+from shared.utils.sessions import Session, SessionType
 
 current_file = Path(__file__)
 
@@ -99,48 +101,6 @@ class TestLazyRustReport(object):
         r = LazyRustReport(filename_mapping, chunks, session_mapping)
         assert r is not None
         assert r.get_report() is not None
-
-
-class TestRustifyDiff(object):
-    def test_rustify_diff_empty(self):
-        assert rustify_diff({}) is None
-        assert rustify_diff(None) is None
-
-    def test_rustify_simple(self):
-        d = {
-            "files": {
-                "file_1.go": {
-                    "type": "modified",
-                    "segments": [{"header": list("1313"), "lines": list("---+++ ")}],
-                },
-                "location/file_1.py": {
-                    "type": "modified",
-                    "segments": [
-                        {
-                            "header": ["100", "3", "100", "3"],
-                            "lines": ["-lost", "+g", "-sdasdas", "+weq", "-dasda", "+"],
-                        }
-                    ],
-                },
-                "deleted.py": {"type": "deleted"},
-                "renamed.py": {"type": "modified", "before": "old_renamed.py"},
-            }
-        }
-        expected_res = {
-            "deleted.py": ("deleted", None, []),
-            "file_1.go": (
-                "modified",
-                None,
-                [((1, 3, 1, 3), ["-", "-", "-", "+", "+", "+", " "])],
-            ),
-            "location/file_1.py": (
-                "modified",
-                None,
-                [((100, 3, 100, 3), ["-", "+", "-", "+", "-", "+"])],
-            ),
-            "renamed.py": ("modified", "old_renamed.py", []),
-        }
-        assert rustify_diff(d) == expected_res
 
 
 class TestReadOnly(object):
@@ -423,6 +383,21 @@ class TestReadOnly(object):
             chunks=chunks, files=files_dict, sessions=sessions_dict
         )
         assert r.rust_report is None
+        assert r.totals == ReportTotals(
+            files=3,
+            lines=20,
+            hits=17,
+            misses=3,
+            partials=0,
+            coverage="85.00000",
+            branches=0,
+            methods=0,
+            messages=0,
+            sessions=1,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
 
     def test_init(self, sample_rust_report):
         report = sample_rust_report
@@ -543,48 +518,6 @@ class TestReadOnly(object):
             diff=0,
         )
 
-    def test_from_chunks_failed(self, mocker):
-        mocker.patch("shared.reports.readonly.parse_report", side_effect=Exception())
-        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
-            chunks = f.read()
-        files_dict = {
-            "awesome/__init__.py": [
-                2,
-                [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]],
-                [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
-            ],
-            "tests/__init__.py": [
-                0,
-                [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]],
-                None,
-            ],
-            "tests/test_sample.py": [
-                1,
-                [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
-                [[0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
-                None,
-            ],
-        }
-        k = ReadOnlyReport.from_chunks(chunks=chunks, files=files_dict, sessions={})
-        assert k.rust_report is None
-        assert k.totals == ReportTotals(
-            files=3,
-            lines=20,
-            hits=17,
-            misses=3,
-            partials=0,
-            coverage="85.00000",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
-        )
-
     def test_differing_totals_calculation(self, mocker, sample_report):
         rust_analyzer = mocker.MagicMock(
             get_totals=mocker.MagicMock(return_value=ReportTotals(1, 999))
@@ -677,3 +610,26 @@ class TestReadOnly(object):
         assert res.complexity is rust_totals.complexity
         assert res.complexity_total is rust_totals.complexity_total
         assert res.diff == 0
+
+    def test_get_uploaded_flags_only_uploaded(self, sample_report):
+        r = ReadOnlyReport.create_from_report(sample_report)
+        assert r.get_uploaded_flags() == set(["complex", "simple"])
+
+    def test_get_uploaded_flags(self, sample_report):
+        sample_report.add_session(
+            Session(flags=["banana", "apple"], session_type=SessionType.carriedforward)
+        )
+        sample_report.add_session(
+            Session(flags=["sugar"], session_type=SessionType.carriedforward)
+        )
+        sample_report.add_session(
+            Session(flags=["chocolate", "apple"], session_type=SessionType.uploaded)
+        )
+        r = ReadOnlyReport.create_from_report(sample_report)
+        assert r.get_uploaded_flags() == set(
+            ["complex", "simple", "apple", "chocolate"]
+        )
+        # second call to use the cached value
+        assert r.get_uploaded_flags() == set(
+            ["complex", "simple", "apple", "chocolate"]
+        )

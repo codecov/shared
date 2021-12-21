@@ -1,7 +1,7 @@
-import re
-import numbers
 import binascii
 import logging
+import numbers
+import re
 
 from shared.encryption.yaml_secret import yaml_secret_encryptor
 
@@ -337,6 +337,7 @@ class LayoutStructure(object):
             "header",
             "reach",
             "suggestions",
+            "betaprofiling",
             "sunburst",
             "tree",
             "uncovered",

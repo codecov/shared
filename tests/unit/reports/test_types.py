@@ -1,13 +1,12 @@
 from dataclasses import astuple
-
 from decimal import Decimal
 
 from shared.reports.types import (
     Change,
-    ReportTotals,
-    ReportLine,
     LineSession,
     NetworkFile,
+    ReportLine,
+    ReportTotals,
 )
 
 
