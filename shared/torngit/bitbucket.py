@@ -847,7 +847,7 @@ class Bitbucket(TorngitBaseAdapter):
                         message=f"Path {path} not found at {ref}",
                     )
                 raise
-            return dict(commitid=None, content=src)
+            return dict(commitid=None, content=src.encode())
 
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None

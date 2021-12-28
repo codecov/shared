@@ -567,7 +567,7 @@ class TestBitbucketTestCase(object):
     async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
             "commitid": None,
-            "content": "from kaploft import smile, fib\n\n\ndef test_something():\n    assert smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n    assert fib(3) == 3\n",
+            "content": b"from kaploft import smile, fib\n\n\ndef test_something():\n    assert smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n    assert fib(3) == 3\n",
         }
         path, ref = "tests/test_k.py", "master"
         res = await valid_handler.get_source(path, ref)
@@ -577,7 +577,7 @@ class TestBitbucketTestCase(object):
     async def test_get_source_random_commit(self, valid_handler, codecov_vcr):
         expected_result = {
             "commitid": None,
-            "content": 'def smile():\n    return ":)"\n\ndef frown():\n    return ":("\n',
+            "content": b'def smile():\n    return ":)"\n\ndef frown():\n    return ":("\n',
         }
         path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
         res = await valid_handler.get_source(path, ref)
