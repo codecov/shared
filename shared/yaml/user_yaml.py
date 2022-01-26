@@ -84,7 +84,7 @@ class UserYaml(object):
         return f"UserYaml<{self.inner_dict}>"
 
     @classmethod
-    def get_final_yaml(cls, *, owner_yaml, repo_yaml, commit_yaml=None):
+    def get_final_yaml(cls, *, owner_yaml, repo_yaml, commit_yaml=None, ownerid=None):
         """Given a owner yaml, repo yaml and user yaml, determines what yaml we need to use
 
         The answer is usually a "deep merge" between the site-level yaml, the
@@ -108,6 +108,9 @@ class UserYaml(object):
             dict - The dict we are supposed to use when concerning that user/commit
         """
         resulting_yaml = get_config("site", default={})
+        if ownerid is not None and get_config("additional_user_yamls", default={}):
+            additional_yaml = _get_possible_additional_user_yaml(ownerid)
+            resulting_yaml = merge_yamls(resulting_yaml, additional_yaml)
         if owner_yaml is not None:
             resulting_yaml = merge_yamls(resulting_yaml, owner_yaml)
         if commit_yaml is not None:
@@ -115,6 +118,17 @@ class UserYaml(object):
         if repo_yaml is not None:
             return cls(merge_yamls(resulting_yaml, repo_yaml))
         return cls(resulting_yaml)
+
+
+def _get_possible_additional_user_yaml(ownerid):
+    additional_user_yamls = get_config("additional_user_yamls", default={})
+    key = ownerid % 100
+    accumulated_percentage = 0
+    for auy in additional_user_yamls:
+        accumulated_percentage += auy.get("percentage")
+        if key < accumulated_percentage:
+            return auy["override"]
+    return {}
 
 
 def merge_yamls(d1, d2):
