@@ -1,4 +1,5 @@
 from shared.yaml import UserYaml, merge_yamls
+from shared.yaml.user_yaml import _get_possible_additional_user_yaml
 
 
 class TestYamlMerge(object):
@@ -193,6 +194,53 @@ class TestUserYaml(object):
             == expected_result
         )
 
+    def test_get_final_yaml_with_additional_user_yaml(self, mock_configuration):
+        mock_configuration._params["site"] = {"codecov": {"max_report_age": 86400}}
+        mock_configuration._params["additional_user_yamls"] = [
+            {"percentage": 10, "name": "banana", "override": {"a": 2, "b": 3}},
+            {"percentage": 30, "name": "apple", "override": {"d": "klmnop", "b": 3}},
+        ]
+        owner_yaml = {"key": {"value": "one", "a": "b"}}
+        repo_yaml = {"barber": "shop"}
+        commit_yaml = {"key": {"value": "two", "c": "d"}}
+        assert UserYaml.get_final_yaml(
+            owner_yaml=owner_yaml, repo_yaml=repo_yaml, commit_yaml=commit_yaml
+        ).to_dict() == {
+            "codecov": {"max_report_age": 86400},
+            "key": {"a": "b", "c": "d", "value": "two"},
+        }
+        assert UserYaml.get_final_yaml(
+            owner_yaml=owner_yaml,
+            repo_yaml=repo_yaml,
+            commit_yaml=commit_yaml,
+            ownerid=100,
+        ).to_dict() == {
+            "codecov": {"max_report_age": 86400},
+            "key": {"a": "b", "c": "d", "value": "two"},
+            "a": 2,
+            "b": 3,
+        }
+        assert UserYaml.get_final_yaml(
+            owner_yaml=owner_yaml,
+            repo_yaml=repo_yaml,
+            commit_yaml=commit_yaml,
+            ownerid=121,
+        ).to_dict() == {
+            "codecov": {"max_report_age": 86400},
+            "key": {"a": "b", "c": "d", "value": "two"},
+            "b": 3,
+            "d": "klmnop",
+        }
+        assert UserYaml.get_final_yaml(
+            owner_yaml=owner_yaml,
+            repo_yaml=repo_yaml,
+            commit_yaml=commit_yaml,
+            ownerid=140,
+        ).to_dict() == {
+            "codecov": {"max_report_age": 86400},
+            "key": {"a": "b", "c": "d", "value": "two"},
+        }
+
     def test_get_final_yaml_no_commit_yaml(self, mock_configuration):
         mock_configuration._params["site"] = {"codecov": {"max_report_age": 86400}}
         owner_yaml = {"key": {"value": "one", "a": "b"}}
@@ -234,3 +282,23 @@ class TestUserYaml(object):
             ).to_dict()
             == expected_result
         )
+
+    def test_get_possible_additional_user_yaml_empty(self, mock_configuration):
+        assert _get_possible_additional_user_yaml(1) == {}
+        assert _get_possible_additional_user_yaml(101) == {}
+
+    def test_get_possible_additional_user_yaml(self, mock_configuration):
+        mock_configuration._params["additional_user_yamls"] = [
+            {"percentage": 10, "name": "banana", "override": {"a": 2, "b": 3}},
+            {"percentage": 30, "name": "apple", "override": {"d": "kllmnop", "b": 3}},
+        ]
+        assert _get_possible_additional_user_yaml(0) == {"a": 2, "b": 3}
+        assert _get_possible_additional_user_yaml(1) == {"a": 2, "b": 3}
+        assert _get_possible_additional_user_yaml(9) == {"a": 2, "b": 3}
+        assert _get_possible_additional_user_yaml(10) == {"d": "kllmnop", "b": 3}
+        assert _get_possible_additional_user_yaml(11) == {"d": "kllmnop", "b": 3}
+        assert _get_possible_additional_user_yaml(39) == {"d": "kllmnop", "b": 3}
+        assert _get_possible_additional_user_yaml(40) == {}
+        assert _get_possible_additional_user_yaml(41) == {}
+        assert _get_possible_additional_user_yaml(100) == {"a": 2, "b": 3}
+        assert _get_possible_additional_user_yaml(101) == {"a": 2, "b": 3}

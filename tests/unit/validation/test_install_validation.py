@@ -308,3 +308,23 @@ def test_validate_install_configuration_with_user_yaml_with_user_secret():
         "setup": {"codecov_url": "http://codecov.company.com"},
         "site": user_yaml_dict,
     }
+
+
+def test_validate_install_configuration_with_additional_yamls():
+    assert validate_install_configuration(
+        {
+            "setup": {"codecov_url": "http://codecov.company.com"},
+            "additional_user_yamls": {
+                "percentage": 30,
+                "name": "banana",
+                "override": {"comment": False},
+            },
+        }
+    ) == {
+        "setup": {"codecov_url": "http://codecov.company.com"},
+        "additional_user_yamls": {
+            "percentage": 30,
+            "name": "banana",
+            "override": {"comment": False},
+        },
+    }

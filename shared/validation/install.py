@@ -253,6 +253,17 @@ config_schema = {
         },
     },
     "site": {"type": "dict", "schema": user_yaml_schema},
+    "additional_user_yamls": {
+        "type": "list",
+        "schema": {
+            "type": "dict",
+            "schema": {
+                "percentage": {"type": "integer"},
+                "name": {"type": "string"},
+                "override": {"type": "dict", "schema": user_yaml_schema},
+            },
+        },
+    },
     "github": {"type": "dict", "schema": {**default_service_fields}},
     "bitbucket": {"type": "dict", "schema": {**default_service_fields}},
     "bitbucket_server": {"type": "dict", "schema": {**default_service_fields}},
