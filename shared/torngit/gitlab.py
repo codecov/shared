@@ -3,7 +3,7 @@ import logging
 import os
 from base64 import b64decode
 from typing import List, Optional
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 import httpx
 
@@ -838,7 +838,8 @@ class Gitlab(TorngitBaseAdapter):
             res = await self.api(
                 "get",
                 "/projects/{}/repository/files/{}".format(
-                    self.data["repo"]["service_id"], urlencode(dict(a=path))[2:]
+                    self.data["repo"]["service_id"],
+                    urlencode(dict(a=path), quote_via=quote)[2:],
                 ),
                 ref=ref,
                 token=token,
