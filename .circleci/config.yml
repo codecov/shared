@@ -94,8 +94,8 @@ jobs:
             chmod +x llvm.sh
             sudo ./llvm.sh
             RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
-            llvm-profdata-13 merge -sparse ribs-*.profraw -o ribs.profdata
-            llvm-cov-13 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+            llvm-profdata-14 merge -sparse ribs-*.profraw -o ribs.profdata
+            llvm-cov-14 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
             pip install codecov
             codecov --required --flags rust
 workflows:
