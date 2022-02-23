@@ -1,10 +1,8 @@
-import socket
-from json import dumps
-
+import httpx
 import pytest
+import respx
 
 from shared.torngit.base import TokenType
-from shared.torngit.exceptions import TorngitServerUnreachableError
 from shared.torngit.gitlab import Gitlab
 
 
@@ -152,3 +150,27 @@ class TestUnitGitlab(object):
         assert instance.get_token_by_type_if_none(
             {"key": "token_set_user"}, TokenType.status
         ) == {"key": "token_set_user"}
+
+    @pytest.mark.asyncio
+    async def test_gitlab_url_spaces_percent_encoded(self, mocker, valid_handler):
+        with respx.mock:
+            mocked_route = respx.get("https://gitlab.com/api/v4/endpoint%20name").mock(
+                return_value=httpx.Response(status_code=200, json="{}")
+            )
+            await valid_handler.api("get", "/endpoint name")
+
+        assert mocked_route.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_gitlab_get_source_path_with_spaces(self, mocker, valid_handler):
+        with respx.mock:
+            mocked_route = respx.get(
+                "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=master"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    content='{"commitid": null, "content": "code goes here"}',
+                )
+            )
+            await valid_handler.get_source("tests with space.py", "master")
+        assert mocked_route.call_count == 1
