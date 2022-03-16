@@ -121,6 +121,7 @@ config_schema = {
                             },
                         },
                     },
+                    "yaml_secret": {"type": "string"},
                     "write_key": {"type": "string"},
                 },
             },

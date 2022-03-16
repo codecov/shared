@@ -1,9 +1,6 @@
-import binascii
 import logging
 import numbers
 import re
-
-from shared.encryption.yaml_secret import yaml_secret_encryptor
 
 log = logging.getLogger(__name__)
 
