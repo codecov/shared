@@ -428,18 +428,27 @@ class Github(TorngitBaseAdapter):
                     break
                 # organization names
                 for org in orgs:
-                    organization = org["organization"]
-                    org = await self.api(
-                        client, "get", "/users/%s" % organization["login"], token=token
-                    )
-                    data.append(
-                        dict(
-                            name=organization.get("name", org["login"]),
-                            id=str(organization["id"]),
-                            email=organization.get("email"),
-                            username=organization["login"],
+                    try:
+                        organization = org["organization"]
+                        org = await self.api(
+                            client,
+                            "get",
+                            "/users/%s" % organization["login"],
+                            token=token,
                         )
-                    )
+                        data.append(
+                            dict(
+                                name=organization.get("name", org["login"]),
+                                id=str(organization["id"]),
+                                email=organization.get("email"),
+                                username=organization["login"],
+                            )
+                        )
+                    except (TorngitClientGeneralError):
+                        log.exception(
+                            "Unable to load organization",
+                            extra=dict(url=organization["url"]),
+                        )
                 if len(orgs) < 30:
                     break
 
