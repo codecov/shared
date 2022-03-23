@@ -83,7 +83,7 @@ class TestUnitGithub(object):
         with respx.mock:
             my_route = respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
-                    status_code=403, headers={"X-RateLimit-Reset": "1350085394",},
+                    status_code=403, headers={"X-RateLimit-Reset": "1350085394"}
                 )
             )
             handler = Github(
@@ -125,7 +125,7 @@ class TestUnitGithub(object):
         )
         with pytest.raises(TorngitServerUnreachableError):
             await valid_handler.api(
-                client, "get", "/repos/%s/branches" % valid_handler.slug, per_page=100,
+                client, "get", "/repos/%s/branches" % valid_handler.slug, per_page=100
             )
 
     @pytest.mark.asyncio
@@ -398,7 +398,7 @@ class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, respx_vcr):
         mocked_response = respx_vcr.get(
-            url="https://api.github.com/user/memberships/orgs?state=active&page=1",
+            url="https://api.github.com/user/memberships/orgs?state=active&page=1"
         ).respond(
             status_code=200,
             json=[
@@ -562,13 +562,13 @@ class TestUnitGithub(object):
             ),
         ]
         for url, data in team_dicts:
-            respx_vcr.get(url=url,).respond(
+            respx_vcr.get(url=url).respond(
                 status_code=200,
                 json=data,
                 headers={"Content-Type": "application/json; charset=utf-8"},
             )
         expected_result = [
-            {"email": None, "id": "8226999", "name": "codecov", "username": "codecov",},
+            {"email": None, "id": "8226999", "name": "codecov", "username": "codecov"},
             {
                 "email": None,
                 "id": "57222756",
@@ -578,6 +578,66 @@ class TestUnitGithub(object):
         ]
         res = await valid_handler.list_teams()
         assert res == expected_result
+        assert mocked_response.called is True
+
+    @pytest.mark.asyncio
+    async def test_list_team_with_org_response_404(self, valid_handler, respx_vcr):
+        mocked_response = respx_vcr.get(
+            url="https://api.github.com/user/memberships/orgs?state=active&page=1"
+        ).respond(
+            status_code=200,
+            json=[
+                {
+                    "url": "https://api.github.com/orgs/codecov/memberships/ThiagoCodecov",
+                    "state": "active",
+                    "role": "member",
+                    "organization_url": "https://api.github.com/orgs/codecov",
+                    "user": {
+                        "login": "ThiagoCodecov",
+                        "id": 44379999,
+                        "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/44379999?v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/ThiagoCodecov",
+                        "html_url": "https://github.com/ThiagoCodecov",
+                        "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                        "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                        "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                        "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                        "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                        "type": "User",
+                        "site_admin": False,
+                    },
+                    "organization": {
+                        "login": "codecov",
+                        "id": 8226999,
+                        "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                        "url": "https://api.github.com/orgs/codecov",
+                        "repos_url": "https://api.github.com/orgs/codecov/repos",
+                        "events_url": "https://api.github.com/orgs/codecov/events",
+                        "hooks_url": "https://api.github.com/orgs/codecov/hooks",
+                        "issues_url": "https://api.github.com/orgs/codecov/issues",
+                        "members_url": "https://api.github.com/orgs/codecov/members{/member}",
+                        "public_members_url": "https://api.github.com/orgs/codecov/public_members{/member}",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/8226999?v=4",
+                        "description": "Empower developers with tools to improve code quality and testing.",
+                    },
+                }
+            ],
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+
+        respx_vcr.get(url="https://api.github.com/users/codecov").respond(
+            status_code=404,
+            json={},
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+        res = await valid_handler.list_teams()
+        assert res == []
         assert mocked_response.called is True
 
     @pytest.mark.asyncio
@@ -626,7 +686,7 @@ class TestUnitGithub(object):
     async def test_get_general_exception_pickle(self, valid_handler):
         with respx.mock:
             mocked_response = respx.get(
-                url="https://api.github.com/repos/ThiagoCodecov/example-python/pulls?page=1&per_page=25&state=open",
+                url="https://api.github.com/repos/ThiagoCodecov/example-python/pulls?page=1&per_page=25&state=open"
             ).mock(
                 return_value=httpx.Response(
                     status_code=404,
