@@ -482,7 +482,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             "owner": {"service_id": 109640, "username": "codecov"},
             "repo": {
-                "branch": b"master",
+                "branch": "master",
                 "language": None,
                 "name": "ci-repo",
                 "private": False,
@@ -499,7 +499,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             "owner": {"service_id": 4165905, "username": "l00p_group_1:subgroup1"},
             "repo": {
-                "branch": b"master",
+                "branch": "master",
                 "language": None,
                 "name": "proj-a",
                 "private": True,
@@ -520,7 +520,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             "owner": {"service_id": 4165905, "username": "l00p_group_1:subgroup1"},
             "repo": {
-                "branch": b"master",
+                "branch": "master",
                 "language": None,
                 "name": "proj-a",
                 "private": True,
@@ -563,7 +563,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 189208, "username": "morerunes"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "delectamentum-mud-server",
@@ -574,7 +574,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 109640, "username": "codecov"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "example-python",
@@ -585,7 +585,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 109640, "username": "codecov"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "ci-private",
@@ -596,7 +596,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 109640, "username": "codecov"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "ci-repo",
@@ -623,12 +623,12 @@ class TestGitlabTestCase(object):
                             "name": "flake8",
                             "language": None,
                             "private": False,
-                            "branch": b"master",
+                            "branch": "master",
                         },
                     },
                     "private": True,
                     "language": None,
-                    "branch": b"master",
+                    "branch": "master",
                 },
             },
             {
@@ -639,7 +639,7 @@ class TestGitlabTestCase(object):
                     "fork": None,
                     "private": True,
                     "language": None,
-                    "branch": b"master",
+                    "branch": "master",
                 },
             },
             {
@@ -650,7 +650,7 @@ class TestGitlabTestCase(object):
                     "fork": None,
                     "private": True,
                     "language": None,
-                    "branch": b"master",
+                    "branch": "master",
                 },
             },
             {
@@ -661,7 +661,7 @@ class TestGitlabTestCase(object):
                     "fork": None,
                     "private": True,
                     "language": None,
-                    "branch": b"master",
+                    "branch": "master",
                 },
             },
         ]
@@ -680,7 +680,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 4037482, "username": "codecov-organization"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "demo-gitlab",
@@ -691,7 +691,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 4037482, "username": "codecov-organization"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "codecov-assume-flag-test",
@@ -702,7 +702,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": 4037482, "username": "codecov-organization"},
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "migration-tests",
@@ -716,14 +716,14 @@ class TestGitlabTestCase(object):
                     "username": "thiagocodecovtestgroup:test-subgroup",
                 },
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": {
                         "owner": {
                             "service_id": 2351283,
                             "username": "gitlab-org:release",
                         },
                         "repo": {
-                            "branch": b"master",
+                            "branch": "master",
                             "language": None,
                             "name": "tasks",
                             "private": False,
@@ -742,7 +742,7 @@ class TestGitlabTestCase(object):
                     "username": "thiagocodecovtestgroup:test-subgroup",
                 },
                 "repo": {
-                    "branch": b"master",
+                    "branch": "master",
                     "fork": None,
                     "language": None,
                     "name": "grouptestprojecttrr",
