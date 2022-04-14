@@ -18,7 +18,7 @@ class TestTorngitBaseAdapter(object):
         assert instance.get_token_by_type(TokenType.status) == {"key": "status"}
 
     def test_get_token_by_type_no_mapping(self):
-        instance = TorngitBaseAdapter(token={"key": "token"},)
+        instance = TorngitBaseAdapter(token={"key": "token"})
         assert instance.get_token_by_type(TokenType.read) == {"key": "token"}
         assert instance.get_token_by_type(TokenType.admin) == {"key": "token"}
         assert instance.get_token_by_type(TokenType.comment) == {"key": "token"}

@@ -97,8 +97,7 @@ class FilteredReportFile(object):
             return line
 
     def _process_totals(self):
-        """return dict of totals
-        """
+        """return dict of totals"""
         return self.calculate_totals_from_lines(self.lines)
 
     @classmethod
@@ -131,7 +130,7 @@ class FilteredReportFile(object):
 
         complexity = tuple(
             map(sum, zip(*map(cls.sum_of_complexity, inputted_lines)))
-        ) or (0, 0,)
+        ) or (0, 0)
 
         return ReportTotals(
             files=0,

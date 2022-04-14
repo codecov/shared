@@ -477,8 +477,8 @@ class BitbucketServer(TorngitBaseAdapter):
             ),
             id=str(pullid),
             number=str(pullid),
-            base=dict(branch=res["toRef"]["displayId"], commitid=first_commit,),
-            head=dict(branch=res["fromRef"]["displayId"], commitid=pull_commitids[0],),
+            base=dict(branch=res["toRef"]["displayId"], commitid=first_commit),
+            head=dict(branch=res["fromRef"]["displayId"], commitid=pull_commitids[0]),
         )
 
     async def list_top_level_files(self, ref, token=None):

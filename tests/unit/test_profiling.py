@@ -120,7 +120,7 @@ class TestProfilingFullDataAnalyzer(object):
             },
         ]
         res = a.find_impacted_endpoints(
-            mocker.MagicMock(), mocker.MagicMock(), mocker.MagicMock(),
+            mocker.MagicMock(), mocker.MagicMock(), mocker.MagicMock()
         )
         assert res == expected_result
 

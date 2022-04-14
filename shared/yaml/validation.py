@@ -85,7 +85,7 @@ class CodecovUserYamlValidator(CodecovYamlValidator):
 
     def _normalize_coerce_secret(self, value: str) -> str:
         """
-            Coerces secret to normal value
+        Coerces secret to normal value
         """
         if self._show_secrets_for:
             return UserGivenSecret(self._show_secrets_for).validate(value)

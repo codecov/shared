@@ -273,9 +273,7 @@ class TestUserYaml(object):
 
     def test_get_final_yaml_nothing(self, mock_configuration):
         mock_configuration._params["site"] = {"codecov": {"max_report_age": 86400}}
-        expected_result = {
-            "codecov": {"max_report_age": 86400},
-        }
+        expected_result = {"codecov": {"max_report_age": 86400}}
         assert (
             UserYaml.get_final_yaml(
                 owner_yaml=None, repo_yaml=None, commit_yaml=None

@@ -22,10 +22,7 @@ segment_enabled = bool(get_config("setup", "segment", "enabled", default=False))
 if segment_enabled:
     setup_analytics()
 
-event_names = [
-    "Coverage Report Passed",
-    "Coverage Report Failed",
-]
+event_names = ["Coverage Report Passed", "Coverage Report Failed"]
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
@@ -42,7 +39,7 @@ def track_event(user_id, event_name, event_data={}, is_enterprise=False):
     Examples: plan changed, repo activated, coverage report uploaded.
 
     - The ownerid of the logged-in user, when the event isn't specific
-    to a particular organization or resource. 
+    to a particular organization or resource.
     Examples: sign in, sign out.
 
     For more context on how segment will store this data, see:

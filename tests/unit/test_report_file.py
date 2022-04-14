@@ -161,7 +161,7 @@ def test_contains_exception():
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "totals, boolean", [(ReportTotals(), False), (ReportTotals(1, 1, 1, 1), True),]
+    "totals, boolean", [(ReportTotals(), False), (ReportTotals(1, 1, 1, 1), True)]
 )
 def test_non_zero(totals, boolean):
     r = ReportFile("filename")
@@ -171,7 +171,7 @@ def test_non_zero(totals, boolean):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "line_modifier, line", [(None, ReportLine.create(1)), (lambda line: None, None),]
+    "line_modifier, line", [(None, ReportLine.create(1)), (lambda line: None, None)]
 )
 def test_get(line_modifier, line):
     r = ReportFile("filename")

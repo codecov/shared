@@ -12,7 +12,7 @@ def test_show_secret_case():
             "round": "down",
             "precision": 2,
             "range": [70.0, 100.0],
-            "status": {"project": {"default": {"base": "auto",}}},
+            "status": {"project": {"default": {"base": "auto"}}},
             "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
         },
         "ignore": ["Pods/.*"],

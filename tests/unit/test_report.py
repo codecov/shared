@@ -79,8 +79,10 @@ def test_files(files, path_filter):
 def test_resolve_paths(mocker):
     r = Report(files={"py.py": [0, ReportTotals(1)]})
     r._path_filter = None
-    r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-        END_OF_CHUNK
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
     )
     assert r.files == ["py.py"]
     r.resolve_paths([("py.py", "file.py")])
@@ -171,8 +173,10 @@ def test_rename(mocker):
     r = Report(files={"file.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._line_modifier = None
-    r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-        END_OF_CHUNK
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
     )
     assert r.get("name.py") is None
     assert repr(r.get("file.py")) == "<ReportFile name=file.py lines=3>"
@@ -208,8 +212,10 @@ def test_del_item(mocker):
     r = Report(files={"file.py": [0, ReportTotals(1)]})
     r._path_filter = None
     r._line_modifier = None
-    r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-        END_OF_CHUNK
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
     )
     assert repr(r.get("file.py")) == "<ReportFile name=file.py lines=3>"
     del r["file.py"]
@@ -223,7 +229,7 @@ def test_del_item(mocker):
         (
             {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]},
             ["file1.py", "file2.py"],
-        ),
+        )
     ],
 )
 def test_manifest(files, manifest):
@@ -278,7 +284,7 @@ def test_flags(mocker):
 @pytest.mark.unit
 def test_iter(mocker):
     r = Report(
-        files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)],}
+        files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
     )
     r._chunks = None
     r._path_filter = None
@@ -295,9 +301,7 @@ def test_iter(mocker):
 @pytest.mark.unit
 def test_contains(mocker):
     r = Report()
-    r._files = {
-        "file1.py": [0, ReportTotals(1)],
-    }
+    r._files = {"file1.py": [0, ReportTotals(1)]}
     assert ("file1.py" in r) is True
     assert ("file2.py" in r) is False
 
@@ -306,10 +310,10 @@ def test_contains(mocker):
 @pytest.mark.parametrize(
     "files, chunks, new_report, manifest",
     [
-        ({"file.py": [0, ReportTotals(1)],}, None, None, ["file.py"]),
-        ({"file.py": [0, ReportTotals(1)],}, None, Report(), ["file.py"]),
+        ({"file.py": [0, ReportTotals(1)]}, None, None, ["file.py"]),
+        ({"file.py": [0, ReportTotals(1)]}, None, Report(), ["file.py"]),
         (
-            {"file.py": [0, ReportTotals(1)],},
+            {"file.py": [0, ReportTotals(1)]},
             "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>".split(END_OF_CHUNK),
             Report(
                 files={"other-file.py": [1, ReportTotals(2)]},
@@ -333,7 +337,7 @@ def test_merge(files, chunks, new_report, manifest):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "files, boolean", [({}, True), ({"file.py": [0, ReportTotals(1)]}, False),],
+    "files, boolean", [({}, True), ({"file.py": [0, ReportTotals(1)]}, False)]
 )
 def test_is_empty(files, boolean):
     r = Report()
@@ -344,7 +348,7 @@ def test_is_empty(files, boolean):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "files, boolean", [({}, False), ({"file.py": [0, ReportTotals(1)]}, True),]
+    "files, boolean", [({}, False), ({"file.py": [0, ReportTotals(1)]}, True)]
 )
 def test_non_zero(files, boolean):
     r = Report()
@@ -358,8 +362,10 @@ def test_non_zero(files, boolean):
 def test_to_archive(mocker):
     r = Report()
     r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
-    r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-        END_OF_CHUNK
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
     )
     assert (
         r.to_archive()
@@ -370,8 +376,10 @@ def test_to_archive(mocker):
 @pytest.mark.unit
 def test_to_database(mocker):
     r = Report(files={"file.py": [0, ReportTotals()]})
-    r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-        END_OF_CHUNK
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
     )
     r._totals = None
     r.diff_totals = None
@@ -753,8 +761,10 @@ def test_flare(files, chunks, params, flare):
 def test_test(mocker):
     mocker.patch.object(ReportFile, "ignore_lines", return_value=None)
     r = Report(files={"py.py": [0, ReportTotals(1)]})
-    r._chunks = "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-        END_OF_CHUNK
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
     )
     r._path_filter = None
     r._line_modifier = None

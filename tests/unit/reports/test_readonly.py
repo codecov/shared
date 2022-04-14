@@ -333,13 +333,7 @@ class TestReadOnly(object):
 
     def test_init_no_loading_rust(self, mocker):
         chunks = "\n".join(
-            [
-                "{}",
-                "",
-                "",
-                "[1, null, [[0, 1], [1, 0]]]",
-                "[0, null, [[0, 0], [1, 0]]]",
-            ]
+            ["{}", "", "", "[1, null, [[0, 1], [1, 0]]]", "[0, null, [[0, 0], [1, 0]]]"]
         )
         files_dict = {
             "awesome/__init__.py": [

@@ -638,7 +638,7 @@ class TestFilteredReport(object):
                         {"header": ["100", "3", "100", "3"], "lines": list("-+-+-+")}
                     ],
                 },
-                "deleted.py": {"type": "deleted",},
+                "deleted.py": {"type": "deleted"},
             }
         }
         res = sample_report.filter(paths=[".*go"]).calculate_diff(diff)
@@ -646,7 +646,7 @@ class TestFilteredReport(object):
             "files": {
                 "file_1.go": ReportTotals(
                     files=0, lines=3, hits=3, misses=0, partials=0, coverage="100"
-                ),
+                )
             },
             "general": ReportTotals(
                 files=1,

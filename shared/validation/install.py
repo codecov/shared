@@ -90,7 +90,7 @@ config_schema = {
             "api_allowed_hosts": {"type": "list", "schema": {"type": "string"}},
             "segment": {
                 "type": "dict",
-                "schema": {"key": {"type": "string"}, "enabled": {"type": "boolean"},},
+                "schema": {"key": {"type": "string"}, "enabled": {"type": "boolean"}},
             },
             "http": {
                 "type": "dict",

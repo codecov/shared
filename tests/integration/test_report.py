@@ -338,7 +338,7 @@ def test_get_folder_totals():
 def test_flags():
     r = Report(
         files={"py.py": [0, ReportTotals(1)]},
-        sessions={1: {"id": "id", "f": ["a", 1, "test"],}},
+        sessions={1: {"id": "id", "f": ["a", 1, "test"]}},
     )
     assert list(r.flags.keys()) == ["a", 1, "test"]
 
@@ -359,7 +359,7 @@ def test_iter():
 
 @pytest.mark.integration
 def test_contains():
-    r = Report(files={"file1.py": [0, ReportTotals(1)],})
+    r = Report(files={"file1.py": [0, ReportTotals(1)]})
     assert ("file1.py" in r) is True
     assert ("file2.py" in r) is False
 
@@ -368,11 +368,11 @@ def test_contains():
 @pytest.mark.parametrize(
     "r, new_report, manifest",
     [
-        (Report(files={"file.py": [0, ReportTotals(1)],}), None, ["file.py"]),
-        (Report(files={"file.py": [0, ReportTotals(1)],}), Report(), ["file.py"]),
+        (Report(files={"file.py": [0, ReportTotals(1)]}), None, ["file.py"]),
+        (Report(files={"file.py": [0, ReportTotals(1)]}), Report(), ["file.py"]),
         (
             Report(
-                files={"file.py": [0, ReportTotals(1)],},
+                files={"file.py": [0, ReportTotals(1)]},
                 chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>",
             ),
             Report(
@@ -410,7 +410,7 @@ def test_is_empty(r, boolean):
 @pytest.mark.integration
 @pytest.mark.parametrize(
     "r, boolean",
-    [(Report(), False), (Report(files={"file.py": [0, ReportTotals(1)]}), True),],
+    [(Report(), False), (Report(files={"file.py": [0, ReportTotals(1)]}), True)],
 )
 def test_non_zero(r, boolean):
     assert bool(r) is boolean
