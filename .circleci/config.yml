@@ -89,6 +89,7 @@ jobs:
           command: |
             curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
             source $HOME/.cargo/env
+            sudo apt-get update
             sudo apt-get install gcc lsb-release wget software-properties-common
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
