@@ -11,8 +11,7 @@ class Flag(object):
 
     @property
     def report(self):
-        """returns the report filtered by this flag
-        """
+        """returns the report filtered by this flag"""
         return self._report.filter(paths=None, flags=[self.name])
 
     @property

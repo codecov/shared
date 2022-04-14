@@ -35,7 +35,7 @@ class CodecovYamlValidator(Validator):
         return BranchSchemaField().validate(value)
 
     def _validate_comma_separated_strings(self, constraint, field, value):
-        """ Test the oddity of a value.
+        """Test the oddity of a value.
 
         The rule's arguments are validated against this schema:
         {'type': 'boolean'}

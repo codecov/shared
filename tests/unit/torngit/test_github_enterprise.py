@@ -40,9 +40,9 @@ class TestGithubEnterprise(object):
                             status_code=201,
                             json=mocker.MagicMock(return_value={}),
                         )
-                    ),
-                ),
-            ),
+                    )
+                )
+            )
         )
         mocked_fetch = mocker.patch.object(
             GithubEnterprise, "get_client", return_value=client

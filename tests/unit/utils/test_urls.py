@@ -10,10 +10,10 @@ class TestUrlsUtil(BaseTestCase):
     @pytest.mark.parametrize(
         "string, result",
         [
-            (("ab" + u"\xf1" + "cd", False), b"ab\xc3\xb1cd"),
-            (("ab" + u"\xf1" + "cd", True), "ab%C3%B1cd"),
-            ((u"ə/fix-coverage", False), b"\xc3\x89\xc2\x99/fix-coverage"),
-            ((u"ə/fix-coverage", True), "%C3%89%C2%99/fix-coverage"),
+            (("ab" + "\xf1" + "cd", False), b"ab\xc3\xb1cd"),
+            (("ab" + "\xf1" + "cd", True), "ab%C3%B1cd"),
+            (("ə/fix-coverage", False), b"\xc3\x89\xc2\x99/fix-coverage"),
+            (("ə/fix-coverage", True), "%C3%89%C2%99/fix-coverage"),
             ((1, False), 1),
             ((1, True), "1"),
             ((None, False), None),
@@ -25,17 +25,17 @@ class TestUrlsUtil(BaseTestCase):
         assert escape(*string) == result
 
     def test_make_url_escapes_in_path(self, mock_configuration):
-        res = make_url(None, u"\xa3")
-        assert u"\xa3" not in res
+        res = make_url(None, "\xa3")
+        assert "\xa3" not in res
         assert "%C2%A3" in res
 
     def test_make_url_escapes_in_query(self, mock_configuration):
-        res = make_url(None, param=u"\xa3")
-        assert u"\xa3" not in res
+        res = make_url(None, param="\xa3")
+        assert "\xa3" not in res
         assert "%C2%A3" in res
 
     def test_make_url(self, mocker, mock_configuration):
-        repo = mocker.MagicMock(service="github", slug="owner/repo",)
+        repo = mocker.MagicMock(service="github", slug="owner/repo")
         assert (
             make_url(repo, "path", "to", "somewhere")
             == "https://codecov.io/gh/owner/repo/path/to/somewhere"

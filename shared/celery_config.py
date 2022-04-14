@@ -119,7 +119,7 @@ class BaseCeleryConfig(object):
         notify_task_name: {
             "queue": get_config(
                 "setup", "tasks", "notify", "queue", default=task_default_queue
-            ),
+            )
         },
         pulls_task_name: {
             "queue": get_config(

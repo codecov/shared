@@ -215,8 +215,7 @@ class ReportFile(object):
         return changed
 
     def __getitem__(self, ln):
-        """Return a single line or None
-        """
+        """Return a single line or None"""
         if ln == "totals":
             return self.totals
         if type(ln) is slice:
@@ -231,8 +230,7 @@ class ReportFile(object):
         return _line
 
     def __setitem__(self, ln, line):
-        """Append line to file, without merging if previously set
-        """
+        """Append line to file, without merging if previously set"""
         if not type(ln) is int:
             raise TypeError("expecting type int got %s" % type(ln))
         elif not isinstance(line, ReportLine):
@@ -250,8 +248,7 @@ class ReportFile(object):
         return
 
     def __delitem__(self, ln: int):
-        """Delete line from file
-        """
+        """Delete line from file"""
         if not isinstance(ln, int):
             raise TypeError("expecting type int got %s" % type(ln))
         elif ln < 1:
@@ -265,14 +262,12 @@ class ReportFile(object):
         return
 
     def __len__(self):
-        """Returns count(number of lines with coverage data)
-        """
+        """Returns count(number of lines with coverage data)"""
         return len([_f for _f in self._lines if _f])
 
     @property
     def eof(self):
-        """Returns count(number of lines)
-        """
+        """Returns count(number of lines)"""
         return len(self._lines) + 1
 
     def _getslice(self, start, stop):
@@ -423,8 +418,7 @@ class ReportFile(object):
         return self._totals
 
     def _process_totals(self):
-        """return dict of totals
-        """
+        """return dict of totals"""
         cov, types, messages = [], [], []
         _cov, _types, _messages = cov.append, types.append, messages.append
         for ln, line in self.lines:
@@ -619,8 +613,7 @@ class Report(object):
 
     @property
     def files(self):
-        """returns a list of files in the report
-        """
+        """returns a list of files in the report"""
         path_filter = None
         if path_filter:
             # return filtered list of filenames
@@ -635,8 +628,7 @@ class Report(object):
 
     @property
     def flags(self):
-        """returns dict(:name=<Flag>)
-        """
+        """returns dict(:name=<Flag>)"""
         flags_dict = {}
         for sid, session in self.sessions.items():
             if session.flags:
@@ -665,8 +657,7 @@ class Report(object):
         return sorted(all_flags)
 
     def append(self, _file, joined=True):
-        """adds or merged a file into the report
-        """
+        """adds or merged a file into the report"""
         if _file is None:
             # skip empty adds
             return False
@@ -871,8 +862,7 @@ class Report(object):
 
     @property
     def manifest(self):
-        """returns a list of files in the report
-        """
+        """returns a list of files in the report"""
         if self._path_filter:
             return list(filter(self._path_filter, list(self._files)))
 
@@ -922,8 +912,7 @@ class Report(object):
         return filename in self._files
 
     def merge(self, new_report, joined=True):
-        """combine report data from another
-        """
+        """combine report data from another"""
         if new_report is None:
             return
 
@@ -941,8 +930,7 @@ class Report(object):
         self._totals = self._process_totals()
 
     def is_empty(self):
-        """returns boolean if the report has no content
-        """
+        """returns boolean if the report has no content"""
         return len(self._files) == 0
 
     def __bool__(self):
@@ -953,8 +941,7 @@ class Report(object):
         return END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
 
     def to_database(self):
-        """returns (totals, report) to be stored in database
-        """
+        """returns (totals, report) to be stored in database"""
         totals = dict(zip(TOTALS_MAP, self.totals))
         totals["diff"] = self.diff_totals
         return (
@@ -1207,7 +1194,7 @@ class Report(object):
             network_file = self._files[filename]
             if file_totals.lines == 0:
                 file_totals = dataclasses.replace(
-                    file_totals, coverage=None, complexity=None, complexity_total=None,
+                    file_totals, coverage=None, complexity=None, complexity_total=None
                 )
             network_file.diff_totals = file_totals
 

@@ -165,9 +165,7 @@ class TestUnitBitbucket(object):
     ):
         respx.get(
             "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python"
-        ).respond(
-            status_code=200, json={},
-        )
+        ).respond(status_code=200, json={})
         respx.get(
             "https://bitbucket.org/api/2.0/user/permissions/repositories"
         ).respond(
@@ -219,14 +217,10 @@ class TestUnitBitbucket(object):
     ):
         respx.get(
             "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python"
-        ).respond(
-            status_code=200, json={},
-        )
+        ).respond(status_code=200, json={})
         respx.get(
             "https://bitbucket.org/api/2.0/user/permissions/repositories"
-        ).respond(
-            status_code=200, json={"pagelen": 10, "values": [], "page": 1},
-        )
+        ).respond(status_code=200, json={"pagelen": 10, "values": [], "page": 1})
         handler = Bitbucket(
             repo=dict(name="example-python", private=True),
             owner=dict(
@@ -252,9 +246,7 @@ class TestUnitBitbucket(object):
     ):
         respx.get(
             "https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python"
-        ).respond(
-            status_code=404, json={},
-        )
+        ).respond(status_code=404, json={})
         handler = Bitbucket(
             repo=dict(name="example-python", private=True),
             owner=dict(

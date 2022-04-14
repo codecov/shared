@@ -232,8 +232,7 @@ def merge_line_session(s1, s2):
 
 
 def _merge_sessions(s1: Sequence[LineSession], s2: Sequence[LineSession]):
-    """Merges two lists of different sessions into one
-    """
+    """Merges two lists of different sessions into one"""
     if not s1 or not s2:
         return s1 or s2
 

@@ -148,7 +148,7 @@ class TestBitbucketTestCase(object):
                     "username": "ThiagoCodecov",
                 },
             },
-        ),
+        )
     ]
 
     @pytest.mark.asyncio
@@ -198,7 +198,7 @@ class TestBitbucketTestCase(object):
             "commitid": "6a45b83",
             "timestamp": "2015-02-27T03:44:32+00:00",
             "message": """wip\n""",
-            "parents": ["0028015f7fa260f5fd68f78c0deffc15183d955e",],
+            "parents": ["0028015f7fa260f5fd68f78c0deffc15183d955e"],
             "author": {
                 "username": "stevepeak",
                 "id": "test6y9pl15lzivhmkgsk67k10x53n04i85o",
@@ -214,7 +214,7 @@ class TestBitbucketTestCase(object):
             "commitid": "6a45b83",
             "timestamp": "2015-02-27T03:44:32+00:00",
             "message": """wip\n""",
-            "parents": ["0028015f7fa260f5fd68f78c0deffc15183d955e",],
+            "parents": ["0028015f7fa260f5fd68f78c0deffc15183d955e"],
             "author": {
                 "username": "stevepeak",
                 "id": "test6y9pl15lzivhmkgsk67k10x53n04i85o",
@@ -353,10 +353,7 @@ class TestBitbucketTestCase(object):
     @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
         url = "http://requestbin.net/r/1ecyaj51"
-        events = [
-            "repo:push",
-            "issue:created",
-        ]
+        events = ["repo:push", "issue:created"]
         name, secret = "a", "d"
         expected_result = {
             "read_only": None,

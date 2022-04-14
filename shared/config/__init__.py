@@ -113,8 +113,8 @@ class ConfigHelper(object):
     @property
     def params(self):
         """
-            Construct the config by combining default values, yaml config, and env vars.
-            An env var overrides a yaml config value, which overrides the default values.
+        Construct the config by combining default values, yaml config, and env vars.
+        An env var overrides a yaml config value, which overrides the default values.
         """
         if self._params is None:
             content = self.yaml_content()

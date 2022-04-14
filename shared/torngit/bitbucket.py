@@ -285,7 +285,7 @@ class Bitbucket(TorngitBaseAdapter):
     async def list_repos(self, username=None, token=None):
         """
         Lists all repositories a user is part of.
-        *Note: 
+        *Note:
         Bitbucket API V2 does not provide a dedicated endpoint which returns all repos a user is part of.
         It provides however, an endpoint to get all the repos a user is part of from an specific org or user.
         Endpoint to list repos from an specific user:
@@ -293,8 +293,8 @@ class Bitbucket(TorngitBaseAdapter):
         In order to get all the repositories a user is part of, we first need to get all the orgs and repo owners
         - Orgs/Teams can be obtained using the 'list_teams' method
         - Usernames of repo owners is a bit tricky since Bitbucket doesnt provide an endpoint for this
-            - Solution: 
-                Use the 'list_permissions' method to get all repo permissions and exctract owner's username 
+            - Solution:
+                Use the 'list_permissions' method to get all repo permissions and exctract owner's username
                 from the repository 'full_name' attribute
         Once we have all orgs/teams and owner's usernames we should call "/repositories/{username}" endpoint
         for each of the orgs/teams and owner's usernames.

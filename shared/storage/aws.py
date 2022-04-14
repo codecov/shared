@@ -26,7 +26,7 @@ class AWSStorageService(BaseStorageService):
             Creates root storage (or bucket, as in some terminologies)
 
         Note:
-            AWS API wont return an error if you attempt to create a bucket that 
+            AWS API wont return an error if you attempt to create a bucket that
             already exists in us-east-1 region. However, it does return an error
             if you attempt to create a bucket that already exists in any other region.
 
@@ -73,7 +73,7 @@ class AWSStorageService(BaseStorageService):
             data (str): The data to be written to the file
             reduced_redundancy (bool): Whether a reduced redundancy mode should be used (default: {False})
             gzipped (bool): Whether the file should be gzipped on write (default: {False})
-        
+
         """
         storage_class = "REDUCED_REDUNDANCY" if reduced_redundancy else "STANDARD"
         self.storage_client.put_object(
@@ -139,7 +139,7 @@ class AWSStorageService(BaseStorageService):
         """Deletes a single file from the storage
 
         Note:
-            AWS returns a 204 regardless if the file is not already 
+            AWS returns a 204 regardless if the file is not already
             there in the first place.
             FileNotInStorageError wont be raised if a file doesnt exists.
 

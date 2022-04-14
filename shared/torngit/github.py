@@ -54,9 +54,7 @@ class Github(TorngitBaseAdapter):
     def token(self):
         return self._token
 
-    async def api(
-        self, *args, token=None, **kwargs,
-    ):
+    async def api(self, *args, token=None, **kwargs):
         token_to_use = token or self.token
         if not token_to_use:
             raise TorngitMisconfiguredCredentials()
@@ -98,7 +96,7 @@ class Github(TorngitBaseAdapter):
         url = url_concat(url, args).replace(" ", "%20")
 
         kwargs = dict(
-            json=body if body else None, headers=_headers, allow_redirects=False,
+            json=body if body else None, headers=_headers, allow_redirects=False
         )
         max_number_retries = 3
         for current_retry in range(1, max_number_retries + 1):
@@ -1001,7 +999,7 @@ class Github(TorngitBaseAdapter):
         if check_suite_id is not None:
             url = (
                 "/repos/{}/check-suites/{}/check-runs".format(
-                    self.slug, check_suite_id,
+                    self.slug, check_suite_id
                 ),
             )
         elif head_sha is not None:
@@ -1009,7 +1007,7 @@ class Github(TorngitBaseAdapter):
         if name is not None:
             url += "?check_name={}".format(name)
         async with self.get_client() as client:
-            res = await self.api(client, "get", url, token=token,)
+            res = await self.api(client, "get", url, token=token)
             return res
 
     async def get_check_suites(self, git_sha, token=None):

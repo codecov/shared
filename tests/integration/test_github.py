@@ -183,7 +183,7 @@ class TestGithubTestCase(object):
                 "title": "Creating new code for reasons no one knows",
                 "author": {"id": "44376991", "username": "ThiagoCodecov"},
             },
-        ),
+        )
     ]
 
     @pytest.mark.asyncio
@@ -401,7 +401,7 @@ class TestGithubTestCase(object):
         for i, val in enumerate(statuses_to_set):
             context, status = val
             res = await valid_handler.set_commit_status(
-                commit_sha, status, context, f"{status} - {i} - {context}", target_url,
+                commit_sha, status, context, f"{status} - {i} - {context}", target_url
             )
         res = await valid_handler.get_commit_statuses(commit_sha)
         print(res._statuses)
@@ -506,10 +506,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
         url = "http://requestbin.net/r/1ecyaj51"
-        events = [
-            "push",
-            "pull_request",
-        ]
+        events = ["push", "pull_request"]
         name, secret = "a", "d"
         expected_result = {
             "type": "Repository",
@@ -1110,7 +1107,7 @@ class TestGithubTestCase(object):
         self, integration_installed_handler, codecov_vcr
     ):
         res = await integration_installed_handler.get_check_runs(
-            name="Test check", head_sha="75f355d8d14ba3d7761c728b4d2607cde0eef065",
+            name="Test check", head_sha="75f355d8d14ba3d7761c728b4d2607cde0eef065"
         )
         expected_result = {
             "total_count": 1,
@@ -1258,7 +1255,7 @@ class TestGithubTestCase(object):
         self, integration_installed_handler, codecov_vcr
     ):
         res = await integration_installed_handler.get_check_suites(
-            "75f355d8d14ba3d7761c728b4d2607cde0eef065",
+            "75f355d8d14ba3d7761c728b4d2607cde0eef065"
         )
         expected_result = {
             "total_count": 1,
