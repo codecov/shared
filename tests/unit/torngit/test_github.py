@@ -581,6 +581,66 @@ class TestUnitGithub(object):
         assert mocked_response.called is True
 
     @pytest.mark.asyncio
+    async def test_list_team_with_org_response_404(self, valid_handler, respx_vcr):
+        mocked_response = respx_vcr.get(
+            url="https://api.github.com/user/memberships/orgs?state=active&page=1"
+        ).respond(
+            status_code=200,
+            json=[
+                {
+                    "url": "https://api.github.com/orgs/codecov/memberships/ThiagoCodecov",
+                    "state": "active",
+                    "role": "member",
+                    "organization_url": "https://api.github.com/orgs/codecov",
+                    "user": {
+                        "login": "ThiagoCodecov",
+                        "id": 44379999,
+                        "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/44379999?v=4",
+                        "gravatar_id": "",
+                        "url": "https://api.github.com/users/ThiagoCodecov",
+                        "html_url": "https://github.com/ThiagoCodecov",
+                        "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+                        "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+                        "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+                        "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+                        "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+                        "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+                        "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+                        "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+                        "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+                        "type": "User",
+                        "site_admin": False,
+                    },
+                    "organization": {
+                        "login": "codecov",
+                        "id": 8226999,
+                        "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                        "url": "https://api.github.com/orgs/codecov",
+                        "repos_url": "https://api.github.com/orgs/codecov/repos",
+                        "events_url": "https://api.github.com/orgs/codecov/events",
+                        "hooks_url": "https://api.github.com/orgs/codecov/hooks",
+                        "issues_url": "https://api.github.com/orgs/codecov/issues",
+                        "members_url": "https://api.github.com/orgs/codecov/members{/member}",
+                        "public_members_url": "https://api.github.com/orgs/codecov/public_members{/member}",
+                        "avatar_url": "https://avatars3.githubusercontent.com/u/8226999?v=4",
+                        "description": "Empower developers with tools to improve code quality and testing.",
+                    },
+                }
+            ],
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+
+        respx_vcr.get(url="https://api.github.com/users/codecov").respond(
+            status_code=404,
+            json={},
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+        res = await valid_handler.list_teams()
+        assert res == []
+        assert mocked_response.called is True
+
+    @pytest.mark.asyncio
     async def test_update_check_run_no_url(self, valid_handler):
         with respx.mock:
             mocked_response = respx.patch(
