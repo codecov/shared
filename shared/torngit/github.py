@@ -1121,11 +1121,6 @@ class Github(TorngitBaseAdapter):
         hasher.update(token.get("key").encode())
         return base64.b64encode(hasher.digest()).decode()[:5]
 
-    def get_token_by_type_if_none(self, token: Optional[str], token_type: TokenType):
-        if token is not None:
-            return token
-        return self.get_token_by_type(token_type)
-
     async def get_best_effort_branches(self, commit_sha: str, token=None) -> List[str]:
         """
         Gets a 'best effort' list of branches this commit is in.

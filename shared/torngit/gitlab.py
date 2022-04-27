@@ -479,6 +479,7 @@ class Gitlab(TorngitBaseAdapter):
         merge_commit=None,
         token=None,
     ):
+        token = self.get_token_by_type_if_none(token, TokenType.status)
         # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
         status = dict(error="failed", failure="failed").get(status, status)
         try:
@@ -924,13 +925,6 @@ class Gitlab(TorngitBaseAdapter):
                 commitid=kwargs["commitid"],
             )
         raise NotImplementedError()
-
-    def get_token_by_type_if_none(
-        self, token: Optional[str], token_type: TokenType
-    ) -> Optional[str]:
-        if token is not None:
-            return token
-        return self.get_token_by_type(token_type)
 
     async def get_best_effort_branches(self, commit_sha: str, token=None) -> List[str]:
         """

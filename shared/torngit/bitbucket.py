@@ -1,14 +1,14 @@
 import logging
 import os
 import urllib.parse as urllib_parse
-from typing import List
+from typing import List, Optional
 
 import httpx
 from oauthlib import oauth1
 
 # from shared.config import get_config
 from shared.metrics import metrics
-from shared.torngit.base import TorngitBaseAdapter
+from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -559,6 +559,7 @@ class Bitbucket(TorngitBaseAdapter):
         token=None,
         coverage=None,
     ):
+        token = self.get_token_by_type_if_none(token, TokenType.status)
         # https://confluence.atlassian.com/bitbucket/buildstatus-resource-779295267.html
         status = dict(
             pending="INPROGRESS", success="SUCCESSFUL", error="FAILED", failure="FAILED"
