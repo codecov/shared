@@ -523,6 +523,7 @@ class ReportFile(object):
 
 class Report(object):
     file_class = ReportFile
+    _files: Dict[str, ReportFileSummary]
 
     def __init__(
         self,
@@ -1104,11 +1105,11 @@ class Report(object):
                 if data["type"] == "modified" and path in self:
                     _file = self.get(path)
                     _file.shift_lines_by_diff(data, forward=forward)
-                    chunk_loc = self._files[path][0]
+                    chunk_loc = self._files[path].file_index
                     # update chunks with file updates
                     self._chunks[chunk_loc] = _file
                     # clear out totals
-                    self._files[path] = [chunk_loc, None, None, None]
+                    self._files[path] = ReportFileSummary(file_index=chunk_loc)
 
     def calculate_diff(self, diff: Dict) -> Dict:
         """
