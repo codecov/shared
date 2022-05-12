@@ -135,7 +135,9 @@ class TorngitBaseAdapter(object):
         diff = ("\n%s" % diff).split("\ndiff --git a/")
         segment = None
         for _diff in diff[1:]:
-            _diff = _diff.splitlines()
+            _diff = _diff.replace("\r\n", "\n").split("\n")
+            if _diff[-1] == "":
+                _diff.pop()
 
             try:
                 before, after = _diff.pop(0).split(" b/", 1)
