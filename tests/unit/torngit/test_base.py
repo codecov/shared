@@ -1,3 +1,5 @@
+import textwrap
+
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 
 
@@ -37,3 +39,30 @@ class TestTorngitBaseAdapter(object):
         assert instance.get_token_by_type(TokenType.admin) == {"key": "admin"}
         assert instance.get_token_by_type(TokenType.comment) == {"key": "token"}
         assert instance.get_token_by_type(TokenType.status) == {"key": "token"}
+
+    def test_diff_to_json(self):
+        instance = TorngitBaseAdapter()
+        diff = textwrap.dedent(
+            """
+            diff --git a/test/file.txt b/test/file.txt
+            index 8695aedf2b..e0d2b1e89d 100644
+            --- a/test/file.txt
+            +++ b/test/file.txt
+            @@ -2,3 +2,3 @@
+             first line
+            -before\u2028
+            +after\u2028
+             last line
+            """
+        )
+
+        res = instance.diff_to_json(diff)
+        segments = res["files"]["test/file.txt"]["segments"]
+        assert len(segments) == 1
+        # it should not split lines on the U+2028 unicode line separator
+        assert segments[0]["lines"] == [
+            " first line",
+            "-before\u2028",
+            "+after\u2028",
+            " last line",
+        ]
