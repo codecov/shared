@@ -57,12 +57,26 @@ class TestTorngitBaseAdapter(object):
         )
 
         res = instance.diff_to_json(diff)
-        segments = res["files"]["test/file.txt"]["segments"]
-        assert len(segments) == 1
-        # it should not split lines on the U+2028 unicode line separator
-        assert segments[0]["lines"] == [
-            " first line",
-            "-before\u2028",
-            "+after\u2028",
-            " last line",
-        ]
+        assert res == {
+            "files": {
+                "test/file.txt": {
+                    "before": None,
+                    "segments": [
+                        {
+                            "header": ["2", "3", "2", "3"],
+                            "lines": [
+                                " first line",
+                                "-before\u2028",
+                                "+after\u2028",
+                                " last line",
+                            ],
+                        }
+                    ],
+                    "stats": {
+                        "added": 1,
+                        "removed": 1,
+                    },
+                    "type": "modified",
+                }
+            }
+        }
