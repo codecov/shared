@@ -50,16 +50,28 @@ class TestTorngitBaseAdapter(object):
             +++ b/test/file.txt
             @@ -1 +1 @@
             -before
-            \ No newline at end of file
+            \\ No newline at end of file
             +after
-            \ No newline at end of file
+            \\ No newline at end of file
             """
         )
 
         res = instance.diff_to_json(diff)
-        segments = res["files"]["test/file.txt"]["segments"]
-        assert len(segments) == 1
-        assert segments[0]["lines"] == [
-            "-before",
-            "+after",
-        ]
+        assert res == {
+            "files": {
+                "test/file.txt": {
+                    "before": None,
+                    "segments": [
+                        {
+                            "header": ["1", "", "1", ""],
+                            "lines": ["-before", "+after"],
+                        }
+                    ],
+                    "stats": {
+                        "added": 1,
+                        "removed": 1,
+                    },
+                    "type": "modified",
+                }
+            }
+        }
