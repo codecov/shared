@@ -17,13 +17,13 @@ class Invalid(Exception):
 class CoverageRangeSchemaField(object):
 
     """
-        Pattern for the user to input a range like 60..90 (which means from 60 to 90)
+    Pattern for the user to input a range like 60..90 (which means from 60 to 90)
 
-        We accept ".." and "..." as separators
+    We accept ".." and "..." as separators
 
-        This value is converted into a two members array
+    This value is converted into a two members array
 
-        CoverageRangeSchemaField().validate('30...99') == [30.0, 99.0]
+    CoverageRangeSchemaField().validate('30...99') == [30.0, 99.0]
     """
 
     def validate_bounds(self, lower_bound, upper_bound):
@@ -67,10 +67,10 @@ class CoverageRangeSchemaField(object):
 
 class PercentSchemaField(object):
     """
-        A field for percentages. Accepts both with and without % symbol.
-        The end result is the percentage number
+    A field for percentages. Accepts both with and without % symbol.
+    The end result is the percentage number
 
-        PercentSchemaField().validate('60%') == 60.0
+    PercentSchemaField().validate('60%') == 60.0
     """
 
     field_regex = re.compile(r"(\d+)(\.\d+)?%?")
@@ -125,16 +125,16 @@ def determine_path_pattern_type(filepath_pattern):
 
 def translate_glob_to_regex(pat, end_of_string=True):
     """
-        Translate a shell PATTERN to a regular expression.
+    Translate a shell PATTERN to a regular expression.
 
-        There is no way to quote meta-characters.
+    There is no way to quote meta-characters.
 
-        This is copied from fnmatch.translate_glob_to_regex. If you could be
-            so kind and see if they changed it since we copied,
-            that would be very helpful, thanks.
+    This is copied from fnmatch.translate_glob_to_regex. If you could be
+        so kind and see if they changed it since we copied,
+        that would be very helpful, thanks.
 
-        The only reason we copied (instead of importing and using),
-            is that we needed to change behavior on **
+    The only reason we copied (instead of importing and using),
+        is that we needed to change behavior on **
     """
 
     i, n = 0, len(pat)

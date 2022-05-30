@@ -248,7 +248,7 @@ class TestCarryfowardFlag(object):
                     (3, 1, None, [[0, 1, None, None, None]], None, None),
                     (5, 0, None, [[0, 0, None, None, None]], None, None),
                     (6, "1/2", None, [[0, "1/2", None, None, None]], None, None),
-                ],
+                ]
             },
             "report": {
                 "files": {
@@ -257,7 +257,7 @@ class TestCarryfowardFlag(object):
                         [0, 5, 2, 2, 1, "40.00000", 0, 0, 0, 0, 0, 0, 0],
                         [[0, 5, 2, 2, 1, "40.00000", 0, 0, 0, 0, 0, 0, 0]],
                         None,
-                    ],
+                    ]
                 },
                 "sessions": {
                     "0": {
@@ -366,7 +366,7 @@ class TestCarryfowardFlag(object):
                 "file_2.py": [
                     (12, 1, None, [[0, 1, None, None, None]], None, None),
                     (51, "1/2", "b", [[0, "1/2", None, None, None]], None, None),
-                ],
+                ]
             },
             "report": {
                 "files": {
@@ -375,7 +375,7 @@ class TestCarryfowardFlag(object):
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
                         [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
                         None,
-                    ],
+                    ]
                 },
                 "sessions": {
                     "0": {
@@ -443,7 +443,7 @@ class TestCarryfowardFlag(object):
                     (3, 0, None, [[1, 0, None, None, None]], None, None),
                     (5, 0, None, [[1, 0, None, None, None]], None, None),
                     (6, 0, None, [[1, 0, None, None, None]], None, None),
-                ],
+                ]
             },
             "report": {
                 "files": {
@@ -452,7 +452,7 @@ class TestCarryfowardFlag(object):
                         [0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0],
                         [[0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0]],
                         None,
-                    ],
+                    ]
                 },
                 "sessions": {
                     "1": {
@@ -516,7 +516,7 @@ class TestCarryfowardFlag(object):
                     (3, 0, None, [[1, 0, None, None, None]], None, None),
                     (5, 0, None, [[1, 0, None, None, None]], None, None),
                     (6, 0, None, [[1, 0, None, None, None]], None, None),
-                ],
+                ]
             },
             "report": {
                 "files": {
@@ -525,7 +525,7 @@ class TestCarryfowardFlag(object):
                         [0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0],
                         [[0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0]],
                         None,
-                    ],
+                    ]
                 },
                 "sessions": {
                     "1": {

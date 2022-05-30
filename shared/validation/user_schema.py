@@ -6,11 +6,7 @@ branches_structure = {
     "nullable": True,
 }
 
-layout_structure = {
-    "type": "string",
-    "comma_separated_strings": True,
-    "nullable": True,
-}
+layout_structure = {"type": "string", "comma_separated_strings": True, "nullable": True}
 
 path_list_structure = {
     "type": "list",
@@ -46,7 +42,7 @@ status_base_attributes = {
     "measurement": {
         "type": "string",
         "nullable": True,
-        "allowed": ("line", "statement", "branch", "method", "complexity",),
+        "allowed": ("line", "statement", "branch", "method", "complexity"),
     },
     "only_pulls": {"type": "boolean"},
     "paths": path_list_structure,
@@ -61,10 +57,7 @@ status_base_attributes = {
     },
 }
 
-status_standard_attributes = {
-    "flags": flag_list_structure,
-    **status_base_attributes,
-}
+status_standard_attributes = {"flags": flag_list_structure, **status_base_attributes}
 
 percent_type_or_auto = {
     "type": ["string", "number"],
@@ -159,7 +152,7 @@ schema = {
         "type": "dict",
         "schema": {
             "precision": {"type": "integer", "min": 0, "max": 99},
-            "round": {"type": "string", "allowed": ("down", "up", "nearest"),},
+            "round": {"type": "string", "allowed": ("down", "up", "nearest")},
             "range": {"type": "list", "maxlength": 2, "coerce": "string_to_range"},
             "notify": {
                 "type": "dict",

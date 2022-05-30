@@ -1,6 +1,6 @@
 import re
 from enum import Enum, auto
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import httpx
 
@@ -59,6 +59,11 @@ class TorngitBaseAdapter(object):
         if self._token_type_mapping.get(token_type) is not None:
             return self._token_type_mapping.get(token_type)
         return self.token
+
+    def get_token_by_type_if_none(self, token: Optional[str], token_type: TokenType):
+        if token is not None:
+            return token
+        return self.get_token_by_type(token_type)
 
     def _oauth_consumer_token(self):
         if not self._oauth:

@@ -576,7 +576,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "range": "70...100",
                 "status": {"project": {"base": "auto", "aa": True}},
             },
-            "ignore": ["Pods/.*",],
+            "ignore": ["Pods/.*"],
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
@@ -591,7 +591,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "range": "70...5000",
                 "status": {"project": {"percent": "abc"}},
             },
-            "ignore": ["Pods/.*",],
+            "ignore": ["Pods/.*"],
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
@@ -654,16 +654,16 @@ class TestUserYamlValidation(BaseTestCase):
                 "round": "down",
                 "precision": 2,
                 "range": "70...100",
-                "status": {"project": {"default": {"base": "auto",}}},
+                "status": {"project": {"default": {"base": "auto"}}},
             },
-            "ignore": ["Pods/.*",],
+            "ignore": ["Pods/.*"],
         }
         expected_result = {
             "coverage": {
                 "round": "down",
                 "precision": 2,
                 "range": [70.0, 100.0],
-                "status": {"project": {"default": {"base": "auto",}}},
+                "status": {"project": {"default": {"base": "auto"}}},
             },
             "ignore": ["Pods/.*"],
         }
@@ -858,7 +858,7 @@ def test_validation_with_branches():
 
 def test_validation_with_null_on_paths():
     user_input = {
-        "comment": {"require_head": True, "behavior": "once", "after_n_builds": 6,},
+        "comment": {"require_head": True, "behavior": "once", "after_n_builds": 6},
         "coverage": {
             "status": {"project": {"default": {"threshold": "1%"}}, "patch": False},
             "notify": {"slack": {"default": {"paths": None}}},
@@ -916,13 +916,9 @@ def test_proper_layout():
 
 
 def test_codecov_branch():
-    user_input = {
-        "codecov": {"branch": "origin/pterosaur"},
-    }
+    user_input = {"codecov": {"branch": "origin/pterosaur"}}
     res = do_actual_validation(user_input, show_secrets_for=None)
-    assert res == {
-        "codecov": {"branch": "pterosaur"},
-    }
+    assert res == {"codecov": {"branch": "pterosaur"}}
 
 
 def test_calculate_error_location_and_message_from_error_dict():

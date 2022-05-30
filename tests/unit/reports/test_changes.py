@@ -401,7 +401,7 @@ def test_get_changes_from_comparison(mocker):
                     "coverage": 0.95238096,
                 }
             },
-        },
+        }
     )
     expected_res = [
         "Complete/index.tsx",
@@ -437,7 +437,7 @@ def test_get_changes_from_comparison_same_line_type():
                         [[1, "p"], [1, "p"]],
                         [[2, "p"], [2, "p"]],
                     ],
-                },
+                }
             ],
             "changes_summary": {
                 "patch_totals": {
@@ -447,7 +447,7 @@ def test_get_changes_from_comparison_same_line_type():
                     "coverage": 0.95238096,
                 }
             },
-        },
+        }
     )
     assert res == []
 

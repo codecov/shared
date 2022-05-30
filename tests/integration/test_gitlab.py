@@ -38,7 +38,7 @@ class TestGitlabTestCase(object):
         user = dict(service_id="3108129")
         owner = (dict(username="hootener"),)
         is_admin = await admin_handler.get_is_admin(
-            user=user, token=dict(key=16 * "f882", username="hootener",),
+            user=user, token=dict(key=16 * "f882", username="hootener")
         )
         assert is_admin
 
@@ -154,7 +154,7 @@ class TestGitlabTestCase(object):
                 "title": "Other branch",
                 "author": {"id": "109640", "username": "codecov"},
             },
-        ),
+        )
     ]
 
     @pytest.mark.asyncio
@@ -228,7 +228,7 @@ class TestGitlabTestCase(object):
             "files": {
                 "large.md": {
                     "before": None,
-                    "segments": [{"header": ["0", "0", "1", "816"],}],
+                    "segments": [{"header": ["0", "0", "1", "816"]}],
                     "stats": {"added": 816, "removed": 0},
                     "type": "modified",
                 }
@@ -509,7 +509,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         ).get_repository()
         assert res == expected_result
 
@@ -530,7 +530,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(name="proj-a"),
             owner=dict(username="l00p_group_1:subgroup1"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         ).get_repository()
         assert res == expected_result
 
@@ -668,7 +668,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         ).list_repos()
         assert res == expected_result
 
@@ -800,7 +800,7 @@ class TestGitlabTestCase(object):
         res = await Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         ).list_teams()
         assert res == expected_result
 
@@ -872,7 +872,7 @@ class TestGitlabTestCase(object):
                 "type": "file",
                 "path": "folder/hello-world.txt",
                 "mode": "100644",
-            },
+            }
         ]
 
         res = await valid_handler.list_files("master", "folder")
@@ -918,7 +918,7 @@ class TestGitlabTestCase(object):
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         )
 
         res = handler.make_paginated_call(
@@ -933,7 +933,7 @@ class TestGitlabTestCase(object):
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         )
         res = handler.make_paginated_call("/groups", max_per_page=4, default_kwargs={})
         res = [i async for i in res]
@@ -946,7 +946,7 @@ class TestGitlabTestCase(object):
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882",),
+            token=dict(key=16 * "f882"),
         )
         res = handler.make_paginated_call(
             "/groups", max_per_page=3, max_number_of_pages=2, default_kwargs={}
@@ -958,9 +958,7 @@ class TestGitlabTestCase(object):
     @pytest.mark.asyncio
     async def test_get_authenticated_user(self, codecov_vcr):
         code = "7c005cbb342626fffe4f24e5eedac28d9e8fa1c8592808dd294bfe0d39ea084d"
-        handler = Gitlab(
-            oauth_consumer_token=dict(key=16 * "f882", secret=16 * "f882",)
-        )
+        handler = Gitlab(oauth_consumer_token=dict(key=16 * "f882", secret=16 * "f882"))
         res = await handler.get_authenticated_user(
             code, "http://localhost:8000/login/gl"
         )

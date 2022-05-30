@@ -593,21 +593,15 @@ def sample_report():
     )
     first_file.append(
         3,
-        ReportLine.create(
-            coverage=1, sessions=[LineSession(0, 1)], complexity=(10, 2),
-        ),
+        ReportLine.create(coverage=1, sessions=[LineSession(0, 1)], complexity=(10, 2)),
     )
     first_file.append(
         4,
-        ReportLine.create(
-            coverage=1, sessions=[LineSession(1, 1)], complexity=(10, 2),
-        ),
+        ReportLine.create(coverage=1, sessions=[LineSession(1, 1)], complexity=(10, 2)),
     )
     first_file.append(
         5,
-        ReportLine.create(
-            coverage=1, sessions=[LineSession(2, 1)], complexity=(10, 2),
-        ),
+        ReportLine.create(coverage=1, sessions=[LineSession(2, 1)], complexity=(10, 2)),
     )
     first_file.append(
         6,
@@ -651,13 +645,13 @@ def sample_report():
     )
     single_session_file = EditableReportFile("single_session_file.c")
     single_session_file.append(
-        101, ReportLine.create(coverage="1/2", sessions=[LineSession(1, "1/2")],),
+        101, ReportLine.create(coverage="1/2", sessions=[LineSession(1, "1/2")])
     )
     single_session_file.append(
-        110, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)],),
+        110, ReportLine.create(coverage=1, sessions=[LineSession(1, 1)])
     )
     single_session_file.append(
-        111, ReportLine.create(coverage=0, sessions=[LineSession(1, 0)],),
+        111, ReportLine.create(coverage=0, sessions=[LineSession(1, 0)])
     )
     report.append(first_file)
     report.append(second_file)

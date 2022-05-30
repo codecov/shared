@@ -128,8 +128,8 @@ def test_validate_sample_production_config():
             },
         },
         "setup": {
-            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key",},
-            "cache": {"uploads": 86400,},
+            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key"},
+            "cache": {"uploads": 86400},
             "codecov_url": "https://codecov.io",
             "debug": False,
             "http": {"force_https": True, "timeouts": {"connect": 30, "receive": 60}},
@@ -154,7 +154,7 @@ def test_validate_sample_production_config():
             "client_secret": "pokemonuction_bitbucket_client_secret",
         },
         "github": {
-            "bot": {"username": "codecov-io", "key": "pokemonuction_github_bot_key",},
+            "bot": {"username": "codecov-io", "key": "pokemonuction_github_bot_key"},
             "bots": {
                 "comment": {
                     "username": "codecov-commenter",
@@ -172,7 +172,7 @@ def test_validate_sample_production_config():
             "integration": {"id": 254, "pem": "/secrets/github-pem/github.pem"},
         },
         "gitlab": {
-            "bot": {"username": "codecov-io", "key": "pokemonuction_gitlab_bot_key",}
+            "bot": {"username": "codecov-io", "key": "pokemonuction_gitlab_bot_key"}
         },
     }
     expected_result = {
@@ -235,7 +235,7 @@ def test_validate_sample_production_config():
             },
         },
         "setup": {
-            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key",},
+            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key"},
             "cache": {"uploads": 86400},
             "codecov_url": "https://codecov.io",
             "debug": False,
@@ -295,7 +295,7 @@ def test_validate_install_configuration_with_user_yaml_with_user_secret():
             "round": "down",
             "precision": 2,
             "range": [70.0, 100.0],
-            "status": {"project": {"default": {"base": "auto",}}},
+            "status": {"project": {"default": {"base": "auto"}}},
             "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
         },
         "ignore": ["Pods/.*"],

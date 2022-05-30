@@ -21,11 +21,7 @@ def test_sum_totals(totals, res):
 
 
 def test_agg_totals():
-    total_list = [
-        (1, 2, 3),
-        (0, 0, 4),
-        (0, 100, 12, 100000),
-    ]
+    total_list = [(1, 2, 3), (0, 0, 4), (0, 100, 12, 100000)]
     assert agg_totals(total_list) == ReportTotals(
         files=3,
         lines=102,
