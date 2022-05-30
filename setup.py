@@ -29,6 +29,7 @@ setup(
         "google-cloud-storage>=1.21",
         "minio~=6.0",
         "oauth2",
+        "protobuf<4.0.0dev",
         "tlslite-ng",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",
