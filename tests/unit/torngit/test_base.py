@@ -1,3 +1,5 @@
+import textwrap
+
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 
 
@@ -37,3 +39,39 @@ class TestTorngitBaseAdapter(object):
         assert instance.get_token_by_type(TokenType.admin) == {"key": "admin"}
         assert instance.get_token_by_type(TokenType.comment) == {"key": "token"}
         assert instance.get_token_by_type(TokenType.status) == {"key": "token"}
+
+    def test_diff_to_json_no_newline(self):
+        instance = TorngitBaseAdapter()
+        diff = textwrap.dedent(
+            """
+            diff --git a/test/file.txt b/test/file.txt
+            index 8695aedf2b..e0d2b1e89d 100644
+            --- a/test/file.txt
+            +++ b/test/file.txt
+            @@ -1 +1 @@
+            -before
+            \\ No newline at end of file
+            +after
+            \\ No newline at end of file
+            """
+        )
+
+        res = instance.diff_to_json(diff)
+        assert res == {
+            "files": {
+                "test/file.txt": {
+                    "before": None,
+                    "segments": [
+                        {
+                            "header": ["1", "", "1", ""],
+                            "lines": ["-before", "+after"],
+                        }
+                    ],
+                    "stats": {
+                        "added": 1,
+                        "removed": 1,
+                    },
+                    "type": "modified",
+                }
+            }
+        }
