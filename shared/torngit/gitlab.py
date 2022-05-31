@@ -329,9 +329,7 @@ class Gitlab(TorngitBaseAdapter):
                                 name=parent["name"],
                                 language=None,
                                 private=(parent_info["visibility"] != "public"),
-                                branch=parent.get("default_branch", "master").encode(
-                                    "utf-8", "replace"
-                                ),
+                                branch=parent.get("default_branch", "master"),
                             ),
                         )
                     else:
@@ -358,7 +356,7 @@ class Gitlab(TorngitBaseAdapter):
                                 fork=fork,
                                 private=(repo["visibility"] != "public"),
                                 language=None,
-                                branch=branch.encode("utf-8", "replace"),
+                                branch=branch,
                             ),
                         )
                     )
@@ -827,7 +825,7 @@ class Gitlab(TorngitBaseAdapter):
                 service_id=res["id"],
                 private=res["visibility"] != "public",
                 language=None,
-                branch=(res["default_branch"] or "master").encode("utf-8", "replace"),
+                branch=(res["default_branch"] or "master"),
                 name=repo_name,
             ),
         )
