@@ -171,7 +171,7 @@ class TorngitBaseAdapter(object):
             # make file, this is ONE file not multiple
             for source in _diff:
                 if source == "\ No newline at end of file":
-                    break
+                    continue
 
                 sol4 = source[:4]
                 if sol4 == "dele":
