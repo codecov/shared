@@ -1,8 +1,14 @@
+from unittest.mock import MagicMock
+
 import httpx
 import pytest
 import respx
 
 from shared.torngit.base import TokenType
+from shared.torngit.exceptions import (
+    TorngitClientGeneralError,
+    TorngitServer5xxCodeError,
+)
 from shared.torngit.gitlab import Gitlab
 
 
@@ -11,7 +17,12 @@ def valid_handler():
     return Gitlab(
         repo=dict(service_id="187725", name="codecov-test"),
         owner=dict(username="ThiagoCodecov", service_id="109479"),
-        token=dict(key="some_key"),
+        oauth_consumer_token=dict(
+            key="some_key",
+            secret="my-even-more-secret-secret",
+            refresh_token="my-refresh",
+            redirect_uri_no_protocol="gitlab.com",
+        ),
     )
 
 
@@ -113,7 +124,7 @@ class TestUnitGitlab(object):
         assert res == "pending"
 
     @pytest.mark.asyncio
-    async def test_find_pull_request_by_commit_new_endpoint_doesnt_find_old_does(
+    async def test_find_pull_request_by_commit_endpoint_doesnt_find_old_does(
         self, mocker, valid_handler
     ):
         commit_sha = "c739768fcac68144a3a6d82305b9c4106934d31a"
@@ -174,3 +185,78 @@ class TestUnitGitlab(object):
             )
             await valid_handler.get_source("tests with space.py", "master")
         assert mocked_route.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_gitlab_refresh_fail_terminates_unavailable(
+        self, mocker, valid_handler
+    ):
+        with pytest.raises(TorngitServer5xxCodeError):
+            with respx.mock:
+                mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
+                    return_value=httpx.Response(
+                        status_code=502, content="Service unavailable try again later"
+                    )
+                )
+                await valid_handler.refresh_token()
+        mocked_refresh.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_gitlab_refresh_fail_terminates_bad_request(
+        self, mocker, valid_handler
+    ):
+        with pytest.raises(TorngitClientGeneralError):
+            with respx.mock:
+                mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
+                    return_value=httpx.Response(
+                        status_code=403, content='{"error": "unauthorized"}'
+                    )
+                )
+                await valid_handler.refresh_token()
+        mocked_refresh.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_gitlab_refresh_after_failed_request(self, mocker, valid_handler):
+        def side_effect(request, *args, **kwargs):
+            token = request.headers["Authorization"]
+            if token == "Bearer some_key":
+                return httpx.Response(
+                    status_code=401,
+                    content='{"error":"invalid_token","error_description":"Token is expired. You can either do re-authorization or token refresh."}',
+                )
+            elif token == "Bearer new_access_token":
+                return httpx.Response(
+                    status_code=200,
+                    content='{"commitid": null, "content": "code goes here"}',
+                )
+            pytest.fail(f"Wrong token received ({token})")
+
+        mock_refresh_callback: MagicMock = mocker.patch.object(
+            valid_handler,
+            "_on_token_refresh",
+            create=True,
+            side_effect=lambda token: True,
+        )
+        with respx.mock:
+            mocked_route = respx.get(
+                "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=master"
+            ).mock(side_effect=side_effect)
+            mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    content='{"access_token": "new_access_token","token_type": "bearer","refresh_token": "new_refresh_token"}',
+                )
+            )
+            await valid_handler.get_source("tests with space.py", "master")
+        assert mocked_route.call_count == 2
+        assert mocked_refresh.call_count == 1
+        assert valid_handler._token["key"] == "new_access_token"
+        assert valid_handler._token["refresh_token"] == "new_refresh_token"
+        assert valid_handler._token["redirect_uri_no_protocol"] == "gitlab.com"
+        assert mock_refresh_callback.call_count == 1
+        assert mock_refresh_callback.called_with(
+            {
+                "access_token": "new_access_token",
+                "refresh_token": "new_refresh_token",
+                "redirect_uri_no_protocol": "gitlab.com",
+            }
+        )
