@@ -1,5 +1,6 @@
 from enum import Enum, auto
-from typing import Callable, Coroutine, Optional, TypedDict
+from typing import Callable, Optional
+from mypy_extensions import TypedDict
 
 
 class Endpoints(Enum):
