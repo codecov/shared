@@ -1,10 +1,10 @@
 import re
 from enum import Enum, auto
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import httpx
 
-from shared.torngit.enums import Endpoints
+from shared.torngit.enums import Endpoints, OauthConsumerToken, OnRefreshCallback
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
@@ -17,9 +17,10 @@ class TokenType(Enum):
 
 
 class TorngitBaseAdapter(object):
-    _repo_url = None
+    _repo_url: str = None
     _aws_key = None
-    _oauth = None
+    _oauth: OauthConsumerToken = None
+    _on_token_refresh: OnRefreshCallback = None
     _token = None
     verify_ssl = None
 
@@ -72,15 +73,17 @@ class TorngitBaseAdapter(object):
 
     def __init__(
         self,
-        oauth_consumer_token=None,
+        oauth_consumer_token: OauthConsumerToken = None,
         timeouts=None,
         token=None,
-        token_type_mapping=None,
+        token_type_mapping: Dict[TokenType, Dict] = None,
+        on_token_refresh: OnRefreshCallback = None,
         verify_ssl=None,
         **kwargs,
     ):
         self._timeouts = timeouts or [10, 30]
         self._token = token
+        self._on_token_refresh = on_token_refresh
         self._token_type_mapping = token_type_mapping or {}
         self._oauth = oauth_consumer_token
         self.data = {"owner": {}, "repo": {}}
@@ -102,7 +105,7 @@ class TorngitBaseAdapter(object):
             if language in self.valid_languages:
                 return language
 
-    def set_token(self, token):
+    def set_token(self, token: OauthConsumerToken):
         self._token = token
 
     @property
