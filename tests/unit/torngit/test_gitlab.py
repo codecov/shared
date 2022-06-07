@@ -18,11 +18,13 @@ def valid_handler():
         repo=dict(service_id="187725", name="codecov-test"),
         owner=dict(username="ThiagoCodecov", service_id="109479"),
         oauth_consumer_token=dict(
-            key="some_key",
-            secret="my-even-more-secret-secret",
-            refresh_token="my-refresh",
-            redirect_uri_no_protocol="gitlab.com",
+            key="client_id",
+            secret='client_secret',
         ),
+        token=dict(
+            key='access_token',
+            refresh_token='refresh_token'
+        )
     )
 
 
@@ -218,7 +220,7 @@ class TestUnitGitlab(object):
     async def test_gitlab_refresh_after_failed_request(self, mocker, valid_handler):
         def side_effect(request, *args, **kwargs):
             token = request.headers["Authorization"]
-            if token == "Bearer some_key":
+            if token == "Bearer access_token":
                 return httpx.Response(
                     status_code=401,
                     content='{"error":"invalid_token","error_description":"Token is expired. You can either do re-authorization or token refresh."}',
@@ -251,12 +253,10 @@ class TestUnitGitlab(object):
         assert mocked_refresh.call_count == 1
         assert valid_handler._token["key"] == "new_access_token"
         assert valid_handler._token["refresh_token"] == "new_refresh_token"
-        assert valid_handler._token["redirect_uri_no_protocol"] == "gitlab.com"
         assert mock_refresh_callback.call_count == 1
         assert mock_refresh_callback.called_with(
             {
                 "access_token": "new_access_token",
                 "refresh_token": "new_refresh_token",
-                "redirect_uri_no_protocol": "gitlab.com",
             }
         )

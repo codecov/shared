@@ -5,6 +5,7 @@ from base64 import b64decode
 from typing import List
 from urllib.parse import quote, urlencode
 
+from shared.config import get_config
 import httpx
 
 from shared.metrics import metrics
@@ -29,6 +30,7 @@ class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
     api_url = "https://gitlab.com/api/v{}"
+    _redirect_uri = None    # Necessary to refresh tokens
     urls = dict(
         owner="{username}",
         user="{username}",
@@ -43,6 +45,17 @@ class Gitlab(TorngitBaseAdapter):
         pull="{username}/{name}/merge_requests/%(pullid)s",
         tree="{username}/{name}/tree/%(commitid)s",
     )
+
+    @property
+    def redirect_uri(self):
+        if not self._redirect_uri is None:
+            return self._redirect_uri
+        from_config = get_config("gitlab", "redirect_uri", default=None)
+        if from_config is not None:
+            return from_config
+        base = get_config("setup", "codecov_url", default="https://codecov.io")
+        self._redirect_uri = base + '/login/gitlab'
+        return self._redirect_uri
 
     async def fetch_and_handle_errors(
         self,
@@ -148,14 +161,13 @@ class Gitlab(TorngitBaseAdapter):
                 dict(
                     refresh_token=self.token["refresh_token"],
                     grant_type="refresh_token",
-                    redirect_uri=self.token["redirect_uri_no_protocol"],
+                    redirect_uri=self.redirect_uri,
                     **creds,
                 )
             ),
         )
         self.set_token(
             {
-                **self.token,
                 "key": res["access_token"],
                 "refresh_token": res["refresh_token"],
             }
@@ -223,7 +235,6 @@ class Gitlab(TorngitBaseAdapter):
 
         self.set_token(
             {
-                **self.token,
                 "key": res["access_token"],
                 "refresh_token": res["refresh_token"],
             }
