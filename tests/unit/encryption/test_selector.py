@@ -102,3 +102,22 @@ def test_decrypt_token_key_normal_generated_with_secret_pair():
     encoded = different_enc.encode(value)
     res = different_enc.decrypt_token(encoded)
     assert res == {"key": value.split(":")[0], "secret": value.split(":")[1]}
+
+
+def test_decrypt_token_key_normal_generated_with_secret_pair():
+    value = "jd3dsfsasq$^ew: :r8cndsbc-0wr$"
+    legacy_encryptor = StandardEncryptor("aruba", "jamaica")
+    enc_dict = {
+        "abc": StandardEncryptor("part1"),
+        "abd": StandardEncryptor("part1", "abd", "banana"),
+        "plq": StandardEncryptor("r", "qwerty", "apple"),
+        DEFAULT_ENCRYPTOR_CONSTANT: legacy_encryptor,
+    }
+    different_enc = EncryptorDivider(enc_dict, "abd")
+    encoded = different_enc.encode(value)
+    res = different_enc.decrypt_token(encoded)
+    assert res == {
+        "key": value.split(":")[0],
+        "refresh_token": value.split(":")[2],
+        "secret": None,
+    }

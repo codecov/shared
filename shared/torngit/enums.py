@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Callable, Optional
-from dataclasses import dataclass
 
 
 class Endpoints(Enum):
