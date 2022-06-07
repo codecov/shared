@@ -5,9 +5,9 @@ from base64 import b64decode
 from typing import List
 from urllib.parse import quote, urlencode
 
-from shared.config import get_config
 import httpx
 
+from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints, OauthConsumerToken
@@ -30,7 +30,7 @@ class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
     api_url = "https://gitlab.com/api/v{}"
-    _redirect_uri = None    # Necessary to refresh tokens
+    _redirect_uri = None  # Necessary to refresh tokens
     urls = dict(
         owner="{username}",
         user="{username}",
@@ -54,7 +54,7 @@ class Gitlab(TorngitBaseAdapter):
         if from_config is not None:
             return from_config
         base = get_config("setup", "codecov_url", default="https://codecov.io")
-        self._redirect_uri = base + '/login/gitlab'
+        self._redirect_uri = base + "/login/gitlab"
         return self._redirect_uri
 
     async def fetch_and_handle_errors(

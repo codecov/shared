@@ -19,16 +19,49 @@ def valid_handler():
         owner=dict(username="ThiagoCodecov", service_id="109479"),
         oauth_consumer_token=dict(
             key="client_id",
-            secret='client_secret',
+            secret="client_secret",
         ),
-        token=dict(
-            key='access_token',
-            refresh_token='refresh_token'
-        )
+        token=dict(key="access_token", refresh_token="refresh_token"),
     )
 
 
 class TestUnitGitlab(object):
+    def test_redirect_uri(self, mocker):
+        gl = Gitlab()
+        assert gl.redirect_uri == "https://codecov.io/login/gitlab"
+
+        def custom_config(*args, **kwargs):
+            print(args)
+            if args == ("gitlab", "redirect_uri"):
+                return "https://custom_redirect.com"
+            if args == ("setup", "codecov_url"):
+                return "http://localhost"
+
+        mocked_config: MagicMock = mocker.patch(
+            "shared.torngit.gitlab.get_config", side_effect=custom_config
+        )
+        gl._redirect_uri = None
+        assert gl._redirect_uri == None
+        assert gl.redirect_uri == "https://custom_redirect.com"
+        mocked_config.assert_called_with("gitlab", "redirect_uri", default=None)
+
+        def custom_config(*args, **kwargs):
+            print(args)
+            if args == ("gitlab", "redirect_uri"):
+                return None
+            if args == ("setup", "codecov_url"):
+                return "http://localhost"
+
+        mocked_config: MagicMock = mocker.patch(
+            "shared.torngit.gitlab.get_config", side_effect=custom_config
+        )
+        gl._redirect_uri = None
+        assert gl._redirect_uri == None
+        assert gl.redirect_uri == "http://localhost/login/gitlab"
+        mocked_config.assert_called_with(
+            "setup", "codecov_url", default="https://codecov.io"
+        )
+
     @pytest.mark.asyncio
     async def test_get_commit_statuses(self, mocker, valid_handler):
         mocked_fetch = mocker.patch.object(
@@ -215,6 +248,42 @@ class TestUnitGitlab(object):
                 )
                 await valid_handler.refresh_token()
         mocked_refresh.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_gitlab_double_refresh(self, mocker, valid_handler):
+        def side_effect(request, *args, **kwargs):
+            token = request.headers["Authorization"]
+            if token == "Bearer access_token":
+                return httpx.Response(
+                    status_code=200,
+                    content='{"access_token": "new_access_token","token_type": "bearer","refresh_token": "new_refresh_token"}',
+                )
+            elif token == "Bearer new_access_token":
+                return httpx.Response(
+                    status_code=200,
+                    content='{"access_token": "newer_access_token","token_type": "bearer","refresh_token": "newer_refresh_token"}',
+                )
+            pytest.fail(f"Wrong token received ({token})")
+
+        assert valid_handler._oauth["key"] == "client_id"
+        assert valid_handler._oauth["secret"] == "client_secret"
+
+        with respx.mock:
+            mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
+                side_effect=side_effect
+            )
+            await valid_handler.refresh_token()
+            assert mocked_refresh.call_count == 1
+            assert valid_handler._token["key"] == "new_access_token"
+            assert valid_handler._token["refresh_token"] == "new_refresh_token"
+
+            await valid_handler.refresh_token()
+            assert mocked_refresh.call_count == 2
+            assert valid_handler._token["key"] == "newer_access_token"
+            assert valid_handler._token["refresh_token"] == "newer_refresh_token"
+
+        assert valid_handler._oauth["key"] == "client_id"
+        assert valid_handler._oauth["secret"] == "client_secret"
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_after_failed_request(self, mocker, valid_handler):
