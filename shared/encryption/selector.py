@@ -1,5 +1,7 @@
 import logging
 
+from shared.encryption.token import decode_token
+
 log = logging.getLogger(__name__)
 
 DEFAULT_ENCRYPTOR_CONSTANT = "default_enc"
@@ -34,30 +36,5 @@ class EncryptorDivider(object):
         return result.encode()
 
     def decrypt_token(self, oauth_token):
-        """ "
-        This function decrypts a oauth_token into its different parts.
-        At the moment it does different things depending on the provider.
-
-        - github
-            Only stores the "key" as the entire token
-        - bitbucket
-            Encodes the token as f"{key}:{secret}"
-        - gitlab
-            Encodes the token as f"{key}: :{refresh_token}"
-            (notice the space where {secret} should go to avoid having '::', used by decode function)
-        """
         _oauth: str = self.decode(oauth_token)
-        token = {}
-        colon_count = _oauth.count(":")
-        if colon_count > 1:
-            # Gitlab
-            token["key"], token["secret"], token["refresh_token"] = _oauth.split(":", 2)
-            token["secret"] = None
-        elif colon_count == 1:
-            # Bitbucket
-            token["key"], token["secret"] = _oauth.split(":", 1)
-        else:
-            # Github
-            token["key"] = _oauth
-            token["secret"] = None
-        return token
+        return decode_token(_oauth)

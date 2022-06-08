@@ -4,7 +4,8 @@ from typing import Dict, List, Optional, Tuple
 
 import httpx
 
-from shared.torngit.enums import Endpoints, OauthConsumerToken, OnRefreshCallback
+from shared.torngit.enums import Endpoints
+from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 

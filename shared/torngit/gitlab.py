@@ -10,7 +10,7 @@ import httpx
 from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
-from shared.torngit.enums import Endpoints, OauthConsumerToken
+from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
@@ -19,6 +19,7 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
 )
 from shared.torngit.status import Status
+from shared.typings.oauth_token_types import OauthConsumerToken
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
