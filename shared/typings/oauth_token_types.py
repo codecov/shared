@@ -3,7 +3,7 @@ from typing import Callable, Optional
 
 
 @dataclass
-class OauthConsumerToken:
+class OauthConsumerToken(object):
     key: str
     secret: str
     refresh_token: str
