@@ -65,3 +65,11 @@ class TorngitServerUnreachableError(TorngitServerFailureError):
 
 class TorngitServer5xxCodeError(TorngitServerFailureError):
     pass
+
+
+class TorngitRefreshTokenFailedError(TorngitError):
+    pass
+
+
+class TorngitCantRefreshTokenError(TorngitClientError):
+    pass

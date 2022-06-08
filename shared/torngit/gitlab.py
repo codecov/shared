@@ -12,9 +12,11 @@ from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
+    TorngitCantRefreshTokenError,
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitObjectNotFoundError,
+    TorngitRefreshTokenFailedError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
 )
@@ -69,81 +71,83 @@ class Gitlab(TorngitBaseAdapter):
         version=4,
         **args,
     ):
-        if url_path.startswith("/"):
-            _log = dict(
-                event="api",
-                endpoint=url_path,
-                method=method,
-                bot=(token or self.token).get("username"),
-            )
-            url_path = self.api_url.format(version) + url_path
-        else:
-            _log = {}
-
-        headers = {
-            "Accept": "application/json",
-            "User-Agent": os.getenv("USER_AGENT", "Default"),
-        }
-
-        if isinstance(body, dict):
-            headers["Content-Type"] = "application/json"
-            body = json.dumps(body)
-
-        if token or self.token:
-            headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
-
-        url = url_concat(url_path, args).replace(" ", "%20")
-
-        try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
-                res = await client.request(
-                    method.upper(), url, headers=headers, data=body
+        current_retry = 0
+        max_retries = 2
+        while current_retry < max_retries:
+            current_retry += 1
+            if url_path.startswith("/"):
+                _log = dict(
+                    event="api",
+                    endpoint=url_path,
+                    method=method,
+                    bot=(token or self.token).get("username"),
                 )
-            logged_body = None
-            if res.status_code >= 300 and res.text is not None:
-                logged_body = res.text
-            log.log(
-                logging.WARNING if res.status_code >= 300 else logging.INFO,
-                "GitLab HTTP %s",
-                res.status_code,
-                extra=dict(time_taken=timer.ms, body=logged_body, **_log),
-            )
+                url_path = self.api_url.format(version) + url_path
+            else:
+                _log = {}
 
-            if res.status_code == 599:
-                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
-                raise TorngitServerUnreachableError(
-                    "Gitlab was not able to be reached, server timed out."
-                )
-            elif res.status_code >= 500:
-                metrics.incr(f"{METRICS_PREFIX}.api.5xx")
-                raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
-            elif res.status_code >= 400:
-                content = res.json()
-                if (
-                    res.status_code == 401
-                    and content.get("error") == "invalid_token"
-                    and content.get("error_description", "").startswith(
-                        "Token is expired."
+            headers = {
+                "Accept": "application/json",
+                "User-Agent": os.getenv("USER_AGENT", "Default"),
+            }
+
+            if isinstance(body, dict):
+                headers["Content-Type"] = "application/json"
+                body = json.dumps(body)
+
+            if token or self.token:
+                headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
+
+            url = url_concat(url_path, args).replace(" ", "%20")
+
+            try:
+                with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
+                    res = await client.request(
+                        method.upper(), url, headers=headers, data=body
                     )
+                logged_body = None
+                if res.status_code >= 300 and res.text is not None:
+                    logged_body = res.text
+                log.log(
+                    logging.WARNING if res.status_code >= 300 else logging.INFO,
+                    "GitLab HTTP %s",
+                    res.status_code,
+                    extra=dict(time_taken=timer.ms, body=logged_body, **_log),
+                )
+
+                if res.status_code == 599:
+                    metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
+                    raise TorngitServerUnreachableError(
+                        "Gitlab was not able to be reached, server timed out."
+                    )
+                elif res.status_code >= 500:
+                    metrics.incr(f"{METRICS_PREFIX}.api.5xx")
+                    raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
+                elif (
+                    res.status_code == 401
+                    and res.json().get("error") == "invalid_token"
+                    and res.json()
+                    .get("error_description", "")
+                    .startswith("Token is expired.")
                 ):
                     # Refresh token and retry
-                    new_token = await self.refresh_token()
+                    token = await self.refresh_token()
                     if callable(self._on_token_refresh):
-                        self._on_token_refresh(new_token)
-                    return await self.fetch_and_handle_errors(
-                        client, method, url_path, body=body, token=new_token, **args
+                        self._on_token_refresh(token)
+                    # Will retry the original request
+                    continue
+                elif res.status_code >= 400:
+                    message = f"Gitlab API: {res.status_code}"
+                    metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
+                    raise TorngitClientGeneralError(
+                        res.status_code, response_data=res.json(), message=message
                     )
-                message = f"Gitlab API: {res.status_code}"
-                metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                raise TorngitClientGeneralError(
-                    res.status_code, response_data=res.json(), message=message
+                return res
+            except (httpx.TimeoutException, httpx.NetworkError):
+                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
+                raise TorngitServerUnreachableError(
+                    "GitLab was not able to be reached. Gateway 502. Please try again."
                 )
-            return res
-        except (httpx.TimeoutException, httpx.NetworkError):
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
-            raise TorngitServerUnreachableError(
-                "GitLab was not able to be reached. Gateway 502. Please try again."
-            )
 
     async def refresh_token(self) -> OauthConsumerToken:
         """
@@ -151,26 +155,34 @@ class Gitlab(TorngitBaseAdapter):
         The refresh_token value is stored as part of the oauth token dict.
 
         ! side effect: updates the self._token value
+        ! raises TorngitCantRefreshTokenError
+        ! raises TorngitRefreshTokenFailedError
         """
         creds = self._oauth_consumer_token()
         creds = dict(client_id=creds["key"], client_secret=creds["secret"])
+
+        if self.token.get("refresh_token") is None:
+            raise TorngitCantRefreshTokenError(
+                "Token doesn't have refresh token information"
+            )
+
         # https://docs.gitlab.com/ee/api/oauth2.html#authorization-code-flow
-        res = await self.api(
-            "post",
-            self.service_url + "/oauth/token",
-            body=urlencode(
-                dict(
-                    refresh_token=self.token["refresh_token"],
-                    grant_type="refresh_token",
-                    redirect_uri=self.redirect_uri,
-                    **creds,
-                )
-            ),
+        params = urlencode(
+            dict(
+                refresh_token=self.token["refresh_token"],
+                grant_type="refresh_token",
+                redirect_uri=self.redirect_uri,
+                **creds,
+            )
         )
+        res = httpx.post(self.service_url + "/oauth/token", data=params, params=params)
+        if res.status_code >= 300:
+            raise TorngitRefreshTokenFailedError(res)
+        content = res.json()
         self.set_token(
             {
-                "key": res["access_token"],
-                "refresh_token": res["refresh_token"],
+                "key": content["access_token"],
+                "refresh_token": content["refresh_token"],
             }
         )
         return self.token

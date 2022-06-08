@@ -1,4 +1,6 @@
 from unittest.mock import MagicMock
+from urllib.parse import parse_qs
+from urllib.request import Request
 
 import httpx
 import pytest
@@ -6,7 +8,9 @@ import respx
 
 from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
+    TorngitCantRefreshTokenError,
     TorngitClientGeneralError,
+    TorngitRefreshTokenFailedError,
     TorngitServer5xxCodeError,
 )
 from shared.torngit.gitlab import Gitlab
@@ -225,7 +229,7 @@ class TestUnitGitlab(object):
     async def test_gitlab_refresh_fail_terminates_unavailable(
         self, mocker, valid_handler
     ):
-        with pytest.raises(TorngitServer5xxCodeError):
+        with pytest.raises(TorngitRefreshTokenFailedError):
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                     return_value=httpx.Response(
@@ -239,7 +243,22 @@ class TestUnitGitlab(object):
     async def test_gitlab_refresh_fail_terminates_bad_request(
         self, mocker, valid_handler
     ):
-        with pytest.raises(TorngitClientGeneralError):
+        with pytest.raises(TorngitRefreshTokenFailedError):
+            with respx.mock:
+                mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
+                    return_value=httpx.Response(
+                        status_code=403, content='{"error": "unauthorized"}'
+                    )
+                )
+                await valid_handler.refresh_token()
+        mocked_refresh.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_gitlab_refresh_fail_terminates_bad_request(
+        self, mocker, valid_handler
+    ):
+        valid_handler._token = {"access_token": "old_token_without_refresh"}
+        with pytest.raises(TorngitCantRefreshTokenError):
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                     return_value=httpx.Response(
@@ -252,13 +271,14 @@ class TestUnitGitlab(object):
     @pytest.mark.asyncio
     async def test_gitlab_double_refresh(self, mocker, valid_handler):
         def side_effect(request, *args, **kwargs):
-            token = request.headers["Authorization"]
-            if token == "Bearer access_token":
+            parsed_content = parse_qs(request.content)
+            refresh_token = parsed_content[b"refresh_token"][0]
+            if refresh_token == b"refresh_token":
                 return httpx.Response(
                     status_code=200,
                     content='{"access_token": "new_access_token","token_type": "bearer","refresh_token": "new_refresh_token"}',
                 )
-            elif token == "Bearer new_access_token":
+            elif refresh_token == b"new_refresh_token":
                 return httpx.Response(
                     status_code=200,
                     content='{"access_token": "newer_access_token","token_type": "bearer","refresh_token": "newer_refresh_token"}',
