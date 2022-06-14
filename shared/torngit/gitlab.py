@@ -228,9 +228,21 @@ class Gitlab(TorngitBaseAdapter):
                 else:
                     current_page, has_more = None, False
 
-    async def get_authenticated_user(self, code, redirect_uri):
+    async def get_authenticated_user(self, code, redirect_uri=None):
+        """
+        Get's access_token and user's details from gitlab.
+
+        Exchanges the code for a proper access_token and refresh_token pair.
+        Get's user details from /user endpoint from GitLab.
+        Returns everything.
+
+        Args:
+            code: the code to be redeemed for a access_token / refresh_token pair
+            redirect_uri: !deprecated. The uri to redirect to. Needs to match redirect_uri used to get the code.
+        """
         creds = self._oauth_consumer_token()
         creds = dict(client_id=creds["key"], client_secret=creds["secret"])
+        redirect_uri = redirect_uri or self._redirect_uri
 
         # http://doc.gitlab.com/ce/api/oauth2.html
         res = await self.api(
