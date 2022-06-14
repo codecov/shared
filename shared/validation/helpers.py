@@ -342,6 +342,7 @@ class LayoutStructure(object):
             "uncovered",
             "newheader",
             "newfooter",
+            "feedback",
         ]
     )
 
