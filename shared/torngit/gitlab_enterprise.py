@@ -7,6 +7,17 @@ from shared.torngit.gitlab import Gitlab
 class GitlabEnterprise(Gitlab):
     service = "gitlab_enterprise"
 
+    @property
+    def redirect_uri(self):
+        if not self._redirect_uri is None:
+            return self._redirect_uri
+        from_config = get_config("gitlab_enterprise", "redirect_uri", default=None)
+        if from_config is not None:
+            return from_config
+        base = get_config("setup", "codecov_url", default="https://codecov.io")
+        self._redirect_uri = base + "/login/gle"
+        return self._redirect_uri
+
     @classmethod
     def get_service_url(cls):
         return get_config("gitlab_enterprise", "url")
