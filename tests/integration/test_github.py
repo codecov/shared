@@ -338,6 +338,35 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_commit_diff_unicode_newline(self, valid_handler, codecov_vcr):
+        expected_result = {
+            "files": {
+                ".travis.yml": {
+                    "type": "modified",
+                    "before": None,
+                    "segments": [
+                        {
+                            "header": ["1", "3", "1", "5"],
+                            "lines": [
+                                "+sudo: false",
+                                "+",
+                                " language: python",
+                                " ",
+                                " python\u2028:",  # should not split on the unicode line separator
+                            ],
+                        }
+                    ],
+                    "stats": {"added": 2, "removed": 0},
+                }
+            }
+        }
+
+        res = await valid_handler.get_commit_diff(
+            "2be550c135cc13425cb2c239b9321e78dcfb787b"
+        )
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_commit_diff_not_found(self, valid_handler, codecov_vcr):
         with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_commit_diff(
