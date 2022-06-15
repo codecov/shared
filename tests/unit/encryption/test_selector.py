@@ -117,7 +117,7 @@ def test_decrypt_token_key_normal_generated_with_secret_pair():
     encoded = different_enc.encode(value)
     res = different_enc.decrypt_token(encoded)
     assert res == {
-        "key": value.split(":")[0],
-        "refresh_token": value.split(":")[2],
+        "key": "jd3dsfsasq$^ew",
+        "refresh_token": "r8cndsbc-0wr$",
         "secret": None,
     }
