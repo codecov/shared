@@ -131,7 +131,7 @@ class Gitlab(TorngitBaseAdapter):
                     .startswith("Token is expired.")
                 ):
                     # Refresh token and retry
-                    token = await self.refresh_token()
+                    token = await self.refresh_token(client)
                     if callable(self._on_token_refresh):
                         self._on_token_refresh(token)
                     # Will retry the original request
@@ -149,7 +149,7 @@ class Gitlab(TorngitBaseAdapter):
                     "GitLab was not able to be reached. Gateway 502. Please try again."
                 )
 
-    async def refresh_token(self) -> OauthConsumerToken:
+    async def refresh_token(self, client: httpx.AsyncClient) -> OauthConsumerToken:
         """
         This function requests a refresh token from GitLab.
         The refresh_token value is stored as part of the oauth token dict.
@@ -175,7 +175,9 @@ class Gitlab(TorngitBaseAdapter):
                 **creds,
             )
         )
-        res = httpx.post(self.service_url + "/oauth/token", data=params, params=params)
+        res = await client.request(
+            "POST", self.service_url + "/oauth/token", data=params, params=params
+        )
         if res.status_code >= 300:
             raise TorngitRefreshTokenFailedError(res)
         content = res.json()

@@ -236,7 +236,7 @@ class TestUnitGitlab(object):
                         status_code=502, content="Service unavailable try again later"
                     )
                 )
-                await valid_handler.refresh_token()
+                await valid_handler.refresh_token(valid_handler.get_client())
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
@@ -250,7 +250,7 @@ class TestUnitGitlab(object):
                         status_code=403, content='{"error": "unauthorized"}'
                     )
                 )
-                await valid_handler.refresh_token()
+                await valid_handler.refresh_token(valid_handler.get_client())
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
@@ -265,7 +265,7 @@ class TestUnitGitlab(object):
                         status_code=403, content='{"error": "unauthorized"}'
                     )
                 )
-                await valid_handler.refresh_token()
+                await valid_handler.refresh_token(valid_handler.get_client())
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
@@ -283,7 +283,7 @@ class TestUnitGitlab(object):
                     status_code=200,
                     content='{"access_token": "newer_access_token","token_type": "bearer","refresh_token": "newer_refresh_token"}',
                 )
-            pytest.fail(f"Wrong token received ({token})")
+            pytest.fail(f"Wrong token received")
 
         assert valid_handler._oauth["key"] == "client_id"
         assert valid_handler._oauth["secret"] == "client_secret"
@@ -292,12 +292,12 @@ class TestUnitGitlab(object):
             mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                 side_effect=side_effect
             )
-            await valid_handler.refresh_token()
+            await valid_handler.refresh_token(valid_handler.get_client())
             assert mocked_refresh.call_count == 1
             assert valid_handler._token["key"] == "new_access_token"
             assert valid_handler._token["refresh_token"] == "new_refresh_token"
 
-            await valid_handler.refresh_token()
+            await valid_handler.refresh_token(valid_handler.get_client())
             assert mocked_refresh.call_count == 2
             assert valid_handler._token["key"] == "newer_access_token"
             assert valid_handler._token["refresh_token"] == "newer_refresh_token"
