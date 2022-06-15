@@ -21,3 +21,13 @@ def test_decode_access_token():
     assert decode_token("some_key:some_secret:refresh") == token
     token["secret"] = None
     assert decode_token("some_key: :refresh") == token
+    token = {
+        "access_token": "some_key",
+        "secret": "some_secret",
+        "refresh_token": "refresh",
+    }
+    assert decode_token(encode_token(token)) == {
+        "key": token["access_token"],
+        "secret": token["secret"],
+        "refresh_token": token["refresh_token"],
+    }

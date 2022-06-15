@@ -4,13 +4,14 @@ from shared.typings.oauth_token_types import OauthConsumerToken
 def encode_token(token: OauthConsumerToken) -> str:
     # Different git providers encode different information on the oauth_token column.
     # Check https://github.com/codecov/shared/blob/a1e7ad5a5beea9a697c79e1d6eb41802523c26d8/shared/encryption/selector.py#L36
-    string_to_save = token["access_token"]
-    if token.get("secret"):
-        string_to_save += f":{token['secret']}"
-    if token.get("refresh_token"):
-        string_to_save += (
-            ": " if token.get("secret") is None else ""
-        ) + f":{token['refresh_token']}"
+    if not token.get("secret") and not token.get("refresh_token"):
+        return token["access_token"]
+
+    string_to_save = (
+        token["access_token"]
+        + f":{token['secret'] if token.get('secret') else ' '}"
+        + (f':{token["refresh_token"]}' if token.get("refresh_token") else "")
+    )
     return string_to_save
 
 
