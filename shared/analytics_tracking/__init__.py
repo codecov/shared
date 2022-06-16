@@ -22,7 +22,12 @@ segment_enabled = bool(get_config("setup", "segment", "enabled", default=False))
 if segment_enabled:
     setup_analytics()
 
-event_names = ["Coverage Report Passed", "Coverage Report Failed"]
+event_names = [
+    "Coverage Report Passed",
+    "Coverage Report Failed",
+    "Impact Analysis Related Entrypoints Sent",
+    " Impact Analysis Critical Files Sent",
+]
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
