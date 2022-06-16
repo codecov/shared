@@ -26,8 +26,10 @@ event_names = [
     "Coverage Report Passed",
     "Coverage Report Failed",
     "Impact Analysis Related Entrypoints Sent",
-    " Impact Analysis Critical Files Sent",
+    "Impact Analysis Critical Files Sent",
 ]
+
+BLANK_SEGMENT_USER_ID = "-1"
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
