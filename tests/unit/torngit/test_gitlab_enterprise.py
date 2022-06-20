@@ -19,8 +19,6 @@ class TestGitlabEnterprise(object):
         mocked_config: MagicMock = mocker.patch(
             "shared.torngit.gitlab_enterprise.get_config", side_effect=custom_config
         )
-        gle._redirect_uri = None
-        assert gle._redirect_uri == None
         assert gle.redirect_uri == "https://custom_redirect.com"
         mocked_config.assert_called_with(
             "gitlab_enterprise", "redirect_uri", default=None
@@ -36,8 +34,6 @@ class TestGitlabEnterprise(object):
         mocked_config: MagicMock = mocker.patch(
             "shared.torngit.gitlab_enterprise.get_config", side_effect=custom_config
         )
-        gle._redirect_uri = None
-        assert gle._redirect_uri == None
         assert gle.redirect_uri == "http://localhost/login/gle"
         mocked_config.assert_called_with(
             "setup", "codecov_url", default="https://codecov.io"

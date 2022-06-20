@@ -33,7 +33,6 @@ class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
     api_url = "https://gitlab.com/api/v{}"
-    _redirect_uri = None  # Necessary to refresh tokens
     urls = dict(
         owner="{username}",
         user="{username}",
@@ -51,14 +50,11 @@ class Gitlab(TorngitBaseAdapter):
 
     @property
     def redirect_uri(self):
-        if not self._redirect_uri is None:
-            return self._redirect_uri
         from_config = get_config("gitlab", "redirect_uri", default=None)
         if from_config is not None:
             return from_config
         base = get_config("setup", "codecov_url", default="https://codecov.io")
-        self._redirect_uri = base + "/login/gitlab"
-        return self._redirect_uri
+        return base + "/login/gitlab"
 
     async def fetch_and_handle_errors(
         self,
