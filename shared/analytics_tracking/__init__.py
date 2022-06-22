@@ -27,6 +27,7 @@ event_names = [
     "Coverage Report Failed",
     "Impact Analysis Related Entrypoints Sent",
     "Impact Analysis Critical Files Sent",
+    "Impact Analysis Related Entrypoints In YAML",
 ]
 
 BLANK_SEGMENT_USER_ID = "-1"
