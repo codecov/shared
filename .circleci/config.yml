@@ -74,7 +74,7 @@ jobs:
           name: codecov python-uploader
           command: |
             . venv/bin/activate
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@b72d14ac768644b6e4dbf842e3f3d2f7711eb432#egg=codecov-cli
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@2b327a135fc5100f881f0eb7e62d54ca8e342705#egg=codecov-cli
             python -m codecov_cli --auto-load-params-from circleci do-upload --flag python-with-python-uploader
       - run:
           name: codecov latest-uploader
