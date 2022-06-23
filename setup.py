@@ -35,6 +35,5 @@ setup(
         "analytics-python==1.3.0b1",
         "httpx>=0.16.0",
         "oauthlib",
-        "codecov-cli @ git+ssh://git@github.com/codecov/codecov-cli.git@b72d14ac768644b6e4dbf842e3f3d2f7711eb432#egg=codecov-cli"
     ],
 )
