@@ -71,11 +71,14 @@ jobs:
             python -m pytest --cov=./
         
       - run:
-          name: codecov
+          name: codecov latest-uploader
           command: |
             . venv/bin/activate
-            pip install codecov
-            codecov --required --flags python
+            # pip install codecov
+            # codecov --required --flags python
+            curl -v -o codecov-latest https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov-latest
+            ./codecov-latest -F python-with-latest-uploader -Z
           
   rust:
     docker:
@@ -97,8 +100,11 @@ jobs:
             RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
             llvm-profdata-14 merge -sparse ribs-*.profraw -o ribs.profdata
             llvm-cov-14 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
-            pip install codecov
-            codecov --required --flags rust
+            # pip install codecov
+            # codecov --required --flags rust
+            curl -v -o codecov-latest https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov-latest
+            ./codecov-latest -F rust-with-latest-uploader -Z
 workflows:
   version: 2
   lint-test:
