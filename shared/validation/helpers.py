@@ -334,13 +334,15 @@ class LayoutStructure(object):
             "flags",
             "footer",
             "header",
-            "header",
             "reach",
             "suggestions",
             "betaprofiling",
             "sunburst",
             "tree",
             "uncovered",
+            "newheader",
+            "newfooter",
+            "feedback",
         ]
     )
 

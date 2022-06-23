@@ -11,7 +11,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.7.17",
+    version="0.7.19",
     rust_extensions=[RustExtension("shared.rustyribs", binding=Binding.PyO3)],
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     # rust extensions are not zip safe, just like C-extensions.
@@ -29,6 +29,7 @@ setup(
         "google-cloud-storage>=1.21",
         "minio~=6.0",
         "oauth2",
+        "protobuf<4.0.0dev",
         "tlslite-ng",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",

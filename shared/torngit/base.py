@@ -135,7 +135,11 @@ class TorngitBaseAdapter(object):
         diff = ("\n%s" % diff).split("\ndiff --git a/")
         segment = None
         for _diff in diff[1:]:
-            _diff = _diff.splitlines()
+            _diff = _diff.replace("\r\n", "\n").split("\n")
+            if _diff[-1] == "":
+                # if the diff ends in a '\n' character then we'll have an extra
+                # empty line at the end that we don't want
+                _diff.pop()
 
             try:
                 before, after = _diff.pop(0).split(" b/", 1)
@@ -167,7 +171,7 @@ class TorngitBaseAdapter(object):
             # make file, this is ONE file not multiple
             for source in _diff:
                 if source == "\ No newline at end of file":
-                    break
+                    continue
 
                 sol4 = source[:4]
                 if sol4 == "dele":
