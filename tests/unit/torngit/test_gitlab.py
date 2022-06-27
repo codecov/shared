@@ -276,15 +276,18 @@ class TestUnitGitlab(object):
             )
             await valid_handler.refresh_token(valid_handler.get_client())
             assert mocked_refresh.call_count == 1
-            assert valid_handler._token == dict(key="new_access_token", refresh_token="new_refresh_token")
+            assert valid_handler._token == dict(
+                key="new_access_token", refresh_token="new_refresh_token"
+            )
 
             await valid_handler.refresh_token(valid_handler.get_client())
             assert mocked_refresh.call_count == 2
-            assert valid_handler._token == dict(key="newer_access_token", refresh_token="newer_refresh_token")
+            assert valid_handler._token == dict(
+                key="newer_access_token", refresh_token="newer_refresh_token"
+            )
 
         # Make sure that changing the token doesn't change the _oauth
         assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
-
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_after_failed_request(self, mocker, valid_handler):

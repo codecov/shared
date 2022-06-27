@@ -5,10 +5,10 @@ def encode_token(token: OauthConsumerToken) -> str:
     # Different git providers encode different information on the oauth_token column.
     # Check decode_token function below.
     if not token.get("secret") and not token.get("refresh_token"):
-        return token["access_token"]
+        return token["key"]
 
     string_to_save = (
-        token["access_token"]
+        token["key"]
         + f":{token['secret'] if token.get('secret') else ' '}"
         + (f':{token["refresh_token"]}' if token.get("refresh_token") else "")
     )
