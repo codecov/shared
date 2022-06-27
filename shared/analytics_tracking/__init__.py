@@ -6,6 +6,7 @@ from shared.config import get_config
 
 log = logging.getLogger("__name__")
 
+BLANK_SEGMENT_USER_ID = -1
 
 # Set up
 def on_error(error):
@@ -22,7 +23,11 @@ segment_enabled = bool(get_config("setup", "segment", "enabled", default=False))
 if segment_enabled:
     setup_analytics()
 
-event_names = ["Coverage Report Passed", "Coverage Report Failed"]
+event_names = [
+    "Coverage Report Passed",
+    "Coverage Report Failed",
+    "Impact Analysis Related Entrypoints In YAML",
+]
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
@@ -73,3 +78,11 @@ def track_user(user_id, user_data={}, is_enterprise=False):
         return
 
     analytics.identify(user_id, user_data)
+
+
+def segment_track_betaprofiling_in_YAML(repo):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Related Entrypoints In YAML",
+        event_data={"repo_id": repo.repoid, "repo_owner_id": repo.ownerid},
+    )
