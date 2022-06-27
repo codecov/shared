@@ -3,7 +3,7 @@ from shared.typings.oauth_token_types import OauthConsumerToken
 
 def encode_token(token: OauthConsumerToken) -> str:
     # Different git providers encode different information on the oauth_token column.
-    # Check https://github.com/codecov/shared/blob/a1e7ad5a5beea9a697c79e1d6eb41802523c26d8/shared/encryption/selector.py#L36
+    # Check decode_token function below.
     if not token.get("secret") and not token.get("refresh_token"):
         return token["access_token"]
 
