@@ -30,37 +30,24 @@ def valid_handler():
 
 
 class TestUnitGitlab(object):
-    def test_redirect_uri(self, mocker):
+    def test_redirect_uri_default(self):
         gl = Gitlab()
         assert gl.redirect_uri == "https://codecov.io/login/gitlab"
 
-        def custom_config(*args, **kwargs):
-            print(args)
-            if args == ("gitlab", "redirect_uri"):
-                return "https://custom_redirect.com"
-            if args == ("setup", "codecov_url"):
-                return "http://localhost"
-
-        mocked_config: MagicMock = mocker.patch(
-            "shared.torngit.gitlab.get_config", side_effect=custom_config
+    def test_redirect_uri_custom_redirect(self, mock_configuration):
+        gl = Gitlab()
+        mock_configuration._params.update(
+            {"gitlab": {"redirect_uri": "https://custom_redirect.com"}}
         )
         assert gl.redirect_uri == "https://custom_redirect.com"
-        mocked_config.assert_called_with("gitlab", "redirect_uri", default=None)
 
-        def custom_config(*args, **kwargs):
-            print(args)
-            if args == ("gitlab", "redirect_uri"):
-                return None
-            if args == ("setup", "codecov_url"):
-                return "http://localhost"
+    def test_redirect_uri_custom_base(self, mock_configuration):
+        gl = Gitlab()
 
-        mocked_config: MagicMock = mocker.patch(
-            "shared.torngit.gitlab.get_config", side_effect=custom_config
+        mock_configuration._params.update(
+            {"setup": {"codecov_url": "http://localhost"}}
         )
         assert gl.redirect_uri == "http://localhost/login/gitlab"
-        mocked_config.assert_called_with(
-            "setup", "codecov_url", default="https://codecov.io"
-        )
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses(self, mocker, valid_handler):
