@@ -67,34 +67,34 @@ class Gitlab(TorngitBaseAdapter):
         version=4,
         **args,
     ):
+
+        if url_path.startswith("/"):
+            _log = dict(
+                event="api",
+                endpoint=url_path,
+                method=method,
+                bot=(token or self.token).get("username"),
+            )
+            url_path = self.api_url.format(version) + url_path
+        else:
+            _log = {}
+
+        headers = {
+            "Accept": "application/json",
+            "User-Agent": os.getenv("USER_AGENT", "Default"),
+        }
+        if isinstance(body, dict):
+            headers["Content-Type"] = "application/json"
+            body = json.dumps(body)
+        url = url_concat(url_path, args).replace(" ", "%20")
+
         current_retry = 0
         max_retries = 2
         while current_retry < max_retries:
             current_retry += 1
-            if url_path.startswith("/"):
-                _log = dict(
-                    event="api",
-                    endpoint=url_path,
-                    method=method,
-                    bot=(token or self.token).get("username"),
-                )
-                url_path = self.api_url.format(version) + url_path
-            else:
-                _log = {}
-
-            headers = {
-                "Accept": "application/json",
-                "User-Agent": os.getenv("USER_AGENT", "Default"),
-            }
-
-            if isinstance(body, dict):
-                headers["Content-Type"] = "application/json"
-                body = json.dumps(body)
 
             if token or self.token:
                 headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
-
-            url = url_concat(url_path, args).replace(" ", "%20")
 
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
@@ -130,15 +130,15 @@ class Gitlab(TorngitBaseAdapter):
                     token = await self.refresh_token(client)
                     if callable(self._on_token_refresh):
                         self._on_token_refresh(token)
-                    # Will retry the original request
-                    continue
                 elif res.status_code >= 400:
                     message = f"Gitlab API: {res.status_code}"
                     metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
                     raise TorngitClientGeneralError(
                         res.status_code, response_data=res.json(), message=message
                     )
-                return res
+                else:
+                    # Success case
+                    return res
             except (httpx.TimeoutException, httpx.NetworkError):
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
