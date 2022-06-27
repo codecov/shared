@@ -154,8 +154,10 @@ class Gitlab(TorngitBaseAdapter):
         ! raises TorngitCantRefreshTokenError
         ! raises TorngitRefreshTokenFailedError
         """
-        creds = self._oauth_consumer_token()
-        creds = dict(client_id=creds["key"], client_secret=creds["secret"])
+        creds_from_token = self._oauth_consumer_token()
+        creds_to_send = dict(
+            client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
+        )
 
         if self.token.get("refresh_token") is None:
             raise TorngitCantRefreshTokenError(
@@ -168,7 +170,7 @@ class Gitlab(TorngitBaseAdapter):
                 refresh_token=self.token["refresh_token"],
                 grant_type="refresh_token",
                 redirect_uri=self.redirect_uri,
-                **creds,
+                **creds_to_send,
             )
         )
         res = await client.request(
@@ -238,8 +240,10 @@ class Gitlab(TorngitBaseAdapter):
             code: the code to be redeemed for a access_token / refresh_token pair
             redirect_uri: !deprecated. The uri to redirect to. Needs to match redirect_uri used to get the code.
         """
-        creds = self._oauth_consumer_token()
-        creds = dict(client_id=creds["key"], client_secret=creds["secret"])
+        creds_from_token = self._oauth_consumer_token()
+        creds_to_send = dict(
+            client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
+        )
         redirect_uri = redirect_uri or self._redirect_uri
 
         # http://doc.gitlab.com/ce/api/oauth2.html
@@ -251,7 +255,7 @@ class Gitlab(TorngitBaseAdapter):
                     code=code,
                     grant_type="authorization_code",
                     redirect_uri=redirect_uri,
-                    **creds,
+                    **creds_to_send,
                 )
             ),
         )
