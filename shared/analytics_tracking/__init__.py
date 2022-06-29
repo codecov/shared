@@ -82,7 +82,7 @@ def track_user(user_id, user_data={}, is_enterprise=False):
     analytics.identify(user_id, user_data)
 
 
-def track_critical_files_sent(repo, commitid, pullid):
+def track_critical_files_sent(repo, commitid, pullid, is_enterprise):
     track_event(
         user_id=BLANK_SEGMENT_USER_ID,
         event_name="Impact Analysis Critical Files Sent",
@@ -92,10 +92,11 @@ def track_critical_files_sent(repo, commitid, pullid):
             "commit_id": commitid,
             "pull_id": pullid,
         },
+        is_enterprise=is_enterprise,
     )
 
 
-def track_related_entrypoints_sent(repo, commitid, pullid):
+def track_related_entrypoints_sent(repo, commitid, pullid, is_enterprise):
     track_event(
         user_id=BLANK_SEGMENT_USER_ID,
         event_name="Impact Analysis Related Entrypoints Sent",
@@ -105,4 +106,5 @@ def track_related_entrypoints_sent(repo, commitid, pullid):
             "commit_id": commitid,
             "pull_id": pullid,
         },
+        is_enterprise=is_enterprise,
     )
