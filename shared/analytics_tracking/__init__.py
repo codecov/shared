@@ -80,3 +80,29 @@ def track_user(user_id, user_data={}, is_enterprise=False):
         return
 
     analytics.identify(user_id, user_data)
+
+
+def track_critical_files_sent(repo, commitid, pullid):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Critical Files Sent",
+        event_data={
+            "repo_id": repo.repoid,
+            "repo_owner_id": repo.ownerid,
+            "commit_id": commitid,
+            "pull_id": pullid,
+        },
+    )
+
+
+def track_related_entrypoints_sent(repo, commitid, pullid):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Related Entrypoints Sent",
+        event_data={
+            "repo_id": repo.repoid,
+            "repo_owner_id": repo.ownerid,
+            "commit_id": commitid,
+            "pull_id": pullid,
+        },
+    )
