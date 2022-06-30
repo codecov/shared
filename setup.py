@@ -36,7 +36,4 @@ setup(
         "httpx>=0.16.0",
         "oauthlib",
     ],
-    dependency_links=[
-        "git+ssh://git@github.com/codecov/codecov-cli.git@bbbb4ebec1e7cdcf1534deb357b6ef2dc0cada5a#egg=codecov-cli",
-    ],
 )

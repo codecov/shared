@@ -78,7 +78,6 @@ jobs:
       - run:
           name: codecov latest-uploader
           command: |
-            . venv/bin/activate
             curl -o codecov-latest https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov-latest
             ./codecov-latest -F python-coverage-with-latest-uploader -Z
@@ -107,7 +106,9 @@ jobs:
       - run:
           name: codecov python-uploader
           command: |
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@bbbb4ebec1e7cdcf1534deb357b6ef2dc0cada5a
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r tests/requirements.txt 
             codecov --auto-load-params-from circleci do-upload --flag rust-coverage-with-python-uploader
       - run:
           name: codecov latest-uploader
