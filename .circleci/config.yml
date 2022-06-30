@@ -107,6 +107,7 @@ jobs:
       - run:
           name: codecov python-uploader
           command: |
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@bbbb4ebec1e7cdcf1534deb357b6ef2dc0cada5a
             codecov --auto-load-params-from circleci do-upload --flag rust-coverage-with-python-uploader
       - run:
           name: codecov latest-uploader
