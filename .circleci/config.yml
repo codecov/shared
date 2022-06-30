@@ -107,12 +107,10 @@ jobs:
       - run:
           name: codecov python-uploader
           command: |
-            . venv/bin/activate
             codecov --auto-load-params-from circleci do-upload --flag rust-coverage-with-python-uploader
       - run:
           name: codecov latest-uploader
           command: |
-            . venv/bin/activate
             curl -o codecov-latest https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov-latest
             ./codecov-latest -F rust-coverage-with-latest-uploader -Z
