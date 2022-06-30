@@ -73,28 +73,28 @@ class TestAnalyticsTracking(BaseTestCase):
         )
         setup_analytics()
 
-    def track_related_entrypoints_sent(self, mocker):
+    def test_track_betaprofiling_added_in_YAML(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         repo = MagicMock()
         track_betaprofiling_added_in_YAML(repo=repo, is_enterprise=False)
         assert mock_track.called
 
-    def track_related_entrypoints_sent(self, mocker):
+    def test_track_betaprofiling_removed_from_YAML(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         repo = MagicMock()
         track_betaprofiling_removed_from_YAML(repo=repo, is_enterprise=False)
         assert mock_track.called
 
-    def track_related_entrypoints_sent(self, mocker):
+    def test_track_show_critical_paths_added_in_YAML(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         repo = MagicMock()
         track_show_critical_paths_added_in_YAML(repo=repo, is_enterprise=False)
         assert mock_track.called
 
-    def track_related_entrypoints_sent(self, mocker):
+    def test_track_show_critical_paths_removed_from_YAML(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         repo = MagicMock()
