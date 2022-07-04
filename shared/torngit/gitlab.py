@@ -129,7 +129,7 @@ class Gitlab(TorngitBaseAdapter):
                     # Refresh token and retry
                     token = await self.refresh_token(client)
                     if callable(self._on_token_refresh):
-                        self._on_token_refresh(token)
+                        await self._on_token_refresh(token)
                 elif res.status_code >= 400:
                     message = f"Gitlab API: {res.status_code}"
                     metrics.incr(f"{METRICS_PREFIX}.api.clienterror")

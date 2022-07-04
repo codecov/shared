@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import MagicMock
 from urllib.parse import parse_qs
 from urllib.request import Request
@@ -305,11 +306,10 @@ class TestUnitGitlab(object):
                 )
             pytest.fail(f"Wrong token received ({token})")
 
+        f = asyncio.Future()
+        f.set_result(True)
         mock_refresh_callback: MagicMock = mocker.patch.object(
-            valid_handler,
-            "_on_token_refresh",
-            create=True,
-            side_effect=lambda token: True,
+            valid_handler, "_on_token_refresh", create=True, return_value=f
         )
         with respx.mock:
             mocked_route = respx.get(
