@@ -244,7 +244,7 @@ class Gitlab(TorngitBaseAdapter):
         creds_to_send = dict(
             client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
         )
-        redirect_uri = redirect_uri or self._redirect_uri
+        redirect_uri = redirect_uri or self.redirect_uri
 
         # http://doc.gitlab.com/ce/api/oauth2.html
         res = await self.api(
