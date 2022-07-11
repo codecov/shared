@@ -1,4 +1,4 @@
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any, Awaitable, Callable, Optional
 
 # FIXME: This is actually a TypedDict
 # But our CircleCI currently doesn't support Python 3.8, needed for TypedDicts
@@ -9,4 +9,4 @@ from typing import Any, Callable, Coroutine, Optional
 #   refresh_token: str
 OauthConsumerToken = Any
 
-OnRefreshCallback = Optional[Callable[[OauthConsumerToken], Coroutine[None]]]
+OnRefreshCallback = Optional[Callable[[OauthConsumerToken], Awaitable[None]]]
