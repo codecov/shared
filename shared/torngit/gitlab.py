@@ -122,11 +122,9 @@ class Gitlab(TorngitBaseAdapter):
                 elif (
                     res.status_code == 401
                     and res.json().get("error") == "invalid_token"
-                    and res.json()
-                    .get("error_description", "")
-                    .startswith("Token is expired.")
                 ):
                     # Refresh token and retry
+                    log.debug("Token is invalid. Refreshing")
                     token = await self.refresh_token(client)
                     if callable(self._on_token_refresh):
                         await self._on_token_refresh(token)
