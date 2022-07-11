@@ -279,7 +279,7 @@ class TestUnitGithub(object):
             )
             async with handler.get_client() as client:
                 res = await handler.api(client, "get", "/endpoint")
-            assert res == "Äpple"
+            assert res == "\xC4pple".encode("latin-1").decode("utf-8", errors="replace")
 
     @pytest.mark.asyncio
     async def test_find_pull_request_uses_proper_query(self, mocker):

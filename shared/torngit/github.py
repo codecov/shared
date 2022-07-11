@@ -96,7 +96,7 @@ class Github(TorngitBaseAdapter):
         url = url_concat(url, args).replace(" ", "%20")
 
         kwargs = dict(
-            json=body if body else None, headers=_headers, allow_redirects=False
+            json=body if body else None, headers=_headers, follow_redirects=False
         )
         max_number_retries = 3
         for current_retry in range(1, max_number_retries + 1):

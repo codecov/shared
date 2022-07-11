@@ -67,5 +67,5 @@ class TestGithubEnterprise(object):
                 "Authorization": "token fake_token",
                 "User-Agent": "Default",
             },
-            allow_redirects=False,
+            follow_redirects=False,
         )

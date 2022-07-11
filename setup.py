@@ -33,7 +33,7 @@ setup(
         "tlslite-ng",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",
-        "httpx>=0.16.0",
+        "httpx>=0.23.0",
         "oauthlib",
     ],
 )
