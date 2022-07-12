@@ -73,7 +73,7 @@ def report_to_flare(files, color, classes=None):
             "",
             flare,
             color
-            if isinstance(color, collections.Callable)
+            if isinstance(color, collections.abc.Callable)
             else coverage_to_color(*color)
             if color
             else None,
