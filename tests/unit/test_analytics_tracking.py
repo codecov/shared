@@ -5,6 +5,7 @@ from shared.analytics_tracking import (
     setup_analytics,
     track_critical_files_sent,
     track_event,
+    track_related_entrypoints_sent,
     track_user,
 )
 from tests.base import BaseTestCase
@@ -85,7 +86,7 @@ class TestAnalyticsTracking(BaseTestCase):
     def track_related_entrypoints_sent(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_critical_files_sent(
+        track_related_entrypoints_sent(
             repoid="123",
             ownerid="abc",
             commitid="abc123",
