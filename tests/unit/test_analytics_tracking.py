@@ -74,7 +74,11 @@ class TestAnalyticsTracking(BaseTestCase):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         track_critical_files_sent(
-            repoid="123", ownerid="abc", commitid="abc123", pullid="7", is_enterprise=False
+            repoid="123",
+            ownerid="abc",
+            commitid="abc123",
+            pullid="7",
+            is_enterprise=False,
         )
         assert mock_track.called
 
@@ -82,6 +86,10 @@ class TestAnalyticsTracking(BaseTestCase):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         track_critical_files_sent(
-            repoid="123", ownerid="abc", commitid="abc123", pullid="7", is_enterprise=False
+            repoid="123",
+            ownerid="abc",
+            commitid="abc123",
+            pullid="7",
+            is_enterprise=False,
         )
         assert mock_track.called
