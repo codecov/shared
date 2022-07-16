@@ -175,6 +175,10 @@ config_schema = {
                 },
             },
             "upload_processing_delay": {"type": "integer"},
+            "timeseries": {
+                "type": "dict",
+                "schema": {"enabled": {"type": "boolean"}},
+            },
         },
     },
     "services": {
@@ -210,6 +214,7 @@ config_schema = {
             },
             "chosen_storage": {"type": "string"},
             "database_url": {"type": "string"},
+            "timeseries_database_url": {"type": "string"},
             "database": {
                 "type": "dict",
                 "schema": {"conn_max_age": {"type": "integer"}},
