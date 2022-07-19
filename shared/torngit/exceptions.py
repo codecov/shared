@@ -29,6 +29,7 @@ class TorngitRepoNotFoundError(TorngitClientError):
         super().__init__(response_data, message)
         self._code = 404
         self._response_data = response_data
+        self.message = message
 
 
 class TorngitObjectNotFoundError(TorngitClientError):
@@ -53,6 +54,7 @@ class TorngitUnauthorizedError(TorngitClientError):
         super().__init__(response_data, message)
         self._code = 401
         self._response_data = response_data
+        self.message = message
 
 
 class TorngitServerFailureError(TorngitError):
