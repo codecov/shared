@@ -50,7 +50,10 @@ default_config = {
         },
         "github_checks": {"annotations": True},
     },
-    "setup": {"segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"}},
+    "setup": {
+        "segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"},
+        "timeseries": {"enabled": False},
+    },
 }
 
 
