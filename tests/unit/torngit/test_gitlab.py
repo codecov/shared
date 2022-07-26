@@ -213,7 +213,7 @@ class TestUnitGitlab(object):
     async def test_gitlab_refresh_fail_terminates_unavailable(
         self, mocker, valid_handler
     ):
-        with pytest.raises(TorngitRefreshTokenFailedError):
+        with pytest.raises(TorngitRefreshTokenFailedError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                     return_value=httpx.Response(
@@ -221,13 +221,14 @@ class TestUnitGitlab(object):
                     )
                 )
                 await valid_handler.refresh_token(valid_handler.get_client())
+            assert exp.code == 555
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_fail_terminates_bad_request(
         self, mocker, valid_handler
     ):
-        with pytest.raises(TorngitRefreshTokenFailedError):
+        with pytest.raises(TorngitRefreshTokenFailedError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                     return_value=httpx.Response(
@@ -235,6 +236,7 @@ class TestUnitGitlab(object):
                     )
                 )
                 await valid_handler.refresh_token(valid_handler.get_client())
+            assert exp.code == 555
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
@@ -242,7 +244,7 @@ class TestUnitGitlab(object):
         self, mocker, valid_handler
     ):
         valid_handler._token = {"access_token": "old_token_without_refresh"}
-        with pytest.raises(TorngitCantRefreshTokenError):
+        with pytest.raises(TorngitCantRefreshTokenError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                     return_value=httpx.Response(
@@ -250,6 +252,8 @@ class TestUnitGitlab(object):
                     )
                 )
                 await valid_handler.refresh_token(valid_handler.get_client())
+            assert exp.code == 555
+            assert exp.response_data is None
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
