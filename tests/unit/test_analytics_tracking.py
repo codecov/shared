@@ -83,7 +83,7 @@ class TestAnalyticsTracking(BaseTestCase):
         )
         assert mock_track.called
 
-    def track_related_entrypoints_sent(self, mocker):
+    def test_track_related_entrypoints_sent(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
         track_related_entrypoints_sent(
