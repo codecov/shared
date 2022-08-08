@@ -788,7 +788,7 @@ def test_filter_exception():
         (ReportFile(name="name.ply"), "{}\n"),
         (
             [ReportLine.create(2), ReportLine.create(1)],
-            "[[2,null,null,null,null],[1,null,null,null,null]]",
+            "[[2,null,null,null,null,null],[1,null,null,null,null,null]]",
         ),
     ],
 )

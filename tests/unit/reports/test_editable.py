@@ -679,6 +679,7 @@ class TestEditableReport(object):
                     sessions,
                     messages,
                     complexity,
+                    datapoints,
                 ) = dataclasses.astuple(line)
                 sessions = [list(s) for s in sessions]
                 lines.append(

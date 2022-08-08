@@ -517,8 +517,18 @@ class ReportFile(object):
         remaining_coverages = [s.coverage for s in new_sessions]
         if len(new_sessions) == 0:
             return EMPTY
+        new_datapoints = (
+            [dt for dt in line.datapoints if dt.sessionid not in session_ids_to_delete]
+            if line.datapoints is not None
+            else None
+        )
         new_coverage = merge_all(remaining_coverages)
-        return dataclasses.replace(line, sessions=new_sessions, coverage=new_coverage)
+        return dataclasses.replace(
+            line,
+            sessions=new_sessions,
+            coverage=new_coverage,
+            datapoints=new_datapoints,
+        )
 
 
 class Report(object):
