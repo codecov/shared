@@ -864,6 +864,40 @@ def test_validation_with_branches():
     assert res == expected_result
 
 
+def test_validation_with_flag_carryforward():
+    user_input = {
+        "flag_management": {
+            "individual_flags": [
+                {"name": "abcdef", "carryforward_mode": "all"},
+                {"name": "abcdef", "carryforward_mode": "labels"},
+            ]
+        },
+    }
+    assert do_actual_validation(user_input, show_secrets_for=None) == user_input
+
+
+def test_validation_with_flag_carryforward_invalid_mode():
+    user_input = {
+        "flag_management": {
+            "individual_flags": [
+                {"name": "abcdef", "carryforward_mode": "mario"},
+                {"name": "abcdef", "carryforward_mode": "labels"},
+            ]
+        },
+    }
+    with pytest.raises(InvalidYamlException) as exp:
+        do_actual_validation(user_input, show_secrets_for=None)
+    assert exp.value.error_dict == {
+        "flag_management": [
+            {
+                "individual_flags": [
+                    {0: [{"carryforward_mode": ["unallowed value mario"]}]}
+                ]
+            }
+        ]
+    }
+
+
 def test_validation_with_null_on_paths():
     user_input = {
         "comment": {"require_head": True, "behavior": "once", "after_n_builds": 6},

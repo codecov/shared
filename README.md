@@ -10,6 +10,19 @@ The current repositories using `shared` are `codecov/worker` and `codecov/codeco
 
 Whenever getting new code into `shared`, one needs to wait for a new version to be released (or release it themselves, see below), and update the `requirements.in` file in `codecov/worker` and `codecov/codecov-api` to use the newly released version of `shared`.
 
+## Getting started
+
+To get started, you will need a few things due the presence of a rust extension on this package:
+
+1. Have rust installed in your system
+2. Have a virtualenv (whichever one you prefer)
+3. Run
+```
+pip install setuptools-rust pip-tools
+python setup.py develop
+pip install -r requirements.txt -r tests/requirements.txt
+```
+
 ## Releasing a new version on shared
 
 To release a new version, you need to:
