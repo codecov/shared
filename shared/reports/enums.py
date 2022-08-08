@@ -1,10 +1,4 @@
-from enum import Enum
-
-
-class CodecovDatabaseEnum(Enum):
-    @classmethod
-    def choices(cls):
-        return tuple((i.value, i.name) for i in cls)
+from shared.utils.enums import CodecovDatabaseEnum
 
 
 class UploadState(CodecovDatabaseEnum):
