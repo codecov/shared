@@ -1,6 +1,15 @@
-from mock import patch
+from mock import MagicMock, patch
 
-from shared.analytics_tracking import on_error, setup_analytics, track_event, track_user
+from shared.analytics_tracking import (
+    on_error,
+    setup_analytics,
+    track_betaprofiling_added_in_YAML,
+    track_betaprofiling_removed_from_YAML,
+    track_event,
+    track_show_critical_paths_added_in_YAML,
+    track_show_critical_paths_removed_from_YAML,
+    track_user,
+)
 from tests.base import BaseTestCase
 
 
@@ -63,3 +72,35 @@ class TestAnalyticsTracking(BaseTestCase):
             {"setup": {"debug": True, "segment": {"key": "123"}}}
         )
         setup_analytics()
+
+    def test_track_betaprofiling_added_in_YAML(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_betaprofiling_added_in_YAML(
+            repoid="123", ownerid="456", is_enterprise=False
+        )
+        assert mock_track.called
+
+    def test_track_betaprofiling_removed_from_YAML(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_betaprofiling_removed_from_YAML(
+            repoid="123", ownerid="456", is_enterprise=False
+        )
+        assert mock_track.called
+
+    def test_track_show_critical_paths_added_in_YAML(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_show_critical_paths_added_in_YAML(
+            repoid="123", ownerid="456", is_enterprise=False
+        )
+        assert mock_track.called
+
+    def test_track_show_critical_paths_removed_from_YAML(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_show_critical_paths_removed_from_YAML(
+            repoid="123", ownerid="456", is_enterprise=False
+        )
+        assert mock_track.called

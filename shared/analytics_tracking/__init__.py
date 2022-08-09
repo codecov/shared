@@ -6,6 +6,7 @@ from shared.config import get_config
 
 log = logging.getLogger("__name__")
 
+BLANK_SEGMENT_USER_ID = -1
 
 # Set up
 def on_error(error):
@@ -22,7 +23,14 @@ segment_enabled = bool(get_config("setup", "segment", "enabled", default=False))
 if segment_enabled:
     setup_analytics()
 
-event_names = ["Coverage Report Passed", "Coverage Report Failed"]
+event_names = [
+    "Coverage Report Passed",
+    "Coverage Report Failed",
+    "Impact Analysis Betaprofiling in YAML",
+    "Impact Analysis Betaprofiling removed from YAML",
+    "Impact Analysis Show Critical Files in YAML",
+    "Impact Analysis Show Critical Files removed from YAML",
+]
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
@@ -73,3 +81,39 @@ def track_user(user_id, user_data={}, is_enterprise=False):
         return
 
     analytics.identify(user_id, user_data)
+
+
+def track_betaprofiling_added_in_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Betaprofiling in YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_betaprofiling_removed_from_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Betaprofiling removed from YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_show_critical_paths_added_in_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Show Critical Files in YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_show_critical_paths_removed_from_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Show Critical Files removed from YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
