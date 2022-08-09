@@ -43,6 +43,7 @@ class TestConfig(object):
         assert (
             get_config("setup", "segment", "key") == "test93utbz4l7nybyx5y960y8pb8w672"
         )
+        assert get_config("setup", "timeseries", "enabled") is False
 
     def test_get_config_production_use_case(self, mocker):
         yaml_content = "\n".join(
@@ -356,6 +357,7 @@ class TestConfig(object):
                 "SERVICES__GCP__GOOGLE_CREDENTIALS_LOCATION": "/secret/gcs-credentials/path.json",
                 "GITHUB__INTEGRATION__PEM": "/secrets/github-pem/github.pem",
                 "SERVICES__DATABASE_URL": "postgres://user:pass@127.0.0.1:5432/postgres",
+                "SERVICES__TIMESERIES_DATABASE_URL": "postgres://user:pass@timescale:5432/timescale",
                 "BITBUCKET__BOT__KEY": "BITBUCKET__BOT__KEY",
                 "SERVICES__MINIO__ACCESS_KEY_ID": "SERVICES__MINIO__ACCESS_KEY_ID",
                 "SERVICES__MINIO__SECRET_ACCESS_KEY": "SERVICES__MINIO__SECRET_ACCESS_KEY",
@@ -366,6 +368,7 @@ class TestConfig(object):
                 "__BAD__KEY": "GITLAB__BOT__KEY",
                 "SETUP__SEGMENT__ENABLED": "True",
                 "SETUP__SEGMENT__KEY": "abc",
+                "SETUP__TIMESERIES__ENABLED": "True",
                 "JSONCONFIG___SETUP__MEDIA": json.dumps(
                     {"assets": "aaa", "dependancies": "bbb"}
                 ),
@@ -394,6 +397,7 @@ class TestConfig(object):
                     "google_credentials_location": "/secret/gcs-credentials/path.json"
                 },
                 "database_url": "postgres://user:pass@127.0.0.1:5432/postgres",
+                "timeseries_database_url": "postgres://user:pass@timescale:5432/timescale",
                 "redis_url": "SERVICES__REDIS_URL:11234",
             },
             "setup": {
@@ -401,6 +405,7 @@ class TestConfig(object):
                 "encryption_secret": "secret",
                 "tasks": {"status": {"queue": "new_tasks"}},
                 "segment": {"enabled": "True", "key": "abc"},
+                "timeseries": {"enabled": "True"},
             },
             "github": {
                 "bot": {"key": "GITHUB__BOT__KEY"},

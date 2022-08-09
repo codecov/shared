@@ -50,15 +50,18 @@ default_config = {
         },
         "github_checks": {"annotations": True},
     },
-    "setup": {"segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"}},
+    "setup": {
+        "segment": {"enabled": False, "key": "test93utbz4l7nybyx5y960y8pb8w672"},
+        "timeseries": {"enabled": False},
+    },
 }
 
 
 def update(d, u):
     d = deepcopy(d)
     for k, v in u.items():
-        if isinstance(v, collections.Mapping) and isinstance(
-            d.get(k), collections.Mapping
+        if isinstance(v, collections.abc.Mapping) and isinstance(
+            d.get(k), collections.abc.Mapping
         ):
             d[k] = update(d.get(k, {}), v)
         else:

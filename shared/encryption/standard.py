@@ -5,6 +5,8 @@ from base64 import b64decode, b64encode
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
+from shared.encryption.token import decode_token
+
 
 class StandardEncryptor(object):
     def __init__(self, *keys, iv=None):
@@ -41,14 +43,8 @@ class StandardEncryptor(object):
         return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
 
     def decrypt_token(self, oauth_token):
-        _oauth = self.decode(oauth_token)
-        token = {}
-        if ":" in _oauth:
-            token["key"], token["secret"] = _oauth.split(":", 1)
-        else:
-            token["key"] = _oauth
-            token["secret"] = None
-        return token
+        _oauth: str = self.decode(oauth_token)
+        return decode_token(_oauth)
 
 
 class EncryptorWithAlreadyGeneratedKey(StandardEncryptor):

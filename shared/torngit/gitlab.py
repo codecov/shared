@@ -2,22 +2,26 @@ import json
 import logging
 import os
 from base64 import b64decode
-from typing import List, Optional
+from typing import List
 from urllib.parse import quote, urlencode
 
 import httpx
 
+from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
+    TorngitCantRefreshTokenError,
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitObjectNotFoundError,
+    TorngitRefreshTokenFailedError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
 )
 from shared.torngit.status import Status
+from shared.typings.oauth_token_types import OauthConsumerToken
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -44,9 +48,26 @@ class Gitlab(TorngitBaseAdapter):
         tree="{username}/{name}/tree/%(commitid)s",
     )
 
+    @property
+    def redirect_uri(self):
+        from_config = get_config("gitlab", "redirect_uri", default=None)
+        if from_config is not None:
+            return from_config
+        base = get_config("setup", "codecov_url", default="https://codecov.io")
+        return base + "/login/gitlab"
+
     async def fetch_and_handle_errors(
-        self, client, method, url_path, *, body=None, token=None, version=4, **args
+        self,
+        client,
+        method,
+        url_path,
+        *,
+        body=None,
+        token: OauthConsumerToken = None,
+        version=4,
+        **args,
     ):
+
         if url_path.startswith("/"):
             _log = dict(
                 event="api",
@@ -62,51 +83,107 @@ class Gitlab(TorngitBaseAdapter):
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
-
         if isinstance(body, dict):
             headers["Content-Type"] = "application/json"
             body = json.dumps(body)
-
-        if token or self.token:
-            headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
-
         url = url_concat(url_path, args).replace(" ", "%20")
 
-        try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
-                res = await client.request(
-                    method.upper(), url, headers=headers, data=body
-                )
-            logged_body = None
-            if res.status_code >= 300 and res.text is not None:
-                logged_body = res.text
-            log.log(
-                logging.WARNING if res.status_code >= 300 else logging.INFO,
-                "GitLab HTTP %s",
-                res.status_code,
-                extra=dict(time_taken=timer.ms, body=logged_body, **_log),
-            )
+        current_retry = 0
+        max_retries = 2
+        while current_retry < max_retries:
+            current_retry += 1
 
-            if res.status_code == 599:
+            if token or self.token:
+                headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
+
+            try:
+                with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
+                    res = await client.request(
+                        method.upper(), url, headers=headers, data=body
+                    )
+                logged_body = None
+                if res.status_code >= 300 and res.text is not None:
+                    logged_body = res.text
+                log.log(
+                    logging.WARNING if res.status_code >= 300 else logging.INFO,
+                    "GitLab HTTP %s",
+                    res.status_code,
+                    extra=dict(time_taken=timer.ms, body=logged_body, **_log),
+                )
+
+                if res.status_code == 599:
+                    metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
+                    raise TorngitServerUnreachableError(
+                        "Gitlab was not able to be reached, server timed out."
+                    )
+                elif res.status_code >= 500:
+                    metrics.incr(f"{METRICS_PREFIX}.api.5xx")
+                    raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
+                elif (
+                    res.status_code == 401
+                    and res.json().get("error") == "invalid_token"
+                ):
+                    # Refresh token and retry
+                    log.debug("Token is invalid. Refreshing")
+                    token = await self.refresh_token(client)
+                    if callable(self._on_token_refresh):
+                        await self._on_token_refresh(token)
+                elif res.status_code >= 400:
+                    message = f"Gitlab API: {res.status_code}"
+                    metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
+                    raise TorngitClientGeneralError(
+                        res.status_code, response_data=res.json(), message=message
+                    )
+                else:
+                    # Success case
+                    return res
+            except (httpx.TimeoutException, httpx.NetworkError):
                 metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
-                    "Gitlab was not able to be reached, server timed out."
+                    "GitLab was not able to be reached. Gateway 502. Please try again."
                 )
-            elif res.status_code >= 500:
-                metrics.incr(f"{METRICS_PREFIX}.api.5xx")
-                raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
-            elif res.status_code >= 400:
-                message = f"Gitlab API: {res.status_code}"
-                metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
-                raise TorngitClientGeneralError(
-                    res.status_code, response_data=res.json(), message=message
-                )
-            return res
-        except (httpx.TimeoutException, httpx.NetworkError):
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
-            raise TorngitServerUnreachableError(
-                "GitLab was not able to be reached. Gateway 502. Please try again."
+
+    async def refresh_token(self, client: httpx.AsyncClient) -> OauthConsumerToken:
+        """
+        This function requests a refresh token from GitLab.
+        The refresh_token value is stored as part of the oauth token dict.
+
+        ! side effect: updates the self._token value
+        ! raises TorngitCantRefreshTokenError
+        ! raises TorngitRefreshTokenFailedError
+        """
+        creds_from_token = self._oauth_consumer_token()
+        creds_to_send = dict(
+            client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
+        )
+
+        if self.token.get("refresh_token") is None:
+            raise TorngitCantRefreshTokenError(
+                "Token doesn't have refresh token information"
             )
+
+        # https://docs.gitlab.com/ee/api/oauth2.html#authorization-code-flow
+        params = urlencode(
+            dict(
+                refresh_token=self.token["refresh_token"],
+                grant_type="refresh_token",
+                redirect_uri=self.redirect_uri,
+                **creds_to_send,
+            )
+        )
+        res = await client.request(
+            "POST", self.service_url + "/oauth/token", data=params, params=params
+        )
+        if res.status_code >= 300:
+            raise TorngitRefreshTokenFailedError(res)
+        content = res.json()
+        self.set_token(
+            {
+                "key": content["access_token"],
+                "refresh_token": content["refresh_token"],
+            }
+        )
+        return self.token
 
     async def api(self, method, url_path, *, body=None, token=None, version=4, **args):
         async with self.get_client() as client:
@@ -149,9 +226,23 @@ class Gitlab(TorngitBaseAdapter):
                 else:
                     current_page, has_more = None, False
 
-    async def get_authenticated_user(self, code, redirect_uri):
-        creds = self._oauth_consumer_token()
-        creds = dict(client_id=creds["key"], client_secret=creds["secret"])
+    async def get_authenticated_user(self, code, redirect_uri=None):
+        """
+        Get's access_token and user's details from gitlab.
+
+        Exchanges the code for a proper access_token and refresh_token pair.
+        Get's user details from /user endpoint from GitLab.
+        Returns everything.
+
+        Args:
+            code: the code to be redeemed for a access_token / refresh_token pair
+            redirect_uri: !deprecated. The uri to redirect to. Needs to match redirect_uri used to get the code.
+        """
+        creds_from_token = self._oauth_consumer_token()
+        creds_to_send = dict(
+            client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
+        )
+        redirect_uri = redirect_uri or self.redirect_uri
 
         # http://doc.gitlab.com/ce/api/oauth2.html
         res = await self.api(
@@ -162,12 +253,17 @@ class Gitlab(TorngitBaseAdapter):
                     code=code,
                     grant_type="authorization_code",
                     redirect_uri=redirect_uri,
-                    **creds,
+                    **creds_to_send,
                 )
             ),
         )
 
-        self.set_token(dict(key=res["access_token"]))
+        self.set_token(
+            {
+                "key": res["access_token"],
+                "refresh_token": res["refresh_token"],
+            }
+        )
         user = await self.api("get", "/user")
         user.update(res)
         return user
