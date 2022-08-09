@@ -13,7 +13,76 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://api.github.com/search/issues?q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+repo%3AThiagoCodecov%2Fexample-python+type%3Apr+state%3Aopen
+    uri: https://api.github.com/repos/codecove2e/example-python/commits/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/pulls
+  response:
+    content: '{"message":"No commit found for SHA: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","documentation_url":"https://docs.github.com/rest/reference/repos#list-pull-requests-associated-with-a-commit"}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Content-Length:
+      - '190'
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 18 Jul 2022 18:49:04 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - FA23:3A7F:808CF7:9752AB:62D5AB1F
+      X-OAuth-Scopes:
+      - repo, user
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4996'
+      X-RateLimit-Reset:
+      - '1658172388'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '4'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-07-25 18:16:08 UTC
+    http_version: HTTP/1.1
+    status_code: 422
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/search/issues?q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+repo%3Acodecove2e%2Fexample-python+type%3Apr+state%3Aopen
   response:
     content: '{"total_count":0,"incomplete_results":false,"items":[]}'
     headers:
@@ -21,8 +90,9 @@ interactions:
       - '*'
       Access-Control-Expose-Headers:
       - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
       Cache-Control:
       - no-cache
       Content-Encoding:
@@ -32,13 +102,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 14 Oct 2020 17:32:06 GMT
+      - Mon, 18 Jul 2022 18:49:04 GMT
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       Server:
       - GitHub.com
-      Status:
-      - 200 OK
       Strict-Transport-Security:
       - max-age=31536000; includeSubdomains; preload
       Transfer-Encoding:
@@ -55,19 +123,23 @@ interactions:
       X-GitHub-Media-Type:
       - github.v3
       X-GitHub-Request-Id:
-      - CFD6:21C2:2126D3:37EB3D:5F873615
+      - FA24:0CD6:11294B:16B7BA:62D5AB20
       X-OAuth-Scopes:
-      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      - repo, user
       X-RateLimit-Limit:
       - '30'
       X-RateLimit-Remaining:
       - '29'
       X-RateLimit-Reset:
-      - '1602696786'
+      - '1658170204'
+      X-RateLimit-Resource:
+      - search
       X-RateLimit-Used:
       - '1'
       X-XSS-Protection:
-      - 1; mode=block
+      - '0'
+      github-authentication-token-expiration:
+      - 2022-07-25 18:16:08 UTC
     http_version: HTTP/1.1
     status_code: 200
 version: 1

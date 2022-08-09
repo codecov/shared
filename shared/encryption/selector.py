@@ -1,5 +1,7 @@
 import logging
 
+from shared.encryption.token import decode_token
+
 log = logging.getLogger(__name__)
 
 DEFAULT_ENCRYPTOR_CONSTANT = "default_enc"
@@ -34,11 +36,5 @@ class EncryptorDivider(object):
         return result.encode()
 
     def decrypt_token(self, oauth_token):
-        _oauth = self.decode(oauth_token)
-        token = {}
-        if ":" in _oauth:
-            token["key"], token["secret"] = _oauth.split(":", 1)
-        else:
-            token["key"] = _oauth
-            token["secret"] = None
-        return token
+        _oauth: str = self.decode(oauth_token)
+        return decode_token(_oauth)

@@ -11,7 +11,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="shared",
-    version="0.7.19",
+    version="0.8.1",
     rust_extensions=[RustExtension("shared.rustyribs", binding=Binding.PyO3)],
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     # rust extensions are not zip safe, just like C-extensions.
@@ -33,7 +33,7 @@ setup(
         "tlslite-ng",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",
-        "httpx>=0.16.0",
+        "httpx>=0.23.0",
         "oauthlib",
     ],
 )

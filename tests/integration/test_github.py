@@ -18,6 +18,16 @@ def valid_handler():
 
 
 @pytest.fixture
+def generic_valid_handler():
+    # TODO replace all occurences of valid_handler (above) by this handler.
+    return Github(
+        repo=dict(name="example-python"),
+        owner=dict(username="codecove2e"),
+        token=dict(key=10 * "a280"),
+    )
+
+
+@pytest.fixture
 def valid_but_no_permissions_handler():
     return Github(
         repo=dict(name="worker"),
@@ -152,13 +162,20 @@ class TestGithubTestCase(object):
             await valid_handler.delete_comment("1", 113977999)
 
     @pytest.mark.asyncio
-    async def test_find_pull_request_nothing_found(self, valid_handler, codecov_vcr):
-        assert await valid_handler.find_pull_request("a" * 40, "no-branch") is None
+    async def test_find_pull_request_nothing_found(
+        self, generic_valid_handler, codecov_vcr
+    ):
+        assert (
+            await generic_valid_handler.find_pull_request("a" * 40, "no-branch") is None
+        )
 
     @pytest.mark.asyncio
-    async def test_find_pull_request_one_found(self, valid_handler, codecov_vcr):
-        commitid = "bbd20d8f42ac7cfa0b5b91087847d0b3620ac3ee"
-        assert await valid_handler.find_pull_request(commitid) == 18
+    async def test_find_pull_request_one_found(
+        self, generic_valid_handler, codecov_vcr
+    ):
+        # PR is https://github.com/codecove2e/example-python/pull/1
+        commitid = "bec77909e0a9b04603d2cdddcba62f99592d6579"
+        assert await generic_valid_handler.find_pull_request(commitid) == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
