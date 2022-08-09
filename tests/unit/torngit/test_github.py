@@ -16,6 +16,7 @@ from shared.torngit.exceptions import (
     TorngitUnauthorizedError,
 )
 from shared.torngit.github import Github
+from shared.torngit.github import log as gh_log
 
 
 @pytest.fixture
@@ -282,7 +283,103 @@ class TestUnitGithub(object):
             assert res == "\xC4pple".encode("latin-1").decode("utf-8", errors="replace")
 
     @pytest.mark.asyncio
+    async def test_find_pull_request_no_fallback(self, mocker):
+        mock_search_by_issues = mocker.patch.object(
+            Github, "_find_pr_by_search_issues", return_value=None
+        )
+        handler = Github(
+            repo=dict(name="repo_name"),
+            owner=dict(username="username"),
+            token=dict(key="aaaaa"),
+        )
+        commit_sha = "some_commit_sha"
+        mock_log = mocker.patch.object(
+            gh_log, "warning"
+        )  # Used to check if the log message is fired because there are 2 PRs with the commit
+        with respx.mock:
+            respx.get(
+                url=f"https://api.github.com/repos/{handler.slug}/commits/{commit_sha}/pulls"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # Response for pulls endpoint returns a list directly
+                    json=[
+                        {
+                            "id": 575148804,
+                            "node_id": "MDExOlB1bGxSZXF1ZXN0MzgzMzQ4Nzc1",
+                            "number": 18,
+                            "title": "Thiago/base no base",
+                            "labels": [],
+                            "state": "open",
+                            "locked": False,
+                        },
+                        {
+                            "id": 575148805,
+                            "node_id": "MDExOlB1bFkSZXF1ZXN0MzgzMzQ4Nzc1",
+                            "number": 22,
+                            "title": "feat/other-pr",
+                            "labels": [],
+                            "state": "closed",
+                            "locked": True,
+                        },
+                    ],
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+
+            res = await handler.find_pull_request(commit=commit_sha)
+            assert res == 18
+            mock_log.assert_called_with(
+                "Commit is referenced in multiple PRs.",
+                extra=dict(
+                    prs=[18, 22], commit="some_commit_sha", slug="username/repo_name"
+                ),
+            )
+            mock_search_by_issues.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_find_pr_by_pulls_failfast_if_no_slug(self, mocker):
+        handler = Github(
+            owner=dict(username="username"),
+            token=dict(key="aaaaa"),
+        )
+        commit_sha = "some_commit_sha"
+        assert handler.slug is None
+        res = await handler._find_pr_by_pulls_endpoint(None, commit_sha, None)
+        assert res is None
+
+    @pytest.mark.asyncio
+    async def test_find_pr_by_pulls_raise_exp_if_not_422(self, mocker):
+        handler = Github(
+            repo=dict(name="repo_name"),
+            owner=dict(username="username"),
+            token=dict(key="aaaaa"),
+        )
+        commit_sha = "some_commit_sha"
+        with respx.mock:
+            respx.get(
+                url=f"https://api.github.com/repos/{handler.slug}/commits/{commit_sha}/pulls"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=425,
+                    # Response for pulls endpoint returns a list directly
+                    json={"reason_phrase": "Some message"},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            client = handler.get_client()
+            token = handler.get_token_by_type(TokenType.read)
+            with pytest.raises(TorngitClientGeneralError):
+                await handler._find_pr_by_pulls_endpoint(client, commit_sha, token)
+
+    @pytest.mark.asyncio
     async def test_find_pull_request_uses_proper_query(self, mocker):
+        mock_search_by_pull = mocker.patch.object(
+            Github, "_find_pr_by_pulls_endpoint", return_value=None
+        )
+        mock_log = mocker.patch.object(
+            gh_log, "warning"
+        )  # Used to check if the log message is fired because there are 2 PRs with the commit
         with respx.mock:
             respx.get(
                 url="https://api.github.com/search/issues?q=abcdef+repo%3Ausername%2Frepo_name+type%3Apr+state%3Aopen"
@@ -302,7 +399,16 @@ class TestUnitGithub(object):
                                 "labels": [],
                                 "state": "open",
                                 "locked": False,
-                            }
+                            },
+                            {
+                                "id": 575148805,
+                                "node_id": "MDExOlB1bFkSZXF1ZXN0MzgzMzQ4Nzc1",
+                                "number": 22,
+                                "title": "feat/other-pr",
+                                "labels": [],
+                                "state": "closed",
+                                "locked": True,
+                            },
                         ],
                     },
                     headers={"Content-Type": "application/json; charset=utf-8"},
@@ -315,6 +421,11 @@ class TestUnitGithub(object):
             )
             res = await handler.find_pull_request(commit="abcdef")
             assert res == 18
+            mock_log.assert_called_with(
+                "Commit search_issues returned multiple references",
+                extra=dict(refs=[18, 22], commit="abcdef", slug="username/repo_name"),
+            )
+            mock_search_by_pull.assert_called()
 
     @pytest.mark.asyncio
     async def test_post_comment(self, respx_vcr, valid_handler):

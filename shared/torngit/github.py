@@ -917,6 +917,48 @@ class Github(TorngitBaseAdapter):
         self, commit=None, branch=None, state="open", token=None
     ):
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        async with self.get_client() as client:
+            if commit:
+                pr_from_pulls = await self._find_pr_by_pulls_endpoint(
+                    client, commit, token
+                )
+                if pr_from_pulls:
+                    return pr_from_pulls
+                log.info(
+                    "Commit not found on pulls endpoint. Fallback to legacy behavior",
+                    extra=dict(commit=commit, slug=self.slug),
+                )
+            return await self._find_pr_by_search_issues(client, commit, state, token)
+
+    async def _find_pr_by_pulls_endpoint(self, client, commit, token):
+        """Searches pull requests of the commit"""
+        if not self.slug:
+            return None
+        # https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit
+        try:
+            res = await self.api(
+                client,
+                "get",
+                f"/repos/{self.slug}/commits/{commit}/pulls",
+                token=token,
+            )
+            if res:
+                if len(res) > 1:
+                    prs_with_commit = list(map(lambda data: data["number"], res))
+                    log.warning(
+                        "Commit is referenced in multiple PRs.",
+                        extra=dict(prs=prs_with_commit, commit=commit, slug=self.slug),
+                    )
+                return res[0]["number"]
+        except TorngitClientGeneralError as exp:
+            if exp.code == 422:
+                return None
+            raise exp
+
+    async def _find_pr_by_search_issues(self, client, commit, state, token):
+        """Legacy behavior. Searches commit reference in issues.
+        Known issues: Can return a reference to a PR in which the commit was just mentioned, leading us to comment in the wrong PR.
+        """
         query = "%srepo:%s+type:pr%s" % (
             (("%s+" % commit) if commit else ""),
             url_escape(self.slug),
@@ -924,11 +966,14 @@ class Github(TorngitBaseAdapter):
         )
 
         # https://developer.github.com/v3/search/#search-issues
-        async with self.get_client() as client:
-            res = await self.api(
-                client, "get", "/search/issues?q=%s" % query, token=token
-            )
+        res = await self.api(client, "get", "/search/issues?q=%s" % query, token=token)
         if res["items"]:
+            if len(res["items"]) > 1:
+                commit_refs = list(map(lambda data: data["number"], res["items"]))
+                log.warning(
+                    "Commit search_issues returned multiple references",
+                    extra=dict(refs=commit_refs, commit=commit, slug=self.slug),
+                )
             return res["items"][0]["number"]
 
     async def list_top_level_files(self, ref, token=None):
