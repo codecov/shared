@@ -48,9 +48,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v05-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
+          - v06-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
           # fallback to using the latest cache if no exact match is found
-          - v05-dependencies-
+          - v06-dependencies-<< parameters.imagename >>
 
       - run:
           name: install dependencies
@@ -64,8 +64,8 @@ jobs:
             pip install -r tests/requirements.txt
       - save_cache:
           paths:
-            - ./venv
-          key: v05-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
+            - venv
+          key: v06-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
 
       - run:
           name: run tests
@@ -96,10 +96,10 @@ jobs:
             sudo apt-get install gcc lsb-release wget software-properties-common
             wget https://apt.llvm.org/llvm.sh
             chmod +x llvm.sh
-            sudo ./llvm.sh
+            sudo ./llvm.sh 15
             RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
-            llvm-profdata-14 merge -sparse ribs-*.profraw -o ribs.profdata
-            llvm-cov-14 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+            llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
+            llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
             pip install codecov
             codecov --required --flags rust
 workflows:
