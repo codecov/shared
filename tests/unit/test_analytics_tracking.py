@@ -3,11 +3,11 @@ from mock import MagicMock, patch
 from shared.analytics_tracking import (
     on_error,
     setup_analytics,
-    track_critical_files_sent,
-    track_related_entrypoints_sent,
     track_betaprofiling_added_in_YAML,
     track_betaprofiling_removed_from_YAML,
+    track_critical_files_sent,
     track_event,
+    track_related_entrypoints_sent,
     track_show_critical_paths_added_in_YAML,
     track_show_critical_paths_removed_from_YAML,
     track_user,
