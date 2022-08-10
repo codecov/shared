@@ -43,6 +43,8 @@ def test_celery_config():
         "app.tasks.sync_teams.SyncTeams",
         "app.tasks.synchronize.Synchronize",
         "app.tasks.timeseries.backfill",
+        "app.tasks.timeseries.backfill_commits",
+        "app.tasks.timeseries.backfill_dataset",
         "app.tasks.upload.Upload",
         "app.tasks.upload_processor.UploadProcessorTask",
     ]
