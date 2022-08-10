@@ -6,6 +6,7 @@ from shared.config import get_config
 
 log = logging.getLogger("__name__")
 
+BLANK_SEGMENT_USER_ID = -1
 
 # Set up
 def on_error(error):
@@ -27,9 +28,12 @@ event_names = [
     "Coverage Report Failed",
     "Impact Analysis Related Entrypoints Sent",
     "Impact Analysis Critical Files Sent",
+    "Impact Analysis Betaprofiling in YAML",
+    "Impact Analysis Betaprofiling removed from YAML",
+    "Impact Analysis Show Critical Files in YAML",
+    "Impact Analysis Show Critical Files removed from YAML",
 ]
 
-BLANK_SEGMENT_USER_ID = "-1"
 
 
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
@@ -82,6 +86,7 @@ def track_user(user_id, user_data={}, is_enterprise=False):
     analytics.identify(user_id, user_data)
 
 
+
 def track_critical_files_sent(repoid, ownerid, commitid, pullid, is_enterprise):
     track_event(
         user_id=BLANK_SEGMENT_USER_ID,
@@ -92,6 +97,12 @@ def track_critical_files_sent(repoid, ownerid, commitid, pullid, is_enterprise):
             "commit_id": commitid,
             "pull_id": pullid,
         },
+
+def track_betaprofiling_added_in_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Betaprofiling in YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
         is_enterprise=is_enterprise,
     )
 
@@ -106,5 +117,29 @@ def track_related_entrypoints_sent(repoid, ownerid, commitid, pullid, is_enterpr
             "commit_id": commitid,
             "pull_id": pullid,
         },
+
+def track_betaprofiling_removed_from_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Betaprofiling removed from YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_show_critical_paths_added_in_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Show Critical Files in YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_show_critical_paths_removed_from_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Show Critical Files removed from YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
         is_enterprise=is_enterprise,
     )
