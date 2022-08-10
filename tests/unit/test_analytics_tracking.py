@@ -96,6 +96,7 @@ class TestAnalyticsTracking(BaseTestCase):
             commitid="abc123",
             pullid="7",
             is_enterprise=False,
+        )
 
     def test_track_betaprofiling_added_in_YAML(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
