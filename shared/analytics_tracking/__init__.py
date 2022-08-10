@@ -35,7 +35,6 @@ event_names = [
 ]
 
 
-
 def track_event(user_id, event_name, event_data={}, is_enterprise=False):
     """
     https://segment.com/docs/connections/spec/track/
@@ -86,7 +85,6 @@ def track_user(user_id, user_data={}, is_enterprise=False):
     analytics.identify(user_id, user_data)
 
 
-
 def track_critical_files_sent(repoid, ownerid, commitid, pullid, is_enterprise):
     track_event(
         user_id=BLANK_SEGMENT_USER_ID,
@@ -97,6 +95,8 @@ def track_critical_files_sent(repoid, ownerid, commitid, pullid, is_enterprise):
             "commit_id": commitid,
             "pull_id": pullid,
         },
+    )
+
 
 def track_betaprofiling_added_in_YAML(repoid, ownerid, is_enterprise):
     track_event(
@@ -117,6 +117,8 @@ def track_related_entrypoints_sent(repoid, ownerid, commitid, pullid, is_enterpr
             "commit_id": commitid,
             "pull_id": pullid,
         },
+    )
+
 
 def track_betaprofiling_removed_from_YAML(repoid, ownerid, is_enterprise):
     track_event(
