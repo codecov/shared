@@ -26,6 +26,8 @@ if segment_enabled:
 event_names = [
     "Coverage Report Passed",
     "Coverage Report Failed",
+    "Impact Analysis Related Entrypoints Sent",
+    "Impact Analysis Critical Files Sent",
     "Impact Analysis Betaprofiling in YAML",
     "Impact Analysis Betaprofiling removed from YAML",
     "Impact Analysis Show Critical Files in YAML",
@@ -83,12 +85,38 @@ def track_user(user_id, user_data={}, is_enterprise=False):
     analytics.identify(user_id, user_data)
 
 
+def track_critical_files_sent(repoid, ownerid, commitid, pullid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Critical Files Sent",
+        event_data={
+            "repo_id": repoid,
+            "repo_owner_id": ownerid,
+            "commit_id": commitid,
+            "pull_id": pullid,
+        },
+    )
+
+
 def track_betaprofiling_added_in_YAML(repoid, ownerid, is_enterprise):
     track_event(
         user_id=BLANK_SEGMENT_USER_ID,
         event_name="Impact Analysis Betaprofiling in YAML",
         event_data={"repo_id": repoid, "repo_owner_id": ownerid},
         is_enterprise=is_enterprise,
+    )
+
+
+def track_related_entrypoints_sent(repoid, ownerid, commitid, pullid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Related Entrypoints Sent",
+        event_data={
+            "repo_id": repoid,
+            "repo_owner_id": ownerid,
+            "commit_id": commitid,
+            "pull_id": pullid,
+        },
     )
 
 

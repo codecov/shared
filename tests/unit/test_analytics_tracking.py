@@ -5,7 +5,9 @@ from shared.analytics_tracking import (
     setup_analytics,
     track_betaprofiling_added_in_YAML,
     track_betaprofiling_removed_from_YAML,
+    track_critical_files_sent,
     track_event,
+    track_related_entrypoints_sent,
     track_show_critical_paths_added_in_YAML,
     track_show_critical_paths_removed_from_YAML,
     track_user,
@@ -72,6 +74,29 @@ class TestAnalyticsTracking(BaseTestCase):
             {"setup": {"debug": True, "segment": {"key": "123"}}}
         )
         setup_analytics()
+
+    def test_track_critical_files_sent(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_critical_files_sent(
+            repoid="123",
+            ownerid="abc",
+            commitid="abc123",
+            pullid="7",
+            is_enterprise=False,
+        )
+        assert mock_track.called
+
+    def test_track_related_entrypoints_sent(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_related_entrypoints_sent(
+            repoid="123",
+            ownerid="abc",
+            commitid="abc123",
+            pullid="7",
+            is_enterprise=False,
+        )
 
     def test_track_betaprofiling_added_in_YAML(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.track_event")
