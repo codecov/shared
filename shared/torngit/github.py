@@ -920,7 +920,7 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             if commit:
                 pr_from_pulls = await self._find_pr_by_pulls_endpoint(
-                    client, commit, token
+                    client, commit, token, state
                 )
                 if pr_from_pulls:
                     return pr_from_pulls
@@ -930,7 +930,7 @@ class Github(TorngitBaseAdapter):
                 )
             return await self._find_pr_by_search_issues(client, commit, state, token)
 
-    async def _find_pr_by_pulls_endpoint(self, client, commit, token):
+    async def _find_pr_by_pulls_endpoint(self, client, commit, token, state="open"):
         """Searches pull requests of the commit"""
         if not self.slug:
             return None
@@ -942,14 +942,19 @@ class Github(TorngitBaseAdapter):
                 f"/repos/{self.slug}/commits/{commit}/pulls",
                 token=token,
             )
-            if res:
-                if len(res) > 1:
-                    prs_with_commit = list(map(lambda data: data["number"], res))
+            prs_with_commit = [data["number"] for data in res if data["state"] == state]
+            if prs_with_commit:
+                if len(prs_with_commit) > 1:
                     log.warning(
                         "Commit is referenced in multiple PRs.",
-                        extra=dict(prs=prs_with_commit, commit=commit, slug=self.slug),
+                        extra=dict(
+                            prs=prs_with_commit,
+                            commit=commit,
+                            slug=self.slug,
+                            state=state,
+                        ),
                     )
-                return res[0]["number"]
+                return prs_with_commit[0]
         except TorngitClientGeneralError as exp:
             if exp.code == 422:
                 return None
