@@ -305,9 +305,27 @@ class TestUnitGithub(object):
                     # Response for pulls endpoint returns a list directly
                     json=[
                         {
+                            "id": 575148805,
+                            "node_id": "MDExOlB1bFkSZXF1ZXN0MzgzMzQ4Nzc1",
+                            "number": 13,
+                            "title": "feat/other-pr",
+                            "labels": [],
+                            "state": "closed",
+                            "locked": True,
+                        },
+                        {
                             "id": 575148804,
                             "node_id": "MDExOlB1bGxSZXF1ZXN0MzgzMzQ4Nzc1",
                             "number": 18,
+                            "title": "Thiago/base no base",
+                            "labels": [],
+                            "state": "open",
+                            "locked": False,
+                        },
+                        {
+                            "id": 575148804,
+                            "node_id": "MDExOlB1bGxSZXF1ZXN0MzgzMzQ4Nzc1",
+                            "number": 19,
                             "title": "Thiago/base no base",
                             "labels": [],
                             "state": "open",
@@ -332,7 +350,10 @@ class TestUnitGithub(object):
             mock_log.assert_called_with(
                 "Commit is referenced in multiple PRs.",
                 extra=dict(
-                    prs=[18, 22], commit="some_commit_sha", slug="username/repo_name"
+                    prs=[18, 19],
+                    commit="some_commit_sha",
+                    slug="username/repo_name",
+                    state="open",
                 ),
             )
             mock_search_by_issues.assert_not_called()
