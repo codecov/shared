@@ -26,6 +26,7 @@ def test_celery_config():
         "app.tasks.archive.MigrateToArchive",
         "app.tasks.bot.VerifyBot",
         "app.tasks.comment.Comment",
+        "app.tasks.commit_update.CommitUpdate",
         "app.tasks.compute_comparison.ComputeComparison",
         "app.tasks.delete_owner.DeleteOwner",
         "app.tasks.flush_repo.FlushRepo",

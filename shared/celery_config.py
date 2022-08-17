@@ -21,6 +21,7 @@ synchronize_task_name = "app.tasks.synchronize.Synchronize"
 new_user_activated_task_name = "app.tasks.new_user_activated.NewUserActivated"
 add_to_sendgrid_list_task_name = "app.tasks.add_to_sendgrid_list.AddToSendgridList"
 compute_comparison_task_name = "app.tasks.compute_comparison.ComputeComparison"
+commit_update_task_name = "app.tasks.commit_update.CommitUpdate"
 
 profiling_finding_task_name = "app.cron.profiling.findinguncollected"
 profiling_summarization_task_name = "app.tasks.profiling.summarization"
@@ -212,6 +213,11 @@ class BaseCeleryConfig(object):
         profiling_normalization_task_name: {
             "queue": get_config(
                 "setup", "tasks", "profiling", "queue", default=task_default_queue
+            )
+        },
+        commit_update_task_name: {
+            "queue": get_config(
+                "setup", "tasks", "commit_update", "queue", default=task_default_queue
             )
         },
         timeseries_backfill_task_name: {
