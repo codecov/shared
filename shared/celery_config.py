@@ -90,6 +90,12 @@ class BaseCeleryConfig(object):
     notify_soft_time_limit = int(
         get_config("setup", "tasks", "notify", "timeout", default=60)
     )
+    timeseries_soft_time_limit = get_config(
+        "setup", "tasks", "timeseries", "soft_timelimit", default=400
+    )
+    timeseries_hard_time_limit = get_config(
+        "setup", "tasks", "timeseries", "hard_timelimit", default=480
+    )
     task_annotations = {
         delete_owner_task_name: {
             "soft_time_limit": 2 * task_soft_time_limit,
@@ -102,6 +108,14 @@ class BaseCeleryConfig(object):
         sync_repos_task_name: {
             "soft_time_limit": 2 * task_soft_time_limit,
             "time_limit": 2 * task_time_limit,
+        },
+        timeseries_backfill_dataset_task_name: {
+            "soft_time_limit": timeseries_soft_time_limit,
+            "time_limit": timeseries_hard_time_limit,
+        },
+        timeseries_backfill_commits_task_name: {
+            "soft_time_limit": timeseries_soft_time_limit,
+            "time_limit": timeseries_hard_time_limit,
         },
     }
 
