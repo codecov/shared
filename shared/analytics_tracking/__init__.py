@@ -95,6 +95,7 @@ def track_critical_files_sent(repoid, ownerid, commitid, pullid, is_enterprise):
             "commit_id": commitid,
             "pull_id": pullid,
         },
+        is_enterprise=is_enterprise,
     )
 
 
@@ -117,6 +118,7 @@ def track_related_entrypoints_sent(repoid, ownerid, commitid, pullid, is_enterpr
             "commit_id": commitid,
             "pull_id": pullid,
         },
+        is_enterprise=is_enterprise,
     )
 
 
