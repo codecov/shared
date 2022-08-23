@@ -137,10 +137,28 @@ class TestCarryfowardFlag(object):
                     sessions,
                     messages,
                     complexity,
+                    datapoints,
                 ) = dataclasses.astuple(line)
                 sessions = [list(s) for s in sessions]
                 lines.append(
-                    (line_number, coverage, line_type, sessions, messages, complexity)
+                    (
+                        line_number,
+                        coverage,
+                        line_type,
+                        sessions,
+                        messages,
+                        complexity,
+                        datapoints,
+                    )
+                    if datapoints is not None
+                    else (
+                        line_number,
+                        coverage,
+                        line_type,
+                        sessions,
+                        messages,
+                        complexity,
+                    )
                 )
             archive_dict[filename] = lines
         return {"totals": totals_dict, "report": report_dict, "archive": archive_dict}

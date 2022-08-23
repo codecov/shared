@@ -9,7 +9,7 @@ from shared.reports.resources import (
     ReportTotals,
     Session,
 )
-from shared.reports.types import NetworkFile
+from shared.reports.types import CoverageDatapoint, NetworkFile
 from shared.utils.sessions import SessionType
 
 
@@ -162,6 +162,15 @@ class TestFilteredReportFile(object):
                     LineSession(2, 0, complexity=4),
                     LineSession(10, 0, complexity=3),
                 ],
+                datapoints=[
+                    CoverageDatapoint(0, 0, None, ["simpletest"]),
+                    CoverageDatapoint(0, 1, None, ["complextest"]),
+                    CoverageDatapoint(1, "1/2", None, ["simpletest"]),
+                    CoverageDatapoint(1, 1, None, ["complextest"]),
+                    CoverageDatapoint(2, 0, None, ["simple"]),
+                    CoverageDatapoint(2, 0, None, ["complextest"]),
+                    CoverageDatapoint(10, 0, None, ["complextest"]),
+                ],
             )
         )
         assert res.coverage == 1
@@ -171,6 +180,12 @@ class TestFilteredReportFile(object):
             LineSession(id=1, coverage=1, complexity=4),
         ]
         assert res.messages is None
+        assert res.datapoints == [
+            CoverageDatapoint(0, 0, None, ["simpletest"]),
+            CoverageDatapoint(0, 1, None, ["complextest"]),
+            CoverageDatapoint(1, "1/2", None, ["simpletest"]),
+            CoverageDatapoint(1, 1, None, ["complextest"]),
+        ]
         assert res.complexity == 5
 
     def test_line_modifier_empty(self):

@@ -3,6 +3,7 @@ from fractions import Fraction
 import pytest
 
 from shared.utils.merge import (
+    CoverageDatapoint,
     LineSession,
     LineType,
     ReportLine,
@@ -205,10 +206,28 @@ def test_merge_missed_branches(sessions, res):
         ),
         # types
         ((1, None, [[1, 1]]), (1, "b", [[1, 1]]), (1, "b", [LineSession(1, 1)])),
-        # messages
-        # ((0, None, None, [{'s': '1', 't': 'a'}], 's': {'1': {'c': 0}}},
-        #  (1, None, None, [{'s': '1', 't': 'a'}], 's': {'1': {'c': 1}}},
-        #  (1, None, None, [{'s': '1', 't': 'a'}, {'s':
+        (
+            (1, None, [[1, 1]], None, None, [(1, 1, None, ["banana"])]),
+            (1, "b", [[1, 1]], None, None, [(1, 1, "b", ["simpletest"])]),
+            (
+                1,
+                "b",
+                [LineSession(1, 1)],
+                None,  # messages
+                None,  # complexity
+                [
+                    CoverageDatapoint(
+                        sessionid=1, coverage=1, coverage_type=None, labels=["banana"]
+                    ),
+                    CoverageDatapoint(
+                        sessionid=1,
+                        coverage=1,
+                        coverage_type="b",
+                        labels=["simpletest"],
+                    ),
+                ],
+            ),
+        ),
     ],
 )
 def test_merge_line(l1, l2, expected_res):

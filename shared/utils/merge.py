@@ -2,9 +2,9 @@ from collections import defaultdict
 from enum import IntEnum
 from fractions import Fraction
 from itertools import groupby
-from typing import Sequence
+from typing import List, Optional, Sequence
 
-from shared.reports.types import LineSession, ReportLine
+from shared.reports.types import CoverageDatapoint, LineSession, ReportLine
 
 
 def merge_all(coverages, missing_branches=None):
@@ -188,11 +188,24 @@ def merge_line(l1, l2, joined=True):
         complexity=get_complexity_from_sessions(sessions) if joined else l1.complexity,
         sessions=sessions,
         messages=merge_messages(l1.messages, l2.messages),
+        datapoints=merge_datapoints(l1.datapoints, l2.datapoints),
     )
 
 
 def merge_messages(m1, m2):
     pass
+
+
+def merge_datapoints(
+    d1: Optional[List[CoverageDatapoint]], d2: Optional[List[CoverageDatapoint]]
+):
+    if d1 is None and d2 is None:
+        return None
+    # the sorting doesn't really matter how as long as it is a consistent thing
+    return sorted(
+        (d1 or []) + (d2 or []),
+        key=lambda x: x.key_sorting_tuple(),
+    )
 
 
 def merge_line_session(s1, s2):
