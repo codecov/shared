@@ -23,6 +23,7 @@ setup(
     author_email="support@codecov.io",
     install_requires=[
         "boto3>=1.9.218",
+        "botocore",
         "cerberus",
         "colour>=0.1.5",
         "cryptography>=35.0.0",
