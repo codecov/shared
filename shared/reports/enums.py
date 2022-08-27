@@ -2,11 +2,18 @@ from shared.utils.enums import CodecovDatabaseEnum
 
 
 class UploadState(CodecovDatabaseEnum):
-    uploaded = 1
-    processed = 2
-    error = 3
+    UPLOADED = (1,)
+    PROCESSED = (2,)
+    ERROR = (3,)
+
+    def __init__(self, db_id):
+        self.db_id = db_id
 
 
 class UploadType(CodecovDatabaseEnum):
-    uploaded = 1
-    carryforwarded = 2
+    UPLOADED = (1, "uploaded")
+    CARRIEDFORWARD = (2, "carriedforward")
+
+    def __init__(self, db_id, db_name):
+        self.db_id = db_id
+        self.db_name = db_name
