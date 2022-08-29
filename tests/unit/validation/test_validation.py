@@ -1005,3 +1005,32 @@ def test_assume_flags():
     assert do_actual_validation(
         user_input, show_secrets_for=("github", "11934774", "154468867")
     ) == {"flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}}
+
+
+def test_profiling_schema():
+    user_input = {
+        "profiling": {
+            "fixes": ["batata_something::batata.txt"],
+            "grouping_attributes": ["string", "str"],
+            "critical_files_paths": [
+                "/path/to/file.extension",
+                "/path/to/dir",
+                r"/path/{src|bin}/regex.{txt|php|cpp}",
+                "/path/using/globs/**/file.extension",
+            ],
+        }
+    }
+    expected_result = {
+        "profiling": {
+            "fixes": ["^batata_something::batata.txt"],
+            "grouping_attributes": ["string", "str"],
+            "critical_files_paths": [
+                "^/path/to/file.extension.*",
+                "^/path/to/dir.*",
+                "^/path/{src|bin}/regex.{txt|php|cpp}.*",
+                "(?s:/path/using/globs/.*/file\\.extension.*)\\Z",
+            ],
+        }
+    }
+    result = validate_yaml(user_input)
+    assert result == expected_result

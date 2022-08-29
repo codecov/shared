@@ -415,6 +415,10 @@ schema = {
                 "schema": {"type": "string", "coerce": "regexify_path_fix"},
             },
             "grouping_attributes": {"type": "list", "schema": {"type": "string"}},
+            "critical_files_paths": {
+                "type": "list",
+                "schema": {"type": "string", "coerce": "regexify_path_pattern"},
+            },
         },
     },
 }
