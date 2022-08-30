@@ -20,28 +20,28 @@ class TestAnalyticsTracking(BaseTestCase):
         mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
 
-        track_event("123", "Coverage Report Passed", {"test": True})
+        track_event("123", "Coverage Report Passed", False, {"test": True})
         assert mock_track.called
 
     def test_track_event_invalid_name(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
 
-        track_event("123", "Invalid Name", {"test": True})
+        track_event("123", "Invalid Name", False, {"test": True})
         assert not mock_track.called
 
     def test_track_event_segment_disabled(self, mocker):
         mocker.patch("shared.analytics_tracking.segment_enabled", False)
         mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
 
-        track_event("123", "Coverage Report Failed", {"test": True})
+        track_event("123", "Coverage Report Failed", False, {"test": True})
         assert not mock_track.called
 
     def test_track_event_is_enterprise(self, mocker):
         mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
         mocker.patch("shared.analytics_tracking.segment_enabled", True)
 
-        track_event("123", "Coverage Report Failed", {"test": True}, True)
+        track_event("123", "Coverage Report Failed", True, {"test": True})
         assert not mock_track.called
 
     def test_track_user(self, mocker):
