@@ -32,6 +32,8 @@ event_names = [
     "Impact Analysis Betaprofiling removed from YAML",
     "Impact Analysis Show Critical Files in YAML",
     "Impact Analysis Show Critical Files removed from YAML",
+    "Impact Analysis Manual Critical File Labelling in YAML",
+    "Impact Analysis Manual Critical File Labelling removed from YAML",
 ]
 
 
@@ -144,6 +146,26 @@ def track_show_critical_paths_removed_from_YAML(repoid, ownerid, is_enterprise):
     track_event(
         user_id=BLANK_SEGMENT_USER_ID,
         event_name="Impact Analysis Show Critical Files removed from YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_manual_critical_file_labelling_added_in_YAML(repoid, ownerid, is_enterprise):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Manual Critical File Labelling in YAML",
+        event_data={"repo_id": repoid, "repo_owner_id": ownerid},
+        is_enterprise=is_enterprise,
+    )
+
+
+def track_manual_critical_file_labelling_removed_from_YAML(
+    repoid, ownerid, is_enterprise
+):
+    track_event(
+        user_id=BLANK_SEGMENT_USER_ID,
+        event_name="Impact Analysis Manual Critical File Labelling removed from YAML",
         event_data={"repo_id": repoid, "repo_owner_id": ownerid},
         is_enterprise=is_enterprise,
     )
