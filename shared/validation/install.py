@@ -172,6 +172,15 @@ config_schema = {
                         "type": "dict",
                         "schema": {**default_task_fields},
                     },
+                    "healthcheck": {
+                        "type": "dict",
+                        "schema": {
+                            "interval_seconds": {
+                                "type": "integer",
+                                "min": 0,
+                            }
+                        },
+                    },
                 },
             },
             "upload_processing_delay": {"type": "integer"},
