@@ -35,7 +35,7 @@ event_names = [
 ]
 
 
-def track_event(user_id, event_name, is_enterprise, event_data={}):
+def track_event(user_id, event_name, *, is_enterprise, event_data={}):
     """
     https://segment.com/docs/connections/spec/track/
 
