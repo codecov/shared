@@ -47,9 +47,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v06-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
+          - v07-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
           # fallback to using the latest cache if no exact match is found
-          - v06-dependencies-<< parameters.imagename >>
+          - v07-dependencies-<< parameters.imagename >>
 
       - run:
           name: install dependencies
@@ -58,13 +58,13 @@ jobs:
             source $HOME/.cargo/env
             python3 -m venv venv
             . venv/bin/activate
+            pip install -r tests/requirements.txt
             pip install setuptools_rust
             python setup.py develop
-            pip install -r tests/requirements.txt
       - save_cache:
           paths:
             - venv
-          key: v06-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
+          key: v07-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
 
       - run:
           name: run tests

@@ -1,12 +1,15 @@
 from mock import MagicMock, patch
 
 from shared.analytics_tracking import (
+    BLANK_SEGMENT_USER_ID,
     on_error,
     setup_analytics,
     track_betaprofiling_added_in_YAML,
     track_betaprofiling_removed_from_YAML,
     track_critical_files_sent,
     track_event,
+    track_manual_critical_file_labelling_added_in_YAML,
+    track_manual_critical_file_labelling_removed_from_YAML,
     track_related_entrypoints_sent,
     track_show_critical_paths_added_in_YAML,
     track_show_critical_paths_removed_from_YAML,
@@ -146,3 +149,29 @@ class TestAnalyticsTracking(BaseTestCase):
             repoid="123", ownerid="456", is_enterprise=False
         )
         assert mock_track.called
+
+    def test_track_manual_critical_file_labelling_added_in_YAML(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_manual_critical_file_labelling_added_in_YAML(
+            repoid="123", ownerid="456", is_enterprise=False
+        )
+        mock_track.assert_called_with(
+            user_id=BLANK_SEGMENT_USER_ID,
+            event_name="Impact Analysis Manual Critical File Labelling in YAML",
+            event_data={"repo_id": "123", "repo_owner_id": "456"},
+            is_enterprise=False,
+        )
+
+    def test_track_manual_critical_file_labelling_removed_from_YAML(self, mocker):
+        mock_track = mocker.patch("shared.analytics_tracking.track_event")
+        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+        track_manual_critical_file_labelling_removed_from_YAML(
+            repoid="123", ownerid="456", is_enterprise=False
+        )
+        mock_track.assert_called_with(
+            user_id=BLANK_SEGMENT_USER_ID,
+            event_name="Impact Analysis Manual Critical File Labelling removed from YAML",
+            event_data={"repo_id": "123", "repo_owner_id": "456"},
+            is_enterprise=False,
+        )

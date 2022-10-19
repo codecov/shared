@@ -1034,3 +1034,86 @@ def test_profiling_schema():
     }
     result = validate_yaml(user_input)
     assert result == expected_result
+
+
+def test_components_schema():
+    user_input = {
+        "component_management": {
+            "default_rules": {
+                "flag_regexes": ["global_flag"],
+            },
+            "individual_components": [
+                {
+                    "name": "fruits",
+                    "component_id": "app_0",
+                    "flag_regexes": ["fruit_.*", "^specific_flag$"],
+                    "paths": ["src/.*"],
+                    "statuses": [{"type": "patch", "name_prefix": "co", "target": 90}],
+                }
+            ],
+        }
+    }
+    expected = {
+        "component_management": {
+            "default_rules": {
+                "flag_regexes": ["global_flag"],
+            },
+            "individual_components": [
+                {
+                    "name": "fruits",
+                    "component_id": "app_0",
+                    "flag_regexes": ["fruit_.*", "^specific_flag$"],
+                    "paths": ["src/.*"],
+                    "statuses": [
+                        {"type": "patch", "name_prefix": "co", "target": 90.0}
+                    ],
+                }
+            ],
+        }
+    }
+    result = validate_yaml(user_input)
+    assert result == expected
+
+
+def test_components_schema_error():
+    user_input = {
+        "component_management": {
+            "individual_components": [
+                {
+                    "key": "extra",
+                    "component_id": "app_0",
+                    "flag_regexes": ["fruit_*", "^specific_flag$"],
+                    "path_filter_regexes": ["src/.*"],
+                    "statuses": [
+                        {"type": "patch", "name_prefix": "co", "target": 90.0}
+                    ],
+                },
+                {
+                    "component_id": "app_0",
+                    "flag_regexes": ["fruit_*", "^specific_flag$"],
+                    "path_filter_regexes": ["src/.*"],
+                },
+            ],
+        }
+    }
+    with pytest.raises(InvalidYamlException) as exp:
+        validate_yaml(user_input)
+        assert exp.error_location == [
+            "component_management",
+            "individual_components",
+            0,
+            "key",
+        ]
+        assert exp.error_message == "unknown field"
+        assert exp.error_dict == {
+            "component_management": [
+                {
+                    "individual_components": [
+                        {
+                            0: [{"key": ["unknown field"]}],
+                            1: [{"component_id": ["required field"]}],
+                        }
+                    ]
+                }
+            ]
+        }

@@ -20,8 +20,7 @@ flag_list_structure = {
     "schema": {"type": "string", "regex": r"^[\w\.\-]{1,45}$"},
 }
 
-
-status_base_attributes = {
+status_common_config = {
     "base": {"type": "string", "allowed": ("parent", "pr", "auto")},
     "branches": branches_structure,
     "disable_approx": {"type": "boolean"},
@@ -45,19 +44,8 @@ status_base_attributes = {
         "allowed": ("line", "statement", "branch", "method", "complexity"),
     },
     "only_pulls": {"type": "boolean"},
-    "paths": path_list_structure,
     "skip_if_assumes": {"type": "boolean"},
-    "carryforward_behavior": {
-        "type": "string",
-        "allowed": ("include", "exclude", "pass"),
-    },
-    "flag_coverage_not_uploaded_behavior": {
-        "type": "string",
-        "allowed": ("include", "exclude", "pass"),
-    },
 }
-
-status_standard_attributes = {"flags": flag_list_structure, **status_base_attributes}
 
 percent_type_or_auto = {
     "type": ["string", "number"],
@@ -72,13 +60,34 @@ percent_type = {
     "coerce": "percentage_to_number",
 }
 
-new_statuses_attributes = {
+custom_status_common_config = {
     "name_prefix": {"type": "string", "regex": r"^[\w\-\.]+$"},
     "type": {"type": "string", "allowed": ("project", "patch", "changes")},
     "target": percent_type_or_auto,
     "threshold": percent_type,
-    **status_base_attributes,
 }
+
+flag_status_base_attributes = {
+    **status_common_config,
+    "paths": path_list_structure,
+    "carryforward_behavior": {
+        "type": "string",
+        "allowed": ("include", "exclude", "pass"),
+    },
+    "flag_coverage_not_uploaded_behavior": {
+        "type": "string",
+        "allowed": ("include", "exclude", "pass"),
+    },
+}
+
+status_standard_attributes = {
+    "flags": flag_list_structure,
+    **flag_status_base_attributes,
+}
+
+flag_status_attributes = {**flag_status_base_attributes, **custom_status_common_config}
+
+component_status_attributes = {**status_common_config, **custom_status_common_config}
 
 notification_standard_attributes = {
     "url": {"type": "string", "coerce": "secret", "nullable": True},
@@ -92,6 +101,26 @@ notification_standard_attributes = {
     "flags": flag_list_structure,
     "base": {"type": "string", "allowed": ("parent", "pr", "auto")},
     "only_pulls": {"type": "boolean"},
+    "paths": path_list_structure,
+}
+
+
+flags_rule_basic_properties = {
+    "statuses": {
+        "type": "list",
+        "schema": {"type": "dict", "schema": flag_status_attributes},
+    },
+    "carryforward": {"type": "boolean"},
+    "paths": path_list_structure,
+    "ignore": path_list_structure,
+}
+
+component_rule_basic_properties = {
+    "statuses": {
+        "type": "list",
+        "schema": {"type": "dict", "schema": component_status_attributes},
+    },
+    "flag_regexes": {"type": "list", "schema": {"type": "string"}},
     "paths": path_list_structure,
 }
 
@@ -346,34 +375,35 @@ schema = {
     "flag_management": {
         "type": "dict",
         "schema": {
-            "default_rules": {
-                "type": "dict",
-                "schema": {
-                    "carryforward": {"type": "boolean"},
-                    "ignore": path_list_structure,
-                    "paths": path_list_structure,
-                    "statuses": {
-                        "type": "list",
-                        "schema": {"type": "dict", "schema": new_statuses_attributes},
-                    },
-                },
-            },
+            "default_rules": {"type": "dict", "schema": flags_rule_basic_properties},
             "individual_flags": {
                 "type": "list",
                 "schema": {
                     "type": "dict",
                     "schema": {
+                        **flags_rule_basic_properties,
                         "name": flag_name,
-                        "carryforward": {"type": "boolean"},
-                        "ignore": path_list_structure,
-                        "paths": path_list_structure,
-                        "statuses": {
-                            "type": "list",
-                            "schema": {
-                                "type": "dict",
-                                "schema": new_statuses_attributes,
-                            },
-                        },
+                    },
+                },
+            },
+        },
+    },
+    "component_management": {
+        "type": "dict",
+        "schema": {
+            "default_rules": {
+                "type": "dict",
+                "schema": component_rule_basic_properties,
+                "nullable": True,
+            },
+            "individual_components": {
+                "type": "list",
+                "schema": {
+                    "type": "dict",
+                    "schema": {
+                        **component_rule_basic_properties,
+                        "name": {"type": "string"},
+                        "component_id": {"type": "string", "required": True},
                     },
                 },
             },
