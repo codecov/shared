@@ -332,6 +332,7 @@ class LayoutStructure(object):
             "footer",
             "header",
             "reach",
+            "components",
             "suggestions",
             "betaprofiling",
             "sunburst",

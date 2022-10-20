@@ -106,8 +106,8 @@ class TestPathPatternSchemaField(BaseTestCase):
 class TestLayoutStructure(BaseTestCase):
     def test_simple_layout(self):
         schema = LayoutStructure()
-        result = "reach, diff, flags, files, footer"
-        expected_result = "reach, diff, flags, files, footer"
+        result = "reach, diff, flags, files, components, footer"
+        expected_result = "reach, diff, flags, files, components, footer"
         assert expected_result == schema.validate(result)
 
     def test_empty_layout(self):

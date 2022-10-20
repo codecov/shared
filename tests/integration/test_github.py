@@ -994,21 +994,21 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_workflow_run(self):
+    async def test_get_workflow_run(self, codecov_vcr):
         handler = Github(
-            repo=dict(name="codecov-test"),
-            owner=dict(username="ibrahim0814"),
+            repo=dict(name="django"),
+            owner=dict(username="django"),
             token=dict(key="test9zwlbanm8k3m3394ihpwyqk08okirro3l3n0"),
         )
         expected_result = {
-            "start_time": "2020-02-07T03:23:26Z",
-            "finish_time": "2020-02-07T03:24:03Z",
+            "start_time": "2022-10-17T14:29:14Z",
+            "finish_time": "2022-10-17T14:31:13Z",
             "status": "completed",
             "public": True,
-            "slug": "ibrahim0814/codecov-test",
-            "commit_sha": "c955f27de13dbbd6b113e069ed836b4d85903c6c",
+            "slug": "django/django",
+            "commit_sha": "384dba7ce472c0f22c33f2bcede8f8d04b9c2b0f",
         }
-        run_id = "35734337"
+        run_id = "3265999402"
         res = await handler.get_workflow_run(run_id)
         assert res == expected_result
 

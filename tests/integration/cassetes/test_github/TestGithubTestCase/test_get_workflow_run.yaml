@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/django/django/actions/runs/3265999402
+  response:
+    content: '{"id":3265999402,"name":"Docs","node_id":"WFR_kwLOAD-Lgs7CqzIq","head_branch":"refs_34099_ticket","head_sha":"384dba7ce472c0f22c33f2bcede8f8d04b9c2b0f","path":".github/workflows/docs.yml","display_title":"Refs
+      #34099 -- Documented a recommendation to add any fields set in the save method
+      to the update_fields kwarg.","run_number":3981,"event":"pull_request","status":"completed","conclusion":"success","workflow_id":6146682,"check_suite_id":8812361904,"check_suite_node_id":"CS_kwDOAD-Lgs8AAAACDUH4sA","url":"https://api.github.com/repos/django/django/actions/runs/3265999402","html_url":"https://github.com/django/django/actions/runs/3265999402","pull_requests":[],"created_at":"2022-10-17T14:29:14Z","updated_at":"2022-10-17T14:31:13Z","actor":{"login":"sarahboyce","id":42296566,"node_id":"MDQ6VXNlcjQyMjk2NTY2","avatar_url":"https://avatars.githubusercontent.com/u/42296566?v=4","gravatar_id":"","url":"https://api.github.com/users/sarahboyce","html_url":"https://github.com/sarahboyce","followers_url":"https://api.github.com/users/sarahboyce/followers","following_url":"https://api.github.com/users/sarahboyce/following{/other_user}","gists_url":"https://api.github.com/users/sarahboyce/gists{/gist_id}","starred_url":"https://api.github.com/users/sarahboyce/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/sarahboyce/subscriptions","organizations_url":"https://api.github.com/users/sarahboyce/orgs","repos_url":"https://api.github.com/users/sarahboyce/repos","events_url":"https://api.github.com/users/sarahboyce/events{/privacy}","received_events_url":"https://api.github.com/users/sarahboyce/received_events","type":"User","site_admin":false},"run_attempt":1,"referenced_workflows":[],"run_started_at":"2022-10-17T14:29:14Z","triggering_actor":{"login":"sarahboyce","id":42296566,"node_id":"MDQ6VXNlcjQyMjk2NTY2","avatar_url":"https://avatars.githubusercontent.com/u/42296566?v=4","gravatar_id":"","url":"https://api.github.com/users/sarahboyce","html_url":"https://github.com/sarahboyce","followers_url":"https://api.github.com/users/sarahboyce/followers","following_url":"https://api.github.com/users/sarahboyce/following{/other_user}","gists_url":"https://api.github.com/users/sarahboyce/gists{/gist_id}","starred_url":"https://api.github.com/users/sarahboyce/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/sarahboyce/subscriptions","organizations_url":"https://api.github.com/users/sarahboyce/orgs","repos_url":"https://api.github.com/users/sarahboyce/repos","events_url":"https://api.github.com/users/sarahboyce/events{/privacy}","received_events_url":"https://api.github.com/users/sarahboyce/received_events","type":"User","site_admin":false},"jobs_url":"https://api.github.com/repos/django/django/actions/runs/3265999402/jobs","logs_url":"https://api.github.com/repos/django/django/actions/runs/3265999402/logs","check_suite_url":"https://api.github.com/repos/django/django/check-suites/8812361904","artifacts_url":"https://api.github.com/repos/django/django/actions/runs/3265999402/artifacts","cancel_url":"https://api.github.com/repos/django/django/actions/runs/3265999402/cancel","rerun_url":"https://api.github.com/repos/django/django/actions/runs/3265999402/rerun","previous_attempt_url":null,"workflow_url":"https://api.github.com/repos/django/django/actions/workflows/6146682","head_commit":{"id":"384dba7ce472c0f22c33f2bcede8f8d04b9c2b0f","tree_id":"de5dcf3076ab1c1f7d7aed399d63a6f08be4e1ff","message":"Refs
+      #34099 -- Documented a recommendation to add any fields set in the save method
+      to the update_fields kwarg.","timestamp":"2022-10-17T14:28:55Z","author":{"name":"sarahboyce","email":"sarahvboyce95@gmail.com"},"committer":{"name":"sarahboyce","email":"sarahvboyce95@gmail.com"}},"repository":{"id":4164482,"node_id":"MDEwOlJlcG9zaXRvcnk0MTY0NDgy","name":"django","full_name":"django/django","private":false,"owner":{"login":"django","id":27804,"node_id":"MDEyOk9yZ2FuaXphdGlvbjI3ODA0","avatar_url":"https://avatars.githubusercontent.com/u/27804?v=4","gravatar_id":"","url":"https://api.github.com/users/django","html_url":"https://github.com/django","followers_url":"https://api.github.com/users/django/followers","following_url":"https://api.github.com/users/django/following{/other_user}","gists_url":"https://api.github.com/users/django/gists{/gist_id}","starred_url":"https://api.github.com/users/django/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/django/subscriptions","organizations_url":"https://api.github.com/users/django/orgs","repos_url":"https://api.github.com/users/django/repos","events_url":"https://api.github.com/users/django/events{/privacy}","received_events_url":"https://api.github.com/users/django/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/django/django","description":"The
+      Web framework for perfectionists with deadlines.","fork":false,"url":"https://api.github.com/repos/django/django","forks_url":"https://api.github.com/repos/django/django/forks","keys_url":"https://api.github.com/repos/django/django/keys{/key_id}","collaborators_url":"https://api.github.com/repos/django/django/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/django/django/teams","hooks_url":"https://api.github.com/repos/django/django/hooks","issue_events_url":"https://api.github.com/repos/django/django/issues/events{/number}","events_url":"https://api.github.com/repos/django/django/events","assignees_url":"https://api.github.com/repos/django/django/assignees{/user}","branches_url":"https://api.github.com/repos/django/django/branches{/branch}","tags_url":"https://api.github.com/repos/django/django/tags","blobs_url":"https://api.github.com/repos/django/django/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/django/django/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/django/django/git/refs{/sha}","trees_url":"https://api.github.com/repos/django/django/git/trees{/sha}","statuses_url":"https://api.github.com/repos/django/django/statuses/{sha}","languages_url":"https://api.github.com/repos/django/django/languages","stargazers_url":"https://api.github.com/repos/django/django/stargazers","contributors_url":"https://api.github.com/repos/django/django/contributors","subscribers_url":"https://api.github.com/repos/django/django/subscribers","subscription_url":"https://api.github.com/repos/django/django/subscription","commits_url":"https://api.github.com/repos/django/django/commits{/sha}","git_commits_url":"https://api.github.com/repos/django/django/git/commits{/sha}","comments_url":"https://api.github.com/repos/django/django/comments{/number}","issue_comment_url":"https://api.github.com/repos/django/django/issues/comments{/number}","contents_url":"https://api.github.com/repos/django/django/contents/{+path}","compare_url":"https://api.github.com/repos/django/django/compare/{base}...{head}","merges_url":"https://api.github.com/repos/django/django/merges","archive_url":"https://api.github.com/repos/django/django/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/django/django/downloads","issues_url":"https://api.github.com/repos/django/django/issues{/number}","pulls_url":"https://api.github.com/repos/django/django/pulls{/number}","milestones_url":"https://api.github.com/repos/django/django/milestones{/number}","notifications_url":"https://api.github.com/repos/django/django/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/django/django/labels{/name}","releases_url":"https://api.github.com/repos/django/django/releases{/id}","deployments_url":"https://api.github.com/repos/django/django/deployments"},"head_repository":{"id":380729936,"node_id":"MDEwOlJlcG9zaXRvcnkzODA3Mjk5MzY=","name":"django","full_name":"sarahboyce/django","private":false,"owner":{"login":"sarahboyce","id":42296566,"node_id":"MDQ6VXNlcjQyMjk2NTY2","avatar_url":"https://avatars.githubusercontent.com/u/42296566?v=4","gravatar_id":"","url":"https://api.github.com/users/sarahboyce","html_url":"https://github.com/sarahboyce","followers_url":"https://api.github.com/users/sarahboyce/followers","following_url":"https://api.github.com/users/sarahboyce/following{/other_user}","gists_url":"https://api.github.com/users/sarahboyce/gists{/gist_id}","starred_url":"https://api.github.com/users/sarahboyce/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/sarahboyce/subscriptions","organizations_url":"https://api.github.com/users/sarahboyce/orgs","repos_url":"https://api.github.com/users/sarahboyce/repos","events_url":"https://api.github.com/users/sarahboyce/events{/privacy}","received_events_url":"https://api.github.com/users/sarahboyce/received_events","type":"User","site_admin":false},"html_url":"https://github.com/sarahboyce/django","description":"The
+      Web framework for perfectionists with deadlines.","fork":true,"url":"https://api.github.com/repos/sarahboyce/django","forks_url":"https://api.github.com/repos/sarahboyce/django/forks","keys_url":"https://api.github.com/repos/sarahboyce/django/keys{/key_id}","collaborators_url":"https://api.github.com/repos/sarahboyce/django/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/sarahboyce/django/teams","hooks_url":"https://api.github.com/repos/sarahboyce/django/hooks","issue_events_url":"https://api.github.com/repos/sarahboyce/django/issues/events{/number}","events_url":"https://api.github.com/repos/sarahboyce/django/events","assignees_url":"https://api.github.com/repos/sarahboyce/django/assignees{/user}","branches_url":"https://api.github.com/repos/sarahboyce/django/branches{/branch}","tags_url":"https://api.github.com/repos/sarahboyce/django/tags","blobs_url":"https://api.github.com/repos/sarahboyce/django/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/sarahboyce/django/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/sarahboyce/django/git/refs{/sha}","trees_url":"https://api.github.com/repos/sarahboyce/django/git/trees{/sha}","statuses_url":"https://api.github.com/repos/sarahboyce/django/statuses/{sha}","languages_url":"https://api.github.com/repos/sarahboyce/django/languages","stargazers_url":"https://api.github.com/repos/sarahboyce/django/stargazers","contributors_url":"https://api.github.com/repos/sarahboyce/django/contributors","subscribers_url":"https://api.github.com/repos/sarahboyce/django/subscribers","subscription_url":"https://api.github.com/repos/sarahboyce/django/subscription","commits_url":"https://api.github.com/repos/sarahboyce/django/commits{/sha}","git_commits_url":"https://api.github.com/repos/sarahboyce/django/git/commits{/sha}","comments_url":"https://api.github.com/repos/sarahboyce/django/comments{/number}","issue_comment_url":"https://api.github.com/repos/sarahboyce/django/issues/comments{/number}","contents_url":"https://api.github.com/repos/sarahboyce/django/contents/{+path}","compare_url":"https://api.github.com/repos/sarahboyce/django/compare/{base}...{head}","merges_url":"https://api.github.com/repos/sarahboyce/django/merges","archive_url":"https://api.github.com/repos/sarahboyce/django/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/sarahboyce/django/downloads","issues_url":"https://api.github.com/repos/sarahboyce/django/issues{/number}","pulls_url":"https://api.github.com/repos/sarahboyce/django/pulls{/number}","milestones_url":"https://api.github.com/repos/sarahboyce/django/milestones{/number}","notifications_url":"https://api.github.com/repos/sarahboyce/django/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/sarahboyce/django/labels{/name}","releases_url":"https://api.github.com/repos/sarahboyce/django/releases{/id}","deployments_url":"https://api.github.com/repos/sarahboyce/django/deployments"}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 19 Oct 2022 02:15:51 GMT
+      ETag:
+      - W/"55a9ec2a17199f50f5ca2bee9c50b17d66539c2849ebc7c6e847ceb4ff87ff02"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - D44B:5C2A:1289BD2:13F41A4:634F5DD6
+      X-OAuth-Scopes:
+      - admin:enterprise, admin:gpg_key, admin:org, admin:org_hook, admin:public_key,
+        admin:repo_hook, delete:packages, delete_repo, gist, notifications, repo,
+        user, workflow, write:discussion, write:packages
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4995'
+      X-RateLimit-Reset:
+      - '1666148190'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '5'
+      X-XSS-Protection:
+      - '0'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
