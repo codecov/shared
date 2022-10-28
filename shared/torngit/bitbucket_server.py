@@ -1,5 +1,13 @@
+# The seemingly useless imports marked are important for enterprise build. DON'T REMOVE.
+# Plus they MUST be there before 'from tlslite.utils import keyfactory'.
+# Check commit message for details
+import asyncore  # enterprise important
 import base64
+import imaplib  # enterprise important
 import os
+import poplib  # enterprise important
+import smtplib  # enterprise important
+import xmlrpc.server  # enterprise important
 from datetime import datetime
 from json import dumps, loads
 from urllib.parse import parse_qsl
