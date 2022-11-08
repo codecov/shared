@@ -461,4 +461,5 @@ schema = {
             },
         },
     },
+    "beta_groups": {"type": "list", "schema": {"type": "string"}},
 }
