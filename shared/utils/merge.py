@@ -20,30 +20,30 @@ def merge_all(coverages, missing_branches=None):
 def merge_branch(b1, b2):
     if b1 == b2:  # 1/2 == 1/2
         return b1
-    elif b1 == -1 or b2 == -1:
+    if b1 == -1 or b2 == -1:
         return -1
-    elif type(b1) is int and b1 > 0:
+    if isinstance(b1, int) and not isinstance(b1, bool) and b1 > 0:
         return b1
-    elif type(b2) is int and b2 > 0:
+    if isinstance(b2, int) and not isinstance(b2, bool) and b2 > 0:
         return b2
-    elif b1 in (0, None, True):
+    if b1 in (0, None, True):
         return b2
-    elif b2 in (0, None, True):
+    if b2 in (0, None, True):
         return b1
-    elif type(b1) is list:
+    if isinstance(b1, list):
         return b1
-    elif type(b2) is list:
+    if isinstance(b2, list):
         return b2
-    br1, br2 = tuple(b1.split("/", 1))
+    br1, br2 = b1.split("/", 1)
     if br1 == br2:  # equal 1/1
         return b1
-    br3, br4 = tuple(b2.split("/", 1))
+    br3, br4 = b2.split("/", 1)
     if br3 == br4:  # equal 1/1
         return b2
     # return the greatest found
     return "%s/%s" % (
         br1 if int(br1) > int(br3) else br3,
-        br2 if int(br2) > int(br3) else br4,
+        br2 if int(br2) > int(br4) else br4,
     )
 
 
