@@ -1117,3 +1117,88 @@ def test_components_schema_error():
                 }
             ]
         }
+
+
+def test_removed_code_behavior_config_valid():
+    user_input = {
+        "coverage": {
+            "status": {
+                "project": {
+                    "some_status": {"removed_code_behavior": "removals_only"},
+                }
+            }
+        },
+        "flag_management": {
+            "default_rules": {
+                "statuses": [
+                    {"name_prefix": "custom", "removed_code_behavior": "adjust_base"}
+                ]
+            },
+            "individual_flags": [
+                {
+                    "name": "random",
+                    "statuses": [
+                        {
+                            "name_prefix": "random-custom",
+                            "removed_code_behavior": False,
+                        }
+                    ],
+                }
+            ],
+        },
+        "component_management": {
+            "default_rules": {
+                "statuses": [
+                    {
+                        "name_prefix": "custom",
+                        "removed_code_behavior": "fully_covered_patch",
+                    }
+                ]
+            },
+            "individual_components": [
+                {
+                    "component_id": "random",
+                    "statuses": [
+                        {
+                            "name_prefix": "random-custom",
+                            "removed_code_behavior": "off",
+                        }
+                    ],
+                }
+            ],
+        },
+    }
+    result = validate_yaml(user_input)
+    # There's no change on the valid yaml
+    assert result == user_input
+
+
+def test_offset_config_error():
+    user_input = {
+        "flag_management": {
+            "default_rules": {
+                "statuses": [
+                    {"name_prefix": "custom", "removed_code_behavior": "banana"}
+                ]
+            }
+        },
+    }
+
+    with pytest.raises(InvalidYamlException) as exp:
+        validate_yaml(user_input)
+        assert exp.error_dict == {
+            "coverage": [
+                {
+                    "status": [
+                        {"patch": [{"some_status": [{"offset": ["unknown field"]}]}]}
+                    ]
+                }
+            ],
+            "flag_management": [
+                {
+                    "default_rules": [
+                        {"statuses": [{0: [{"offset": ["unallowed value banana"]}]}]}
+                    ]
+                }
+            ],
+        }

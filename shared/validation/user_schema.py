@@ -45,6 +45,16 @@ status_common_config = {
     },
     "only_pulls": {"type": "boolean"},
     "skip_if_assumes": {"type": "boolean"},
+    "removed_code_behavior": {
+        "type": ["string", "boolean"],
+        "allowed": (
+            "removals_only",
+            "adjust_base",
+            "fully_covered_patch",
+            "off",
+            False,
+        ),
+    },
 }
 
 percent_type_or_auto = {
