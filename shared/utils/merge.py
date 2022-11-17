@@ -50,34 +50,30 @@ def merge_branch(b1, b2):
 def merge_partial_line(p1, p2):
     if not p1 or not p2:
         return p1 or p2
-
     np = p1 + p2
-    if len(np) == 1:
-        # one result already
-        return np
-
     fl = defaultdict(list)
-    [
-        [fl[x].append(_c) for x in range(_s or 0, _e + 1)]
-        for _s, _e, _c in np
-        if _e is not None
-    ]
+    for _s, _e, _cov in np:
+        if _e is not None:
+            for x in range(_s or 0, _e + 1):
+                fl[x].append(_cov)
     ks = list(fl.keys())
     mx = max(ks) + 1 if ks else 0
     # appends coverage on each column when [X, None, C]
-    [[fl[x].append(_c) for x in range(_s or 0, mx)] for _s, _e, _c in np if _e is None]
+    for _s, _e, _cov in np:
+        if _e is None:
+            for x in range(_s or 0, mx):
+                fl[x].append(_cov)
     ks = list(fl.keys())
     # fl = {1: [1], 2: [1], 4: [0], 3: [1], 5: [0], 7: [0], 8: [0]}
     pp = []
-    append = pp.append
     for cov, group in groupby(
         sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]
     ):
         group = list(group)
-        append(_ifg(group[0][0], group[-1][0], cov))
+        pp.append(_interval_if_greater_than(group[0][0], group[-1][0], cov))
 
-    # never ends
-    if [[max(ks), None, _c] for _s, _e, _c in np if _e is None]:
+    # This makes no sense
+    if any([max(ks), None, _cov] for _s, _e, _cov in np if _e is None):
         pp[-1][1] = None
 
     return pp
@@ -268,7 +264,7 @@ def _merge_sessions(s1: Sequence[LineSession], s2: Sequence[LineSession]):
         return s1
 
 
-def _ifg(s, e, c):
+def _interval_if_greater_than(s: int, e: int, c):
     """
     s=start, e=end, c=coverage
     Insures the end is larger then the start.
