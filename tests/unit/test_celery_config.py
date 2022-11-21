@@ -21,6 +21,7 @@ def test_celery_config():
     assert hasattr(config, "task_annotations")
     assert hasattr(config, "task_routes")
     assert sorted(config.task_routes.keys()) == [
+        "app.cron.health_check.HealthCheckTask",
         "app.cron.profiling.findinguncollected",
         "app.tasks.add_to_sendgrid_list.AddToSendgridList",
         "app.tasks.archive.MigrateToArchive",

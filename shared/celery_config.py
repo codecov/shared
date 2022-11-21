@@ -32,6 +32,8 @@ timeseries_backfill_task_name = "app.tasks.timeseries.backfill"
 timeseries_backfill_dataset_task_name = "app.tasks.timeseries.backfill_dataset"
 timeseries_backfill_commits_task_name = "app.tasks.timeseries.backfill_commits"
 
+health_check_task_name = "app.cron.health_check.HealthCheckTask"
+
 
 class BaseCeleryConfig(object):
     broker_url = get_config("services", "celery_broker") or get_config(
@@ -46,6 +48,7 @@ class BaseCeleryConfig(object):
     task_default_queue = get_config(
         "setup", "tasks", "celery", "default_queue", default="celery"
     )
+    health_check_default_queue = "healthcheck"
 
     # Import jobs
     imports = ("tasks",)
@@ -132,7 +135,11 @@ class BaseCeleryConfig(object):
         },
         delete_owner_task_name: {
             "queue": get_config(
-                "setup", "tasks", "delete_owner", "queue", default=task_default_queue
+                "setup",
+                "tasks",
+                "delete_owner",
+                "queue",
+                default=task_default_queue,
             )
         },
         notify_task_name: {
@@ -192,7 +199,11 @@ class BaseCeleryConfig(object):
         },
         remove_webhook_task_name: {
             "queue": get_config(
-                "setup", "tasks", "remove_webhook", "queue", default=task_default_queue
+                "setup",
+                "tasks",
+                "remove_webhook",
+                "queue",
+                default=task_default_queue,
             )
         },
         synchronize_task_name: {
@@ -258,5 +269,8 @@ class BaseCeleryConfig(object):
                 "queue",
                 default=task_default_queue,
             )
+        },
+        health_check_task_name: {
+            "queue": health_check_default_queue,
         },
     }
