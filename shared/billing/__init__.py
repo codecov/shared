@@ -13,3 +13,16 @@ class BillingPlan(Enum):
 
     def __init__(self, db_name):
         self.db_name = db_name
+
+    @classmethod
+    def from_str(cls, plan_name: str):
+        for plan in cls:
+            if plan.db_name == plan_name:
+                return plan
+
+
+def is_enterprise_cloud_plan(plan: BillingPlan) -> bool:
+    return plan in [
+        BillingPlan.enterprise_cloud_monthly,
+        BillingPlan.enterprise_cloud_yearly,
+    ]
