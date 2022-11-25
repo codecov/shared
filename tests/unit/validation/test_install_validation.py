@@ -70,6 +70,7 @@ def test_validate_install_configuration_with_user_yaml():
 def test_validate_sample_production_config():
     user_input = {
         "services": {
+            "external_dependencies_folder": "./external_deps",
             "minio": {
                 "host": "minio",
                 "access_key_id": "pokemon01_hmac_id",
@@ -177,6 +178,7 @@ def test_validate_sample_production_config():
     }
     expected_result = {
         "services": {
+            "external_dependencies_folder": "./external_deps",
             "minio": {
                 "host": "minio",
                 "access_key_id": "pokemon01_hmac_id",

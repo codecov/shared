@@ -193,6 +193,7 @@ config_schema = {
     "services": {
         "type": "dict",
         "schema": {
+            "external_dependencies_folder": {"type": "string"},
             "google_analytics_key": {"type": "string"},
             "minio": {
                 "type": "dict",
