@@ -503,7 +503,8 @@ class TestUserYamlValidation(BaseTestCase):
                         "macro": False,
                         "method": False,
                     }
-                }
+                },
+                "jacoco": {"partials_as_hits": True},
             },
         }
         expected_result = {
@@ -542,7 +543,8 @@ class TestUserYamlValidation(BaseTestCase):
                         "macro": False,
                         "method": False,
                     }
-                }
+                },
+                "jacoco": {"partials_as_hits": True},
             },
         }
         assert validate_yaml(user_input) == expected_result
@@ -772,6 +774,12 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"github_checks": {"annotations": False}}
         expected_result = {"github_checks": {"annotations": False}}
         assert validate_yaml(user_input) == expected_result
+
+    def test_validate_jacoco_partials(self):
+        user_input = {"parsers": {"jacoco": {"partials_as_hits": True}}}
+        expected_result = {"parsers": {"jacoco": {"partials_as_hits": True}}}
+        result = validate_yaml(user_input)
+        assert result == expected_result
 
 
 class TestValidationConfig(object):
