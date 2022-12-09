@@ -10,3 +10,9 @@ def test_route_tasks_based_on_user_plan_defaults():
     assert route_tasks_based_on_user_plan(
         upload_task_name, BillingPlan.enterprise_cloud_monthly.db_name
     ) == {"queue": "enterprise_celery"}
+    assert route_tasks_based_on_user_plan(
+        "misterious_task", BillingPlan.users_basic.db_name
+    ) == {"queue": "celery"}
+    assert route_tasks_based_on_user_plan(
+        "misterious_task", BillingPlan.enterprise_cloud_monthly.db_name
+    ) == {"queue": "enterprise_celery"}
