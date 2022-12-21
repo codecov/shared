@@ -203,7 +203,7 @@ def merge_datapoints(
         return None
     # the sorting doesn't really matter how as long as it is a consistent thing
     return sorted(
-        (d1 or []) + (d2 or []),
+        filter(None, (d1 or []) + (d2 or [])),
         key=lambda x: x.key_sorting_tuple(),
     )
 

@@ -118,7 +118,7 @@ class CoverageDatapoint(object):
             self.sessionid,
             str(self.coverage),
             self.coverage_type if self.coverage_type is not None else "",
-            self.labels,
+            self.labels if self.labels is not None else [],
         )
 
 
