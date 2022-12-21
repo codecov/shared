@@ -14,6 +14,7 @@ from shared.utils.merge import (
     merge_all,
     merge_branch,
     merge_coverage,
+    merge_datapoints,
     merge_line,
     merge_line_session,
     merge_missed_branches,
@@ -63,6 +64,27 @@ def test_merge_branch(b1, b2, res):
         res,
         str(merge_branch(b2, b1)),
     )
+
+
+def test_merge_datapoints():
+    c_1 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, labels=None)
+    c_2 = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, labels=["banana"]
+    )
+    c_3 = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, labels=["apple"]
+    )
+    assert [c_1, c_2] == merge_datapoints(
+        [c_1],
+        [c_2],
+    )
+    assert [c_1, c_2] == merge_datapoints(
+        [c_2],
+        [c_1],
+    )
+    assert [c_1, c_3, c_2] == merge_datapoints([c_2, c_1], [c_3])
+    assert [c_1, c_2] == merge_datapoints([c_2, c_1], None)
+    assert [c_1, c_2] == merge_datapoints([c_2, c_1], [None])
 
 
 @pytest.mark.unit
