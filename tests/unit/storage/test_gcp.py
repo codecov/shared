@@ -29,14 +29,14 @@ C/tY+lZIEO1Gg/FxSMB+hwwhwfSuE3WohZfEcSy+R48=
 gcp_config = {
     "type": "service_account",
     "project_id": "genuine-polymer-165712",
-    "private_key_id": "test79zpqc19shzoxdzoagqqcg603os4oa72rnql",
+    "private_key_id": "testu7gvpfyaasze2lboblawjb3032mbfisy9gpg",
     "private_key": fake_private_key,
-    "client_email": "codecov@genuine-polymer-165712.iam.gserviceaccount.com",
-    "client_id": "116227067571432102184",
+    "client_email": "localstoragetester@genuine-polymer-165712.iam.gserviceaccount.com",
+    "client_id": "110927033630051704865",
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
     "token_uri": "https://oauth2.googleapis.com/token",
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/codecov%40genuine-polymer-165712.iam.gserviceaccount.com",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/localstoragetester%40genuine-polymer-165712.iam.gserviceaccount.com",
 }
 
 
@@ -57,18 +57,50 @@ class TestGCPStorateService(BaseTestCase):
         storage = GCPStorageService(gcp_config)
         path = "test_write_then_read_file/result"
         data = "lorem ipsum dolor test_write_then_read_file á"
-        bucket_name = "testingarchive004"
+        bucket_name = "testingarchive02"
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == data
+
+    def test_manually_then_read_then_write_then_read_file(self, codecov_vcr):
+        bucket_name = "testingarchive02"
+        path = "test_manually_then_read_then_write_then_read_file/result01"
+        storage = GCPStorageService(gcp_config)
+        blob = storage.get_blob(bucket_name, path)
+        blob.upload_from_string("some data around")
+        assert storage.read_file(bucket_name, path).decode() == "some data around"
+        blob.reload()
+        assert blob.content_type == "text/plain"
+        assert blob.content_encoding is None
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        assert storage.write_file(bucket_name, path, data)
+        assert storage.read_file(bucket_name, path).decode() == data
+        blob = storage.get_blob(bucket_name, path)
+        blob.reload()
+        assert blob.content_type == "text/plain"
+        assert blob.content_encoding == "gzip"
+
+    def test_write_then_read_file_gzipped(self, codecov_vcr):
+        storage = GCPStorageService(gcp_config)
+        path = "test_write_then_read_file/result"
+        data = gzip.compress("lorem ipsum dolor test_write_then_read_file á".encode())
+        bucket_name = "testingarchive02"
+        writing_result = storage.write_file(
+            bucket_name, path, data, is_already_gzipped=True
+        )
+        assert writing_result
+        reading_result = storage.read_file(bucket_name, path)
+        assert (
+            reading_result.decode() == "lorem ipsum dolor test_write_then_read_file á"
+        )
 
     def test_write_then_append_then_read_file(self, codecov_vcr):
         storage = GCPStorageService(gcp_config)
         path = "test_write_then_append_then_read_file/result"
         data = "lorem ipsum dolor test_write_then_read_file á"
         second_data = "mom, look at me, appending data"
-        bucket_name = "testingarchive004"
+        bucket_name = "testingarchive02"
         writing_result = storage.write_file(bucket_name, path, data)
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert writing_result
@@ -80,7 +112,7 @@ class TestGCPStorateService(BaseTestCase):
         storage = GCPStorageService(gcp_config)
         path = f"{request.node.name}/result.txt"
         second_data = "mom, look at me, appending data"
-        bucket_name = "testingarchive004"
+        bucket_name = "testingarchive02"
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert second_writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -115,7 +147,7 @@ class TestGCPStorateService(BaseTestCase):
         storage = GCPStorageService(gcp_config)
         path = f"{request.node.name}/result.txt"
         data = "lorem ipsum dolor test_write_then_read_file á"
-        bucket_name = "testingarchive004"
+        bucket_name = "testingarchive02"
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         deletion_result = storage.delete_file(bucket_name, path)
