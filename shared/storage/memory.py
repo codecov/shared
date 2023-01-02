@@ -36,7 +36,13 @@ class MemoryStorageService(BaseStorageService):
         return {"name": bucket_name}
 
     def write_file(
-        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+        self,
+        bucket_name,
+        path,
+        data,
+        reduced_redundancy=False,
+        *,
+        is_already_gzipped: bool = False,
     ):
         """
             Writes a new file with the contents of `data`
@@ -48,7 +54,7 @@ class MemoryStorageService(BaseStorageService):
             path (str): The desired path of the file
             data (str): The data to be written to the file
             reduced_redundancy (bool): Whether a reduced redundancy mode should be used (default: {False})
-            gzipped (bool): Whether the file should be gzipped on write (default: {False})
+            is_already_gzipped (bool): Whether the file is already gzipped (default: {False})
 
         Raises:
             NotImplementedError: If the current instance did not implement this method

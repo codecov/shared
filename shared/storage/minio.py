@@ -130,9 +130,15 @@ class MinioStorageService(BaseStorageService):
 
     # Writes a file to storage will gzip if not compressed already
     def write_file(
-        self, bucket_name, path, data, reduced_redundancy=False, gzipped=False
+        self,
+        bucket_name,
+        path,
+        data,
+        reduced_redundancy=False,
+        *,
+        is_already_gzipped: bool = False,
     ):
-        if not gzipped:
+        if not is_already_gzipped:
             out = BytesIO()
             with gzip.GzipFile(fileobj=out, mode="w", compresslevel=9) as gz:
                 if isinstance(data, str):
