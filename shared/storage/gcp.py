@@ -1,4 +1,6 @@
+import gzip
 import logging
+from io import BytesIO
 
 import google.cloud.exceptions
 from google.cloud import storage
@@ -69,7 +71,12 @@ class GCPStorageService(BaseStorageService):
         Raises:
             NotImplementedError: If the current instance did not implement this method
         """
+        if isinstance(data, str):
+            data = data.encode()
+        if not is_already_gzipped:
+            data = gzip.compress(data)
         blob = self.get_blob(bucket_name, path)
+        blob.content_encoding = "gzip"
         blob.upload_from_string(data)
         return True
 
