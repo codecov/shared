@@ -3,9 +3,10 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from typing import List, Optional
+from typing import List
 
 import httpx
+from httpx import Response
 
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
@@ -55,10 +56,55 @@ class Github(TorngitBaseAdapter):
         return self._token
 
     async def api(self, *args, token=None, **kwargs):
+        """
+        Makes a single http request to GitHub and returns the parsed response
+        """
         token_to_use = token or self.token
         if not token_to_use:
             raise TorngitMisconfiguredCredentials()
-        return await self.make_http_call(*args, token_to_use=token_to_use, **kwargs)
+        response = await self.make_http_call(*args, token_to_use=token_to_use, **kwargs)
+        return self._parse_response(response)
+
+    async def paginated_api_generator(
+        self, client, method, initial_url, token=None, **kwargs
+    ):
+        """
+        Generator that requests pages from GitHub and yields each page as they come.
+        Continues to request pages while there's a link to the next page.
+        """
+        token_to_use = token or self.token
+        if not token_to_use:
+            raise TorngitMisconfiguredCredentials()
+        url = initial_url
+        while url:
+            args = [client, method, url]
+            response = await self.make_http_call(
+                *args, token_to_use=token_to_use, **kwargs
+            )
+            yield self._parse_response(response)
+            url = response.links.get("next", {}).get("url", "")
+
+    def _parse_response(self, res: Response):
+        if res.status_code == 204:
+            return None
+        elif res.headers.get("Content-Type")[:16] == "application/json":
+            return res.json()
+        else:
+            try:
+                return res.text
+            except UnicodeDecodeError as uerror:
+                log.warning(
+                    "Unable to parse Github response",
+                    extra=dict(
+                        first_bytes=res.content[:100],
+                        final_bytes=res.content[-100:],
+                        errored_bytes=res.content[
+                            (uerror.start - 10) : (uerror.start + 10)
+                        ],
+                        declared_contenttype=res.headers.get("content-type"),
+                    ),
+                )
+                return res.text
 
     async def make_http_call(
         self,
@@ -70,7 +116,7 @@ class Github(TorngitBaseAdapter):
         token_to_use=None,
         statuses_to_retry=None,
         **args,
-    ):
+    ) -> Response:
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -161,27 +207,7 @@ class Github(TorngitBaseAdapter):
                     raise TorngitClientGeneralError(
                         res.status_code, response_data=res.text, message=message
                     )
-                if res.status_code == 204:
-                    return None
-                elif res.headers.get("Content-Type")[:16] == "application/json":
-                    return res.json()
-                else:
-                    try:
-                        return res.text
-                    except UnicodeDecodeError as uerror:
-                        log.warning(
-                            "Unable to parse Github response",
-                            extra=dict(
-                                first_bytes=res.content[:100],
-                                final_bytes=res.content[-100:],
-                                errored_bytes=res.content[
-                                    (uerror.start - 10) : (uerror.start + 10)
-                                ],
-                                declared_contenttype=res.headers.get("content-type"),
-                            ),
-                        )
-                        res.encoding = None
-                        return res.text
+                return res
             else:
                 log.info(
                     "Retrying due to retriable status",
@@ -216,7 +242,7 @@ class Github(TorngitBaseAdapter):
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
         async with self.get_client() as client:
-            session = await self.make_http_call(
+            response = await self.make_http_call(
                 client,
                 "get",
                 self.service_url + "/login/oauth/access_token",
@@ -224,6 +250,7 @@ class Github(TorngitBaseAdapter):
                 client_id=creds["key"],
                 client_secret=creds["secret"],
             )
+            session = self._parse_response(response)
 
             if session.get("access_token"):
                 # set current token
@@ -1202,3 +1229,28 @@ class Github(TorngitBaseAdapter):
                 return res["student"]
             except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
                 return False
+
+    # GitHub App Webhook management
+    # =============================
+    async def list_webhook_deliveries(self):
+        """
+        Lists the webhook deliveries for the gh app.
+        docs: https://docs.github.com/en/rest/apps/webhooks?apiVersion=2022-11-28#list-deliveries-for-an-app-webhook
+
+        This is a generator function that yields the pages from webhook deliveries until all have been requested.
+        Page size is 50.
+        """
+        base_url = "/app/hook/deliveries"
+        url = base_url + "?per_page=50"
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {self.token['key']}",
+        }
+        async with self.get_client() as client:
+            async for response in self.paginated_api_generator(
+                client,
+                "get",
+                url,
+                headers=headers,
+            ):
+                yield response

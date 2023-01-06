@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/vnd.github+json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/app/hook/deliveries?per_page=50
+  response:
+    content: '[{"id":17324040107,"guid":"53c93580-7a6e-11ed-96c9-5e1ce3e5574e","delivered_at":"2022-12-12T22:42:59Z","redelivery":false,"duration":0.37,"status":"OK","status_code":200,"event":"installation_repositories","action":"added","installation_id":null,"repository_id":null,"url":""},{"id":17324018336,"guid":"40d7f830-7a6e-11ed-8b90-0777e88b1858","delivered_at":"2022-12-12T22:42:30Z","redelivery":false,"duration":2.31,"status":"OK","status_code":200,"event":"installation_repositories","action":"removed","installation_id":null,"repository_id":null,"url":""},{"id":17324018291,"guid":"40ca1490-7a6e-11ed-967d-29986a5a51d7","delivered_at":"2022-12-12T22:42:29Z","redelivery":false,"duration":2.31,"status":"OK","status_code":200,"event":"installation_repositories","action":"added","installation_id":null,"repository_id":null,"url":""},{"id":17323914960,"guid":"ec63f0b0-7a6d-11ed-8520-02855a090a3f","delivered_at":"2022-12-12T22:40:09Z","redelivery":false,"duration":3.07,"status":"Invalid
+      HTTP Response: 403","status_code":403,"event":"installation_repositories","action":"added","installation_id":null,"repository_id":null,"url":""},{"id":17323444221,"guid":"7457a07c-7a6c-11ed-9053-6e7a5afa9f92","delivered_at":"2022-12-12T22:29:39Z","redelivery":false,"duration":4.28,"status":"Invalid
+      HTTP Response: 403","status_code":403,"event":"installation_repositories","action":"removed","installation_id":null,"repository_id":null,"url":""},{"id":17323444217,"guid":"743ffa80-7a6c-11ed-9fde-491e59e80b4c","delivered_at":"2022-12-12T22:29:39Z","redelivery":false,"duration":4.03,"status":"Invalid
+      HTTP Response: 403","status_code":403,"event":"installation_repositories","action":"added","installation_id":null,"repository_id":null,"url":""},{"id":17323292984,"guid":"0498e8e0-7a6c-11ed-8834-c5eb5a4b102a","delivered_at":"2022-12-12T22:26:28Z","redelivery":false,"duration":0.69,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"created","installation_id":null,"repository_id":null,"url":""},{"id":17323228732,"guid":"d41fa780-7a6b-11ed-8890-0619085a3f97","delivered_at":"2022-12-12T22:25:07Z","redelivery":false,"duration":0.74,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"deleted","installation_id":null,"repository_id":null,"url":""},{"id":17323148882,"guid":"971e2d20-7a6b-11ed-8d64-8069e97df19b","delivered_at":"2022-12-12T22:23:25Z","redelivery":false,"duration":0.93,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"created","installation_id":null,"repository_id":null,"url":""},{"id":17323034945,"guid":"44e51d48-7a6b-11ed-896a-952fdec99fb1","delivered_at":"2022-12-12T22:21:06Z","redelivery":false,"duration":0.7,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"deleted","installation_id":null,"repository_id":null,"url":""},{"id":17322838109,"guid":"bde24c80-7a6a-11ed-82f8-3ab3fc2087e2","delivered_at":"2022-12-12T22:17:20Z","redelivery":false,"duration":0.61,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"created","installation_id":null,"repository_id":null,"url":""},{"id":17322818598,"guid":"b0ad9bfa-7a6a-11ed-8cd1-5991761b218b","delivered_at":"2022-12-12T22:16:58Z","redelivery":false,"duration":0.79,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"deleted","installation_id":null,"repository_id":null,"url":""},{"id":17322611772,"guid":"1fadf690-7a6a-11ed-8f0c-93835183bf91","delivered_at":"2022-12-12T22:12:54Z","redelivery":false,"duration":0.59,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"created","installation_id":null,"repository_id":null,"url":""},{"id":17322592837,"guid":"11f168e8-7a6a-11ed-800f-f78cd489c77d","delivered_at":"2022-12-12T22:12:31Z","redelivery":false,"duration":0.93,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"deleted","installation_id":null,"repository_id":null,"url":""},{"id":17322555251,"guid":"f80fc050-7a69-11ed-9523-490fcf66f6ce","delivered_at":"2022-12-12T22:11:48Z","redelivery":false,"duration":0.59,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"installation","action":"new_permissions_accepted","installation_id":null,"repository_id":null,"url":""},{"id":17322476105,"guid":"c03336d0-7a69-11ed-83e4-5b94a522ce04","delivered_at":"2022-12-12T22:10:14Z","redelivery":false,"duration":0.7,"status":"Invalid
+      HTTP Response: 400","status_code":400,"event":"ping","action":null,"installation_id":null,"repository_id":null,"url":""}]'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - public, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 02 Jan 2023 17:40:03 GMT
+      ETag:
+      - W/"dde9b182b3b4e7c4c6dea22b0af116672743b6c8ad0da6122104ac0d94f5ee3f"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - E7E5:5F8D:71A03C:8677D4:63B316F2
+      X-XSS-Protection:
+      - '0'
+      x-github-api-version-selected:
+      - '2022-11-28'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

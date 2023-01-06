@@ -1487,3 +1487,31 @@ class TestGithubTestCase(object):
         }
         print(res)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_list_github_app_webhook_deliveries(self, codecov_vcr):
+        ghapp_handler = Github(
+            token=dict(key="not the real token"),
+            oauth_consumer_token=dict(
+                key="client_id",
+                secret="client_secret",
+            ),
+        )
+        deliveries = []
+        async for res in ghapp_handler.list_webhook_deliveries():
+            deliveries += res
+        assert len(deliveries) == 16
+        assert deliveries[0] == {
+            "id": 17324040107,
+            "guid": "53c93580-7a6e-11ed-96c9-5e1ce3e5574e",
+            "delivered_at": "2022-12-12T22:42:59Z",
+            "redelivery": False,
+            "duration": 0.37,
+            "status": "OK",
+            "status_code": 200,
+            "event": "installation_repositories",
+            "action": "added",
+            "installation_id": None,
+            "repository_id": None,
+            "url": "",
+        }

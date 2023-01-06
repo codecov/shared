@@ -34,6 +34,19 @@ def valid_handler():
     )
 
 
+@pytest.fixture
+def ghapp_handler():
+    return Github(
+        repo=dict(name="example-python", using_integration=True),
+        owner=dict(username="codecov-e2e", integration_id=10000),
+        token=dict(key="integration_token"),
+        oauth_consumer_token=dict(
+            key="client_id",
+            secret="client_secret",
+        ),
+    )
+
+
 class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_api_client_error_unreachable(self, valid_handler, mocker):
@@ -842,3 +855,180 @@ class TestUnitGithub(object):
         c = Github()
         with pytest.raises(TorngitMisconfiguredCredentials):
             await c.api()
+
+    @pytest.mark.asyncio
+    async def test_paginated_api_no_token(self, mocker):
+        c = Github()
+        with pytest.raises(TorngitMisconfiguredCredentials):
+            async for page in c.paginated_api_generator(
+                mocker.MagicMock(), mocker.MagicMock(), mocker.MagicMock()
+            ):
+                pass
+
+    @pytest.mark.asyncio
+    async def test_list_webhook_deliveries(self, ghapp_handler):
+        def side_effect(request):
+            assert request.headers.get("Accept") == "application/vnd.github+json"
+            assert (
+                request.headers.get("Authorization")
+                == f"Bearer {ghapp_handler.token['key']}"
+            )
+
+            return httpx.Response(
+                status_code=200,
+                json=[
+                    {
+                        "id": 17324040107,
+                        "guid": "53c93580-7a6e-11ed-96c9-5e1ce3e5574e",  # this value is the same accross redeliveries
+                        "delivered_at": "2022-12-12T22:42:59Z",
+                        "redelivery": False,
+                        "duration": 0.37,
+                        "status": "OK",
+                        "status_code": 200,
+                        "event": "installation_repositories",  # when you add / remove repos from installation
+                        "action": "added",
+                        "installation_id": None,
+                        "repository_id": None,
+                        "url": "",
+                    },
+                    {
+                        "id": 17324018336,
+                        "guid": "40d7f830-7a6e-11ed-8b90-0777e88b1858",
+                        "delivered_at": "2022-12-12T22:42:30Z",
+                        "redelivery": False,
+                        "duration": 2.31,
+                        "status": "OK",
+                        "status_code": 200,
+                        "event": "installation_repositories",
+                        "action": "removed",
+                        "installation_id": None,
+                        "repository_id": None,
+                        "url": "",
+                    },
+                    {
+                        "id": 17323292984,
+                        "guid": "0498e8e0-7a6c-11ed-8834-c5eb5a4b102a",
+                        "delivered_at": "2022-12-12T22:26:28Z",
+                        "redelivery": False,
+                        "duration": 0.69,
+                        "status": "Invalid HTTP Response: 400",
+                        "status_code": 400,
+                        "event": "installation",  # A new installation
+                        "action": "created",
+                        "installation_id": None,
+                        "repository_id": None,
+                        "url": "",
+                    },
+                    {
+                        "id": 17323228732,
+                        "guid": "d41fa780-7a6b-11ed-8890-0619085a3f97",
+                        "delivered_at": "2022-12-12T22:25:07Z",
+                        "redelivery": False,
+                        "duration": 0.74,
+                        "status": "Invalid HTTP Response: 400",
+                        "status_code": 400,
+                        "event": "installation",
+                        "action": "deleted",
+                        "installation_id": None,
+                        "repository_id": None,
+                        "url": "",
+                    },
+                ],
+                headers={"Content-Type": "application/json; charset=utf-8"},
+            )
+
+        with respx.mock:
+            mocked_response = respx.get(
+                url="https://api.github.com/app/hook/deliveries?per_page=50",
+            ).mock(side_effect=side_effect)
+            async for res in ghapp_handler.list_webhook_deliveries():
+                assert len(res) == 4
+        assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_list_webhook_deliveries_multiple_pages(self, ghapp_handler):
+        with respx.mock:
+            mocked_response_1 = respx.get(
+                url="https://api.github.com/app/hook/deliveries?per_page=50"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    headers=dict(
+                        link='<https://api.github.com/app/hook/deliveries?per_page=50&cursor=v1_17323292984>; rel="next"'
+                    ),
+                    json=[
+                        {
+                            "id": 17324040107,
+                            "guid": "53c93580-7a6e-11ed-96c9-5e1ce3e5574e",  # this value is the same accross redeliveries
+                            "delivered_at": "2022-12-12T22:42:59Z",
+                            "redelivery": False,
+                            "duration": 0.37,
+                            "status": "OK",
+                            "status_code": 200,
+                            "event": "installation_repositories",  # when you add / remove repos from installation
+                            "action": "added",
+                            "installation_id": None,
+                            "repository_id": None,
+                            "url": "",
+                        },
+                        {
+                            "id": 17324018336,
+                            "guid": "40d7f830-7a6e-11ed-8b90-0777e88b1858",
+                            "delivered_at": "2022-12-12T22:42:30Z",
+                            "redelivery": False,
+                            "duration": 2.31,
+                            "status": "OK",
+                            "status_code": 200,
+                            "event": "installation_repositories",
+                            "action": "removed",
+                            "installation_id": None,
+                            "repository_id": None,
+                            "url": "",
+                        },
+                    ],
+                )
+            )
+            mocked_response_2 = respx.get(
+                url="https://api.github.com/app/hook/deliveries?per_page=50&cursor=v1_17323292984"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    json=[
+                        {
+                            "id": 17323292984,
+                            "guid": "0498e8e0-7a6c-11ed-8834-c5eb5a4b102a",
+                            "delivered_at": "2022-12-12T22:26:28Z",
+                            "redelivery": False,
+                            "duration": 0.69,
+                            "status": "Invalid HTTP Response: 400",
+                            "status_code": 400,
+                            "event": "installation",  # A new installation
+                            "action": "created",
+                            "installation_id": None,
+                            "repository_id": None,
+                            "url": "",
+                        },
+                        {
+                            "id": 17323228732,
+                            "guid": "d41fa780-7a6b-11ed-8890-0619085a3f97",
+                            "delivered_at": "2022-12-12T22:25:07Z",
+                            "redelivery": False,
+                            "duration": 0.74,
+                            "status": "Invalid HTTP Response: 400",
+                            "status_code": 400,
+                            "event": "installation",
+                            "action": "deleted",
+                            "installation_id": None,
+                            "repository_id": None,
+                            "url": "",
+                        },
+                    ],
+                )
+            )
+            aggregate_res = []
+            async for res in ghapp_handler.list_webhook_deliveries():
+                assert len(res) == 2
+                aggregate_res += res
+        assert len(aggregate_res) == 4
+        assert mocked_response_1.call_count == 1
+        assert mocked_response_2.call_count == 1
