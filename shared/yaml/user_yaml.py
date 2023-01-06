@@ -1,7 +1,8 @@
 import logging
 from copy import deepcopy
-from typing import Any
+from typing import Any, List
 
+from shared.components import Component
 from shared.config import get_config
 
 log = logging.getLogger(__name__)
@@ -74,6 +75,24 @@ class UserYaml(object):
                 res.update(f_dict)
                 return res
         return deepcopy(general_dict)
+
+    def get_components(self) -> List[Component]:
+        component_definitions = self.read_yaml_field("component_management")
+        if not component_definitions:
+            return []
+        # Default set of rules that is overriden by individual components.
+        # The individual components inherit the values from default_definition if they don't have a particular key defined in the default rules
+        default_definition = component_definitions.get("default_rules", {})
+
+        individual_components = list(
+            map(
+                lambda component_dict: Component.from_dict(
+                    {**default_definition, **component_dict}
+                ),
+                component_definitions.get("individual_components", []),
+            )
+        )
+        return individual_components
 
     def __eq__(self, other):
         if not isinstance(other, UserYaml):
