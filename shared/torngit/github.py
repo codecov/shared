@@ -1254,3 +1254,20 @@ class Github(TorngitBaseAdapter):
                 headers=headers,
             ):
                 yield response
+
+    async def request_webhook_redelivery(self, delivery_id: str) -> bool:
+        """
+        Request redelivery of a webhook from github app. Returns True if request is successful, False otherwise.
+        docs: https://docs.github.com/en/rest/apps/webhooks?apiVersion=2022-11-28#redeliver-a-delivery-for-an-app-webhook
+        """
+        url = f"/app/hook/deliveries/{delivery_id}/attempts"
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {self.token['key']}",
+        }
+        async with self.get_client() as client:
+            try:
+                await self.api(client, "post", url, headers=headers)
+                return True
+            except (TorngitClientError, TorngitServer5xxCodeError):
+                return False

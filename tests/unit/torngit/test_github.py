@@ -1032,3 +1032,41 @@ class TestUnitGithub(object):
         assert len(aggregate_res) == 4
         assert mocked_response_1.call_count == 1
         assert mocked_response_2.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_webhook_redelivery_success(self, ghapp_handler):
+        delivery_id = 17323228732
+
+        def side_effect(request):
+            assert request.headers.get("Accept") == "application/vnd.github+json"
+            assert (
+                request.headers.get("Authorization")
+                == f"Bearer {ghapp_handler.token['key']}"
+            )
+            assert request.method == "POST"
+            return httpx.Response(
+                status_code=202, headers={"Content-Type": "applicaiton/json"}
+            )
+
+        with respx.mock:
+            mocked_response = respx.post(
+                url=f"https://api.github.com/app/hook/deliveries/{delivery_id}/attempts"
+            ).mock(side_effect=side_effect)
+            ans = await ghapp_handler.request_webhook_redelivery(delivery_id)
+            assert ans is True
+        assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_webhook_redelivery_fail(self, ghapp_handler):
+        delivery_id = 17323228732
+        with respx.mock:
+            mocked_response = respx.post(
+                url=f"https://api.github.com/app/hook/deliveries/{delivery_id}/attempts"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=422, headers={"Content-Type": "applicaiton/json"}
+                ),
+            )
+            ans = await ghapp_handler.request_webhook_redelivery(delivery_id)
+            assert ans is False
+        assert mocked_response.call_count == 1

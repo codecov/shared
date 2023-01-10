@@ -1515,3 +1515,15 @@ class TestGithubTestCase(object):
             "repository_id": None,
             "url": "",
         }
+
+    @pytest.mark.asyncio
+    async def test_list_github_app_webhook_redelivery(self, codecov_vcr):
+        ghapp_handler = Github(
+            token=dict(key="not real token"),
+            oauth_consumer_token=dict(
+                key="client_id",
+                secret="client_secret",
+            ),
+        )
+        res = await ghapp_handler.request_webhook_redelivery(17322555251)
+        assert res is True
