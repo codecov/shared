@@ -485,24 +485,32 @@ class ReportFile(object):
                     pos += 1
         return False
 
-    def shift_lines_by_diff(self, diff, forward=True):
+    def shift_lines_by_diff(self, diff, forward=True) -> None:
+        """
+        Adjusts report _lines IN PLACE to account for the diff given.
+        !!! This WILL CHANGE the report permanently.
+
+        Given coverage info for commit A (report._lines), and a diff from A to B (diff),
+        adjust coverage info so that it works AS IF it was uploaded for commit B.
+        """
         try:
-            remove = "-" if forward else "+"
-            add = "+" if forward else "-"
-            # loop through each segment
+            removed = "-"
+            added = "+"
+            # loop through each segment in the diff.
             for segment in diff["segments"]:
-                # loop through each line
+                # Header is [pos_in_base, lines_len_base, pos_in_head, lines_len_head]
                 pos = (int(segment["header"][2]) or 1) - 1
+                # loop through each line in segment
                 for line in segment["lines"]:
-                    if line[0] == remove:  # removed
+                    if line[0] == removed:
                         self._lines.pop(pos)
-                    elif line[0] == add:
+                    elif line[0] == added:
+                        self._lines.insert(pos, "")
                         pos += 1
-                        self._lines.insert(pos, None)
                     else:
                         pos += 1
-        except:
-            # https://sentry.io/codecov/v4/issues/226391457/events/5041535451/
+        except (ValueError, KeyError, TypeError, IndexError) as exp:
+            log.warning("Failed to shift lines by diff", extra=dict(error=exp))
             pass
 
     @classmethod
@@ -544,7 +552,7 @@ class Report(object):
         diff_totals=None,
         yaml=None,
         flags=None,
-        **kwargs
+        **kwargs,
     ):
         # {"filename": [<line index in chunks :int>, <ReportTotals>]}
         self._files = files or {}
