@@ -34,6 +34,7 @@ timeseries_backfill_dataset_task_name = "app.tasks.timeseries.backfill_dataset"
 timeseries_backfill_commits_task_name = "app.tasks.timeseries.backfill_commits"
 
 health_check_task_name = "app.cron.health_check.HealthCheckTask"
+gh_app_webhook_check_task_name = "app.cron.daily.GitHubAppWebhooksCheckTask"
 
 
 class BaseCeleryConfig(object):
