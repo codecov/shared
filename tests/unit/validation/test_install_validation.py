@@ -151,20 +151,11 @@ def test_validate_sample_production_config():
                 "secret": "pokemonuction_bitbucket_bot_secret",
                 "key": "pokemonuction_bitbucket_bot_key",
             },
-            "tokenless_bot": {
-                "username": "codecov-io",
-                "secret": "pokemonuction_bitbucket_tokenless_bot_secret",
-                "key": "pokemonuction_bitbucket_tokenless_bot_key",
-            },
             "client_id": "pokemonuction_bitbucket_client_id",
             "client_secret": "pokemonuction_bitbucket_client_secret",
         },
         "github": {
             "bot": {"username": "codecov-io", "key": "pokemonuction_github_bot_key"},
-            "tokenless_bot": {
-                "username": "codecov-io",
-                "key": "pokemonuction_github_tokenless_bot_key",
-            },
             "bots": {
                 "comment": {
                     "username": "codecov-commenter",
@@ -178,15 +169,15 @@ def test_validate_sample_production_config():
                     "username": "codecov-commenter",
                     "key": "pokemonuction_github_commenter_pa_token",
                 },
+                "tokenless": {
+                    "username": "codecov-commenter",
+                    "key": "pokemonuction_github_commenter_pa_token",
+                },
             },
             "integration": {"id": 254, "pem": "/secrets/github-pem/github.pem"},
         },
         "gitlab": {
             "bot": {"username": "codecov-io", "key": "pokemonuction_gitlab_bot_key"},
-            "tokenless_bot": {
-                "username": "codecov-io",
-                "key": "pokemonuction_gitlab_tokenless_bot_key",
-            },
         },
     }
     expected_result = {
@@ -272,20 +263,11 @@ def test_validate_sample_production_config():
                 "secret": "pokemonuction_bitbucket_bot_secret",
                 "key": "pokemonuction_bitbucket_bot_key",
             },
-            "tokenless_bot": {
-                "username": "codecov-io",
-                "secret": "pokemonuction_bitbucket_tokenless_bot_secret",
-                "key": "pokemonuction_bitbucket_tokenless_bot_key",
-            },
             "client_id": "pokemonuction_bitbucket_client_id",
             "client_secret": "pokemonuction_bitbucket_client_secret",
         },
         "github": {
             "bot": {"username": "codecov-io", "key": "pokemonuction_github_bot_key"},
-            "tokenless_bot": {
-                "username": "codecov-io",
-                "key": "pokemonuction_github_tokenless_bot_key",
-            },
             "bots": {
                 "comment": {
                     "username": "codecov-commenter",
@@ -299,15 +281,15 @@ def test_validate_sample_production_config():
                     "username": "codecov-commenter",
                     "key": "pokemonuction_github_commenter_pa_token",
                 },
+                "tokenless": {
+                    "username": "codecov-commenter",
+                    "key": "pokemonuction_github_commenter_pa_token",
+                },
             },
             "integration": {"id": 254, "pem": "/secrets/github-pem/github.pem"},
         },
         "gitlab": {
             "bot": {"username": "codecov-io", "key": "pokemonuction_gitlab_bot_key"},
-            "tokenless_bot": {
-                "username": "codecov-io",
-                "key": "pokemonuction_gitlab_tokenless_bot_key",
-            },
         },
     }
     res = validate_install_configuration(user_input)

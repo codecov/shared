@@ -28,14 +28,6 @@ default_service_fields = {
             "username": {"type": "string"},
         },
     },
-    "tokenless_bot": {
-        "type": "dict",
-        "schema": {
-            "key": {"type": "string"},
-            "secret": {"type": "string"},
-            "username": {"type": "string"},
-        },
-    },
     "global_upload_token": {"type": "string"},
     "organizations": {"type": "list", "schema": {"type": "string"}},
     "webhook_secret": {"type": "string"},
@@ -59,6 +51,14 @@ default_service_fields = {
                 },
             },
             "status": {
+                "type": "dict",
+                "schema": {
+                    "key": {"type": "string"},
+                    "secret": {"type": "string"},
+                    "username": {"type": "string"},
+                },
+            },
+            "tokenless": {
                 "type": "dict",
                 "schema": {
                     "key": {"type": "string"},
