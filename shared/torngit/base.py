@@ -15,6 +15,7 @@ class TokenType(Enum):
     admin = auto()
     comment = auto()
     status = auto()
+    tokenless = auto()
 
 
 class TorngitBaseAdapter(object):
