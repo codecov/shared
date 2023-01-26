@@ -1025,14 +1025,14 @@ mod tests {
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            vec![true, false, false, false, false, false, false],
+            vec![true, false, false, false, false, false, false, false],
             res.iter()
                 .map(|b| b.file_was_added_by_diff)
                 .into_iter()
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            vec![false, false, false, false, false, true, false],
+            vec![false, false, false, false, false, true, false, false],
             res.iter()
                 .map(|b| b.file_was_removed_by_diff)
                 .into_iter()
