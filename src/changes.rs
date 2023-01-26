@@ -291,7 +291,7 @@ fn run_filereport_analysis(
                 None => false,
                 Some(x) => !x.is_empty(),
             };
-            if unexpected_vec.is_empty() && !has_removed_diff_coverage && !has_added_diff_coverage {
+            if unexpected_vec.is_empty() && !has_removed_diff_coverage && !has_added_diff_coverage && lines_only_on_base.is_empty() && lines_only_on_head.is_empty() {
                 return None;
             }
             return Some(FileChangesAnalysis {
