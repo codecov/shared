@@ -1016,6 +1016,7 @@ mod tests {
                 "file_with_unexpected_changes.c",
                 "missing.c",
                 "removed_file.c",
+                "renamed_new.c",
                 "renamed_old_with_changes.c"
             ],
             res.iter()
