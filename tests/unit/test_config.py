@@ -21,7 +21,7 @@ class TestConfig(object):
         assert get_config("site", "codecov", "require_ci_to_pass") is True
         assert get_config("site", "coverage", "precision") == 2
         assert get_config("site", "coverage", "round") == "down"
-        assert get_config("site", "coverage", "range") == [70.0, 100.0]
+        assert get_config("site", "coverage", "range") == [60.0, 80.0]
         assert get_config("site", "coverage", "status", "project") is True
         assert get_config("site", "coverage", "status", "patch") is True
         assert get_config("site", "coverage", "status", "changes") is False
@@ -253,7 +253,7 @@ class TestConfig(object):
         assert get_config("site", "codecov", "require_ci_to_pass") is True
         assert get_config("site", "coverage", "precision") == 2
         assert get_config("site", "coverage", "round") == "down"
-        assert get_config("site", "coverage", "range") == [70, 100]
+        assert get_config("site", "coverage", "range") == [60, 80]
         assert get_config("site", "coverage", "status") == {
             "project": {
                 "default": {"only_pulls": True, "target": "auto", "threshold": 100.0}

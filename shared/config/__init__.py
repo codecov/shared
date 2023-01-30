@@ -35,7 +35,7 @@ default_config = {
         "coverage": {
             "precision": 2,
             "round": "down",
-            "range": "70...100",
+            "range": "60...80",
             "status": {
                 "project": True,
                 "patch": True,
