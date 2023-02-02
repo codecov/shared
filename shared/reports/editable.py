@@ -6,7 +6,6 @@ from typing import List
 from shared.metrics import metrics
 from shared.reports.resources import Report, ReportFile
 from shared.reports.types import EMPTY
-from shared.utils.sessions import Session, SessionType
 
 log = logging.getLogger(__name__)
 
@@ -166,19 +165,3 @@ class EditableReport(Report):
                 else:
                     del self[file.name]
         return deleted_sessions
-
-    @metrics.timer("services.report.EditableReport.add_session")
-    def add_session(self, session: Session):
-        sessions_to_delete = []
-        for sess_id, curr_sess in self.sessions.items():
-            if curr_sess.session_type == SessionType.carriedforward:
-                if curr_sess.flags and session.flags:
-                    if any(f in session.flags for f in curr_sess.flags):
-                        sessions_to_delete.append(sess_id)
-        if sessions_to_delete:
-            log.info(
-                "Deleted multiple sessions due to carriedforward overwrite",
-                extra=dict(deleted_sessions=sessions_to_delete),
-            )
-            self.delete_multiple_sessions(sessions_to_delete)
-        return super().add_session(session)
