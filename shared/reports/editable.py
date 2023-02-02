@@ -34,6 +34,24 @@ class EditableReportFile(ReportFile):
         res["present_sessions"] = sorted(self._details.get("present_sessions"))
         return res
 
+    def delete_labels(self, session_ids_to_delete, labels_to_delete):
+        for index, line in self.lines:
+            if line.datapoints is not None:
+                if any(
+                    (dp.sessionid in session_ids_to_delete and lb in labels_to_delete)
+                    for dp in line.datapoints
+                    for lb in dp.labels
+                ):
+                    # Line fits change requirements
+                    new_line = self.line_without_labels(
+                        line, session_ids_to_delete, labels_to_delete
+                    )
+                    if new_line == EMPTY:
+                        del self[index]
+                    else:
+                        self[index] = new_line
+        self._totals = None
+
     @metrics.timer("services.report.EditableReportFile.calculate_present_sessions")
     def calculate_present_sessions(self):
         all_sessions = set()
@@ -110,6 +128,20 @@ class EditableReport(Report):
     @metrics.timer("services.report.EditableReport.delete_session")
     def delete_session(self, sessionid: int):
         return self.delete_multiple_sessions([sessionid])[0]
+
+    def delete_labels(self, sessionids, labels_to_delete):
+        self._totals = None
+        for file in self._chunks:
+            if file is not None:
+                file.delete_labels(sessionids, labels_to_delete)
+                if file:
+                    self._files[file.name] = dataclasses.replace(
+                        self._files.get(file.name),
+                        file_totals=file.totals,
+                    )
+                else:
+                    del self[file.name]
+        return sessionids
 
     @metrics.timer("services.report.EditableReport.delete_multiple_sessions")
     def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
