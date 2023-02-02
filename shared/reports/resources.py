@@ -514,6 +514,35 @@ class ReportFile(object):
             pass
 
     @classmethod
+    def line_without_labels(cls, line, session_ids_to_delete, labels):
+        new_datapoints = (
+            [
+                dp
+                for dp in line.datapoints
+                if dp.sessionid not in session_ids_to_delete
+                or all(lb not in labels for lb in dp.labels)
+            ]
+            if line.datapoints is not None
+            else None
+        )
+        remaining_session_ids = set(dp.sessionid for dp in new_datapoints)
+        removed_session_ids = set(session_ids_to_delete) - remaining_session_ids
+        if set(s.id for s in line.sessions) & removed_session_ids:
+            new_sessions = [s for s in line.sessions if s.id not in removed_session_ids]
+        else:
+            new_sessions = line.sessions
+        if len(new_sessions) == 0:
+            return EMPTY
+        remaining_coverages = [s.coverage for s in new_datapoints]
+        new_coverage = merge_all(remaining_coverages)
+        return dataclasses.replace(
+            line,
+            coverage=new_coverage,
+            datapoints=new_datapoints,
+            sessions=new_sessions,
+        )
+
+    @classmethod
     def line_without_session(cls, line: ReportLine, sessionid: int):
         return cls.line_without_multiple_sessions(line, [sessionid])
 
