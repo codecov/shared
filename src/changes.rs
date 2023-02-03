@@ -291,7 +291,12 @@ fn run_filereport_analysis(
                 None => false,
                 Some(x) => !x.is_empty(),
             };
-            if unexpected_vec.is_empty() && !has_removed_diff_coverage && !has_added_diff_coverage {
+            if unexpected_vec.is_empty()
+                && !has_removed_diff_coverage
+                && !has_added_diff_coverage
+                && lines_only_on_base.is_empty()
+                && lines_only_on_head.is_empty()
+            {
                 return None;
             }
             return Some(FileChangesAnalysis {
@@ -1000,6 +1005,7 @@ mod tests {
                 "file_with_unexpected_changes.c",
                 "missing.c",
                 "removed_file.c",
+                "renamed_new.c",
                 "renamed_new_with_changes.c",
             ],
             res.iter()
@@ -1015,6 +1021,7 @@ mod tests {
                 "file_with_unexpected_changes.c",
                 "missing.c",
                 "removed_file.c",
+                "renamed_old.c",
                 "renamed_old_with_changes.c"
             ],
             res.iter()
@@ -1023,14 +1030,14 @@ mod tests {
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            vec![true, false, false, false, false, false, false],
+            vec![true, false, false, false, false, false, false, false],
             res.iter()
                 .map(|b| b.file_was_added_by_diff)
                 .into_iter()
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            vec![false, false, false, false, false, true, false],
+            vec![false, false, false, false, false, true, false, false],
             res.iter()
                 .map(|b| b.file_was_removed_by_diff)
                 .into_iter()
