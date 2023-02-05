@@ -99,8 +99,8 @@ class TestUserYamlValidation(BaseTestCase):
                     "github_checks": {"annotations": False},
                     "ignore": [
                         "^agent/uiserver/bindata_assetfs.go.*",
-                        "(?s:vendor/.*/[^\\/]+)\\Z",
-                        "(?s:.*/[^\\/]+\\.pb\\.go.*)\\Z",
+                        "(?s:vendor/.*/[^\\/]*)\\Z",
+                        "(?s:.*/[^\\/]*\\.pb\\.go.*)\\Z",
                     ],
                 },
             ),

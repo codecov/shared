@@ -227,7 +227,7 @@ class TestPreprocess(BaseTestCase):
 class TestGlobToRegexTranslation(BaseTestCase):
     def test_translate_glob_to_regex(self):
         assert re.compile(translate_glob_to_regex("a")).match("a") is not None
-        assert re.compile(translate_glob_to_regex("[abc]*")).match("a") is None
+        assert re.compile(translate_glob_to_regex("[abc]*")).match("a") is not None
         assert re.compile(translate_glob_to_regex("[abc]*")).match("ab") is not None
         assert re.compile(translate_glob_to_regex("[abc]")).match("d") is None
         assert re.compile(translate_glob_to_regex("[a-c]")).match("b") is not None
@@ -257,12 +257,12 @@ class TestCustomFixPathSchemaField(BaseTestCase):
     def test_custom_fixpath_regex(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate("path-*::b")
-        assert res == r"(?s:path\-[^\/]+)::b"
+        assert res == r"(?s:path\-[^\/]*)::b"
 
     def test_custom_fixpath_docs_example(self):
         cfpsf = CustomFixPathSchemaField()
         res = cfpsf.validate("before/tests-*::after/")
-        assert res == r"(?s:before/tests\-[^\/]+)::after/"
+        assert res == r"(?s:before/tests\-[^\/]*)::after/"
 
     def test_custom_fixpath_invalid_input(self):
         cfpsf = CustomFixPathSchemaField()
