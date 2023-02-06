@@ -231,6 +231,11 @@ class TestGlobToRegexTranslation(BaseTestCase):
         assert re.compile(translate_glob_to_regex("[abc]*")).match("ab") is not None
         assert re.compile(translate_glob_to_regex("[abc]")).match("d") is None
         assert re.compile(translate_glob_to_regex("[a-c]")).match("b") is not None
+        assert translate_glob_to_regex("**/test*.ts") == "(?s:.*/test[^\/]*\.ts)\Z"
+        assert (
+            re.compile(translate_glob_to_regex("**/test*.ts")).match("src/src2/test.ts")
+            is not None
+        )
 
 
 class TestCustomFixPathSchemaField(BaseTestCase):
