@@ -47,6 +47,7 @@ def test_celery_config():
         "app.tasks.timeseries.backfill",
         "app.tasks.timeseries.backfill_commits",
         "app.tasks.timeseries.backfill_dataset",
+        "app.tasks.timeseries.delete",
         "app.tasks.upload.Upload",
         "app.tasks.upload_processor.UploadProcessorTask",
     ]
