@@ -32,6 +32,7 @@ profiling_normalization_task_name = "app.tasks.profiling.normalizer"
 timeseries_backfill_task_name = "app.tasks.timeseries.backfill"
 timeseries_backfill_dataset_task_name = "app.tasks.timeseries.backfill_dataset"
 timeseries_backfill_commits_task_name = "app.tasks.timeseries.backfill_commits"
+timeseries_delete_task_name = "app.tasks.timeseries.delete"
 
 health_check_task_name = "app.cron.health_check.HealthCheckTask"
 gh_app_webhook_check_task_name = "app.cron.daily.GitHubAppWebhooksCheckTask"
@@ -258,6 +259,11 @@ class BaseCeleryConfig(object):
             )
         },
         timeseries_backfill_dataset_task_name: {
+            "queue": get_config(
+                "setup", "tasks", "timeseries", "queue", default=task_default_queue
+            )
+        },
+        timeseries_delete_task_name: {
             "queue": get_config(
                 "setup", "tasks", "timeseries", "queue", default=task_default_queue
             )
