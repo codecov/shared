@@ -509,8 +509,8 @@ class ReportFile(object):
                         pos += 1
                     else:
                         pos += 1
-        except (ValueError, KeyError, TypeError, IndexError) as exp:
-            log.warning("Failed to shift lines by diff", extra=dict(error=exp))
+        except (ValueError, KeyError, TypeError, IndexError):
+            log.exception("Failed to shift lines by diff")
             pass
 
     @classmethod
@@ -1152,11 +1152,17 @@ class Report(object):
                 if data["type"] == "modified" and path in self:
                     _file = self.get(path)
                     _file.shift_lines_by_diff(data, forward=forward)
+                    _file._totals = None
                     chunk_loc = self._files[path].file_index
                     # update chunks with file updates
                     self._chunks[chunk_loc] = _file
                     # clear out totals
-                    self._files[path] = ReportFileSummary(file_index=chunk_loc)
+                    self._files[path] = ReportFileSummary(
+                        file_index=chunk_loc,
+                        file_totals=_file.totals,
+                        session_totals=[None] * len(self.sessions),
+                        diff_totals=None,
+                    )
 
     def calculate_diff(self, diff: Dict) -> Dict:
         """
