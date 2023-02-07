@@ -58,6 +58,14 @@ default_service_fields = {
                     "username": {"type": "string"},
                 },
             },
+            "tokenless": {
+                "type": "dict",
+                "schema": {
+                    "key": {"type": "string"},
+                    "secret": {"type": "string"},
+                    "username": {"type": "string"},
+                },
+            },
         },
     },
 }
