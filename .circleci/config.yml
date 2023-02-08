@@ -1,6 +1,47 @@
 version: 2.1
 
 jobs:
+  codecovstartup:
+    docker:
+      - image: circleci/python:3.10.1
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: |
+            curl https://sh.rustup.rs -sSf | sh -s -- -y
+            source $HOME/.cargo/env
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r tests/requirements.txt
+            pip install setuptools_rust
+            python setup.py develop
+      - run:
+          name: Install CLI
+          command: |
+            . venv/bin/activate
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@62f2e25bc80ceb06e83ac600e4e8ea16dddc2409#egg=codecov-cli
+      - run:
+          name: Save commit info 
+          command: |
+            . venv/bin/activate
+            codecovcli --auto-load-params-from circleci create-commit --service=github
+      - run: 
+          name: Create report
+          command: |
+            . venv/bin/activate
+            codecovcli --auto-load-params-from circleci create-report --service=github
+      - run:
+          name: Run Static Analysis
+          command: |
+            . venv/bin/activate
+            codecovcli static-analysis --token=$STATIC_TOKEN
+      - run:
+          name: Run Predictor Analysis
+          command: |
+            . venv/bin/activate
+            python -m pytest -q --collect-only
+            codecovcli label-analysis --token=$STATIC_TOKEN --base-sha=$(git log -n 1 master --pretty=format:"%H")
   linter:
     docker:
       - image: circleci/python:3.7.6
@@ -105,6 +146,7 @@ workflows:
   version: 2
   lint-test:
     jobs:
+      - codecovstartup
       - mutations
       - rust:
           filters:
