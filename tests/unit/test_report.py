@@ -2,7 +2,13 @@ import pytest
 from mock import PropertyMock
 
 from shared.reports.resources import Report, ReportFile, _encode_chunk
-from shared.reports.types import LineSession, NetworkFile, ReportLine, ReportTotals
+from shared.reports.types import (
+    LineSession,
+    NetworkFile,
+    ReportFileSummary,
+    ReportLine,
+    ReportTotals,
+)
 from shared.utils.match import match
 from shared.utils.sessions import Session, SessionType
 from tests.helper import v2_to_v3
@@ -1018,3 +1024,206 @@ def test_ignore_lines():
         complexity_total=0,
         diff=0,
     )
+
+
+@pytest.mark.unit
+def test_shift_lines_by_diff():
+    r = ReportFile("filename")
+    r._lines = [ReportLine.create(n) for n in range(8)]
+    report = Report(sessions={0: Session()})
+    report.append(r)
+    assert list(r.lines) == [
+        (
+            1,
+            ReportLine(
+                coverage=0,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            2,
+            ReportLine(
+                coverage=1,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            3,
+            ReportLine(
+                coverage=2,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            4,
+            ReportLine(
+                coverage=3,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            5,
+            ReportLine(
+                coverage=4,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            6,
+            ReportLine(
+                coverage=5,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            7,
+            ReportLine(
+                coverage=6,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            8,
+            ReportLine(
+                coverage=7,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+    ]
+    assert report.totals == ReportTotals(
+        files=1,
+        lines=8,
+        hits=7,
+        misses=1,
+        partials=0,
+        coverage="87.50000",
+        branches=0,
+        methods=0,
+        messages=0,
+        sessions=1,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )
+    report.shift_lines_by_diff(
+        {
+            "files": {
+                "filename": {
+                    "type": "modified",
+                    "segments": [
+                        {
+                            # [-, -, POS_to_start, new_lines_added]
+                            "header": [1, 1, 1, 1],
+                            "lines": ["- afefe", "+ fefe", "="],
+                        },
+                        {
+                            # [-, -, POS_to_start, new_lines_added]
+                            "header": [5, 3, 5, 2],
+                            "lines": ["- ", "- ", "- ", "+ ", "+ ", " ="],
+                        },
+                    ],
+                }
+            }
+        }
+    )
+    assert report.files == ["filename"]
+    assert list(report.get("filename").lines) == [
+        (
+            2,
+            ReportLine(
+                coverage=1,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            3,
+            ReportLine(
+                coverage=2,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            4,
+            ReportLine(
+                coverage=3,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+        (
+            7,
+            ReportLine(
+                coverage=7,
+                type=None,
+                sessions=None,
+                messages=None,
+                complexity=None,
+                datapoints=None,
+            ),
+        ),
+    ]
+    assert report._files == {
+        "filename": ReportFileSummary(
+            file_index=0,
+            file_totals=ReportTotals(
+                files=0,
+                lines=4,
+                hits=4,
+                misses=0,
+                partials=0,
+                coverage="100",
+                branches=0,
+                methods=0,
+                messages=0,
+                sessions=0,
+                complexity=0,
+                complexity_total=0,
+                diff=0,
+            ),
+            session_totals=[None],
+            diff_totals=None,
+        )
+    }
