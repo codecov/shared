@@ -120,6 +120,10 @@ flags_rule_basic_properties = {
         "type": "list",
         "schema": {"type": "dict", "schema": flag_status_attributes},
     },
+    "carryforward_mode": {
+        "type": "string",
+        "allowed": ("all", "labels"),
+    },
     "carryforward": {"type": "boolean"},
     "paths": path_list_structure,
     "ignore": path_list_structure,
