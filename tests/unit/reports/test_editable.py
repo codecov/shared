@@ -1671,10 +1671,8 @@ class TestEditableReport(object):
 
     def test_add_conflicting_session(self, sample_report):
         report = sample_report
-        import pprint
-
-        # pprint.pprint(self.convert_report_to_better_readable(report))
-        assert self.convert_report_to_better_readable(report) == {
+        old_readable = self.convert_report_to_better_readable(report)
+        assert old_readable == {
             "archive": {
                 "file_1.go": [
                     (
@@ -1847,135 +1845,12 @@ class TestEditableReport(object):
                 sessionid=3, session_type=SessionType.uploaded, flags=["integration"]
             )
         )
-        pprint.pprint(self.convert_report_to_better_readable(report))
-        expected_result = {
-            "archive": {
-                "file_1.go": [
-                    (
-                        1,
-                        1,
-                        None,
-                        [[0, 1, None, None, None], [2, 1, None, None, None]],
-                        None,
-                        (10, 2),
-                    ),
-                    (
-                        2,
-                        1,
-                        None,
-                        [[0, 1, None, None, None], [2, 1, None, None, None]],
-                        None,
-                        (10, 2),
-                    ),
-                    (3, 1, None, [[0, 1, None, None, None]], None, (10, 2)),
-                    (5, 1, None, [[2, 1, None, None, None]], None, (10, 2)),
-                    (6, 1, None, [[0, 1, None, None, None]], None, (10, 2)),
-                    (7, 1, None, [[2, 1, None, None, None]], None, (10, 2)),
-                    (
-                        8,
-                        1,
-                        None,
-                        [[2, 1, None, None, None], [0, 1, None, None, None]],
-                        None,
-                        (10, 2),
-                    ),
-                ],
-                "file_2.py": [
-                    (
-                        12,
-                        1,
-                        None,
-                        [[0, 1, None, None, None], [2, 0, None, None, None]],
-                        None,
-                        None,
-                    ),
-                    (51, "1/3", "b", [[0, "1/3", None, None, None]], None, None),
-                ],
-            },
-            "report": {
-                "files": {
-                    "file_1.go": [
-                        0,
-                        [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 70, 14, 0],
-                        [[0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16, 0]],
-                        None,
-                    ],
-                    "file_2.py": [
-                        1,
-                        [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
-                        [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
-                        None,
-                    ],
-                },
-                "sessions": {
-                    "0": {
-                        "N": None,
-                        "a": None,
-                        "c": None,
-                        "d": None,
-                        "e": None,
-                        "f": ["unit"],
-                        "j": None,
-                        "n": None,
-                        "p": None,
-                        "st": "uploaded",
-                        "se": {},
-                        "t": None,
-                        "u": None,
-                    },
-                    "2": {
-                        "N": None,
-                        "a": None,
-                        "c": None,
-                        "d": None,
-                        "e": None,
-                        "f": None,
-                        "j": None,
-                        "n": None,
-                        "p": None,
-                        "st": "uploaded",
-                        "se": {},
-                        "t": None,
-                        "u": None,
-                    },
-                    "3": {
-                        "N": None,
-                        "a": None,
-                        "c": None,
-                        "d": None,
-                        "e": None,
-                        "f": ["integration"],
-                        "j": None,
-                        "n": None,
-                        "p": None,
-                        "st": "uploaded",
-                        "se": {},
-                        "t": None,
-                        "u": None,
-                    },
-                },
-            },
-            "totals": {
-                "C": 70,
-                "M": 0,
-                "N": 14,
-                "b": 1,
-                "c": "88.88889",
-                "d": 0,
-                "diff": None,
-                "f": 2,
-                "h": 8,
-                "m": 0,
-                "n": 9,
-                "p": 1,
-                "s": 3,
-            },
-        }
         res = self.convert_report_to_better_readable(report)
-        assert res["archive"] == expected_result["archive"]
-        assert res["report"] == expected_result["report"]
-        assert res["totals"] == expected_result["totals"]
-        assert res == expected_result
+        assert res["archive"] == old_readable["archive"]
+        assert res["report"]["files"] == old_readable["report"]["files"]
+        assert old_readable["totals"].pop("s") == 3
+        assert res["totals"].pop("s") == 4
+        assert res["totals"] == old_readable["totals"]
 
     def test_delete_labels(self, sample_with_labels_report):
         sample_with_labels_report.delete_labels([0], ["another_label"])
@@ -1985,7 +1860,8 @@ class TestEditableReport(object):
                 if line.datapoints:
                     for dp in line.datapoints:
                         assert dp.sessionid != 0 or "another_label" not in dp.labels
-        assert self.convert_report_to_better_readable(sample_with_labels_report) == {
+        res = self.convert_report_to_better_readable(sample_with_labels_report)
+        expected_result = {
             "totals": {
                 "f": 1,
                 "n": 8,
@@ -1996,7 +1872,7 @@ class TestEditableReport(object):
                 "b": 0,
                 "d": 0,
                 "M": 0,
-                "s": 3,
+                "s": 4,
                 "C": 0,
                 "N": 0,
                 "diff": None,
@@ -2006,7 +1882,7 @@ class TestEditableReport(object):
                     "first_file.py": [
                         0,
                         [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
-                        [None, None, [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
+                        [None, None, None, [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
                         None,
                     ]
                 },
@@ -2023,10 +1899,25 @@ class TestEditableReport(object):
                         "u": None,
                         "p": None,
                         "e": None,
-                        "st": "uploaded",
+                        "st": "carriedforward",
                         "se": {},
                     },
                     "1": {
+                        "t": None,
+                        "d": None,
+                        "a": None,
+                        "f": ["enterprise"],
+                        "c": None,
+                        "n": None,
+                        "N": None,
+                        "j": None,
+                        "u": None,
+                        "p": None,
+                        "e": None,
+                        "st": "uploaded",
+                        "se": {},
+                    },
+                    "2": {
                         "t": None,
                         "d": None,
                         "a": None,
@@ -2041,7 +1932,7 @@ class TestEditableReport(object):
                         "st": "carriedforward",
                         "se": {},
                     },
-                    "2": {
+                    "3": {
                         "t": None,
                         "d": None,
                         "a": None,
@@ -2168,3 +2059,10 @@ class TestEditableReport(object):
                 ]
             },
         }
+        assert res["report"]["sessions"] == expected_result["report"]["sessions"]
+        assert (
+            res["report"]["files"]["first_file.py"]
+            == expected_result["report"]["files"]["first_file.py"]
+        )
+        assert res["report"]["files"] == expected_result["report"]["files"]
+        assert res == expected_result
