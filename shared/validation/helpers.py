@@ -144,7 +144,7 @@ def translate_glob_to_regex(pat, end_of_string=True):
                 res = res + ".*"
                 i = i + 1
             else:
-                res = res + r"[^\/]+"
+                res = res + r"[^\/]*"
         elif c == "?":
             res = res + "."
         elif c == "[":

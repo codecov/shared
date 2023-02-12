@@ -60,8 +60,8 @@ def test_validate_install_configuration_with_user_yaml():
             "github_checks": {"annotations": False},
             "ignore": [
                 "^agent/uiserver/bindata_assetfs.go.*",
-                "(?s:vendor/.*/[^\\/]+)\\Z",
-                "(?s:.*/[^\\/]+\\.pb\\.go.*)\\Z",
+                "(?s:vendor/.*/[^\\/]*)\\Z",
+                "(?s:.*/[^\\/]*\\.pb\\.go.*)\\Z",
             ],
         },
     }
