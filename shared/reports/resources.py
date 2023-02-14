@@ -503,7 +503,8 @@ class ReportFile(object):
                 # loop through each line in segment
                 for line in segment["lines"]:
                     if line[0] == removed:
-                        self._lines.pop(pos)
+                        if len(self._lines) > pos:
+                            self._lines.pop(pos)
                     elif line[0] == added:
                         self._lines.insert(pos, "")
                         pos += 1

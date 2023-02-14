@@ -597,6 +597,59 @@ def test_shift_lines_by_diff_wiki_example():
 
 
 @pytest.mark.unit
+def test_shift_lines_by_diff_changes_to_no_code_at_eof():
+    file = ReportFile("file")
+    for i in range(1, 10):
+        file.append(i, ReportLine.create(coverage=(i)))
+    fake_diff = {
+        "segments": [
+            {
+                "header": [1, 25, 1, 20],
+                "lines": [
+                    " This is an important",
+                    " notice! It should",
+                    " therefore be located at",
+                    " the beginning of this",
+                    " document!",
+                    " ",
+                    " This part of the",
+                    " document has stayed the",
+                    " same from version to",
+                    " LAST LINE OF CODE IN THE FILE",
+                    " ",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    " #comment #comment",
+                    "-#comment #comment",
+                    "-#comment #comment",
+                    "-#comment #comment",
+                    "-#comment #comment",
+                    "-#comment #comment",
+                ],
+            },
+        ]
+    }
+    file.shift_lines_by_diff(fake_diff)
+    assert format_lines_idx_and_coverage_only(file._lines) == [
+        (1, "ReportLine(coverage=1)"),
+        (2, "ReportLine(coverage=2)"),
+        (3, "ReportLine(coverage=3)"),
+        (4, "ReportLine(coverage=4)"),
+        (5, "ReportLine(coverage=5)"),
+        (6, "ReportLine(coverage=6)"),
+        (7, "ReportLine(coverage=7)"),
+        (8, "ReportLine(coverage=8)"),
+        (9, "ReportLine(coverage=9)"),
+    ]
+
+
+@pytest.mark.unit
 def test_del_item():
     r = ReportFile("name.h")
     with pytest.raises(TypeError):
