@@ -3,48 +3,61 @@ version: 2.1
 jobs:
   codecovstartup:
     docker:
-      - image: circleci/python:3.10.1
+      - image: cimg/python:3.10.10
+    working_directory: ~/repo
     steps:
       - checkout
-      - run:
+      - run: &preparation
           name: install dependencies
           command: |
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
-            source $HOME/.cargo/env
-            python3 -m venv venv
-            . venv/bin/activate
+            sudo apt-get update
+            sudo apt install cargo
+            python3 -m venv ../venv
+            . ../venv/bin/activate
             pip install -r tests/requirements.txt
             pip install setuptools_rust
             python setup.py develop
       - run:
           name: Install CLI
           command: |
-            . venv/bin/activate
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@62f2e25bc80ceb06e83ac600e4e8ea16dddc2409#egg=codecov-cli
+            . ../venv/bin/activate
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@9a8498ab43772d6508a703c1d5360387ec525974#egg=codecov-cli
       - run:
           name: Save commit info 
           command: |
-            . venv/bin/activate
+            . ../venv/bin/activate
             codecovcli --auto-load-params-from circleci create-commit --service=github
       - run: 
           name: Create report
           command: |
-            . venv/bin/activate
+            . ../venv/bin/activate
             codecovcli --auto-load-params-from circleci create-report --service=github
       - run:
           name: Run Static Analysis
           command: |
-            . venv/bin/activate
+            . ../venv/bin/activate
             codecovcli static-analysis --token=$STATIC_TOKEN
+  iterativetesting:
+    docker:
+      - image: cimg/python:3.10.10
+    steps:
+      - checkout
+      - run: *preparation
+      - run:
+          name: Setup
+          command: |
+            . ../venv/bin/activate
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@9a8498ab43772d6508a703c1d5360387ec525974#egg=codecov-cli
       - run:
           name: Run Predictor Analysis
           command: |
-            . venv/bin/activate
-            python -m pytest -q --collect-only
-            codecovcli label-analysis --token=$STATIC_TOKEN --base-sha=$(git log -n 1 master --pretty=format:"%H")
+            . ../venv/bin/activate
+            codecovcli label-analysis --token=$STATIC_TOKEN --base-sha=$(git merge-base HEAD^ master)
+            coverage json --show-contexts -o label.coverage.json
+            codecovcli --auto-load-params-from circleci do-upload --flag onlysomelabels --file=label.coverage.json
   linter:
     docker:
-      - image: circleci/python:3.7.6
+      - image: cimg/python:3.10.10
     working_directory: ~/repo
     steps:
       - checkout
@@ -56,20 +69,16 @@ jobs:
             isort --profile black --check .
   mutations:
     docker:
-      - image: circleci/python:3.7.9
+      - image: cimg/python:3.10.10
     working_directory: ~/repo
     steps:
       - checkout
+      - run: *preparation
       - run:
           name: Run Mutations
           command: |
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
-            source $HOME/.cargo/env
-            python -m venv venv
-            . venv/bin/activate
+            . ../venv/bin/activate
             pip install setuptools_rust mutmut[patch]
-            pip install -r tests/requirements.txt
-            python setup.py develop
             git diff master $CIRCLE_SHA1 > data.patch
             mutmut run --use-patch-file data.patch || true
             mkdir /tmp/artifacts;
@@ -91,38 +100,28 @@ jobs:
           - v07-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
           # fallback to using the latest cache if no exact match is found
           - v07-dependencies-<< parameters.imagename >>
-
-      - run:
-          name: install dependencies
-          command: |
-            curl https://sh.rustup.rs -sSf | sh -s -- -y
-            source $HOME/.cargo/env
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r tests/requirements.txt
-            pip install setuptools_rust
-            python setup.py develop
+      - run: *preparation
       - save_cache:
           paths:
-            - venv
+            - ../venv
           key: v07-dependencies-<< parameters.imagename >>-{{ checksum "setup.py" }}
 
       - run:
           name: run tests
           command: |
-            . venv/bin/activate
+            . ../venv/bin/activate
             python -m pytest --cov=./
         
       - run:
           name: codecov
           command: |
-            . venv/bin/activate
+            . ../venv/bin/activate
             pip install codecov
             codecov --required --flags python<< parameters.imagename >>
           
   rust:
     docker:
-      - image: circleci/python:3.9
+      - image: cimg/python:3.10.10
     working_directory: ~/repo
     steps:
       - checkout
@@ -148,6 +147,9 @@ workflows:
     jobs:
       - codecovstartup
       - mutations
+      - iterativetesting:
+          requires:
+            - codecovstartup
       - rust:
           filters:
             tags:
@@ -157,6 +159,8 @@ workflows:
             tags:
               only: /.*/
       - build:
+          requires:
+            - codecovstartup
           matrix:
             parameters:
               imagename: ["3.7.13", "3.8.13", "3.9.12", "3.10.5"]
