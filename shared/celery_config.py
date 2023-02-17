@@ -102,6 +102,15 @@ class BaseCeleryConfig(object):
     timeseries_hard_time_limit = get_config(
         "setup", "tasks", "timeseries", "hard_timelimit", default=480
     )
+
+    gh_webhook_retry_soft_time_limit = get_config(
+        "setup", "tasks", "gh_webhook_retry", "soft_timelimit", default=600
+    )
+
+    gh_webhook_retry_hard_time_limit = get_config(
+        "setup", "tasks", "gh_webhook_retry", "hard_timelimit", default=680
+    )
+
     task_annotations = {
         delete_owner_task_name: {
             "soft_time_limit": 2 * task_soft_time_limit,
@@ -122,6 +131,10 @@ class BaseCeleryConfig(object):
         timeseries_backfill_commits_task_name: {
             "soft_time_limit": timeseries_soft_time_limit,
             "time_limit": timeseries_hard_time_limit,
+        },
+        gh_app_webhook_check_task_name: {
+            "soft_time_limit": gh_webhook_retry_soft_time_limit,
+            "time_limit": gh_webhook_retry_hard_time_limit,
         },
     }
 
