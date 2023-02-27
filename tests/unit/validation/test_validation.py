@@ -485,6 +485,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "carryforward_behavior": "pass",
                         "flag_coverage_not_uploaded_behavior": "pass",
                     },
+                    "no_upload_behavior": "pass",
                 },
                 "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
@@ -525,6 +526,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "carryforward_behavior": "pass",
                         "flag_coverage_not_uploaded_behavior": "pass",
                     },
+                    "no_upload_behavior": "pass",
                 },
                 "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
             },
@@ -599,6 +601,24 @@ class TestUserYamlValidation(BaseTestCase):
             validate_yaml(user_input)
         assert exc.value.error_location == ["coverage", "range"]
         assert exc.value.error_message == "must be of list type"
+
+    def test_invalid_yaml_case_no_upload_behavior(self):
+        user_input = {
+            "coverage": {
+                "round": "down",
+                "precision": 2,
+                "range": "70...100",
+                "status": {
+                    "project": {"percent": "abc"},
+                    "no_upload_behavior": "no-pass",
+                },
+            },
+            "ignore": ["Pods/.*"],
+        }
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+        assert exc.value.error_location == ["coverage", "status", "no_upload_behavior"]
+        assert exc.value.error_message == "unallowed value no-pass"
 
     def test_yaml_with_null_threshold(self):
         user_input = {
