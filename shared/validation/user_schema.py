@@ -331,6 +331,10 @@ schema = {
                             "schema": status_standard_attributes,
                         },
                     },
+                    "no_upload_behavior": {
+                        "type": "string",
+                        "allowed": ("pass", "fail"),
+                    },
                 },
             },
         },
