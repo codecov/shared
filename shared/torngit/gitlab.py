@@ -389,13 +389,18 @@ class Gitlab(TorngitBaseAdapter):
                         token=token,
                     )
                 else:
-                    repos = await self.api(
-                        "get",
-                        "/groups/{}/projects?per_page=50&page={}".format(
-                            group["id"], page
-                        ),
-                        token=token,
-                    )
+                    try:
+                        repos = await self.api(
+                            "get",
+                            "/groups/{}/projects?per_page=50&page={}".format(
+                                group["id"], page
+                            ),
+                            token=token,
+                        )
+                    except TorngitClientError as e:
+                        if e.code == 404:
+                            log.warning(f"Group with id {group['id']} does not exist")
+                            repos = []
                 for repo in repos:
                     (
                         owner_service_id,
