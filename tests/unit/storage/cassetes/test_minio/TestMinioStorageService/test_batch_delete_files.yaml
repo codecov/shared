@@ -2,14 +2,16 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +25,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,39 +33,35 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D0B63975
+      - 1748FD4CA02AF388
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
       code: 200
       message: OK
 - request:
-    body: !!python/object/new:_io.BytesIO
-      state: !!python/tuple
-      - !!binary |
-        H4sIAAhnKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
-        ABQu+7guAAAA
-      - 0
-      - null
+    body: !!binary |
+      H4sIADZBAmQC/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+      ABQu+7guAAAA
     headers:
-      content-encoding:
+      Content-Encoding:
       - gzip
-      content-length:
-      - 66
-      content-type:
+      Content-Length:
+      - '66'
+      Content-Type:
       - text/plain
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
-      - b7a0cd5b0a05849e17b055e7c9c86c6658de2cdf03525ef56a930ecc1c404a25
+      - 576f9547d514d18ba635cada9a5436c328452318373bee43ee3fc3872a3592dc
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/test_batch_delete_files/result_1.txt
+    uri: http://minio:9000/archivetest/test_batch_delete_files/result_1.txt
   response:
     body:
       string: ''
@@ -75,47 +73,43 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       ETag:
-      - '"2164cb4817c354bf2fef8f55c9e72220"'
+      - '"1e07eb1e057b4fa3be7795787edc06be"'
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D0DEC65B
+      - 1748FD4CA06D0980
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
       code: 200
       message: OK
 - request:
-    body: !!python/object/new:_io.BytesIO
-      state: !!python/tuple
-      - !!binary |
-        H4sIAAhnKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
-        ABQu+7guAAAA
-      - 0
-      - null
+    body: !!binary |
+      H4sIADZBAmQC/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+      ABQu+7guAAAA
     headers:
-      content-encoding:
+      Content-Encoding:
       - gzip
-      content-length:
-      - 66
-      content-type:
+      Content-Length:
+      - '66'
+      Content-Type:
       - text/plain
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
-      - b7a0cd5b0a05849e17b055e7c9c86c6658de2cdf03525ef56a930ecc1c404a25
+      - 576f9547d514d18ba635cada9a5436c328452318373bee43ee3fc3872a3592dc
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/test_batch_delete_files/result_3.txt
+    uri: http://minio:9000/archivetest/test_batch_delete_files/result_3.txt
   response:
     body:
       string: ''
@@ -127,39 +121,39 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       ETag:
-      - '"2164cb4817c354bf2fef8f55c9e72220"'
+      - '"1e07eb1e057b4fa3be7795787edc06be"'
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D156CE61
+      - 1748FD4CA0BEA808
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
       code: 200
       message: OK
 - request:
-    body: <Delete><Quiet>true</Quiet><Object><Key>test_batch_delete_files/result_1.txt</Key></Object><Object><Key>test_batch_delete_files/result_2.txt</Key></Object><Object><Key>test_batch_delete_files/result_3.txt</Key></Object></Delete>
+    body: <Delete xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Quiet>true</Quiet><Object><Key>test_batch_delete_files/result_1.txt</Key></Object><Object><Key>test_batch_delete_files/result_2.txt</Key></Object><Object><Key>test_batch_delete_files/result_3.txt</Key></Object></Delete>
     headers:
-      content-length:
-      - 228
-      content-md5:
-      - +YAcXKc5blGXoM/o8j8BOw==
-      host:
+      Content-Length:
+      - '276'
+      Content-MD5:
+      - MrpDMrFf0g+3CscVIXVWvQ==
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
-      - af47fd6fc089dba166160ce3776b5f7fb4d8213d887b09cdf53afcaa9ca9271b
+      - 145d8eab556e59a94106dafd54a7252e9c646e730362ba862f15645150e514e4
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: POST
-    uri: http://minio:9000/thiagoarchivetest/?delete=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -173,7 +167,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -181,9 +175,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D1C9C78E
+      - 1748FD4CA10E4EA8
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -192,21 +186,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_batch_delete_files/result_1.txt
+    uri: http://minio:9000/archivetest/test_batch_delete_files/result_1.txt
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_batch_delete_files/result_1.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_batch_delete_files/result_1.txt</Resource><RequestId>1627D922D207C5F6</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_batch_delete_files/result_1.txt</Key><BucketName>archivetest</BucketName><Resource>/archivetest/test_batch_delete_files/result_1.txt</Resource><RequestId>1748FD4CA150E588</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -215,7 +209,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -223,9 +217,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D207C5F6
+      - 1748FD4CA150E588
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -234,19 +228,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest/test_batch_delete_files/result_2.txt
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_batch_delete_files/result_2.txt</Key><BucketName>archivetest</BucketName><Resource>/archivetest/test_batch_delete_files/result_2.txt</Resource><RequestId>1748FD4CA17FC970</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -255,7 +251,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -263,51 +259,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D23612AB
+      - 1748FD4CA17FC970
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
-      X-Xss-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      host:
-      - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
-      x-amz-content-sha256:
-      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      x-amz-date:
-      - 20200803T193536Z
-    method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_batch_delete_files/result_2.txt
-  response:
-    body:
-      string: '<?xml version="1.0" encoding="UTF-8"?>
-
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_batch_delete_files/result_2.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_batch_delete_files/result_2.txt</Resource><RequestId>1627D922D26A997D</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
-    headers:
-      Accept-Ranges:
-      - bytes
-      Content-Security-Policy:
-      - block-all-mixed-content
-      Content-Type:
-      - application/xml
-      Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
-      Server:
-      - Minio/RELEASE.2019-04-09T01-22-30Z
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      X-Amz-Request-Id:
-      - 1627D922D26A997D
-      X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -316,19 +270,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest/test_batch_delete_files/result_3.txt
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_batch_delete_files/result_3.txt</Key><BucketName>archivetest</BucketName><Resource>/archivetest/test_batch_delete_files/result_3.txt</Resource><RequestId>1748FD4CA1AD7CA8</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -337,7 +293,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -345,51 +301,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922D28D0FEE
+      - 1748FD4CA1AD7CA8
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
-      X-Xss-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      host:
-      - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
-      x-amz-content-sha256:
-      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      x-amz-date:
-      - 20200803T193536Z
-    method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_batch_delete_files/result_3.txt
-  response:
-    body:
-      string: '<?xml version="1.0" encoding="UTF-8"?>
-
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_batch_delete_files/result_3.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_batch_delete_files/result_3.txt</Resource><RequestId>1627D922D2B18B79</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
-    headers:
-      Accept-Ranges:
-      - bytes
-      Content-Security-Policy:
-      - block-all-mixed-content
-      Content-Type:
-      - application/xml
-      Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
-      Server:
-      - Minio/RELEASE.2019-04-09T01-22-30Z
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      X-Amz-Request-Id:
-      - 1627D922D2B18B79
-      X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:

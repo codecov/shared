@@ -2,19 +2,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest</Resource><RequestId>1627D922C023C87C</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
+        <Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>archivetest</BucketName><Resource>/archivetest</Resource><RequestId>1748FD4C94D7A0F8</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -23,7 +25,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,9 +33,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C023C87C
+      - 1748FD4C94D7A0F8
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -45,13 +47,13 @@ interactions:
       Host:
       - minio:9000
       User-Agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
-      X-Amz-Content-Sha256:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
+      x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      X-Amz-Date:
-      - 20200803T193536Z
+      x-amz-date:
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: ''
@@ -63,57 +65,17 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Location:
-      - /thiagoarchivetest
+      - /archivetest
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C057C9CF
+      - 1748FD4C956F8F80
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
-      X-Xss-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      host:
-      - minio:9000
-      x-amz-content-sha256:
-      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      x-amz-date:
-      - 20200803T193536Z
-    method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
-  response:
-    body:
-      string: '<?xml version="1.0" encoding="UTF-8"?>
-
-        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
-    headers:
-      Accept-Ranges:
-      - bytes
-      Content-Security-Policy:
-      - block-all-mixed-content
-      Content-Type:
-      - application/xml
-      Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
-      Server:
-      - Minio/RELEASE.2019-04-09T01-22-30Z
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Origin
-      X-Amz-Request-Id:
-      - 1627D922C07DC763
-      X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -121,23 +83,22 @@ interactions:
       message: OK
 - request:
     body: '{"Statement": [{"Action": ["s3:GetObject"], "Effect": "Allow", "Principal":
-      {"AWS": ["*"]}, "Resource": ["arn:aws:s3:::thiagoarchivetest/*"]}], "Version":
-      "2012-10-17"}'
+      {"AWS": ["*"]}, "Resource": ["arn:aws:s3:::archivetest/*"]}], "Version": "2012-10-17"}'
     headers:
-      content-length:
-      - '168'
-      content-md5:
-      - YCiWymyioPlJ5VhSB/6YTQ==
-      host:
+      Content-Length:
+      - '162'
+      Content-MD5:
+      - RwFjKcistI7UvHORW0EYwg==
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
-      - 6cb7008e5ef9de5b33e120325b3685b5fb0e938f26272204f2d4f2cd8caee2c8
+      - a20040fe517efd9d77074313a7033df79d96583606f2f3cf794c5d6e412c447a
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/?policy=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: ''
@@ -147,15 +108,15 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C0AC63F9
+      - 1748FD4C95FC9128
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:

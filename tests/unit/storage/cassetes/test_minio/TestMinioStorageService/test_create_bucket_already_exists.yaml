@@ -2,19 +2,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/alreadyexists?location=
+    uri: http://minio:9000/alreadyexists
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>alreadyexists</BucketName><Resource>/alreadyexists</Resource><RequestId>1627D922C21B0508</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
+        <Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>alreadyexists</BucketName><Resource>/alreadyexists</Resource><RequestId>1748FD4C971655F8</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -23,7 +25,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,9 +33,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C21B0508
+      - 1748FD4C971655F8
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -45,13 +47,13 @@ interactions:
       Host:
       - minio:9000
       User-Agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
-      X-Amz-Content-Sha256:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
+      x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      X-Amz-Date:
-      - 20200803T193536Z
+      x-amz-date:
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/alreadyexists/
+    uri: http://minio:9000/alreadyexists
   response:
     body:
       string: ''
@@ -63,7 +65,7 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Location:
       - /alreadyexists
       Server:
@@ -71,9 +73,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C24D1E39
+      - 1748FD4C97757D58
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -83,20 +85,20 @@ interactions:
     body: '{"Statement": [{"Action": ["s3:GetObject"], "Effect": "Allow", "Principal":
       {"AWS": ["*"]}, "Resource": ["arn:aws:s3:::alreadyexists/*"]}], "Version": "2012-10-17"}'
     headers:
-      content-length:
+      Content-Length:
       - '164'
-      content-md5:
+      Content-MD5:
       - wMVEpPwi61YITdnCWLfNjA==
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - d3f24d69aa644d958b232c0200b1f7f02d06852b29839cb3ffc1c1163c10f75b
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/alreadyexists/?policy=
+    uri: http://minio:9000/alreadyexists
   response:
     body:
       string: ''
@@ -106,15 +108,15 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C26E1A93
+      - 1748FD4C97D2C058
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -123,16 +125,16 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: HEAD
-    uri: http://minio:9000/alreadyexists/
+    uri: http://minio:9000/alreadyexists
   response:
     body:
       string: ''
@@ -142,15 +144,15 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C2939A2C
+      - 1748FD4C98215D58
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
