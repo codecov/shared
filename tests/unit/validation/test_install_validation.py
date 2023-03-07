@@ -140,8 +140,15 @@ def test_validate_sample_production_config():
                 "dependancies": "https://codecov-cdn.storage.googleapis.com/4.4.8-e33f298",
             },
             "tasks": {
-                "celery": {"hard_timelimit": 240, "soft_timelimit": 200},
-                "upload": {"queue": "uploads"},
+                "celery": {
+                    "hard_timelimit": 240,
+                    "soft_timelimit": 200,
+                    "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
+                },
+                "upload": {
+                    "queue": "uploads",
+                    "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
+                },
             },
             "encryption_secret": "encryption_$ecret",
         },
@@ -252,8 +259,15 @@ def test_validate_sample_production_config():
                 "dependancies": "https://codecov-cdn.storage.googleapis.com/4.4.8-e33f298",
             },
             "tasks": {
-                "celery": {"hard_timelimit": 240, "soft_timelimit": 200},
-                "upload": {"queue": "uploads"},
+                "celery": {
+                    "hard_timelimit": 240,
+                    "soft_timelimit": 200,
+                    "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
+                },
+                "upload": {
+                    "queue": "uploads",
+                    "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
+                },
             },
             "encryption_secret": "encryption_$ecret",
         },

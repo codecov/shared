@@ -70,7 +70,18 @@ default_service_fields = {
     },
 }
 
-default_task_fields = {"queue": {"type": "string"}}
+enterprise_queue_fields = {
+    "type": "dict",
+    "schema": {
+        "soft_timelimit": {"type": "integer"},
+        "hard_timelimit": {"type": "integer"},
+    },
+}
+
+default_task_fields = {
+    "queue": {"type": "string"},
+    "enterprise": {**enterprise_queue_fields},
+}
 
 config_schema = {
     "setup": {
@@ -151,6 +162,7 @@ config_schema = {
                             "prefetch": {"type": "integer"},
                             "soft_timelimit": {"type": "integer"},
                             "hard_timelimit": {"type": "integer"},
+                            "enterprise": {**enterprise_queue_fields},
                         },
                     },
                     "notify": {
