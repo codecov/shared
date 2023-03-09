@@ -307,7 +307,9 @@ class TestUserYamlValidation(BaseTestCase):
                     "carryforward": False,
                     "statuses": [{"name_prefix": "aaa", "type": "patch"}],
                 },
-                "individual_flags": [{"name": "cawcaw", "paths": ["banana"]}],
+                "individual_flags": [
+                    {"name": "cawcaw", "paths": ["banana"], "after_n_builds": 3}
+                ],
             },
         }
         expected_result = {
@@ -439,7 +441,9 @@ class TestUserYamlValidation(BaseTestCase):
                     "carryforward": False,
                     "statuses": [{"name_prefix": "aaa", "type": "patch"}],
                 },
-                "individual_flags": [{"name": "cawcaw", "paths": ["^banana.*"]}],
+                "individual_flags": [
+                    {"name": "cawcaw", "paths": ["^banana.*"], "after_n_builds": 3}
+                ],
             },
         }
         assert validate_yaml(user_input) == expected_result
