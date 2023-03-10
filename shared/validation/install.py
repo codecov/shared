@@ -1,9 +1,19 @@
 import logging
 
+from shared.utils.enums import TaskConfigGroup
 from shared.validation.user_schema import schema as user_yaml_schema
 from shared.validation.validator import CodecovYamlValidator
 
 log = logging.getLogger(__name__)
+
+
+def check_task_config_key(field, value, error):
+    if value == "celery":
+        return
+    if value in set(group.value for group in TaskConfigGroup):
+        return
+    error(field, "Not a valid TaskConfigGroup")
+
 
 default_service_fields = {
     "verify_ssl": {"type": "boolean"},
@@ -80,6 +90,11 @@ enterprise_queue_fields = {
 
 default_task_fields = {
     "queue": {"type": "string"},
+    "timeout": {"type": "integer"},
+    "interval_seconds": {
+        "type": "integer",
+        "min": 0,
+    },
     "enterprise": {**enterprise_queue_fields},
 }
 
@@ -153,54 +168,24 @@ config_schema = {
             },
             "tasks": {
                 "type": "dict",
-                "schema": {
-                    "celery": {
-                        "type": "dict",
-                        "schema": {
-                            "default_queue": {"type": "string"},
-                            "acks_late": {"type": "boolean"},
-                            "prefetch": {"type": "integer"},
-                            "soft_timelimit": {"type": "integer"},
-                            "hard_timelimit": {"type": "integer"},
-                            "enterprise": {**enterprise_queue_fields},
-                        },
-                    },
-                    "notify": {
-                        "type": "dict",
-                        "schema": {
-                            "timeout": {"type": "integer"},
-                            **default_task_fields,
-                        },
-                    },
-                    "sync_teams": {"type": "dict", "schema": {**default_task_fields}},
-                    "sync_repos": {"type": "dict", "schema": {**default_task_fields}},
-                    "delete_owner": {"type": "dict", "schema": {**default_task_fields}},
-                    "pulls": {"type": "dict", "schema": {**default_task_fields}},
-                    "status": {"type": "dict", "schema": {**default_task_fields}},
-                    "upload": {"type": "dict", "schema": {**default_task_fields}},
-                    "archive": {"type": "dict", "schema": {**default_task_fields}},
-                    "verify_bot": {"type": "dict", "schema": {**default_task_fields}},
-                    "comment": {"type": "dict", "schema": {**default_task_fields}},
-                    "flush_repo": {"type": "dict", "schema": {**default_task_fields}},
-                    "sync_plans": {"type": "dict", "schema": {**default_task_fields}},
-                    "remove_webhook": {
-                        "type": "dict",
-                        "schema": {**default_task_fields},
-                    },
-                    "synchronize": {"type": "dict", "schema": {**default_task_fields}},
-                    "new_user_activated": {
-                        "type": "dict",
-                        "schema": {**default_task_fields},
-                    },
-                    "healthcheck": {
-                        "type": "dict",
-                        "schema": {
-                            "interval_seconds": {
-                                "type": "integer",
-                                "min": 0,
+                "keysrules": {"type": "string", "check_with": check_task_config_key},
+                "valuesrules": {
+                    "type": "dict",
+                    "oneof": [
+                        # Regular tasks config
+                        {"schema": {**default_task_fields}},
+                        # Special value for 'celery' key
+                        {
+                            "schema": {
+                                "default_queue": {"type": "string"},
+                                "acks_late": {"type": "boolean"},
+                                "prefetch": {"type": "integer"},
+                                "soft_timelimit": {"type": "integer"},
+                                "hard_timelimit": {"type": "integer"},
+                                "enterprise": {**enterprise_queue_fields},
                             }
                         },
-                    },
+                    ],
                 },
             },
             "upload_processing_delay": {"type": "integer"},

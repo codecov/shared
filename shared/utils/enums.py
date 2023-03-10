@@ -12,3 +12,34 @@ class CodecovDatabaseEnum(Enum):
             if elem.db_id == value:
                 return elem
         return None
+
+
+class TaskConfigGroup(Enum):
+    """
+    Configuration Group for tasks.
+    Marks the config key in the install yaml that affects a given task.
+    """
+
+    add_to_sendgrid_list = "add_to_sendgrid_list"
+    archive = "archive"
+    comment = "comment"
+    commit_update = "commit_update"
+    compute_comparison = "compute_comparison"
+    daily = "daily"
+    delete_owner = "delete_owner"
+    healthcheck = "healthcheck"
+    flush_repo = "flush_repo"
+    new_user_activated = "new_user_activated"
+    notify = "notify"
+    profiling = "profiling"
+    pulls = "pulls"
+    remove_webhook = "remove_webhook"
+    send_email = "send_email"
+    status = "status"
+    sync_plans = "sync_plans"
+    sync_repos = "sync_repos"
+    sync_teams = "sync_teams"
+    synchronize = "synchronize"
+    timeseries = "timeseries"
+    upload = "upload"
+    verify_bot = "verify_bot"

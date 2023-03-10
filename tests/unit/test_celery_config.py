@@ -1,4 +1,6 @@
-import shared.celery_config
+import pytest
+
+import shared.celery_config as celery_config
 
 
 def test_celery_config():
@@ -9,7 +11,7 @@ def test_celery_config():
     # and hold the logic inside it.
     # It's not a terrible idea, but I am not sure of the impact of reloading those things every time
     # So the best we can do is to ensure the fields have a sane structure
-    config = shared.celery_config.BaseCeleryConfig
+    config = celery_config.BaseCeleryConfig
     assert hasattr(config, "broker_url")
     assert hasattr(config, "result_backend")
     assert hasattr(config, "task_default_queue")
@@ -21,35 +23,28 @@ def test_celery_config():
     assert hasattr(config, "task_annotations")
     assert hasattr(config, "task_routes")
     assert sorted(config.task_routes.keys()) == [
-        "app.cron.health_check.HealthCheckTask",
-        "app.cron.profiling.findinguncollected",
+        "app.cron.healthcheck.HealthCheckTask",
+        "app.cron.profiling.*",
         "app.tasks.add_to_sendgrid_list.AddToSendgridList",
         "app.tasks.archive.MigrateToArchive",
-        "app.tasks.bot.VerifyBot",
         "app.tasks.comment.Comment",
         "app.tasks.commit_update.CommitUpdate",
         "app.tasks.compute_comparison.ComputeComparison",
         "app.tasks.delete_owner.DeleteOwner",
         "app.tasks.flush_repo.FlushRepo",
-        "app.tasks.ghm_sync_plans.SyncPlans",
         "app.tasks.new_user_activated.NewUserActivated",
         "app.tasks.notify.Notify",
-        "app.tasks.profiling.collection",
-        "app.tasks.profiling.normalizer",
-        "app.tasks.profiling.summarization",
+        "app.tasks.profiling.*",
         "app.tasks.pulls.Sync",
         "app.tasks.remove_webhook.RemoveOldHook",
-        "app.tasks.status.SetError",
-        "app.tasks.status.SetPending",
+        "app.tasks.status.*",
+        "app.tasks.sync_plans.SyncPlans",
         "app.tasks.sync_repos.SyncRepos",
         "app.tasks.sync_teams.SyncTeams",
         "app.tasks.synchronize.Synchronize",
-        "app.tasks.timeseries.backfill",
-        "app.tasks.timeseries.backfill_commits",
-        "app.tasks.timeseries.backfill_dataset",
-        "app.tasks.timeseries.delete",
-        "app.tasks.upload.Upload",
-        "app.tasks.upload_processor.UploadProcessorTask",
+        "app.tasks.timeseries.*",
+        "app.tasks.upload.*",
+        "app.tasks.verify_bot.VerifyBot",
     ]
     assert config.broker_transport_options == {"visibility_timeout": 18000}
     assert config.result_extended is True
@@ -62,3 +57,44 @@ def test_celery_config():
     assert config.enable_utc is True
     assert config.task_ignore_result is True
     assert config.worker_disable_rate_limits is True
+
+
+@pytest.mark.parametrize(
+    "task_name,task_group",
+    [
+        ("app.cron.healthcheck.HealthCheckTask", "healthcheck"),
+        ("app.cron.profiling.findinguncollected", "profiling"),
+        ("app.tasks.add_to_sendgrid_list.AddToSendgridList", "add_to_sendgrid_list"),
+        ("app.tasks.archive.MigrateToArchive", "archive"),
+        ("app.tasks.verify_bot.VerifyBot", "verify_bot"),
+        ("app.tasks.comment.Comment", "comment"),
+        ("app.tasks.commit_update.CommitUpdate", "commit_update"),
+        ("app.tasks.compute_comparison.ComputeComparison", "compute_comparison"),
+        ("app.tasks.delete_owner.DeleteOwner", "delete_owner"),
+        ("app.tasks.flush_repo.FlushRepo", "flush_repo"),
+        ("app.tasks.sync_plans.SyncPlans", "sync_plans"),
+        ("app.tasks.new_user_activated.NewUserActivated", "new_user_activated"),
+        ("app.tasks.notify.Notify", "notify"),
+        ("app.tasks.profiling.collection", "profiling"),
+        ("app.tasks.profiling.normalizer", "profiling"),
+        ("app.tasks.profiling.summarization", "profiling"),
+        ("app.tasks.pulls.Sync", "pulls"),
+        ("app.tasks.remove_webhook.RemoveOldHook", "remove_webhook"),
+        ("app.tasks.status.SetError", "status"),
+        ("app.tasks.status.SetPending", "status"),
+        ("app.tasks.sync_repos.SyncRepos", "sync_repos"),
+        ("app.tasks.sync_teams.SyncTeams", "sync_teams"),
+        ("app.tasks.synchronize.Synchronize", "synchronize"),
+        ("app.tasks.timeseries.backfill", "timeseries"),
+        ("app.tasks.timeseries.backfill_commits", "timeseries"),
+        ("app.tasks.timeseries.backfill_dataset", "timeseries"),
+        ("app.tasks.timeseries.delete", "timeseries"),
+        ("app.tasks.upload.Upload", "upload"),
+        ("app.tasks.upload.UploadProcessor", "upload"),
+        ("app.tasks.upload.UploadFinisher", "upload"),
+        ("unknown.task", None),
+        ("app.tasks.legacy", None),
+    ],
+)
+def test_task_group(task_name, task_group):
+    assert celery_config.get_task_group(task_name) == task_group

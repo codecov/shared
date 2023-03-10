@@ -1,3 +1,4 @@
+from shared.validation.install import log as install_log
 from shared.validation.install import validate_install_configuration
 from shared.yaml.validation import UserGivenSecret
 
@@ -149,6 +150,7 @@ def test_validate_sample_production_config():
                     "queue": "uploads",
                     "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
                 },
+                "notify": {"queue": "notify", "timeout": 60},
             },
             "encryption_secret": "encryption_$ecret",
         },
@@ -268,6 +270,7 @@ def test_validate_sample_production_config():
                     "queue": "uploads",
                     "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
                 },
+                "notify": {"queue": "notify", "timeout": 60},
             },
             "encryption_secret": "encryption_$ecret",
         },
@@ -352,3 +355,52 @@ def test_validate_install_configuration_with_additional_yamls():
             "override": {"comment": False},
         },
     }
+
+
+def test_validate_install_configuration_raise_warning(mocker):
+    mock_warning = mocker.patch.object(install_log, "warning")
+    input = {
+        "setup": {
+            "tasks": {
+                "celery": {
+                    "hard_timelimit": 240,
+                    "soft_timelimit": 200,
+                    "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
+                },
+                "upload": {"queue": "uploads", "unknown_key": "error"},
+                "notify": {"queue": "notify", "timeout": 60},
+                "unknown_task": {"queue": "error"},
+            }
+        }
+    }
+    validate_install_configuration(input)
+    mock_warning.assert_called_with(
+        "Configuration considered invalid, using dict as it is",
+        extra={
+            "errors": {
+                "setup": [
+                    {
+                        "tasks": [
+                            {
+                                "unknown_task": ["Not a valid TaskConfigGroup"],
+                                "upload": [
+                                    "none or more than one rule validate",
+                                    {
+                                        "oneof definition 0": [
+                                            {"unknown_key": ["unknown field"]}
+                                        ],
+                                        "oneof definition 1": [
+                                            {
+                                                "queue": ["unknown field"],
+                                                "unknown_key": ["unknown field"],
+                                            }
+                                        ],
+                                    },
+                                ],
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+    )
