@@ -1073,6 +1073,13 @@ def test_assume_flags():
     ) == {"flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}}
 
 
+def test_after_n_builds_flags():
+    user_input = {"flags": {"some_flag": {"after_n_builds": 5}}}
+    assert do_actual_validation(
+        user_input, show_secrets_for=("github", "11934774", "154468867")
+    ) == {"flags": {"some_flag": {"after_n_builds": 5}}}
+
+
 def test_profiling_schema():
     user_input = {
         "profiling": {

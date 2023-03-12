@@ -392,6 +392,7 @@ schema = {
                     "type": ["boolean", "string", "dict"],
                     "schema": {"branches": branches_structure},
                 },
+                "after_n_builds": {"type": "integer", "min": 0},
             },
         },
     },
