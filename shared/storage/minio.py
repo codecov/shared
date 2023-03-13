@@ -6,13 +6,14 @@ import sys
 from io import BytesIO
 
 from minio import Minio
-from minio.credentials import Chain, Credentials, EnvAWS, EnvMinio, IAMProvider
-from minio.error import (
-    BucketAlreadyExists,
-    BucketAlreadyOwnedByYou,
-    NoSuchKey,
-    ResponseError,
+from minio.credentials import (
+    ChainedProvider,
+    EnvAWSProvider,
+    EnvMinioProvider,
+    IamAwsProvider,
 )
+from minio.deleteobjects import DeleteObject
+from minio.error import MinioException, S3Error
 
 from shared.storage.base import BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
@@ -79,14 +80,12 @@ class MinioStorageService(BaseStorageService):
             return Minio(
                 host,
                 secure=verify_ssl,
-                credentials=Credentials(
-                    provider=Chain(
-                        providers=[
-                            IAMProvider(endpoint=iam_endpoint),
-                            EnvMinio(),
-                            EnvAWS(),
-                        ]
-                    )
+                credentials=ChainedProvider(
+                    providers=[
+                        IamAwsProvider(custom_endpoint=iam_endpoint),
+                        EnvMinioProvider(),
+                        EnvAWSProvider(),
+                    ]
                 ),
             )
         return Minio(
@@ -121,11 +120,13 @@ class MinioStorageService(BaseStorageService):
             else:
                 raise BucketAlreadyExistsError(f"Bucket {bucket_name} already exists")
         # todo should only pass or raise
-        except BucketAlreadyOwnedByYou:
-            raise BucketAlreadyExistsError(f"Bucket {bucket_name} already exists")
-        except BucketAlreadyExists:
-            pass
-        except ResponseError:
+        except S3Error as e:
+            if e.code == "BucketAlreadyOwnedByYou":
+                raise BucketAlreadyExistsError(f"Bucket {bucket_name} already exists")
+            elif e.code == "BucketAlreadyExists":
+                pass
+            raise
+        except MinioException:
             raise
 
     # Writes a file to storage will gzip if not compressed already
@@ -168,7 +169,7 @@ class MinioStorageService(BaseStorageService):
             )
             return True
 
-        except ResponseError:
+        except MinioException:
             raise
 
     """
@@ -183,22 +184,26 @@ class MinioStorageService(BaseStorageService):
             )
         except FileNotInStorageError:
             file_contents = data
-        except ResponseError:
+        except MinioException:
             raise
         return self.write_file(bucket_name, path, file_contents)
 
     def read_file(self, bucket_name, path):
         try:
-            req = self.minio_client.get_object(bucket_name, path)
+            res = self.minio_client.get_object(bucket_name, path)
             data = BytesIO()
-            for d in req.stream(32 * 1024):
+            for d in res.stream(32 * 1024):
                 data.write(d)
 
             data.seek(0)
             return data.getvalue()
-        except NoSuchKey:
-            raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
-        except ResponseError:
+        except S3Error as e:
+            if e.code == "NoSuchKey":
+                raise FileNotInStorageError(
+                    f"File {path} does not exist in {bucket_name}"
+                )
+            raise e
+        except MinioException as e:
             raise
 
     """
@@ -212,21 +217,23 @@ class MinioStorageService(BaseStorageService):
             # delete a file given a bucket name and a url
             self.minio_client.remove_object(bucket_name, url)
             return True
-        except ResponseError:
+        except MinioException:
             raise
 
     def delete_files(self, bucket_name, urls=[]):
         try:
-            for del_err in self.minio_client.remove_objects(bucket_name, urls):
+            for del_err in self.minio_client.remove_objects(
+                bucket_name, [DeleteObject(url) for url in urls]
+            ):
                 print("Deletion error: {}".format(del_err))
             return [True] * len(urls)
-        except ResponseError:
+        except MinioException:
             raise
 
     def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
         return (
             self.object_to_dict(b)
-            for b in self.minio_client.list_objects_v2(bucket_name, prefix, recursive)
+            for b in self.minio_client.list_objects(bucket_name, prefix, recursive)
         )
 
     def object_to_dict(self, obj):

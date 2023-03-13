@@ -2,14 +2,16 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +25,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,9 +33,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922CC0D9BC9
+      - 1748FD4C9D1CF038
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -42,21 +44,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_read_file_does_not_exist/does_not_exist.txt
+    uri: http://minio:9000/archivetest/test_read_file_does_not_exist/does_not_exist.txt
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_read_file_does_not_exist/does_not_exist.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_read_file_does_not_exist/does_not_exist.txt</Resource><RequestId>1627D922CC2E934A</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_read_file_does_not_exist/does_not_exist.txt</Key><BucketName>archivetest</BucketName><Resource>/archivetest/test_read_file_does_not_exist/does_not_exist.txt</Resource><RequestId>1748FD4C9D5E0078</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -65,7 +67,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -73,9 +75,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922CC2E934A
+      - 1748FD4C9D5E0078
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:

@@ -2,14 +2,16 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +25,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,39 +33,35 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C41A696C
+      - 1748FD4C98CD7FC0
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
       code: 200
       message: OK
 - request:
-    body: !!python/object/new:_io.BytesIO
-      state: !!python/tuple
-      - !!binary |
-        H4sIAAhnKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
-        ABQu+7guAAAA
-      - 0
-      - null
+    body: !!binary |
+      H4sIADZBAmQC/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+      ABQu+7guAAAA
     headers:
-      content-encoding:
+      Content-Encoding:
       - gzip
-      content-length:
-      - 66
-      content-type:
+      Content-Length:
+      - '66'
+      Content-Type:
       - text/plain
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
-      - b7a0cd5b0a05849e17b055e7c9c86c6658de2cdf03525ef56a930ecc1c404a25
+      - 576f9547d514d18ba635cada9a5436c328452318373bee43ee3fc3872a3592dc
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/test_write_then_read_file/result
+    uri: http://minio:9000/archivetest/test_write_then_read_file/result
   response:
     body:
       string: ''
@@ -75,17 +73,17 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       ETag:
-      - '"2164cb4817c354bf2fef8f55c9e72220"'
+      - '"1e07eb1e057b4fa3be7795787edc06be"'
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C44B574D
+      - 1748FD4C991765B8
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -94,20 +92,20 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_write_then_read_file/result
+    uri: http://minio:9000/archivetest/test_write_then_read_file/result
   response:
     body:
       string: !!binary |
-        H4sIAAhnKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+        H4sIADZBAmQC/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
         ABQu+7guAAAA
     headers:
       Accept-Ranges:
@@ -121,19 +119,19 @@ interactions:
       Content-Type:
       - text/plain
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       ETag:
-      - '"2164cb4817c354bf2fef8f55c9e72220"'
+      - '"1e07eb1e057b4fa3be7795787edc06be"'
       Last-Modified:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922C4E263BA
+      - 1748FD4C996BA038
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:

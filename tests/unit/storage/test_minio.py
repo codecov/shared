@@ -20,9 +20,9 @@ minio_config = {
 class TestMinioStorageService(BaseTestCase):
     def test_create_bucket(self, codecov_vcr):
         storage = MinioStorageService(minio_config)
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         res = storage.create_root_storage(bucket_name, region="")
-        assert res == {"name": "thiagoarchivetest"}
+        assert res == {"name": "archivetest"}
 
     def test_create_bucket_already_exists(self, codecov_vcr):
         storage = MinioStorageService(minio_config)
@@ -35,7 +35,7 @@ class TestMinioStorageService(BaseTestCase):
         storage = MinioStorageService(minio_config)
         path = "test_write_then_read_file/result"
         data = "lorem ipsum dolor test_write_then_read_file á"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -46,7 +46,7 @@ class TestMinioStorageService(BaseTestCase):
         path = "test_write_then_append_then_read_file/result"
         data = "lorem ipsum dolor test_write_then_read_file á"
         second_data = "mom, look at me, appending data"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         writing_result = storage.write_file(bucket_name, path, data)
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert writing_result
@@ -58,7 +58,7 @@ class TestMinioStorageService(BaseTestCase):
         storage = MinioStorageService(minio_config)
         path = f"{request.node.name}/result.txt"
         second_data = "mom, look at me, appending data"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         second_writing_result = storage.append_to_file(bucket_name, path, second_data)
         assert second_writing_result
         reading_result = storage.read_file(bucket_name, path)
@@ -67,7 +67,7 @@ class TestMinioStorageService(BaseTestCase):
     def test_read_file_does_not_exist(self, request, codecov_vcr):
         storage = MinioStorageService(minio_config)
         path = f"{request.node.name}/does_not_exist.txt"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         with pytest.raises(FileNotInStorageError):
             storage.read_file(bucket_name, path)
 
@@ -75,7 +75,7 @@ class TestMinioStorageService(BaseTestCase):
         storage = MinioStorageService(minio_config)
         path = f"{request.node.name}/result.txt"
         data = "lorem ipsum dolor test_write_then_read_file á"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         writing_result = storage.write_file(bucket_name, path, data)
         assert writing_result
         deletion_result = storage.delete_file(bucket_name, path)
@@ -86,7 +86,7 @@ class TestMinioStorageService(BaseTestCase):
     def test_delete_file_doesnt_exist(self, request, codecov_vcr):
         storage = MinioStorageService(minio_config)
         path = f"{request.node.name}/result.txt"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         storage.delete_file(bucket_name, path)
 
     def test_batch_delete_files(self, request, codecov_vcr):
@@ -96,7 +96,7 @@ class TestMinioStorageService(BaseTestCase):
         path_3 = f"{request.node.name}/result_3.txt"
         paths = [path_1, path_2, path_3]
         data = "lorem ipsum dolor test_write_then_read_file á"
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         storage.write_file(bucket_name, path_1, data)
         storage.write_file(bucket_name, path_3, data)
         deletion_result = storage.delete_files(bucket_name, paths)
@@ -114,7 +114,7 @@ class TestMinioStorageService(BaseTestCase):
         path_5 = f"thiago/{request.node.name}/f1/result_2.txt"
         path_6 = f"thiago/{request.node.name}/f1/result_3.txt"
         all_paths = [path_1, path_2, path_3, path_4, path_5, path_6]
-        bucket_name = "thiagoarchivetest"
+        bucket_name = "archivetest"
         for i, p in enumerate(all_paths):
             data = f"Lorem ipsum on file {p} for {i * 'po'}"
             storage.write_file(bucket_name, p, data)

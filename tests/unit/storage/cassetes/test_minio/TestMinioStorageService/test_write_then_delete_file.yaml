@@ -2,14 +2,16 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest?location=
+    uri: http://minio:9000/archivetest
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +25,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -31,39 +33,35 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922CD186707
+      - 1748FD4C9E19AB70
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
       code: 200
       message: OK
 - request:
-    body: !!python/object/new:_io.BytesIO
-      state: !!python/tuple
-      - !!binary |
-        H4sIAAhnKF8C/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
-        ABQu+7guAAAA
-      - 0
-      - null
+    body: !!binary |
+      H4sIADZBAmQC/8vJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsvSk1MiU/LzElVOLwQ
+      ABQu+7guAAAA
     headers:
-      content-encoding:
+      Content-Encoding:
       - gzip
-      content-length:
-      - 66
-      content-type:
+      Content-Length:
+      - '66'
+      Content-Type:
       - text/plain
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
-      - b7a0cd5b0a05849e17b055e7c9c86c6658de2cdf03525ef56a930ecc1c404a25
+      - 576f9547d514d18ba635cada9a5436c328452318373bee43ee3fc3872a3592dc
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: PUT
-    uri: http://minio:9000/thiagoarchivetest/test_write_then_delete_file/result.txt
+    uri: http://minio:9000/archivetest/test_write_then_delete_file/result.txt
   response:
     body:
       string: ''
@@ -75,17 +73,17 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       ETag:
-      - '"2164cb4817c354bf2fef8f55c9e72220"'
+      - '"1e07eb1e057b4fa3be7795787edc06be"'
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922CD60ED0C
+      - 1748FD4C9E4E05C8
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -94,16 +92,16 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: DELETE
-    uri: http://minio:9000/thiagoarchivetest/test_write_then_delete_file/result.txt
+    uri: http://minio:9000/archivetest/test_write_then_delete_file/result.txt
   response:
     body:
       string: ''
@@ -113,15 +111,15 @@ interactions:
       Content-Security-Policy:
       - block-all-mixed-content
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922CDCAE7F6
+      - 1748FD4C9EA3BB30
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
@@ -130,21 +128,21 @@ interactions:
 - request:
     body: null
     headers:
-      host:
+      Host:
       - minio:9000
-      user-agent:
-      - MinIO (Linux; x86_64) minio-py/6.0.0
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.13
       x-amz-content-sha256:
       - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       x-amz-date:
-      - 20200803T193536Z
+      - 20230303T184926Z
     method: GET
-    uri: http://minio:9000/thiagoarchivetest/test_write_then_delete_file/result.txt
+    uri: http://minio:9000/archivetest/test_write_then_delete_file/result.txt
   response:
     body:
       string: '<?xml version="1.0" encoding="UTF-8"?>
 
-        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_write_then_delete_file/result.txt</Key><BucketName>thiagoarchivetest</BucketName><Resource>/thiagoarchivetest/test_write_then_delete_file/result.txt</Resource><RequestId>1627D922CDFC3999</RequestId><HostId>dff08acf-3f9b-4fac-88eb-10d887b3f4ee</HostId></Error>'
+        <Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>test_write_then_delete_file/result.txt</Key><BucketName>archivetest</BucketName><Resource>/archivetest/test_write_then_delete_file/result.txt</Resource><RequestId>1748FD4C9ED85FC0</RequestId><HostId>3db02b4e-899f-4daa-a9d3-fea142b68ee9</HostId></Error>'
     headers:
       Accept-Ranges:
       - bytes
@@ -153,7 +151,7 @@ interactions:
       Content-Type:
       - application/xml
       Date:
-      - Mon, 03 Aug 2020 19:35:36 GMT
+      - Fri, 03 Mar 2023 18:49:26 GMT
       Server:
       - Minio/RELEASE.2019-04-09T01-22-30Z
       Transfer-Encoding:
@@ -161,9 +159,9 @@ interactions:
       Vary:
       - Origin
       X-Amz-Request-Id:
-      - 1627D922CDFC3999
+      - 1748FD4C9ED85FC0
       X-Minio-Deployment-Id:
-      - dff08acf-3f9b-4fac-88eb-10d887b3f4ee
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
       X-Xss-Protection:
       - 1; mode=block
     status:
