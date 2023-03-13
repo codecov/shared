@@ -1,5 +1,4 @@
 # http://docs.celeryq.org/en/latest/configuration.html#configuration
-
 from typing import Optional
 
 from shared.config import get_config
