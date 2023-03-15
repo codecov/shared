@@ -127,6 +127,7 @@ flags_rule_basic_properties = {
     "carryforward": {"type": "boolean"},
     "paths": path_list_structure,
     "ignore": path_list_structure,
+    "after_n_builds": {"type": "integer", "min": 0},
 }
 
 component_rule_basic_properties = {
@@ -391,6 +392,7 @@ schema = {
                     "type": ["boolean", "string", "dict"],
                     "schema": {"branches": branches_structure},
                 },
+                "after_n_builds": {"type": "integer", "min": 0},
             },
         },
     },

@@ -307,7 +307,9 @@ class TestUserYamlValidation(BaseTestCase):
                     "carryforward": False,
                     "statuses": [{"name_prefix": "aaa", "type": "patch"}],
                 },
-                "individual_flags": [{"name": "cawcaw", "paths": ["banana"]}],
+                "individual_flags": [
+                    {"name": "cawcaw", "paths": ["banana"], "after_n_builds": 3}
+                ],
             },
         }
         expected_result = {
@@ -439,7 +441,9 @@ class TestUserYamlValidation(BaseTestCase):
                     "carryforward": False,
                     "statuses": [{"name_prefix": "aaa", "type": "patch"}],
                 },
-                "individual_flags": [{"name": "cawcaw", "paths": ["^banana.*"]}],
+                "individual_flags": [
+                    {"name": "cawcaw", "paths": ["^banana.*"], "after_n_builds": 3}
+                ],
             },
         }
         assert validate_yaml(user_input) == expected_result
@@ -1067,6 +1071,13 @@ def test_assume_flags():
     assert do_actual_validation(
         user_input, show_secrets_for=("github", "11934774", "154468867")
     ) == {"flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}}
+
+
+def test_after_n_builds_flags():
+    user_input = {"flags": {"some_flag": {"after_n_builds": 5}}}
+    assert do_actual_validation(
+        user_input, show_secrets_for=("github", "11934774", "154468867")
+    ) == {"flags": {"some_flag": {"after_n_builds": 5}}}
 
 
 def test_profiling_schema():
