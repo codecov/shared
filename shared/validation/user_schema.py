@@ -418,7 +418,6 @@ schema = {
             "default_rules": {
                 "type": "dict",
                 "schema": component_rule_basic_properties,
-                "nullable": True,
             },
             "individual_components": {
                 "type": "list",
