@@ -1,6 +1,6 @@
 import pytest
 
-from shared.reports.types import ReportTotals
+from shared.reports.types.totals import ReportTotals, SessionTotalsArray
 from shared.utils.ReportEncoder import ReportEncoder
 from shared.utils.sessions import Session
 
@@ -30,6 +30,16 @@ from shared.utils.sessions import Session
                 "t": "totals",
                 "st": "uploaded",
                 "se": {},
+            },
+        ),
+        (
+            SessionTotalsArray(
+                real_length=10,
+                non_null_items={4: [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0]},
+            ),
+            {
+                "meta": {"real_length": 10},
+                4: [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0],
             },
         ),
     ],
