@@ -337,3 +337,12 @@ class TestUnitGitlab(object):
                 "refresh_token": "new_refresh_token",
             }
         )
+
+    @pytest.mark.asyncio
+    async def test_get_behind_by(self):
+        expected_result = {"behind_by": None, "behind_by_commit": None}
+        handler = Gitlab(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_behind_by("branch", "commit")
+        assert res == expected_result

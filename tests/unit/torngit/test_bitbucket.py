@@ -402,3 +402,12 @@ class TestUnitBitbucket(object):
         res = await valid_handler.get_compare(base, head)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_behind_by(self):
+        expected_result = {"behind_by": None, "behind_by_commit": None}
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_behind_by("branch", "commit")
+        assert res == expected_result

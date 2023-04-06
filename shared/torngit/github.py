@@ -803,6 +803,23 @@ class Github(TorngitBaseAdapter):
             ][::-1],
         )
 
+    async def get_behind_by(
+        self, base_branch, head, context=None, with_commits=True, token=None
+    ):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        # https://developer.github.com/v3/repos/commits/#compare-two-commits
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "get",
+                "/repos/%s/compare/%s...%s" % (self.slug, base_branch, head),
+                token=token,
+            )
+        return dict(
+            behind_by=res["behind_by"] if "behind_by" in res else None,
+            behind_by_commit=res["base_commit"]["sha"] if res["base_commit"] else None,
+        )
+
     async def get_commit(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit

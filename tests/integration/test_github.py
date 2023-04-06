@@ -756,6 +756,17 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_behind_by(self, generic_valid_handler, codecov_vcr):
+        base_branch, head = "master", "0206296b1424912cc05069a9bf4025cbb95f5ecc"
+        expected_result = {
+            "behind_by": 0,
+            "behind_by_commit": "93189ce50f224296d6412e2884b93dcc3c7c8654",
+        }
+        res = await generic_valid_handler.get_behind_by(base_branch, head)
+        assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_compare_same_commit(self, valid_handler, codecov_vcr):
         base, head = "6ae5f17", "6ae5f17"
         expected_result = {

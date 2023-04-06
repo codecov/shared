@@ -351,6 +351,11 @@ class TorngitBaseAdapter(object):
     ):
         raise NotImplementedError()
 
+    async def get_behind_by(
+        self, base_branch, head, context=None, with_commits=True, token=None
+    ):
+        return {"behind_by": None, "behind_by_commit": None}
+
     async def get_is_admin(self, user: dict, token=None) -> bool:
         """Tells whether `user` is an admin of the organization described on `self.data`
 
