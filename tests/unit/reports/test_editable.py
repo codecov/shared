@@ -1453,19 +1453,28 @@ class TestEditableReport(object):
                     "file_1.go": [
                         0,
                         [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16, 0],
-                        [[0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16],
+                        },
                         None,
                     ],
                     "file_2.py": [
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
-                        [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 2, 1, 0, 1, "50.00000", 1],
+                        },
                         None,
                     ],
                     "single_session_file.c": [
                         2,
                         [0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0],
-                        [[0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 3, 1, 1, 1, "33.33333"],
+                        },
                         None,
                     ],
                 },
@@ -1583,13 +1592,19 @@ class TestEditableReport(object):
                     "file_1.go": [
                         0,
                         [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 70, 14, 0],
-                        [[0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16],
+                        },
                         None,
                     ],
                     "file_2.py": [
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
-                        [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 2, 1, 0, 1, "50.00000", 1],
+                        },
                         None,
                     ],
                 },
@@ -1760,19 +1775,28 @@ class TestEditableReport(object):
                     "file_1.go": [
                         0,
                         [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16, 0],
-                        [[0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 80, 16],
+                        },
                         None,
                     ],
                     "file_2.py": [
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
-                        [[0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 2, 1, 0, 1, "50.00000", 1],
+                        },
                         None,
                     ],
                     "single_session_file.c": [
                         2,
                         [0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0],
-                        [[0, 3, 1, 1, 1, "33.33333", 0, 0, 0, 0, 0, 0, 0]],
+                        {
+                            "meta": {"session_count": 1},
+                            "0": [0, 3, 1, 1, 1, "33.33333"],
+                        },
                         None,
                     ],
                 },
@@ -1860,6 +1884,8 @@ class TestEditableReport(object):
                 if line.datapoints:
                     for dp in line.datapoints:
                         assert dp.sessionid != 0 or "another_label" not in dp.labels
+        print(sample_with_labels_report)
+        print(sample_with_labels_report._files)
         res = self.convert_report_to_better_readable(sample_with_labels_report)
         expected_result = {
             "totals": {
@@ -1882,7 +1908,10 @@ class TestEditableReport(object):
                     "first_file.py": [
                         0,
                         [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
-                        [None, None, None, [0, 8, 8, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
+                        {
+                            "meta": {"session_count": 4},
+                            "3": [0, 8, 8, 0, 0, "100"],
+                        },
                         None,
                     ]
                 },

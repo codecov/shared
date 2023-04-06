@@ -8,6 +8,7 @@ from shared.reports.types import (
     ReportFileSummary,
     ReportLine,
     ReportTotals,
+    SessionTotalsArray,
 )
 from shared.utils.match import match
 from shared.utils.sessions import Session, SessionType
@@ -409,8 +410,167 @@ def test_to_database(mocker):
             "diff": None,
             "N": 0,
         },
-        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], null, null]}, "sessions": {}}',
+        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {"meta": {"session_count": 0}}, null]}, "sessions": {}}',
     )
+
+
+@pytest.mark.unit
+def test_to_database_report_with_session_totals(mocker):
+    report = Report(
+        files={
+            "calc/CalcCore.cpp": ReportFileSummary(
+                file_index=0,
+                file_totals=ReportTotals(
+                    files=0,
+                    lines=10,
+                    hits=7,
+                    misses=2,
+                    partials=1,
+                    coverage="70.00000",
+                    branches=6,
+                    methods=4,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                session_totals=SessionTotalsArray(
+                    session_count=1,
+                    non_null_items={
+                        0: ReportTotals(
+                            files=0,
+                            lines=10,
+                            hits=7,
+                            misses=2,
+                            partials=1,
+                            coverage="70.00000",
+                            branches=6,
+                            methods=4,
+                            messages=0,
+                            sessions=0,
+                            complexity=0,
+                            complexity_total=0,
+                            diff=0,
+                        )
+                    },
+                ),
+                diff_totals=None,
+            ),
+            "calc/CalcCore.h": ReportFileSummary(
+                file_index=1,
+                file_totals=ReportTotals(
+                    files=0,
+                    lines=1,
+                    hits=1,
+                    misses=0,
+                    partials=0,
+                    coverage="100",
+                    branches=0,
+                    methods=1,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                session_totals=SessionTotalsArray(
+                    session_count=1,
+                    non_null_items={
+                        0: ReportTotals(
+                            files=0,
+                            lines=1,
+                            hits=1,
+                            misses=0,
+                            partials=0,
+                            coverage="100",
+                            branches=0,
+                            methods=1,
+                            messages=0,
+                            sessions=0,
+                            complexity=0,
+                            complexity_total=0,
+                            diff=0,
+                        )
+                    },
+                ),
+                diff_totals=None,
+            ),
+            "calc/Calculator.cpp": ReportFileSummary(
+                file_index=2,
+                file_totals=ReportTotals(
+                    files=0,
+                    lines=4,
+                    hits=3,
+                    misses=1,
+                    partials=0,
+                    coverage="75.00000",
+                    branches=1,
+                    methods=1,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                session_totals=SessionTotalsArray(
+                    session_count=1,
+                    non_null_items={
+                        0: ReportTotals(
+                            files=0,
+                            lines=4,
+                            hits=3,
+                            misses=1,
+                            partials=0,
+                            coverage="75.00000",
+                            branches=1,
+                            methods=1,
+                            messages=0,
+                            sessions=0,
+                            complexity=0,
+                            complexity_total=0,
+                            diff=0,
+                        )
+                    },
+                ),
+                diff_totals=None,
+            ),
+        },
+        totals=ReportTotals(
+            files=3,
+            lines=15,
+            hits=11,
+            misses=3,
+            partials=1,
+            coverage="73.33333",
+            branches=7,
+            methods=6,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        ),
+    )
+    expected_result = (
+        {
+            "f": 3,
+            "n": 15,
+            "h": 11,
+            "m": 3,
+            "p": 1,
+            "c": "73.33333",
+            "b": 7,
+            "d": 6,
+            "M": 0,
+            "s": 0,
+            "C": 0,
+            "N": 0,
+            "diff": None,
+        },  # totals
+        '{"files": {"calc/CalcCore.cpp": [0, [0, 10, 7, 2, 1, "70.00000", 6, 4, 0, 0, 0, 0, 0], {"0": [0, 10, 7, 2, 1, "70.00000", 6, 4], "meta": {"session_count": 1}}, null], "calc/CalcCore.h": [1, [0, 1, 1, 0, 0, "100", 0, 1, 0, 0, 0, 0, 0], {"0": [0, 1, 1, 0, 0, "100", 0, 1], "meta": {"session_count": 1}}, null], "calc/Calculator.cpp": [2, [0, 4, 3, 1, 0, "75.00000", 1, 1, 0, 0, 0, 0, 0], {"0": [0, 4, 3, 1, 0, "75.00000", 1, 1], "meta": {"session_count": 1}}, null]}, "sessions": {}}',
+    )
+    assert report.to_database() == expected_result
 
 
 @pytest.mark.unit

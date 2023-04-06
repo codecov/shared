@@ -445,7 +445,7 @@ def test_to_database():
             "diff": None,
             "N": 0,
         },
-        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], null, null]}, "sessions": {}}',
+        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {"meta": {"session_count": 0}}, null]}, "sessions": {}}',
     )
     res = Report(
         files={"file.py": [0, ReportTotals()]},

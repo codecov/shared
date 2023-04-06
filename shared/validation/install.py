@@ -112,6 +112,7 @@ config_schema = {
                     "yaml": {"type": "integer"},
                 },
             },
+            "legacy_report_style": {"type": "boolean"},
             "loglvl": {"type": "string", "allowed": ("INFO",)},
             "max_sessions": {"type": "integer"},
             "debug": {"type": "boolean"},

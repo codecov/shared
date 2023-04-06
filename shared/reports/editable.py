@@ -152,15 +152,12 @@ class EditableReport(Report):
             if file is not None:
                 file.delete_multiple_sessions(session_ids_to_delete)
                 if file:
-                    new_session_totals = [
-                        a
-                        for ind, a in enumerate(self._files[file.name].session_totals)
-                        if ind not in session_ids_to_delete
-                    ]
+                    session_totals = self._files[file.name].session_totals
+                    session_totals.delete_many(session_ids_to_delete)
                     self._files[file.name] = dataclasses.replace(
                         self._files.get(file.name),
                         file_totals=file.totals,
-                        session_totals=new_session_totals,
+                        session_totals=session_totals,
                     )
                 else:
                     del self[file.name]

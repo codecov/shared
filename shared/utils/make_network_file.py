@@ -1,11 +1,9 @@
-from shared.reports.types import NetworkFile, ReportTotals
+from shared.reports.types import NetworkFile, ReportTotals, SessionTotalsArray
 
 
-def make_network_file(totals, sessions=None, diff=None):
+def make_network_file(totals, sessions_totals: SessionTotalsArray = None, diff=None):
     return NetworkFile(
         ReportTotals(*totals) if totals else ReportTotals(),
-        [ReportTotals(*session) if session else None for session in sessions]
-        if sessions
-        else None,
+        sessions_totals,
         ReportTotals(*diff) if diff else None,
     )
