@@ -208,6 +208,7 @@ class SessionTotalsArray(object):
                 log.warning(
                     "Unknown value for SessionTotal. Ignoring.",
                     extra=dict(session_total=value, key=key),
+                    stack_info=True,
                 )
         self.non_null_items: Dict[int, SessionTotals] = parsed_non_null_items
 
