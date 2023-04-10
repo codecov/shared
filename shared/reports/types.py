@@ -232,6 +232,22 @@ class SessionTotalsArray(object):
             non_null_items = {int(key): value for key, value in sessions_array.items()}
             return cls(session_count=session_count, non_null_items=non_null_items)
         elif isinstance(sessions_array, list):
+            if (
+                len(sessions_array) == 1
+                and isinstance(sessions_array[0], dict)
+                and "meta" in sessions_array[0]
+            ):
+                log.debug(
+                    "New encoded session_totals inside legacy array",
+                    extra=dict(sessions_array=sessions_array),
+                )
+                return cls.build_from_encoded_data(sessions_array[0])
+            if len(sessions_array) > 0 and not isinstance(sessions_array[0], list):
+                log.warning(
+                    "session_array legacy encoding is not right",
+                    extra=dict(sessions_array=sessions_array),
+                    stack_info=True,
+                )
             session_count = len(sessions_array)
             non_null_items = {}
             for idx, session_totals in enumerate(sessions_array):

@@ -282,6 +282,16 @@ class TestSessionTotalsArray(object):
         encoded_obj = obj.to_database()
         assert encoded_obj == expected_result
 
+    def test_mixed_encoding_format(self):
+        mixed_obj = [{"meta": {"session_count": 5}, "4": [0, 35, 35, 0, 0, "100", 5]}]
+        obj = SessionTotalsArray.build_from_encoded_data(mixed_obj)
+        assert obj.session_count == 5
+        assert obj.non_null_items == {4: ReportTotals(*[0, 35, 35, 0, 0, "100", 5])}
+        assert obj.to_database() == {
+            "meta": {"session_count": 5},
+            4: [0, 35, 35, 0, 0, "100", 5],
+        }
+
     def test_decode_then_encode(self):
         encoded_obj_copy = deepcopy(self.encoded_obj)
         obj = SessionTotalsArray.build_from_encoded_data(encoded_obj_copy)
