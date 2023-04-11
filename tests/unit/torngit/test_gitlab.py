@@ -339,10 +339,10 @@ class TestUnitGitlab(object):
         )
 
     @pytest.mark.asyncio
-    async def test_get_behind_by(self):
+    async def test_get_distance_in_commits(self):
         expected_result = {"behind_by": None, "behind_by_commit": None}
         handler = Gitlab(
             repo=dict(name="example-python", private=True),
         )
-        res = await handler.get_behind_by("branch", "commit")
+        res = await handler.get_distance_in_commits("branch", "commit")
         assert res == expected_result

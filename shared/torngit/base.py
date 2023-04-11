@@ -351,7 +351,7 @@ class TorngitBaseAdapter(object):
     ):
         raise NotImplementedError()
 
-    async def get_behind_by(
+    async def get_distance_in_commits(
         self, base_branch, head, context=None, with_commits=True, token=None
     ):
         return {"behind_by": None, "behind_by_commit": None}

@@ -803,7 +803,7 @@ class Github(TorngitBaseAdapter):
             ][::-1],
         )
 
-    async def get_behind_by(
+    async def get_distance_in_commits(
         self, base_branch, head, context=None, with_commits=True, token=None
     ):
         token = self.get_token_by_type_if_none(token, TokenType.read)
@@ -816,8 +816,10 @@ class Github(TorngitBaseAdapter):
                 token=token,
             )
         return dict(
-            behind_by=res["behind_by"] if "behind_by" in res else None,
+            behind_by=res.get("behind_by"),
             behind_by_commit=res["base_commit"]["sha"] if res["base_commit"] else None,
+            status=res.get("status"),
+            ahead_by=res.get("ahead_by"),
         )
 
     async def get_commit(self, commit, token=None):
