@@ -68,7 +68,7 @@ def test_validate_install_configuration_with_user_yaml():
     }
 
 
-def test_validate_sample_production_config():
+def test_validate_sample_production_config(mocker):
     user_input = {
         "services": {
             "external_dependencies_folder": "./external_deps",
@@ -149,6 +149,10 @@ def test_validate_sample_production_config():
                 "upload": {
                     "queue": "uploads",
                     "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
+                },
+                "label_analysis": {
+                    "queue": "labelanalysis",
+                    "enterprise": {"hard_timelimit": 401, "soft_timelimit": 501},
                 },
                 "notify": {"queue": "notify", "timeout": 60},
             },
@@ -266,6 +270,10 @@ def test_validate_sample_production_config():
                     "soft_timelimit": 200,
                     "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
                 },
+                "label_analysis": {
+                    "queue": "labelanalysis",
+                    "enterprise": {"hard_timelimit": 401, "soft_timelimit": 501},
+                },
                 "upload": {
                     "queue": "uploads",
                     "enterprise": {"hard_timelimit": 400, "soft_timelimit": 500},
@@ -309,7 +317,9 @@ def test_validate_sample_production_config():
             "bot": {"username": "codecov-io", "key": "pokemonuction_gitlab_bot_key"},
         },
     }
+    mock_warning = mocker.patch.object(install_log, "warning")
     res = validate_install_configuration(user_input)
+    assert mock_warning.call_count == 0
     assert res["site"] == expected_result["site"]
     assert res == expected_result
 

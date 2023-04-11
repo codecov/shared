@@ -64,6 +64,13 @@ timeseries_backfill_commits_task_name = (
 )
 timeseries_delete_task_name = f"app.tasks.{TaskConfigGroup.timeseries.value}.delete"
 
+static_analysis_task_name = (
+    f"app.tasks.{TaskConfigGroup.static_analysis.value}.check_suite"
+)
+label_analysis_task_name = (
+    f"app.tasks.{TaskConfigGroup.label_analysis.value}.process_request"
+)
+
 health_check_task_name = f"app.cron.{TaskConfigGroup.healthcheck.value}.HealthCheckTask"
 gh_app_webhook_check_task_name = (
     f"app.cron.{TaskConfigGroup.daily.value}.GitHubAppWebhooksCheckTask"
@@ -371,5 +378,23 @@ class BaseCeleryConfig(object):
         },
         health_check_task_name: {
             "queue": health_check_default_queue,
+        },
+        f"app.tasks.{TaskConfigGroup.label_analysis.value}.*": {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.label_analysis.value,
+                "queue",
+                default=task_default_queue,
+            )
+        },
+        f"app.tasks.{TaskConfigGroup.static_analysis.value}.*": {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.static_analysis.value,
+                "queue",
+                default=task_default_queue,
+            )
         },
     }
