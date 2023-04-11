@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/codecove2e/example-python/pulls/4/files
+  response:
+    content: '[{"sha":"898991ad883e00916ed4ced91b534734b211c7ba","filename":"awesome/__init__.py","status":"modified","additions":1,"deletions":1,"changes":2,"blob_url":"https://github.com/codecove2e/example-python/blob/0206296b1424912cc05069a9bf4025cbb95f5ecc/awesome%2F__init__.py","raw_url":"https://github.com/codecove2e/example-python/raw/0206296b1424912cc05069a9bf4025cbb95f5ecc/awesome%2F__init__.py","contents_url":"https://api.github.com/repos/codecove2e/example-python/contents/awesome%2F__init__.py?ref=0206296b1424912cc05069a9bf4025cbb95f5ecc","patch":"@@
+      -3,7 +3,7 @@ def smile():\n \n \n def frown():\n-    return \":(\"\n+    return
+      \"==(\"\n \n \n def shieeee(g):"}]'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 12 Apr 2023 12:09:47 GMT
+      ETag:
+      - W/"2622ac23d8520a43925683b13198cd0cf1087dd1a6c4374d14965f485fa07194"
+      Last-Modified:
+      - Tue, 04 Apr 2023 19:15:16 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - F236:DD94:1438888:14648C2:64369F8B
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4999'
+      X-RateLimit-Reset:
+      - '1681304987'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '1'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2023-05-12 12:07:21 UTC
+      x-github-api-version-selected:
+      - '2022-11-28'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

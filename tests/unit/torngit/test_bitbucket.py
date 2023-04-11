@@ -7,6 +7,7 @@ import respx
 from shared.torngit.bitbucket import Bitbucket
 from shared.torngit.exceptions import (
     TorngitClientError,
+    TorngitObjectNotFoundError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
 )
@@ -402,3 +403,116 @@ class TestUnitBitbucket(object):
         res = await valid_handler.get_compare(base, head)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_rquest_files(self, valid_handler):
+        handler = Bitbucket(
+            repo=dict(name="test-repo"),
+            owner=dict(username="e2e-org"),
+            token=dict(secret="somesecret", key="somekey"),
+            oauth_consumer_token=dict(
+                key="oauth_consumer_key_value",
+                secret="oauth_consumer_token_secret_value",
+            ),
+        )
+        with respx.mock:
+            my_route = respx.get(
+                "https://bitbucket.org/api/2.0/repositories/e2e-org/test-repo/pullrequests/1/diffstat"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    json={
+                        "values": [
+                            {
+                                "type": "diffstat",
+                                "lines_added": 1,
+                                "lines_removed": 1,
+                                "status": "modified",
+                                "old": {
+                                    "path": "README.md",
+                                    "type": "commit_file",
+                                    "escaped_path": "README.md",
+                                    "links": {
+                                        "self": {
+                                            "href": "https://bitbucket.org/!api/2.0/repositories/e2e-org/test-repo/src/d32434b65381acce9709e11234c0ba5ce2a9f515/README.md"
+                                        }
+                                    },
+                                },
+                                "new": {
+                                    "path": "README.md",
+                                    "type": "commit_file",
+                                    "escaped_path": "README.md",
+                                    "links": {
+                                        "self": {
+                                            "href": "https://bitbucket.org/!api/2.0/repositories/e2e-org/test-repo/src/8ed929e26c3e9dd51bb7abefc89f4f5044ff28fe/README.md"
+                                        }
+                                    },
+                                },
+                            }
+                        ],
+                        "pagelen": 500,
+                        "size": 1,
+                        "page": 1,
+                    },
+                )
+            )
+            v = await handler.get_pull_request_files("1")
+            assert v == [
+                "README.md",
+            ]
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_404(self):
+        handler = Bitbucket(
+            repo=dict(name="test-repo"),
+            owner=dict(username="e2e-org"),
+            token=dict(secret="somesecret", key="somekey"),
+            oauth_consumer_token=dict(
+                key="oauth_consumer_key_value",
+                secret="oauth_consumer_token_secret_value",
+            ),
+        )
+        with respx.mock:
+            my_route = respx.get(
+                "https://bitbucket.org/api/2.0/repositories/e2e-org/test-repo/pullrequests/4/diffstat"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=404,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                )
+            )
+            with pytest.raises(TorngitObjectNotFoundError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 404
+            assert excinfo.value.message == "PR with id 4 does not exist"
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_403(self):
+        handler = Bitbucket(
+            repo=dict(name="test-repo"),
+            owner=dict(username="e2e-org"),
+            token=dict(secret="somesecret", key="somekey"),
+            oauth_consumer_token=dict(
+                key="oauth_consumer_key_value",
+                secret="oauth_consumer_token_secret_value",
+            ),
+        )
+        with respx.mock:
+            my_route = respx.get(
+                "https://bitbucket.org/api/2.0/repositories/e2e-org/test-repo/pullrequests/4/diffstat"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=403,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                )
+            )
+            with pytest.raises(TorngitClientError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 403
+            assert excinfo.value.message == "Bitbucket API: Forbidden"

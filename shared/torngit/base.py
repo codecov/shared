@@ -279,6 +279,9 @@ class TorngitBaseAdapter(object):
     async def get_pull_requests(self, state="open", token=None):
         raise NotImplementedError()
 
+    async def get_pull_request_files(self, pullid: str, token=None):
+        raise NotImplementedError()
+
     # COMMIT LOGIC
 
     async def get_commit(self, commit: str, token=None):

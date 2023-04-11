@@ -10,6 +10,7 @@ from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitMisconfiguredCredentials,
+    TorngitObjectNotFoundError,
     TorngitRateLimitError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
@@ -1021,3 +1022,51 @@ class TestUnitGithub(object):
             ans = await ghapp_handler.request_webhook_redelivery(delivery_id)
             assert ans is False
         assert mocked_response.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_404(self):
+        with respx.mock:
+            my_route = respx.get(
+                "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=404,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                )
+            )
+            handler = Github(
+                repo=dict(name="example-python"),
+                owner=dict(username="codecove2e"),
+                token=dict(key=10 * "a280"),
+            )
+            with pytest.raises(TorngitObjectNotFoundError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 404
+            assert excinfo.value.message == "PR with id 4 does not exist"
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_403(self):
+        with respx.mock:
+            my_route = respx.get(
+                "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=403,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                )
+            )
+            handler = Github(
+                repo=dict(name="example-python"),
+                owner=dict(username="codecove2e"),
+                token=dict(key=10 * "a280"),
+            )
+            with pytest.raises(TorngitClientError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 403
+            assert excinfo.value.message == "Github API rate limit error: Forbidden"

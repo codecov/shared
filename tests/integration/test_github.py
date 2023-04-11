@@ -32,7 +32,7 @@ def valid_but_no_permissions_handler():
     return Github(
         repo=dict(name="worker"),
         owner=dict(username="codecov"),
-        token=dict(key=10 * "fdaa"),  # ThiagoCodecovTester
+        token=dict(key=10 * "a280"),  # ThiagoCodecovTester
     )
 
 
@@ -277,6 +277,14 @@ class TestGithubTestCase(object):
         print(commit)
         assert commit["author"] == expected_result["author"]
         assert commit == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_requests_files(self, generic_valid_handler, codecov_vcr):
+        expected_result = [
+            "awesome/__init__.py",
+        ]
+        res = await generic_valid_handler.get_pull_request_files(4)
+        assert res == expected_result
 
     @pytest.mark.asyncio
     async def test_get_commit_with_proper_author(self, valid_handler, codecov_vcr):

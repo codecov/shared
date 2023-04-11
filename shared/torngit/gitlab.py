@@ -567,6 +567,26 @@ class Gitlab(TorngitBaseAdapter):
                 number=str(pull["iid"]),
             )
 
+    async def get_pull_request_files(self, pullid, token=None):
+        # https://docs.gitlab.com/ee/api/merge_requests.html#list-merge-request-diffs
+        try:
+            diffs = await self.api(
+                "get",
+                "/projects/{}/merge_requests/{}/diffs".format(
+                    self.data["repo"]["service_id"], pullid
+                ),
+                token=token,
+            )
+            filenames = [data.get("new_path") for data in diffs]
+            return filenames
+        except TorngitClientError as ce:
+            if ce.code == 404:
+                raise TorngitObjectNotFoundError(
+                    response_data=ce.response_data,
+                    message=f"PR with id {pullid} does not exist",
+                )
+            raise
+
     async def set_commit_status(
         self,
         commit,

@@ -1,0 +1,105 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - gitlab.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/30951850/merge_requests/1/diffs
+  response:
+    content: "[{\"diff\":\"@@ -1,11 +0,0 @@\\n-# Learn Gitlab\\n-\\n-We prepared tutorials
+      to help you set up GitLab in a way to support your complete software development
+      life cycle. Each tutorial is contained in an issue, and features a task to complete.\\n-\\n-View
+      the tutorials by clicking on [Issues \\u003e Boards](../../boards) in the left
+      sidebar. Complete each tutorial in turn by working through the Open list. When
+      you've completed a tutorial, drag its issue card to the Closed list and move
+      on to the next.\\n-\\n-\\u003ca href=\\\"../../boards\\\"\\u003e\\u003cimg src=\\\"/issue-board.png\\\"
+      width=\\\"700\\\" /\\u003e\\u003c/a\\u003e\\n-\\n-# Don\u2019t need this project
+      anymore?\\n-\\n-You can delete it by going to [Settings \\u003e General](../../../edit),
+      then expand the \u201CAdvanced\u201D section at the bottom of the page and either
+      archive or remove the project.\\n\",\"new_path\":\"README.md\",\"old_path\":\"README.md\",\"a_mode\":\"100644\",\"b_mode\":\"0\",\"new_file\":false,\"renamed_file\":false,\"deleted_file\":true}]"
+    headers:
+      CF-Cache-Status:
+      - MISS
+      CF-RAY:
+      - 7c204f491b171e14-FRA
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 04 May 2023 11:12:37 GMT
+      Etag:
+      - W/"359fd2183d5fa775e07032b0519a43d0"
+      GitLab-LB:
+      - fe-15-lb-gprd
+      GitLab-SV:
+      - localhost
+      Link:
+      - <https://gitlab.com/api/v4/projects/30951850/merge_requests/1/diffs?id=30951850&merge_request_iid=1&page=1&per_page=20>;
+        rel="first", <https://gitlab.com/api/v4/projects/30951850/merge_requests/1/diffs?id=30951850&merge_request_iid=1&page=1&per_page=20>;
+        rel="last"
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      RateLimit-Limit:
+      - '2000'
+      RateLimit-Observed:
+      - '1'
+      RateLimit-Remaining:
+      - '1999'
+      RateLimit-Reset:
+      - '1683198817'
+      RateLimit-ResetTime:
+      - Thu, 04 May 2023 11:13:37 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=hvdK%2BRsc44AILDUEh3X7toqKx0%2FHRzMSiZIrwAdmlukwa1ub1uZvN8JJFI0pENyB9FVnwcBHDrMnxw8R5IMzPCHK8tDH9GjxE6DrfAnPWHyKfnB6PU%2BbEmYfx7Y%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=wLGRAKTJPY8.TWZIfL.NtQZuDigPRbHFoVEJNwk5DLI-1683198757663-0-604800000;
+        path=/; domain=.gitlab.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Next-Page:
+      - ''
+      X-Page:
+      - '1'
+      X-Per-Page:
+      - '20'
+      X-Prev-Page:
+      - ''
+      X-Request-Id:
+      - 9aca4da5f52a9b70d5b0d264199a6083
+      X-Runtime:
+      - '0.206571'
+      X-Total:
+      - '1'
+      X-Total-Pages:
+      - '1'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

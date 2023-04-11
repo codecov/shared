@@ -10,7 +10,9 @@ import respx
 from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
     TorngitCantRefreshTokenError,
+    TorngitClientError,
     TorngitClientGeneralError,
+    TorngitObjectNotFoundError,
     TorngitRefreshTokenFailedError,
     TorngitServer5xxCodeError,
 )
@@ -337,3 +339,53 @@ class TestUnitGitlab(object):
                 "refresh_token": "new_refresh_token",
             }
         )
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_404(self):
+        with respx.mock:
+            my_route = respx.get(
+                "https://gitlab.com/api/v4/projects/187725/merge_requests/4/diffs"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=404,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                    content='{"error": "unauthorized"}',
+                )
+            )
+            handler = Gitlab(
+                repo=dict(name="example-python", service_id="187725"),
+                owner=dict(username="codecove2e", service_id="109479"),
+                token=dict(key=10 * "a280"),
+            )
+            with pytest.raises(TorngitObjectNotFoundError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 404
+            assert excinfo.value.message == "PR with id 4 does not exist"
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_403(self):
+        with respx.mock:
+            my_route = respx.get(
+                "https://gitlab.com/api/v4/projects/187725/merge_requests/4/diffs"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=403,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
+                    content='{"error": "unauthorized"}',
+                )
+            )
+            handler = Gitlab(
+                repo=dict(name="example-python", service_id="187725"),
+                owner=dict(username="codecove2e", service_id="109479"),
+                token=dict(key=10 * "a280"),
+            )
+            with pytest.raises(TorngitClientError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 403
+            assert excinfo.value.message == "Gitlab API: 403"

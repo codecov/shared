@@ -756,6 +756,29 @@ class Bitbucket(TorngitBaseAdapter):
                     if not res.get("next"):
                         break
 
+    async def get_pull_request_files(self, pullid, token=None):
+        # https://developer.atlassian.com/cloud/bitbucket/rest/api-group-pullrequests/#api-repositories-workspace-repo-slug-pullrequests-pull-request-id-diffstat-get
+        async with self.get_client() as client:
+            try:
+                res = await self.api(
+                    client,
+                    "2",
+                    "get",
+                    "/repositories/{}/pullrequests/{}/diffstat".format(
+                        self.slug, pullid
+                    ),
+                    token=token,
+                )
+                filenames = [data["new"]["path"] for data in res.get("values")]
+                return filenames
+            except TorngitClientError as ce:
+                if ce.code == 404:
+                    raise TorngitObjectNotFoundError(
+                        response_data=ce.response_data,
+                        message=f"PR with id {pullid} does not exist",
+                    )
+                raise
+
     async def get_repository(self, token=None):
         async with self.get_client() as client:
             if self.data["repo"].get("service_id") is None:
