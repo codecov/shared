@@ -352,9 +352,14 @@ class TorngitBaseAdapter(object):
         raise NotImplementedError()
 
     async def get_distance_in_commits(
-        self, base_branch, head, context=None, with_commits=True, token=None
+        self, base_branch, base, context=None, with_commits=True, token=None
     ):
-        return {"behind_by": None, "behind_by_commit": None}
+        return {
+            "behind_by": None,
+            "behind_by_commit": None,
+            "status": None,
+            "ahead_by": None,
+        }
 
     async def get_is_admin(self, user: dict, token=None) -> bool:
         """Tells whether `user` is an admin of the organization described on `self.data`

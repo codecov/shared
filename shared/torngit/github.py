@@ -804,7 +804,7 @@ class Github(TorngitBaseAdapter):
         )
 
     async def get_distance_in_commits(
-        self, base_branch, head, context=None, with_commits=True, token=None
+        self, base_branch, base, context=None, with_commits=True, token=None
     ):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
@@ -812,12 +812,17 @@ class Github(TorngitBaseAdapter):
             res = await self.api(
                 client,
                 "get",
-                "/repos/%s/compare/%s...%s" % (self.slug, base_branch, head),
+                "/repos/%s/compare/%s...%s" % (self.slug, base_branch, base),
                 token=token,
             )
+        behind_by = res.get("behind_by")
+        behind_by_commit = res["base_commit"]["sha"] if "base_commit" in res else None
+        if behind_by is None or behind_by_commit is None:
+            behind_by = None
+            behind_by_commit = None
         return dict(
-            behind_by=res.get("behind_by"),
-            behind_by_commit=res["base_commit"]["sha"] if res["base_commit"] else None,
+            behind_by=behind_by,
+            behind_by_commit=behind_by_commit,
             status=res.get("status"),
             ahead_by=res.get("ahead_by"),
         )

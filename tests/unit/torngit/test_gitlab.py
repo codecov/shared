@@ -340,7 +340,12 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_get_distance_in_commits(self):
-        expected_result = {"behind_by": None, "behind_by_commit": None}
+        expected_result = {
+            "behind_by": None,
+            "behind_by_commit": None,
+            "status": None,
+            "ahead_by": None,
+        }
         handler = Gitlab(
             repo=dict(name="example-python", private=True),
         )
