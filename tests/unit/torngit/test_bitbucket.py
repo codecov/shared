@@ -402,3 +402,17 @@ class TestUnitBitbucket(object):
         res = await valid_handler.get_compare(base, head)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_distance_in_commits(self):
+        expected_result = {
+            "behind_by": None,
+            "behind_by_commit": None,
+            "status": None,
+            "ahead_by": None,
+        }
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_distance_in_commits("branch", "commit")
+        assert res == expected_result

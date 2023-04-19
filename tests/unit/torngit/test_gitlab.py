@@ -337,3 +337,17 @@ class TestUnitGitlab(object):
                 "refresh_token": "new_refresh_token",
             }
         )
+
+    @pytest.mark.asyncio
+    async def test_get_distance_in_commits(self):
+        expected_result = {
+            "behind_by": None,
+            "behind_by_commit": None,
+            "status": None,
+            "ahead_by": None,
+        }
+        handler = Gitlab(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_distance_in_commits("branch", "commit")
+        assert res == expected_result
