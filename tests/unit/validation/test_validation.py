@@ -890,6 +890,16 @@ def test_validation_with_branches():
 
 def test_validation_with_flag_carryforward():
     user_input = {
+        "flags": {
+            "old-flag": {
+                "carryforward": True,
+                "carryforward_mode": "labels",
+            },
+            "other-old-flag": {
+                "carryforward": True,
+                "carryforward_mode": "all",
+            },
+        },
         "flag_management": {
             "individual_flags": [
                 {"name": "abcdef", "carryforward_mode": "all"},

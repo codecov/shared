@@ -385,6 +385,10 @@ schema = {
             "schema": {
                 "joined": {"type": "boolean"},
                 "carryforward": {"type": "boolean"},
+                "carryforward_mode": {
+                    "type": "string",
+                    "allowed": ("all", "labels"),
+                },
                 "required": {"type": "boolean"},
                 "ignore": path_list_structure,
                 "paths": path_list_structure,
