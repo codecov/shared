@@ -414,6 +414,83 @@ class TestUnitGithub(object):
                 await handler.find_pull_request(commit=commit_sha, token=token)
 
     @pytest.mark.asyncio
+    async def test_distance_in_commits(self, mocker):
+        handler = Github(
+            repo=dict(name="repo_name"),
+            owner=dict(username="username"),
+            token=dict(key="aaaaa"),
+        )
+        base_commit_sha = "some_commit_sha"
+        repos_default_branch = "branch"
+        with respx.mock:
+            respx.get(
+                url=f"https://api.github.com/repos/{handler.slug}/compare/{repos_default_branch}...{base_commit_sha}"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    json={
+                        "status": "behind",
+                        "ahead_by": 0,
+                        "behind_by": 10,
+                        "total_commits": 0,
+                        "commits": [],
+                        "files": [],
+                        "base_commit": {
+                            "sha": "c63a6b7c0dbc9e04a3bc8c109519615098325e41",
+                        },
+                    },
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            expected_result = {
+                "behind_by": 10,
+                "behind_by_commit": "c63a6b7c0dbc9e04a3bc8c109519615098325e41",
+                "status": "behind",
+                "ahead_by": 0,
+            }
+            res = await handler.get_distance_in_commits(
+                repos_default_branch, base_commit_sha
+            )
+            assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_null_distance_in_commits(self, mocker):
+        handler = Github(
+            repo=dict(name="repo_name"),
+            owner=dict(username="username"),
+            token=dict(key="aaaaa"),
+        )
+        base_commit_sha = "some_commit_sha"
+        repos_default_branch = "branch"
+        with respx.mock:
+            respx.get(
+                url=f"https://api.github.com/repos/{handler.slug}/compare/{repos_default_branch}...{base_commit_sha}"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    json={
+                        "status": "behind",
+                        "ahead_by": 0,
+                        "behind_by": 0,
+                        "total_commits": 0,
+                        "commits": [],
+                        "files": [],
+                    },
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            expected_result = {
+                "behind_by": None,
+                "behind_by_commit": None,
+                "status": "behind",
+                "ahead_by": 0,
+            }
+            res = await handler.get_distance_in_commits(
+                repos_default_branch, base_commit_sha
+            )
+            assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_post_comment(self, respx_vcr, valid_handler):
         mocked_response = respx_vcr.post(
             url="https://api.github.com/repos/ThiagoCodecov/example-python/issues/1/comments",

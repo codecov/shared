@@ -20,17 +20,17 @@ jobs:
           name: Install CLI
           command: |
             . venv/bin/activate
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@62f2e25bc80ceb06e83ac600e4e8ea16dddc2409#egg=codecov-cli
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@v0.1.2#egg=codecov-cli
       - run:
           name: Save commit info 
           command: |
             . venv/bin/activate
-            codecovcli --auto-load-params-from circleci create-commit --service=github
+            codecovcli create-commit 
       - run: 
           name: Create report
           command: |
             . venv/bin/activate
-            codecovcli --auto-load-params-from circleci create-report --service=github
+            codecovcli create-report 
       - run:
           name: Run Static Analysis
           command: |
@@ -112,13 +112,26 @@ jobs:
           command: |
             . venv/bin/activate
             python -m pytest --cov=./
-        
       - run:
-          name: codecov
+          name: Install CLI
           command: |
             . venv/bin/activate
-            pip install codecov
-            codecov --required --flags python<< parameters.imagename >>
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@0d8eba604af22aa04f7cdcc521361aecfaec3b47#egg=codecov-cli
+      - run:
+          name: Save commit info 
+          command: |
+            . venv/bin/activate
+            codecovcli create-commit 
+      - run: 
+          name: Create report
+          command: |
+            . venv/bin/activate
+            codecovcli create-report 
+      - run:
+          name: Upload to codecov
+          command: |
+            . venv/bin/activate
+            codecovcli do-upload --flag python<< parameters.imagename >>
           
   rust:
     docker:
@@ -126,7 +139,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-
       - run:
           name: Rust tests
           command: |
@@ -140,8 +152,23 @@ jobs:
             RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
             llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
             llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
-            pip install codecov
-            codecov --required --flags rust
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@0d8eba604af22aa04f7cdcc521361aecfaec3b47#egg=codecov-cli
+      - run:
+          name: Install CLI
+          command: |
+            pip install git+ssh://git@github.com/codecov/codecov-cli.git@0d8eba604af22aa04f7cdcc521361aecfaec3b47#egg=codecov-cli
+      - run:
+          name: Save commit info 
+          command: |
+            codecovcli create-commit 
+      - run: 
+          name: Create report
+          command: |
+            codecovcli create-report 
+      - run:
+          name: Upload to codecov
+          command: |
+            codecovcli do-upload --flag rust
 workflows:
   version: 2
   lint-test:

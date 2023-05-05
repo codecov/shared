@@ -405,6 +405,20 @@ class TestUnitBitbucket(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_distance_in_commits(self):
+        expected_result = {
+            "behind_by": None,
+            "behind_by_commit": None,
+            "status": None,
+            "ahead_by": None,
+        }
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_distance_in_commits("branch", "commit")
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_pull_rquest_files(self, valid_handler):
         handler = Bitbucket(
             repo=dict(name="test-repo"),
