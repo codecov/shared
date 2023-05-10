@@ -999,6 +999,29 @@ class Github(TorngitBaseAdapter):
                     return None
                 raise exp
 
+    async def get_pull_request_files(self, pullid, token=None):
+        if not self.slug:
+            return None
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        async with self.get_client() as client:
+            # https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests-files
+            try:
+                res = await self.api(
+                    client,
+                    "get",
+                    f"/repos/{self.slug}/pulls/{pullid}/files",
+                    token=token,
+                )
+                filenames = [data.get("filename") for data in res]
+                return filenames
+            except TorngitClientError as ce:
+                if ce.code == 404:
+                    raise TorngitObjectNotFoundError(
+                        response_data=ce.response_data,
+                        message=f"PR with id {pullid} does not exist",
+                    )
+                raise
+
     async def list_top_level_files(self, ref, token=None):
         return await self.list_files(ref, dir_path="", token=None)
 

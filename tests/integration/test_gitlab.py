@@ -188,6 +188,19 @@ class TestGitlabTestCase(object):
         }
 
     @pytest.mark.asyncio
+    async def test_get_pull_request_files(self, codecov_vcr):
+        recent_handler = Gitlab(
+            repo=dict(service_id="30951850", name="learn-gitlab"),
+            owner=dict(username="codecove2e", service_id="10119799"),
+            token=dict(key=16 * "f882"),
+        )
+        res = await recent_handler.get_pull_request_files("1")
+
+        assert res == [
+            "README.md",
+        ]
+
+    @pytest.mark.asyncio
     async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
         expected_result = ["dd798926730aad14aadf72281204bdb85734fe67"]
         res = await valid_handler.get_pull_request_commits("1")
