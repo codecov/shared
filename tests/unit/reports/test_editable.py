@@ -151,6 +151,26 @@ class TestEditableReportHelpers(object):
             == ""
         )
 
+    def test_delete_labels_session_without_datapoints(self):
+        line = ReportLine.create(
+            1,
+            None,
+            [LineSession(0, 1), LineSession(1, 1), LineSession(2, 0)],
+            datapoints=[
+                CoverageDatapoint(1, 1, None, ["label_1", "label_2"]),
+                CoverageDatapoint(1, 0, None, ["label_3", "label_2"]),
+                CoverageDatapoint(2, 0, None, ["label_6"]),
+            ],
+        )
+        assert EditableReportFile.line_without_labels(
+            line, [1], ["label_1", "label_2", "label_6"]
+        ) == ReportLine.create(
+            1,
+            None,
+            [LineSession(0, 1), LineSession(2, 0)],
+            datapoints=[CoverageDatapoint(2, 0, None, ["label_6"])],
+        )
+
 
 class TestEditableReportFile(object):
     def test_init(self):

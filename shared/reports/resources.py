@@ -534,8 +534,15 @@ class ReportFile(object):
             new_sessions = line.sessions
         if len(new_sessions) == 0:
             return EMPTY
-        remaining_coverages = [s.coverage for s in new_datapoints]
-        new_coverage = merge_all(remaining_coverages)
+        remaining_coverages_from_datapoints = [s.coverage for s in new_datapoints]
+        remaining_coverage_from_sessions_with_no_datapoints = [
+            s.coverage for s in new_sessions if s.id not in remaining_session_ids
+        ]
+
+        new_coverage = merge_all(
+            remaining_coverages_from_datapoints
+            + remaining_coverage_from_sessions_with_no_datapoints
+        )
         return dataclasses.replace(
             line,
             coverage=new_coverage,
