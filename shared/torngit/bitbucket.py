@@ -436,7 +436,11 @@ class Bitbucket(TorngitBaseAdapter):
         return dict(
             author=dict(
                 id=str(res["author"]["uuid"][1:-1]) if res["author"] else None,
-                username=res["author"].get("nickname") if res["author"] else None,
+                username=(
+                    res["author"].get("nickname") or res["author"].get("username")
+                )
+                if res["author"]
+                else None,
             ),
             base=dict(
                 branch=res["destination"]["branch"]["name"], commitid=base["hash"]
