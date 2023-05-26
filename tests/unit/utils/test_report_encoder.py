@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import pytest
 
 from shared.reports.types import ReportTotals, SessionTotalsArray
@@ -42,6 +44,7 @@ from shared.utils.sessions import Session
                 4: [0, 35, 35, 0, 0, "100", 5],
             },
         ),
+        (Decimal("85.00"), "85.00"),
     ],
 )
 def test_report_encoder(obj, res):

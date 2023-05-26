@@ -1,4 +1,5 @@
 import dataclasses
+from decimal import Decimal
 from fractions import Fraction
 from json import JSONEncoder
 from types import GeneratorType
@@ -13,6 +14,8 @@ class ReportEncoder(JSONEncoder):
         if dataclasses.is_dataclass(obj):
             return obj.astuple()
         elif isinstance(obj, Fraction):
+            return str(obj)
+        elif isinstance(obj, Decimal):
             return str(obj)
         elif isinstance(obj, ReportTotals):
             # reduce totals
