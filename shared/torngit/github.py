@@ -665,7 +665,6 @@ class Github(TorngitBaseAdapter):
     async def get_commit_statuses(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.status)
         page = 0
-        statuses = []
         cache_key = f"commit_status_{commit}"
         if self._use_cache:
             redis_service = self.get_redis_service()
@@ -679,6 +678,7 @@ class Github(TorngitBaseAdapter):
                     ),
                 )
                 return Status(statuses)
+        statuses = []
         async with self.get_client() as client:
             while True:
                 page += 1
