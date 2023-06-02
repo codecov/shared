@@ -3,7 +3,8 @@ from enum import Enum, auto
 from typing import Dict, List, Optional, Tuple
 
 import httpx
-
+from redis import Redis
+from shared.config import get_config
 from shared.torngit.enums import Endpoints
 from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback
 
@@ -73,6 +74,16 @@ class TorngitBaseAdapter(object):
             raise Exception("Oauth consumer token not present")
         return self._oauth
 
+    def get_redis_service(self) -> Redis:
+        if self._redis_service is None:
+            url = get_config("services", "redis_url")
+            if url is None:
+                hostname = "redis"
+                port = 6379
+                url = f"redis://{hostname}:{port}"
+            self._redis_service = Redis.from_url(url)
+        return self._redis_service
+
     def __init__(
         self,
         oauth_consumer_token: OauthConsumerToken = None,
@@ -90,7 +101,12 @@ class TorngitBaseAdapter(object):
         self._oauth = oauth_consumer_token
         self.data = {"owner": {}, "repo": {}}
         self.verify_ssl = verify_ssl
-
+        self._redis_service = None
+        self._use_cache = get_config("services", "vcs_cache", "enabled", default=False)
+        # self._commit_cache_duration = int(get_config("services", "vcs_cache", "commit_duration", default=120)) TODO
+        self._check_cache_duration = int(get_config("services", "vcs_cache", "check_duration", default=120))
+        self._compare_cache_duration = int(get_config("services", "vcs_cache", "compare_duration", default=120))
+        self._status_cache_duration = int(get_config("services", "vcs_cache", "status_duration", default=120))
         self.data.update(kwargs)
 
     def __repr__(self):

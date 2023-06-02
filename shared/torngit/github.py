@@ -24,7 +24,7 @@ from shared.torngit.exceptions import (
 )
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat, url_escape
-
+from shared.config import get_config
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
@@ -667,6 +667,19 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.status)
         page = 0
         statuses = []
+        cache_key = f"commit_status_{commit}"
+        if self._use_cache:
+            redis_service = self.get_redis_service()
+            statuses = redis_service.get(cache_key)
+            if statuses is not None:
+                log.info(
+                    "Using cached commit status",
+                    extra=dict(
+                        commit=commit,
+                        loggable_token=self.loggable_token(token)
+                    ),
+                )
+                return Status(statuses)
         async with self.get_client() as client:
             while True:
                 page += 1
@@ -694,7 +707,13 @@ class Github(TorngitBaseAdapter):
                 )
                 if len(provided_statuses) < 100:
                     break
-
+            if self._use_cache:
+                redis_service = self.get_redis_service()
+                redis_service.set(
+                    cache_key,
+                    statuses,
+                    self._status_cache_duration,
+                )
         return Status(statuses)
 
     # Source
@@ -748,6 +767,20 @@ class Github(TorngitBaseAdapter):
     ):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
+        cache_key = f"compare_{base}_{head}"
+        if self._use_cache:
+            redis_service = self.get_redis_service()
+            result = redis_service.get(cache_key)
+            if result is not None:
+                log.info(
+                    "Using cached compare",
+                    extra=dict(
+                        commit=head,
+                        base=base,
+                        loggable_token=self.loggable_token(token)
+                    ),
+                )
+                return result
         async with self.get_client() as client:
             res = await self.api(
                 client,
@@ -785,7 +818,7 @@ class Github(TorngitBaseAdapter):
             files.update(diff["files"])
 
         # commits are returned in reverse chronological order. ie [newest...oldest]
-        return dict(
+        result = dict(
             diff=dict(files=files),
             commits=[
                 dict(
@@ -802,6 +835,14 @@ class Github(TorngitBaseAdapter):
                 for c in ([res["base_commit"]] + res["commits"])
             ][::-1],
         )
+        if self._use_cache:
+            redis_service = self.get_redis_service()
+            redis_service.set(
+                cache_key,
+                result,
+                self._compare_cache_duration,
+            )
+        return result
 
     async def get_distance_in_commits(
         self, base_branch, base, context=None, with_commits=True, token=None
@@ -1096,6 +1137,22 @@ class Github(TorngitBaseAdapter):
                 "check_suite_id and head_sha parameter should not both be None"
             )
         url = ""
+
+        cache_key = f"check_status_{check_suite_id}_{head_sha}_{name}"
+        if self._use_cache:
+            redis_service = self.get_redis_service()
+            res = redis_service.get(cache_key)
+            if res is not None:
+                log.info(
+                    "Using cached check run status",
+                    extra=dict(
+                        check_suite_id=check_suite_id,
+                        head_sha=head_sha,
+                        name=name,
+                        loggable_token=self.loggable_token(token)
+                    ),
+                )
+                return res
         if check_suite_id is not None:
             url = (
                 "/repos/{}/check-suites/{}/check-runs".format(
@@ -1108,6 +1165,13 @@ class Github(TorngitBaseAdapter):
             url += "?check_name={}".format(name)
         async with self.get_client() as client:
             res = await self.api(client, "get", url, token=token)
+            if self._use_cache:
+                redis_service = self.get_redis_service()
+                redis_service.set(
+                    cache_key,
+                    res,
+                    self._check_cache_duration,
+                )
             return res
 
     async def get_check_suites(self, git_sha, token=None):
