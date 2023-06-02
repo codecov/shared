@@ -24,7 +24,6 @@ from shared.torngit.exceptions import (
 )
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat, url_escape
-from shared.config import get_config
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
