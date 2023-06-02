@@ -2,6 +2,7 @@ import base64
 import hashlib
 import logging
 import os
+import json
 from base64 import b64decode
 from typing import List
 
@@ -677,7 +678,7 @@ class Github(TorngitBaseAdapter):
                         loggable_token=self.loggable_token(token)
                     ),
                 )
-                return Status(statuses)
+                return Status(json.loads(statuses))
         statuses = []
         async with self.get_client() as client:
             while True:
@@ -710,7 +711,7 @@ class Github(TorngitBaseAdapter):
                 redis_service = self.get_redis_service()
                 redis_service.set(
                     cache_key,
-                    statuses,
+                    json.dumps(statuses),
                     self._status_cache_duration,
                 )
         return Status(statuses)
@@ -779,7 +780,7 @@ class Github(TorngitBaseAdapter):
                         loggable_token=self.loggable_token(token)
                     ),
                 )
-                return result
+                return json.loads(result)
         async with self.get_client() as client:
             res = await self.api(
                 client,
@@ -838,7 +839,7 @@ class Github(TorngitBaseAdapter):
             redis_service = self.get_redis_service()
             redis_service.set(
                 cache_key,
-                result,
+                json.dumps(result),
                 self._compare_cache_duration,
             )
         return result
