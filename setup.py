@@ -35,5 +35,6 @@ setup(
         "analytics-python==1.3.0b1",
         "httpx>=0.23.0",
         "oauthlib",
+        "redis",
     ],
 )
