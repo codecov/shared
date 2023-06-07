@@ -1147,3 +1147,29 @@ class TestUnitGithub(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Github API rate limit error: Forbidden"
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_files_403_secondary_limit(self):
+        with respx.mock:
+            my_route = respx.get(
+                "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=403,
+                    headers={
+                        "Retry-After": "60",
+                    },
+                )
+            )
+            handler = Github(
+                repo=dict(name="example-python"),
+                owner=dict(username="codecove2e"),
+                token=dict(key=10 * "a280"),
+            )
+            with pytest.raises(TorngitRateLimitError) as excinfo:
+                res = await handler.get_pull_request_files(4)
+            assert excinfo.value.code == 403
+            assert (
+                excinfo.value.message
+                == "Github API rate limit error: secondary rate limit"
+            )
