@@ -36,5 +36,7 @@ setup(
         "httpx>=0.23.0",
         "oauthlib",
         "redis",
+        "typing",
+        "typing_extensions",
     ],
 )

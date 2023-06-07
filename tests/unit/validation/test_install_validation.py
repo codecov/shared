@@ -94,6 +94,13 @@ def test_validate_sample_production_config(mocker):
             },
             "database_url": "pokemon01_database_url",
             "redis_url": "kaploft-memorystore-url",
+            "vsc_cache": {
+                "enabled": True,
+                "metrics_app": "shared",
+                "check_duration": 100,
+                "compare_duration": 110,
+                "status_duration": 90,
+            },
         },
         "site": {
             "codecov": {"require_ci_to_pass": True},
@@ -218,6 +225,13 @@ def test_validate_sample_production_config(mocker):
             },
             "database_url": "pokemon01_database_url",
             "redis_url": "kaploft-memorystore-url",
+            "vsc_cache": {
+                "enabled": True,
+                "metrics_app": "shared",
+                "check_duration": 100,
+                "compare_duration": 110,
+                "status_duration": 90,
+            },
         },
         "site": {
             "codecov": {"require_ci_to_pass": True},

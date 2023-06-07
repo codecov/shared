@@ -10,6 +10,7 @@ from httpx import Response
 
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
+from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -23,7 +24,7 @@ from shared.torngit.exceptions import (
     TorngitUnauthorizedError,
 )
 from shared.torngit.status import Status
-from shared.utils.urls import url_concat, url_escape
+from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
 
@@ -663,6 +664,11 @@ class Github(TorngitBaseAdapter):
                 )
             return res
 
+    @torngit_cache.cache_function(
+        torngit_cache.get_ttl("status"),
+        log_hits=True,
+        log_map={"args_indexes_to_log": [0], "kwargs_keys_to_log": ["commit"]},
+    )
     async def get_commit_statuses(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.status)
         page = 0
@@ -694,7 +700,6 @@ class Github(TorngitBaseAdapter):
                 )
                 if len(provided_statuses) < 100:
                     break
-
         return Status(statuses)
 
     # Source
@@ -743,6 +748,11 @@ class Github(TorngitBaseAdapter):
             raise
         return self.diff_to_json(res)
 
+    @torngit_cache.cache_function(
+        torngit_cache.get_ttl("compare"),
+        log_hits=True,
+        log_map={"args_indexes_to_log": [0, 1], "kwargs_keys_to_log": ["base", "head"]},
+    )
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
@@ -1088,6 +1098,14 @@ class Github(TorngitBaseAdapter):
             )
             return res["id"]
 
+    @torngit_cache.cache_function(
+        torngit_cache.get_ttl("check"),
+        log_hits=True,
+        log_map={
+            "args_indexes_to_log": [0, 1, 2],
+            "kwargs_keys_to_log": ["check_suite_id", "head_sha", "name"],
+        },
+    )
     async def get_check_runs(
         self, check_suite_id=None, head_sha=None, name=None, token=None
     ):

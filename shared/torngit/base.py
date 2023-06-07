@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Tuple
 
 import httpx
 
+from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback
 
@@ -90,8 +91,10 @@ class TorngitBaseAdapter(object):
         self._oauth = oauth_consumer_token
         self.data = {"owner": {}, "repo": {}}
         self.verify_ssl = verify_ssl
-
         self.data.update(kwargs)
+        # This has the side effect of initializing the torngit_cache
+        # (if not yet initialized)
+        torngit_cache.initialize()
 
     def __repr__(self):
         return "<%s slug=%s ownerid=%s repoid=%s>" % (

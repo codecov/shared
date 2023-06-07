@@ -272,6 +272,16 @@ config_schema = {
                     },
                 },
             },
+            "vsc_cache": {
+                "type": "dict",
+                "schema": {
+                    "enabled": {"type": "boolean"},
+                    "metrics_app": {"type": "string"},
+                    "check_duration": {"type": "integer"},
+                    "compare_duration": {"type": "integer"},
+                    "status_duration": {"type": "integer"},
+                },
+            },
         },
     },
     "site": {"type": "dict", "schema": user_yaml_schema},
