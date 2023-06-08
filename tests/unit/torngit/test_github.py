@@ -1173,3 +1173,4 @@ class TestUnitGithub(object):
                 excinfo.value.message
                 == "Github API rate limit error: secondary rate limit"
             )
+            assert excinfo.value.retry_after == 60

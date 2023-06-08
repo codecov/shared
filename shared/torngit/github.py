@@ -2,7 +2,6 @@ import base64
 import hashlib
 import logging
 import os
-import time
 from base64 import b64decode
 from typing import List
 
@@ -209,7 +208,7 @@ class Github(TorngitBaseAdapter):
                     raise TorngitRateLimitError(
                         response_data=res.text,
                         message=message,
-                        reset=int(time.time()) + retry_after,
+                        retry_after=retry_after,
                     )
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"

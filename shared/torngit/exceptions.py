@@ -41,12 +41,16 @@ class TorngitObjectNotFoundError(TorngitClientError):
 
 
 class TorngitRateLimitError(TorngitClientError):
-    def __init__(self, response_data, message, reset):
+    def __init__(self, response_data, message, reset=None, retry_after=None):
         super().__init__(response_data, message, reset)
-        self.reset = reset
         self._code = 403
         self._response_data = response_data
         self.message = message
+
+        # timestamp when the rate limit resets
+        self.reset = reset
+        # seconds to wait before making another request
+        self.retry_after = retry_after
 
 
 class TorngitUnauthorizedError(TorngitClientError):
