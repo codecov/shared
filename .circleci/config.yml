@@ -5,6 +5,42 @@ jobs:
     docker:
       - image: circleci/python:3.10.1
     steps:
+      - run:
+          name: Install CLI
+          command: |
+            pip install codecov-cli
+      - run:
+          name: Save commit info 
+          command: |
+            codecovcli create-commit 
+      - run: 
+          name: Create report
+          command: |
+            codecovcli create-report 
+  staticanalysis:
+    docker:
+      - image: circleci/python:3.10.1
+    steps:
+      - checkout
+      - run:
+          name: Install CLI
+          command: |
+            pip install codecov-cli
+      - run:
+          # Adding this because we're getting 404 consistently
+          # When calling just static-analysis
+          # Not sure if this fixes it, but hoping it does
+          name: Save commit info 
+          command: |
+            codecovcli create-commit 
+      - run:
+          name: Run Static Analysis
+          command: |
+            codecovcli static-analysis --token=$STATIC_TOKEN
+  labelanalysis:
+    docker:
+      - image: circleci/python:3.10.1
+    steps:
       - checkout
       - run:
           name: install dependencies
@@ -20,28 +56,17 @@ jobs:
           name: Install CLI
           command: |
             . venv/bin/activate
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@v0.1.2#egg=codecov-cli
-      - run:
-          name: Save commit info 
-          command: |
-            . venv/bin/activate
-            codecovcli create-commit 
-      - run: 
-          name: Create report
-          command: |
-            . venv/bin/activate
-            codecovcli create-report 
-      - run:
-          name: Run Static Analysis
-          command: |
-            . venv/bin/activate
-            codecovcli static-analysis --token=$STATIC_TOKEN
+            pip install codecov-cli
       - run:
           name: Run Predictor Analysis
           command: |
             . venv/bin/activate
-            python -m pytest -q --collect-only
             codecovcli label-analysis --token=$STATIC_TOKEN --base-sha=$(git log -n 1 master --pretty=format:"%H")
+      - run:
+          name: Upload smart-labels
+          command: |
+            . venv/bin/activate
+            codecovcli --codecov-yml-path=codecov_cli.yml do-upload --plugin pycoverage --plugin compress-pycoverage --flag smart-labels --fail-on-error
   linter:
     docker:
       - image: circleci/python:3.7.6
@@ -84,7 +109,6 @@ jobs:
       - image: cimg/python:<< parameters.imagename >>
     steps:
       - checkout
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -116,17 +140,7 @@ jobs:
           name: Install CLI
           command: |
             . venv/bin/activate
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@0d8eba604af22aa04f7cdcc521361aecfaec3b47#egg=codecov-cli
-      - run:
-          name: Save commit info 
-          command: |
-            . venv/bin/activate
-            codecovcli create-commit 
-      - run: 
-          name: Create report
-          command: |
-            . venv/bin/activate
-            codecovcli create-report 
+            pip install codecov-cli
       - run:
           name: Upload to codecov
           command: |
@@ -152,11 +166,10 @@ jobs:
             RUSTFLAGS="-Z instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
             llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
             llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@0d8eba604af22aa04f7cdcc521361aecfaec3b47#egg=codecov-cli
       - run:
           name: Install CLI
           command: |
-            pip install git+ssh://git@github.com/codecov/codecov-cli.git@0d8eba604af22aa04f7cdcc521361aecfaec3b47#egg=codecov-cli
+            pip install codecov-cli
       - run:
           name: Save commit info 
           command: |
@@ -173,7 +186,6 @@ workflows:
   version: 2
   lint-test:
     jobs:
-      - codecovstartup
       - mutations
       - rust:
           filters:
@@ -183,7 +195,16 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - codecovstartup
+      - staticanalysis:
+          requires:
+            - codecovstartup
+      - labelanalysis:
+          requires:
+            - staticanalysis
       - build:
+          requires:
+            - codecovstartup
           matrix:
             parameters:
               imagename: ["3.7.13", "3.8.13", "3.9.12", "3.10.5"]
