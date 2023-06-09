@@ -59,9 +59,11 @@ jobs:
             pip install codecov-cli
       - run:
           name: Run Predictor Analysis
+          # Comparing the current commit (HEAD) to Lowest Common Ancestor with master (BASE)
+          # In practice this will be the base of the branch (almost all the time)
           command: |
             . venv/bin/activate
-            codecovcli label-analysis --token=$STATIC_TOKEN --base-sha=$(git log -n 1 master --pretty=format:"%H")
+            codecovcli label-analysis --token=$STATIC_TOKEN --base-sha=$(git merge-base HEAD^ master)
       - run:
           name: Upload smart-labels
           command: |
