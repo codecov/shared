@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: circleci/python:3.10.1
     steps:
+      - checkout
       - run:
           name: Install CLI
           command: |
@@ -26,13 +27,6 @@ jobs:
           name: Install CLI
           command: |
             pip install codecov-cli
-      - run:
-          # Adding this because we're getting 404 consistently
-          # When calling just static-analysis
-          # Not sure if this fixes it, but hoping it does
-          name: Save commit info 
-          command: |
-            codecovcli create-commit 
       - run:
           name: Run Static Analysis
           command: |
@@ -147,7 +141,7 @@ jobs:
           name: Upload to codecov
           command: |
             . venv/bin/activate
-            codecovcli do-upload --flag python<< parameters.imagename >>
+            codecovcli do-upload --flag python<< parameters.imagename >> --fail-on-error
           
   rust:
     docker:
