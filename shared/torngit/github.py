@@ -164,6 +164,7 @@ class Github(TorngitBaseAdapter):
                         rlx=res.headers.get("X-RateLimit-Remaining"),
                         rly=res.headers.get("X-RateLimit-Limit"),
                         rlr=res.headers.get("X-RateLimit-Reset"),
+                        retry_after=res.headers.get("Retry-After"),
                         **log_dict,
                     ),
                 )
@@ -195,6 +196,19 @@ class Github(TorngitBaseAdapter):
                         response_data=res.text,
                         message=message,
                         reset=res.headers.get("X-RateLimit-Reset"),
+                    )
+                elif (
+                    res.status_code == 403
+                    and res.headers.get("Retry-After") is not None
+                ):
+                    # https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#secondary-rate-limits
+                    message = f"Github API rate limit error: secondary rate limit"
+                    retry_after = int(res.headers.get("Retry-After"))
+                    metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
+                    raise TorngitRateLimitError(
+                        response_data=res.text,
+                        message=message,
+                        retry_after=retry_after,
                     )
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"
