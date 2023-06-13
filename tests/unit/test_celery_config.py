@@ -20,7 +20,7 @@ def test_celery_config():
     assert hasattr(config, "notify_soft_time_limit")
     assert hasattr(config, "task_annotations")
     assert hasattr(config, "task_routes")
-    assert (config, "worker_max_memory_per_child")
+    assert hasattr(config, "worker_max_memory_per_child")
     assert sorted(config.task_routes.keys()) == [
         "app.cron.profiling.findinguncollected",
         "app.tasks.add_to_sendgrid_list.AddToSendgridList",
