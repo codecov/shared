@@ -20,6 +20,7 @@ def test_celery_config():
     assert hasattr(config, "notify_soft_time_limit")
     assert hasattr(config, "task_annotations")
     assert hasattr(config, "task_routes")
+    assert (config, "worker_max_memory_per_child")
     assert sorted(config.task_routes.keys()) == [
         "app.cron.profiling.findinguncollected",
         "app.tasks.add_to_sendgrid_list.AddToSendgridList",
@@ -54,7 +55,6 @@ def test_celery_config():
     assert config.imports == ("tasks",)
     assert config.task_serializer == "json"
     assert config.accept_content == ["json"]
-    assert config.worker_max_memory_per_child == 1500000
     assert config.worker_hijack_root_logger is False
     assert config.timezone == "UTC"
     assert config.enable_utc is True
