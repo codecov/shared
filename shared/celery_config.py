@@ -106,7 +106,11 @@ class BaseCeleryConfig(object):
 
     accept_content = ["json"]
 
-    worker_max_memory_per_child = 1500000  # 1.5GB
+    worker_max_memory_per_child = int(
+        get_config(
+            "setup", "tasks", "celery", "worker_max_memory_per_child", default=1500000
+        )
+    )  # 1.5GB
 
     # http://docs.celeryproject.org/en/latest/configuration.html?highlight=celery_redirect_stdouts#celeryd-hijack-root-logger
     worker_hijack_root_logger = False
