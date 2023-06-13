@@ -143,6 +143,7 @@ config_schema = {
                             "prefetch": {"type": "integer"},
                             "soft_timelimit": {"type": "integer"},
                             "hard_timelimit": {"type": "integer"},
+                            "worker_max_memory_per_child": {"type": "integer"},
                         },
                     },
                     "notify": {
