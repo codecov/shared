@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from shared.billing import BillingPlan
 from shared.celery_config import timeseries_backfill_task_name, upload_task_name
 from shared.celery_router import route_tasks_based_on_user_plan
@@ -42,3 +44,16 @@ def test_route_tasks_with_config(mock_configuration):
         "queue": "enterprise_celery",
         "extra_config": {"soft_timelimit": 400, "hard_timelimit": 500},
     }
+
+
+@patch.dict(
+    "shared.celery_config.BaseCeleryConfig.task_routes",
+    {"app.tasks.upload.*": {"queue": "uploads"}},
+)
+def test_route_tasks_with_glob_config(mocker):
+    assert route_tasks_based_on_user_plan(
+        upload_task_name, BillingPlan.users_basic.db_name
+    ) == {"queue": "uploads", "extra_config": {}}
+    assert route_tasks_based_on_user_plan(
+        upload_task_name, BillingPlan.enterprise_cloud_monthly.db_name
+    ) == {"queue": "enterprise_uploads", "extra_config": {}}

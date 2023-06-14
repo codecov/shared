@@ -122,6 +122,7 @@ jobs:
             pip install -r tests/requirements.txt
             pip install setuptools_rust
             python setup.py develop
+
       - save_cache:
           paths:
             - venv
