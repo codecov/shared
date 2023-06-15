@@ -1,6 +1,46 @@
+import fnmatch
+import re
+from collections import OrderedDict
+from collections.abc import Mapping
+
 from shared.billing import BillingPlan, is_enterprise_cloud_plan
 from shared.celery_config import BaseCeleryConfig, get_task_group
 from shared.config import get_config
+
+try:
+    Pattern = re._pattern_type
+except AttributeError:  # pragma: no cover
+    # for Python 3.7 support
+    Pattern = re.Pattern
+
+
+# based on code from https://github.com/celery/celery/blob/main/celery/app/routes.py
+class MapRoute:
+    def __init__(self, map):
+        map = map.items() if isinstance(map, Mapping) else map
+        self.map = {}
+        self.patterns = OrderedDict()
+        for k, v in map:
+            if isinstance(k, Pattern):
+                self.patterns[k] = v
+            elif "*" in k:
+                self.patterns[re.compile(fnmatch.translate(k))] = v
+            else:
+                self.map[k] = v
+
+    def __call__(self, name, *args, **kwargs):
+        try:
+            return dict(self.map[name])
+        except KeyError:
+            pass
+        except ValueError:
+            return {"queue": self.map[name]}
+        for regex, route in self.patterns.items():
+            if regex.match(name):
+                try:
+                    return dict(route)
+                except ValueError:
+                    return {"queue": route}
 
 
 def route_tasks_based_on_user_plan(task_name: str, user_plan: str):
@@ -8,8 +48,9 @@ def route_tasks_based_on_user_plan(task_name: str, user_plan: str):
     This cannot be used as a celery router function directly.
     Returns extra config for the queue, if any.
     """
-    default_task_queue = BaseCeleryConfig.task_routes.get(
-        task_name, dict(queue=BaseCeleryConfig.task_default_queue)
+    route = MapRoute(BaseCeleryConfig.task_routes)
+    default_task_queue = (
+        route(task_name) or dict(queue=BaseCeleryConfig.task_default_queue)
     )["queue"]
     billing_plan = BillingPlan.from_str(user_plan)
     if is_enterprise_cloud_plan(billing_plan):
