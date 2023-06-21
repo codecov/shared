@@ -403,3 +403,60 @@ class TestUnitGitlab(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Gitlab API: 403"
+
+    @pytest.mark.asyncio
+    async def test_post_webhook(self, mocker):
+        m = mocker.patch("shared.torngit.gitlab.Gitlab.api")
+
+        handler = Gitlab(
+            repo=dict(name="example-python", service_id="187725"),
+            owner=dict(username="codecove2e", service_id="109479"),
+            token=dict(key=10 * "a280"),
+        )
+
+        await handler.post_webhook(
+            "Test Webhook",
+            "http://example.com/gitlab/webhook",
+            {"test_event": True},
+            "supersecret",
+        )
+
+        assert m.call_args.args == ("post", "/projects/187725/hooks")
+        assert m.call_args.kwargs == {
+            "body": {
+                "url": "http://example.com/gitlab/webhook",
+                "enable_ssl_verification": True,
+                "token": "supersecret",
+                "test_event": True,
+            },
+            "token": {"key": "a280a280a280a280a280a280a280a280a280a280"},
+        }
+
+    @pytest.mark.asyncio
+    async def test_edit_webhook(self, mocker):
+        m = mocker.patch("shared.torngit.gitlab.Gitlab.api")
+
+        handler = Gitlab(
+            repo=dict(name="example-python", service_id="187725"),
+            owner=dict(username="codecove2e", service_id="109479"),
+            token=dict(key=10 * "a280"),
+        )
+
+        await handler.edit_webhook(
+            12345,
+            "Test Webhook",
+            "http://example.com/gitlab/webhook",
+            {"test_event": True},
+            "supersecret",
+        )
+
+        assert m.call_args.args == ("put", "/projects/187725/hooks/12345")
+        assert m.call_args.kwargs == {
+            "body": {
+                "url": "http://example.com/gitlab/webhook",
+                "enable_ssl_verification": True,
+                "token": "supersecret",
+                "test_event": True,
+            },
+            "token": {"key": "a280a280a280a280a280a280a280a280a280a280"},
+        }

@@ -279,6 +279,7 @@ class Gitlab(TorngitBaseAdapter):
                 enable_ssl_verification=self.verify_ssl
                 if isinstance(self.verify_ssl, bool)
                 else True,
+                token=secret,
                 **events,
             ),
             token=token,
@@ -296,6 +297,7 @@ class Gitlab(TorngitBaseAdapter):
                 enable_ssl_verification=self.verify_ssl
                 if type(self.verify_ssl) is bool
                 else True,
+                token=secret,
                 **events,
             ),
             token=token,
