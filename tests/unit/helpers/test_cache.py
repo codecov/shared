@@ -30,6 +30,9 @@ class RandomCounter(object):
         self.value *= 4
         return self.value
 
+    async def async_call_function_args(self, base, head, something=None, danger=True):
+        return base + head
+
 
 class FakeBackend(BaseBackend):
     def __init__(self):
@@ -186,6 +189,59 @@ class TestCache(object):
         assert (await cached_function()) == 8
         assert (await cached_function()) == 8
         assert (await cached_function()) == 8
+
+    @pytest.mark.asyncio
+    async def test_simple_caching_fake_backend_async_with_params(self, mocker):
+        mock_log = mocker.patch.object(cache_log, "info")
+        log_map = LogMapping(
+            {
+                "args_indexes_to_log": [0, 1],
+                "kwargs_keys_to_log": ["base", "head", "something"],
+            }
+        )
+        cache = OurOwnCache()
+        cache.configure(FakeBackend())
+        assert cache._app == "shared"
+        sample_function = RandomCounter().async_call_function_args
+        cached_function = cache.cache_function(log_hits=True, log_map=log_map)(
+            sample_function
+        )
+        assert await cached_function("base", "head", something="batata") == "basehead"
+        mock_log.assert_not_called()  # not a hit, not logger
+        assert await cached_function("base", "head", something="else") == "basehead"
+        mock_log.assert_not_called()  # not a hit, not logger
+        assert await cached_function("base", "head", something="else") == "basehead"
+        assert mock_log.call_count == 1
+        args, kwargs = mock_log.call_args
+        assert args == ("Returning cache hit",)
+        assert "extra" in kwargs
+        extra_logged = kwargs["extra"]
+        extra_args = extra_logged["args"]
+        extra_kwargs = extra_logged["kwargs"]
+        assert extra_args == ["base", "head"]
+        assert extra_kwargs == {
+            "something": "else"
+        }  # Notice that danger is not part of it
+        # Changing the way we call the function
+        assert (
+            await cached_function("base", head="head", something="else") == "basehead"
+        )
+        assert mock_log.call_count == 1  # This is not cached because the args changed
+        assert (
+            await cached_function("base", head="head", something="else") == "basehead"
+        )
+        assert mock_log.call_count == 2
+        args, kwargs = mock_log.call_args
+        assert args == ("Returning cache hit",)
+        assert "extra" in kwargs
+        extra_logged = kwargs["extra"]
+        extra_args = extra_logged["args"]
+        extra_kwargs = extra_logged["kwargs"]
+        assert extra_args == ["base"]
+        assert extra_kwargs == {
+            "head": "head",
+            "something": "else",
+        }  # Notice that danger is not part of it
 
     @pytest.mark.asyncio
     async def test_make_hash_sha256(self):

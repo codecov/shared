@@ -4,7 +4,7 @@ import hashlib
 import logging
 import pickle
 from functools import wraps
-from typing import Any, Callable, Hashable, List
+from typing import Any, Callable, Hashable, List, Optional
 
 from redis import Redis, RedisError
 
@@ -172,9 +172,9 @@ class OurOwnCache(object):
         self._backend = NullBackend()
         self._app = "not_configured"
 
-    def configure(self, backend: BaseBackend, app: str = "shared"):
+    def configure(self, backend: BaseBackend, app: Optional[str] = None):
         self._backend = backend
-        self._app = app
+        self._app = app or "shared"
 
     def get_backend(self) -> BaseBackend:
         return self._backend
@@ -256,6 +256,8 @@ class FunctionCacher(object):
             value = self.cache_instance.get_backend().get(key)
             if value is not NO_VALUE:
                 metrics.incr(f"{self.cache_instance._app}.caches.{func.__name__}.hits")
+                if self.log_hits:
+                    self._log_hits(func, args, kwargs, key)
                 return value
             metrics.incr(f"{self.cache_instance._app}.caches.{func.__name__}.misses")
             with metrics.timer(
