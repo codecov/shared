@@ -184,6 +184,14 @@ class TestUserYamlValidation(BaseTestCase):
                     },
                 },
             ),
+            (
+                {
+                    "codecov": {"notify": {"manual_trigger": True}},
+                },
+                {
+                    "codecov": {"notify": {"manual_trigger": True}},
+                },
+            ),
         ],
     )
     def test_random_real_life_cases(self, user_input, expected_result):
