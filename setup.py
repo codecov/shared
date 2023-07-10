@@ -38,6 +38,6 @@ setup(
         "redis",
         "typing",
         "typing_extensions",
-        "google-auth"
+        "google-auth==2.21.0",
     ],
 )
