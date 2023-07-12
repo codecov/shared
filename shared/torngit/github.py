@@ -352,14 +352,14 @@ class Github(TorngitBaseAdapter):
 
     async def list_repos_using_installation(self, username):
         """
-        returns list of service_id's of repos included in this integration
+        returns list of repositories included in this integration
         """
         repos = []
         page = 0
         async with self.get_client() as client:
             while True:
                 page += 1
-                # https://developer.github.com/v3/repos/#list-your-repositories
+                # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
                 res = await self.api(
                     client,
                     "get",
@@ -370,10 +370,12 @@ class Github(TorngitBaseAdapter):
                 )
                 if len(res["repositories"]) == 0:
                     break
-                repos.extend([repo["id"] for repo in res["repositories"]])
+                repos.extend(res["repositories"])
                 if len(res["repositories"]) < 100:
                     break
 
+            for repo in repos:
+                repo["id"] = str(repo["id"])
             return repos
 
     async def list_repos(self, username=None, token=None):
