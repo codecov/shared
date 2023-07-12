@@ -519,6 +519,9 @@ class TestUserYamlValidation(BaseTestCase):
                 },
                 "jacoco": {"partials_as_hits": True},
             },
+            "cli": {
+                "plugins": {"pycoverage": {"report_type": "json"}},
+            },
         }
         expected_result = {
             "coverage": {
@@ -559,6 +562,9 @@ class TestUserYamlValidation(BaseTestCase):
                     }
                 },
                 "jacoco": {"partials_as_hits": True},
+            },
+            "cli": {
+                "plugins": {"pycoverage": {"report_type": "json"}},
             },
         }
         assert validate_yaml(user_input) == expected_result
@@ -1293,3 +1299,21 @@ def test_offset_config_error():
                 }
             ],
         }
+
+
+def test_cli_validation():
+    user_input = {
+        "cli": {
+            "plugins": {"pycoverage": {"report_type": "json"}},
+            "runners": {
+                "custom_runner": {
+                    "module": "my_project.runner",
+                    "class": "MyCustomRunner",
+                    "params": {"randseed": 0},
+                }
+            },
+        }
+    }
+    result = validate_yaml(user_input)
+    # There's no change on the valid yaml
+    assert result == user_input
