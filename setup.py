@@ -26,7 +26,7 @@ setup(
         "cerberus",
         "colour>=0.1.5",
         "cryptography>=35.0.0",
-        "google-cloud-storage>=1.21",
+        "google-cloud-storage>=2.10.0",
         "minio~=7.0",
         "oauth2",
         "protobuf<4.0.0dev",
