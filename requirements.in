@@ -1,0 +1,8 @@
+-e file:.#egg=shared
+pytest
+pytest-asyncio
+pytest-cov
+mock
+ddt
+vcrpy
+respx
