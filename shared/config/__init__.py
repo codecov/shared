@@ -26,7 +26,7 @@ default_config = {
             "verify_ssl": False,
             "iam_auth": False,
             "iam_endpoint": None,
-            "hash_key": "ab164bf3f7d947f2a0681b215404873e",
+            "hash_key": "test3qh2dhwowarp489nvjvadz91ofq1",
         },
         "database_url": "postgres://postgres:@postgres:5432/postgres",
     },
