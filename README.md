@@ -66,4 +66,3 @@ We hope it provides a new level of speed to the CPU-bound parts of the code
 ## Contributing
 
 This repository, like all of Codecov's repositories, strives to follow our general [Contributing guidlines](https://github.com/codecov/contributing). If you're considering making a contribution to this repository, we encourage review of our Contributing guidelines first. 
-
