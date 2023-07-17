@@ -41,7 +41,7 @@ class TestConfig(object):
         }
         assert get_config("setup", "segment", "enabled") is False
         assert (
-            get_config("setup", "segment", "key") == "test93utbz4l7nybyx5y960y8pb8w672"
+            get_config("setup", "segment", "key") == "JustARandomTestValueMeaningless"
         )
         assert get_config("setup", "timeseries", "enabled") is False
 
