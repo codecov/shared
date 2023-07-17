@@ -16,7 +16,7 @@ class TestConfig(object):
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
         assert (
             get_config("services", "minio", "hash_key")
-            == "test3qh2dhwowarp489nvjvadz91ofq1"
+            == "ab164bf3f7d947f2a0681b215404873e"
         )
         assert get_config("site", "codecov", "require_ci_to_pass") is True
         assert get_config("site", "coverage", "precision") == 2
@@ -35,7 +35,7 @@ class TestConfig(object):
                 "verify_ssl": False,
                 "iam_auth": False,
                 "iam_endpoint": None,
-                "hash_key": "test3qh2dhwowarp489nvjvadz91ofq1",
+                "hash_key": "ab164bf3f7d947f2a0681b215404873e",
             },
             "database_url": "postgres://postgres:@postgres:5432/postgres",
         }
@@ -301,7 +301,7 @@ class TestConfig(object):
             "iam_endpoint": None,
             "bucket": "cce-minio-update-test",
             "region": "us-east-2",
-            "hash_key": "test3qh2dhwowarp489nvjvadz91ofq1",
+            "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
 
     def test_get_config_minio_with_port(self, mocker):
@@ -330,7 +330,7 @@ class TestConfig(object):
             "iam_endpoint": None,
             "bucket": "cce-minio-update-test",
             "region": "us-east-2",
-            "hash_key": "test3qh2dhwowarp489nvjvadz91ofq1",
+            "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
 
     def test_load_env_var(self, mocker):
