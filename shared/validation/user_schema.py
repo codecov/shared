@@ -66,6 +66,7 @@ percent_type_or_auto = {
 
 percent_type = {
     "type": ["string", "number"],
+    "regex": r"(\d+)(\.\d+)?%?",
     "nullable": True,
     "coerce": "percentage_to_number",
 }
