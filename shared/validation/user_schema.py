@@ -103,11 +103,7 @@ component_status_attributes = {**status_common_config, **custom_status_common_co
 notification_standard_attributes = {
     "url": {"type": "string", "coerce": "secret", "nullable": True},
     "branches": branches_structure,
-    "threshold": {
-        "type": ["string", "number"],
-        "nullable": True,
-        "coerce": "percentage_to_number",
-    },
+    "threshold": percent_type,
     "message": {"type": "string"},
     "flags": flag_list_structure,
     "base": {"type": "string", "allowed": ("parent", "pr", "auto")},
