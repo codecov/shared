@@ -181,12 +181,14 @@ class TestPercentSchemaField(BaseTestCase):
     def test_simple_coverage_range(self):
         crsf = PercentSchemaField()
         assert crsf.validate(80) == 80.0
-        assert crsf.validate("auto") == "auto"
+        assert crsf.validate("auto", allow_auto=True) == "auto"
         assert crsf.validate(80.0) == 80.0
         assert crsf.validate("80%") == 80.0
         assert crsf.validate("80") == 80.0
         assert crsf.validate("0") == 0.0
         assert crsf.validate("150%") == 150.0
+        with pytest.raises(Invalid):
+            crsf.validate("auto")
         with pytest.raises(Invalid):
             crsf.validate("nana")
         with pytest.raises(Invalid):

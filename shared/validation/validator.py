@@ -28,6 +28,9 @@ class CodecovYamlValidator(Validator):
     def _normalize_coerce_percentage_to_number(self, value):
         return PercentSchemaField().validate(value)
 
+    def _normalize_coerce_percentage_to_number_or_auto(self, value):
+        return PercentSchemaField().validate(value, allow_auto=True)
+
     def _normalize_coerce_string_to_range(self, value):
         return CoverageRangeSchemaField().validate(value)
 
