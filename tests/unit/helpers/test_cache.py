@@ -156,8 +156,8 @@ class TestCache(object):
         assert args == ("Returning cache hit",)
         assert "extra" in kwargs
         extra_logged = kwargs["extra"]
-        extra_args = extra_logged["args"]
-        extra_kwargs = extra_logged["kwargs"]
+        extra_args = extra_logged["fn_args"]
+        extra_kwargs = extra_logged["fn_kwargs"]
         assert extra_args == ["base", "head"]
         assert extra_kwargs == {
             "something": "else"
@@ -171,8 +171,8 @@ class TestCache(object):
         assert args == ("Returning cache hit",)
         assert "extra" in kwargs
         extra_logged = kwargs["extra"]
-        extra_args = extra_logged["args"]
-        extra_kwargs = extra_logged["kwargs"]
+        extra_args = extra_logged["fn_args"]
+        extra_kwargs = extra_logged["fn_kwargs"]
         assert extra_args == ["base"]
         assert extra_kwargs == {
             "head": "head",
@@ -216,8 +216,8 @@ class TestCache(object):
         assert args == ("Returning cache hit",)
         assert "extra" in kwargs
         extra_logged = kwargs["extra"]
-        extra_args = extra_logged["args"]
-        extra_kwargs = extra_logged["kwargs"]
+        extra_args = extra_logged["fn_args"]
+        extra_kwargs = extra_logged["fn_kwargs"]
         assert extra_args == ["base", "head"]
         assert extra_kwargs == {
             "something": "else"
@@ -235,8 +235,8 @@ class TestCache(object):
         assert args == ("Returning cache hit",)
         assert "extra" in kwargs
         extra_logged = kwargs["extra"]
-        extra_args = extra_logged["args"]
-        extra_kwargs = extra_logged["kwargs"]
+        extra_args = extra_logged["fn_args"]
+        extra_kwargs = extra_logged["fn_kwargs"]
         assert extra_args == ["base"]
         assert extra_kwargs == {
             "head": "head",
