@@ -194,6 +194,9 @@ class TestSessionTotalsArray(object):
         "meta": {"session_count": 5},
         "4": [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0],
     }
+    encoded_obj_string_no_meta = {
+        "4": [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0],
+    }
 
     def test_decode_session_totals_array_from_legacy(self):
         expected = SessionTotalsArray(
@@ -222,6 +225,16 @@ class TestSessionTotalsArray(object):
 
     def test_decode_session_totals_array_string_indexes(self):
         encoded_obj_copy = deepcopy(self.encoded_obj_string_index)
+        expected = SessionTotalsArray(
+            session_count=5,
+            non_null_items={4: [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0]},
+        )
+        result = SessionTotalsArray.build_from_encoded_data(encoded_obj_copy)
+        assert expected.session_count == result.session_count
+        assert expected.non_null_items == result.non_null_items
+
+    def test_decode_session_totals_array_string_indexes_no_meta(self):
+        encoded_obj_copy = deepcopy(self.encoded_obj_string_no_meta)
         expected = SessionTotalsArray(
             session_count=5,
             non_null_items={4: [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0]},

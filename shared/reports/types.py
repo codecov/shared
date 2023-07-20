@@ -223,7 +223,7 @@ class SessionTotalsArray(object):
                     extra=dict(sessions_array=sessions_array),
                 )
                 sessions_array["meta"] = {
-                    "session_count": max(sessions_array.keys()) + 1
+                    "session_count": int(max(sessions_array.keys())) + 1
                 }
             meta_info = sessions_array.pop("meta")
             session_count = meta_info["session_count"]
