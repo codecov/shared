@@ -88,7 +88,6 @@ class NullBackend(BaseBackend):
 
 
 class RedisBackend(BaseBackend):
-
     current_protocol = pickle.DEFAULT_PROTOCOL
 
     def __init__(self, redis_connection: Redis):
@@ -220,7 +219,9 @@ class FunctionCacher(object):
                 kwargs_to_log[lkey] = kwargs[lkey]
         log.info(
             "Returning cache hit",
-            extra=dict(func=func, args=args_to_log, kwargs=kwargs_to_log, key=key),
+            extra=dict(
+                func=func, fn_args=args_to_log, fn_kwargs=kwargs_to_log, key=key
+            ),
         )
 
     def cache_synchronous_function(self, func: Callable) -> Callable:
