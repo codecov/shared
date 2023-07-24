@@ -19,6 +19,9 @@ status_set_pending_task_name = f"app.tasks.{TaskConfigGroup.status.value}.SetPen
 upload_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.Upload"
 upload_processor_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadProcessor"
 upload_finisher_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadFinisher"
+manual_upload_completion_trigger_task_name = (
+    f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
+)
 archive_task_name = f"app.tasks.{TaskConfigGroup.archive.value}.MigrateToArchive"
 bot_task_name = f"app.tasks.{TaskConfigGroup.verify_bot.value}.VerifyBot"
 comment_task_name = f"app.tasks.{TaskConfigGroup.comment.value}.Comment"
