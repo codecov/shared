@@ -240,26 +240,6 @@ class BitbucketServer(TorngitBaseAdapter):
         if res["project"]["type"] == "PERSONAL":
             owner_service_id = "U%d" % res["project"]["owner"]["id"]
 
-        fork = None
-        if res.get("origin"):
-            _fork_owner_service_id = res["origin"]["project"]["id"]
-            if res["origin"]["project"]["type"] == "PERSONAL":
-                _fork_owner_service_id = "U%d" % res["origin"]["project"]["owner"]["id"]
-
-            fork = dict(
-                owner=dict(
-                    service_id=_fork_owner_service_id,
-                    username=res["origin"]["project"]["key"],
-                ),
-                repo=dict(
-                    service_id=res["origin"]["id"],
-                    language=None,
-                    private=(not res["origin"]["public"]),
-                    branch="master",
-                    name=res["origin"]["slug"],
-                ),
-            )
-
         return dict(
             owner=dict(service_id=owner_service_id, username=res["project"]["key"]),
             repo=dict(
@@ -267,7 +247,6 @@ class BitbucketServer(TorngitBaseAdapter):
                 language=None,
                 private=(not res.get("public", res.get("origin", {}).get("public"))),
                 branch="master",
-                fork=fork,
                 name=res["slug"],
             ),
         )
@@ -522,28 +501,6 @@ class BitbucketServer(TorngitBaseAdapter):
                 if repo["project"]["type"] == "PERSONAL":
                     ownerid = "U" + str(repo["project"]["owner"]["id"])
 
-                fork = None
-                if repo.get("origin"):
-                    _fork_owner_service_id = str(repo["origin"]["project"]["id"])
-                    if repo["origin"]["project"]["type"] == "PERSONAL":
-                        _fork_owner_service_id = (
-                            "U%d" % repo["origin"]["project"]["owner"]["id"]
-                        )
-
-                    fork = dict(
-                        owner=dict(
-                            service_id=_fork_owner_service_id,
-                            username=repo["origin"]["project"]["key"],
-                        ),
-                        repo=dict(
-                            service_id=repo["origin"]["id"],
-                            language=None,
-                            private=(not repo["origin"]["public"]),
-                            branch="master",
-                            name=repo["origin"]["slug"],
-                        ),
-                    )
-
                 data.append(
                     dict(
                         owner=dict(
@@ -560,7 +517,6 @@ class BitbucketServer(TorngitBaseAdapter):
                                 )
                             ),
                             branch="master",
-                            fork=fork,
                         ),
                     )
                 )
