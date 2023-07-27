@@ -240,6 +240,27 @@ class BitbucketServer(TorngitBaseAdapter):
         if res["project"]["type"] == "PERSONAL":
             owner_service_id = "U%d" % res["project"]["owner"]["id"]
 
+        fork = None
+        if res.get("origin"):
+            _fork_owner_service_id = res["origin"]["project"]["id"]
+            if res["origin"]["project"]["type"] == "PERSONAL":
+                _fork_owner_service_id = "U%d" % res["origin"]["project"]["owner"]["id"]
+
+            fork = dict(
+                owner=dict(
+                    service_id=_fork_owner_service_id,
+                    username=res["origin"]["project"]["key"],
+                ),
+                repo=dict(
+                    service_id=res["origin"]["id"],
+                    language=None,
+                    private=(not res["origin"]["public"]),
+                    branch="master",
+                    fork=fork,
+                    name=res["origin"]["slug"],
+                ),
+            )
+
         return dict(
             owner=dict(service_id=owner_service_id, username=res["project"]["key"]),
             repo=dict(

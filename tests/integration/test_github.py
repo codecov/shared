@@ -810,6 +810,16 @@ class TestGithubTestCase(object):
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
+                "fork": {
+                    "owner": {"service_id": 8226205, "username": "codecov"},
+                    "repo": {
+                        "service_id": 24344106,
+                        "name": "example-python",
+                        "language": "python",
+                        "private": False,
+                        "branch": "master",
+                    },
+                },
                 "branch": "master",
             },
         }

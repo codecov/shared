@@ -320,6 +320,24 @@ class Github(TorngitBaseAdapter):
                 )
 
         username, repo = tuple(res["full_name"].split("/", 1))
+        parent = res.get("parent")
+
+        if parent:
+            fork = dict(
+                owner=dict(
+                    service_id=parent["owner"]["id"], username=parent["owner"]["login"]
+                ),
+                repo=dict(
+                    service_id=parent["id"],
+                    name=parent["name"],
+                    language=self._validate_language(parent["language"]),
+                    private=parent["private"],
+                    branch=parent["default_branch"],
+                ),
+            )
+        else:
+            fork = None
+
         return dict(
             owner=dict(service_id=res["owner"]["id"], username=username),
             repo=dict(
@@ -327,6 +345,7 @@ class Github(TorngitBaseAdapter):
                 name=repo,
                 language=self._validate_language(res["language"]),
                 private=res["private"],
+                fork=fork,
                 branch=res["default_branch"] or "master",
             ),
         )
