@@ -358,7 +358,6 @@ class Bitbucket(TorngitBaseAdapter):
                                         ),
                                         private=repo["is_private"],
                                         branch="master",
-                                        fork=None,
                                     ),
                                 )
                             )

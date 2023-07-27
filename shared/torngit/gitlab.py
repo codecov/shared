@@ -67,7 +67,6 @@ class Gitlab(TorngitBaseAdapter):
         version=4,
         **args,
     ):
-
         if url_path.startswith("/"):
             _log = dict(
                 event="api",
@@ -409,35 +408,6 @@ class Gitlab(TorngitBaseAdapter):
                         owner_username,
                     ) = await self.get_owner_info_from_repo(repo, token)
 
-                    if repo.get("forked_from_project"):
-                        parent = repo.get("forked_from_project")
-                        (
-                            parent_service_id,
-                            parent_username,
-                        ) = await self.get_owner_info_from_repo(parent, token)
-                        parent_info = await self.api(
-                            "get", "/projects/{}".format(parent["id"]), token=token
-                        )
-                        if "default_branch" not in parent:
-                            log.warning(
-                                "Forked repo doesn't have default_branch, using master instead",
-                                extra=dict(repo=repo),
-                            )
-                        fork = dict(
-                            owner=dict(
-                                service_id=parent_service_id, username=parent_username
-                            ),
-                            repo=dict(
-                                service_id=parent["id"],
-                                name=parent["name"],
-                                language=None,
-                                private=(parent_info["visibility"] != "public"),
-                                branch=parent.get("default_branch", "master"),
-                            ),
-                        )
-                    else:
-                        fork = None
-
                     # Gitlab API will return a repo with one of: no default branch key, default_branch: None, or default_branch: 'some_branch'
                     branch = "master"
                     if "default_branch" in repo and repo["default_branch"] is not None:
@@ -456,7 +426,6 @@ class Gitlab(TorngitBaseAdapter):
                             repo=dict(
                                 service_id=repo["id"],
                                 name=repo["path"],
-                                fork=fork,
                                 private=(repo["visibility"] != "public"),
                                 language=None,
                                 branch=branch,

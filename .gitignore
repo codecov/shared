@@ -141,7 +141,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# vscode settings
+# Editor junk
 .vscode/settings.json
+.*.sw?
 
 /target

@@ -406,34 +406,7 @@ class Github(TorngitBaseAdapter):
                     )
 
                 for repo in repos:
-                    _o, _r, parent = repo["owner"]["login"], repo["name"], None
-                    if repo["fork"]:
-                        # need to get its source
-                        # https://developer.github.com/v3/repos/#get
-                        try:
-                            parent = await self.api(
-                                client, "get", "/repos/%s/%s" % (_o, _r), token=token
-                            )
-                            parent = parent["source"]
-                        except Exception:
-                            parent = None
-
-                    if parent:
-                        fork = dict(
-                            owner=dict(
-                                service_id=parent["owner"]["id"],
-                                username=parent["owner"]["login"],
-                            ),
-                            repo=dict(
-                                service_id=parent["id"],
-                                name=parent["name"],
-                                language=self._validate_language(parent["language"]),
-                                private=parent["private"],
-                                branch=parent["default_branch"],
-                            ),
-                        )
-                    else:
-                        fork = None
+                    _o, _r = repo["owner"]["login"], repo["name"]
 
                     data.append(
                         dict(
@@ -444,7 +417,6 @@ class Github(TorngitBaseAdapter):
                                 language=self._validate_language(repo["language"]),
                                 private=repo["private"],
                                 branch=repo["default_branch"],
-                                fork=fork,
                             ),
                         )
                     )
@@ -488,7 +460,7 @@ class Github(TorngitBaseAdapter):
                                 username=organization["login"],
                             )
                         )
-                    except (TorngitClientGeneralError):
+                    except TorngitClientGeneralError:
                         log.exception(
                             "Unable to load organization",
                             extra=dict(url=organization["url"]),

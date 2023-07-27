@@ -341,7 +341,6 @@ class TestUnitBitbucket(object):
                     "language": "python",
                     "private": True,
                     "branch": "master",
-                    "fork": None,
                 },
             },
             {
@@ -352,7 +351,6 @@ class TestUnitBitbucket(object):
                     "language": "python",
                     "private": True,
                     "branch": "master",
-                    "fork": None,
                 },
             },
         ]

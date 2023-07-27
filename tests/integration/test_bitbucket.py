@@ -594,7 +594,6 @@ class TestBitbucketTestCase(object):
         expected_result = [
             {
                 "repo": {
-                    "fork": None,
                     "name": "ci-repo",
                     "language": None,
                     "branch": "master",
@@ -608,7 +607,6 @@ class TestBitbucketTestCase(object):
             },
             {
                 "repo": {
-                    "fork": None,
                     "name": "private",
                     "language": "python",
                     "branch": "master",
@@ -622,7 +620,6 @@ class TestBitbucketTestCase(object):
             },
             {
                 "repo": {
-                    "fork": None,
                     "name": "coverage.py",
                     "language": "python",
                     "branch": "master",
@@ -636,7 +633,6 @@ class TestBitbucketTestCase(object):
             },
             {
                 "repo": {
-                    "fork": None,
                     "name": "integration-test-repo",
                     "language": "python",
                     "branch": "master",
@@ -650,7 +646,6 @@ class TestBitbucketTestCase(object):
             },
             {
                 "repo": {
-                    "fork": None,
                     "name": "test-bb-integration-public",
                     "language": None,
                     "branch": "master",
@@ -948,7 +943,6 @@ class TestBitbucketTestCase(object):
         expected_result = [
             {
                 "repo": {
-                    "fork": None,
                     "name": "example-python",
                     "language": None,
                     "branch": "master",
