@@ -1,4 +1,5 @@
 import base64
+import logging
 import os
 from datetime import datetime
 from json import dumps, loads
@@ -7,7 +8,11 @@ from urllib.parse import parse_qsl
 import oauth2 as oauth
 from tlslite.utils import keyfactory
 
-from shared.config import get_config
+from shared.config import (
+    MissingConfigException,
+    get_config,
+    load_file_from_path_at_config,
+)
 from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -17,27 +22,33 @@ from shared.torngit.exceptions import (
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat
 
-PEM = """-----BEGIN RSA PRIVATE KEY-----
-MIICXQIBAAKBgQC9d2iMTFiXglyvHmp5ExoNK2X8nxJ+1mlxgWOyTUpTrOKRiDUb
-ZoZID3TP8CobQ5BsqDOSawHyi+Waf9Ca+iYoTu1fa8yZUreQXAdaK1u61Mn2XCkm
-ITE/N5kvbYjDEWA1Dwb6CsvVkYZXo/Eq1X/3yrLXWKDNEnm0Cq48PFWqMQIDAQAB
-AoGBAJ9wEqytuoeVDkXXhKXqayvV73cMrdXKvOTli24KGJgdjnQFeRtbxXhyeUxa
-wDQ9QRYO3YdDQVpIW6kOEg+4nc4vEb4o2kiZTSq/OMkoO7NFM4AlsUbXB+lJ2Cgf
-p0M4MjQVaMihvyXMw3qAFBNAAuwCYShau54rGTIbXJlODqN5AkEA4HPkM3JW8i11
-xZLDYcwclYUhShx4WldNJkS0btoBwGrBt0NKiCR9dkZcZMLfFYuZhaLw5ybCw9dN
-7iOiOoFexwJBANgYqhm0bQKWusSilD0mNmdq6HfSJsVOh5o/6GLsIEhPGkawAPkW
-eReTr/Ucu+88a2QXo7GGjPRQxTY8UVcLl0cCQGO+nLbQJRtSYHgAlJstXbaEhxqs
-ND/RdBOBjL2GXCjqSFPsr3542NhqxDxy7Thh5UOh+XR/oSXu1E7zvvBI9ZkCQECm
-iGVuVFq8652eokj1ILuqAWivp8fJ6cndKtJFoJbhi5PwXionbgz+s1rawOMfKWXl
-qKSZA5yoeYfzXcZ0AksCQQC3NtXZCOLRHvs+aawuUDyi0GmTNYgg3DNVP5vIUFRl
-KyWKpbO+hG9eIqczRK4IxN89hoCD00GhRiWGqAVUGGhz
------END RSA PRIVATE KEY-----"""
-
-PRIVATEKEY = keyfactory.parsePrivateKey(PEM)
+log = logging.getLogger(__name__)
 
 
 class _Signature(oauth.SignatureMethod):
     name = "RSA-SHA1"
+    privkey = None
+
+    def _prepare_private_key():
+        # The user should provide a path to a pemfile in `bitbucket_server.pemfile`
+        try:
+            pemfile = load_file_from_path_at_config("bitbucket_server", "pemfile")
+        except MissingConfigException:
+            log.exception("`bitbucket_server.pemfile` config required but not found")
+            raise
+        except FileNotFoundError:
+            log.exception(
+                "No PEM file found at configured path (`bitbucket_server.pemfile`)",
+                extra=dict(path=get_config("bitbucket_server", "pemfile")),
+            )
+            raise
+
+        # Parse and memoize the pemfile, if it's valid
+        try:
+            _Signature.privkey = keyfactory.parsePrivateKey(pemfile)
+        except Exception as e:
+            log.exception("Failed to parse PEM file", extra=dict(exception=e))
+            raise
 
     def signing_base(self, request, consumer, token):
         if not hasattr(request, "normalized_url") or request.normalized_url is None:
@@ -62,7 +73,12 @@ class _Signature(oauth.SignatureMethod):
         """Builds the base signature string."""
         key, raw = self.signing_base(request, consumer, token)
 
-        signature = PRIVATEKEY.hashAndSign(raw)
+        # If this is the first time we're signing a request, initialize the private key
+        if not _Signature.privkey:
+            _Signature._prepare_private_key()
+            assert _Signature.privkey, "Failed to load private key to sign requests"
+
+        signature = _Signature.privkey.hashAndSign(raw)
         return base64.b64encode(signature)
 
 
