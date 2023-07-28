@@ -895,6 +895,22 @@ class TestGithubTestCase(object):
         assert one_expected_result in res
 
     @pytest.mark.asyncio
+    async def test_list_repos_using_installation(self, valid_handler, codecov_vcr):
+        res = await valid_handler.list_repos_using_installation()
+        assert res == [
+            {
+                "owner": {"service_id": 111885151, "username": "scott-codecov-org"},
+                "repo": {
+                    "service_id": 610348935,
+                    "name": "codecov-test",
+                    "language": "python",
+                    "private": True,
+                    "branch": "master",
+                },
+            }
+        ]
+
+    @pytest.mark.asyncio
     async def test_list_top_level_files(self, valid_handler, codecov_vcr):
         expected_result = [
             {"name": ".gitignore", "path": ".gitignore", "type": "file"},

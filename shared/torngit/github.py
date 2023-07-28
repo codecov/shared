@@ -350,7 +350,7 @@ class Github(TorngitBaseAdapter):
             ),
         )
 
-    async def list_repos_using_installation(self, username):
+    async def list_repos_using_installation(self, username=None):
         """
         returns list of repositories included in this integration
         """
@@ -370,12 +370,27 @@ class Github(TorngitBaseAdapter):
                 )
                 if len(res["repositories"]) == 0:
                     break
-                repos.extend(res["repositories"])
+
+                for repo in res["repositories"]:
+                    repos.append(
+                        dict(
+                            owner=dict(
+                                service_id=repo["owner"]["id"],
+                                username=repo["owner"]["login"],
+                            ),
+                            repo=dict(
+                                service_id=repo["id"],
+                                name=repo["name"],
+                                language=self._validate_language(repo["language"]),
+                                private=repo["private"],
+                                branch=repo["default_branch"] or "master",
+                            ),
+                        )
+                    )
+
                 if len(res["repositories"]) < 100:
                     break
 
-            for repo in repos:
-                repo["id"] = str(repo["id"])
             return repos
 
     async def list_repos(self, username=None, token=None):
