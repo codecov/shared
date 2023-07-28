@@ -63,6 +63,8 @@ def mock_config_load_file(configs, mocker):
 
 class TestBitbucketTestCase(object):
     def test_signature_without_config(self, mocker):
+        _Signature.privkey = None
+
         def raise_missing_config(obj, *args, **kwargs):
             raise MissingConfigException(args)
 
@@ -84,6 +86,7 @@ class TestBitbucketTestCase(object):
             assert False, "MissingConfigException should have been thrown"
 
     def test_signature_with_invalid_config(self, mocker):
+        _Signature.privkey = None
         mock_config_get({"bitbucket_server.pemfile": "/invalid"}, mocker)
 
         signature = _Signature()
@@ -101,6 +104,7 @@ class TestBitbucketTestCase(object):
             assert False, "FileNotFoundError should have been thrown"
 
     def test_signature_with_invalid_pemfile(self, mocker):
+        _Signature.privkey = None
         mock_config_load_file({"bitbucket_server.pemfile": "invalid pemfile"}, mocker)
 
         signature = _Signature()
@@ -118,7 +122,7 @@ class TestBitbucketTestCase(object):
             assert False, "SyntaxError should have been thrown"
 
     def test_signature_with_valid_pemfile(self, mocker):
-        assert not _Signature.privkey, "Test should start without a parsed privkey"
+        _Signature.privkey = None
 
         mock_config_load_file({"bitbucket_server.pemfile": mock_private_key}, mocker)
 
