@@ -376,6 +376,7 @@ class Github(TorngitBaseAdapter):
 
             for repo in repos:
                 repo["id"] = str(repo["id"])
+                repo["language"] = self._validate_language(repo["language"])
             return repos
 
     async def list_repos(self, username=None, token=None):
