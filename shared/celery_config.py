@@ -78,6 +78,9 @@ health_check_task_name = f"app.cron.{TaskConfigGroup.healthcheck.value}.HealthCh
 gh_app_webhook_check_task_name = (
     f"app.cron.{TaskConfigGroup.daily.value}.GitHubAppWebhooksCheckTask"
 )
+brolly_stats_rollup_task_name = (
+    f"app.cron.{TaskConfigGroup.daily.value}.BrollyStatsRollupTask"
+)
 
 
 def get_task_group(task_name: str) -> Optional[str]:

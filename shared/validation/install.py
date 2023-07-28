@@ -195,6 +195,15 @@ config_schema = {
                 "type": "dict",
                 "schema": {"enabled": {"type": "boolean"}},
             },
+            "telemetry": {
+                "type": "dict",
+                "schema": {
+                    "enabled": {"type": "boolean"},
+                    "admin_email": {"type": "string"},
+                    "anonymous": {"type": "boolean"},
+                    "endpoint_override": {"type": "string"},
+                },
+            },
         },
     },
     "services": {
