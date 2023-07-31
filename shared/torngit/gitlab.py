@@ -421,10 +421,11 @@ class Gitlab(TorngitBaseAdapter):
                     data.append(
                         dict(
                             owner=dict(
-                                service_id=owner_service_id, username=owner_username
+                                service_id=str(owner_service_id),
+                                username=owner_username,
                             ),
                             repo=dict(
-                                service_id=repo["id"],
+                                service_id=str(repo["id"]),
                                 name=repo["path"],
                                 private=(repo["visibility"] != "public"),
                                 language=None,
@@ -912,9 +913,9 @@ class Gitlab(TorngitBaseAdapter):
         owner_service_id, owner_username = await self.get_owner_info_from_repo(res)
         repo_name = res["path"]
         return dict(
-            owner=dict(service_id=owner_service_id, username=owner_username),
+            owner=dict(service_id=str(owner_service_id), username=owner_username),
             repo=dict(
-                service_id=res["id"],
+                service_id=str(res["id"]),
                 private=res["visibility"] != "public",
                 language=None,
                 branch=(res["default_branch"] or "master"),

@@ -325,10 +325,11 @@ class Github(TorngitBaseAdapter):
         if parent:
             fork = dict(
                 owner=dict(
-                    service_id=parent["owner"]["id"], username=parent["owner"]["login"]
+                    service_id=str(parent["owner"]["id"]),
+                    username=parent["owner"]["login"],
                 ),
                 repo=dict(
-                    service_id=parent["id"],
+                    service_id=str(parent["id"]),
                     name=parent["name"],
                     language=self._validate_language(parent["language"]),
                     private=parent["private"],
@@ -339,9 +340,9 @@ class Github(TorngitBaseAdapter):
             fork = None
 
         return dict(
-            owner=dict(service_id=res["owner"]["id"], username=username),
+            owner=dict(service_id=str(res["owner"]["id"]), username=username),
             repo=dict(
-                service_id=res["id"],
+                service_id=str(res["id"]),
                 name=repo,
                 language=self._validate_language(res["language"]),
                 private=res["private"],
@@ -375,11 +376,11 @@ class Github(TorngitBaseAdapter):
                     repos.append(
                         dict(
                             owner=dict(
-                                service_id=repo["owner"]["id"],
+                                service_id=str(repo["owner"]["id"]),
                                 username=repo["owner"]["login"],
                             ),
                             repo=dict(
-                                service_id=repo["id"],
+                                service_id=str(repo["id"]),
                                 name=repo["name"],
                                 language=self._validate_language(repo["language"]),
                                 private=repo["private"],
@@ -425,9 +426,11 @@ class Github(TorngitBaseAdapter):
 
                     data.append(
                         dict(
-                            owner=dict(service_id=repo["owner"]["id"], username=_o),
+                            owner=dict(
+                                service_id=str(repo["owner"]["id"]), username=_o
+                            ),
                             repo=dict(
-                                service_id=repo["id"],
+                                service_id=str(repo["id"]),
                                 name=_r,
                                 language=self._validate_language(repo["language"]),
                                 private=repo["private"],
