@@ -804,16 +804,16 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_repository(self, valid_handler, codecov_vcr):
         expected_result = {
-            "owner": {"service_id": 44376991, "username": "ThiagoCodecov"},
+            "owner": {"service_id": "44376991", "username": "ThiagoCodecov"},
             "repo": {
-                "service_id": 156617777,
+                "service_id": "156617777",
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
                 "fork": {
-                    "owner": {"service_id": 8226205, "username": "codecov"},
+                    "owner": {"service_id": "8226205", "username": "codecov"},
                     "repo": {
-                        "service_id": 24344106,
+                        "service_id": "24344106",
                         "name": "example-python",
                         "language": "python",
                         "private": False,
@@ -880,11 +880,11 @@ class TestGithubTestCase(object):
     async def test_list_repos(self, valid_handler, codecov_vcr):
         res = await valid_handler.list_repos()
         assert len(res) == 115
-        assert all(x["owner"]["service_id"] in [8226205, 44376991] for x in res)
+        assert all(x["owner"]["service_id"] in ["8226205", "44376991"] for x in res)
         one_expected_result = {
-            "owner": {"service_id": 44376991, "username": "ThiagoCodecov"},
+            "owner": {"service_id": "44376991", "username": "ThiagoCodecov"},
             "repo": {
-                "service_id": 156617777,
+                "service_id": "156617777",
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
@@ -899,9 +899,9 @@ class TestGithubTestCase(object):
         res = await valid_handler.list_repos_using_installation()
         assert res == [
             {
-                "owner": {"service_id": 111885151, "username": "scott-codecov-org"},
+                "owner": {"service_id": "111885151", "username": "scott-codecov-org"},
                 "repo": {
-                    "service_id": 610348935,
+                    "service_id": "610348935",
                     "name": "codecov-test",
                     "language": "python",
                     "private": True,

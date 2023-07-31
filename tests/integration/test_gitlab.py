@@ -493,13 +493,13 @@ class TestGitlabTestCase(object):
     @pytest.mark.asyncio
     async def test_get_repository(self, valid_handler, codecov_vcr):
         expected_result = {
-            "owner": {"service_id": 109640, "username": "codecov"},
+            "owner": {"service_id": "109640", "username": "codecov"},
             "repo": {
                 "branch": "master",
                 "language": None,
                 "name": "ci-repo",
                 "private": False,
-                "service_id": 187725,
+                "service_id": "187725",
             },
         }
         res = await valid_handler.get_repository()
@@ -510,13 +510,13 @@ class TestGitlabTestCase(object):
     async def test_get_repository_subgroup(self, valid_handler, codecov_vcr):
         # test get_repository for repo in a subgroup
         expected_result = {
-            "owner": {"service_id": 4165905, "username": "l00p_group_1:subgroup1"},
+            "owner": {"service_id": "4165905", "username": "l00p_group_1:subgroup1"},
             "repo": {
                 "branch": "master",
                 "language": None,
                 "name": "proj-a",
                 "private": True,
-                "service_id": 9715852,
+                "service_id": "9715852",
             },
         }
         res = await Gitlab(
@@ -531,13 +531,13 @@ class TestGitlabTestCase(object):
         # test get repo in a subgroup when no repo service_id which happens when a user
         # tries to view a repo on legacy codecov.io and the repo is not in the database yet
         expected_result = {
-            "owner": {"service_id": 4165905, "username": "l00p_group_1:subgroup1"},
+            "owner": {"service_id": "4165905", "username": "l00p_group_1:subgroup1"},
             "repo": {
                 "branch": "master",
                 "language": None,
                 "name": "proj-a",
                 "private": True,
-                "service_id": 9715852,
+                "service_id": "9715852",
             },
         }
         res = await Gitlab(
@@ -574,43 +574,43 @@ class TestGitlabTestCase(object):
     async def test_list_repos(self, valid_handler, codecov_vcr):
         expected_result = [
             {
-                "owner": {"service_id": 189208, "username": "morerunes"},
+                "owner": {"service_id": "189208", "username": "morerunes"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "delectamentum-mud-server",
                     "private": False,
-                    "service_id": 1384844,
+                    "service_id": "1384844",
                 },
             },
             {
-                "owner": {"service_id": 109640, "username": "codecov"},
+                "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "example-python",
                     "private": False,
-                    "service_id": 580838,
+                    "service_id": "580838",
                 },
             },
             {
-                "owner": {"service_id": 109640, "username": "codecov"},
+                "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "ci-private",
                     "private": True,
-                    "service_id": 190307,
+                    "service_id": "190307",
                 },
             },
             {
-                "owner": {"service_id": 109640, "username": "codecov"},
+                "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "ci-repo",
                     "private": False,
-                    "service_id": 187725,
+                    "service_id": "187725",
                 },
             },
         ]
@@ -621,9 +621,12 @@ class TestGitlabTestCase(object):
     async def test_list_repos_subgroups(self, valid_handler, codecov_vcr):
         expected_result = [
             {
-                "owner": {"service_id": 4165907, "username": "l00p_group_1:subgroup2"},
+                "owner": {
+                    "service_id": "4165907",
+                    "username": "l00p_group_1:subgroup2",
+                },
                 "repo": {
-                    "service_id": 9715886,
+                    "service_id": "9715886",
                     "name": "flake8",
                     "private": True,
                     "language": None,
@@ -631,9 +634,9 @@ class TestGitlabTestCase(object):
                 },
             },
             {
-                "owner": {"service_id": 3215137, "username": "1nf1n1t3l00p"},
+                "owner": {"service_id": "3215137", "username": "1nf1n1t3l00p"},
                 "repo": {
-                    "service_id": 9715862,
+                    "service_id": "9715862",
                     "name": "inf-proj",
                     "private": True,
                     "language": None,
@@ -641,9 +644,9 @@ class TestGitlabTestCase(object):
                 },
             },
             {
-                "owner": {"service_id": 4165904, "username": "l00p_group_1"},
+                "owner": {"service_id": "4165904", "username": "l00p_group_1"},
                 "repo": {
-                    "service_id": 9715859,
+                    "service_id": "9715859",
                     "name": "loop-proj",
                     "private": True,
                     "language": None,
@@ -651,9 +654,12 @@ class TestGitlabTestCase(object):
                 },
             },
             {
-                "owner": {"service_id": 4165905, "username": "l00p_group_1:subgroup1"},
+                "owner": {
+                    "service_id": "4165905",
+                    "username": "l00p_group_1:subgroup1",
+                },
                 "repo": {
-                    "service_id": 9715852,
+                    "service_id": "9715852",
                     "name": "proj-a",
                     "private": True,
                     "language": None,
@@ -674,38 +680,38 @@ class TestGitlabTestCase(object):
     ):
         expected_result = [
             {
-                "owner": {"service_id": 4037482, "username": "codecov-organization"},
+                "owner": {"service_id": "4037482", "username": "codecov-organization"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "demo-gitlab",
                     "private": True,
-                    "service_id": 12060694,
+                    "service_id": "12060694",
                 },
             },
             {
-                "owner": {"service_id": 4037482, "username": "codecov-organization"},
+                "owner": {"service_id": "4037482", "username": "codecov-organization"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "codecov-assume-flag-test",
                     "private": True,
-                    "service_id": 10575601,
+                    "service_id": "10575601",
                 },
             },
             {
-                "owner": {"service_id": 4037482, "username": "codecov-organization"},
+                "owner": {"service_id": "4037482", "username": "codecov-organization"},
                 "repo": {
                     "branch": "master",
                     "language": None,
                     "name": "migration-tests",
                     "private": True,
-                    "service_id": 9422435,
+                    "service_id": "9422435",
                 },
             },
             {
                 "owner": {
-                    "service_id": 5938764,
+                    "service_id": "5938764",
                     "username": "thiagocodecovtestgroup:test-subgroup",
                 },
                 "repo": {
@@ -713,12 +719,12 @@ class TestGitlabTestCase(object):
                     "language": None,
                     "name": "tasks",
                     "private": True,
-                    "service_id": 14027433,
+                    "service_id": "14027433",
                 },
             },
             {
                 "owner": {
-                    "service_id": 5938764,
+                    "service_id": "5938764",
                     "username": "thiagocodecovtestgroup:test-subgroup",
                 },
                 "repo": {
@@ -726,7 +732,7 @@ class TestGitlabTestCase(object):
                     "language": None,
                     "name": "grouptestprojecttrr",
                     "private": True,
-                    "service_id": 14026543,
+                    "service_id": "14026543",
                 },
             },
         ]
