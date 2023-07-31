@@ -166,7 +166,7 @@ class ConfigHelper(object):
                     self.loaded_files[args] = _file.read()
             except FileNotFoundError:
                 log.exception(
-                    "Unable to read filepath for install YAML",
+                    "Unable to read file specified in config",
                     extra=dict(file_location=location, path_args=list(args)),
                 )
                 raise
