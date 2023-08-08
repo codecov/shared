@@ -72,9 +72,11 @@ class PercentSchemaField(object):
 
     field_regex = re.compile(r"(\d+)(\.\d+)?%?")
 
-    def validate(self, value):
-        if value == "auto":
+    def validate(self, value, allow_auto=False):
+        if value == "auto" and allow_auto:
             return value
+        elif value == "auto":
+            raise Invalid("This field does not accept auto")
         if isinstance(value, numbers.Number):
             return float(value)
         if not self.field_regex.match(value):
