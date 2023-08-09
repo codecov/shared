@@ -459,6 +459,7 @@ schema = {
             "after_n_builds": {"type": "integer", "min": 0},
             "show_carryforward_flags": {"type": "boolean"},
             "hide_comment_details": {"type": "boolean"},
+            "hide_project_coverage": {"type": "boolean"},
         },
     },
     "github_checks": {
