@@ -114,6 +114,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "branches": ["master"],
                         "behavior": "once",
                         "after_n_builds": 6,
+                        "hide_project_coverage": True,
                     },
                     "coverage": {
                         "status": {
@@ -138,6 +139,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "branches": ["^master$"],
                         "behavior": "once",
                         "after_n_builds": 6,
+                        "hide_project_coverage": True,
                     },
                     "coverage": {
                         "status": {
