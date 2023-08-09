@@ -225,11 +225,15 @@ class SessionTotalsArray(object):
                 sessions_array["meta"] = {
                     "session_count": int(max(sessions_array.keys())) + 1
                 }
-            meta_info = sessions_array.pop("meta")
+            meta_info = sessions_array.get("meta")
             session_count = meta_info["session_count"]
             # Force keys to be integers for standarization.
             # It probably becomes a strong when going to the database
-            non_null_items = {int(key): value for key, value in sessions_array.items()}
+            non_null_items = {
+                int(key): value
+                for key, value in sessions_array.items()
+                if key != "meta"
+            }
             return cls(session_count=session_count, non_null_items=non_null_items)
         elif isinstance(sessions_array, list):
             session_count = len(sessions_array)
