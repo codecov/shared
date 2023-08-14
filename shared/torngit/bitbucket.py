@@ -324,6 +324,10 @@ class Bitbucket(TorngitBaseAdapter):
         else:
             usernames = [username]
         # fetch repo information
+        log.info(
+            "Bitbucket: fetching repos from teams",
+            extra=dict(usernames=usernames, repos=repos_to_log),
+        )
         async with self.get_client() as client:
             for team in usernames:
                 try:
@@ -369,6 +373,10 @@ class Bitbucket(TorngitBaseAdapter):
                         "Unable to fetch repos from team on Bitbucket",
                         extra=dict(team_name=team, repository_names=repos_to_log),
                     )
+        log.info(
+            "Bitbucket: finished fetching repos",
+            extra=dict(usernames=usernames, repos=data),
+        )
         return data
 
     async def list_permissions(self, token=None):
