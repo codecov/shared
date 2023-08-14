@@ -659,8 +659,9 @@ class TestBitbucketTestCase(object):
             },
         ]
 
-        res = await valid_handler.list_repos("codecov")
-        assert sorted(res, key=lambda x: x["repo"]["service_id"]) == sorted(
+        pages = [page async for page in valid_handler.list_repos("codecov")]
+        repos = [repo for page in pages for repo in page]
+        assert sorted(repos, key=lambda x: x["repo"]["service_id"]) == sorted(
             expected_result, key=lambda x: x["repo"]["service_id"]
         )
 
@@ -955,9 +956,9 @@ class TestBitbucketTestCase(object):
                 },
             }
         ]
-        res = await valid_handler.list_repos()
-        print(res)
-        assert sorted(res, key=lambda x: x["repo"]["service_id"]) == sorted(
+        pages = [page async for page in valid_handler.list_repos()]
+        repos = [repo for page in pages for repo in page]
+        assert sorted(repos, key=lambda x: x["repo"]["service_id"]) == sorted(
             expected_result, key=lambda x: x["repo"]["service_id"]
         )
 

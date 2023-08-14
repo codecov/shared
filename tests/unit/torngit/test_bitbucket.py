@@ -331,8 +331,9 @@ class TestUnitBitbucket(object):
         respx.get("https://bitbucket.org/api/2.0/repositories/codecov").respond(
             status_code=404, json={"values": []}
         )
-        res = await valid_handler.list_repos()
-        assert res == [
+        pages = [page async for page in valid_handler.list_repos()]
+        repos = [repo for page in pages for repo in page]
+        assert repos == [
             {
                 "owner": {"service_id": "poilk", "username": "anotherslug"},
                 "repo": {

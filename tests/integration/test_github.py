@@ -878,9 +878,13 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):
-        res = await valid_handler.list_repos()
-        assert len(res) == 115
-        assert all(x["owner"]["service_id"] in ["8226205", "44376991"] for x in res)
+        pages = [page async for page in valid_handler.list_repos()]
+        assert len(pages) == 2
+
+        repos = [repo for page in pages for repo in page]
+        assert len(repos) == 115
+
+        assert all(x["owner"]["service_id"] in ["8226205", "44376991"] for x in repos)
         one_expected_result = {
             "owner": {"service_id": "44376991", "username": "ThiagoCodecov"},
             "repo": {
@@ -892,12 +896,17 @@ class TestGithubTestCase(object):
             },
         }
 
-        assert one_expected_result in res
+        assert one_expected_result in repos
 
     @pytest.mark.asyncio
     async def test_list_repos_using_installation(self, valid_handler, codecov_vcr):
-        res = await valid_handler.list_repos_using_installation()
-        assert res == [
+        pages = [page async for page in valid_handler.list_repos_using_installation()]
+        assert len(pages) == 1
+
+        repos = [repo for page in pages for repo in page]
+        assert len(repos) == 1
+
+        assert repos == [
             {
                 "owner": {"service_id": "111885151", "username": "scott-codecov-org"},
                 "repo": {

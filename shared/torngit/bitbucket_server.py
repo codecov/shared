@@ -526,8 +526,9 @@ class BitbucketServer(TorngitBaseAdapter):
         return [{"path": f, "type": "file"} for f in files]
 
     async def list_repos(self, username=None, token=None):
-        data, start = [], 0
+        start = 0
         while True:
+            data = []
             # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1847760
             res = await self.api("get", "/repos", start=start, token=token)
             if len(res["values"]) == 0:
@@ -557,12 +558,13 @@ class BitbucketServer(TorngitBaseAdapter):
                         ),
                     )
                 )
+
+            yield data
+
             if res["isLastPage"] or res.get("nextPageStart") is None:
                 break
             else:
                 start = res["nextPageStart"]
-
-        return data
 
     async def list_teams(self, token=None):
         data, start = [], 0

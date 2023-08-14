@@ -355,10 +355,10 @@ class Github(TorngitBaseAdapter):
         """
         returns list of repositories included in this integration
         """
-        repos = []
         page = 0
         async with self.get_client() as client:
             while True:
+                repos = []
                 page += 1
                 # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
                 res = await self.api(
@@ -366,7 +366,7 @@ class Github(TorngitBaseAdapter):
                     "get",
                     "/installation/repositories?per_page=100&page=%d" % page,
                     headers={
-                        "Accept": "application/vnd.github.machine-man-preview+json"
+                        "Accept": "application/vnd.github.machine-man-preview+json",
                     },
                 )
                 if len(res["repositories"]) == 0:
@@ -389,10 +389,10 @@ class Github(TorngitBaseAdapter):
                         )
                     )
 
-                if len(res["repositories"]) < 100:
-                    break
+                yield repos
 
-            return repos
+                if len(repos) < 100:
+                    break
 
     async def list_repos(self, username=None, token=None):
         """
@@ -401,9 +401,9 @@ class Github(TorngitBaseAdapter):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         page = 0
-        data = []
         async with self.get_client() as client:
             while True:
+                data = []
                 page += 1
                 # https://developer.github.com/v3/repos/#list-your-repositories
                 if username is None:
@@ -439,10 +439,10 @@ class Github(TorngitBaseAdapter):
                         )
                     )
 
+                yield data
+
                 if len(repos) < 100:
                     break
-
-            return data
 
     async def list_teams(self, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)

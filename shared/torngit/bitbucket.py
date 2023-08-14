@@ -299,7 +299,7 @@ class Bitbucket(TorngitBaseAdapter):
         Once we have all orgs/teams and owner's usernames we should call "/repositories/{username}" endpoint
         for each of the orgs/teams and owner's usernames.
         """
-        data, page = [], 0
+        page = 0
         # if username is not provided, list all repos
         repos_to_log = []
         if username is None:
@@ -328,6 +328,7 @@ class Bitbucket(TorngitBaseAdapter):
             for team in usernames:
                 try:
                     while True:
+                        data = []
                         page += 1
                         # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
                         res = await self.api(
@@ -361,6 +362,7 @@ class Bitbucket(TorngitBaseAdapter):
                                     ),
                                 )
                             )
+                        yield data
                         if not res.get("next"):
                             page = 0
                             break
@@ -369,7 +371,6 @@ class Bitbucket(TorngitBaseAdapter):
                         "Unable to fetch repos from team on Bitbucket",
                         extra=dict(team_name=team, repository_names=repos_to_log),
                     )
-        return data
 
     async def list_permissions(self, token=None):
         data, page = [], 0

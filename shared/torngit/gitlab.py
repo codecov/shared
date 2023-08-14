@@ -418,27 +418,29 @@ class Gitlab(TorngitBaseAdapter):
                             extra=dict(repo=repo),
                         )
 
-                    data.append(
-                        dict(
-                            owner=dict(
-                                service_id=str(owner_service_id),
-                                username=owner_username,
-                            ),
-                            repo=dict(
-                                service_id=str(repo["id"]),
-                                name=repo["path"],
-                                private=(repo["visibility"] != "public"),
-                                language=None,
-                                branch=branch,
-                            ),
-                        )
+                    processed_repo = dict(
+                        owner=dict(
+                            service_id=str(owner_service_id),
+                            username=owner_username,
+                        ),
+                        repo=dict(
+                            service_id=str(repo["id"]),
+                            name=repo["path"],
+                            private=(repo["visibility"] != "public"),
+                            language=None,
+                            branch=branch,
+                        ),
                     )
+                    # Apparently some values will show up twice and we have to dedup or update tests
+                    if processed_repo not in data:
+                        data.append(processed_repo)
+
+                page_start = 50 * (page - 1)
+                page_end = 50 * page
+                yield data[page_start:page_end]
+
                 if len(repos) < 50:
                     break
-
-        # deduplicate, since some of them might show up twice
-        data = [i for n, i in enumerate(data) if i not in data[n + 1 :]]
-        return data
 
     async def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups

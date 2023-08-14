@@ -614,8 +614,9 @@ class TestGitlabTestCase(object):
                 },
             },
         ]
-        res = await valid_handler.list_repos()
-        assert res == expected_result
+        pages = [page async for page in valid_handler.list_repos()]
+        repos = [repo for page in pages for repo in page]
+        assert repos == expected_result
 
     @pytest.mark.asyncio
     async def test_list_repos_subgroups(self, valid_handler, codecov_vcr):
@@ -667,12 +668,16 @@ class TestGitlabTestCase(object):
                 },
             },
         ]
-        res = await Gitlab(
-            repo=dict(service_id="9715852"),
-            owner=dict(username="1nf1n1t3l00p"),
-            token=dict(key=16 * "f882"),
-        ).list_repos()
-        assert res == expected_result
+        pages = [
+            page
+            async for page in Gitlab(
+                repo=dict(service_id="9715852"),
+                owner=dict(username="1nf1n1t3l00p"),
+                token=dict(key=16 * "f882"),
+            ).list_repos()
+        ]
+        repos = [repo for page in pages for repo in page]
+        assert repos == expected_result
 
     @pytest.mark.asyncio
     async def test_list_repos_subgroups_from_subgroups_username(
@@ -736,12 +741,16 @@ class TestGitlabTestCase(object):
                 },
             },
         ]
-        res = await Gitlab(
-            repo=dict(service_id="5938764"),
-            owner=dict(username="thiagocodecovtestgroup:test-subgroup"),
-            token=dict(key=16 * "f882"),
-        ).list_repos()
-        assert res == expected_result
+        pages = [
+            page
+            async for page in Gitlab(
+                repo=dict(service_id="5938764"),
+                owner=dict(username="thiagocodecovtestgroup:test-subgroup"),
+                token=dict(key=16 * "f882"),
+            ).list_repos()
+        ]
+        repos = [repo for page in pages for repo in page]
+        assert repos == expected_result
 
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, codecov_vcr):
