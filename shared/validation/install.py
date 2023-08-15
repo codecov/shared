@@ -216,6 +216,7 @@ config_schema = {
                 "type": "dict",
                 "schema": {
                     "host": {"type": "string"},
+                    "port": {"type": "integer"},
                     "hash_key": {"type": "string"},
                     "iam_auth": {"type": "boolean"},
                     "iam_endpoint": {"type": "string", "nullable": True},
