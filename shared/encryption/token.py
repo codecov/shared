@@ -20,10 +20,9 @@ def decode_token(_oauth: str) -> OauthConsumerToken:
     This function decrypts a oauth_token into its different parts.
     At the moment it does different things depending on the provider.
 
-    - github
-        Only stores the "key" as the entire token
     - bitbucket
         Encodes the token as f"{key}:{secret}"
+    - github
     - gitlab
         Encodes the token as f"{key}: :{refresh_token}"
         (notice the space where {secret} should go to avoid having '::', used by decode function)
@@ -31,7 +30,7 @@ def decode_token(_oauth: str) -> OauthConsumerToken:
     token = {}
     colon_count = _oauth.count(":")
     if colon_count > 1:
-        # Gitlab (after refresh tokens)
+        # Github + Gitlab  (post refresh tokens)
         token["key"], token["secret"], token["refresh_token"] = _oauth.split(":", 2)
         if token["secret"] == " ":
             # We remove the secret if it's our placeholder value
@@ -40,7 +39,7 @@ def decode_token(_oauth: str) -> OauthConsumerToken:
         # Bitbucket
         token["key"], token["secret"] = _oauth.split(":", 1)
     else:
-        # Github (and Gitlab pre refresh tokens)
+        # Github + Gitlab (pre refresh tokens)
         token["key"] = _oauth
         token["secret"] = None
     return token

@@ -23,7 +23,7 @@ def generic_valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="codecove2e"),
-        token=dict(key=10 * "a280"),
+        token=dict(key=10 * "a280", refresh_token=10 * "a180"),
     )
 
 
@@ -134,6 +134,7 @@ class TestGithubTestCase(object):
             "created_at": "2018-10-22T17:51:44Z",
             "updated_at": "2020-10-14T17:58:13Z",
             "access_token": "testw5efy5qccduniyucsk5tesu08s4640xtoymv",
+            "refresh_token": "testblahblahblahblahsfas",
             "token_type": "bearer",
             "scope": "read:org,repo:status,user:email,write:repo_hook",
         }
@@ -1307,9 +1308,13 @@ class TestGithubTestCase(object):
         assert not res
 
     @pytest.mark.asyncio
-    async def test_is_student_not_capable_app(self, valid_handler, codecov_vcr):
-        res = await valid_handler.is_student()
+    async def test_is_student_not_capable_app(
+        self, generic_valid_handler, codecov_vcr, mocker
+    ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
+        res = await generic_valid_handler.is_student()
         assert not res
+        assert mock_refresh.call_count == 0
 
     @pytest.mark.asyncio
     async def test_is_student_github_education_503(self, valid_handler, codecov_vcr):

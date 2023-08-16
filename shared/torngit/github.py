@@ -4,6 +4,7 @@ import logging
 import os
 from base64 import b64decode
 from typing import List
+from urllib.parse import parse_qs, urlencode
 
 import httpx
 from httpx import Response
@@ -13,17 +14,20 @@ from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
+    TorngitCantRefreshTokenError,
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitMisconfiguredCredentials,
     TorngitObjectNotFoundError,
     TorngitRateLimitError,
+    TorngitRefreshTokenFailedError,
     TorngitRepoNotFoundError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
 from shared.torngit.status import Status
+from shared.typings.oauth_token_types import OauthConsumerToken
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -146,6 +150,7 @@ class Github(TorngitBaseAdapter):
             json=body if body else None, headers=_headers, follow_redirects=False
         )
         max_number_retries = 3
+        tried_refresh = False
         for current_retry in range(1, max_number_retries + 1):
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
@@ -173,6 +178,22 @@ class Github(TorngitBaseAdapter):
                 raise TorngitServerUnreachableError(
                     "GitHub was not able to be reached."
                 )
+            if (
+                # I don't think Github have any specific message for trying to use an expired token
+                res.status_code == 401
+                and not tried_refresh
+                and url.startswith(self.api_url)
+            ):
+                tried_refresh = True
+                # Refresh token and retry
+                log.debug("Token is invalid. Refreshing")
+                token = await self.refresh_token(client)
+                _headers["Authorization"] = "token %s" % token["key"]
+                if callable(self._on_token_refresh):
+                    await self._on_token_refresh(token)
+                # Skip the rest of the validations and try again.
+                # It does consume one of the retries
+                continue
             if (
                 not statuses_to_retry
                 or res.status_code not in statuses_to_retry
@@ -229,6 +250,55 @@ class Github(TorngitBaseAdapter):
                     extra=dict(status=res.status_code, **log_dict),
                 )
 
+    async def refresh_token(self, client: httpx.AsyncClient) -> OauthConsumerToken:
+        """
+        This function requests a refresh token from Github.
+        The refresh_token value is stored as part of the oauth token dict.
+
+        ! side effect: updates the self._token value
+        ! raises TorngitCantRefreshTokenError
+        ! raises TorngitRefreshTokenFailedError
+        """
+        creds_from_token = self._oauth_consumer_token()
+        creds_to_send = dict(
+            client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
+        )
+
+        if self.token.get("refresh_token") is None:
+            raise TorngitCantRefreshTokenError(
+                "Token doesn't have refresh token information"
+            )
+
+        # https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens#refreshing-a-user-access-token-with-a-refresh-token
+        # Returns response as application/x-www-form-urlencoded
+        params = urlencode(
+            dict(
+                refresh_token=self.token["refresh_token"],
+                grant_type="refresh_token",
+                **creds_to_send,
+            )
+        )
+        res = await client.request(
+            "POST",
+            self.service_url + "/login/oauth/access_token",
+            params=params,
+        )
+        if res.status_code >= 300:
+            raise TorngitRefreshTokenFailedError(res)
+        response_text = self._parse_response(res)
+        session = parse_qs(response_text)
+
+        if session.get("access_token"):
+            self.set_token(
+                {
+                    # parse_qs put values in a list for reasons
+                    "key": session["access_token"][0],
+                    "refresh_token": session["refresh_token"][0],
+                }
+            )
+            return self.token
+        raise TorngitRefreshTokenFailedError(f"No access token in response - {res}")
+
     # Generic
     # -------
     async def get_branches(self, token=None):
@@ -269,7 +339,12 @@ class Github(TorngitBaseAdapter):
 
             if session.get("access_token"):
                 # set current token
-                self.set_token(dict(key=session["access_token"]))
+                self.set_token(
+                    dict(
+                        key=session["access_token"],
+                        refresh_token=session["refresh_token"],
+                    )
+                )
 
                 user = await self.api(client, "get", "/user")
                 user.update(session or {})
