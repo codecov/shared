@@ -3,7 +3,7 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from typing import List
+from typing import List, Optional
 from urllib.parse import parse_qs, urlencode
 
 import httpx
@@ -180,20 +180,26 @@ class Github(TorngitBaseAdapter):
                 )
             if (
                 # I don't think Github have any specific message for trying to use an expired token
-                res.status_code == 401
-                and not tried_refresh
+                not tried_refresh
                 and url.startswith(self.api_url)
+                and (
+                    (res.status_code == 401)
+                    or (res.status_code == 404 and f"/repos/{self.slug}/" in url)
+                )
             ):
                 tried_refresh = True
                 # Refresh token and retry
                 log.debug("Token is invalid. Refreshing")
-                token = await self.refresh_token(client)
-                _headers["Authorization"] = "token %s" % token["key"]
-                if callable(self._on_token_refresh):
-                    await self._on_token_refresh(token)
-                # Skip the rest of the validations and try again.
-                # It does consume one of the retries
-                continue
+                token = await self.refresh_token(client, url)
+                if token is not None:
+                    # Assuming we could retry and the retry was successful
+                    # Update headers and retry
+                    _headers["Authorization"] = "token %s" % token["key"]
+                    if callable(self._on_token_refresh):
+                        await self._on_token_refresh(token)
+                    # Skip the rest of the validations and try again.
+                    # It does consume one of the retries
+                    continue
             if (
                 not statuses_to_retry
                 or res.status_code not in statuses_to_retry
@@ -250,7 +256,9 @@ class Github(TorngitBaseAdapter):
                     extra=dict(status=res.status_code, **log_dict),
                 )
 
-    async def refresh_token(self, client: httpx.AsyncClient) -> OauthConsumerToken:
+    async def refresh_token(
+        self, client: httpx.AsyncClient, original_url: str
+    ) -> Optional[OauthConsumerToken]:
         """
         This function requests a refresh token from Github.
         The refresh_token value is stored as part of the oauth token dict.
@@ -265,9 +273,8 @@ class Github(TorngitBaseAdapter):
         )
 
         if self.token.get("refresh_token") is None:
-            raise TorngitCantRefreshTokenError(
-                "Token doesn't have refresh token information"
-            )
+            log.warning("Trying to refresh Github token with no refresh")
+            return None
 
         # https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens#refreshing-a-user-access-token-with-a-refresh-token
         # Returns response as application/x-www-form-urlencoded
@@ -284,7 +291,13 @@ class Github(TorngitBaseAdapter):
             params=params,
         )
         if res.status_code >= 300:
-            raise TorngitRefreshTokenFailedError(res)
+            raise TorngitRefreshTokenFailedError(
+                dict(
+                    status_code=res.status_code,
+                    response_text=res.text,
+                    original_url=original_url,
+                )
+            )
         response_text = self._parse_response(res)
         session = parse_qs(response_text)
 
@@ -297,7 +310,9 @@ class Github(TorngitBaseAdapter):
                 }
             )
             return self.token
-        raise TorngitRefreshTokenFailedError(f"No access token in response - {res}")
+        # Not passing the response on purpose in case we are failing to parse it properly
+        # So as to not leak user's tokens by accident
+        raise TorngitRefreshTokenFailedError(dict(error="No access_token in response"))
 
     # Generic
     # -------
@@ -342,7 +357,9 @@ class Github(TorngitBaseAdapter):
                 self.set_token(
                     dict(
                         key=session["access_token"],
-                        refresh_token=session["refresh_token"],
+                        # Refresh token only exists if the app is configured
+                        # to have expiring tokens
+                        refresh_token=session.get("refresh_token", None),
                     )
                 )
 

@@ -17,16 +17,17 @@ interactions:
       user-agent:
       - Default
     method: PATCH
-    uri: https://api.github.com/repos/ThiagoCodecov/example-python/issues/comments/113979999
+    uri: https://api.github.com/repos/codecove2e/example-python/issues/comments/113979999
   response:
-    content: '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/issues#update-an-issue-comment"}'
+    content: '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/issues/comments#update-an-issue-comment"}'
     headers:
       Access-Control-Allow-Origin:
       - '*'
       Access-Control-Expose-Headers:
       - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
-        X-RateLimit-Used, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes,
-        X-Poll-Interval, X-GitHub-Media-Type, Deprecation, Sunset
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
       Content-Encoding:
       - gzip
       Content-Security-Policy:
@@ -34,13 +35,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 14 Oct 2020 17:32:04 GMT
+      - Fri, 18 Aug 2023 20:21:33 GMT
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       Server:
       - GitHub.com
-      Status:
-      - 404 Not Found
       Strict-Transport-Security:
       - max-age=31536000; includeSubdomains; preload
       Transfer-Encoding:
@@ -56,19 +55,25 @@ interactions:
       X-GitHub-Media-Type:
       - github.v3
       X-GitHub-Request-Id:
-      - CFD3:2B25:1F7F33:344F30:5F873613
+      - E310:1725:17B63EA:1925BB4:64DFD2CD
       X-OAuth-Scopes:
-      - admin:org, admin:public_key, admin:repo_hook, repo, user, write:discussion
+      - repo, user
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
       - '4997'
       X-RateLimit-Reset:
-      - '1602700322'
+      - '1692393273'
+      X-RateLimit-Resource:
+      - core
       X-RateLimit-Used:
       - '3'
       X-XSS-Protection:
-      - 1; mode=block
+      - '0'
+      github-authentication-token-expiration:
+      - 2023-08-25 20:13:04 UTC
+      x-github-api-version-selected:
+      - '2022-11-28'
     http_version: HTTP/1.1
     status_code: 404
 version: 1

@@ -876,7 +876,8 @@ class TestUnitGithub(object):
         assert mocked_response.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_get_general_exception_pickle(self, valid_handler):
+    async def test_get_general_exception_pickle(self, valid_handler, mocker):
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         with respx.mock:
             mocked_response = respx.get(
                 url="https://api.github.com/repos/ThiagoCodecov/example-python/pulls?page=1&per_page=25&state=open"
@@ -896,7 +897,8 @@ class TestUnitGithub(object):
             assert isinstance(renegerated_error, TorngitClientGeneralError)
             assert renegerated_error.code == error.code
 
-        assert mocked_response.call_count == 1
+        assert mocked_response.call_count == 2
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_api_no_token(self):
@@ -1120,7 +1122,8 @@ class TestUnitGithub(object):
         assert mocked_response.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_files_404(self):
+    async def test_get_pull_request_files_404(self, mocker):
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         with respx.mock:
             my_route = respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
@@ -1142,6 +1145,7 @@ class TestUnitGithub(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_403(self):
@@ -1207,7 +1211,9 @@ class TestUnitGithub(object):
                         status_code=502, content="Service unavailable try again later"
                     )
                 )
-                await valid_handler.refresh_token(valid_handler.get_client())
+                await valid_handler.refresh_token(
+                    valid_handler.get_client(), "original_request_url"
+                )
             assert exp.code == 555
         mocked_refresh.call_count == 1
 
@@ -1224,29 +1230,22 @@ class TestUnitGithub(object):
                         status_code=403, content='{"error": "unauthorized"}'
                     )
                 )
-                await valid_handler.refresh_token(valid_handler.get_client())
+                await valid_handler.refresh_token(
+                    valid_handler.get_client(), "original_request_url"
+                )
             assert exp.code == 555
         mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_github_refresh_fail_terminates_bad_request(
+    async def test_github_refresh_fail_terminates_no_refresh_token(
         self, mocker, valid_handler
     ):
         old_token = valid_handler._token
         valid_handler._token = {"access_token": "old_token_without_refresh"}
-        with pytest.raises(TorngitCantRefreshTokenError) as exp:
-            with respx.mock:
-                mocked_refresh = respx.post(
-                    "https://github.com/login/oauth/access_token"
-                ).mock(
-                    return_value=httpx.Response(
-                        status_code=403, content='{"error": "unauthorized"}'
-                    )
-                )
-                await valid_handler.refresh_token(valid_handler.get_client())
-            assert exp.code == 555
-            assert exp.response_data is None
-        mocked_refresh.call_count == 1
+        res = await valid_handler.refresh_token(
+            valid_handler.get_client(), "original_request_url"
+        )
+        assert res is None
         valid_handler._token = old_token
 
     @pytest.mark.asyncio
@@ -1276,13 +1275,17 @@ class TestUnitGithub(object):
             mocked_refresh = respx.post(
                 "https://github.com/login/oauth/access_token"
             ).mock(side_effect=side_effect)
-            await valid_handler.refresh_token(valid_handler.get_client())
+            await valid_handler.refresh_token(
+                valid_handler.get_client(), "original_request_url"
+            )
             assert mocked_refresh.call_count == 1
             assert valid_handler._token == dict(
                 key="new_access_token", refresh_token="new_refresh_token"
             )
 
-            await valid_handler.refresh_token(valid_handler.get_client())
+            await valid_handler.refresh_token(
+                valid_handler.get_client(), "original_request_url"
+            )
             assert mocked_refresh.call_count == 2
             assert valid_handler._token == dict(
                 key="newer_access_token", refresh_token="newer_refresh_token"
