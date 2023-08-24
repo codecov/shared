@@ -2,6 +2,10 @@
 
 Shared is a place for code that is common to multiple python repositories on `codecov`.
 
+> We believe that everyone should have access to quality software (like Sentry), that’s why we have always offered Codecov for free to open source maintainers.
+>
+> By making our code public, we’re not only joining the community that’s supported us from the start — but also want to make sure that every developer can contribute to and build on the Codecov experience.
+
 ## How does shared get into production
 
 `shared` is a repository of its own, so it needs to be installed as a dependency on the repositories that might use it.
