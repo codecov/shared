@@ -1,17 +1,21 @@
+import asyncio
 import pickle
-from urllib.parse import parse_qsl, urlparse
+from urllib.parse import parse_qs, parse_qsl, urlparse
 
 import httpx
 import pytest
 import respx
+from mock import MagicMock
 
 from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
+    TorngitCantRefreshTokenError,
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitMisconfiguredCredentials,
     TorngitObjectNotFoundError,
     TorngitRateLimitError,
+    TorngitRefreshTokenFailedError,
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
@@ -31,7 +35,11 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="some_key"),
+        token=dict(key="some_key", refresh_token="refresh_token"),
+        oauth_consumer_token=dict(
+            key="client_id",
+            secret="client_secret",
+        ),
     )
 
 
@@ -44,6 +52,7 @@ def ghapp_handler():
         oauth_consumer_token=dict(
             key="client_id",
             secret="client_secret",
+            refresh_token="refresh_token",
         ),
     )
 
@@ -54,20 +63,24 @@ class TestUnitGithub(object):
         client = mocker.MagicMock(
             request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=599))
         )
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         method = "GET"
         url = "random_url"
         with pytest.raises(TorngitServerUnreachableError):
             await valid_handler.api(client, method, url)
+        assert mock_refresh.call_count == 0
 
     @pytest.mark.asyncio
     async def test_api_client_error_unauthorized(self, valid_handler, mocker):
         client = mocker.MagicMock(
             request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=401))
         )
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         method = "GET"
-        url = "random_url"
+        url = "https://api.github.com/some_endpoint"
         with pytest.raises(TorngitUnauthorizedError):
             await valid_handler.api(client, method, url)
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_api_client_error_ratelimit_reached(self):
@@ -210,10 +223,12 @@ class TestUnitGithub(object):
                 ]
             )
         )
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         method = "GET"
-        url = "random_url"
+        url = "https://api.github.com/some_endpoint"
         res = await valid_handler.api(client, method, url, statuses_to_retry=[401])
         assert res == "FOUND"
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_api_almost_too_many_retries(self, valid_handler, mocker):
@@ -226,10 +241,12 @@ class TestUnitGithub(object):
                 ]
             )
         )
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         method = "GET"
-        url = "random_url"
+        url = "https://api.github.com/some_endpoint"
         res = await valid_handler.api(client, method, url, statuses_to_retry=[401])
         assert res == "FOUND"
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_api_too_many_retries(self, valid_handler, mocker):
@@ -243,10 +260,12 @@ class TestUnitGithub(object):
                 ]
             )
         )
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         method = "GET"
-        url = "random_url"
+        url = "https://api.github.com/some_endpoint"
         with pytest.raises(TorngitClientError):
             await valid_handler.api(client, method, url, statuses_to_retry=[401])
+        assert mock_refresh.call_count == 1
 
     def test_get_token_by_type_if_none(self):
         instance = Github(
@@ -857,7 +876,8 @@ class TestUnitGithub(object):
         assert mocked_response.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_get_general_exception_pickle(self, valid_handler):
+    async def test_get_general_exception_pickle(self, valid_handler, mocker):
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         with respx.mock:
             mocked_response = respx.get(
                 url="https://api.github.com/repos/ThiagoCodecov/example-python/pulls?page=1&per_page=25&state=open"
@@ -877,7 +897,8 @@ class TestUnitGithub(object):
             assert isinstance(renegerated_error, TorngitClientGeneralError)
             assert renegerated_error.code == error.code
 
-        assert mocked_response.call_count == 1
+        assert mocked_response.call_count == 2
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_api_no_token(self):
@@ -1101,7 +1122,8 @@ class TestUnitGithub(object):
         assert mocked_response.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_files_404(self):
+    async def test_get_pull_request_files_404(self, mocker):
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
         with respx.mock:
             my_route = respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
@@ -1123,6 +1145,7 @@ class TestUnitGithub(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
+        assert mock_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_403(self):
@@ -1174,3 +1197,146 @@ class TestUnitGithub(object):
                 == "Github API rate limit error: secondary rate limit"
             )
             assert excinfo.value.retry_after == 60
+
+    @pytest.mark.asyncio
+    async def test_github_refresh_fail_terminates_unavailable(
+        self, mocker, valid_handler
+    ):
+        with pytest.raises(TorngitRefreshTokenFailedError) as exp:
+            with respx.mock:
+                mocked_refresh = respx.post(
+                    "https://github.com/login/oauth/access_token"
+                ).mock(
+                    return_value=httpx.Response(
+                        status_code=502, content="Service unavailable try again later"
+                    )
+                )
+                await valid_handler.refresh_token(
+                    valid_handler.get_client(), "original_request_url"
+                )
+            assert exp.code == 555
+        mocked_refresh.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_github_refresh_fail_terminates_unauthorized(
+        self, mocker, valid_handler
+    ):
+        with pytest.raises(TorngitRefreshTokenFailedError) as exp:
+            with respx.mock:
+                mocked_refresh = respx.post(
+                    "https://github.com/login/oauth/access_token"
+                ).mock(
+                    return_value=httpx.Response(
+                        status_code=403, content='{"error": "unauthorized"}'
+                    )
+                )
+                await valid_handler.refresh_token(
+                    valid_handler.get_client(), "original_request_url"
+                )
+            assert exp.code == 555
+        mocked_refresh.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_github_refresh_fail_terminates_no_refresh_token(
+        self, mocker, valid_handler
+    ):
+        old_token = valid_handler._token
+        valid_handler._token = {"access_token": "old_token_without_refresh"}
+        res = await valid_handler.refresh_token(
+            valid_handler.get_client(), "original_request_url"
+        )
+        assert res is None
+        valid_handler._token = old_token
+
+    @pytest.mark.asyncio
+    async def test_gihub_double_refresh(self, mocker, valid_handler):
+        def side_effect(request, *args, **kwargs):
+            url_parts = urlparse(str(request.url))
+            query = url_parts.query
+            params = parse_qs(query)
+            refresh_token = params["refresh_token"][0]
+            if refresh_token == "refresh_token":
+                return httpx.Response(
+                    status_code=200,
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
+                    text="access_token=new_access_token&token_type=bearer&refresh_token=new_refresh_token",
+                )
+            elif refresh_token == "new_refresh_token":
+                return httpx.Response(
+                    status_code=200,
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
+                    text="access_token=newer_access_token&token_type=bearer&refresh_token=newer_refresh_token",
+                )
+            pytest.fail(f"Wrong token received")
+
+        assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
+
+        with respx.mock:
+            mocked_refresh = respx.post(
+                "https://github.com/login/oauth/access_token"
+            ).mock(side_effect=side_effect)
+            await valid_handler.refresh_token(
+                valid_handler.get_client(), "original_request_url"
+            )
+            assert mocked_refresh.call_count == 1
+            assert valid_handler._token == dict(
+                key="new_access_token", refresh_token="new_refresh_token"
+            )
+
+            await valid_handler.refresh_token(
+                valid_handler.get_client(), "original_request_url"
+            )
+            assert mocked_refresh.call_count == 2
+            assert valid_handler._token == dict(
+                key="newer_access_token", refresh_token="newer_refresh_token"
+            )
+
+        # Make sure that changing the token doesn't change the _oauth
+        assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
+
+    @pytest.mark.asyncio
+    async def test_github_refresh_after_failed_request(self, mocker, valid_handler):
+        def side_effect(request, *args, **kwargs):
+            print(f"Received request with headers {request.headers['Authorization']}")
+            token = request.headers["Authorization"]
+            if token == "token some_key":
+                return httpx.Response(
+                    status_code=401,
+                    content='{"message":"Bad Request"}',
+                )
+            elif token == "token new_access_token":
+                return httpx.Response(
+                    status_code=200, json={"state": "active", "role": "admin"}
+                )
+            pytest.fail(f"Wrong token received ({token})")
+
+        f = asyncio.Future()
+        f.set_result(True)
+        mock_refresh_callback: MagicMock = mocker.patch.object(
+            valid_handler, "_on_token_refresh", create=True, return_value=f
+        )
+        with respx.mock:
+            mocked_route = respx.get(
+                "https://api.github.com/orgs/ThiagoCodecov/memberships/John%20Doe"
+            ).mock(side_effect=side_effect)
+            mocked_refresh = respx.post(
+                "https://github.com/login/oauth/access_token"
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
+                    text="access_token=new_access_token&token_type=bearer&refresh_token=new_refresh_token",
+                )
+            )
+            await valid_handler.get_is_admin(user={"username": "John Doe"})
+        assert mocked_route.call_count == 2
+        assert mocked_refresh.call_count == 1
+        assert valid_handler._token["key"] == "new_access_token"
+        assert valid_handler._token["refresh_token"] == "new_refresh_token"
+        assert mock_refresh_callback.call_count == 1
+        assert mock_refresh_callback.called_with(
+            {
+                "access_token": "new_access_token",
+                "refresh_token": "new_refresh_token",
+            }
+        )

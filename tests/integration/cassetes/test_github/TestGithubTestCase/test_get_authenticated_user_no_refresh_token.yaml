@@ -15,7 +15,7 @@ interactions:
     method: GET
     uri: https://github.com/login/oauth/access_token?code=dc38acf492b071cc4dce&client_id=999247146557c3ba045c&client_secret=testo8lnq6ihj7zsf896r15yxujnl06og9o0fqiu
   response:
-    content: '{"refresh_token": "testblahblahblahblahsfas", "access_token":"testw5efy5qccduniyucsk5tesu08s4640xtoymv","token_type":"bearer","scope":"read:org,repo:status,user:email,write:repo_hook"}'
+    content: '{"access_token":"testw5efy5qccduniyucsk5tesu08s4640xtoymv","token_type":"bearer","scope":"read:org,repo:status,user:email,write:repo_hook"}'
     headers:
       Cache-Control:
       - max-age=0, private, must-revalidate

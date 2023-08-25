@@ -23,7 +23,7 @@ def generic_valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="codecove2e"),
-        token=dict(key=10 * "a280"),
+        token=dict(key=10 * "a280", refresh_token=10 * "a180"),
     )
 
 
@@ -134,6 +134,59 @@ class TestGithubTestCase(object):
             "created_at": "2018-10-22T17:51:44Z",
             "updated_at": "2020-10-14T17:58:13Z",
             "access_token": "testw5efy5qccduniyucsk5tesu08s4640xtoymv",
+            "refresh_token": "testblahblahblahblahsfas",
+            "token_type": "bearer",
+            "scope": "read:org,repo:status,user:email,write:repo_hook",
+        }
+
+    @pytest.mark.asyncio
+    async def test_get_authenticated_user_no_refresh_token(self, codecov_vcr):
+        # To regenerate this test, go to
+        # https://github.com/login/oauth/authorize?response_type=code&scope=user%3Aemail%2Cread%3Aorg%2Crepo%3Astatus%2Cwrite%3Arepo_hook&client_id=999247146557c3ba045c
+        # get the code and paste it here below
+        code = "dc38acf492b071cc4dce"
+        handler = Github(
+            oauth_consumer_token=dict(
+                key="999247146557c3ba045c",
+                secret="testo8lnq6ihj7zsf896r15yxujnl06og9o0fqiu",
+            )
+        )
+        res = await handler.get_authenticated_user(code)
+        print(res)
+        assert res == {
+            "login": "ThiagoCodecov",
+            "id": 44376991,
+            "node_id": "MDQ6VXNlcjQ0Mzc2OTkx",
+            "avatar_url": "https://avatars3.githubusercontent.com/u/44376991?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/ThiagoCodecov",
+            "html_url": "https://github.com/ThiagoCodecov",
+            "followers_url": "https://api.github.com/users/ThiagoCodecov/followers",
+            "following_url": "https://api.github.com/users/ThiagoCodecov/following{/other_user}",
+            "gists_url": "https://api.github.com/users/ThiagoCodecov/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/ThiagoCodecov/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/ThiagoCodecov/subscriptions",
+            "organizations_url": "https://api.github.com/users/ThiagoCodecov/orgs",
+            "repos_url": "https://api.github.com/users/ThiagoCodecov/repos",
+            "events_url": "https://api.github.com/users/ThiagoCodecov/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/ThiagoCodecov/received_events",
+            "type": "User",
+            "site_admin": False,
+            "name": "Thiago",
+            "company": "@codecov ",
+            "blog": "",
+            "location": None,
+            "email": "thiago@codecov.io",
+            "hireable": None,
+            "bio": None,
+            "twitter_username": None,
+            "public_repos": 3,
+            "public_gists": 0,
+            "followers": 0,
+            "following": 0,
+            "created_at": "2018-10-22T17:51:44Z",
+            "updated_at": "2020-10-14T17:58:13Z",
+            "access_token": "testw5efy5qccduniyucsk5tesu08s4640xtoymv",
             "token_type": "bearer",
             "scope": "read:org,repo:status,user:email,write:repo_hook",
         }
@@ -148,18 +201,28 @@ class TestGithubTestCase(object):
         assert res["body"] == "Hello world numbah 2 my friendo"
 
     @pytest.mark.asyncio
-    async def test_edit_comment_not_found(self, valid_handler, codecov_vcr):
+    async def test_edit_comment_not_found(
+        self, generic_valid_handler, codecov_vcr, mocker
+    ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         with pytest.raises(TorngitObjectNotFoundError):
-            await valid_handler.edit_comment("1", "113979999", "Hello world number 2")
+            await generic_valid_handler.edit_comment(
+                "1", "113979999", "Hello world number 2"
+            )
+        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_delete_comment(self, valid_handler, codecov_vcr):
         assert await valid_handler.delete_comment("1", "708545249") is True
 
     @pytest.mark.asyncio
-    async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
+    async def test_delete_comment_not_found(
+        self, generic_valid_handler, codecov_vcr, mocker
+    ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         with pytest.raises(TorngitObjectNotFoundError):
-            await valid_handler.delete_comment("1", 113977999)
+            await generic_valid_handler.delete_comment("1", 113977999)
+        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_find_pull_request_nothing_found(
@@ -178,9 +241,13 @@ class TestGithubTestCase(object):
         assert await generic_valid_handler.find_pull_request(commitid) == 1
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_fail(self, valid_handler, codecov_vcr):
+    async def test_get_pull_request_fail(
+        self, generic_valid_handler, codecov_vcr, mocker
+    ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         with pytest.raises(TorngitObjectNotFoundError):
-            await valid_handler.get_pull_request("100")
+            await generic_valid_handler.get_pull_request("100")
+        mock_refresh.assert_called_once()
 
     get_pull_request_test_data = [
         (
@@ -316,22 +383,26 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_no_permissions(
-        self, valid_but_no_permissions_handler, codecov_vcr
+        self, valid_but_no_permissions_handler, codecov_vcr, mocker
     ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         commitid = "bbe3e94949d11471cc4e054f822d222254a4a4f8"
         with pytest.raises(TorngitRepoNotFoundError):
             await valid_but_no_permissions_handler.get_commit(commitid)
+        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_commit_repo_doesnt_exist(
-        self, repo_doesnt_exist_handler, codecov_vcr
+        self, repo_doesnt_exist_handler, codecov_vcr, mocker
     ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         commitid = "bbe3e94949d11471cc4e054f822d222254a4a4f8"
         with pytest.raises(TorngitRepoNotFoundError) as ex:
             await repo_doesnt_exist_handler.get_commit(commitid)
         expected_response = '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/repos#get-a-commit"}'
         exc = ex.value
         assert exc.response_data == expected_response
+        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_commit_diff(self, valid_handler, codecov_vcr):
@@ -625,9 +696,11 @@ class TestGithubTestCase(object):
         assert res is True
 
     @pytest.mark.asyncio
-    async def test_delete_webhook_not_found(self, valid_handler, codecov_vcr):
+    async def test_delete_webhook_not_found(self, valid_handler, codecov_vcr, mocker):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_webhook("4742f011-8397-aa77-8876-5e9a06f10f98")
+        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_authenticated(self, valid_handler, codecov_vcr):
@@ -868,13 +941,17 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_source_random_commit_not_found(self, valid_handler, codecov_vcr):
+    async def test_get_source_random_commit_not_found(
+        self, valid_handler, codecov_vcr, mocker
+    ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         path, ref = (
             "awesome/non_exising_file.py",
             "96492d409fc86aa7ae31b214dfe6b08ae860458a",
         )
         with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.get_source(path, ref)
+        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):
@@ -1307,9 +1384,13 @@ class TestGithubTestCase(object):
         assert not res
 
     @pytest.mark.asyncio
-    async def test_is_student_not_capable_app(self, valid_handler, codecov_vcr):
-        res = await valid_handler.is_student()
+    async def test_is_student_not_capable_app(
+        self, generic_valid_handler, codecov_vcr, mocker
+    ):
+        mock_refresh = mocker.patch.object(Github, "refresh_token")
+        res = await generic_valid_handler.is_student()
         assert not res
+        assert mock_refresh.call_count == 0
 
     @pytest.mark.asyncio
     async def test_is_student_github_education_503(self, valid_handler, codecov_vcr):
