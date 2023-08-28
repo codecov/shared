@@ -1,5 +1,6 @@
 import asyncio
 import pickle
+from typing import Dict
 from urllib.parse import parse_qs, parse_qsl, urlparse
 
 import httpx
@@ -57,6 +58,14 @@ def ghapp_handler():
     )
 
 
+# Github needs a refresh_token callback function to try and refresh the token
+# so we can add valid_handler._on_token_refresh = token_refresh_fake_callback
+# to the tests that we want to see if Github refreshes the tokens
+# other tests won't retry to refresh (cause the handlers dont have callbacks by default)
+async def token_refresh_fake_callback(new_token: Dict) -> None:
+    print("Saving new token after refresh")
+
+
 class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_api_client_error_unreachable(self, valid_handler, mocker):
@@ -76,8 +85,10 @@ class TestUnitGithub(object):
             request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=401))
         )
         mock_refresh = mocker.patch.object(Github, "refresh_token")
+        valid_handler._on_token_refresh = token_refresh_fake_callback
         method = "GET"
         url = "https://api.github.com/some_endpoint"
+        assert callable(valid_handler._on_token_refresh)
         with pytest.raises(TorngitUnauthorizedError):
             await valid_handler.api(client, method, url)
         assert mock_refresh.call_count == 1
@@ -224,6 +235,7 @@ class TestUnitGithub(object):
             )
         )
         mock_refresh = mocker.patch.object(Github, "refresh_token")
+        valid_handler._on_token_refresh = token_refresh_fake_callback
         method = "GET"
         url = "https://api.github.com/some_endpoint"
         res = await valid_handler.api(client, method, url, statuses_to_retry=[401])
@@ -242,6 +254,7 @@ class TestUnitGithub(object):
             )
         )
         mock_refresh = mocker.patch.object(Github, "refresh_token")
+        valid_handler._on_token_refresh = token_refresh_fake_callback
         method = "GET"
         url = "https://api.github.com/some_endpoint"
         res = await valid_handler.api(client, method, url, statuses_to_retry=[401])
@@ -265,7 +278,8 @@ class TestUnitGithub(object):
         url = "https://api.github.com/some_endpoint"
         with pytest.raises(TorngitClientError):
             await valid_handler.api(client, method, url, statuses_to_retry=[401])
-        assert mock_refresh.call_count == 1
+        # Doesn't try to refresh because there's no on_token_refresh callback function
+        assert mock_refresh.call_count == 0
 
     def test_get_token_by_type_if_none(self):
         instance = Github(
@@ -878,6 +892,7 @@ class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_get_general_exception_pickle(self, valid_handler, mocker):
         mock_refresh = mocker.patch.object(Github, "refresh_token")
+        valid_handler._on_token_refresh = token_refresh_fake_callback
         with respx.mock:
             mocked_response = respx.get(
                 url="https://api.github.com/repos/ThiagoCodecov/example-python/pulls?page=1&per_page=25&state=open"
@@ -1141,6 +1156,7 @@ class TestUnitGithub(object):
                 owner=dict(username="codecove2e"),
                 token=dict(key=10 * "a280"),
             )
+            handler._on_token_refresh = token_refresh_fake_callback
             with pytest.raises(TorngitObjectNotFoundError) as excinfo:
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404

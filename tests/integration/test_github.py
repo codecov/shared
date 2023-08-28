@@ -14,6 +14,7 @@ def valid_handler():
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
         token=dict(key=10 * "a280"),
+        on_token_refresh=lambda token: token,
     )
 
 
@@ -24,6 +25,7 @@ def generic_valid_handler():
         repo=dict(name="example-python"),
         owner=dict(username="codecove2e"),
         token=dict(key=10 * "a280", refresh_token=10 * "a180"),
+        on_token_refresh=lambda token: token,
     )
 
 
@@ -385,24 +387,20 @@ class TestGithubTestCase(object):
     async def test_get_commit_no_permissions(
         self, valid_but_no_permissions_handler, codecov_vcr, mocker
     ):
-        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         commitid = "bbe3e94949d11471cc4e054f822d222254a4a4f8"
         with pytest.raises(TorngitRepoNotFoundError):
             await valid_but_no_permissions_handler.get_commit(commitid)
-        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_commit_repo_doesnt_exist(
         self, repo_doesnt_exist_handler, codecov_vcr, mocker
     ):
-        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         commitid = "bbe3e94949d11471cc4e054f822d222254a4a4f8"
         with pytest.raises(TorngitRepoNotFoundError) as ex:
             await repo_doesnt_exist_handler.get_commit(commitid)
         expected_response = '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/reference/repos#get-a-commit"}'
         exc = ex.value
         assert exc.response_data == expected_response
-        mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_get_commit_diff(self, valid_handler, codecov_vcr):
