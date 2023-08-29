@@ -178,10 +178,18 @@ class Github(TorngitBaseAdapter):
                 raise TorngitServerUnreachableError(
                     "GitHub was not able to be reached."
                 )
+            # Github doesn't have any specific message for trying to use an expired token
+            # on top of that they return 404 for certain endpoints (not 401).
+            # So this is the little heuristics that we follow to decide on refreshing a token
             if (
-                # I don't think Github have any specific message for trying to use an expired token
+                # Only try to refresh once
                 not tried_refresh
+                # If there's no self._on_token_refresh then the token being used is probably from integration
+                # and therefore can't be refreshed (i.e. it's not a user-to-server request)
+                and callable(self._on_token_refresh)
+                # Exclude the check to see if is_student from refreshes
                 and url.startswith(self.api_url)
+                # Requests that can potentially have failed due to token expired
                 and (
                     (res.status_code == 401)
                     or (res.status_code == 404 and f"/repos/{self.slug}/" in url)
@@ -195,8 +203,7 @@ class Github(TorngitBaseAdapter):
                     # Assuming we could retry and the retry was successful
                     # Update headers and retry
                     _headers["Authorization"] = "token %s" % token["key"]
-                    if callable(self._on_token_refresh):
-                        await self._on_token_refresh(token)
+                    await self._on_token_refresh(token)
                     # Skip the rest of the validations and try again.
                     # It does consume one of the retries
                     continue
@@ -273,7 +280,7 @@ class Github(TorngitBaseAdapter):
         )
 
         if self.token.get("refresh_token") is None:
-            log.warning("Trying to refresh Github token with no refresh")
+            log.warning("Trying to refresh Github token with no refresh_token saved")
             return None
 
         # https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens#refreshing-a-user-access-token-with-a-refresh-token
