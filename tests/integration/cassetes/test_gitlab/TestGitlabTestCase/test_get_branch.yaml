@@ -1,0 +1,71 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - gitlab.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/repository/branches/main
+  response:
+    content: '{"name":"main","commit":{"id":"0fc784af11c401449e56b24a174bae7b9af86c98","short_id":"0fc784af","created_at":"2023-06-27T11:13:34.000-04:00","parent_ids":["b64b9b4c25c6c088781ead5eae424f156ee98d8c"],"title":"3","message":"3\n","author_name":"joseph-sentry","author_email":"joseph.sawaya@sentry.io","authored_date":"2023-06-27T11:13:34.000-04:00","committer_name":"joseph-sentry","committer_email":"joseph.sawaya@sentry.io","committed_date":"2023-06-27T11:13:34.000-04:00","trailers":{},"web_url":"https://gitlab.com/joseph-sentry/example-python/-/commit/0fc784af11c401449e56b24a174bae7b9af86c98"},"merged":false,"protected":true,"developers_can_push":false,"developers_can_merge":false,"can_push":true,"default":true,"web_url":"https://gitlab.com/joseph-sentry/example-python/-/tree/main"}'
+    headers:
+      CF-Cache-Status:
+      - MISS
+      CF-RAY:
+      - 7fed9431ed625794-IAD
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 30 Aug 2023 14:03:44 GMT
+      Etag:
+      - W/"dc6c2ab0a46ec8ec3206a880d101b54d"
+      GitLab-LB:
+      - fe-14-lb-gprd
+      GitLab-SV:
+      - api-gke-us-east1-d
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=XEJJs%2F7hPMLtjBnLXP45vRBG8HNG5%2Bx19W1IBYQyKvjEKErE0sLd5ElmZEa2shWFskj%2BeBHhodJclRSzODnCaOVaLXBkjzsKHi2p4lW%2FzcHNJHdp7ofTDgy9p2HvIz3jxa9amNJXm5Q%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=6AVW_X5yf1WZ42EMYu64yCL7C5mLWpGVD9Zkbwqb4oI-1693404224628-0-604800000;
+        path=/; domain=.gitlab.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Gitlab-Meta:
+      - '{"correlation_id":"35ed075323ab9c477e7353e72d454624","version":"1"}'
+      X-Request-Id:
+      - 35ed075323ab9c477e7353e72d454624
+      X-Runtime:
+      - '0.183047'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

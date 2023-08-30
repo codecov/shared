@@ -352,6 +352,9 @@ class TorngitBaseAdapter(object):
     async def get_branches(self, token=None):
         raise NotImplementedError()
 
+    async def get_branch(self, token=None):
+        raise NotImplementedError()
+
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):

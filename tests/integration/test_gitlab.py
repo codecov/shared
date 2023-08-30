@@ -355,6 +355,16 @@ class TestGitlabTestCase(object):
         assert list(map(lambda a: a[0], branches)) == ["master", "other-branch"]
 
     @pytest.mark.asyncio
+    async def test_get_branch(self, valid_handler, codecov_vcr):
+        expected_result = {
+            "name": "main",
+            "sha": "0fc784af11c401449e56b24a174bae7b9af86c98",
+        }
+        branch = await valid_handler.get_branch("main")
+        print(branch)
+        assert branch == expected_result
+
+    @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
         url = "http://requestbin.net/r/1ecyaj51"
         name, events, secret = "a", {"job_events": True}, "d"

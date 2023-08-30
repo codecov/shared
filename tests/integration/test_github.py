@@ -627,6 +627,16 @@ class TestGithubTestCase(object):
         assert sorted(map(lambda a: a[0], branches)) == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_branch(self, valid_handler, codecov_vcr):
+        expected_result = {
+            "name": "main",
+            "sha": "38c2d0214f2a48c9212a140f5311977059a15b35",
+        }
+        branch = await valid_handler.get_branch("main")
+        print(branch)
+        assert branch == expected_result
+
+    @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
         url = "http://requestbin.net/r/1ecyaj51"
         events = ["push", "pull_request"]
