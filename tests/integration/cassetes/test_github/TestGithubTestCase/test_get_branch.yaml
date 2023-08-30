@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/repos/ThiagoCodecov/example-python/branches/main
+  response:
+    content: '{"name":"main","commit":{"sha":"38c2d0214f2a48c9212a140f5311977059a15b35","node_id":"C_kwDOJu7MkNoAKDM4YzJkMDIxNGYyYTQ4YzkyMTJhMTQwZjUzMTE5NzcwNTlhMTViMzU","commit":{"author":{"name":"joseph-sentry","email":"joseph.sawaya@sentry.io","date":"2023-08-18T16:48:10Z"},"committer":{"name":"joseph-sentry","email":"joseph.sawaya@sentry.io","date":"2023-08-18T16:48:10Z"},"message":"make
+      change to app\n\nSigned-off-by: joseph-sentry <joseph.sawaya@sentry.io>","tree":{"sha":"9ba2c9dd228af0bbaf34cc8dcac85a1bdeed6043","url":"https://api.github.com/repos/joseph-sentry/codecov-demo/git/trees/9ba2c9dd228af0bbaf34cc8dcac85a1bdeed6043"},"url":"https://api.github.com/repos/joseph-sentry/codecov-demo/git/commits/38c2d0214f2a48c9212a140f5311977059a15b35","comment_count":0,"verification":{"verified":true,"reason":"valid","signature":"-----BEGIN
+      SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgZAgzn4ZBqwutNsBP2EqViyU9PP\n/bJINxsDu+12+Wr9EAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5\nAAAAQJe3OYXkY7fA1+RZ130Zrab06lH36l2XC9HMqjHDAW8iCW5VUbvNhOxNpKSokDItdd\nroqDRnazyFj3+oWVCvxgM=\n-----END
+      SSH SIGNATURE-----","payload":"tree 9ba2c9dd228af0bbaf34cc8dcac85a1bdeed6043\nparent
+      1713006782821e36912c23baa98901c7361ee83c\nauthor joseph-sentry <joseph.sawaya@sentry.io>
+      1692377290 -0400\ncommitter joseph-sentry <joseph.sawaya@sentry.io> 1692377290
+      -0400\n\nmake change to app\n\nSigned-off-by: joseph-sentry <joseph.sawaya@sentry.io>\n"}},"url":"https://api.github.com/repos/joseph-sentry/codecov-demo/commits/38c2d0214f2a48c9212a140f5311977059a15b35","html_url":"https://github.com/joseph-sentry/codecov-demo/commit/38c2d0214f2a48c9212a140f5311977059a15b35","comments_url":"https://api.github.com/repos/joseph-sentry/codecov-demo/commits/38c2d0214f2a48c9212a140f5311977059a15b35/comments","author":{"login":"joseph-sentry","id":136376984,"node_id":"U_kgDOCCDymA","avatar_url":"https://avatars.githubusercontent.com/u/136376984?v=4","gravatar_id":"","url":"https://api.github.com/users/joseph-sentry","html_url":"https://github.com/joseph-sentry","followers_url":"https://api.github.com/users/joseph-sentry/followers","following_url":"https://api.github.com/users/joseph-sentry/following{/other_user}","gists_url":"https://api.github.com/users/joseph-sentry/gists{/gist_id}","starred_url":"https://api.github.com/users/joseph-sentry/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/joseph-sentry/subscriptions","organizations_url":"https://api.github.com/users/joseph-sentry/orgs","repos_url":"https://api.github.com/users/joseph-sentry/repos","events_url":"https://api.github.com/users/joseph-sentry/events{/privacy}","received_events_url":"https://api.github.com/users/joseph-sentry/received_events","type":"User","site_admin":false},"committer":{"login":"joseph-sentry","id":136376984,"node_id":"U_kgDOCCDymA","avatar_url":"https://avatars.githubusercontent.com/u/136376984?v=4","gravatar_id":"","url":"https://api.github.com/users/joseph-sentry","html_url":"https://github.com/joseph-sentry","followers_url":"https://api.github.com/users/joseph-sentry/followers","following_url":"https://api.github.com/users/joseph-sentry/following{/other_user}","gists_url":"https://api.github.com/users/joseph-sentry/gists{/gist_id}","starred_url":"https://api.github.com/users/joseph-sentry/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/joseph-sentry/subscriptions","organizations_url":"https://api.github.com/users/joseph-sentry/orgs","repos_url":"https://api.github.com/users/joseph-sentry/repos","events_url":"https://api.github.com/users/joseph-sentry/events{/privacy}","received_events_url":"https://api.github.com/users/joseph-sentry/received_events","type":"User","site_admin":false},"parents":[{"sha":"1713006782821e36912c23baa98901c7361ee83c","url":"https://api.github.com/repos/joseph-sentry/codecov-demo/commits/1713006782821e36912c23baa98901c7361ee83c","html_url":"https://github.com/joseph-sentry/codecov-demo/commit/1713006782821e36912c23baa98901c7361ee83c"}]},"_links":{"self":"https://api.github.com/repos/joseph-sentry/codecov-demo/branches/main","html":"https://github.com/joseph-sentry/codecov-demo/tree/main"},"protected":false,"protection":{"enabled":false,"required_status_checks":{"enforcement_level":"off","contexts":[],"checks":[]}},"protection_url":"https://api.github.com/repos/joseph-sentry/codecov-demo/branches/main/protection"}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 30 Aug 2023 13:48:13 GMT
+      ETag:
+      - W/"a4b0d9bc04a6bc5e48bb347055a6db9e6bb3f10a38bccb0c21abb3b9d69b6ba5"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - ''
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3
+      X-GitHub-Request-Id:
+      - F674:18BC:1B8CB12:37E2EC3:64EF489C
+      X-OAuth-Scopes:
+      - repo
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4999'
+      X-RateLimit-Reset:
+      - '1693406893'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '1'
+      X-XSS-Protection:
+      - '0'
+      github-authentication-token-expiration:
+      - 2023-09-06 13:39:44 UTC
+      x-github-api-version-selected:
+      - '2022-11-28'
+    http_version: HTTP/1.1
+    status_code: 200

@@ -346,6 +346,17 @@ class Github(TorngitBaseAdapter):
                     break
             return branches
 
+    async def get_branch(self, branch_name: str, token=None):
+        async with self.get_client() as client:
+            token = self.get_token_by_type_if_none(token, TokenType.read)
+            # https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28#get-a-branch
+            res = await self.api(
+                client,
+                "get",
+                f"/repos/{self.slug}/branches/{branch_name}",
+            )
+            return {"name": res["name"], "sha": res["commit"]["sha"]}
+
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
         async with self.get_client() as client:

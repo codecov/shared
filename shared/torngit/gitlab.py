@@ -769,6 +769,17 @@ class Gitlab(TorngitBaseAdapter):
         )
         return [(b["name"], b["commit"]["id"]) for b in res]
 
+    async def get_branch(self, name, token=None):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        # https://docs.gitlab.com/ee/api/branches.html
+        branch = await self.api(
+            "get",
+            "/projects/%s/repository/branches/%s"
+            % (self.data["repo"]["service_id"], name),
+            token=token,
+        )
+        return {"name": branch["name"], "sha": branch["commit"]["id"]}
+
     async def get_pull_requests(self, state="open", token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # ONLY searchable by branch.

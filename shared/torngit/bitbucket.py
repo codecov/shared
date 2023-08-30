@@ -701,6 +701,20 @@ class Bitbucket(TorngitBaseAdapter):
             )
             return [(k["name"], k["target"]["hash"]) for k in res["values"]]
 
+    async def get_branch(self, name, token=None):
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "2",
+                "get",
+                "/repositories/%s/refs/branches/%s" % (self.slug, name),
+                token=token,
+            )
+            return {
+                "name": res["values"]["name"],
+                "sha": res["values"]["target"]["hash"],
+            }
+
     async def get_pull_requests(self, state="open", token=None):
         state = {"open": "OPEN", "merged": "MERGED", "close": "DECLINED"}.get(state)
         pulls, page = [], 0

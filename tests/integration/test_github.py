@@ -2,6 +2,7 @@ import pytest
 
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
+    TorngitClientGeneralError,
     TorngitObjectNotFoundError,
     TorngitRepoNotFoundError,
 )
@@ -14,6 +15,7 @@ def valid_handler():
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
         token=dict(key=10 * "a280"),
+        oauth_consumer_token=dict(key=None, secret=None, refresh_token=None),
         on_token_refresh=lambda token: token,
     )
 
@@ -625,6 +627,24 @@ class TestGithubTestCase(object):
         branches = sorted(await valid_handler.get_branches())
         print(sorted(map(lambda a: a[0], branches)))
         assert sorted(map(lambda a: a[0], branches)) == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_branch(self, valid_handler, codecov_vcr):
+        expected_result = {
+            "name": "main",
+            "sha": "38c2d0214f2a48c9212a140f5311977059a15b35",
+        }
+        branch = await valid_handler.get_branch("main")
+        print(branch)
+        assert branch == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_branch_not_existent(self, valid_handler, codecov_vcr):
+        with pytest.raises(TorngitClientGeneralError) as e:
+            branch = await valid_handler.get_branch("none")
+            print(branch)
+            assert e[0] == 404
+            assert e[1]["message"] == "Branch not found"
 
     @pytest.mark.asyncio
     async def test_post_webhook(self, valid_handler, codecov_vcr):
