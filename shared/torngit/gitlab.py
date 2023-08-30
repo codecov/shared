@@ -778,13 +778,6 @@ class Gitlab(TorngitBaseAdapter):
             % (self.data["repo"]["service_id"], name),
             token=token,
         )
-        if not branch:
-            log.warning(
-                "Failed to fetch branch details from GitLab",
-                extra=dict(branch=name, slug=self.slug),
-            )
-            return None
-
         return {"name": branch["name"], "sha": branch["commit"]["id"]}
 
     async def get_pull_requests(self, state="open", token=None):

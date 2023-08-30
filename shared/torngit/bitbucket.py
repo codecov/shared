@@ -710,11 +710,6 @@ class Bitbucket(TorngitBaseAdapter):
                 "/repositories/%s/refs/branches/%s" % (self.slug, name),
                 token=token,
             )
-            if not res:
-                log.warning(
-                    "Failed to fetch branch details from Bitbucket",
-                    extra=dict(branch=name, slug=self.slug),
-                )
             return {
                 "name": res["values"]["name"],
                 "sha": res["values"]["target"]["hash"],
