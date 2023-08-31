@@ -711,8 +711,8 @@ class Bitbucket(TorngitBaseAdapter):
                 token=token,
             )
             return {
-                "name": res["values"]["name"],
-                "sha": res["values"]["target"]["hash"],
+                "name": res["name"],
+                "sha": res["target"]["hash"],
             }
 
     async def get_pull_requests(self, state="open", token=None):
