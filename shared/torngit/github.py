@@ -1002,7 +1002,7 @@ class Github(TorngitBaseAdapter):
             commitid=commit,
             parents=[p["sha"] for p in res["parents"]],
             message=res["commit"]["message"],
-            timestamp=res["commit"]["author"].get("date"),
+            timestamp=res["commit"]["committer"].get("date"),
         )
 
     # Pull Requests

@@ -392,7 +392,7 @@ class TestGithubTestCase(object):
             "commitid": "75f355d8d14ba3d7761c728b4d2607cde0eef065",
             "parents": ["f0895290dc26668faeeb20ee5ccd4cc995925775"],
             "message": "Adding README\n\nsurpriseaAKDS\n\nddkokgfnskfds\n\nBanana\n\nYallow\n\nABG",
-            "timestamp": "2020-05-18T03:16:22Z",
+            "timestamp": "2020-10-13T15:15:31Z",
         }
 
         commit = await valid_handler.get_commit(
