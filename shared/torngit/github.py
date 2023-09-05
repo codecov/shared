@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import hashlib
 import logging
@@ -602,16 +603,30 @@ class Github(TorngitBaseAdapter):
     # -------
     async def get_pull_request_commits(self, pullid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        commits = await self._get_raw_pull_request_commits(pullid, token)
+        return [commit_info["sha"] for commit_info in commits]
+
+    async def _get_raw_pull_request_commits(self, pullid, token):
         # https://developer.github.com/v3/pulls/#list-commits-on-a-pull-request
         # NOTE limited to 250 commits
+        # NOTE page max size is 100
+        # Which means we have to fetch at most 3 pages
+        all_commits = []
+        MAX_RESULTS_PER_PAGE = 100
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                "/repos/%s/pulls/%s/commits" % (self.slug, pullid),
-                token=token,
-            )
-            return [c["sha"] for c in res]
+            for page_number in [1, 2, 3]:
+                page_results = await self.api(
+                    client,
+                    "get",
+                    "/repos/%s/pulls/%s/commits?per_page=%s&page=%s"
+                    % (self.slug, pullid, MAX_RESULTS_PER_PAGE, page_number),
+                    token=token,
+                )
+                if len(page_results):
+                    all_commits.extend(page_results)
+                if len(page_results) < MAX_RESULTS_PER_PAGE:
+                    break
+        return all_commits
 
     # Webhook
     # -------
@@ -1024,13 +1039,7 @@ class Github(TorngitBaseAdapter):
                         message=f"Pull Request {pullid} not found",
                     )
                 raise
-            commits = await self.api(
-                client,
-                "get",
-                "/repos/%s/pulls/%s/commits" % (self.slug, pullid),
-                token=token,
-                per_page=250,
-            )
+            commits = await self._get_raw_pull_request_commits(pullid, token)
             commit_mapping = {
                 val["sha"]: [k["sha"] for k in val["parents"]] for val in commits
             }

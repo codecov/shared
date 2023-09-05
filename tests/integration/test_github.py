@@ -282,7 +282,7 @@ class TestGithubTestCase(object):
         expected_result = {
             "base": {
                 "branch": "master",
-                "commitid": "d723f5cb5c9c9f48c47f2df97c47de20457d3fdc",
+                "commitid": "335ec9958daf0242bc8945659bb120c05800eacf",
             },
             "head": {
                 "branch": "thiago/f/big-pt",
@@ -320,6 +320,29 @@ class TestGithubTestCase(object):
         res = await valid_handler.get_pull_request_commits("1")
         print(res)
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_commits_paginated(self, codecov_vcr):
+        handler = Github(
+            repo=dict(name="y0"),
+            owner=dict(username="y0-causal-inference"),
+            token=dict(key=10 * "a128"),
+            oauth_consumer_token=dict(key=None, secret=None, refresh_token=None),
+        )
+        res = await handler.get_pull_request_commits("149")
+
+        # From https://stackoverflow.com/a/32234251
+        def is_sha1(maybe_sha):
+            if len(maybe_sha) != 40:
+                return False
+            try:
+                int(maybe_sha, 16)
+                return True
+            except ValueError:
+                return False
+
+        assert len(res) == 134
+        assert all(map(is_sha1, res))
 
     @pytest.mark.asyncio
     async def test_get_pull_requests(self, valid_handler, codecov_vcr):
@@ -1092,7 +1115,7 @@ class TestGithubTestCase(object):
         self, valid_handler, codecov_vcr
     ):
         handler = Github(
-            repo=dict(name="codecov-api"),
+            repo=dict(name="codecov-api-archive"),
             owner=dict(username="codecov"),
             token=valid_handler.token,
         )
