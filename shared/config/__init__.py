@@ -48,6 +48,7 @@ default_config = {
             "behavior": "default",
             "show_carryforward_flags": False,
         },
+        "slack_app": True,
         "github_checks": {"annotations": True},
     },
     "setup": {
