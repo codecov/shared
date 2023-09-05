@@ -1,177 +1,153 @@
-from mock import MagicMock, patch
+import pytest
+from mock import patch
 
-from shared.analytics_tracking import (
-    BLANK_SEGMENT_USER_ID,
-    on_error,
-    setup_analytics,
-    track_betaprofiling_added_in_YAML,
-    track_betaprofiling_removed_from_YAML,
-    track_critical_files_sent,
-    track_event,
-    track_manual_critical_file_labelling_added_in_YAML,
-    track_manual_critical_file_labelling_removed_from_YAML,
-    track_related_entrypoints_sent,
-    track_show_critical_paths_added_in_YAML,
-    track_show_critical_paths_removed_from_YAML,
-    track_user,
-)
-from tests.base import BaseTestCase
+from shared.analytics_tracking import get_list_of_analytic_tools, get_tools_manager
+from shared.analytics_tracking.events import Events
+from shared.analytics_tracking.manager import AnalyticsToolManager
 
 
-class TestAnalyticsTracking(BaseTestCase):
-    def test_track_event(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+@pytest.fixture
+def mock_segment():
+    with patch("shared.analytics_tracking.Segment.is_enabled", return_value=True):
+        yield
 
-        track_event(
-            "123",
-            "Coverage Report Passed",
-            is_enterprise=False,
-            event_data={"test": True},
-        )
-        assert mock_track.called
 
-    def test_track_event_invalid_name(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+def test_get_list_of_analytic_tools():
+    tools = get_list_of_analytic_tools()
+    assert isinstance(tools, list)
 
-        track_event(
-            "123", "Invalid Name", is_enterprise=False, event_data={"test": True}
-        )
-        assert not mock_track.called
 
-    def test_track_event_segment_disabled(self, mocker):
-        mocker.patch("shared.analytics_tracking.segment_enabled", False)
-        mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
+def test_get_tools_manager(mock_segment):
+    tool = get_tools_manager()
+    assert tool is not None
+    assert isinstance(tool, AnalyticsToolManager)
 
-        track_event(
-            "123",
-            "Coverage Report Failed",
-            is_enterprise=False,
-            event_data={"test": True},
-        )
-        assert not mock_track.called
 
-    def test_track_event_is_enterprise(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.analytics.track")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+def test_track_event(mock_segment, mocker):
+    analytics_tool = get_tools_manager()
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
 
-        track_event(
-            "123",
-            "Coverage Report Failed",
-            is_enterprise=True,
-            event_data={"test": True},
-        )
-        assert not mock_track.called
+    analytics_tool.track_event(
+        "123",
+        Events.USER_SIGNED_IN.value,
+        is_enterprise=False,
+        event_data={"test": True},
+    )
 
-    def test_track_user(self, mocker):
-        mock_identify = mocker.patch("shared.analytics_tracking.analytics.identify")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+    assert mock_track.called
 
-        track_user("456", {"username": "test"})
-        assert mock_identify.called
 
-    def test_track_user_segment_disabled(self, mocker):
-        mock_identify = mocker.patch("shared.analytics_tracking.analytics.identify")
-        mocker.patch("shared.analytics_tracking.segment_enabled", False)
+def test_track_event_tool_not_enabled(mocker):
+    analytics_tool = get_tools_manager()
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
 
-        track_user("456", {"username": "test"})
-        assert not mock_identify.called
+    analytics_tool.track_event(
+        "123",
+        Events.USER_SIGNED_UP.value,
+        is_enterprise=False,
+        event_data={"test": True},
+    )
 
-    @patch("shared.analytics_tracking.analytics.identify")
-    def test_track_user_is_enterprise(self, mocker):
-        mock_identify = mocker.patch("shared.analytics_tracking.analytics.identify")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
+    assert not mock_track.called
 
-        track_user("456", {"username": "test"}, True)
-        assert not mock_identify.called
 
-    def test_on_error(self):
-        on_error("Not initialized with API key")
+def test_track_user(mock_segment, mocker):
+    analytics_tool = get_tools_manager()
+    mock_identify = mocker.patch("shared.analytics_tracking.segment.analytics.identify")
 
-    def test_setup_analytics(self, mock_configuration):
-        mock_configuration.set_params(
-            {"setup": {"debug": True, "segment": {"key": "123"}}}
-        )
-        setup_analytics()
+    user_id = "user123"
+    user_data = {"name": "John"}
 
-    def test_track_critical_files_sent(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_critical_files_sent(
-            repoid="123",
-            ownerid="abc",
-            commitid="abc123",
-            pullid="7",
-            is_enterprise=False,
-        )
-        assert mock_track.called
+    analytics_tool.track_user(user_id, user_data=user_data)
+    mock_identify.assert_called_once_with(user_id, user_data)
 
-    def test_track_related_entrypoints_sent(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_related_entrypoints_sent(
-            repoid="123",
-            ownerid="abc",
-            commitid="abc123",
-            pullid="7",
-            is_enterprise=False,
-        )
 
-    def test_track_betaprofiling_added_in_YAML(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_betaprofiling_added_in_YAML(
-            repoid="123", ownerid="456", is_enterprise=False
-        )
-        assert mock_track.called
+def test_track_event_invalid_name(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    analytics_tool = get_tools_manager()
 
-    def test_track_betaprofiling_removed_from_YAML(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_betaprofiling_removed_from_YAML(
-            repoid="123", ownerid="456", is_enterprise=False
-        )
-        assert mock_track.called
+    analytics_tool.track_event(
+        "123", "Invalid Name", is_enterprise=False, event_data={"test": True}
+    )
+    assert not mock_track.called
 
-    def test_track_show_critical_paths_added_in_YAML(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_show_critical_paths_added_in_YAML(
-            repoid="123", ownerid="456", is_enterprise=False
-        )
-        assert mock_track.called
 
-    def test_track_show_critical_paths_removed_from_YAML(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_show_critical_paths_removed_from_YAML(
-            repoid="123", ownerid="456", is_enterprise=False
-        )
-        assert mock_track.called
+def test_track_event_is_enterprise(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    analytics_tool = get_tools_manager()
+    analytics_tool.track_event(
+        "123",
+        "Account Uploaded Coverage Report",
+        is_enterprise=True,
+        event_data={"test": True},
+    )
+    assert not mock_track.called
 
-    def test_track_manual_critical_file_labelling_added_in_YAML(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_manual_critical_file_labelling_added_in_YAML(
-            repoid="123", ownerid="456", is_enterprise=False
-        )
-        mock_track.assert_called_with(
-            user_id=BLANK_SEGMENT_USER_ID,
-            event_name="Impact Analysis Manual Critical File Labelling in YAML",
-            event_data={"repo_id": "123", "repo_owner_id": "456"},
-            is_enterprise=False,
-        )
 
-    def test_track_manual_critical_file_labelling_removed_from_YAML(self, mocker):
-        mock_track = mocker.patch("shared.analytics_tracking.track_event")
-        mocker.patch("shared.analytics_tracking.segment_enabled", True)
-        track_manual_critical_file_labelling_removed_from_YAML(
-            repoid="123", ownerid="456", is_enterprise=False
-        )
-        mock_track.assert_called_with(
-            user_id=BLANK_SEGMENT_USER_ID,
-            event_name="Impact Analysis Manual Critical File Labelling removed from YAML",
-            event_data={"repo_id": "123", "repo_owner_id": "456"},
-            is_enterprise=False,
-        )
+def test_track_user_is_enterprise(mock_segment, mocker):
+    mock_identify = mocker.patch("shared.analytics_tracking.segment.analytics.identify")
+    analytics_tool = get_tools_manager()
+    analytics_tool.track_user("456", {"username": "test"}, True)
+    assert not mock_identify.called
+
+
+def test_track_account_activated_repo_on_upload(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    get_tools_manager().track_account_activated_repo_on_upload(
+        repoid="123",
+        ownerid="abc",
+        commitid="abc123",
+        pullid="7",
+        is_enterprise=False,
+    )
+    assert mock_track.called
+
+
+def test_track_account_activated_repo(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    get_tools_manager().track_account_activated_repo(
+        repoid="123",
+        ownerid="abc",
+        commitid="abc123",
+        pullid="7",
+        is_enterprise=False,
+    )
+    assert mock_track.called
+
+
+def test_track_account_uploaded_coverage_report(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    get_tools_manager().track_account_uploaded_coverage_report(
+        repoid="123",
+        ownerid="abc",
+        commitid="abc123",
+        pullid="7",
+        is_enterprise=False,
+    )
+    assert mock_track.called
+
+
+def test_track_user_signed_in(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    get_tools_manager().track_user_signed_in(
+        repoid="123",
+        ownerid="abc",
+        commitid="abc123",
+        pullid="7",
+        is_enterprise=False,
+        userid=1,
+    )
+    assert mock_track.called
+
+
+def test_track_user_signed_up(mock_segment, mocker):
+    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+    get_tools_manager().track_user_signed_up(
+        repoid="123",
+        ownerid="abc",
+        commitid="abc123",
+        pullid="7",
+        is_enterprise=False,
+        userid=1,
+    )
+    assert mock_track.called
