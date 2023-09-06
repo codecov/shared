@@ -50,7 +50,7 @@ def test_celery_config():
         "app.tasks.upload.*",
         "app.tasks.verify_bot.VerifyBot",
     ]
-    assert config.broker_transport_options == {"visibility_timeout": 18000}
+    assert config.broker_transport_options == {"visibility_timeout": 21600}
     assert config.result_extended is True
     assert config.imports == ("tasks",)
     assert config.task_serializer == "json"
