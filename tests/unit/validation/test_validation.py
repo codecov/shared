@@ -849,6 +849,7 @@ class TestValidationConfig(object):
                 "show_carryforward_flags": False,
             },
             "github_checks": {"annotations": True},
+            "slack_app": True,
         }
         res = validate_yaml(
             get_config("site", default={}),
@@ -1318,4 +1319,16 @@ def test_cli_validation():
     }
     result = validate_yaml(user_input)
     # There's no change on the valid yaml
+    assert result == user_input
+
+
+def test_slack_app_validation():
+    user_input = {"slack_app": {"enabled": True}}
+    result = validate_yaml(user_input)
+    assert result == user_input
+
+
+def test_slack_app_validation_boolean():
+    user_input = {"slack_app": True}
+    result = validate_yaml(user_input)
     assert result == user_input

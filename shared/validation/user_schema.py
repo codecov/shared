@@ -459,6 +459,10 @@ schema = {
             "hide_project_coverage": {"type": "boolean"},
         },
     },
+    "slack_app": {
+        "type": ["dict", "boolean"],
+        "schema": {"enabled": {"type": "boolean"}},
+    },
     "github_checks": {
         "type": ["dict", "boolean"],
         "schema": {"annotations": {"type": "boolean"}},
