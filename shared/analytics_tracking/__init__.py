@@ -25,6 +25,7 @@ def get_tools_manager():
 
     # Noop shouldn't be added unless there are no tracking tools used
     if not available_tools:
+        log.warning("Analytics tool is not enabled. Please check your configuration.")
         tool_manager.add_tool(NoopTool)
     return tool_manager
 

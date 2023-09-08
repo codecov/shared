@@ -11,4 +11,4 @@ class NoopTool(BaseAnalyticsTool):
         return False
 
     def track_event(self, user_id, event_name, *, is_enterprise, event_data={}):
-        log.warning("Analytics tool is not enabled. Please check your configuration.")
+        return
