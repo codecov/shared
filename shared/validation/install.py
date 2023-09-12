@@ -128,6 +128,14 @@ config_schema = {
                 "type": "dict",
                 "schema": {"key": {"type": "string"}, "enabled": {"type": "boolean"}},
             },
+            "pubsub": {
+                "type": "dict",
+                "schema": {
+                    "project_id": {"type": "string"},
+                    "topic": {"type": "string"},
+                    "enabled": {"type": "boolean"},
+                },
+            },
             "http": {
                 "type": "dict",
                 "schema": {
