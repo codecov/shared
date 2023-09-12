@@ -4,6 +4,7 @@ from typing import List
 from shared.analytics_tracking.base import BaseAnalyticsTool
 from shared.analytics_tracking.manager import AnalyticsToolManager
 from shared.analytics_tracking.noop import NoopTool
+from shared.analytics_tracking.pubsub import PubSub
 from shared.analytics_tracking.segment import Segment
 
 log = logging.getLogger("__name__")
@@ -12,9 +13,7 @@ __all__ = "analytics_tool"
 
 
 def get_list_of_analytic_tools() -> List[BaseAnalyticsTool]:
-    return [
-        Segment(),
-    ]
+    return [Segment(), PubSub()]
 
 
 def get_tools_manager():
