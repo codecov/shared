@@ -40,5 +40,6 @@ setup(
         "typing_extensions",
         "google-auth==2.21.0",
         "google-cloud-pubsub>=2.13.6",
+        "pytz",
     ],
 )
