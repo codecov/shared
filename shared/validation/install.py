@@ -294,6 +294,23 @@ config_schema = {
                     "status_duration": {"type": "integer"},
                 },
             },
+            "smtp": {
+                "type": "dict",
+                "schema": {
+                    "host": {"type": "string"},
+                    "port": {"type": "integer"},
+                    "username": {"type": "string", "required": False},
+                    "password": {"type": "string", "required": False},
+                    "ssl": {
+                        "type": "dict",
+                        "schema": {
+                            "keyfile": {"type": "string", "required": False},
+                            "certfile": {"type": "string", "required": False},
+                        },
+                        "required": False,
+                    },
+                },
+            },
         },
     },
     "site": {"type": "dict", "schema": user_yaml_schema},
