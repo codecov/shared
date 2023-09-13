@@ -9,7 +9,7 @@ from shared.analytics_tracking.segment import Segment
 
 log = logging.getLogger("__name__")
 
-__all__ = "analytics_tool"
+__all__ = "analytics_manager"
 
 
 def get_list_of_analytic_tools() -> List[BaseAnalyticsTool]:
@@ -29,4 +29,4 @@ def get_tools_manager():
     return tool_manager
 
 
-analytics_tool = get_tools_manager()
+analytics_manager = get_tools_manager()
