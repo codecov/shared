@@ -25,17 +25,23 @@ class PubSub(BaseAnalyticsTool):
         )
         self.project = get_config("setup", "pubsub", "project_id")
         topic_name = get_config("setup", "pubsub", "topic")
-        try:
-            self.publisher = pubsub_v1.PublisherClient(settings)
-        except GoogleAuthError:
-            log.warning("Unable to initialize PubSub, no auth found")
-            self.publisher = None
-        else:
+        self.publisher = self.get_publisher(settings)
+        if self.publisher:
             self.topic = self.publisher.topic_path(self.project, topic_name)
 
     @classmethod
     def is_enabled(cls):
         return bool(get_config("setup", "pubsub", "enabled", default=False))
+
+    def get_publisher(self, settings):
+        if not self.is_enabled():
+            return None
+        try:
+            publisher = pubsub_v1.PublisherClient(settings)
+        except GoogleAuthError:
+            log.warning("Unable to initialize PubSub, no auth found")
+            publisher = None
+        return publisher
 
     def track_event(self, event: Event, *, is_enterprise=False, context=None):
         if is_enterprise:

@@ -139,7 +139,7 @@ class TestPubSub(object):
         assert pubsub.topic == "projects/1234/topics/codecov"
         assert pubsub.project == "1234"
 
-    def test_pubsub_track_event(self, mocker, mock_pubsub_publisher):
+    def test_pubsub_track_event(self, mocker, mock_pubsub_publisher, mock_pubsub):
         event = Event(
             Events.ACCOUNT_ACTIVATED_REPOSITORY.value,
             user_id="1234",
