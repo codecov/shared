@@ -21,10 +21,10 @@ class Events(Enum):
 
 
 class Event:
-    def __init__(self, name: str, dt: datetime = None, **data: Any) -> None:
+    def __init__(self, event_name: str, dt: datetime = None, **data: Any) -> None:
         self.uuid = uuid1()
         self.datetime = dt or datetime.now(tz=pytz.utc)
-        self.name = self._get_event_name(name)
+        self.name = self._get_event_name(event_name)
         self.data = data
 
     def _get_event_name(self, event_name: str):
