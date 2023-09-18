@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from shared.analytics_tracking.events import Event
+
 
 class BaseAnalyticsTool(ABC):
     BLANK_USER_ID = -1
@@ -9,8 +11,5 @@ class BaseAnalyticsTool(ABC):
     def is_enabled(cls):
         raise NotImplementedError()
 
-    def track_event(self, user_id, event_name, *, is_enterprise, event_data={}):
-        raise NotImplementedError()
-
-    def track_user(self, user_id, user_data={}, is_enterprise=False):
+    def track_event(self, event: Event, *, is_enterprise, context: None):
         raise NotImplementedError()
