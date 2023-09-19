@@ -29,7 +29,7 @@ setup(
         "google-cloud-storage>=2.10.0",
         "minio~=7.0",
         "oauth2",
-        "protobuf<4.0.0dev",
+        "protobuf>=4.21.6",
         "tlslite-ng",
         "statsd>=3.3.0",
         "analytics-python==1.3.0b1",
@@ -39,5 +39,7 @@ setup(
         "typing",
         "typing_extensions",
         "google-auth==2.21.0",
+        "google-cloud-pubsub>=2.13.6",
+        "pytz",
     ],
 )
