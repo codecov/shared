@@ -301,15 +301,8 @@ config_schema = {
                     "port": {"type": "integer"},
                     "username": {"type": "string", "required": False},
                     "password": {"type": "string", "required": False},
-                    "ssl": {
-                        "type": "dict",
-                        "schema": {
-                            "keyfile": {"type": "string", "required": False},
-                            "certfile": {"type": "string", "required": False},
-                        },
-                        "required": False,
-                    },
                 },
+                "required": False,
             },
         },
     },
