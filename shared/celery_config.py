@@ -268,7 +268,7 @@ class BaseCeleryConfig(object):
                 default=task_default_queue,
             )
         },
-        archive_task_name: {
+        f"app.tasks.{TaskConfigGroup.archive.value}.*": {
             "queue": get_config(
                 "setup",
                 "tasks",
