@@ -462,48 +462,77 @@ class Github(TorngitBaseAdapter):
             ),
         )
 
+    def _process_repository_page(self, page):
+        def process(repo):
+            return dict(
+                owner=dict(
+                    service_id=str(repo["owner"]["id"]),
+                    username=repo["owner"]["login"],
+                ),
+                repo=dict(
+                    service_id=str(repo["id"]),
+                    name=repo["name"],
+                    language=self._validate_language(repo["language"]),
+                    private=repo["private"],
+                    branch=repo["default_branch"] or "master",
+                ),
+            )
+
+        return list(map(process, page))
+
+    async def _fetch_page_of_repos_using_installation(
+        self, client, page_size=100, page=0
+    ):
+        # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
+        res = await self.api(
+            client,
+            "get",
+            f"/installation/repositories?per_page={page_size}&page={page}",
+            headers={"Accept": "application/vnd.github.machine-man-preview+json"},
+        )
+
+        return self._process_repository_page(res.get("repositories", []))
+
+    async def _fetch_page_of_repos(
+        self, client, username, token, page_size=100, page=0
+    ):
+        # https://developer.github.com/v3/repos/#list-your-repositories
+        if username is None:
+            repos = await self.api(
+                client,
+                "get",
+                f"/user/repos?per_page={page_size}&page={page}",
+                token=token,
+            )
+        else:
+            repos = await self.api(
+                client,
+                "get",
+                f"/users/{username}/repos?per_page={page_size}&page={page}",
+                token=token,
+            )
+
+        return self._process_repository_page(repos)
+
     async def list_repos_using_installation(self, username=None):
         """
         returns list of repositories included in this integration
         """
-        repos = []
+        data = []
         page = 0
         async with self.get_client() as client:
             while True:
                 page += 1
-                # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
-                res = await self.api(
-                    client,
-                    "get",
-                    "/installation/repositories?per_page=100&page=%d" % page,
-                    headers={
-                        "Accept": "application/vnd.github.machine-man-preview+json"
-                    },
+                repos = await self._fetch_page_of_repos_using_installation(
+                    client, page=page
                 )
-                if len(res["repositories"]) == 0:
+
+                data.extend(repos)
+
+                if len(repos) < 100:
                     break
 
-                for repo in res["repositories"]:
-                    repos.append(
-                        dict(
-                            owner=dict(
-                                service_id=str(repo["owner"]["id"]),
-                                username=repo["owner"]["login"],
-                            ),
-                            repo=dict(
-                                service_id=str(repo["id"]),
-                                name=repo["name"],
-                                language=self._validate_language(repo["language"]),
-                                private=repo["private"],
-                                branch=repo["default_branch"] or "master",
-                            ),
-                        )
-                    )
-
-                if len(res["repositories"]) < 100:
-                    break
-
-            return repos
+            return data
 
     async def list_repos(self, username=None, token=None):
         """
@@ -516,39 +545,11 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             while True:
                 page += 1
-                # https://developer.github.com/v3/repos/#list-your-repositories
-                if username is None:
-                    repos = await self.api(
-                        client,
-                        "get",
-                        "/user/repos?per_page=100&page=%d" % page,
-                        token=token,
-                    )
-                else:
-                    repos = await self.api(
-                        client,
-                        "get",
-                        "/users/%s/repos?per_page=100&page=%d" % (username, page),
-                        token=token,
-                    )
+                repos = await self._fetch_page_of_repos(
+                    client, username, token, page=page
+                )
 
-                for repo in repos:
-                    _o, _r = repo["owner"]["login"], repo["name"]
-
-                    data.append(
-                        dict(
-                            owner=dict(
-                                service_id=str(repo["owner"]["id"]), username=_o
-                            ),
-                            repo=dict(
-                                service_id=str(repo["id"]),
-                                name=_r,
-                                language=self._validate_language(repo["language"]),
-                                private=repo["private"],
-                                branch=repo["default_branch"],
-                            ),
-                        )
-                    )
+                data.extend(repos)
 
                 if len(repos) < 100:
                     break
