@@ -35,9 +35,6 @@ synchronize_task_name = f"app.tasks.{TaskConfigGroup.synchronize.value}.Synchron
 new_user_activated_task_name = (
     f"app.tasks.{TaskConfigGroup.new_user_activated.value}.NewUserActivated"
 )
-add_to_sendgrid_list_task_name = (
-    f"app.tasks.{TaskConfigGroup.add_to_sendgrid_list.value}.AddToSendgridList"
-)
 compute_comparison_task_name = (
     f"app.tasks.{TaskConfigGroup.compute_comparison.value}.ComputeComparison"
 )
@@ -376,7 +373,6 @@ class BaseCeleryConfig(object):
                 default=task_default_queue,
             )
         },
-        add_to_sendgrid_list_task_name: {"queue": task_default_queue},
         compute_comparison_task_name: {
             "queue": get_config(
                 "setup",

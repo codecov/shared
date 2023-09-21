@@ -27,7 +27,6 @@ def test_celery_config():
     assert sorted(config.task_routes.keys()) == [
         "app.cron.healthcheck.HealthCheckTask",
         "app.cron.profiling.*",
-        "app.tasks.add_to_sendgrid_list.AddToSendgridList",
         "app.tasks.archive.*",
         "app.tasks.comment.Comment",
         "app.tasks.commit_update.CommitUpdate",
@@ -67,10 +66,6 @@ def test_celery_config():
     [
         ("app.cron.healthcheck.HealthCheckTask", TaskConfigGroup.healthcheck.value),
         ("app.cron.profiling.findinguncollected", TaskConfigGroup.profiling.value),
-        (
-            "app.tasks.add_to_sendgrid_list.AddToSendgridList",
-            TaskConfigGroup.add_to_sendgrid_list.value,
-        ),
         ("app.tasks.archive.MigrateToArchive", TaskConfigGroup.archive.value),
         ("app.tasks.verify_bot.VerifyBot", TaskConfigGroup.verify_bot.value),
         ("app.tasks.comment.Comment", TaskConfigGroup.comment.value),
