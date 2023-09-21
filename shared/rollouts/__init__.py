@@ -21,7 +21,7 @@ class FeatureVariant:
     """
 
     def __init__(self, value, proportion):
-        assert proportion > 0 and proportion <= 1.0
+        assert proportion >= 0 and proportion <= 1.0
         self.value = value
         self.proportion = proportion
 
@@ -89,7 +89,7 @@ class Feature:
         overrides={},
     ):
         assert sum(map(lambda x: x.proportion, variants.values())) == 1.0
-        assert proportion > 0 and proportion <= 1.0
+        assert proportion >= 0 and proportion <= 1.0
         self.name = name
         self.proportion = proportion
         self.variants = variants
