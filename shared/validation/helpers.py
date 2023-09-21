@@ -325,7 +325,6 @@ class LayoutStructure(object):
 
     acceptable_objects = set(
         [
-            "changes",
             "diff",
             "file",
             "files",
@@ -335,14 +334,11 @@ class LayoutStructure(object):
             "header",
             "reach",
             "components",
-            "suggestions",
             "betaprofiling",
-            "sunburst",
             "tree",
-            "uncovered",
             "newheader",
             "newfooter",
-            "feedback",
+            "newfiles",
         ]
     )
 
