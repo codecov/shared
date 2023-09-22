@@ -1013,6 +1013,58 @@ class TestGithubTestCase(object):
         assert one_expected_result in res
 
     @pytest.mark.asyncio
+    async def test_list_repos_generator(self, valid_handler, codecov_vcr):
+        repos = []
+        page_count = 0
+        async for page in valid_handler.list_repos_generator():
+            repos.extend(page)
+            page_count += 1
+
+        assert page_count == 2
+        assert len(repos) == 145
+
+        expected_owners = [
+            "137832199",  # matt-codecov
+            "139263855",  # matt-codecov-club
+            "8226205",  # codecov
+        ]
+        assert all(x["owner"]["service_id"] in expected_owners for x in repos)
+
+        some_expected_results = [
+            {
+                "owner": {"service_id": "137832199", "username": "matt-codecov"},
+                "repo": {
+                    "service_id": "670770179",
+                    "name": "rust",
+                    "language": None,
+                    "private": False,
+                    "branch": "master",
+                },
+            },
+            {
+                "owner": {"service_id": "139263855", "username": "matt-codecov-club"},
+                "repo": {
+                    "service_id": "665219192",
+                    "name": "mike",
+                    "language": None,
+                    "private": True,
+                    "branch": "main",
+                },
+            },
+            {
+                "owner": {"service_id": "8226205", "username": "codecov"},
+                "repo": {
+                    "service_id": "665728948",
+                    "name": "worker",
+                    "language": "python",
+                    "private": False,
+                    "branch": "main",
+                },
+            },
+        ]
+        assert all(x in repos for x in some_expected_results)
+
+    @pytest.mark.asyncio
     async def test_list_repos_using_installation(self, valid_handler, codecov_vcr):
         res = await valid_handler.list_repos_using_installation()
         assert res == [
@@ -1026,6 +1078,30 @@ class TestGithubTestCase(object):
                     "branch": "master",
                 },
             }
+        ]
+
+    @pytest.mark.asyncio
+    async def test_list_repos_using_installation_generator(
+        self, valid_handler, codecov_vcr
+    ):
+        repos = []
+        page_count = 0
+        async for page in valid_handler.list_repos_using_installation_generator():
+            repos.extend(page)
+            page_count += 1
+
+        assert page_count == 1
+        assert repos == [
+            {
+                "owner": {"service_id": "139263855", "username": "matt-codecov-club"},
+                "repo": {
+                    "service_id": "665219192",
+                    "name": "mike",
+                    "language": None,
+                    "private": True,
+                    "branch": "main",
+                },
+            },
         ]
 
     @pytest.mark.asyncio

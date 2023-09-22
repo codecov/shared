@@ -2,6 +2,7 @@ import json
 from unittest.mock import patch
 
 import pytest
+import vcr
 
 from shared.torngit.bitbucket import Bitbucket
 from shared.torngit.enums import Endpoints
@@ -661,6 +662,94 @@ class TestBitbucketTestCase(object):
 
         res = await valid_handler.list_repos("codecov")
         assert sorted(res, key=lambda x: x["repo"]["service_id"]) == sorted(
+            expected_result, key=lambda x: x["repo"]["service_id"]
+        )
+
+    @pytest.mark.asyncio
+    @vcr.use_cassette(
+        "tests/integration/cassetes/test_bitbucket/TestBitbucketTestCase/test_list_repos.yaml",
+        record_mode="none",
+        filter_headers=["authorization"],
+        match_on=["method", "scheme", "host", "port", "path", "query"],
+        filter_query_parameters=["oauth_nonce", "oauth_timestamp", "oauth_signature"],
+    )
+    async def test_list_repos_generator(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                "repo": {
+                    "name": "ci-repo",
+                    "language": None,
+                    "branch": "master",
+                    "service_id": "a980e378-088f-48a8-9850-98923f497546",
+                    "private": False,
+                },
+                "owner": {
+                    "username": "codecov",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
+                },
+            },
+            {
+                "repo": {
+                    "name": "private",
+                    "language": "python",
+                    "branch": "master",
+                    "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
+                    "private": True,
+                },
+                "owner": {
+                    "username": "codecov",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
+                },
+            },
+            {
+                "repo": {
+                    "name": "coverage.py",
+                    "language": "python",
+                    "branch": "master",
+                    "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
+                    "private": False,
+                },
+                "owner": {
+                    "username": "codecov",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
+                },
+            },
+            {
+                "repo": {
+                    "name": "integration-test-repo",
+                    "language": "python",
+                    "branch": "master",
+                    "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
+                    "private": True,
+                },
+                "owner": {
+                    "username": "codecov",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
+                },
+            },
+            {
+                "repo": {
+                    "name": "test-bb-integration-public",
+                    "language": None,
+                    "branch": "master",
+                    "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
+                    "private": False,
+                },
+                "owner": {
+                    "username": "codecov",
+                    "service_id": "6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49",
+                },
+            },
+        ]
+
+        repos = []
+        page_count = 0
+        async for page in valid_handler.list_repos_generator("codecov"):
+            repos.extend(page)
+            page_count += 1
+
+        assert page_count == 1
+        assert sorted(repos, key=lambda x: x["repo"]["service_id"]) == sorted(
             expected_result, key=lambda x: x["repo"]["service_id"]
         )
 

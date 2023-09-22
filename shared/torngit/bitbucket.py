@@ -392,6 +392,45 @@ class Bitbucket(TorngitBaseAdapter):
         )
         return data
 
+    async def list_repos_generator(self, username=None, token=None):
+        """
+        New version of list_repos() that should replace the old one after safely
+        rolling out in the worker.
+        """
+        usernames, repos_to_log = await self._get_teams_and_username_to_list(
+            username, token
+        )
+
+        # fetch repo information
+        log.info(
+            "Bitbucket: fetching repos from teams",
+            extra=dict(usernames=usernames, repos=repos_to_log),
+        )
+        async with self.get_client() as client:
+            page = 0
+            for team in usernames:
+                try:
+                    while True:
+                        page += 1
+
+                        repos, has_next = await self._fetch_page_of_repos(
+                            client, team, token, page
+                        )
+                        yield repos
+
+                        if len(repos) == 0 or not has_next:
+                            page = 0
+                            break
+                except TorngitClientError:
+                    log.warning(
+                        "Unable to fetch repos from team on Bitbucket",
+                        extra=dict(team_name=team, repository_names=repos_to_log),
+                    )
+        log.info(
+            "Bitbucket: finished fetching repos",
+            extra=dict(usernames=usernames),
+        )
+
     async def list_permissions(self, token=None):
         data, page = [], 0
         async with self.get_client() as client:

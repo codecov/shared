@@ -568,6 +568,25 @@ class BitbucketServer(TorngitBaseAdapter):
 
         return data
 
+    async def list_repos_generator(self, username=None, token=None):
+        """
+        New version of list_repos() that should replace the old one after safely
+        rolling out in the worker.
+        """
+        start = 0
+        while True:
+            repos, next_page_start = await self._fetch_page_of_repos(start, token)
+
+            if len(repos) == 0:
+                break
+
+            yield repos
+
+            if next_page_start is None:
+                break
+            else:
+                start = next_page_start
+
     async def list_teams(self, token=None):
         data, start = [], 0
         while True:

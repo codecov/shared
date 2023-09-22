@@ -1,4 +1,5 @@
 import pytest
+import vcr
 
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import TorngitClientError, TorngitObjectNotFoundError
@@ -626,6 +627,65 @@ class TestGitlabTestCase(object):
         ]
         res = await valid_handler.list_repos()
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    @vcr.use_cassette(
+        "tests/integration/cassetes/test_gitlab/TestGitlabTestCase/test_list_repos.yaml",
+        record_mode="once",
+        filter_headers=["authorization"],
+        match_on=["method", "scheme", "host", "port", "path", "query"],
+        filter_query_parameters=["oauth_nonce", "oauth_timestamp", "oauth_signature"],
+    )
+    async def test_list_repos_generator(self, valid_handler, codecov_vcr):
+        expected_result = [
+            {
+                "owner": {"service_id": "189208", "username": "morerunes"},
+                "repo": {
+                    "branch": "master",
+                    "language": None,
+                    "name": "delectamentum-mud-server",
+                    "private": False,
+                    "service_id": "1384844",
+                },
+            },
+            {
+                "owner": {"service_id": "109640", "username": "codecov"},
+                "repo": {
+                    "branch": "master",
+                    "language": None,
+                    "name": "example-python",
+                    "private": False,
+                    "service_id": "580838",
+                },
+            },
+            {
+                "owner": {"service_id": "109640", "username": "codecov"},
+                "repo": {
+                    "branch": "master",
+                    "language": None,
+                    "name": "ci-private",
+                    "private": True,
+                    "service_id": "190307",
+                },
+            },
+            {
+                "owner": {"service_id": "109640", "username": "codecov"},
+                "repo": {
+                    "branch": "master",
+                    "language": None,
+                    "name": "ci-repo",
+                    "private": False,
+                    "service_id": "187725",
+                },
+            },
+        ]
+        repos = []
+        page_count = 0
+        async for page in valid_handler.list_repos_generator():
+            repos.extend(page)
+            page_count += 1
+        assert page_count == 1
+        assert repos == expected_result
 
     @pytest.mark.asyncio
     async def test_list_repos_subgroups(self, valid_handler, codecov_vcr):
