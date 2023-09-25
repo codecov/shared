@@ -69,7 +69,7 @@ jobs:
             codecovcli --codecov-yml-path=codecov_cli.yml do-upload --plugin pycoverage --plugin compress-pycoverage --flag smart-labels --fail-on-error
   linter:
     docker:
-      - image: circleci/python:3.7.6
+      - image: circleci/python:3.10.1
     working_directory: ~/repo
     steps:
       - checkout
@@ -81,7 +81,7 @@ jobs:
             isort --profile black --check .
   mutations:
     docker:
-      - image: circleci/python:3.7.9
+      - image: circleci/python:3.10.1
     working_directory: ~/repo
     steps:
       - checkout
@@ -208,7 +208,7 @@ workflows:
             - codecovstartup
           matrix:
             parameters:
-              imagename: ["3.7.13", "3.8.13", "3.9.12", "3.10.5"]
+              imagename: ["3.8.13", "3.9.12", "3.10.5"]
           filters:
             tags:
               only: /.*/
