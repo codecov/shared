@@ -20,7 +20,6 @@ class TaskConfigGroup(Enum):
     Marks the config key in the install yaml that affects a given task.
     """
 
-    add_to_sendgrid_list = "add_to_sendgrid_list"
     archive = "archive"
     comment = "comment"
     commit_update = "commit_update"
