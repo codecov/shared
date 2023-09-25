@@ -381,6 +381,28 @@ def test_validate_install_configuration_with_additional_yamls():
     }
 
 
+def test_pubsub_config(mocker):
+    assert validate_install_configuration(
+        {
+            "setup": {
+                "pubsub": {
+                    "project_id": "1234",
+                    "topic": "codecov",
+                    "enabled": True,
+                }
+            },
+        }
+    ) == {
+        "setup": {
+            "pubsub": {
+                "project_id": "1234",
+                "topic": "codecov",
+                "enabled": True,
+            }
+        },
+    }
+
+
 def test_validate_install_configuration_raise_warning(mocker):
     mock_warning = mocker.patch.object(install_log, "warning")
     input = {
