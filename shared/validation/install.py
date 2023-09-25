@@ -128,6 +128,14 @@ config_schema = {
                 "type": "dict",
                 "schema": {"key": {"type": "string"}, "enabled": {"type": "boolean"}},
             },
+            "pubsub": {
+                "type": "dict",
+                "schema": {
+                    "project_id": {"type": "string"},
+                    "topic": {"type": "string"},
+                    "enabled": {"type": "boolean"},
+                },
+            },
             "http": {
                 "type": "dict",
                 "schema": {
@@ -301,15 +309,8 @@ config_schema = {
                     "port": {"type": "integer"},
                     "username": {"type": "string", "required": False},
                     "password": {"type": "string", "required": False},
-                    "ssl": {
-                        "type": "dict",
-                        "schema": {
-                            "keyfile": {"type": "string", "required": False},
-                            "certfile": {"type": "string", "required": False},
-                        },
-                        "required": False,
-                    },
                 },
+                "required": False,
             },
         },
     },

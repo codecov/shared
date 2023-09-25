@@ -28,7 +28,7 @@ def test_celery_config():
         "app.cron.healthcheck.HealthCheckTask",
         "app.cron.profiling.*",
         "app.tasks.add_to_sendgrid_list.AddToSendgridList",
-        "app.tasks.archive.MigrateToArchive",
+        "app.tasks.archive.*",
         "app.tasks.comment.Comment",
         "app.tasks.commit_update.CommitUpdate",
         "app.tasks.compute_comparison.ComputeComparison",

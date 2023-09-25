@@ -151,7 +151,7 @@ class BaseCeleryConfig(object):
 
     notify_soft_time_limit = int(
         get_config(
-            "setup", "tasks", TaskConfigGroup.notify.value, "timeout", default=60
+            "setup", "tasks", TaskConfigGroup.notify.value, "timeout", default=120
         )
     )
     timeseries_soft_time_limit = get_config(
@@ -268,7 +268,7 @@ class BaseCeleryConfig(object):
                 default=task_default_queue,
             )
         },
-        archive_task_name: {
+        f"app.tasks.{TaskConfigGroup.archive.value}.*": {
             "queue": get_config(
                 "setup",
                 "tasks",

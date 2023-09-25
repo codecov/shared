@@ -343,6 +343,7 @@ class LayoutStructure(object):
             "newheader",
             "newfooter",
             "feedback",
+            "newfiles",
         ]
     )
 
