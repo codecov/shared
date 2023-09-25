@@ -7,11 +7,7 @@ from shared.billing import BillingPlan, is_enterprise_cloud_plan
 from shared.celery_config import BaseCeleryConfig, get_task_group
 from shared.config import get_config
 
-try:
-    Pattern = re._pattern_type
-except AttributeError:  # pragma: no cover
-    # for Python 3.7 support
-    Pattern = re.Pattern
+Pattern = re.Pattern
 
 
 # based on code from https://github.com/celery/celery/blob/main/celery/app/routes.py

@@ -1,12 +1,10 @@
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any, Awaitable, Callable, Optional, TypedDict
 
-# FIXME: This is actually a TypedDict
-# But our CircleCI currently doesn't support Python 3.8, needed for TypedDicts
-# So this will seat here until we update it
-# OauthConsumerToken(TypedDict):
-#   key: str
-#   secret: str
-#   refresh_token: str
-OauthConsumerToken = Any
+
+class OauthConsumerToken(TypedDict):
+    key: str
+    secret: str
+    refresh_token: str
+
 
 OnRefreshCallback = Optional[Callable[[OauthConsumerToken], Awaitable[None]]]
