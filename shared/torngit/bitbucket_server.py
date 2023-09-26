@@ -525,44 +525,67 @@ class BitbucketServer(TorngitBaseAdapter):
             has_more = not results["isLastPage"]
         return [{"path": f, "type": "file"} for f in files]
 
+    async def _fetch_page_of_repos(self, start, token):
+        # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1847760
+        res = await self.api("get", "/repos", start=start, token=token)
+
+        repos = []
+        for repo in res["values"]:
+            ownerid = str(repo["project"]["id"])
+            if repo["project"]["type"] == "PERSONAL":
+                ownerid = "U" + str(repo["project"]["owner"]["id"])
+
+            repos.append(
+                dict(
+                    owner=dict(
+                        service_id=ownerid,
+                        username=repo["project"]["key"].lower().replace("~", ""),
+                    ),
+                    repo=dict(
+                        service_id=repo["id"],
+                        name=repo["slug"].lower(),
+                        language=None,
+                        private=(
+                            not repo.get("public", repo.get("origin", {}).get("public"))
+                        ),
+                        branch="master",
+                    ),
+                )
+            )
+
+        next_page_start = res.get("nextPageStart") if not res["isLastPage"] else None
+        return (repos, next_page_start)
+
     async def list_repos(self, username=None, token=None):
         data, start = [], 0
         while True:
-            # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1847760
-            res = await self.api("get", "/repos", start=start, token=token)
-            if len(res["values"]) == 0:
-                break
+            repos, next_page_start = await self._fetch_page_of_repos(start, token)
 
-            for repo in res["values"]:
-                ownerid = str(repo["project"]["id"])
-                if repo["project"]["type"] == "PERSONAL":
-                    ownerid = "U" + str(repo["project"]["owner"]["id"])
-
-                data.append(
-                    dict(
-                        owner=dict(
-                            service_id=ownerid,
-                            username=repo["project"]["key"].lower().replace("~", ""),
-                        ),
-                        repo=dict(
-                            service_id=repo["id"],
-                            name=repo["slug"].lower(),
-                            language=None,
-                            private=(
-                                not repo.get(
-                                    "public", repo.get("origin", {}).get("public")
-                                )
-                            ),
-                            branch="master",
-                        ),
-                    )
-                )
-            if res["isLastPage"] or res.get("nextPageStart") is None:
+            if len(repos) == 0 or next_page_start is None:
                 break
             else:
-                start = res["nextPageStart"]
+                start = next_page_start
 
         return data
+
+    async def list_repos_generator(self, username=None, token=None):
+        """
+        New version of list_repos() that should replace the old one after safely
+        rolling out in the worker.
+        """
+        start = 0
+        while True:
+            repos, next_page_start = await self._fetch_page_of_repos(start, token)
+
+            if len(repos) == 0:
+                break
+
+            yield repos
+
+            if next_page_start is None:
+                break
+            else:
+                start = next_page_start
 
     async def list_teams(self, token=None):
         data, start = [], 0

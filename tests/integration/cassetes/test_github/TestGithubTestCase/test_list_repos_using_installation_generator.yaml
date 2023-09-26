@@ -1,0 +1,145 @@
+interactions:
+- request:
+    body: '{"query": "\nquery {\n    viewer {\n        repositories(\n            ownerAffiliations:
+      [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]\n            affiliations: [OWNER,
+      COLLABORATOR, ORGANIZATION_MEMBER]\n        ) {\n            totalCount\n        }\n    }\n}\n"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '264'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    content: '{"data":{"viewer":{"repositories":{"totalCount":1}}}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 22 Sep 2023 18:36:12 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v4
+      X-GitHub-Request-Id:
+      - F053:6826:66F4DB:D1347F:650DDE9B
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4999'
+      X-RateLimit-Reset:
+      - '1695411372'
+      X-RateLimit-Resource:
+      - graphql
+      X-RateLimit-Used:
+      - '1'
+      X-XSS-Protection:
+      - '0'
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/vnd.github.machine-man-preview+json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://api.github.com/installation/repositories?page=1&per_page=100
+  response:
+    content: '{"total_count":1,"repository_selection":"selected","repositories":[{"id":665219192,"node_id":"R_kgDOJ6ZweA","name":"mike","full_name":"matt-codecov-club/mike","private":true,"owner":{"login":"matt-codecov-club","id":139263855,"node_id":"O_kgDOCEz_bw","avatar_url":"https://avatars.githubusercontent.com/u/139263855?v=4","gravatar_id":"","url":"https://api.github.com/users/matt-codecov-club","html_url":"https://github.com/matt-codecov-club","followers_url":"https://api.github.com/users/matt-codecov-club/followers","following_url":"https://api.github.com/users/matt-codecov-club/following{/other_user}","gists_url":"https://api.github.com/users/matt-codecov-club/gists{/gist_id}","starred_url":"https://api.github.com/users/matt-codecov-club/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/matt-codecov-club/subscriptions","organizations_url":"https://api.github.com/users/matt-codecov-club/orgs","repos_url":"https://api.github.com/users/matt-codecov-club/repos","events_url":"https://api.github.com/users/matt-codecov-club/events{/privacy}","received_events_url":"https://api.github.com/users/matt-codecov-club/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/matt-codecov-club/mike","description":null,"fork":false,"url":"https://api.github.com/repos/matt-codecov-club/mike","forks_url":"https://api.github.com/repos/matt-codecov-club/mike/forks","keys_url":"https://api.github.com/repos/matt-codecov-club/mike/keys{/key_id}","collaborators_url":"https://api.github.com/repos/matt-codecov-club/mike/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/matt-codecov-club/mike/teams","hooks_url":"https://api.github.com/repos/matt-codecov-club/mike/hooks","issue_events_url":"https://api.github.com/repos/matt-codecov-club/mike/issues/events{/number}","events_url":"https://api.github.com/repos/matt-codecov-club/mike/events","assignees_url":"https://api.github.com/repos/matt-codecov-club/mike/assignees{/user}","branches_url":"https://api.github.com/repos/matt-codecov-club/mike/branches{/branch}","tags_url":"https://api.github.com/repos/matt-codecov-club/mike/tags","blobs_url":"https://api.github.com/repos/matt-codecov-club/mike/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/matt-codecov-club/mike/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/matt-codecov-club/mike/git/refs{/sha}","trees_url":"https://api.github.com/repos/matt-codecov-club/mike/git/trees{/sha}","statuses_url":"https://api.github.com/repos/matt-codecov-club/mike/statuses/{sha}","languages_url":"https://api.github.com/repos/matt-codecov-club/mike/languages","stargazers_url":"https://api.github.com/repos/matt-codecov-club/mike/stargazers","contributors_url":"https://api.github.com/repos/matt-codecov-club/mike/contributors","subscribers_url":"https://api.github.com/repos/matt-codecov-club/mike/subscribers","subscription_url":"https://api.github.com/repos/matt-codecov-club/mike/subscription","commits_url":"https://api.github.com/repos/matt-codecov-club/mike/commits{/sha}","git_commits_url":"https://api.github.com/repos/matt-codecov-club/mike/git/commits{/sha}","comments_url":"https://api.github.com/repos/matt-codecov-club/mike/comments{/number}","issue_comment_url":"https://api.github.com/repos/matt-codecov-club/mike/issues/comments{/number}","contents_url":"https://api.github.com/repos/matt-codecov-club/mike/contents/{+path}","compare_url":"https://api.github.com/repos/matt-codecov-club/mike/compare/{base}...{head}","merges_url":"https://api.github.com/repos/matt-codecov-club/mike/merges","archive_url":"https://api.github.com/repos/matt-codecov-club/mike/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/matt-codecov-club/mike/downloads","issues_url":"https://api.github.com/repos/matt-codecov-club/mike/issues{/number}","pulls_url":"https://api.github.com/repos/matt-codecov-club/mike/pulls{/number}","milestones_url":"https://api.github.com/repos/matt-codecov-club/mike/milestones{/number}","notifications_url":"https://api.github.com/repos/matt-codecov-club/mike/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/matt-codecov-club/mike/labels{/name}","releases_url":"https://api.github.com/repos/matt-codecov-club/mike/releases{/id}","deployments_url":"https://api.github.com/repos/matt-codecov-club/mike/deployments","created_at":"2023-07-11T17:52:21Z","updated_at":"2023-07-11T17:52:22Z","pushed_at":"2023-07-11T17:52:21Z","git_url":"git://github.com/matt-codecov-club/mike.git","ssh_url":"git@github.com:matt-codecov-club/mike.git","clone_url":"https://github.com/matt-codecov-club/mike.git","svn_url":"https://github.com/matt-codecov-club/mike","homepage":null,"size":0,"stargazers_count":0,"watchers_count":0,"language":null,"has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":false,"has_pages":false,"has_discussions":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":0,"license":null,"allow_forking":false,"is_template":false,"web_commit_signoff_required":false,"topics":[],"visibility":"private","forks":0,"open_issues":0,"watchers":0,"default_branch":"main","permissions":{"admin":false,"maintain":false,"push":false,"triage":false,"pull":false}}]}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - private, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 22 Sep 2023 18:36:12 GMT
+      ETag:
+      - W/"8d2dcc0cfab97e3c4a10b2eddfa1d1ebdb043c125df33ba1ba4421ebf8de78a9"
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Authorization, Cookie, X-GitHub-OTP
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; param=machine-man-preview; format=json
+      X-GitHub-Request-Id:
+      - F053:6826:66F50C:D13509:650DDE9C
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4999'
+      X-RateLimit-Reset:
+      - '1695411372'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '1'
+      X-XSS-Protection:
+      - '0'
+      x-github-api-version-selected:
+      - '2022-11-28'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

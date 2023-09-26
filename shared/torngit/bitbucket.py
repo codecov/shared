@@ -282,24 +282,7 @@ class Bitbucket(TorngitBaseAdapter):
                 page = urllib_parse.parse_qs(parsed.query)["page"][0]
         return commits
 
-    async def list_repos(self, username=None, token=None):
-        """
-        Lists all repositories a user is part of.
-        *Note:
-        Bitbucket API V2 does not provide a dedicated endpoint which returns all repos a user is part of.
-        It provides however, an endpoint to get all the repos a user is part of from an specific org or user.
-        Endpoint to list repos from an specific user:
-            - /repositories/{username}
-        In order to get all the repositories a user is part of, we first need to get all the orgs and repo owners
-        - Orgs/Teams can be obtained using the 'list_teams' method
-        - Usernames of repo owners is a bit tricky since Bitbucket doesnt provide an endpoint for this
-            - Solution:
-                Use the 'list_permissions' method to get all repo permissions and exctract owner's username
-                from the repository 'full_name' attribute
-        Once we have all orgs/teams and owner's usernames we should call "/repositories/{username}" endpoint
-        for each of the orgs/teams and owner's usernames.
-        """
-        data, page = [], 0
+    async def _get_teams_and_username_to_list(self, username=None, token=None):
         # if username is not provided, list all repos
         repos_to_log = []
         if username is None:
@@ -323,6 +306,62 @@ class Bitbucket(TorngitBaseAdapter):
             usernames.add(self.data["owner"]["username"])
         else:
             usernames = [username]
+
+        return (usernames, repos_to_log)
+
+    async def _fetch_page_of_repos(self, client, username, token, page):
+        # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
+        res = await self.api(
+            client,
+            "2",
+            "get",
+            f"/repositories/{username}",
+            page=page,
+            token=token,
+        )
+
+        repos = []
+        for repo in res.get("values", []):
+            repo_name_arr = repo["full_name"].split("/", 1)
+
+            repos.append(
+                dict(
+                    owner=dict(
+                        service_id=repo["owner"]["uuid"][1:-1],
+                        username=repo_name_arr[0],
+                    ),
+                    repo=dict(
+                        service_id=repo["uuid"][1:-1],
+                        name=repo_name_arr[1],
+                        language=self._validate_language(repo["language"]),
+                        private=repo["is_private"],
+                        branch="master",
+                    ),
+                )
+            )
+        return (repos, res.get("next"))
+
+    async def list_repos(self, username=None, token=None):
+        """
+        Lists all repositories a user is part of.
+        *Note:
+        Bitbucket API V2 does not provide a dedicated endpoint which returns all repos a user is part of.
+        It provides however, an endpoint to get all the repos a user is part of from an specific org or user.
+        Endpoint to list repos from an specific user:
+            - /repositories/{username}
+        In order to get all the repositories a user is part of, we first need to get all the orgs and repo owners
+        - Orgs/Teams can be obtained using the 'list_teams' method
+        - Usernames of repo owners is a bit tricky since Bitbucket doesnt provide an endpoint for this
+            - Solution:
+                Use the 'list_permissions' method to get all repo permissions and exctract owner's username
+                from the repository 'full_name' attribute
+        Once we have all orgs/teams and owner's usernames we should call "/repositories/{username}" endpoint
+        for each of the orgs/teams and owner's usernames.
+        """
+        data, page = [], 0
+        usernames, repos_to_log = await self._get_teams_and_username_to_list(
+            username, token
+        )
         # fetch repo information
         log.info(
             "Bitbucket: fetching repos from teams",
@@ -333,39 +372,13 @@ class Bitbucket(TorngitBaseAdapter):
                 try:
                     while True:
                         page += 1
-                        # https://confluence.atlassian.com/display/BITBUCKET/repositories+Endpoint#repositoriesEndpoint-GETalistofrepositoriesforanaccount
-                        res = await self.api(
-                            client,
-                            "2",
-                            "get",
-                            "/repositories/%s" % (team),
-                            page=page,
-                            token=token,
-                        )
-                        if len(res["values"]) == 0:
-                            page = 0
-                            break
-                        for repo in res["values"]:
-                            repo_name_arr = repo["full_name"].split("/", 1)
 
-                            data.append(
-                                dict(
-                                    owner=dict(
-                                        service_id=repo["owner"]["uuid"][1:-1],
-                                        username=repo_name_arr[0],
-                                    ),
-                                    repo=dict(
-                                        service_id=repo["uuid"][1:-1],
-                                        name=repo_name_arr[1],
-                                        language=self._validate_language(
-                                            repo["language"]
-                                        ),
-                                        private=repo["is_private"],
-                                        branch="master",
-                                    ),
-                                )
-                            )
-                        if not res.get("next"):
+                        repos, has_next = await self._fetch_page_of_repos(
+                            client, team, token, page
+                        )
+                        data.extend(repos)
+
+                        if len(repos) == 0 or not has_next:
                             page = 0
                             break
                 except TorngitClientError:
@@ -378,6 +391,45 @@ class Bitbucket(TorngitBaseAdapter):
             extra=dict(usernames=usernames, repos=data),
         )
         return data
+
+    async def list_repos_generator(self, username=None, token=None):
+        """
+        New version of list_repos() that should replace the old one after safely
+        rolling out in the worker.
+        """
+        usernames, repos_to_log = await self._get_teams_and_username_to_list(
+            username, token
+        )
+
+        # fetch repo information
+        log.info(
+            "Bitbucket: fetching repos from teams",
+            extra=dict(usernames=usernames, repos=repos_to_log),
+        )
+        async with self.get_client() as client:
+            page = 0
+            for team in usernames:
+                try:
+                    while True:
+                        page += 1
+
+                        repos, has_next = await self._fetch_page_of_repos(
+                            client, team, token, page
+                        )
+                        yield repos
+
+                        if len(repos) == 0 or not has_next:
+                            page = 0
+                            break
+                except TorngitClientError:
+                    log.warning(
+                        "Unable to fetch repos from team on Bitbucket",
+                        extra=dict(team_name=team, repository_names=repos_to_log),
+                    )
+        log.info(
+            "Bitbucket: finished fetching repos",
+            extra=dict(usernames=usernames),
+        )
 
     async def list_permissions(self, token=None):
         data, page = [], 0

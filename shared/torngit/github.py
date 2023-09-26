@@ -35,6 +35,19 @@ log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
 
+GITHUB_REPO_COUNT_QUERY = """
+query {
+    viewer {
+        repositories(
+            ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
+            affiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
+        ) {
+            totalCount
+        }
+    }
+}
+"""
+
 
 class Github(TorngitBaseAdapter):
     service = "github"
@@ -462,48 +475,97 @@ class Github(TorngitBaseAdapter):
             ),
         )
 
+    def _process_repository_page(self, page):
+        def process(repo):
+            return dict(
+                owner=dict(
+                    service_id=str(repo["owner"]["id"]),
+                    username=repo["owner"]["login"],
+                ),
+                repo=dict(
+                    service_id=str(repo["id"]),
+                    name=repo["name"],
+                    language=self._validate_language(repo["language"]),
+                    private=repo["private"],
+                    branch=repo["default_branch"] or "master",
+                ),
+            )
+
+        return list(map(process, page))
+
+    async def _fetch_page_of_repos_using_installation(
+        self, client, page_size=100, page=0
+    ):
+        # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
+        res = await self.api(
+            client,
+            "get",
+            f"/installation/repositories?per_page={page_size}&page={page}",
+            headers={"Accept": "application/vnd.github.machine-man-preview+json"},
+        )
+
+        return self._process_repository_page(res.get("repositories", []))
+
+    async def _fetch_page_of_repos(
+        self, client, username, token, page_size=100, page=0
+    ):
+        # https://developer.github.com/v3/repos/#list-your-repositories
+        if username is None:
+            repos = await self.api(
+                client,
+                "get",
+                f"/user/repos?per_page={page_size}&page={page}",
+                token=token,
+            )
+        else:
+            repos = await self.api(
+                client,
+                "get",
+                f"/users/{username}/repos?per_page={page_size}&page={page}",
+                token=token,
+            )
+
+        return self._process_repository_page(repos)
+
+    async def _fetch_number_of_repos(self, client, token):
+        res = await self.api(
+            client,
+            "post",
+            "/graphql",
+            body=dict(query=GITHUB_REPO_COUNT_QUERY),
+            token=token,
+        )
+        return res["data"]["viewer"]["repositories"]["totalCount"]
+
     async def list_repos_using_installation(self, username=None):
         """
         returns list of repositories included in this integration
         """
-        repos = []
+        data = []
         page = 0
         async with self.get_client() as client:
             while True:
                 page += 1
-                # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
-                res = await self.api(
-                    client,
-                    "get",
-                    "/installation/repositories?per_page=100&page=%d" % page,
-                    headers={
-                        "Accept": "application/vnd.github.machine-man-preview+json"
-                    },
+                repos = await self._fetch_page_of_repos_using_installation(
+                    client, page=page
                 )
-                if len(res["repositories"]) == 0:
+
+                data.extend(repos)
+
+                if len(repos) < 100:
                     break
 
-                for repo in res["repositories"]:
-                    repos.append(
-                        dict(
-                            owner=dict(
-                                service_id=str(repo["owner"]["id"]),
-                                username=repo["owner"]["login"],
-                            ),
-                            repo=dict(
-                                service_id=str(repo["id"]),
-                                name=repo["name"],
-                                language=self._validate_language(repo["language"]),
-                                private=repo["private"],
-                                branch=repo["default_branch"] or "master",
-                            ),
-                        )
-                    )
+            return data
 
-                if len(res["repositories"]) < 100:
-                    break
-
-            return repos
+    async def list_repos_using_installation_generator(self, username=None):
+        """
+        New version of list_repos_using_installation() that should replace the
+        old one after safely rolling out in the worker.
+        """
+        async for page in self.list_repos_generator(
+            username=username, using_installation=True
+        ):
+            yield page
 
     async def list_repos(self, username=None, token=None):
         """
@@ -516,44 +578,49 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             while True:
                 page += 1
-                # https://developer.github.com/v3/repos/#list-your-repositories
-                if username is None:
-                    repos = await self.api(
-                        client,
-                        "get",
-                        "/user/repos?per_page=100&page=%d" % page,
-                        token=token,
-                    )
-                else:
-                    repos = await self.api(
-                        client,
-                        "get",
-                        "/users/%s/repos?per_page=100&page=%d" % (username, page),
-                        token=token,
-                    )
+                repos = await self._fetch_page_of_repos(
+                    client, username, token, page=page
+                )
 
-                for repo in repos:
-                    _o, _r = repo["owner"]["login"], repo["name"]
-
-                    data.append(
-                        dict(
-                            owner=dict(
-                                service_id=str(repo["owner"]["id"]), username=_o
-                            ),
-                            repo=dict(
-                                service_id=str(repo["id"]),
-                                name=_r,
-                                language=self._validate_language(repo["language"]),
-                                private=repo["private"],
-                                branch=repo["default_branch"],
-                            ),
-                        )
-                    )
+                data.extend(repos)
 
                 if len(repos) < 100:
                     break
 
             return data
+
+    async def list_repos_generator(
+        self, username=None, token=None, using_installation=False
+    ):
+        """
+        New version of list_repos() that should replace the old one after safely
+        rolling out in the worker.
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        async with self.get_client() as client:
+            repo_count = await self._fetch_number_of_repos(client, token)
+            page_size = 100
+            pages = repo_count // page_size
+
+            if repo_count % page_size > 0:
+                pages += 1
+
+            if using_installation:
+                futures = [
+                    self._fetch_page_of_repos_using_installation(client, page=page)
+                    for page in range(1, pages + 1)
+                ]
+            else:
+                futures = [
+                    self._fetch_page_of_repos(
+                        client, token=token, username=username, page=page
+                    )
+                    for page in range(1, pages + 1)
+                ]
+
+            for future in asyncio.as_completed(futures):
+                next_page = await future
+                yield next_page
 
     async def list_teams(self, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)

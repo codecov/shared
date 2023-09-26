@@ -440,6 +440,19 @@ class Gitlab(TorngitBaseAdapter):
         data = [i for n, i in enumerate(data) if i not in data[n + 1 :]]
         return data
 
+    async def list_repos_generator(self, username=None, token=None):
+        """
+        Unlike GitHub and Bitbucket, GitLab has to pull a complete list of repos
+        from multiple endpoints which can return overlapping results. We can
+        still yield a page at a time through a generator to be consistent with
+        the other providers, but we have to pre-fetch all of the pages to remove
+        duplicates and then return slice after slice.
+        """
+        repos = await self.list_repos(username, token)
+        page_size = 100
+        for i in range(0, len(repos), page_size):
+            yield repos[i : i + page_size]
+
     async def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups
         all_groups = []
