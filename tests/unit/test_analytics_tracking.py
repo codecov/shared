@@ -88,7 +88,7 @@ def test_track_event_is_enterprise(mock_segment, mocker):
     mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
     analytics_tool = get_tools_manager()
     analytics_tool.track_event(
-        "Account Uploaded Coverage Report",
+        "Codecov - Account Uploaded Coverage Report",
         is_enterprise=True,
         event_data={"test": True},
     )
@@ -169,7 +169,7 @@ class TestEvent(object):
         assert event.serialize() == {
             "uuid": "AAEC",
             "timestamp": 1694476800.0,
-            "type": "Account Activated Repository",
+            "type": "Codecov - Account Activated Repository",
             "data": {"user_id": "1234", "repo_id": "1234", "branch": "test_branch"},
         }
 
