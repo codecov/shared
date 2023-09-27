@@ -8,3 +8,5 @@ class OauthConsumerToken(TypedDict):
 
 
 OnRefreshCallback = Optional[Callable[[OauthConsumerToken], Awaitable[None]]]
+
+PossiblyRefreshTokenFromDbCallback = Optional[Callable[[OauthConsumerToken], Awaitable[Optional[OauthConsumerToken]]]]

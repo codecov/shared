@@ -6,7 +6,7 @@ import httpx
 
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
-from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback
+from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback, PossiblyRefreshTokenFromDbCallback
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
@@ -24,6 +24,7 @@ class TorngitBaseAdapter(object):
     _aws_key = None
     _oauth: OauthConsumerToken = None
     _on_token_refresh: OnRefreshCallback = None
+    _possibly_refresh_token_from_db = None
     _token = None
     verify_ssl = None
 
@@ -81,12 +82,14 @@ class TorngitBaseAdapter(object):
         token=None,
         token_type_mapping: Dict[TokenType, Dict] = None,
         on_token_refresh: OnRefreshCallback = None,
+        possibly_refresh_token_from_db: PossiblyRefreshTokenFromDbCallback = None,
         verify_ssl=None,
         **kwargs,
     ):
         self._timeouts = timeouts or [10, 30]
         self._token = token
         self._on_token_refresh = on_token_refresh
+        self._possibly_refresh_token_from_db = possibly_refresh_token_from_db
         self._token_type_mapping = token_type_mapping or {}
         self._oauth = oauth_consumer_token
         self.data = {"owner": {}, "repo": {}}
