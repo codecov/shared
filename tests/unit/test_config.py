@@ -333,6 +333,32 @@ class TestConfig(object):
             "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
 
+    def test_parse_path_and_value_from_envvar(self, mocker):
+        this_config = ConfigHelper()
+        mock_env = {
+            "CONVERT__TO__BOOL__TRUE": ("true", True),
+            "CONVERT__TO__BOOL__FALSE": ("false", False),
+            "CONVERT__TO__INT__123": ("123", 123),
+            "CONVERT__TO__FLOAT__12.3": ("12.3", 12.3),
+            "LEAVE__ALONE__MALFORMED__TRUE": ("True", "True"),
+            "LEAVE__ALONE__MALFORMED__FALSE": ("False", "False"),
+            "LEAVE__ALONE__MALFORMED__FLOAT": ("12.3.4", "12.3.4"),
+            "LEAVE__ALONE__STRING": ("hello world", "hello world"),
+        }
+
+        mocker.patch.dict(
+            os.environ,
+            {k: v[0] for k, v in mock_env.items()},
+        )
+
+        for k, v in mock_env.items():
+            expected_path = k.split("__")
+            env_val, expected_val = v
+            assert this_config._parse_path_and_value_from_envvar(k) == (
+                expected_path,
+                expected_val,
+            )
+
     def test_load_env_var(self, mocker):
         this_config = ConfigHelper()
         mocker.patch.dict(
@@ -379,7 +405,7 @@ class TestConfig(object):
                 "minio": {
                     "hash_key": "hash_key",
                     "host": "minio-proxy",
-                    "port": "9000",
+                    "port": 9000,
                     "access_key_id": "SERVICES__MINIO__ACCESS_KEY_ID",
                     "secret_access_key": "SERVICES__MINIO__SECRET_ACCESS_KEY",
                 },
