@@ -92,11 +92,11 @@ class ConfigHelper(object):
 
     def _env_var_value_cast(self, data):
         if isinstance(data, str):
-            if data == "true":
+            if data in ("true", "True", "TRUE", "on", "On", "ON"):
                 return True
-            elif data == "false":
+            elif data in ("false", "False", "FALSE", "off", "Off", "OFF"):
                 return False
-            elif data.isdigit():
+            elif re.match(r"^-?\d+$", data):
                 return int(data)
             elif re.match(r"^-?\d+\.\d+$", data):
                 try:
