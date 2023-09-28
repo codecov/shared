@@ -168,6 +168,12 @@ class Github(TorngitBaseAdapter):
         for current_retry in range(1, max_number_retries + 1):
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
+                    log.info("make_http_call")
+                    log.info(f"method {method}")
+                    log.info(f"url {url}")
+                    log.info(f"body {body}")
+                    log.info(f"headers {_headers}")
+                    log.info("/make_http_call")
                     res = await client.request(method, url, **kwargs)
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
