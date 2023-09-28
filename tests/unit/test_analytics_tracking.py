@@ -168,7 +168,7 @@ class TestEvent(object):
         )
         assert event.serialize() == {
             "uuid": "AAEC",
-            # "timestamp": 1694476800.0,
+            "timestamp": 1694476800.0,
             "type": "Codecov - Account Activated Repository",
             "data": {"user_id": "1234", "repo_id": "1234", "branch": "test_branch"},
         }

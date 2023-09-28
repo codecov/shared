@@ -37,7 +37,7 @@ class Event:
     def serialize(self) -> Mapping[str, Any]:
         return {
             "uuid": b64encode(self.uuid.bytes).decode(),
-            # "timestamp": to_timestamp(self.datetime),
+            "timestamp": to_timestamp(self.datetime),
             "type": self.name,
             "data": self.data,
         }
