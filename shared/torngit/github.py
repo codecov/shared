@@ -1450,8 +1450,10 @@ class Github(TorngitBaseAdapter):
                 res = await self.api(
                     client, "get", "https://education.github.com/api/user"
                 )
+                log.info(f"EDUCATION GET USER RESPONSE: '{res}'")
                 return res["student"]
-            except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
+            except (TorngitUnauthorizedError, TorngitServer5xxCodeError) as e:
+                log.info(f"EDUCATION GET USER ERRORED: '{e}'")
                 return False
 
     # GitHub App Webhook management
