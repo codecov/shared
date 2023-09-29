@@ -1,7 +1,10 @@
+import logging
 from typing import Optional
 
 from shared.analytics_tracking.base import BaseAnalyticsTool
 from shared.analytics_tracking.events import Event
+
+log = logging.getLogger("__name__")
 
 
 class AnalyticsToolManager:
@@ -28,4 +31,11 @@ class AnalyticsToolManager:
         event = Event(event_name, **event_data)
         for tool in self.tools:
             if tool.is_enabled():
-                tool.track_event(event, is_enterprise=is_enterprise, context=context)
+                try:
+                    tool.track_event(
+                        event, is_enterprise=is_enterprise, context=context
+                    )
+                except Exception as exc:
+                    log.error(
+                        "Got an error sending events", extra=dict(tool=tool, error=exc)
+                    )
