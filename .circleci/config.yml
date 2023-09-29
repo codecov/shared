@@ -1,6 +1,23 @@
 version: 2.1
 
 jobs:
+  codecovstartup:
+    docker:
+      - image: circleci/python:3.10.1
+    steps:
+      - checkout
+      - run:
+          name: Install CLI
+          command: |
+            pip install codecov-cli
+      - run:
+          name: Save commit info
+          command: |
+            codecovcli create-commit
+      - run:
+          name: Create report
+          command: |
+            codecovcli create-report
   staticanalysis:
     docker:
       - image: circleci/python:3.10.1
