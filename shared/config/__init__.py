@@ -2,6 +2,7 @@ import collections
 import json
 import logging
 import os
+import re
 from base64 import b64decode
 from copy import deepcopy
 from typing import Any, List, Tuple
@@ -89,6 +90,22 @@ class ConfigHelper(object):
                 current[multiple_level_vars[-1].lower()] = data
         return val
 
+    def _env_var_value_cast(self, data):
+        if isinstance(data, str):
+            if data in ("true", "True", "TRUE", "on", "On", "ON"):
+                return True
+            elif data in ("false", "False", "FALSE", "off", "Off", "OFF"):
+                return False
+            elif re.match(r"^-?\d+$", data):
+                return int(data)
+            elif re.match(r"^-?\d+\.\d+$", data):
+                try:
+                    return float(data)
+                except ValueError as e:
+                    pass
+
+        return data
+
     def _parse_path_and_value_from_envvar(
         self, env_var_name: str
     ) -> Tuple[List[str], Any]:
@@ -112,6 +129,7 @@ class ConfigHelper(object):
         path_to_use = env_var_name if not should_load_from_json else env_var_name[13:]
         data = os.getenv(env_var_name)
         data = data if not should_load_from_json else json.loads(data)
+        data = self._env_var_value_cast(data)
         return (path_to_use.split("__"), data)
 
     @property
