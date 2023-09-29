@@ -5,6 +5,7 @@ full_sha := $(shell git rev-parse HEAD)
 export CODECOV_TOKEN=${CODECOV_UPLOAD_TOKEN}
 
 test:
+	. venv/bin/activate
 	python -m pytest --cov=./
 
 lint:
@@ -29,12 +30,15 @@ requirements.install:
 	./tests/reqs.sh
 
 test_env.install_cli:
+	. venv/bin/activate
 	pip install codecov-cli
 
 test_env.upload:
+	. venv/bin/activate
 	codecovcli -u ${CODECOV_URL} do-upload --flag ${CODECOV_FLAG} --fail-on-error
 
 test_env.mutation:
+	. venv/bin/activate
 	git diff origin/main ${full_sha} > data.patch
 	pip install mutmut[patch]
 	mutmut run --use-patch-file data.patch || true
