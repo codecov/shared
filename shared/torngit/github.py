@@ -331,9 +331,17 @@ class Github(TorngitBaseAdapter):
                 }
             )
             return self.token
-        # Not passing the response on purpose in case we are failing to parse it properly
-        # So as to not leak user's tokens by accident
-        raise TorngitRefreshTokenFailedError(dict(error="No access_token in response"))
+        # https://docs.github.com/apps/managing-oauth-apps/troubleshooting-oauth-app-access-token-request-errors
+        log.error(
+            dict(
+                error="No access_token in response",
+                gh_error=session.get("error"),
+                gh_error_description=session.get("error_description"),
+            )
+        )
+        # Retunring None will let the code handle the request failure gracefully
+        # Instead of probably throwing 500
+        return None
 
     # Generic
     # -------
