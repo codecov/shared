@@ -7,6 +7,7 @@ from mock import patch
 from shared.analytics_tracking import get_list_of_analytic_tools, get_tools_manager
 from shared.analytics_tracking.events import Event, Events
 from shared.analytics_tracking.manager import AnalyticsToolManager
+from shared.analytics_tracking.marketo import Marketo
 from shared.analytics_tracking.pubsub import PubSub
 from shared.config import ConfigHelper
 
@@ -20,6 +21,12 @@ def mock_segment():
 @pytest.fixture
 def mock_pubsub():
     with patch("shared.analytics_tracking.PubSub.is_enabled", return_value=True):
+        yield
+
+
+@pytest.fixture
+def mock_marketo():
+    with patch("shared.analytics_tracking.Marketo.is_enabled", return_value=True):
         yield
 
 
@@ -44,19 +51,37 @@ def test_get_tools_manager(mock_segment):
     assert isinstance(tool, AnalyticsToolManager)
 
 
-def test_track_event(mock_segment, mock_pubsub, mock_pubsub_publisher, mocker):
+def test_track_event(
+    mock_segment, mock_pubsub, mock_marketo, mock_pubsub_publisher, mocker
+):
     analytics_tool = get_tools_manager()
     mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
-
+    mock_marketo_request = mocker.patch(
+        "shared.analytics_tracking.Marketo.make_rest_request"
+    )
+    event = Event(
+        Events.USER_SIGNED_IN.value,
+        test=True,
+    )
+    mocked_event = mocker.patch(
+        "shared.analytics_tracking.manager.Event", return_value=event
+    )
     analytics_tool.track_event(
         Events.USER_SIGNED_IN.value,
         is_enterprise=False,
         event_data={"test": True},
     )
-    event = Event(Events.USER_SIGNED_IN.value, test=True)
-    assert mock_track.called_with(-1, Events.USER_SIGNED_IN.value, {"test": True}, None)
-    assert mock_pubsub_publisher.publish.called_with(
-        mocker, data=json.dumps(event.serialize()).encode("utf-8")
+    mock_track.assert_called_with(-1, Events.USER_SIGNED_IN.value, {"test": True}, None)
+    mock_pubsub_publisher.publish.assert_called_with(
+        "projects/1234/topics/codecov",
+        data=json.dumps(event.serialize()).encode("utf-8"),
+    )
+    mock_marketo_request.assert_called_with(
+        Marketo.LEAD_URL,
+        method="POST",
+        json={
+            "input": [event.serialize()],
+        },
     )
 
 
@@ -70,8 +95,8 @@ def test_track_event_tool_not_enabled(mocker, mock_pubsub_publisher):
         event_data={"test": True},
     )
 
-    assert not mock_track.called
-    assert not mock_pubsub_publisher.publish.called
+    mock_track.assert_not_called()
+    mock_pubsub_publisher.publish.assert_not_called()
 
 
 def test_track_event_invalid_name(mock_segment, mocker):
@@ -81,7 +106,7 @@ def test_track_event_invalid_name(mock_segment, mocker):
         analytics_tool.track_event(
             "Invalid Name", is_enterprise=False, event_data={"test": True}
         )
-    assert not mock_track.called
+    mock_track.assert_not_called()
 
 
 def test_track_event_is_enterprise(mock_segment, mocker):
@@ -92,7 +117,7 @@ def test_track_event_is_enterprise(mock_segment, mocker):
         is_enterprise=True,
         event_data={"test": True},
     )
-    assert not mock_track.called
+    mock_track.assert_not_called()
 
 
 class TestPubSub(object):
@@ -148,8 +173,8 @@ class TestPubSub(object):
         )
         pubsub = PubSub()
         pubsub.track_event(event)
-        assert mock_pubsub_publisher.publish.called_with(
-            pubsub.topic, json.dumps(event.serialize()).encode("utf-8")
+        mock_pubsub_publisher.publish.assert_called_with(
+            pubsub.topic, data=json.dumps(event.serialize()).encode("utf-8")
         )
 
 
