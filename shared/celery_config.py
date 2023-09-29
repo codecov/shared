@@ -16,6 +16,9 @@ notify_task_name = f"app.tasks.{TaskConfigGroup.notify.value}.Notify"
 pulls_task_name = f"app.tasks.{TaskConfigGroup.pulls.value}.Sync"
 status_set_error_task_name = f"app.tasks.{TaskConfigGroup.status.value}.SetError"
 status_set_pending_task_name = f"app.tasks.{TaskConfigGroup.status.value}.SetPending"
+pre_process_upload_task_name = (
+    f"app.tasks.{TaskConfigGroup.upload.value}.PreProcessUpload"
+)
 upload_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.Upload"
 upload_processor_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadProcessor"
 upload_finisher_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadFinisher"
