@@ -91,7 +91,7 @@ jobs:
 
   test:
     name: Test
-    needs: [build, codecovstartup]
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -174,7 +174,7 @@ jobs:
 
   rust:
     name: Rust Tests
-    needs: [build, codecovstartup]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
