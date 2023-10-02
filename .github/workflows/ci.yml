@@ -121,6 +121,9 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-
+      - name: Install Requirements
+        run: |
+          make requirements.install
       - name: Run unit tests
         run: |
           make test

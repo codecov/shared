@@ -30,7 +30,6 @@ requirements.install:
 	./tests/reqs.sh
 
 test_env.install_cli:
-	. venv/bin/activate
 	pip install codecov-cli
 
 test_env.upload:
