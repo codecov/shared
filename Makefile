@@ -34,7 +34,7 @@ test_env.install_cli:
 
 test_env.upload:
 	. venv/bin/activate
-	codecovcli -u ${CODECOV_URL} do-upload --flag ${CODECOV_FLAG} --fail-on-error
+	codecovcli -u ${CODECOV_URL} upload-process --flag ${CODECOV_FLAG} --fail-on-error
 
 test_env.mutation:
 	. venv/bin/activate

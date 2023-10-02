@@ -1,4 +1,4 @@
-name: Worker CI
+name: Shared CI
 
 on:
   push:
@@ -45,17 +45,9 @@ jobs:
         run: |
           make requirements.install
 
-
-
-  codecovstartup:
-    name: Codecov Startup
-    needs: build
-    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.0.0
-    secrets: inherit
-
   ats:
     name: ATS
-    needs: [build, codecovstartup]
+    needs: [build]
     strategy:
       fail-fast: false
       matrix:
