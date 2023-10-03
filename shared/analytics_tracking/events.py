@@ -14,12 +14,12 @@ log = logging.getLogger("__name__")
 
 class Events(Enum):
     ACCOUNT_ACTIVATED_REPOSITORY_ON_UPLOAD = (
-        "Codecov - Account Activated Repository On Upload"
+        "codecov.account.activated_repository_on_upload"
     )
-    ACCOUNT_ACTIVATED_REPOSITORY = "Codecov - Account Activated Repository"
-    ACCOUNT_UPLOADED_COVERAGE_REPORT = "Codecov - Account Uploaded Coverage Report"
-    USER_SIGNED_IN = "Codecov - User Signed In"
-    USER_SIGNED_UP = "Codecov - User Signed Up"
+    ACCOUNT_ACTIVATED_REPOSITORY = "codecov.account.activated_repository"
+    ACCOUNT_UPLOADED_COVERAGE_REPORT = "codecov.account.uploaded_coverage_report"
+    USER_SIGNED_IN = "codecov.user.signed_in"
+    USER_SIGNED_UP = "codecov.user.signed_up"
 
 
 class Event:
