@@ -125,10 +125,15 @@ jobs:
           toolchain: stable
       - name: Install Requirements
         run: |
-          make requirements.install
+          python -m venv venv
+          . venv/bin/activate
+          pip install -r tests/requirements.txt
+          pip install setuptools_rust
+          python setup.py develop
+          pip install codecov-cli
+          echo PATH=$PATH >> $GITHUB_ENV
       - name: Run unit tests
         run: |
-          . venv/bin/activate
           python -m pytest --cov=./
       ## Don't upload on forks for now.
       - name: upload using codecovcli
