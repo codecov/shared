@@ -3,6 +3,7 @@ CODECOV_URL ?= "https://api.codecov.io"
 CODECOV_FLAG ?= ""
 full_sha := $(shell git rev-parse HEAD)
 export CODECOV_TOKEN=${CODECOV_UPLOAD_TOKEN}
+.ONESHELL:
 
 test:
 	. venv/bin/activate
@@ -30,11 +31,12 @@ requirements.install:
 	./tests/reqs.sh
 
 test_env.install_cli:
+	. venv/bin/activate
 	pip install codecov-cli
 
 test_env.upload:
 	. venv/bin/activate
-	codecovcli -u ${CODECOV_URL} upload-process --flag ${CODECOV_FLAG} --fail-on-error
+	codecovcli -u ${CODECOV_URL} do-upload --flag ${CODECOV_FLAG} --fail-on-error
 
 test_env.mutation:
 	. venv/bin/activate
