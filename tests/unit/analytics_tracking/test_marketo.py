@@ -127,7 +127,7 @@ class TestMarketo(object):
             )
             mocker.patch("shared.analytics_tracking.events.uuid1", return_value=uuid)
             event = Event(
-                Events.ACCOUNT_ACTIVATED_REPOSITORY.value,
+                Events.ACCOUNT_UPLOADED_COVERAGE_REPORT.value,
                 user_id="1234",
                 repo_id="1234",
                 branch="test_branch",
