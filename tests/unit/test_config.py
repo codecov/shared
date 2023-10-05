@@ -333,6 +333,46 @@ class TestConfig(object):
             "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         }
 
+    def test_parse_path_and_value_from_envvar(self, mocker):
+        this_config = ConfigHelper()
+        mock_env = {
+            "CONVERT__TO__BOOL__TRUE1": ("true", True),
+            "CONVERT__TO__BOOL__TRUE2": ("True", True),
+            "CONVERT__TO__BOOL__TRUE3": ("TRUE", True),
+            "CONVERT__TO__BOOL__TRUE4": ("on", True),
+            "CONVERT__TO__BOOL__TRUE5": ("On", True),
+            "CONVERT__TO__BOOL__TRUE6": ("ON", True),
+            "CONVERT__TO__BOOL__FALSE1": ("false", False),
+            "CONVERT__TO__BOOL__FALSE2": ("False", False),
+            "CONVERT__TO__BOOL__FALSE3": ("FALSE", False),
+            "CONVERT__TO__BOOL__FALSE4": ("off", False),
+            "CONVERT__TO__BOOL__FALSE5": ("Off", False),
+            "CONVERT__TO__BOOL__FALSE6": ("OFF", False),
+            "CONVERT__TO__INT__123": ("123", 123),
+            "CONVERT__TO__INT__-123": ("-123", -123),
+            "CONVERT__TO__FLOAT__12.3": ("12.3", 12.3),
+            "CONVERT__TO__FLOAT__-12.3": ("-12.3", -12.3),
+            "LEAVE__ALONE__MALFORMED__TRUE1": ("TrUe", "TrUe"),
+            "LEAVE__ALONE__MALFORMED__TRUE2": ("oN", "oN"),
+            "LEAVE__ALONE__MALFORMED__FALSE1": ("FaLse", "FaLse"),
+            "LEAVE__ALONE__MALFORMED__FALSE2": ("oFF", "oFF"),
+            "LEAVE__ALONE__MALFORMED__FLOAT": ("12.3.4", "12.3.4"),
+            "LEAVE__ALONE__STRING": ("hello world", "hello world"),
+        }
+
+        mocker.patch.dict(
+            os.environ,
+            {k: v[0] for k, v in mock_env.items()},
+        )
+
+        for k, v in mock_env.items():
+            expected_path = k.split("__")
+            env_val, expected_val = v
+            assert this_config._parse_path_and_value_from_envvar(k) == (
+                expected_path,
+                expected_val,
+            )
+
     def test_load_env_var(self, mocker):
         this_config = ConfigHelper()
         mocker.patch.dict(
@@ -379,7 +419,7 @@ class TestConfig(object):
                 "minio": {
                     "hash_key": "hash_key",
                     "host": "minio-proxy",
-                    "port": "9000",
+                    "port": 9000,
                     "access_key_id": "SERVICES__MINIO__ACCESS_KEY_ID",
                     "secret_access_key": "SERVICES__MINIO__SECRET_ACCESS_KEY",
                 },
@@ -404,8 +444,8 @@ class TestConfig(object):
                 "media": {"assets": "aaa", "dependancies": "bbb"},
                 "encryption_secret": "secret",
                 "tasks": {"status": {"queue": "new_tasks"}},
-                "segment": {"enabled": "True", "key": "abc"},
-                "timeseries": {"enabled": "True"},
+                "segment": {"enabled": True, "key": "abc"},
+                "timeseries": {"enabled": True},
             },
             "github": {
                 "bot": {"key": "GITHUB__BOT__KEY"},
