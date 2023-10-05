@@ -213,6 +213,12 @@ config_schema = {
                     "endpoint_override": {"type": "string"},
                 },
             },
+            "health_check": {
+                "type": "dict",
+                "schema": {
+                    "enabled": {"type": "boolean"},
+                },
+            },
         },
     },
     "services": {
