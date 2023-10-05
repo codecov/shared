@@ -43,7 +43,16 @@ jobs:
 
       - name: Install requirements
         run: |
-          make requirements.install
+          python -m venv venv
+          . venv/bin/activate
+          pip install -r tests/requirements.txt
+          pip install setuptools_rust
+          python setup.py develop
+          pip install codecov-cli
+          pip install --ignore-installed google-cloud-iam-logging
+          pip install --ignore-installed google-cloud
+          pip install --ignore-installed google-cloud-storage
+          pip install --ignore-installed google-cloud-pubsub
 
 #  codecovstartup:
 #    name: Codecov Startup
@@ -131,6 +140,14 @@ jobs:
       - name: Install reqs and run tests
         run: |
           . venv/bin/activate
+          pip install -r tests/requirements.txt
+          pip install setuptools_rust
+          python setup.py develop
+          pip install codecov-cli
+          pip install --ignore-installed google-cloud-iam-logging
+          pip install --ignore-installed google-cloud
+          pip install --ignore-installed google-cloud-storage
+          pip install --ignore-installed google-cloud-pubsub
           python -m pytest --cov=./
 
 
