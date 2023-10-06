@@ -37,23 +37,17 @@ jobs:
         with:
           path: |
             venv
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/tests/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
       - name: Install requirements
+        if: ${{ steps.cache-requirements.outputs.cache-hit != 'true' }}
         run: |
-          python -m venv venv
-          . venv/bin/activate
-          pip install -r tests/requirements.txt
-          pip install setuptools_rust
-          python setup.py develop
-          pip install codecov-cli
-          pip install --ignore-installed google-cloud-iam-logging
-          pip install --ignore-installed google-cloud
-          pip install --ignore-installed google-cloud-storage
-          pip install --ignore-installed google-cloud-pubsub
-
+          make requirements.install
 #  codecovstartup:
 #    name: Codecov Startup
 #    needs: build
@@ -139,15 +133,7 @@ jobs:
           toolchain: stable
       - name: Install reqs and run tests
         run: |
-          . venv/bin/activate
-          pip install -r tests/requirements.txt
-          pip install setuptools_rust
-          python setup.py develop
-          pip install codecov-cli
-          pip install --ignore-installed google-cloud-iam-logging
-          pip install --ignore-installed google-cloud
-          pip install --ignore-installed google-cloud-storage
-          pip install --ignore-installed google-cloud-pubsub
+          . venv/bin/activate          
           python -m pytest --cov=./
 
 
