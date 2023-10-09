@@ -136,6 +136,15 @@ config_schema = {
                     "enabled": {"type": "boolean"},
                 },
             },
+            "marketo": {
+                "type": "dict",
+                "schema": {
+                    "client_id": {"type": "string"},
+                    "client_secret": {"type": "string"},
+                    "base_url": {"type": "string"},
+                    "enabled": {"type": "boolean"},
+                },
+            },
             "http": {
                 "type": "dict",
                 "schema": {
