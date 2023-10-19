@@ -1,8 +1,14 @@
 import httpx
 
 from shared.analytics_tracking.base import BaseAnalyticsTool
-from shared.analytics_tracking.events import Event
+from shared.analytics_tracking.events import Event, Events
 from shared.config import get_config
+
+marketo_events = [
+    Events.USER_SIGNED_IN.value,
+    Events.USER_SIGNED_UP.value,
+    Events.ACCOUNT_UPLOADED_COVERAGE_REPORT.value,
+]
 
 
 class MarketoError(Exception):
@@ -36,10 +42,11 @@ class Marketo(BaseAnalyticsTool):
         return bool(get_config("setup", "marketo", "enabled", default=False))
 
     def track_event(self, event: Event, *, is_enterprise, context: None):
-        body = {
-            "input": [event.serialize()],
-        }
-        return self.make_rest_request(self.LEAD_URL, method="POST", json=body)
+        if event.name in marketo_events:
+            body = {
+                "input": [event.serialize()],
+            }
+            return self.make_rest_request(self.LEAD_URL, method="POST", json=body)
 
     def make_request(self, url, *args, **kwargs):
         full_url = self.base_url + url
