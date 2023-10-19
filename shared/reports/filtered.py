@@ -1,6 +1,7 @@
 import dataclasses
 import logging
 import os
+import time
 
 from shared.config import get_config
 from shared.helpers.numeric import ratio
@@ -54,8 +55,11 @@ class FilteredReportFile(object):
 
     @property
     def totals(self):
+        ts_start = time.time()
         if not self._totals:
             self._totals = self._process_totals()
+        ts_end = time.time()
+        log.info(f"Shared Watch: FilteredReportFile totals: {ts_end-ts_start}")
         return self._totals
 
     @property
@@ -68,10 +72,13 @@ class FilteredReportFile(object):
         returning (ln, line)
         <generator ((3, Line), (4, Line), (7, Line), ...)>
         """
+        ts_start = time.time()
         for ln, line in self.report_file.lines:
             line = self.line_modifier(line)
             if line:
                 yield ln, line
+        ts_end = time.time()
+        log.info(f"Shared Watch: FilteredReportFile lines: {ts_end-ts_start}")
 
     def calculate_diff(self, all_file_segments):
         fg = self.get
