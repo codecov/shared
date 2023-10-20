@@ -1,6 +1,5 @@
 import dataclasses
 import logging
-import time
 from copy import copy
 from itertools import filterfalse, zip_longest
 from json import JSONEncoder, dumps, loads
@@ -138,7 +137,6 @@ class ReportFile(object):
         returning (ln, line)
         <generator ((3, Line), (4, Line), (7, Line), ...)>
         """
-        ts_start = time.time()
         func = self._line_modifier
         for ln, line in enumerate(self._lines, start=1):
             if line:
@@ -148,8 +146,6 @@ class ReportFile(object):
                     if not line:
                         continue
                 yield ln, line
-        ts_end = time.time()
-        log.info(f"Shared Watch: ReportFile lines: {ts_end-ts_start}")
 
     def calculate_diff(self, all_file_segments):
         fg = self.get
@@ -417,11 +413,8 @@ class ReportFile(object):
 
     @property
     def totals(self):
-        ts_start = time.time()
         if not self._totals:
             self._totals = self._process_totals()
-        ts_end = time.time()
-        log.info(f"Shared Watch: ReportFile totals: {ts_end-ts_start}")
         return self._totals
 
     def _process_totals(self):
