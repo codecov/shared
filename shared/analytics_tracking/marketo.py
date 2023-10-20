@@ -8,6 +8,7 @@ marketo_events = [
     Events.USER_SIGNED_IN.value,
     Events.USER_SIGNED_UP.value,
     Events.ACCOUNT_UPLOADED_COVERAGE_REPORT.value,
+    Events.GDPR_OPT_IN.value,
 ]
 
 
