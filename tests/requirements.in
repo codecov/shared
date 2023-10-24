@@ -5,7 +5,7 @@ pytest-asyncio
 pytest-cov
 pytest-mock
 pytest>=7.2.0
-vcrpy
+vcrpy>=5.0.0
 respx>=0.19.2
 httpx>=0.23.0
 requests>=2.31.0
