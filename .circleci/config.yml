@@ -11,13 +11,13 @@ jobs:
           command: |
             pip install codecov-cli
       - run:
-          name: Save commit info 
+          name: Save commit info
           command: |
-            codecovcli create-commit 
-      - run: 
+            codecovcli create-commit
+      - run:
           name: Create report
           command: |
-            codecovcli create-report 
+            codecovcli create-report
   staticanalysis:
     docker:
       - image: circleci/python:3.10.1
@@ -49,7 +49,7 @@ jobs:
             pip install --ignore-installed google-cloud-iam-logging
             pip install --ignore-installed google-cloud
             pip install --ignore-installed google-cloud-storage
-            pip install --ignore-installed google-cloud-pubsub        
+            pip install --ignore-installed google-cloud-pubsub
       - run:
           name: Install CLI
           command: |
@@ -147,7 +147,7 @@ jobs:
           command: |
             . venv/bin/activate
             codecovcli do-upload --flag python<< parameters.imagename >> --fail-on-error
-          
+
   rust:
     docker:
       - image: circleci/python:3.9
@@ -172,13 +172,13 @@ jobs:
           command: |
             pip install codecov-cli
       - run:
-          name: Save commit info 
+          name: Save commit info
           command: |
-            codecovcli create-commit 
-      - run: 
+            codecovcli create-commit
+      - run:
           name: Create report
           command: |
-            codecovcli create-report 
+            codecovcli create-report
       - run:
           name: Upload to codecov
           command: |
