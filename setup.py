@@ -44,5 +44,6 @@ setup(
         "google-auth>=2.21.0",
         "google-cloud-pubsub>=2.13.6",
         "pytz",
+        "django>=4.2.3",
     ],
 )
