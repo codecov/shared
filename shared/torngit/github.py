@@ -413,6 +413,16 @@ class Github(TorngitBaseAdapter):
                 return user
 
             else:
+                if "error" in session:
+                    # https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-oauth-app-access-token-request-errors
+                    log.error(
+                        "Error fetching GitHub access token",
+                        extra=dict(
+                            error=session.get("error"),
+                            error_description=session.get("error_description"),
+                            error_uri=session.get("error_uri"),
+                        ),
+                    )
                 return None
 
     async def get_is_admin(self, user, token=None):
