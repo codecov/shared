@@ -20,6 +20,7 @@ class Events(Enum):
     ACCOUNT_UPLOADED_COVERAGE_REPORT = "codecov.account.uploaded_coverage_report"
     USER_SIGNED_IN = "codecov.user.signed_in"
     USER_SIGNED_UP = "codecov.user.signed_up"
+    GDPR_OPT_IN = "codecov.email.gdpr_opt_in"
 
 
 class Event:

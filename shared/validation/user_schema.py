@@ -368,6 +368,10 @@ schema = {
                 "type": "dict",
                 "schema": {"partials_as_hits": {"type": "boolean"}},
             },
+            "cobertura": {
+                "type": "dict",
+                "schema": {"handle_missing_conditions": {"type": "boolean"}},
+            },
         },
     },
     "ignore": path_list_structure,

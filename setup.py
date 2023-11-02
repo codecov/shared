@@ -32,6 +32,7 @@ setup(
         "protobuf>=4.21.6",
         "tlslite-ng",
         "statsd>=3.3.0",
+        "prometheus-client",
         "analytics-python==1.3.0b1",
         "httpx>=0.23.0",
         "certifi>=2023.07.22",
