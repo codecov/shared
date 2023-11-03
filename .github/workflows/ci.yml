@@ -131,7 +131,7 @@ jobs:
       - name: Upload Coverage
         run: |
           . venv/bin/activate
-          codecovcli -u ${CODECOV_URL} upload-process --flag smart-labels --fail-on-error
+          codecovcli upload-process --flag smart-labels --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
 
 #      - name: Run Skip Tests
 #        id: skip
@@ -219,55 +219,55 @@ jobs:
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           . venv/bin/activate
-          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }}  upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
 
       - name: upload using codecovcli qa
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           . venv/bin/activate
-          codecovcli -u ${{ secrets.CODECOV_QA_URL }}  upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
 
       - name: upload using codecovcli public qa
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           . venv/bin/activate
-          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }}  upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
        
 
-#  mutation:
-#    name: Run Mutations
-#    needs: [build]
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        python-version: [ "3.11" ]
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 2
-#      - uses: actions/setup-python@v4
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#      - name: Cache Requirements
-#        id: cache-requirements
-#        uses: actions/cache@v3
-#        env:
-#          cache-name: cache-requirements
-#        with:
-#          path: |
-#            venv
-#          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
-#      - name: Install Requirements
-#        run: |
-#          make requirements.install
-#      - name: Run mutations
-#        run: |
-#          make test_env.mutation
-#
+  mutation:
+    name: Run Mutations
+    needs: [build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache Requirements
+        id: cache-requirements
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-requirements
+        with:
+          path: |
+            venv
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
+      - name: Install Requirements
+        run: |
+          make requirements.install
+      - name: Run mutations
+        run: |
+          make test_env.mutation
+
 
   rust:
     name: Rust Tests
