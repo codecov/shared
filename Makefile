@@ -36,12 +36,6 @@ requirements.install:
 	python setup.py develop
 	pip install codecov-cli
 
-test_env.install_cli:
-	pip install codecov-cli
-
-test_env.upload:
-	. venv/bin/activate
-	codecovcli -u ${CODECOV_URL} upload-process --flag ${CODECOV_FLAG} --fail-on-error
 
 test_env.mutation:
 	. venv/bin/activate
