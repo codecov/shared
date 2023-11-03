@@ -28,12 +28,19 @@ lint.check:
 	isort --profile black --check .
 
 requirements.install:
-	./tests/reqs.sh
+	python -m venv venv
+	source venv/bin/activate
+	pip install setuptools_rust
+	pip install -r tests/requirements.txt
+	pip install -r requirements.txt
+	python setup.py develop
+	pip install codecov-cli
 
 test_env.install_cli:
 	pip install codecov-cli
 
 test_env.upload:
+	. venv/bin/activate
 	codecovcli -u ${CODECOV_URL} upload-process --flag ${CODECOV_FLAG} --fail-on-error
 
 test_env.mutation:
