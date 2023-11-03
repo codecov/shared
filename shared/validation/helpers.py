@@ -344,6 +344,9 @@ class LayoutStructure(object):
             "newfooter",
             "feedback",
             "newfiles",
+            "condensed_header",
+            "condensed_footer",
+            "condensed_files",
         ]
     )
 
