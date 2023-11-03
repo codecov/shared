@@ -36,6 +36,8 @@ requirements.install:
 	python setup.py develop
 	pip install codecov-cli
 
+test_env.install_cli:
+	pip install codecov-cli
 
 test_env.mutation:
 	. venv/bin/activate
