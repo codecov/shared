@@ -118,7 +118,7 @@ jobs:
         run: |
           . venv/bin/activate
           START=$(date +%s)
-          TESTS_TO_RUN=$(jq -r '.ats_tests_to_run []' analysis.json)
+          TESTS_TO_RUN=$(jq -r '.ats_tests_to_run | map(@sh) | join(" ")' analysis.json --raw-output)
           TEST_COUNT=$(jq -r '.ats_tests_to_run | length' analysis.json)
           RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
           python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
@@ -137,7 +137,7 @@ jobs:
         run: |
           . venv/bin/activate
           START=$(date +%s)
-          TESTS_TO_RUN=$(jq -r '.ats_tests_to_run []' analysis.json)
+          TESTS_TO_RUN=$(jq -r '.ats_tests_to_skip | map(@sh) | join(" ")' analysis.json --raw-output)
           TEST_COUNT=$(jq -r '.ats_tests_to_skip | length' analysis.json)
           RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
           python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
