@@ -1,6 +1,7 @@
 import pytest
 from mock import PropertyMock
 
+from shared.reports.editable import EditableReport, EditableReportFile
 from shared.reports.resources import Report, ReportFile, _encode_chunk
 from shared.reports.types import (
     LineSession,
@@ -340,6 +341,21 @@ def test_merge(files, chunks, new_report, manifest):
     assert list(r.files) == ["file.py"]
     r.merge(new_report)
     assert list(r.files) == manifest
+
+
+def test_merge_into_editable_report():
+    editable_report = EditableReport(
+        files={"file.py": [1, ReportTotals(2)]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    )
+    new_report = Report(
+        files={"other-file.py": [1, ReportTotals(2)]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    )
+    editable_report.merge(new_report)
+    assert list(editable_report.files) == ["file.py", "other-file.py"]
+    for file in editable_report:
+        assert isinstance(file, EditableReportFile)
 
 
 @pytest.mark.unit
