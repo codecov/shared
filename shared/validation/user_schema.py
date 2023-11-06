@@ -370,7 +370,10 @@ schema = {
             },
             "cobertura": {
                 "type": "dict",
-                "schema": {"handle_missing_conditions": {"type": "boolean"}},
+                "schema": {
+                    "handle_missing_conditions": {"type": "boolean"},
+                    "partials_as_hits": {"type": "boolean"},
+                },
             },
         },
     },
