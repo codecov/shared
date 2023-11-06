@@ -93,6 +93,10 @@ class ReadOnlyReport(object):
     def sessions(self):
         return self.inner_report.sessions
 
+    @property
+    def size(self):
+        return self.inner_report.size
+
     @metrics.timer("shared.reports.readonly.apply_diff")
     def apply_diff(self, *args, **kwargs):
         return self.inner_report.apply_diff(*args, **kwargs)

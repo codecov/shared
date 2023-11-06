@@ -438,6 +438,9 @@ class TestReadOnly(object):
             diff=0,
         )
 
+    def test_size(self, sample_rust_report):
+        assert sample_rust_report.size == 580
+
     def test_append(self, sample_rust_report):
         assert sample_rust_report.totals.asdict() == dict(
             files=3,

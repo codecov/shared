@@ -633,6 +633,13 @@ class Report(object):
     def from_chunks(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
+    @property
+    def size(self):
+        size = 0
+        for chunk in self._chunks:
+            size += len(chunk)
+        return size
+
     def get_session_from_session(self, sess):
         if isinstance(sess, Session):
             return copy(sess)
