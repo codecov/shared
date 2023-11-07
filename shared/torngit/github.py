@@ -53,6 +53,7 @@ class Github(TorngitBaseAdapter):
     service = "github"
     service_url = "https://github.com"
     api_url = "https://api.github.com"
+    testResponse = ""
     urls = dict(
         repo="{username}/{name}",
         owner="{username}",
@@ -73,6 +74,12 @@ class Github(TorngitBaseAdapter):
     @property
     def token(self):
         return self._token
+    
+    def testStuff(self):
+        return "Hello world!"
+
+    def showResponse(self):
+        return self.testResponse
 
     async def api(self, *args, token=None, **kwargs):
         """
@@ -277,9 +284,6 @@ class Github(TorngitBaseAdapter):
                     "Retrying due to retriable status",
                     extra=dict(status=res.status_code, **log_dict),
                 )
-
-    # SEND EXPIRES IN HERE!!!
-
     async def refresh_token(
         self, client: httpx.AsyncClient, original_url: str
     ) -> Optional[OauthConsumerToken]:
@@ -324,7 +328,7 @@ class Github(TorngitBaseAdapter):
             )
         response_text = self._parse_response(res)
         session = parse_qs(response_text)
-        print(response_text)
+        self.testResponse = response_text
         if session.get("access_token"):
             self.set_token(
                 {
