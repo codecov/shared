@@ -1,4 +1,6 @@
-from shared import ribs
+import cc_rustyribs as ribs
+
+# from shared import ribs
 from shared.reports.types import Change
 
 

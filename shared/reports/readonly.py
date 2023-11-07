@@ -2,10 +2,13 @@ import logging
 import os
 import random
 
+from cc_rustyribs import FilterAnalyzer, SimpleAnalyzer, parse_report
+
 from shared.helpers.flag import Flag
 from shared.metrics import metrics
 from shared.reports.resources import Report, ReportTotals
-from shared.ribs import FilterAnalyzer, SimpleAnalyzer, parse_report
+
+# from shared.ribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 from shared.utils.match import match
 
 log = logging.getLogger(__name__)
