@@ -270,12 +270,15 @@ class Github(TorngitBaseAdapter):
                     raise TorngitClientGeneralError(
                         res.status_code, response_data=res.text, message=message
                     )
+                print("make http res", res)
                 return res
             else:
                 log.info(
                     "Retrying due to retriable status",
                     extra=dict(status=res.status_code, **log_dict),
                 )
+
+    # SEND EXPIRES IN HERE!!!
 
     async def refresh_token(
         self, client: httpx.AsyncClient, original_url: str
@@ -321,7 +324,7 @@ class Github(TorngitBaseAdapter):
             )
         response_text = self._parse_response(res)
         session = parse_qs(response_text)
-
+        print(response_text)
         if session.get("access_token"):
             self.set_token(
                 {
@@ -390,6 +393,7 @@ class Github(TorngitBaseAdapter):
                 client_id=creds["key"],
                 client_secret=creds["secret"],
             )
+            print("big response", response)
             session = self._parse_response(response)
 
             if session.get("access_token"):
