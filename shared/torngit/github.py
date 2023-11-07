@@ -176,6 +176,8 @@ class Github(TorngitBaseAdapter):
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                     res = await client.request(method, url, **kwargs)
+                    print("nested check")
+                    print(res.text)
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
                     logged_body = res.text
@@ -278,6 +280,7 @@ class Github(TorngitBaseAdapter):
                         res.status_code, response_data=res.text, message=message
                     )
                 print("make http res", res)
+                print(res.text)
                 return res
             else:
                 log.info(
