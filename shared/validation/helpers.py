@@ -340,10 +340,13 @@ class LayoutStructure(object):
             "sunburst",
             "tree",
             "uncovered",
-            "newheader",
-            "newfooter",
+            "newheader",  # deprecated, keeping it for backward compatibility
+            "newfooter",  # deprecated, keeping it for backward compatibility
             "feedback",
-            "newfiles",
+            "newfiles",  # deprecated, keeping it for backward compatibility
+            "condensed_header",
+            "condensed_footer",
+            "condensed_files",
         ]
     )
 
