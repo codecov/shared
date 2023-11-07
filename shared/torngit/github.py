@@ -397,9 +397,10 @@ class Github(TorngitBaseAdapter):
                 client_id=creds["key"],
                 client_secret=creds["secret"],
             )
+            self.testResponse = str(response)
             print("big response", response)
             session = self._parse_response(response)
-
+            
             if session.get("access_token"):
                 # set current token
                 self.set_token(
