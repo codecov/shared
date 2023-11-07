@@ -400,7 +400,8 @@ class Github(TorngitBaseAdapter):
             self.testResponse = str(response)
             print("big response", response)
             session = self._parse_response(response)
-            
+            print("debug it all")
+            print(session)
             if session.get("access_token"):
                 # set current token
                 self.set_token(
