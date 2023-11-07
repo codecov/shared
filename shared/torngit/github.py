@@ -399,6 +399,7 @@ class Github(TorngitBaseAdapter):
             )
             self.testResponse = str(response)
             print("big response", response)
+            print("check parser")
             session = self._parse_response(response)
             print("debug it all")
             print(session)
