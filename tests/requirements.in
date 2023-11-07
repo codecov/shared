@@ -10,3 +10,5 @@ vcrpy>=5.0.0
 respx>=0.19.2
 httpx>=0.23.0
 requests>=2.31.0
+urllib3>=1.26.18
+pyyaml>=6.0.1
