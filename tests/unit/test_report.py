@@ -4,6 +4,7 @@ from mock import PropertyMock
 from shared.reports.editable import EditableReport, EditableReportFile
 from shared.reports.resources import Report, ReportFile, _encode_chunk
 from shared.reports.types import (
+    CoverageDatapoint,
     LineSession,
     NetworkFile,
     ReportFileSummary,
@@ -477,6 +478,48 @@ def test_contains(mocker):
 
 
 @pytest.mark.unit
+def test_set_labels_idx():
+    report = Report()
+    assert report._labels_index is None
+    label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
+    report.set_label_idx(label_idx)
+    assert report._labels_index == label_idx
+    report.unset_label_idx()
+    assert report._labels_index is None
+
+
+def test_get_label_from_idx():
+    report = Report()
+    label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
+    report.set_label_idx(label_idx)
+    report_file = ReportFile(
+        name="something.py",
+        lines=[
+            ReportLine.create(
+                coverage=1,
+                type=None,
+                sessions=[[0, 1]],
+                datapoints=[
+                    CoverageDatapoint(
+                        sessionid=0, coverage=1, coverage_type=None, label_ids=[0, 2]
+                    )
+                ],
+            )
+        ],
+    )
+    report.append(report_file)
+    labels_in_report = set()
+    for file in report:
+        for line in file:
+            for datapoint in line.datapoints:
+                for label_id in datapoint.label_ids:
+                    labels_in_report.add(report.lookup_label_by_id(label_id))
+    assert "Special_global_label" in labels_in_report
+    assert "cachorro" in labels_in_report
+    assert "banana" not in labels_in_report
+
+
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "files, chunks, new_report, manifest",
     [
@@ -505,6 +548,7 @@ def test_merge(files, chunks, new_report, manifest):
     assert list(r.files) == manifest
 
 
+@pytest.mark.unit
 def test_merge_into_editable_report():
     editable_report = EditableReport(
         files={"file.py": [1, ReportTotals(2)]},
@@ -1005,6 +1049,7 @@ def test_encode_chunk(chunk, res):
     assert _encode_chunk(chunk) == res
 
 
+@pytest.mark.unit
 def test_delete_session():
     chunks = "\n".join(
         [
@@ -1107,14 +1152,17 @@ def test_delete_session():
     )
 
 
+@pytest.mark.unit
 def test_get_flag_names(sample_report):
     assert sample_report.get_flag_names() == ["complex", "simple"]
 
 
+@pytest.mark.unit
 def test_get_flag_names_no_sessions():
     assert Report().get_flag_names() == []
 
 
+@pytest.mark.unit
 def test_get_flag_names_sessions_no_flags():
     s = Session()
     r = Report()
@@ -1122,6 +1170,7 @@ def test_get_flag_names_sessions_no_flags():
     assert r.get_flag_names() == []
 
 
+@pytest.mark.unit
 def test_repack(sample_report):
     f = ReportFile("hahafile.txt")
     f.append(1, ReportLine.create(1))
@@ -1142,6 +1191,7 @@ def test_repack(sample_report):
     assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
 
 
+@pytest.mark.unit
 def test_repack_bad_data(sample_report):
     f = ReportFile("hahafile.txt")
     f.append(1, ReportLine.create(1))
@@ -1170,12 +1220,14 @@ def test_repack_bad_data(sample_report):
     assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
 
 
+@pytest.mark.unit
 def test_repack_no_change(sample_report):
     assert len(sample_report._chunks) == len(sample_report._files)
     sample_report.repack()
     assert len(sample_report._chunks) == len(sample_report._files)
 
 
+@pytest.mark.unit
 def test_file_reports(sample_report):
     res = list(sample_report.file_reports())
     assert len(res) == 3
@@ -1186,6 +1238,7 @@ def test_file_reports(sample_report):
     ]
 
 
+@pytest.mark.unit
 def test_ignore_lines():
     r = Report()
     r.append(

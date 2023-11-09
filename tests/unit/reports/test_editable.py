@@ -19,9 +19,10 @@ from shared.utils.sessions import SessionType
 
 current_file = Path(__file__)
 
-# temporary
-# This immitates what the Report label_lookup will look like
+
+# This immitates what a Report._labels_index looks like
 # It's an map idx -> label, so we can go from CoverageDatapoint.label_id to the actual label
+# typically via Report.lookup_label_by_id
 def lookup_label(label_id: int) -> str:
     lookup_table = {
         1: "simple",

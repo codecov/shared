@@ -66,9 +66,9 @@ def test_merge_branch(b1, b2, res):
     )
 
 
-# temporary
-# This immitates what the Report label_lookup will look like
+# This immitates what a Report._labels_index looks like
 # It's an map idx -> label, so we can go from CoverageDatapoint.label_id to the actual label
+# typically via Report.lookup_label_by_id
 def lookup_label(label_id: int) -> str:
     lookup_table = {1: "banana", 2: "apple", 3: "simpletest"}
     return lookup_table[label_id]

@@ -9,6 +9,7 @@ from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
 from shared.helpers.yaml import walk
 from shared.metrics import sentry
+from shared.reports.exceptions import LabelIndexNotLoadedError, LabelNotFoundError
 from shared.reports.filtered import FilteredReport
 from shared.reports.types import (
     EMPTY,
@@ -586,6 +587,7 @@ class ReportFile(object):
 class Report(object):
     file_class = ReportFile
     _files: Dict[str, ReportFileSummary]
+    _labels_index: Optional[Dict[int, str]] = None
 
     @sentry.trace
     def __init__(
@@ -636,6 +638,20 @@ class Report(object):
         self._filter_cache = (None, None)
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
+
+    def set_label_idx(self, label_idx: Dict[int, str]) -> None:
+        self._labels_index = label_idx
+
+    def unset_label_idx(self) -> None:
+        self._labels_index = None
+
+    def lookup_label_by_id(self, label_id: int) -> str:
+
+        if self._labels_index is None:
+            raise LabelIndexNotLoadedError()
+        if label_id not in self._labels_index:
+            raise LabelNotFoundError()
+        return self._labels_index[label_id]
 
     @classmethod
     def from_chunks(cls, *args, **kwargs):
