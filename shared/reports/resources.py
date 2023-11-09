@@ -520,13 +520,15 @@ class ReportFile(object):
             pass
 
     @classmethod
-    def line_without_labels(cls, line, session_ids_to_delete, labels):
+    def line_without_labels(
+        cls, line, session_ids_to_delete: List[int], label_ids_to_delete: List[int]
+    ):
         new_datapoints = (
             [
                 dp
                 for dp in line.datapoints
                 if dp.sessionid not in session_ids_to_delete
-                or all(lb not in labels for lb in dp.labels)
+                or all(lb not in label_ids_to_delete for lb in dp.label_ids)
             ]
             if line.datapoints is not None
             else None

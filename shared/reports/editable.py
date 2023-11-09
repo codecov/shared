@@ -49,17 +49,26 @@ class EditableReportFile(ReportFile):
         res["present_sessions"] = sorted(self._details.get("present_sessions"))
         return res
 
-    def delete_labels(self, session_ids_to_delete, labels_to_delete):
+    def delete_labels(
+        self, session_ids_to_delete: List[int], label_ids_to_delete: List[int]
+    ):
+        """Given a list of session_ids and label_ids to delete
+        Remove all datapoints that belong to at least 1 session_ids to delete and include
+        at least 1 of the label_ids to be removed
+        """
         for index, line in self.lines:
             if line.datapoints is not None:
                 if any(
-                    (dp.sessionid in session_ids_to_delete and lb in labels_to_delete)
+                    (
+                        dp.sessionid in session_ids_to_delete
+                        and label_id in label_ids_to_delete
+                    )
                     for dp in line.datapoints
-                    for lb in dp.labels
+                    for label_id in dp.label_ids
                 ):
                     # Line fits change requirements
                     new_line = self.line_without_labels(
-                        line, session_ids_to_delete, labels_to_delete
+                        line, session_ids_to_delete, label_ids_to_delete
                     )
                     if new_line == EMPTY:
                         del self[index]

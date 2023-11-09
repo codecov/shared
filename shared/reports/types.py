@@ -96,17 +96,24 @@ class LineSession(object):
 
 @dataclass
 class CoverageDatapoint(object):
-    __slots__ = ("sessionid", "coverage", "coverage_type", "labels")
+    # This is commented because having __slots__ would caulse "labels" to not be optional
+    # But because we are giving a default value it should be optional
+    # TODO: Un-comment after "labels" is removed
+    # __slots__ = ("sessionid", "coverage", "coverage_type", "label_ids", "labels")
     sessionid: int
     coverage: Decimal
     coverage_type: Optional[str]
-    labels: List[str]
+    # Optional because old reports still use labels
+    label_ids: Optional[List[int]]
+    # Deprecated. Replaced by label_ids
+    labels: Optional[List[str]] = None
 
     def astuple(self):
         return (
             self.sessionid,
             self.coverage,
             self.coverage_type,
+            self.label_ids,
             self.labels,
         )
 
@@ -115,6 +122,7 @@ class CoverageDatapoint(object):
             self.sessionid,
             str(self.coverage),
             self.coverage_type if self.coverage_type is not None else "",
+            self.label_ids if self.label_ids is not None else [],
             self.labels if self.labels is not None else [],
         )
 

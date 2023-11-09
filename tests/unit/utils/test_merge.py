@@ -66,13 +66,23 @@ def test_merge_branch(b1, b2, res):
     )
 
 
+# temporary
+# This immitates what the Report label_lookup will look like
+# It's an map idx -> label, so we can go from CoverageDatapoint.label_id to the actual label
+def lookup_label(label_id: int) -> str:
+    lookup_table = {1: "banana", 2: "apple", 3: "simpletest"}
+    return lookup_table[label_id]
+
+
 def test_merge_datapoints():
-    c_1 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, labels=None)
+    c_1 = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, labels=None, label_ids=None
+    )
     c_2 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=["banana"]
+        sessionid=1, coverage=1, coverage_type=None, labels=[], label_ids=[1]
     )
     c_3 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=["apple"]
+        sessionid=1, coverage=1, coverage_type=None, labels=[], label_ids=[2]
     )
     assert [c_1, c_2] == merge_datapoints(
         [c_1],
@@ -82,7 +92,7 @@ def test_merge_datapoints():
         [c_2],
         [c_1],
     )
-    assert [c_1, c_3, c_2] == merge_datapoints([c_2, c_1], [c_3])
+    assert [c_1, c_2, c_3] == merge_datapoints([c_2, c_1], [c_3])
     assert [c_1, c_2] == merge_datapoints([c_2, c_1], None)
     assert [c_1, c_2] == merge_datapoints([c_2, c_1], [None])
 
@@ -230,8 +240,8 @@ def test_merge_missed_branches(sessions, res):
         # types
         ((1, None, [[1, 1]]), (1, "b", [[1, 1]]), (1, "b", [LineSession(1, 1)])),
         (
-            (1, None, [[1, 1]], None, None, [(1, 1, None, ["banana"])]),
-            (1, "b", [[1, 1]], None, None, [(1, 1, "b", ["simpletest"])]),
+            (1, None, [[1, 1]], None, None, [(1, 1, None, [1])]),
+            (1, "b", [[1, 1]], None, None, [(1, 1, "b", [3])]),
             (
                 1,
                 "b",
@@ -240,13 +250,18 @@ def test_merge_missed_branches(sessions, res):
                 None,  # complexity
                 [
                     CoverageDatapoint(
-                        sessionid=1, coverage=1, coverage_type=None, labels=["banana"]
+                        sessionid=1,
+                        coverage=1,
+                        coverage_type=None,
+                        label_ids=[1],
+                        labels=None,
                     ),
                     CoverageDatapoint(
                         sessionid=1,
                         coverage=1,
                         coverage_type="b",
-                        labels=["simpletest"],
+                        label_ids=[3],
+                        labels=None,
                     ),
                 ],
             ),
