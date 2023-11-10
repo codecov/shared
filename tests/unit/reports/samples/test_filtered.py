@@ -189,13 +189,13 @@ class TestFilteredReportFile(object):
                     LineSession(10, 0, complexity=3),
                 ],
                 datapoints=[
-                    CoverageDatapoint(0, 0, None, [1], None),
-                    CoverageDatapoint(0, 1, None, [2], None),
-                    CoverageDatapoint(1, "1/2", None, [1], None),
-                    CoverageDatapoint(1, 1, None, [2], None),
-                    CoverageDatapoint(2, 0, None, [3], None),
-                    CoverageDatapoint(2, 0, None, [2], None),
-                    CoverageDatapoint(10, 0, None, [2], None),
+                    CoverageDatapoint(0, 0, None, [1]),
+                    CoverageDatapoint(0, 1, None, [2]),
+                    CoverageDatapoint(1, "1/2", None, [1]),
+                    CoverageDatapoint(1, 1, None, [2]),
+                    CoverageDatapoint(2, 0, None, [3]),
+                    CoverageDatapoint(2, 0, None, [2]),
+                    CoverageDatapoint(10, 0, None, [2]),
                 ],
             )
         )
@@ -207,10 +207,10 @@ class TestFilteredReportFile(object):
         ]
         assert res.messages is None
         assert res.datapoints == [
-            CoverageDatapoint(0, 0, None, [1], None),
-            CoverageDatapoint(0, 1, None, [2], None),
-            CoverageDatapoint(1, "1/2", None, [1], None),
-            CoverageDatapoint(1, 1, None, [2], None),
+            CoverageDatapoint(0, 0, None, [1]),
+            CoverageDatapoint(0, 1, None, [2]),
+            CoverageDatapoint(1, "1/2", None, [1]),
+            CoverageDatapoint(1, 1, None, [2]),
         ]
         assert res.complexity == 5
 

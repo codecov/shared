@@ -2,6 +2,7 @@ import pytest
 from mock import PropertyMock
 
 from shared.reports.editable import EditableReport, EditableReportFile
+from shared.reports.exceptions import LabelIndexNotLoadedError, LabelNotFoundError
 from shared.reports.resources import Report, ReportFile, _encode_chunk
 from shared.reports.types import (
     CoverageDatapoint,
@@ -517,6 +518,18 @@ def test_get_label_from_idx():
     assert "Special_global_label" in labels_in_report
     assert "cachorro" in labels_in_report
     assert "banana" not in labels_in_report
+
+
+def test_lookup_label_by_id_fails():
+    report = Report()
+    with pytest.raises(LabelIndexNotLoadedError):
+        report.lookup_label_by_id(0)
+
+    label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
+    report.set_label_idx(label_idx)
+
+    with pytest.raises(LabelNotFoundError):
+        report.lookup_label_by_id(100)
 
 
 @pytest.mark.unit

@@ -915,9 +915,9 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 0, None, [2], None),
-                        (2, 14, None, [3, 2], None),
-                        (3, 7, None, [3], None),
+                        (0, 0, None, [2]),
+                        (2, 14, None, [3, 2]),
+                        (3, 7, None, [3]),
                     ],
                 ),
                 (
@@ -932,10 +932,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 8, None, [2], None),
-                        (0, 8, None, [3], None),
-                        (1, 1, None, [2], None),
-                        (3, 15, None, [3, 2], None),
+                        (0, 8, None, [2]),
+                        (0, 8, None, [3]),
+                        (1, 1, None, [2]),
+                        (3, 15, None, [3, 2]),
                     ],
                 ),
                 (
@@ -950,10 +950,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 16, None, [4], None),
-                        (1, 9, None, [2], None),
-                        (1, 9, None, [3], None),
-                        (2, 2, None, [2], None),
+                        (0, 16, None, [4]),
+                        (1, 9, None, [2]),
+                        (1, 9, None, [3]),
+                        (2, 2, None, [2]),
                     ],
                 ),
                 (
@@ -968,10 +968,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (1, 17, None, [4], None),
-                        (2, 10, None, [2], None),
-                        (2, 10, None, [3], None),
-                        (3, 3, None, [2], None),
+                        (1, 17, None, [4]),
+                        (2, 10, None, [2]),
+                        (2, 10, None, [3]),
+                        (3, 3, None, [2]),
                     ],
                 ),
                 (
@@ -986,10 +986,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 4, None, [3], None),
-                        (2, 18, None, [4], None),
-                        (3, 11, None, [2], None),
-                        (3, 11, None, [3], None),
+                        (0, 4, None, [3]),
+                        (2, 18, None, [4]),
+                        (3, 11, None, [2]),
+                        (3, 11, None, [3]),
                     ],
                 ),
                 (
@@ -1004,9 +1004,9 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 12, None, [3, 2], None),
-                        (1, 5, None, [3], None),
-                        (3, 19, None, [4], None),
+                        (0, 12, None, [3, 2]),
+                        (1, 5, None, [3]),
+                        (3, 19, None, [4]),
                     ],
                 ),
                 (
@@ -1017,8 +1017,8 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (1, 13, None, [3, 2], None),
-                        (2, 6, None, [3], None),
+                        (1, 13, None, [3, 2]),
+                        (2, 6, None, [3]),
                     ],
                 ),
                 (23, 1, None, [[1, 1, None, None, None]], None, None),
@@ -1052,7 +1052,7 @@ class TestEditableReport(object):
                     [[2, 1, None, None, None]],
                     None,
                     None,
-                    [(2, 1, None, [1], None)],
+                    [(2, 1, None, [1])],
                 )
             ],
             "someother.py": [(1, 1, None, [[2, 1, None, None, None]], None, None)],
@@ -2024,9 +2024,9 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (0, 0, None, [2], None),
-                            (2, 14, None, [3, 2], None),
-                            (3, 7, None, [3], None),
+                            (0, 0, None, [2]),
+                            (2, 14, None, [3, 2]),
+                            (3, 7, None, [3]),
                         ],
                     ),
                     (
@@ -2041,9 +2041,9 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (0, 8, None, [2], None),
-                            (1, 1, None, [2], None),
-                            (3, 15, None, [3, 2], None),
+                            (0, 8, None, [2]),
+                            (1, 1, None, [2]),
+                            (3, 15, None, [3, 2]),
                         ],
                     ),
                     (
@@ -2058,10 +2058,10 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (0, 16, None, [4], None),
-                            (1, 9, None, [2], None),
-                            (1, 9, None, [3], None),
-                            (2, 2, None, [2], None),
+                            (0, 16, None, [4]),
+                            (1, 9, None, [2]),
+                            (1, 9, None, [3]),
+                            (2, 2, None, [2]),
                         ],
                     ),
                     (
@@ -2076,10 +2076,10 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (1, 17, None, [4], None),
-                            (2, 10, None, [2], None),
-                            (2, 10, None, [3], None),
-                            (3, 3, None, [2], None),
+                            (1, 17, None, [4]),
+                            (2, 10, None, [2]),
+                            (2, 10, None, [3]),
+                            (3, 3, None, [2]),
                         ],
                     ),
                     (
@@ -2090,9 +2090,9 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (2, 18, None, [4], None),
-                            (3, 11, None, [2], None),
-                            (3, 11, None, [3], None),
+                            (2, 18, None, [4]),
+                            (3, 11, None, [2]),
+                            (3, 11, None, [3]),
                         ],
                     ),
                     (
@@ -2102,7 +2102,7 @@ class TestEditableReport(object):
                         [[1, 5, None, None, None], [3, 19, None, None, None]],
                         None,
                         None,
-                        [(1, 5, None, [3], None), (3, 19, None, [4], None)],
+                        [(1, 5, None, [3]), (3, 19, None, [4])],
                     ),
                     (
                         7,
@@ -2112,8 +2112,8 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (1, 13, None, [3, 2], None),
-                            (2, 6, None, [3], None),
+                            (1, 13, None, [3, 2]),
+                            (2, 6, None, [3]),
                         ],
                     ),
                     (23, 1, None, [[1, 1, None, None, None]], None, None),

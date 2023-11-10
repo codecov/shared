@@ -96,17 +96,11 @@ class LineSession(object):
 
 @dataclass
 class CoverageDatapoint(object):
-    # This is commented because having __slots__ would caulse "labels" to not be optional
-    # But because we are giving a default value it should be optional
-    # TODO: Un-comment after "labels" is removed
-    # __slots__ = ("sessionid", "coverage", "coverage_type", "label_ids", "labels")
+    __slots__ = ("sessionid", "coverage", "coverage_type", "label_ids")
     sessionid: int
     coverage: Decimal
     coverage_type: Optional[str]
-    # Optional because old reports still use labels
-    label_ids: Optional[List[int]]
-    # Deprecated. Replaced by label_ids
-    labels: Optional[List[str]] = None
+    label_ids: List[int]
 
     def astuple(self):
         return (
@@ -114,8 +108,14 @@ class CoverageDatapoint(object):
             self.coverage,
             self.coverage_type,
             self.label_ids,
-            self.labels,
         )
+
+    def __post_init__(self):
+        if self.label_ids is not None:
+            possibly_cast_to_int = (
+                lambda el: int(el) if (type(el) == str and el.isnumeric()) else el
+            )
+            self.label_ids = [possibly_cast_to_int(el) for el in self.label_ids]
 
     def key_sorting_tuple(self):
         return (
@@ -123,7 +123,6 @@ class CoverageDatapoint(object):
             str(self.coverage),
             self.coverage_type if self.coverage_type is not None else "",
             self.label_ids if self.label_ids is not None else [],
-            self.labels if self.labels is not None else [],
         )
 
 

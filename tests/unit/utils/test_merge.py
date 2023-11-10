@@ -75,15 +75,9 @@ def lookup_label(label_id: int) -> str:
 
 
 def test_merge_datapoints():
-    c_1 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=None, label_ids=None
-    )
-    c_2 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=[], label_ids=[1]
-    )
-    c_3 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=[], label_ids=[2]
-    )
+    c_1 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=None)
+    c_2 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=[1])
+    c_3 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=[2])
     assert [c_1, c_2] == merge_datapoints(
         [c_1],
         [c_2],
@@ -254,14 +248,12 @@ def test_merge_missed_branches(sessions, res):
                         coverage=1,
                         coverage_type=None,
                         label_ids=[1],
-                        labels=None,
                     ),
                     CoverageDatapoint(
                         sessionid=1,
                         coverage=1,
                         coverage_type="b",
                         label_ids=[3],
-                        labels=None,
                     ),
                 ],
             ),
