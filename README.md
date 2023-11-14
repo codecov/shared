@@ -1,4 +1,6 @@
 # shared
+[![Shared CI](https://github.com/codecov/shared/actions/workflows/ci.yml/badge.svg)](https://github.com/codecov/shared/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/codecov/shared/graph/badge.svg?token=IL64imgbOu)](https://codecov.io/gh/codecov/shared)  
 
 Shared is a place for code that is common to multiple python repositories on `codecov`.
 
