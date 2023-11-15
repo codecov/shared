@@ -3,7 +3,7 @@ import os
 import random
 
 from shared.helpers.flag import Flag
-from shared.metrics import metrics
+from shared.metrics import metrics, sentry
 from shared.reports.resources import Report, ReportTotals
 from shared.ribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 from shared.utils.match import match
@@ -18,12 +18,14 @@ class LazyRustReport(object):
         self._session_mapping = session_mapping
         self._actual_report = None
 
+    @sentry.trace
     def get_report(self):
         if self._actual_report is None:
-            self._actual_report = parse_report(
-                self._filename_mapping, self._chunks, self._session_mapping
-            )
-            self._chunks = None  # Free the memory
+            with sentry.start_span(description="Parse Rust report"):
+                self._actual_report = parse_report(
+                    self._filename_mapping, self._chunks, self._session_mapping
+                )
+                self._chunks = None  # Free the memory
         return self._actual_report
 
 
@@ -41,6 +43,7 @@ class ReadOnlyReport(object):
         self._uploaded_flags = None
 
     @classmethod
+    @sentry.trace
     @metrics.timer("shared.reports.readonly.from_chunks")
     def from_chunks(cls, files=None, sessions=None, totals=None, chunks=None):
         rust_analyzer = SimpleAnalyzer()
@@ -97,10 +100,12 @@ class ReadOnlyReport(object):
     def size(self):
         return self.inner_report.size
 
+    @sentry.trace
     @metrics.timer("shared.reports.readonly.apply_diff")
     def apply_diff(self, *args, **kwargs):
         return self.inner_report.apply_diff(*args, **kwargs)
 
+    @sentry.trace
     def append(self, *args, **kwargs):
         log.warning("Modifying report that is read only")
         res = self.inner_report.append(*args, **kwargs)
@@ -118,6 +123,7 @@ class ReadOnlyReport(object):
         self._totals = None
         return res
 
+    @sentry.trace
     @metrics.timer("shared.reports.readonly.calculate_diff")
     def calculate_diff(self, *args, **kwargs):
         return self.inner_report.calculate_diff(*args, **kwargs)
@@ -125,6 +131,7 @@ class ReadOnlyReport(object):
     def get(self, *args, **kwargs):
         return self.inner_report.get(*args, **kwargs)
 
+    @sentry.trace
     @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
         if self.inner_report.has_precalculated_totals():
@@ -154,6 +161,7 @@ class ReadOnlyReport(object):
             self._totals = self._process_totals()
         return self._totals
 
+    @sentry.trace
     def filter(self, paths=None, flags=None):
         if paths is None and flags is None:
             return self
