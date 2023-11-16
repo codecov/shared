@@ -220,8 +220,6 @@ class FilteredReport(object):
                 yield fname, make_network_file(file.totals)
 
     def get(self, filename, _else=None):
-        if filename in self.report_file_cache:
-            return self.report_file_cache[filename]
         if not self.should_include(filename):
             return _else
         if not self.flags:
@@ -229,9 +227,12 @@ class FilteredReport(object):
         r = self.report.get(filename)
         if r is None:
             return None
-        filtered_report_file = FilteredReportFile(r, self.session_ids_to_include)
-        self.report_file_cache[filename] = filtered_report_file
-        return filtered_report_file
+
+        if filename not in self.report_file_cache:
+            self.report_file_cache[filename] = FilteredReportFile(
+                r, self.session_ids_to_include
+            )
+        return self.report_file_cache[filename]
 
     @property
     def files(self):
