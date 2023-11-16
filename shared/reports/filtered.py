@@ -226,6 +226,12 @@ class FilteredReport(object):
     def files(self):
         return [f for f in self.report.files if self.should_include(f)]
 
+    def get_file_totals(self, path):
+        if self.should_include(path):
+            return self.report.get_file_totals(path)
+
+        return None
+
     @property
     def manifest(self):
         return self.files
