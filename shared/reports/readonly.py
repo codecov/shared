@@ -161,6 +161,9 @@ class ReadOnlyReport(object):
             self._totals = self._process_totals()
         return self._totals
 
+    def get_file_totals(self, path):
+        return self.inner_report.get_file_totals(path)
+
     @sentry.trace
     def filter(self, paths=None, flags=None):
         if paths is None and flags is None:
