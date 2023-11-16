@@ -516,6 +516,19 @@ class TestFilteredReport(object):
             diff=0,
         )
 
+    def test_get_file_totals(self, sample_report):
+        assert "location/file_1.py" in sample_report
+        assert "file_1.go" in sample_report
+        filtered_report = FilteredReport(sample_report, ["location/file_1.py"], [])
+
+        # Go file exists in the raw report but is not included in the filters
+        assert sample_report.get_file_totals("file_1.go") is not None
+        assert filtered_report.get_file_totals("file_1.go") is None
+
+        # Python file exists in the raw report and is included in the filters
+        py_file_totals = sample_report.get_file_totals("location/file_1.py")
+        assert filtered_report.get_file_totals("location/file_1.py") == py_file_totals
+
     def test_can_use_session_totals(self, mocker):
         report = Report()
         report.add_session(

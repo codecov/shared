@@ -878,6 +878,27 @@ class Report(object):
         self._chunks[_file.file_index] = None
         return True
 
+    def get_file_totals(self, path, _else=None):
+        """
+        returns <ReportTotals> for the file if it exists
+        """
+        if self._path_filter and not self._path_filter(filename):
+            # filtered out of report
+            return _else
+
+        if path not in self._files:
+            log.warning(
+                "Fetching file totals for a file that isn't in the report",
+                extra=dict(path=path),
+            )
+            return None
+
+        totals = self._files[path].file_totals
+        if isinstance(totals, ReportTotals):
+            return totals
+        else:
+            return ReportTotals(*totals)
+
     def get_folder_totals(self, path):
         """
         returns <ReportTotals> for files contained in a folder

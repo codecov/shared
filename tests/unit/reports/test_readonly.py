@@ -229,6 +229,26 @@ class TestReadOnly(object):
             diff=0,
         )
 
+    def test_get_file_totals(self, sample_report, mocker):
+        r = ReadOnlyReport.create_from_report(sample_report)
+        print(sample_report._files)
+        print(r)
+        assert r.get_file_totals("location/file_1.py") == ReportTotals(
+            files=0,
+            lines=2,
+            hits=0,
+            misses=0,
+            partials=2,
+            coverage="0",
+            branches=2,
+            methods=0,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        )
+
     def test_from_chunks_with_totals(self, mocker):
         mocked_process_totals = mocker.patch.object(ReadOnlyReport, "_process_totals")
         mocker.patch.object(
