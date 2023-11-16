@@ -893,7 +893,11 @@ class Report(object):
             )
             return None
 
-        return self._files[path].file_totals
+        totals = self._files[path].file_totals
+        if isinstance(totals, ReportTotals):
+            return totals
+        else:
+            return ReportTotals(*totals)
 
     def get_folder_totals(self, path):
         """
