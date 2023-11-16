@@ -1,8 +1,6 @@
 import dataclasses
 import logging
 import os
-import time
-import traceback
 
 from shared.config import get_config
 from shared.helpers.numeric import ratio
