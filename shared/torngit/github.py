@@ -85,11 +85,11 @@ class Github(TorngitBaseAdapter):
 
     @classmethod
     def get_api_host_header(cls):
-        return get_config("github", "api_host_override")
+        return get_config(cls.service, "api_host_override")
 
     @classmethod
     def get_host_header(cls):
-        return get_config("github", "host_override")
+        return get_config(cls.service, "host_override")
 
     @property
     def api_url(self):

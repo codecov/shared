@@ -17,14 +17,6 @@ class GithubEnterprise(Github):
             return get_config("github_enterprise", "api_url").strip("/")
         return cls.get_service_url() + "/api/v3"
 
-    @classmethod
-    def get_api_host_header(cls):
-        return get_config("github_enterprise", "api_host_override")
-
-    @classmethod
-    def get_host_header(cls):
-        return get_config("github_enterprise", "host_override")
-
     service = "github_enterprise"
     verify_ssl = os.getenv("GITHUB_ENTERPRISE_SSL_PEM") or (
         os.getenv("GITHUB_ENTERPRISE_VERIFY_SSL") != "FALSE"
