@@ -71,7 +71,7 @@ class Github(TorngitBaseAdapter):
 
     @classmethod
     def get_service_url(cls):
-        return get_config("github", "url", "https://github.com").strip("/")
+        return get_config("github", "url", default="https://github.com").strip("/")
 
     @property
     def service_url(self):
@@ -79,7 +79,7 @@ class Github(TorngitBaseAdapter):
 
     @classmethod
     def get_api_url(cls):
-        return get_config("github", "api_url", "https://api.github.com").strip("/")
+        return get_config("github", "api_url", default="https://api.github.com").strip("/")
 
     @property
     def api_url(self):
