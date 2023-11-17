@@ -79,7 +79,17 @@ class Github(TorngitBaseAdapter):
 
     @classmethod
     def get_api_url(cls):
-        return get_config("github", "api_url", default="https://api.github.com").strip("/")
+        return get_config("github", "api_url", default="https://api.github.com").strip(
+            "/"
+        )
+
+    @classmethod
+    def get_api_host_header(cls):
+        return get_config("github", "api_host_override")
+
+    @classmethod
+    def get_host_header(cls):
+        return get_config("github", "host_override")
 
     @property
     def api_url(self):
@@ -91,11 +101,11 @@ class Github(TorngitBaseAdapter):
 
     @property
     def api_host_header(self):
-        return get_config(self.service, "api_host_override")
+        return self.get_api_host_header()
 
     @property
     def host_header(self):
-        return get_config(self.service, "host_override")
+        return self.get_host_header()
 
     async def api(self, *args, token=None, **kwargs):
         """
