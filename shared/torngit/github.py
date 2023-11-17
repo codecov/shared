@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlencode
 import httpx
 from httpx import Response
 
+from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
@@ -51,8 +52,6 @@ query {
 
 class Github(TorngitBaseAdapter):
     service = "github"
-    service_url = "https://github.com"
-    api_url = "https://api.github.com"
     urls = dict(
         repo="{username}/{name}",
         owner="{username}",
@@ -70,9 +69,43 @@ class Github(TorngitBaseAdapter):
         author="{username}/{name}/commits?author=%(author)s",
     )
 
+    @classmethod
+    def get_service_url(cls):
+        return get_config("github", "url", default="https://github.com").strip("/")
+
+    @property
+    def service_url(self):
+        return self.get_service_url()
+
+    @classmethod
+    def get_api_url(cls):
+        return get_config("github", "api_url", default="https://api.github.com").strip(
+            "/"
+        )
+
+    @classmethod
+    def get_api_host_header(cls):
+        return get_config(cls.service, "api_host_override")
+
+    @classmethod
+    def get_host_header(cls):
+        return get_config(cls.service, "host_override")
+
+    @property
+    def api_url(self):
+        return self.get_api_url()
+
     @property
     def token(self):
         return self._token
+
+    @property
+    def api_host_header(self):
+        return self.get_api_host_header()
+
+    @property
+    def host_header(self):
+        return self.get_host_header()
 
     async def api(self, *args, token=None, **kwargs):
         """
@@ -140,7 +173,6 @@ class Github(TorngitBaseAdapter):
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
-
         if token_to_use:
             _headers["Authorization"] = "token %s" % token_to_use["key"]
         _headers.update(headers or {})
@@ -159,6 +191,11 @@ class Github(TorngitBaseAdapter):
             url = self.api_url + url
 
         url = url_concat(url, args).replace(" ", "%20")
+
+        if url.startswith(self.api_url) and self.api_host_header is not None:
+            _headers["Host"] = self.api_host_header
+        elif url.startswith(self.service_url) and self.host_header is not None:
+            _headers["Host"] = self.host_header
 
         kwargs = dict(
             json=body if body else None, headers=_headers, follow_redirects=False

@@ -29,7 +29,7 @@ lint.check:
 
 requirements.install:
 	python -m venv venv
-	source venv/bin/activate
+	. venv/bin/activate
 	pip install setuptools_rust
 	pip install -r tests/requirements.txt
 	pip install -r requirements.txt

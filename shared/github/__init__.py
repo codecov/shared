@@ -42,7 +42,7 @@ def get_github_integration_token(service, integration_id=None) -> Optional[str]:
     token = jwt.encode(payload, get_pem(service), algorithm="RS256")
     if integration_id:
         api_endpoint = (
-            torngit.Github.api_url
+            torngit.Github.get_api_url()
             if service == "github"
             else torngit.GithubEnterprise.get_api_url()
         )
