@@ -194,7 +194,7 @@ class Github(TorngitBaseAdapter):
 
         if url.startswith(self.api_url) and self.api_host_header is not None:
             _headers["Host"] = self.api_host_header
-        elif url.startswith(self.api_url) and self.host_header is not None:
+        elif url.startswith(self.service_url) and self.host_header is not None:
             _headers["Host"] = self.host_header
 
         kwargs = dict(

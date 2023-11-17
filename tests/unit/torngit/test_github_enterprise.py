@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 import pytest
 
 from shared.torngit.github_enterprise import GithubEnterprise
@@ -69,3 +71,84 @@ class TestGithubEnterprise(object):
             },
             follow_redirects=False,
         )
+
+    @pytest.mark.asyncio
+    async def test_api_client_change_api_host(self, mocker, mock_configuration):
+        mock_host = "legit-ghe"
+        mock_configuration._params["github_enterprise"] = {
+            "api_url": "https://" + mock_host,
+            "api_host_override": "api.ghe.com",
+        }
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                return_value=mocker.MagicMock(text="kowabunga", status_code=200)
+            )
+        )
+        mocked_fetch = mocker.patch.object(
+            GithubEnterprise, "get_client", return_value=client
+        )
+        gl = GithubEnterprise(
+            repo=dict(service_id="187725", name="codecov-test"),
+            owner=dict(username="stevepeak", service_id="109479"),
+            token=dict(key="fake_token"),
+        )
+        method = "GET"
+        url = "/random_url"
+        query_params = {"qparam1": "a param", "qparam2": "another param"}
+        res = await gl.api(client, method, url, **query_params)
+        assert res == "kowabunga"
+        assert client.request.call_count == 1
+        args, kwargs = client.request.call_args
+        print(args)
+        print(kwargs)
+        assert kwargs.get("headers") is not None
+        assert kwargs.get("headers").get("Host") == "api.ghe.com"
+        assert len(args) == 2
+        built_url = args[1]
+        parsed_url = urlparse(built_url)
+        print(parsed_url)
+        assert parsed_url.scheme == "https"
+        assert parsed_url.netloc == mock_host
+        assert parsed_url.path == url
+        assert parsed_url.params == ""
+        assert parsed_url.fragment == ""
+
+    @pytest.mark.asyncio
+    async def test_make_http_call_change_host(self, mocker, mock_configuration):
+        mock_host = "legit-ghe"
+        mock_configuration._params["github_enterprise"] = {
+            "url": "https://" + mock_host,
+            "host_override": "ghe.com",
+        }
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                return_value=mocker.MagicMock(text="kowabunga", status_code=200)
+            )
+        )
+        mocked_fetch = mocker.patch.object(
+            GithubEnterprise, "get_client", return_value=client
+        )
+        gl = GithubEnterprise(
+            repo=dict(service_id="187725", name="codecov-test"),
+            owner=dict(username="stevepeak", service_id="109479"),
+            token=dict(key="fake_token"),
+        )
+        method = "GET"
+        url = f"https://{mock_host}/random_url"
+        query_params = {"qparam1": "a param", "qparam2": "another param"}
+        await gl.make_http_call(client, method, url, **query_params)
+        assert client.request.call_count == 1
+        args, kwargs = client.request.call_args
+        print(args)
+        print(kwargs)
+        assert kwargs.get("headers") is not None
+        assert kwargs.get("headers").get("Host") == "ghe.com"
+        assert len(args) == 2
+        built_url = args[1]
+        parsed_url = urlparse(built_url)
+        print(parsed_url)
+        assert parsed_url.scheme == "https"
+        assert parsed_url.netloc == mock_host
+        assert parsed_url.path == "/random_url"
+        assert parsed_url.params == ""
+        assert parsed_url.fragment == ""
