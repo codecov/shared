@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlencode
 import httpx
 from httpx import Response
 
+from shared.config import get_config
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
@@ -30,7 +31,7 @@ from shared.torngit.exceptions import (
 from shared.torngit.status import Status
 from shared.typings.oauth_token_types import OauthConsumerToken
 from shared.utils.urls import url_concat
-from shared.config import get_config
+
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
@@ -80,10 +81,10 @@ class Github(TorngitBaseAdapter):
     def get_api_url(cls):
         return get_config("github", "api_url", "https://api.github.com").strip("/")
 
-
     @property
     def api_url(self):
         return self.get_api_url()
+
     @property
     def token(self):
         return self._token
