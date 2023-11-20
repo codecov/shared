@@ -8,6 +8,7 @@ from typing import Dict, List, Optional
 from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
 from shared.helpers.yaml import walk
+from shared.metrics import sentry
 from shared.reports.filtered import FilteredReport
 from shared.reports.types import (
     EMPTY,
@@ -147,6 +148,7 @@ class ReportFile(object):
                         continue
                 yield ln, line
 
+    @sentry.trace
     def calculate_diff(self, all_file_segments):
         fg = self.get
         lines = []
@@ -329,6 +331,7 @@ class ReportFile(object):
                         return None
                 return line
 
+    @sentry.trace
     def append(self, ln, line):
         """Append a line to the report
         if the line exists it will merge it
@@ -352,6 +355,7 @@ class ReportFile(object):
             self._lines[ln - 1] = line
         return True
 
+    @sentry.trace
     def merge(self, other_file, joined=True):
         """merges another report chunk
         returning the <dict totals>
@@ -485,6 +489,7 @@ class ReportFile(object):
                     pos += 1
         return False
 
+    @sentry.trace
     def shift_lines_by_diff(self, diff, forward=True) -> None:
         """
         Adjusts report _lines IN PLACE to account for the diff given.
@@ -580,6 +585,7 @@ class Report(object):
     file_class = ReportFile
     _files: Dict[str, ReportFileSummary]
 
+    @sentry.trace
     def __init__(
         self,
         files=None,
@@ -632,6 +638,13 @@ class Report(object):
     @classmethod
     def from_chunks(cls, *args, **kwargs):
         return cls(*args, **kwargs)
+
+    @property
+    def size(self):
+        size = 0
+        for chunk in self._chunks:
+            size += len(chunk)
+        return size
 
     def get_session_from_session(self, sess):
         if isinstance(sess, Session):
@@ -712,6 +725,7 @@ class Report(object):
                 all_flags.update(session.flags)
         return sorted(all_flags)
 
+    @sentry.trace
     def append(self, _file, joined=True):
         """adds or merged a file into the report"""
         if _file is None:
@@ -864,6 +878,27 @@ class Report(object):
         self._chunks[_file.file_index] = None
         return True
 
+    def get_file_totals(self, path, _else=None):
+        """
+        returns <ReportTotals> for the file if it exists
+        """
+        if self._path_filter and not self._path_filter(filename):
+            # filtered out of report
+            return _else
+
+        if path not in self._files:
+            log.warning(
+                "Fetching file totals for a file that isn't in the report",
+                extra=dict(path=path),
+            )
+            return None
+
+        totals = self._files[path].file_totals
+        if isinstance(totals, ReportTotals):
+            return totals
+        else:
+            return ReportTotals(*totals)
+
     def get_folder_totals(self, path):
         """
         returns <ReportTotals> for files contained in a folder
@@ -967,6 +1002,7 @@ class Report(object):
     def __contains__(self, filename):
         return filename in self._files
 
+    @sentry.trace
     def merge(self, new_report, joined=True):
         """combine report data from another"""
         if new_report is None:
@@ -1008,6 +1044,7 @@ class Report(object):
     def update_sessions(self, **data):
         pass
 
+    @sentry.trace
     def flare(self, changes=None, color=None):
         if changes is not None:
             """
@@ -1079,6 +1116,7 @@ class Report(object):
 
         return report_to_flare(network, color, classes)
 
+    @sentry.trace
     def filter(self, paths=None, flags=None):
         if paths:
             if not isinstance(paths, (list, set, tuple)):
@@ -1089,6 +1127,7 @@ class Report(object):
             return self
         return FilteredReport(self, path_patterns=paths, flags=flags)
 
+    @sentry.trace
     def does_diff_adjust_tracked_lines(self, diff, future_report, future_diff):
         """
         Returns <boolean> if the diff touches tracked lines
@@ -1149,6 +1188,7 @@ class Report(object):
 
         return False
 
+    @sentry.trace
     def shift_lines_by_diff(self, diff, forward=True):
         """
         [volitile] will permanently adjust repot report
@@ -1172,6 +1212,7 @@ class Report(object):
                         diff_totals=None,
                     )
 
+    @sentry.trace
     def calculate_diff(self, diff: Dict) -> Dict:
         """
             Calculates the per-file totals (and total) of the parts
@@ -1260,6 +1301,7 @@ class Report(object):
                 )
             network_file.diff_totals = file_totals
 
+    @sentry.trace
     def apply_diff(self, diff, _save=True):
         """
         Add coverage details to the diff at ['coverage'] = <ReportTotals>
@@ -1292,6 +1334,7 @@ class Report(object):
             flags.update(k)
         return flags
 
+    @sentry.trace
     def repack(self):
         """Repacks in a more compact format to avoid deleted files and such"""
         if not self._passes_integrity_analysis():

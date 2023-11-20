@@ -1,0 +1,306 @@
+name: Shared CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Run Lint
+    uses: codecov/gha-workflows/.github/workflows/lint.yml@v1.0.0
+
+  build:
+    name: Build Shared
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11","3.8.13", "3.9.12", "3.10.5"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache Requirements
+        id: cache-requirements
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-requirements
+        with:
+          path: |
+            venv
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/tests/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install requirements
+        if: ${{ steps.cache-requirements.outputs.cache-hit != 'true' }}
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install setuptools_rust
+          pip install -r tests/requirements.txt
+          pip install -r requirements.txt
+          python setup.py develop
+          pip install codecov-cli
+  codecovstartup:
+    name: Codecov Startup
+    needs: build
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.0
+    secrets: inherit
+  ats:
+    name: ATS
+    needs: [build]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11" ]
+    if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache Requirements
+        id: cache-requirements
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-requirements
+        with:
+          path: |
+            venv
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install reqs
+        run: |
+          . venv/bin/activate
+          pip install setuptools_rust
+          pip install -r tests/requirements.txt
+          pip install -r requirements.txt
+          python setup.py develop
+          pip install codecov-cli
+# Need the action to support venv
+#      - name: Run ATS
+#        uses: codecov/codecov-ats@v0
+#        env:
+#          CODECOV_STATIC_TOKEN: ${{ secrets.STATIC_TOKEN }}
+#          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+      - name: Run Static Analysis
+        run: |
+          . venv/bin/activate
+          codecovcli static-analysis --token=${{ secrets.STATIC_TOKEN }}
+      - name: Run Label Analysis
+        run: |
+          . venv/bin/activate
+          codecovcli label-analysis --base-sha=$(git merge-base HEAD^ origin/main) --token=${{ secrets.STATIC_TOKEN }}
+# Leaving the below for now. We have some super sus test names that defeat shell escaping. If we figure out a path forward we can change to the output mode and get these stats more effectively
+#      - name: Run Tests
+#        id: tests
+#        run: |
+#          . venv/bin/activate
+#          START=$(date +%s)
+#          TESTS_TO_RUN=$(jq -r '.ats_tests_to_run | map(@sh) | join(" ")' analysis.json --raw-output)
+#          TEST_COUNT=$(jq -r '.ats_tests_to_run | length' analysis.json)
+#          RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
+#          python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
+#          END=$(date +%s)
+#          DURATION=$((END - START))
+#          echo duration=$DURATION>> "$GITHUB_OUTPUT"
+#          echo test_count=$TEST_COUNT>> "$GITHUB_OUTPUT"
+
+      - name: Upload Coverage
+        run: |
+          . venv/bin/activate
+          codecovcli upload-process --flag smart-labels --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+
+#      - name: Run Skip Tests
+#        id: skip
+#        run: |
+#          . venv/bin/activate
+#          START=$(date +%s)
+#          TESTS_TO_RUN=$(jq -r '.ats_tests_to_skip | map(@sh) | join(" ")' analysis.json --raw-output)
+#          TEST_COUNT=$(jq -r '.ats_tests_to_skip | length' analysis.json)
+#          RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
+#          python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
+#          END=$(date +%s)
+#          DURATION=$((END - START))
+#          echo duration=$DURATION>> "$GITHUB_OUTPUT"
+#          echo test_count=$TEST_COUNT>> "$GITHUB_OUTPUT"
+#
+#
+#      - name: Summary
+#        run: |
+#          echo "### ATS Summary" >> $GITHUB_STEP_SUMMARY
+#          echo "" >> $GITHUB_STEP_SUMMARY
+#          echo "- ${{ steps.tests.outputs.test_count }} tests ran in ${{ steps.tests.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
+#          echo "- ${{ steps.skip.outputs.test_count }} tests skipped" >> $GITHUB_STEP_SUMMARY
+#          echo "- Skipped tests took ${{ steps.skip.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
+  #      - name: Upload coverage to Codecov
+#        uses: codecov/codecov-action@v4-beta
+#        env:
+#          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+#        with:
+#          flags: smart-labels
+#          plugins: pycoverage,compress-pycoverage
+
+  test:
+    name: Test
+    needs: [build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11","3.8.13", "3.9.12", "3.10.5" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache Requirements
+        id: cache-requirements
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-requirements
+        with:
+          path: |
+            venv
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install reqs
+        run: |
+          . venv/bin/activate
+          pip install setuptools_rust
+          pip install -r tests/requirements.txt
+          pip install -r requirements.txt
+          python setup.py develop
+          pip install codecov-cli
+
+      - name: Run tests
+        run: |
+          . venv/bin/activate
+          python -m pytest --cov=./
+
+      # Don't upload on forks for now.
+      - name: upload using codecovcli
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          . venv/bin/activate
+          codecovcli upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+
+      - name: upload using codecovcli staging
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          . venv/bin/activate
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
+
+      - name: upload using codecovcli qa
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          . venv/bin/activate
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+
+      - name: upload using codecovcli public qa
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          . venv/bin/activate
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+       
+
+  mutation:
+    name: Run Mutations
+    needs: [build]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11" ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache Requirements
+        id: cache-requirements
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-requirements
+        with:
+          path: |
+            venv
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
+      - name: Install Requirements
+        run: |
+          make requirements.install
+      - name: Run mutations
+        run: |
+          make test_env.mutation
+
+
+  rust:
+    name: Rust Tests
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Run install cli
+        run: |
+          pip install codecov-cli
+      - name: Run rust tests
+        run: |
+          make test_env.rust_tests
+      ## Don't upload on forks for now.
+      - name: upload using codecovcli
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli upload-process --flag rust --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+
+      - name: upload using codecovcli staging
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }}  upload-process --flag rust --token ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
+
+      - name: upload using codecovcli qa
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }}  upload-process --flag rust --token ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+
+      - name: upload using codecovcli public qa
+        if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        run: |
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }}  upload-process --flag rust --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error

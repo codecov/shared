@@ -14,14 +14,30 @@ class EditableReportFile(ReportFile):
 
     __slots__ = ("_details",)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    @classmethod
+    def from_ReportFile(cls, report_file: ReportFile):
+        name = report_file.name
+        editable_file = cls(name)
+        editable_file._totals = report_file._totals
+        editable_file._session_totals = report_file._session_totals
+        editable_file._lines = report_file._lines
+        editable_file._line_modifier = report_file._line_modifier
+        editable_file._ignore = report_file._ignore
+        editable_file._details = report_file._details
+        editable_file.fix_details()
+        return editable_file
+
+    def fix_details(self):
         if self._details is None:
             self._details = {}
         if self._details.get("present_sessions") is not None:
             self._details["present_sessions"] = set(
                 self._details.get("present_sessions")
             )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fix_details()
 
     @property
     def details(self):
@@ -100,6 +116,14 @@ class EditableReport(Report):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.turn_chunks_into_reports()
+
+    def merge(self, new_report, joined=True):
+        super().merge(new_report, joined)
+        for file in self:
+            if isinstance(file, ReportFile):
+                self._chunks[
+                    self._files.get(file.name).file_index
+                ] = EditableReportFile.from_ReportFile(file)
 
     @metrics.timer("services.report.EditableReport.turn_chunks_into_reports")
     def turn_chunks_into_reports(self):

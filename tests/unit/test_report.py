@@ -1,6 +1,7 @@
 import pytest
 from mock import PropertyMock
 
+from shared.reports.editable import EditableReport, EditableReportFile
 from shared.reports.resources import Report, ReportFile, _encode_chunk
 from shared.reports.types import (
     LineSession,
@@ -15,6 +16,145 @@ from shared.utils.sessions import Session, SessionType
 from tests.helper import v2_to_v3
 
 END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
+
+
+def report_with_file_summaries():
+    return Report(
+        files={
+            "calc/CalcCore.cpp": ReportFileSummary(
+                file_index=0,
+                file_totals=ReportTotals(
+                    files=0,
+                    lines=10,
+                    hits=7,
+                    misses=2,
+                    partials=1,
+                    coverage="70.00000",
+                    branches=6,
+                    methods=4,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                session_totals=SessionTotalsArray(
+                    session_count=1,
+                    non_null_items={
+                        0: ReportTotals(
+                            files=0,
+                            lines=10,
+                            hits=7,
+                            misses=2,
+                            partials=1,
+                            coverage="70.00000",
+                            branches=6,
+                            methods=4,
+                            messages=0,
+                            sessions=0,
+                            complexity=0,
+                            complexity_total=0,
+                            diff=0,
+                        )
+                    },
+                ),
+                diff_totals=None,
+            ),
+            "calc/CalcCore.h": ReportFileSummary(
+                file_index=1,
+                file_totals=ReportTotals(
+                    files=0,
+                    lines=1,
+                    hits=1,
+                    misses=0,
+                    partials=0,
+                    coverage="100",
+                    branches=0,
+                    methods=1,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                session_totals=SessionTotalsArray(
+                    session_count=1,
+                    non_null_items={
+                        0: ReportTotals(
+                            files=0,
+                            lines=1,
+                            hits=1,
+                            misses=0,
+                            partials=0,
+                            coverage="100",
+                            branches=0,
+                            methods=1,
+                            messages=0,
+                            sessions=0,
+                            complexity=0,
+                            complexity_total=0,
+                            diff=0,
+                        )
+                    },
+                ),
+                diff_totals=None,
+            ),
+            "calc/Calculator.cpp": ReportFileSummary(
+                file_index=2,
+                file_totals=ReportTotals(
+                    files=0,
+                    lines=4,
+                    hits=3,
+                    misses=1,
+                    partials=0,
+                    coverage="75.00000",
+                    branches=1,
+                    methods=1,
+                    messages=0,
+                    sessions=0,
+                    complexity=0,
+                    complexity_total=0,
+                    diff=0,
+                ),
+                session_totals=SessionTotalsArray(
+                    session_count=1,
+                    non_null_items={
+                        0: ReportTotals(
+                            files=0,
+                            lines=4,
+                            hits=3,
+                            misses=1,
+                            partials=0,
+                            coverage="75.00000",
+                            branches=1,
+                            methods=1,
+                            messages=0,
+                            sessions=0,
+                            complexity=0,
+                            complexity_total=0,
+                            diff=0,
+                        )
+                    },
+                ),
+                diff_totals=None,
+            ),
+        },
+        totals=ReportTotals(
+            files=3,
+            lines=15,
+            hits=11,
+            misses=3,
+            partials=1,
+            coverage="73.33333",
+            branches=7,
+            methods=6,
+            messages=0,
+            sessions=0,
+            complexity=0,
+            complexity_total=0,
+            diff=0,
+        ),
+    )
 
 
 @pytest.mark.unit
@@ -248,6 +388,29 @@ def test_manifest(files, manifest):
 
 
 @pytest.mark.unit
+def test_get_file_totals(mocker):
+    report = report_with_file_summaries()
+    report._path_filter = None
+
+    expected_totals = ReportTotals(
+        files=0,
+        lines=10,
+        hits=7,
+        misses=2,
+        partials=1,
+        coverage="70.00000",
+        branches=6,
+        methods=4,
+        messages=0,
+        sessions=0,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )
+    assert report.get_file_totals("calc/CalcCore.cpp") == expected_totals
+
+
+@pytest.mark.unit
 def test_get_folder_totals(mocker):
     r = Report(
         files={
@@ -342,6 +505,21 @@ def test_merge(files, chunks, new_report, manifest):
     assert list(r.files) == manifest
 
 
+def test_merge_into_editable_report():
+    editable_report = EditableReport(
+        files={"file.py": [1, ReportTotals(2)]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    )
+    new_report = Report(
+        files={"other-file.py": [1, ReportTotals(2)]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    )
+    editable_report.merge(new_report)
+    assert list(editable_report.files) == ["file.py", "other-file.py"]
+    for file in editable_report:
+        assert isinstance(file, EditableReportFile)
+
+
 @pytest.mark.unit
 @pytest.mark.parametrize(
     "files, boolean", [({}, True), ({"file.py": [0, ReportTotals(1)]}, False)]
@@ -416,142 +594,7 @@ def test_to_database(mocker):
 
 @pytest.mark.unit
 def test_to_database_report_with_session_totals(mocker):
-    report = Report(
-        files={
-            "calc/CalcCore.cpp": ReportFileSummary(
-                file_index=0,
-                file_totals=ReportTotals(
-                    files=0,
-                    lines=10,
-                    hits=7,
-                    misses=2,
-                    partials=1,
-                    coverage="70.00000",
-                    branches=6,
-                    methods=4,
-                    messages=0,
-                    sessions=0,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                session_totals=SessionTotalsArray(
-                    session_count=1,
-                    non_null_items={
-                        0: ReportTotals(
-                            files=0,
-                            lines=10,
-                            hits=7,
-                            misses=2,
-                            partials=1,
-                            coverage="70.00000",
-                            branches=6,
-                            methods=4,
-                            messages=0,
-                            sessions=0,
-                            complexity=0,
-                            complexity_total=0,
-                            diff=0,
-                        )
-                    },
-                ),
-                diff_totals=None,
-            ),
-            "calc/CalcCore.h": ReportFileSummary(
-                file_index=1,
-                file_totals=ReportTotals(
-                    files=0,
-                    lines=1,
-                    hits=1,
-                    misses=0,
-                    partials=0,
-                    coverage="100",
-                    branches=0,
-                    methods=1,
-                    messages=0,
-                    sessions=0,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                session_totals=SessionTotalsArray(
-                    session_count=1,
-                    non_null_items={
-                        0: ReportTotals(
-                            files=0,
-                            lines=1,
-                            hits=1,
-                            misses=0,
-                            partials=0,
-                            coverage="100",
-                            branches=0,
-                            methods=1,
-                            messages=0,
-                            sessions=0,
-                            complexity=0,
-                            complexity_total=0,
-                            diff=0,
-                        )
-                    },
-                ),
-                diff_totals=None,
-            ),
-            "calc/Calculator.cpp": ReportFileSummary(
-                file_index=2,
-                file_totals=ReportTotals(
-                    files=0,
-                    lines=4,
-                    hits=3,
-                    misses=1,
-                    partials=0,
-                    coverage="75.00000",
-                    branches=1,
-                    methods=1,
-                    messages=0,
-                    sessions=0,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                session_totals=SessionTotalsArray(
-                    session_count=1,
-                    non_null_items={
-                        0: ReportTotals(
-                            files=0,
-                            lines=4,
-                            hits=3,
-                            misses=1,
-                            partials=0,
-                            coverage="75.00000",
-                            branches=1,
-                            methods=1,
-                            messages=0,
-                            sessions=0,
-                            complexity=0,
-                            complexity_total=0,
-                            diff=0,
-                        )
-                    },
-                ),
-                diff_totals=None,
-            ),
-        },
-        totals=ReportTotals(
-            files=3,
-            lines=15,
-            hits=11,
-            misses=3,
-            partials=1,
-            coverage="73.33333",
-            branches=7,
-            methods=6,
-            messages=0,
-            sessions=0,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
-        ),
-    )
+    report = report_with_file_summaries()
     expected_result = (
         {
             "f": 3,
