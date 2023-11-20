@@ -1,4 +1,5 @@
 import os
+from unittest.mock import patch
 
 from shared.reports.filtered import FilteredReport, FilteredReportFile
 from shared.reports.resources import (
@@ -24,6 +25,23 @@ class TestFilteredReportFile(object):
         f = FilteredReportFile(first_file, [1])
         assert f.eof == 1
         assert f.eof == first_file.eof
+
+    @patch("shared.reports.filtered.FilteredReportFile.line_modifier")
+    def test_lines_cached(self, line_modifier_mock):
+        line_modifier_mock.return_value = True
+
+        first_file = ReportFile("file_1.go")
+        first_file.append(
+            1,
+            ReportLine.create(
+                coverage=1,
+                sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
+            ),
+        )
+        filtered_report_file = FilteredReportFile(first_file, [1])
+
+        assert filtered_report_file.lines == filtered_report_file.lines
+        assert line_modifier_mock.call_count == 1
 
     def test_totals(self):
         first_file = ReportFile("file_1.go")
@@ -215,6 +233,14 @@ class TestFilteredReport(object):
             sample_report.filter(paths=[".*.go"], flags=["simple"]).get("myfile.go")
             is None
         )
+
+    def test_get_cached(self, sample_report):
+        filtered_report = sample_report.filter(paths=[".*.go"], flags=["simple"])
+        filtered_report_file_1 = filtered_report.get("file_1.go")
+        assert isinstance(filtered_report_file_1, FilteredReportFile)
+        filtered_report_file_2 = filtered_report.get("file_1.go")
+        assert isinstance(filtered_report_file_2, FilteredReportFile)
+        assert filtered_report_file_1 == filtered_report_file_2
 
     def test_normal_totals(self, sample_report):
         assert sample_report.totals == ReportTotals(

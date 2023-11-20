@@ -22,12 +22,13 @@ def _contain_any_of_the_flags(expected_flags, actual_flags):
 
 class FilteredReportFile(object):
 
-    __slots__ = ["report_file", "session_ids", "_totals"]
+    __slots__ = ["report_file", "session_ids", "_totals", "_cached_lines"]
 
     def __init__(self, report_file, session_ids):
         self.report_file = report_file
         self.session_ids = session_ids
         self._totals = None
+        self._cached_lines = None
 
     def line_modifier(self, line):
         new_sessions = [s for s in line.sessions if s.id in self.session_ids]
@@ -68,10 +69,15 @@ class FilteredReportFile(object):
         returning (ln, line)
         <generator ((3, Line), (4, Line), (7, Line), ...)>
         """
+        if self._cached_lines:
+            return self._cached_lines
+        ret = []
         for ln, line in self.report_file.lines:
             line = self.line_modifier(line)
             if line:
-                yield ln, line
+                ret.append((ln, line))
+        self._cached_lines = ret
+        return ret
 
     def calculate_diff(self, all_file_segments):
         fg = self.get
@@ -161,6 +167,7 @@ class FilteredReport(object):
         self.flags = flags
         self._totals = None
         self._sessions_to_include = None
+        self.report_file_cache = {}
 
     def file_reports(self):
         for f in self.files:
@@ -220,7 +227,12 @@ class FilteredReport(object):
         r = self.report.get(filename)
         if r is None:
             return None
-        return FilteredReportFile(r, self.session_ids_to_include)
+
+        if filename not in self.report_file_cache:
+            self.report_file_cache[filename] = FilteredReportFile(
+                r, self.session_ids_to_include
+            )
+        return self.report_file_cache[filename]
 
     @property
     def files(self):
