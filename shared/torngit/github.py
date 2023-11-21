@@ -1500,12 +1500,15 @@ class Github(TorngitBaseAdapter):
             return [r["name"] for r in res]
 
     async def is_student(self):
-        async with self.get_client() as client:
+        async with self.get_client([3, 3]) as client:
             try:
                 res = await self.api(
                     client, "get", "https://education.github.com/api/user"
                 )
                 return res["student"]
+            except TorngitServerUnreachableError:
+                log.warn("Timeout on Github Education API for is_student")
+                return False
             except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
                 return False
 

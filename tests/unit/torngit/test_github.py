@@ -1380,6 +1380,30 @@ class TestUnitGithub(object):
         assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
 
     @pytest.mark.asyncio
+    async def test_github_is_student_timeout(self, ghapp_handler):
+        def side_effect(*args, **kwargs):
+            raise httpx.TimeoutException("timeout")
+        with respx.mock:
+            mocked_route = respx.get(
+                "https://education.github.com/api/user"
+            ).mock(side_effect=side_effect)
+            res = await ghapp_handler.is_student()
+            assert mocked_route.call_count == 1
+            assert res == False
+
+    @pytest.mark.asyncio
+    async def test_github_is_student_network_error(self, ghapp_handler):
+        def side_effect(*args, **kwargs):
+            raise httpx.NetworkError("timeout")
+        with respx.mock:
+            mocked_route = respx.get(
+                "https://education.github.com/api/user"
+            ).mock(side_effect=side_effect)
+            res = await ghapp_handler.is_student()
+            assert mocked_route.call_count == 1
+            assert res == False
+
+    @pytest.mark.asyncio
     async def test_github_refresh_after_failed_request(self, mocker, valid_handler):
         def side_effect(request, *args, **kwargs):
             print(f"Received request with headers {request.headers['Authorization']}")
