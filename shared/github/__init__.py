@@ -46,11 +46,18 @@ def get_github_integration_token(service, integration_id=None) -> Optional[str]:
             if service == "github"
             else torngit.GithubEnterprise.get_api_url()
         )
+        host_override = (
+            torngit.Github.get_api_host_header()
+            if service == "github"
+            else torngit.GithubEnterprise.get_api_host_header()
+        )
         headers = {
             "Accept": "application/vnd.github.machine-man-preview+json",
             "User-Agent": "Codecov",
             "Authorization": "Bearer %s" % token,
         }
+        if host_override is not None:
+            headers["Host"] = host_override
         url = "%s/app/installations/%s/access_tokens" % (api_endpoint, integration_id)
         res = requests.post(url, headers=headers)
         if res.status_code in (404, 403):
