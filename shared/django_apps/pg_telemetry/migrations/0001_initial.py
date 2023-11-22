@@ -48,6 +48,6 @@ class Migration(migrations.Migration):
         ),
     ]
 
-    if settings.TEST:
+    if hasattr(settings, "TEST") and settings.TEST:
         # Skip steps that complicate tests
         operations = [operations[0], operations[2]]
