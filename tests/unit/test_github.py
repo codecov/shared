@@ -39,6 +39,29 @@ class TestGithubSpecificLogic(object):
             },
         )
 
+    def test_get_github_integration_token_enterprise_host_override(
+        self, mocker, mock_configuration
+    ):
+        service = "github_enterprise"
+        mock_configuration._params[service] = {
+            "url": "https://legit-github",
+            "api_host_override": "some-other-github.com",
+        }
+        integration_id = 1
+        mocked_post = mocker.patch("shared.github.requests.post")
+        mocked_post.return_value.json.return_value = {"token": "arriba"}
+        mocker.patch("shared.github.get_pem", return_value=fake_private_key)
+        assert get_github_integration_token(service, integration_id) == "arriba"
+        mocked_post.assert_called_with(
+            "https://legit-github/api/v3/app/installations/1/access_tokens",
+            headers={
+                "Accept": "application/vnd.github.machine-man-preview+json",
+                "Authorization": mocker.ANY,
+                "User-Agent": "Codecov",
+                "Host": "some-other-github.com",
+            },
+        )
+
     def test_get_github_integration_token_production(self, mocker, mock_configuration):
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
@@ -53,6 +76,30 @@ class TestGithubSpecificLogic(object):
                 "Accept": "application/vnd.github.machine-man-preview+json",
                 "Authorization": mocker.ANY,
                 "User-Agent": "Codecov",
+            },
+        )
+
+    def test_get_github_integration_token_production_host_override(
+        self, mocker, mock_configuration
+    ):
+        service = "github"
+        api_url = "https://legit-github"
+        mock_configuration._params["github"] = {
+            "api_url": api_url,
+            "api_host_override": "api.github.com",
+        }
+        integration_id = 1
+        mocked_post = mocker.patch("shared.github.requests.post")
+        mocked_post.return_value.json.return_value = {"token": "arriba"}
+        mocker.patch("shared.github.get_pem", return_value=fake_private_key)
+        assert get_github_integration_token(service, integration_id) == "arriba"
+        mocked_post.assert_called_with(
+            f"{api_url}/app/installations/1/access_tokens",
+            headers={
+                "Accept": "application/vnd.github.machine-man-preview+json",
+                "Authorization": mocker.ANY,
+                "User-Agent": "Codecov",
+                "Host": "api.github.com",
             },
         )
 
