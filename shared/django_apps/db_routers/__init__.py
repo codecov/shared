@@ -92,6 +92,9 @@ class TelemetryDatabaseRouter:
         if l._meta.app_label in (
             "pg_telemetry",
             "ts_telemetry",
+        ) or r._meta.app_label in (
+            "pg_telemetry",
+            "ts_telemetry",
         ):
             return l._meta.app_label == r._meta.app_label
 
