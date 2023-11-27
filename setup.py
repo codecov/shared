@@ -46,5 +46,7 @@ setup(
         "urllib3>=1.25.4,<1.27",
         "pyjwt",
         "pytz",
+        "sqlalchemy>=2.0",
+        "ijson==3.*",
     ],
 )

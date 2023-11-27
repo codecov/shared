@@ -1,3 +1,5 @@
+CHUNK_SIZE = 1024 * 32
+
 # Interface class for interfacing with codecov's underlying storage layer
 class BaseStorageService(object):
     def client(self):
@@ -58,19 +60,20 @@ class BaseStorageService(object):
         """
         raise NotImplementedError()
 
-    def read_file(self, bucket_name, path):
+    def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 
         Args:
             bucket_name (str): The name of the bucket for the file lives
             path (str): The path of the file
+            file_obj (file like): A file-like object in which to write the contents
 
         Raises:
             NotImplementedError: If the current instance did not implement this method
             FileNotInStorageError: If the file does not exist
 
         Returns:
-            bytes : The contents of that file, still encoded as bytes
+            bytes : The contents of that file, still encoded as bytes (only when file_obj is None)
         """
         raise NotImplementedError()
 

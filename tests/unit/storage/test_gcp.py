@@ -1,5 +1,6 @@
 import gzip
 import io
+import tempfile
 
 import pytest
 from google.cloud import storage as google_storage

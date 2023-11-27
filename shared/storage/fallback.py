@@ -58,7 +58,7 @@ class StorageWithFallbackService(BaseStorageService):
         """
         return self.main_service.append_to_file(bucket_name, path, data)
 
-    def read_file(self, bucket_name, path):
+    def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 
         Args:
@@ -73,10 +73,10 @@ class StorageWithFallbackService(BaseStorageService):
             bytes : The contents of that file, still encoded as bytes
         """
         try:
-            return self.main_service.read_file(bucket_name, path)
+            return self.main_service.read_file(bucket_name, path, file_obj=file_obj)
         except FileNotInStorageError:
             log.info("File not in first storage, looking into second one")
-            return self.fallback_service.read_file(bucket_name, path)
+            return self.fallback_service.read_file(bucket_name, path, file_obj=file_obj)
 
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage

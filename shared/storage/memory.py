@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from shared.storage.base import BaseStorageService
+from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 
@@ -61,7 +61,12 @@ class MemoryStorageService(BaseStorageService):
         """
         if isinstance(data, str):
             data = data.encode()
-        self.storage[bucket_name][path] = data
+        if isinstance(data, bytes):
+            self.storage[bucket_name][path] = data
+        else:
+            # data is a file-like object
+            data.seek(0)
+            self.storage[bucket_name][path] = data.read()
         return True
 
     def append_to_file(self, bucket_name, path, data):
@@ -85,7 +90,7 @@ class MemoryStorageService(BaseStorageService):
             new_content = b"\n".join([self.storage[bucket_name].get(path, b""), data])
             return self.write_file(bucket_name, path, new_content)
 
-    def read_file(self, bucket_name, path):
+    def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 
         Args:
@@ -100,7 +105,15 @@ class MemoryStorageService(BaseStorageService):
             bytes : The contents of that file, still encoded as bytes
         """
         try:
-            return self.storage[bucket_name][path]
+            data = self.storage[bucket_name][path]
+            if file_obj is None:
+                return data
+            else:
+                chunks = [
+                    data[i : i + CHUNK_SIZE] for i in range(0, len(data), CHUNK_SIZE)
+                ]
+                for chunk in chunks:
+                    file_obj.write(chunk)
         except KeyError:
             raise FileNotInStorageError()
 
