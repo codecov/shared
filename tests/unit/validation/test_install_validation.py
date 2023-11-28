@@ -403,6 +403,26 @@ def test_pubsub_config(mocker):
     }
 
 
+def test_admins(mocker):
+    assert validate_install_configuration(
+        {
+            "setup": {
+                "admins": {
+                    "service": "github",
+                    "username": "user123",
+                }
+            },
+        }
+    ) == {
+        "setup": {
+            "admins": {
+                "service": "github",
+                "username": "user123",
+            }
+        },
+    }
+
+
 def test_validate_install_configuration_raise_warning(mocker):
     mock_warning = mocker.patch.object(install_log, "warning")
     input = {
