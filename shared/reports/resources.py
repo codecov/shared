@@ -587,7 +587,7 @@ class ReportFile(object):
 class Report(object):
     file_class = ReportFile
     _files: Dict[str, ReportFileSummary]
-    _labels_index: Optional[Dict[int, str]] = None
+    labels_index: Optional[Dict[int, str]] = None
 
     @sentry.trace
     def __init__(
@@ -640,18 +640,18 @@ class Report(object):
         self.yaml = yaml  # ignored
 
     def set_label_idx(self, label_idx: Dict[int, str]) -> None:
-        self._labels_index = label_idx
+        self.labels_index = label_idx
 
     def unset_label_idx(self) -> None:
-        self._labels_index = None
+        self.labels_index = None
 
     def lookup_label_by_id(self, label_id: int) -> str:
 
-        if self._labels_index is None:
+        if self.labels_index is None:
             raise LabelIndexNotLoadedError()
-        if label_id not in self._labels_index:
+        if label_id not in self.labels_index:
             raise LabelNotFoundError()
-        return self._labels_index[label_id]
+        return self.labels_index[label_id]
 
     @classmethod
     def from_chunks(cls, *args, **kwargs):

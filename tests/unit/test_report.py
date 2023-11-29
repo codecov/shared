@@ -481,12 +481,12 @@ def test_contains(mocker):
 @pytest.mark.unit
 def test_set_labels_idx():
     report = Report()
-    assert report._labels_index is None
+    assert report.labels_index is None
     label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
     report.set_label_idx(label_idx)
-    assert report._labels_index == label_idx
+    assert report.labels_index == label_idx
     report.unset_label_idx()
-    assert report._labels_index is None
+    assert report.labels_index is None
 
 
 def test_get_label_from_idx():
