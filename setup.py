@@ -46,5 +46,6 @@ setup(
         "urllib3>=1.25.4,<1.27",
         "pyjwt",
         "pytz",
+        "django>=4.2.3",
     ],
 )
