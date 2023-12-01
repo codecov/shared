@@ -50,8 +50,11 @@ class TorngitBaseAdapter(object):
         "xtend",
     )
 
-    def get_client(self):
-        timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
+    def get_client(self, timeouts: List[int] = []) -> httpx.AsyncClient:
+        if timeouts:
+            timeout = httpx.Timeout(timeouts[1], connect=timeouts[0])
+        else:
+            timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
         return httpx.AsyncClient(
             verify=self.verify_ssl
             if not isinstance(self.verify_ssl, bool)

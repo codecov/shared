@@ -46,6 +46,7 @@ setup(
         "urllib3>=1.25.4,<1.27",
         "pyjwt",
         "pytz",
+        "django>=4.2.3",
         "sqlalchemy>=2.0",
         "ijson==3.*",
     ],

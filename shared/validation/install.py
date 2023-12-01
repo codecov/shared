@@ -122,6 +122,16 @@ config_schema = {
             "api_cors_allowed_origins": {"type": "string"},
             "codecov_dashboard_url": {"type": "string"},
             "enterprise_license": {"type": "string"},
+            "admins": {
+                "type": "list",
+                "schema": {
+                    "type": "dict",
+                    "schema": {
+                        "service": {"type": "string"},
+                        "username": {"type": "string"},
+                    },
+                },
+            },
             "api_allowed_hosts": {"type": "list", "schema": {"type": "string"}},
             "secure_cookie": {"type": "boolean"},
             "segment": {

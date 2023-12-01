@@ -4,6 +4,7 @@ mock
 coverage>=7.3.2
 pytest-asyncio
 pytest-cov
+pytest-django
 pytest-mock
 pytest>=7.2.0
 vcrpy>=5.0.0

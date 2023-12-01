@@ -489,4 +489,8 @@ schema = {
         },
     },
     "beta_groups": {"type": "list", "schema": {"type": "string"}},
+    "ai_pr_review": {
+        "type": ["dict", "boolean"],
+        "schema": {"enabled": {"type": "boolean"}},
+    },
 }
