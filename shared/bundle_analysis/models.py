@@ -72,6 +72,9 @@ def get_db_session(path: str) -> DbSession:
     return session
 
 
+# table definitions for many-to-many joins
+# (we're not creating models for these tables since they can be manipulated through each side of the join)
+
 assets_chunks = Table(
     "assets_chunks",
     Base.metadata,
@@ -85,6 +88,8 @@ chunks_modules = Table(
     Column("chunk_id", ForeignKey("chunks.id")),
     Column("module_id", ForeignKey("modules.id")),
 )
+
+# model definitions
 
 
 class Session(Base):

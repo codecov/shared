@@ -8,8 +8,8 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from . import models
-from .parser import parse
+from shared.bundle_analysis import models
+from shared.bundle_analysis.parser import parse
 
 # matches file paths with content hashes like:
 # path/to/file-aa21a697.ext

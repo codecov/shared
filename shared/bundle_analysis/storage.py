@@ -2,11 +2,10 @@ from enum import Enum
 from tempfile import NamedTemporaryFile
 from typing import Optional
 
+from shared.bundle_analysis.report import BundleReport
 from shared.config import get_config
 from shared.storage.base import BaseStorageService
 from shared.storage.exceptions import FileNotInStorageError
-
-from .report import BundleReport
 
 BUCKET_NAME = get_config("bundle_analysis", "bucket_name", default="bundle-analysis")
 

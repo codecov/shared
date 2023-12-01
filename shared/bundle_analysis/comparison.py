@@ -3,8 +3,8 @@ from enum import Enum
 from functools import cached_property
 from typing import List
 
-from .report import BundleReport
-from .storage import BundleReportLoader
+from shared.bundle_analysis.report import BundleReport
+from shared.bundle_analysis.storage import BundleReportLoader
 
 
 class MissingBaseReportError(Exception):
