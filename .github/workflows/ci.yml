@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11","3.8.13", "3.9.12", "3.10.5"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.11" ]
+        python-version: ["3.12"]
     if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
     runs-on: ubuntu-latest
     steps:
@@ -232,7 +232,7 @@ jobs:
         run: |
           . venv/bin/activate
           codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
-       
+
 
   mutation:
     name: Run Mutations
