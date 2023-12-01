@@ -1,7 +1,7 @@
 import logging
 from dataclasses import asdict, dataclass
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
 from shared.config import get_config
 
@@ -331,6 +331,10 @@ class NetworkFile(object):
             self.session_totals.to_database(),
             self.diff_totals.astuple() if self.diff_totals else None,
         )
+
+
+class ReportHeader(TypedDict):
+    labels_index: Dict[int, str]
 
 
 @dataclass

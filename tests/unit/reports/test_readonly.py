@@ -56,8 +56,9 @@ def sample_rust_report(mocker):
 
 
 class TestLazyRustReport(object):
-    def test_get_report(self):
-        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
+    @pytest.mark.parametrize("chunks_file", ["chunks_01.txt", "chunks_03.txt"])
+    def test_get_report(self, chunks_file):
+        with open(current_file.parent / "samples" / chunks_file, "r") as f:
             chunks = f.read()
         filename_mapping = {
             "awesome/__init__.py": 2,
@@ -104,10 +105,14 @@ class TestLazyRustReport(object):
 
 
 class TestReadOnly(object):
-    def test_create_from_report(self, sample_report, mocker):
+    @pytest.mark.parametrize(
+        "report_header", [{}, {"labels_index": {0: "special_label", 1: "some_test"}}]
+    )
+    def test_create_from_report(self, sample_report, mocker, report_header):
         mocker.patch.object(
             ReadOnlyReport, "should_load_rust_version", return_value=True
         )
+        sample_report._header = report_header
         r = ReadOnlyReport.create_from_report(sample_report)
         assert r.rust_report is not None
         assert r.totals == sample_report.totals

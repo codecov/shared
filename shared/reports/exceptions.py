@@ -1,4 +1,4 @@
-class LabelIndexNotLoadedError(Exception):
+class LabelIndexNotFoundError(Exception):
     pass
 
 

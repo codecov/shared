@@ -2,13 +2,20 @@ import pytest
 from mock import PropertyMock
 
 from shared.reports.editable import EditableReport, EditableReportFile
-from shared.reports.exceptions import LabelIndexNotLoadedError, LabelNotFoundError
-from shared.reports.resources import Report, ReportFile, _encode_chunk
+from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
+from shared.reports.resources import (
+    END_OF_CHUNK,
+    END_OF_HEADER,
+    Report,
+    ReportFile,
+    _encode_chunk,
+)
 from shared.reports.types import (
     CoverageDatapoint,
     LineSession,
     NetworkFile,
     ReportFileSummary,
+    ReportHeader,
     ReportLine,
     ReportTotals,
     SessionTotalsArray,
@@ -16,8 +23,6 @@ from shared.reports.types import (
 from shared.utils.match import match
 from shared.utils.sessions import Session, SessionType
 from tests.helper import v2_to_v3
-
-END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
 
 
 def report_with_file_summaries():
@@ -390,6 +395,51 @@ def test_manifest(files, manifest):
 
 
 @pytest.mark.unit
+class TestReportHeader(object):
+    def test_default(self):
+        r = Report()
+        assert r.header == ReportHeader()
+        assert r.labels_index == None
+
+    def test_get(self):
+        r = Report()
+        r._header = ReportHeader(labels_index={0: "special_label"})
+        assert r.header == ReportHeader(labels_index={0: "special_label"})
+
+    def test_from_archive(self):
+        r = Report(
+            files={"other-file.py": [1, ReportTotals(2)]},
+            chunks='{"labels_index":{"0": "special_label"}}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]',
+        )
+        assert r.header == ReportHeader(labels_index={0: "special_label"})
+
+    def test_setter(self):
+        r = Report()
+        header = ReportHeader(labels_index={0: "special_label"})
+        r.header = header
+        assert r.header == header
+
+    def test_get_labels_index(self):
+        r = Report()
+        r._header = ReportHeader(labels_index={0: "special_label"})
+        assert r.labels_index == {0: "special_label"}
+
+    def test_set_labels_index(self):
+        r = Report()
+        assert r.labels_index == None
+        r.labels_index = {0: "special_label"}
+        assert r.labels_index == {0: "special_label"}
+        assert r.header == ReportHeader(labels_index={0: "special_label"})
+
+    def test_partial_set_labels_index(self):
+        r = Report()
+        r._header = ReportHeader(labels_index={0: "special_label"})
+        assert r.labels_index == {0: "special_label"}
+        r.labels_index[1] = "some_test"
+        r.labels_index == {0: "special_label", 1: "some_test"}
+
+
+@pytest.mark.unit
 def test_get_file_totals(mocker):
     report = report_with_file_summaries()
     report._path_filter = None
@@ -478,21 +528,10 @@ def test_contains(mocker):
     assert ("file2.py" in r) is False
 
 
-@pytest.mark.unit
-def test_set_labels_idx():
-    report = Report()
-    assert report.labels_index is None
-    label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
-    report.set_label_idx(label_idx)
-    assert report.labels_index == label_idx
-    report.unset_label_idx()
-    assert report.labels_index is None
-
-
 def test_get_label_from_idx():
     report = Report()
     label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
-    report.set_label_idx(label_idx)
+    report._header = ReportHeader(labels_index=label_idx)
     report_file = ReportFile(
         name="something.py",
         lines=[
@@ -522,11 +561,11 @@ def test_get_label_from_idx():
 
 def test_lookup_label_by_id_fails():
     report = Report()
-    with pytest.raises(LabelIndexNotLoadedError):
+    with pytest.raises(LabelIndexNotFoundError):
         report.lookup_label_by_id(0)
 
     label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
-    report.set_label_idx(label_idx)
+    report._header = ReportHeader(labels_index=label_idx)
 
     with pytest.raises(LabelNotFoundError):
         report.lookup_label_by_id(100)
@@ -611,7 +650,23 @@ def test_to_archive(mocker):
     )
     assert (
         r.to_archive()
-        == "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
+        == "{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
+    )
+
+
+@pytest.mark.unit
+def test_to_archive_with_header(mocker):
+    r = Report()
+    r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
+    r._header = ReportHeader(labels_index={0: "special_label", 1: "some_label"})
+    r._chunks = (
+        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
+            END_OF_CHUNK
+        )
+    )
+    assert (
+        r.to_archive()
+        == '{"labels_index":{"0":"special_label","1":"some_label"}}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'
     )
 
 
