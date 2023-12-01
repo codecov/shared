@@ -1,5 +1,4 @@
 import os
-import re
 import sqlite3
 import tempfile
 from typing import Any, Dict, Iterator, Optional
@@ -11,10 +10,6 @@ from sqlalchemy.sql import func
 from shared.bundle_analysis import models
 from shared.bundle_analysis.parser import parse
 
-# matches file paths with content hashes like:
-# path/to/file-aa21a697.ext
-CONTENT_HASH_RE = re.compile(r"^.+(-[\w\d]{8})\.[\w\d]+$")
-
 
 class Bundle:
     def __init__(self, asset: models.Asset):
@@ -23,31 +18,15 @@ class Bundle:
 
     @property
     def name(self):
+        return self.asset.normalized_name
+
+    @property
+    def hashed_name(self):
         return self.asset.name
 
     @property
     def size(self):
         return self.asset.size
-
-    @property
-    def id(self):
-        """
-        Attempts to track the unique name of the bundle while ignoring
-        content hashes found in the file name.
-
-        For example, if the name is `path/to/file-aa21a697.ext` then this
-        method will return `path/to/file.ext`
-        """
-        res = self.name
-
-        # FIXME: this is likely too naive to work in all cases - need to figure out
-        # various ways these content hashes can be formed
-        re_match = CONTENT_HASH_RE.match(self.name)
-        if re_match:
-            (dash_hash,) = re_match.groups()
-            res = self.name.replace(dash_hash, "")
-
-        return res
 
     def modules(self):
         return (

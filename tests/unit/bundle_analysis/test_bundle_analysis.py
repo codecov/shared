@@ -19,18 +19,19 @@ def test_create_bundle_report():
     }
 
     bundles = list(bundle_report.bundles())
-    assert len(bundles) == 4
+    assert len(bundles) == 5
 
-    assert [(b.id, b.name, b.size, len(b.modules())) for b in bundles] == [
-        ("assets/react.svg", "assets/react-35ef61ed.svg", 4126, 0),
-        ("assets/index.css", "assets/index-d526a0c5.css", 1421, 0),
-        ("assets/LazyComponent.js", "assets/LazyComponent-aa21a697.js", 183, 1),
+    assert [(b.name, b.hashed_name, b.size, len(b.modules())) for b in bundles] == [
+        ("assets/react-*.svg", "assets/react-35ef61ed.svg", 4126, 0),
+        ("assets/index-*.css", "assets/index-d526a0c5.css", 1421, 0),
+        ("assets/LazyComponent-*.js", "assets/LazyComponent-fcbb0922.js", 294, 1),
+        ("assets/index-*.js", "assets/index-c8676264.js", 154, 2),
         # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
         # Made a similar note in the parser code where the associations are made
-        ("assets/index.js", "assets/index-8df741ec.js", 144469, 28),
+        ("assets/index-*.js", "assets/index-666d2e09.js", 144577, 28),
     ]
 
-    assert bundle_report.total_size() == 150199
+    assert bundle_report.total_size() == 150572
     bundle_report.cleanup()
 
 

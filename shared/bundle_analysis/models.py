@@ -21,6 +21,7 @@ create table assets (
     id integer primary key,
     session_id integer not null,
     name text not null,
+    normalized_name text not null,
     size integer not null,
     foreign key (session_id) references sessions (id)
 );
@@ -31,9 +32,10 @@ create index assets_name_index on assets (name);
 create table chunks (
     id integer primary key,
     external_id text not null,
+    unique_external_id text not null,
     entry boolean not null,
     initial boolean not null,
-    unique (external_id)
+    unique (unique_external_id)
 );
 
 create table assets_chunks (
@@ -126,6 +128,7 @@ class Asset(Base):
     id = Column(types.Integer, primary_key=True)
     session_id = Column(types.Integer, ForeignKey("sessions.id"), nullable=False)
     name = Column(types.Text, nullable=False)
+    normalized_name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
 
     session = relationship(Session, backref=backref("assets"))
@@ -143,6 +146,7 @@ class Chunk(Base):
 
     id = Column(types.Integer, primary_key=True)
     external_id = Column(types.Text, nullable=False)
+    unique_external_id = Column(types.Text, nullable=False)
     entry = Column(types.Boolean, nullable=False)
     initial = Column(types.Boolean, nullable=False)
 

@@ -49,39 +49,41 @@ def test_bundle_analysis_comparison():
     loader.save(head_report, "head-report")
 
     changes = comparison.bundle_changes()
-    assert changes == [
-        BundleChange(
-            bundle_id="assets/testing.svg",
-            change_type=BundleChange.ChangeType.ADDED,
-            size_delta=4126,
-        ),
-        BundleChange(
-            bundle_id="assets/index.css",
-            change_type=BundleChange.ChangeType.CHANGED,
-            size_delta=-100,
-        ),
-        BundleChange(
-            bundle_id="assets/other.js",
-            change_type=BundleChange.ChangeType.ADDED,
-            size_delta=1234,
-        ),
-        BundleChange(
-            bundle_id="assets/index.js",
-            change_type=BundleChange.ChangeType.CHANGED,
-            size_delta=1000,
-        ),
-        BundleChange(
-            bundle_id="assets/react.svg",
-            change_type=BundleChange.ChangeType.REMOVED,
-            size_delta=-4126,
-        ),
-        BundleChange(
-            bundle_id="assets/LazyComponent.js",
-            change_type=BundleChange.ChangeType.REMOVED,
-            size_delta=-183,
-        ),
-    ]
+    assert set(changes) == set(
+        [
+            BundleChange(
+                bundle_name="assets/other-*.svg",
+                change_type=BundleChange.ChangeType.ADDED,
+                size_delta=5126,
+            ),
+            BundleChange(
+                bundle_name="assets/index-*.css",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=0,
+            ),
+            BundleChange(
+                bundle_name="assets/LazyComponent-*.js",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=0,
+            ),
+            BundleChange(
+                bundle_name="assets/index-*.js",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=100,
+            ),
+            BundleChange(
+                bundle_name="assets/index-*.js",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=0,
+            ),
+            BundleChange(
+                bundle_name="assets/react-*.svg",
+                change_type=BundleChange.ChangeType.REMOVED,
+                size_delta=-4126,
+            ),
+        ]
+    )
 
     total_size_delta = comparison.total_size_delta()
-    assert total_size_delta == 1951
+    assert total_size_delta == 1100
     assert total_size_delta == sum([change.size_delta for change in changes])

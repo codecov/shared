@@ -38,7 +38,7 @@ class Parser:
         self.chunk_asset_names_index = {}
 
         # module id -> chunk external id list
-        self.module_chunk_external_ids_index = {}
+        self.module_chunk_unique_external_ids_index = {}
 
         # misc. top-level info from the stats data (i.e. bundler version, bundle time, etc.)
         self.info = {}
@@ -49,7 +49,7 @@ class Parser:
         self.chunk = None
         self.chunk_asset_names = []
         self.module = None
-        self.module_chunk_external_ids = []
+        self.module_chunk_unique_external_ids = []
 
     def parse(self, path: str):
         self.reset()
@@ -80,14 +80,16 @@ class Parser:
         # session info
         elif prefix == "version":
             self.info["version"] = value
-        elif prefix == "outputPath":
-            self.info["output_path"] = value
         elif prefix == "bundler.name":
             self.info["bundler_name"] = value
         elif prefix == "bundler.version":
             self.info["bundler_version"] = value
         elif prefix == "builtAt":
             self.info["built_at"] = value
+        elif prefix == "plugin.name":
+            self.info["plugin_name"] = value
+        elif prefix == "plugin.version":
+            self.info["plugin_version"] = value
 
     def _parse_assets_event(self, prefix: str, event: str, value: str):
         if (prefix, event) == ("assets.item", "start_map"):
@@ -96,6 +98,8 @@ class Parser:
             self.asset = Asset(session=self.session)
         elif prefix == "assets.item.name":
             self.asset.name = value
+        elif prefix == "assets.item.normalized":
+            self.asset.normalized_name = value
         elif prefix == "assets.item.size":
             self.asset.size = value
         elif (prefix, event) == ("assets.item", "end_map"):
@@ -113,6 +117,8 @@ class Parser:
             self.chunk = Chunk()
         elif prefix == "chunks.item.id":
             self.chunk.external_id = value
+        elif prefix == "chunks.item.uniqueId":
+            self.chunk.unique_external_id = value
         elif prefix == "chunks.item.initial":
             self.chunk.initial = value
         elif prefix == "chunks.item.entry":
@@ -138,18 +144,18 @@ class Parser:
             self.module.name = value
         elif prefix == "modules.item.size":
             self.module.size = value
-        elif prefix == "modules.item.chunks.item":
-            self.module_chunk_external_ids.append(value)
+        elif prefix == "modules.item.chunkUniqueIds.item":
+            self.module_chunk_unique_external_ids.append(value)
         elif (prefix, event) == ("modules.item", "end_map"):
             # save module
             self.db_session.add(self.module)
             self.db_session.flush()
-            self.module_chunk_external_ids_index[
+            self.module_chunk_unique_external_ids_index[
                 self.module.id
-            ] = self.module_chunk_external_ids
+            ] = self.module_chunk_unique_external_ids
             # reset parser state
             self.module = None
-            self.module_chunk_external_ids = []
+            self.module_chunk_unique_external_ids = []
 
     def _create_associations(self):
         # associate chunks to assets
@@ -166,10 +172,10 @@ class Parser:
         inserts = []
         for (
             module_id,
-            chunk_external_ids,
-        ) in self.module_chunk_external_ids_index.items():
+            chunk_unique_external_ids,
+        ) in self.module_chunk_unique_external_ids_index.items():
             chunks = self.db_session.query(Chunk).filter(
-                Chunk.external_id.in_(chunk_external_ids)
+                Chunk.unique_external_id.in_(chunk_unique_external_ids)
             )
             inserts.extend(
                 [dict(chunk_id=chunk.id, module_id=module_id) for chunk in chunks]
