@@ -406,18 +406,22 @@ def test_pubsub_config(mocker):
 def test_admins(mocker):
     user_input = {
         "setup": {
-            "admins":[{
-                "service": "github",
-                "username": "user123",
-            }],
+            "admins": [
+                {
+                    "service": "github",
+                    "username": "user123",
+                }
+            ],
         },
     }
     expected_result = {
         "setup": {
-            "admins": [{
-                "service": "github",
-                "username": "user123",
-            }],
+            "admins": [
+                {
+                    "service": "github",
+                    "username": "user123",
+                }
+            ],
         },
     }
     mock_warning = mocker.patch.object(install_log, "warning")
