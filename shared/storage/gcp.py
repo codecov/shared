@@ -71,14 +71,19 @@ class GCPStorageService(BaseStorageService):
         Raises:
             NotImplementedError: If the current instance did not implement this method
         """
+        blob = self.get_blob(bucket_name, path)
         if isinstance(data, str):
             data = data.encode()
-        if not is_already_gzipped:
-            data = gzip.compress(data)
-        blob = self.get_blob(bucket_name, path)
-        blob.content_encoding = "gzip"
-        blob.upload_from_string(data)
-        return True
+        if isinstance(data, bytes):
+            if not is_already_gzipped:
+                data = gzip.compress(data)
+            blob.content_encoding = "gzip"
+            blob.upload_from_string(data)
+            return True
+        else:
+            # data is a file-like object
+            blob.upload_from_file(data)
+            return True
 
     def append_to_file(self, bucket_name, path, data):
         """
@@ -104,7 +109,7 @@ class GCPStorageService(BaseStorageService):
             file_contents = data
         return self.write_file(bucket_name, path, file_contents)
 
-    def read_file(self, bucket_name, path):
+    def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 
         Args:
@@ -128,7 +133,10 @@ class GCPStorageService(BaseStorageService):
                 blob.content_type = "text/plain"
                 blob.content_encoding = "gzip"
                 blob.patch()
-            return blob.download_as_string()
+            if file_obj is None:
+                return blob.download_as_string()
+            else:
+                blob.download_to_file(file_obj)
         except google.cloud.exceptions.NotFound:
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
 
