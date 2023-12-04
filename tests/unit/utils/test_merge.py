@@ -76,7 +76,16 @@ def lookup_label(label_id: int) -> str:
 
 def test_merge_datapoints():
     c_1 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=None)
+    c_1_copy = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, label_ids=None
+    )
     c_2 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=[1])
+    c_2_copy = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, label_ids=[1]
+    )
+    c_2_other_session = CoverageDatapoint(
+        sessionid=2, coverage=1, coverage_type=None, label_ids=[1]
+    )
     c_3 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=[2])
     assert [c_1, c_2] == merge_datapoints(
         [c_1],
@@ -89,6 +98,9 @@ def test_merge_datapoints():
     assert [c_1, c_2, c_3] == merge_datapoints([c_2, c_1], [c_3])
     assert [c_1, c_2] == merge_datapoints([c_2, c_1], None)
     assert [c_1, c_2] == merge_datapoints([c_2, c_1], [None])
+    assert [c_1, c_2, c_2_other_session] == merge_datapoints(
+        [c_1, c_2, c_2_other_session], [c_1_copy, c_2_copy, c_2_other_session]
+    )
 
 
 @pytest.mark.unit
