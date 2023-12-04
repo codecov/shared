@@ -22,6 +22,15 @@ pre_process_upload_task_name = (
 upload_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.Upload"
 upload_processor_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadProcessor"
 upload_finisher_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadFinisher"
+upload_test_task_name = f"app.tasks.{TaskConfigGroup.upload_test.value}.UploadTest"
+upload_test_processor_task_name = (
+    f"app.tasks.{TaskConfigGroup.upload_test.value}.UploadTestProcessor"
+)
+upload_test_finisher_task_name = (
+    f"app.tasks.{TaskConfigGroup.upload.value}.UploadTestFinisher"
+)
+
+
 manual_upload_completion_trigger_task_name = (
     f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
 )
