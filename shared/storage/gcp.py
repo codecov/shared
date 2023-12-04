@@ -83,6 +83,7 @@ class GCPStorageService(BaseStorageService):
         else:
             # data is a file-like object
             blob.upload_from_file(data)
+            return True
 
     def append_to_file(self, bucket_name, path, data):
         """
