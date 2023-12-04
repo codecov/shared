@@ -587,6 +587,17 @@ class ReportFile(object):
         )
 
 
+def chunks_from_storage_contains_header(chunks: str) -> bool:
+    try:
+        first_line_end = chunks.index("\n")
+        second_line_end = chunks.index("\n", first_line_end + 1)
+    except ValueError:
+        return False
+    # If the header is present then the END_OF_HEADER marker
+    # is in the 2nd line of the report
+    return chunks[first_line_end : second_line_end + 1] == END_OF_HEADER
+
+
 class Report(object):
     file_class = ReportFile
     _files: Dict[str, ReportFileSummary]
@@ -627,7 +638,7 @@ class Report(object):
         if isinstance(chunks, str):
             # came from archive
             # split the details header, which is JSON
-            if END_OF_HEADER in chunks:
+            if chunks_from_storage_contains_header(chunks):
                 header, chunks = chunks.split(END_OF_HEADER, 1)
                 self._header = self._parse_header(header)
             else:

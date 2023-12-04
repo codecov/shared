@@ -9,6 +9,7 @@ from shared.reports.resources import (
     Report,
     ReportFile,
     _encode_chunk,
+    chunks_from_storage_contains_header,
 )
 from shared.reports.types import (
     CoverageDatapoint,
@@ -169,6 +170,25 @@ def test_report_repr(mocker):
     r = Report()
     r._files = []
     assert repr(Report()) == "<Report files=0>"
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "chunks, expected",
+    [
+        ("", False),
+        ("{}\nline\nline\n\n", False),
+        ("{}\nline\nline\n\n<<<<< end_of_chunk >>>>>\n{}\nline\nline\n", False),
+        (
+            "{}\n<<<<< end_of_header >>>>>\n{}\nline\nline\n\n<<<<< end_of_chunk >>>>>\n{}\nline\nline\n",
+            True,
+        ),
+        ("{}\n<<<<< end_of_header >>>>>\n{}\nline\nline\n\n", True),
+        ("{}\n<<<<< end_of_header >>>>>\n", True),
+    ],
+)
+def test_chunks_from_storage_contains_header(chunks, expected):
+    assert chunks_from_storage_contains_header(chunks) == expected
 
 
 @pytest.mark.unit
