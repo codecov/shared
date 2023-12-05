@@ -1141,7 +1141,7 @@ class Github(TorngitBaseAdapter):
             title=pull["title"],
             id=str(pull["number"]),
             number=str(pull["number"]),
-            labels=[label["name"] for label in pull.get("labels", [])]
+            labels=[label["name"] for label in pull.get("labels", [])],
         )
 
     async def get_pull_request(self, pullid, token=None):

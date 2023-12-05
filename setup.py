@@ -47,7 +47,7 @@ setup(
         "pyjwt",
         "pytz",
         "django>=4.2.3",
-        "sqlalchemy>=2.0",
+        "sqlalchemy==1.*",
         "ijson==3.*",
     ],
 )
