@@ -40,7 +40,7 @@ jobs:
             venv
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/tests/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
+            ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
