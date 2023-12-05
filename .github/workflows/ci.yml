@@ -75,6 +75,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: actions/setup-python@v4
+        id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
       - name: Cache Requirements
@@ -85,9 +86,9 @@ jobs:
         with:
           path: |
             venv
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-
+            ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -171,13 +172,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.11","3.8.13", "3.9.12", "3.10.5" ]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - uses: actions/setup-python@v4
+        id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
       - name: Cache Requirements
@@ -188,9 +190,9 @@ jobs:
         with:
           path: |
             venv
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-
+            ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -242,13 +244,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.11" ]
+        python-version: [ "3.12" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - uses: actions/setup-python@v4
+        id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
       - name: Cache Requirements
@@ -259,9 +262,9 @@ jobs:
         with:
           path: |
             venv
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.python-version }}
+            ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}
       - name: Install Requirements
         run: |
           make requirements.install
