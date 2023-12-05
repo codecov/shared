@@ -270,6 +270,7 @@ class TestGithubTestCase(object):
                 "state": "merged",
                 "title": "Creating new code for reasons no one knows",
                 "author": {"id": "44376991", "username": "ThiagoCodecov"},
+                "labels": [],
             },
         )
     ]
@@ -293,6 +294,7 @@ class TestGithubTestCase(object):
             "state": "open",
             "title": "PR with more than 250 results",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
+            "labels": [],
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1182,6 +1184,7 @@ class TestGithubTestCase(object):
             "state": "closed",
             "title": "Thiago/test 1",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
+            "labels": [],
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1210,6 +1213,7 @@ class TestGithubTestCase(object):
             "state": "merged",
             "title": "CE-1314 GitHub Status Event Handler",
             "author": {"id": "5767537", "username": "pierce-m"},
+            "labels": [],
         }
         res = await handler.get_pull_request(pull_id)
         assert res == expected_result
