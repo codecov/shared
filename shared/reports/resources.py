@@ -1133,7 +1133,7 @@ class Report(object):
         Returns <boolean> if the diff touches tracked lines
 
         master . A . C
-        pull          \ . . B
+        pull          | . . B
 
         :diff = <diff> A...C
         :future_report = <report> B

@@ -181,7 +181,7 @@ class TorngitBaseAdapter(object):
             # ------------------------------
             # make file, this is ONE file not multiple
             for source in _diff:
-                if source == "\ No newline at end of file":
+                if re.match(r"\\ No newline at end of file", source):
                     continue
 
                 sol4 = source[:4]
