@@ -2,9 +2,9 @@ from enum import Enum
 from typing import List
 
 from sqlalchemy import Column, ForeignKey, Table, create_engine, types
-from sqlalchemy.orm import Mapped
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session as DbSession
-from sqlalchemy.orm import backref, declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import backref, relationship, sessionmaker
 
 SCHEMA = """
 create table sessions (
@@ -131,10 +131,8 @@ class Asset(Base):
     normalized_name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
 
-    session = relationship(Session, backref=backref("assets"))
-    chunks: Mapped[List["Chunk"]] = relationship(
-        secondary=assets_chunks, back_populates="assets"
-    )
+    session = relationship("Session", backref=backref("assets"))
+    chunks = relationship("Chunk", secondary=assets_chunks, back_populates="assets")
 
 
 class Chunk(Base):
@@ -150,12 +148,8 @@ class Chunk(Base):
     entry = Column(types.Boolean, nullable=False)
     initial = Column(types.Boolean, nullable=False)
 
-    assets: Mapped[List["Asset"]] = relationship(
-        secondary=assets_chunks, back_populates="chunks"
-    )
-    modules: Mapped[List["Module"]] = relationship(
-        secondary=chunks_modules, back_populates="chunks"
-    )
+    assets = relationship("Asset", secondary=assets_chunks, back_populates="chunks")
+    modules = relationship("Module", secondary=chunks_modules, back_populates="chunks")
 
 
 class Module(Base):
@@ -169,9 +163,7 @@ class Module(Base):
     name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
 
-    chunks: Mapped[List["Chunk"]] = relationship(
-        secondary=chunks_modules, back_populates="modules"
-    )
+    chunks = relationship("Chunk", secondary=chunks_modules, back_populates="modules")
 
 
 class MetadataKey(Enum):
