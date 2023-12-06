@@ -14,6 +14,14 @@ from shared.reports.types import CoverageDatapoint, NetworkFile
 from shared.utils.sessions import SessionType
 
 
+# This immitates what a report.labels_index looks like
+# It's an map idx -> label, so we can go from CoverageDatapoint.label_id to the actual label
+# typically via Report.lookup_label_by_id
+def lookup_label(label_id: int) -> str:
+    lookup_table = {1: "simpletest", 2: "complextest", 3: "simple"}
+    return lookup_table[label_id]
+
+
 class TestFilteredReportFile(object):
     def test_name(self):
         first_file = ReportFile("file_1.go")
@@ -181,13 +189,13 @@ class TestFilteredReportFile(object):
                     LineSession(10, 0, complexity=3),
                 ],
                 datapoints=[
-                    CoverageDatapoint(0, 0, None, ["simpletest"]),
-                    CoverageDatapoint(0, 1, None, ["complextest"]),
-                    CoverageDatapoint(1, "1/2", None, ["simpletest"]),
-                    CoverageDatapoint(1, 1, None, ["complextest"]),
-                    CoverageDatapoint(2, 0, None, ["simple"]),
-                    CoverageDatapoint(2, 0, None, ["complextest"]),
-                    CoverageDatapoint(10, 0, None, ["complextest"]),
+                    CoverageDatapoint(0, 0, None, [1]),
+                    CoverageDatapoint(0, 1, None, [2]),
+                    CoverageDatapoint(1, "1/2", None, [1]),
+                    CoverageDatapoint(1, 1, None, [2]),
+                    CoverageDatapoint(2, 0, None, [3]),
+                    CoverageDatapoint(2, 0, None, [2]),
+                    CoverageDatapoint(10, 0, None, [2]),
                 ],
             )
         )
@@ -199,10 +207,10 @@ class TestFilteredReportFile(object):
         ]
         assert res.messages is None
         assert res.datapoints == [
-            CoverageDatapoint(0, 0, None, ["simpletest"]),
-            CoverageDatapoint(0, 1, None, ["complextest"]),
-            CoverageDatapoint(1, "1/2", None, ["simpletest"]),
-            CoverageDatapoint(1, 1, None, ["complextest"]),
+            CoverageDatapoint(0, 0, None, [1]),
+            CoverageDatapoint(0, 1, None, [2]),
+            CoverageDatapoint(1, "1/2", None, [1]),
+            CoverageDatapoint(1, 1, None, [2]),
         ]
         assert res.complexity == 5
 

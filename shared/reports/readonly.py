@@ -4,7 +4,12 @@ import random
 
 from shared.helpers.flag import Flag
 from shared.metrics import metrics, sentry
-from shared.reports.resources import Report, ReportTotals
+from shared.reports.resources import (
+    END_OF_HEADER,
+    Report,
+    ReportTotals,
+    chunks_from_storage_contains_header,
+)
 from shared.ribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 from shared.utils.match import match
 
@@ -13,6 +18,10 @@ log = logging.getLogger(__name__)
 
 class LazyRustReport(object):
     def __init__(self, filename_mapping, chunks, session_mapping):
+        # Because Rust can't parse the header. It doesn't need it either,
+        # So it's simpler to just never sent it.
+        if chunks_from_storage_contains_header(chunks):
+            _, chunks = chunks.split(END_OF_HEADER, 1)
         self._chunks = chunks
         self._filename_mapping = filename_mapping
         self._session_mapping = session_mapping
@@ -64,9 +73,9 @@ class ReadOnlyReport(object):
         return cls(rust_analyzer, rust_report, inner_report, totals=totals)
 
     @classmethod
-    def create_from_report(cls, report):
+    def create_from_report(cls, report: Report):
         return cls.from_chunks(
-            chunks=report.to_archive(),
+            chunks=report.to_archive(with_header=False),
             sessions=report.sessions,
             files=report._files,
             totals=None,

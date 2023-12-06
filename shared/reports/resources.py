@@ -1,4 +1,5 @@
 import dataclasses
+import json
 import logging
 from copy import copy
 from itertools import filterfalse, zip_longest
@@ -9,12 +10,14 @@ from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
 from shared.helpers.yaml import walk
 from shared.metrics import sentry
+from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.filtered import FilteredReport
 from shared.reports.types import (
     EMPTY,
     TOTALS_MAP,
     LineSession,
     ReportFileSummary,
+    ReportHeader,
     ReportLine,
     ReportTotals,
 )
@@ -41,6 +44,7 @@ def unique_everseen(iterable):
 
 
 END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
+END_OF_HEADER = "\n<<<<< end_of_header >>>>>\n"
 
 
 class ReportFile(object):
@@ -520,13 +524,15 @@ class ReportFile(object):
             pass
 
     @classmethod
-    def line_without_labels(cls, line, session_ids_to_delete, labels):
+    def line_without_labels(
+        cls, line, session_ids_to_delete: List[int], label_ids_to_delete: List[int]
+    ):
         new_datapoints = (
             [
                 dp
                 for dp in line.datapoints
                 if dp.sessionid not in session_ids_to_delete
-                or all(lb not in labels for lb in dp.labels)
+                or all(lb not in label_ids_to_delete for lb in dp.label_ids)
             ]
             if line.datapoints is not None
             else None
@@ -581,9 +587,21 @@ class ReportFile(object):
         )
 
 
+def chunks_from_storage_contains_header(chunks: str) -> bool:
+    try:
+        first_line_end = chunks.index("\n")
+        second_line_end = chunks.index("\n", first_line_end + 1)
+    except ValueError:
+        return False
+    # If the header is present then the END_OF_HEADER marker
+    # is in the 2nd line of the report
+    return chunks[first_line_end : second_line_end + 1] == END_OF_HEADER
+
+
 class Report(object):
     file_class = ReportFile
     _files: Dict[str, ReportFileSummary]
+    _header: ReportHeader
 
     @sentry.trace
     def __init__(
@@ -612,10 +630,19 @@ class Report(object):
             if sessions
             else {}
         )
+        # Default header
+        # Is overriden if building from archive
+        self._header = {}
 
         # ["<json>", ...]
         if isinstance(chunks, str):
             # came from archive
+            # split the details header, which is JSON
+            if chunks_from_storage_contains_header(chunks):
+                header, chunks = chunks.split(END_OF_HEADER, 1)
+                self._header = self._parse_header(header)
+            else:
+                self._header = self._parse_header("")
             chunks = chunks.split(END_OF_CHUNK)
         self._chunks = chunks or []
 
@@ -634,6 +661,40 @@ class Report(object):
         self._filter_cache = (None, None)
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
+
+    def _parse_header(self, header: str) -> ReportHeader:
+        if header == "":
+            return ReportHeader()
+        header = json.loads(header)
+        return ReportHeader(
+            # JSON can only have str as keys. We cast to int.
+            # Because encoded labels in the CoverageDatapoint level are ints.
+            labels_index={int(k): v for k, v in header.get("labels_index", {}).items()}
+        )
+
+    @property
+    def header(self) -> ReportHeader:
+        return self._header
+
+    @header.setter
+    def header(self, value: ReportHeader):
+        self._header = value
+
+    @property
+    def labels_index(self) -> Optional[Dict[int, str]]:
+        return self._header.get("labels_index")
+
+    @labels_index.setter
+    def labels_index(self, value: Dict[int, str]):
+        self.header = {**self.header, "labels_index": value}
+
+    def lookup_label_by_id(self, label_id: int) -> str:
+
+        if self.labels_index is None:
+            raise LabelIndexNotFoundError()
+        if label_id not in self.labels_index:
+            raise LabelNotFoundError()
+        return self.labels_index[label_id]
 
     @classmethod
     def from_chunks(cls, *args, **kwargs):
@@ -1028,9 +1089,18 @@ class Report(object):
     def __bool__(self):
         return self.is_empty() is False
 
-    def to_archive(self):
+    def to_archive(self, with_header=True):
         # TODO: confirm removing encoding here is fine
-        return END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
+        chunks = END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
+        if with_header:
+            # When saving to satabase we want this
+            return END_OF_HEADER.join(
+                [json.dumps(self._header, separators=(",", ":")), chunks]
+            )
+        # This is helpful to build ReadOnlyReport
+        # Because Rust can't parse the header. It doesn't need it either,
+        # So it's simpler to just never sent it.
+        return chunks
 
     def to_database(self):
         """returns (totals, report) to be stored in database"""

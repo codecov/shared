@@ -95,12 +95,13 @@ def test_reportline_as_tuple():
 
 def test_coverage_datapoint_as_tuple():
     cd = CoverageDatapoint(
-        sessionid=3,
-        coverage=1,
-        coverage_type="b",
-        labels=["test_one", "condition_1", "file_1"],
+        sessionid=3, coverage=1, coverage_type="b", label_ids=[1, 2, 3]
     )
-    assert cd.astuple() == (3, 1, "b", ["test_one", "condition_1", "file_1"])
+    assert cd.astuple() == (3, 1, "b", [1, 2, 3])
+    cd = CoverageDatapoint(
+        sessionid=3, coverage=1, coverage_type="b", label_ids=["1", "2", "3"]
+    )
+    assert cd.astuple() == (3, 1, "b", [1, 2, 3])
 
 
 class TestNetworkFile(object):

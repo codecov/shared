@@ -2,6 +2,7 @@ import dataclasses
 from fractions import Fraction
 from json import loads
 from pathlib import Path
+from typing import List
 
 import pytest
 
@@ -19,15 +20,36 @@ from shared.utils.sessions import SessionType
 current_file = Path(__file__)
 
 
-def create_sample_line(*, coverage, sessionid=None, list_of_lists_of_labels=None):
+# This immitates what a report.labels_index looks like
+# It's an map idx -> label, so we can go from CoverageDatapoint.label_id to the actual label
+# typically via Report.lookup_label_by_id
+def lookup_label(label_id: int) -> str:
+    lookup_table = {
+        1: "simple",
+        2: "one_label",
+        3: "another_label",
+        4: "something",
+        5: "label_1",
+        6: "label_2",
+        7: "label_3",
+        8: "label_4",
+        9: "label_5",
+        10: "label_6",
+    }
+    return lookup_table[label_id]
+
+
+def create_sample_line(
+    *, coverage, sessionid=None, list_of_lists_of_label_ids: List[List[int]] = None
+):
     datapoints = [
         CoverageDatapoint(
             sessionid=sessionid,
             coverage=coverage,
             coverage_type=None,
-            labels=labels,
+            label_ids=label_ids,
         )
-        for labels in (list_of_lists_of_labels or [[]])
+        for label_ids in (list_of_lists_of_label_ids or [[]])
     ]
     return ReportLine.create(
         coverage=coverage,
@@ -70,86 +92,76 @@ class TestEditableReportHelpers(object):
             None,
             [LineSession(1, 0), LineSession(0, 1)],
             datapoints=[
-                CoverageDatapoint(1, 0, None, ["label_1", "label_2"]),
-                CoverageDatapoint(1, 0, None, ["label_3", "label_2"]),
-                CoverageDatapoint(0, 1, None, ["label_1", "label_2"]),
-                CoverageDatapoint(0, "1/2", None, ["label_1", "label_4"]),
-                CoverageDatapoint(0, "1/2", None, ["label_5", "label_6"]),
-                CoverageDatapoint(0, 0, None, ["label_6", "label_4"]),
+                CoverageDatapoint(1, 0, None, [5, 6]),
+                CoverageDatapoint(1, 0, None, [7, 6]),
+                CoverageDatapoint(0, 1, None, [5, 6]),
+                CoverageDatapoint(0, "1/2", None, [5, 8]),
+                CoverageDatapoint(0, "1/2", None, [9, 10]),
+                CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1], ["label_1"]
+            line, [1], [5]
         ) == ReportLine.create(
             "2/2",
             None,
             [LineSession(1, 0), LineSession(0, 1)],
             datapoints=[
-                CoverageDatapoint(1, 0, None, ["label_3", "label_2"]),
-                CoverageDatapoint(0, 1, None, ["label_1", "label_2"]),
-                CoverageDatapoint(0, "1/2", None, ["label_1", "label_4"]),
-                CoverageDatapoint(0, "1/2", None, ["label_5", "label_6"]),
-                CoverageDatapoint(0, 0, None, ["label_6", "label_4"]),
+                CoverageDatapoint(1, 0, None, [7, 6]),
+                CoverageDatapoint(0, 1, None, [5, 6]),
+                CoverageDatapoint(0, "1/2", None, [5, 8]),
+                CoverageDatapoint(0, "1/2", None, [9, 10]),
+                CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1, 0], ["label_1"]
+            line, [1, 0], [5]
         ) == ReportLine.create(
             "1/2",
             None,
             [LineSession(1, 0), LineSession(0, 1)],
             datapoints=[
-                CoverageDatapoint(1, 0, None, ["label_3", "label_2"]),
-                CoverageDatapoint(0, "1/2", None, ["label_5", "label_6"]),
-                CoverageDatapoint(0, 0, None, ["label_6", "label_4"]),
+                CoverageDatapoint(1, 0, None, [7, 6]),
+                CoverageDatapoint(0, "1/2", None, [9, 10]),
+                CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1], ["label_1", "label_2"]
+            line, [1], [5, 6]
         ) == ReportLine.create(
             "2/2",
             None,
             [LineSession(0, 1)],
             datapoints=[
-                CoverageDatapoint(0, 1, None, ["label_1", "label_2"]),
-                CoverageDatapoint(0, "1/2", None, ["label_1", "label_4"]),
-                CoverageDatapoint(0, "1/2", None, ["label_5", "label_6"]),
-                CoverageDatapoint(0, 0, None, ["label_6", "label_4"]),
+                CoverageDatapoint(0, 1, None, [5, 6]),
+                CoverageDatapoint(0, "1/2", None, [5, 8]),
+                CoverageDatapoint(0, "1/2", None, [9, 10]),
+                CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [0, 1], ["label_1", "label_2"]
+            line, [0, 1], [5, 6]
         ) == ReportLine.create(
             "1/2",
             None,
             [LineSession(0, 1)],
             datapoints=[
-                CoverageDatapoint(0, "1/2", None, ["label_5", "label_6"]),
-                CoverageDatapoint(0, 0, None, ["label_6", "label_4"]),
+                CoverageDatapoint(0, "1/2", None, [9, 10]),
+                CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
-        assert (
-            EditableReportFile.line_without_labels(
-                line, [0, 1], ["label_1", "label_2", "label_6"]
-            )
-            == ""
-        )
+        assert EditableReportFile.line_without_labels(line, [0, 1], [5, 6, 10]) == ""
         assert EditableReportFile.line_without_labels(
-            line, [0, 1], ["label_1", "label_2", "label_5"]
+            line, [0, 1], [5, 6, 9]
         ) == ReportLine.create(
             0,
             None,
             [LineSession(0, 1)],
             datapoints=[
-                CoverageDatapoint(0, 0, None, ["label_6", "label_4"]),
+                CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
-        assert (
-            EditableReportFile.line_without_labels(
-                line, [0, 1], ["label_1", "label_2", "label_6"]
-            )
-            == ""
-        )
+        assert EditableReportFile.line_without_labels(line, [0, 1], [5, 6, 10]) == ""
 
     def test_delete_labels_session_without_datapoints(self):
         line = ReportLine.create(
@@ -157,18 +169,18 @@ class TestEditableReportHelpers(object):
             None,
             [LineSession(0, 1), LineSession(1, 1), LineSession(2, 0)],
             datapoints=[
-                CoverageDatapoint(1, 1, None, ["label_1", "label_2"]),
-                CoverageDatapoint(1, 0, None, ["label_3", "label_2"]),
-                CoverageDatapoint(2, 0, None, ["label_6"]),
+                CoverageDatapoint(1, 1, None, [5, 6]),
+                CoverageDatapoint(1, 0, None, [7, 6]),
+                CoverageDatapoint(2, 0, None, [10]),
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1], ["label_1", "label_2", "label_6"]
+            line, [1], [5, 6, 10]
         ) == ReportLine.create(
             1,
             None,
             [LineSession(0, 1), LineSession(2, 0)],
-            datapoints=[CoverageDatapoint(2, 0, None, ["label_6"])],
+            datapoints=[CoverageDatapoint(2, 0, None, [10])],
         )
 
 
@@ -257,7 +269,7 @@ class TestEditableReportFile(object):
             create_sample_line(
                 coverage=1,
                 sessionid=2,
-                list_of_lists_of_labels=[["simple"]],
+                list_of_lists_of_label_ids=[[1]],
             ),
         )
         assert list(first_file.lines) == [
@@ -282,13 +294,13 @@ class TestEditableReportFile(object):
                             sessionid=2,
                             coverage=1,
                             coverage_type=None,
-                            labels=["simple"],
+                            label_ids=[1],
                         )
                     ],
                 ),
             )
         ]
-        first_file.delete_labels([2], ["simple"])
+        first_file.delete_labels([2], [1])
         assert list(first_file.lines) == []
 
     def test_merge_not_previously_set_sessions_header(self):
@@ -867,12 +879,12 @@ class TestEditableReport(object):
         )
         first_file = EditableReportFile("first_file.py")
         c = 0
-        for list_of_lists_of_labels in [
-            [["one_label"]],
-            [["another_label"]],
-            [["another_label"], ["one_label"]],
-            [["another_label", "one_label"]],
-            [["something"]],
+        for list_of_lists_of_label_ids in [
+            [[2]],
+            [[3]],
+            [[3], [2]],
+            [[3, 2]],
+            [[4]],
         ]:
             for sessionid in range(4):
                 first_file.append(
@@ -880,7 +892,7 @@ class TestEditableReport(object):
                     create_sample_line(
                         coverage=c,
                         sessionid=sessionid,
-                        list_of_lists_of_labels=list_of_lists_of_labels,
+                        list_of_lists_of_label_ids=list_of_lists_of_label_ids,
                     ),
                 )
                 c += 1
@@ -903,9 +915,9 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 0, None, ["one_label"]),
-                        (2, 14, None, ["another_label", "one_label"]),
-                        (3, 7, None, ["another_label"]),
+                        (0, 0, None, [2]),
+                        (2, 14, None, [3, 2]),
+                        (3, 7, None, [3]),
                     ],
                 ),
                 (
@@ -920,10 +932,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 8, None, ["another_label"]),
-                        (0, 8, None, ["one_label"]),
-                        (1, 1, None, ["one_label"]),
-                        (3, 15, None, ["another_label", "one_label"]),
+                        (0, 8, None, [2]),
+                        (0, 8, None, [3]),
+                        (1, 1, None, [2]),
+                        (3, 15, None, [3, 2]),
                     ],
                 ),
                 (
@@ -938,10 +950,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 16, None, ["something"]),
-                        (1, 9, None, ["another_label"]),
-                        (1, 9, None, ["one_label"]),
-                        (2, 2, None, ["one_label"]),
+                        (0, 16, None, [4]),
+                        (1, 9, None, [2]),
+                        (1, 9, None, [3]),
+                        (2, 2, None, [2]),
                     ],
                 ),
                 (
@@ -956,10 +968,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (1, 17, None, ["something"]),
-                        (2, 10, None, ["another_label"]),
-                        (2, 10, None, ["one_label"]),
-                        (3, 3, None, ["one_label"]),
+                        (1, 17, None, [4]),
+                        (2, 10, None, [2]),
+                        (2, 10, None, [3]),
+                        (3, 3, None, [2]),
                     ],
                 ),
                 (
@@ -974,10 +986,10 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 4, None, ["another_label"]),
-                        (2, 18, None, ["something"]),
-                        (3, 11, None, ["another_label"]),
-                        (3, 11, None, ["one_label"]),
+                        (0, 4, None, [3]),
+                        (2, 18, None, [4]),
+                        (3, 11, None, [2]),
+                        (3, 11, None, [3]),
                     ],
                 ),
                 (
@@ -992,9 +1004,9 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (0, 12, None, ["another_label", "one_label"]),
-                        (1, 5, None, ["another_label"]),
-                        (3, 19, None, ["something"]),
+                        (0, 12, None, [3, 2]),
+                        (1, 5, None, [3]),
+                        (3, 19, None, [4]),
                     ],
                 ),
                 (
@@ -1005,8 +1017,8 @@ class TestEditableReport(object):
                     None,
                     None,
                     [
-                        (1, 13, None, ["another_label", "one_label"]),
-                        (2, 6, None, ["another_label"]),
+                        (1, 13, None, [3, 2]),
+                        (2, 6, None, [3]),
                     ],
                 ),
                 (23, 1, None, [[1, 1, None, None, None]], None, None),
@@ -1025,7 +1037,7 @@ class TestEditableReport(object):
             create_sample_line(
                 coverage=1,
                 sessionid=2,
-                list_of_lists_of_labels=[["simple"]],
+                list_of_lists_of_label_ids=[[1]],
             ),
         )
         report.append(first_file)
@@ -1040,12 +1052,12 @@ class TestEditableReport(object):
                     [[2, 1, None, None, None]],
                     None,
                     None,
-                    [(2, 1, None, ["simple"])],
+                    [(2, 1, None, [1])],
                 )
             ],
             "someother.py": [(1, 1, None, [[2, 1, None, None, None]], None, None)],
         }
-        report.delete_labels([2], ["simple"])
+        report.delete_labels([2], [1])
         assert self.convert_report_to_better_readable(report)["archive"] == {
             "someother.py": [(1, 1, None, [[2, 1, None, None, None]], None, None)]
         }
@@ -1897,13 +1909,13 @@ class TestEditableReport(object):
         assert res["totals"] == old_readable["totals"]
 
     def test_delete_labels(self, sample_with_labels_report):
-        sample_with_labels_report.delete_labels([0], ["another_label"])
+        sample_with_labels_report.delete_labels([0], [3])
         for file in sample_with_labels_report:
             for ln, line in file.lines:
                 # some lines previously didnt have datapoints
                 if line.datapoints:
                     for dp in line.datapoints:
-                        assert dp.sessionid != 0 or "another_label" not in dp.labels
+                        assert dp.sessionid != 0 or 3 not in dp.label_ids
         print(sample_with_labels_report)
         print(sample_with_labels_report._files)
         res = self.convert_report_to_better_readable(sample_with_labels_report)
@@ -2012,9 +2024,9 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (0, 0, None, ["one_label"]),
-                            (2, 14, None, ["another_label", "one_label"]),
-                            (3, 7, None, ["another_label"]),
+                            (0, 0, None, [2]),
+                            (2, 14, None, [3, 2]),
+                            (3, 7, None, [3]),
                         ],
                     ),
                     (
@@ -2029,9 +2041,9 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (0, 8, None, ["one_label"]),
-                            (1, 1, None, ["one_label"]),
-                            (3, 15, None, ["another_label", "one_label"]),
+                            (0, 8, None, [2]),
+                            (1, 1, None, [2]),
+                            (3, 15, None, [3, 2]),
                         ],
                     ),
                     (
@@ -2046,10 +2058,10 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (0, 16, None, ["something"]),
-                            (1, 9, None, ["another_label"]),
-                            (1, 9, None, ["one_label"]),
-                            (2, 2, None, ["one_label"]),
+                            (0, 16, None, [4]),
+                            (1, 9, None, [2]),
+                            (1, 9, None, [3]),
+                            (2, 2, None, [2]),
                         ],
                     ),
                     (
@@ -2064,10 +2076,10 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (1, 17, None, ["something"]),
-                            (2, 10, None, ["another_label"]),
-                            (2, 10, None, ["one_label"]),
-                            (3, 3, None, ["one_label"]),
+                            (1, 17, None, [4]),
+                            (2, 10, None, [2]),
+                            (2, 10, None, [3]),
+                            (3, 3, None, [2]),
                         ],
                     ),
                     (
@@ -2078,9 +2090,9 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (2, 18, None, ["something"]),
-                            (3, 11, None, ["another_label"]),
-                            (3, 11, None, ["one_label"]),
+                            (2, 18, None, [4]),
+                            (3, 11, None, [2]),
+                            (3, 11, None, [3]),
                         ],
                     ),
                     (
@@ -2090,7 +2102,7 @@ class TestEditableReport(object):
                         [[1, 5, None, None, None], [3, 19, None, None, None]],
                         None,
                         None,
-                        [(1, 5, None, ["another_label"]), (3, 19, None, ["something"])],
+                        [(1, 5, None, [3]), (3, 19, None, [4])],
                     ),
                     (
                         7,
@@ -2100,8 +2112,8 @@ class TestEditableReport(object):
                         None,
                         None,
                         [
-                            (1, 13, None, ["another_label", "one_label"]),
-                            (2, 6, None, ["another_label"]),
+                            (1, 13, None, [3, 2]),
+                            (2, 6, None, [3]),
                         ],
                     ),
                     (23, 1, None, [[1, 1, None, None, None]], None, None),
