@@ -19,11 +19,3 @@ class UploadType(CodecovDatabaseEnum):
     def __init__(self, db_id, db_name):
         self.db_id = db_id
         self.db_name = db_name
-
-
-class UploadFileType(CodecovDatabaseEnum):
-    COVERAGE = (1,)
-    TESTING = (2,)
-
-    def __init__(self, db_id):
-        self.db_id = db_id
