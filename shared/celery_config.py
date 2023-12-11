@@ -23,7 +23,7 @@ upload_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.Upload"
 upload_processor_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadProcessor"
 upload_finisher_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadFinisher"
 upload_test_processor_task_name = (
-    f"app.tasks.{TaskConfigGroup.upload_test.value}.UploadTestProcessor"
+    f"app.tasks.{TaskConfigGroup.upload_test.value}.UploadTestResultProcessor"
 )
 
 
