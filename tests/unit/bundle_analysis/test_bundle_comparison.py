@@ -29,8 +29,8 @@ def test_bundle_analysis_comparison():
 
     comparison = BundleAnalysisComparison(
         loader=loader,
-        base_sha="base-report",
-        head_sha="head-report",
+        base_report_key="base-report",
+        head_report_key="head-report",
     )
 
     # raises errors when either report doesn't exist in storage

@@ -40,21 +40,23 @@ class BundleAnalysisComparison:
     Compares bundle reports on two different commits.
     """
 
-    def __init__(self, loader: BundleReportLoader, base_sha: str, head_sha: str):
+    def __init__(
+        self, loader: BundleReportLoader, base_report_key: str, head_report_key: str
+    ):
         self.loader = loader
-        self.base_sha = base_sha
-        self.head_sha = head_sha
+        self.base_report_key = base_report_key
+        self.head_report_key = head_report_key
 
     @cached_property
     def base_report(self) -> BundleReport:
-        base_report = self.loader.load(self.base_sha)
+        base_report = self.loader.load(self.base_report_key)
         if base_report is None:
             raise MissingBaseReportError()
         return base_report
 
     @cached_property
     def head_report(self) -> BundleReport:
-        head_report = self.loader.load(self.head_sha)
+        head_report = self.loader.load(self.head_report_key)
         if head_report is None:
             raise MissingHeadReportError()
         return head_report

@@ -11,7 +11,7 @@ BUCKET_NAME = get_config("bundle_analysis", "bucket_name", default="bundle-analy
 
 
 class StoragePaths(Enum):
-    bundle_report = "v1/repos/{repo_key}/commits/{commit_sha}/bundle_report.sqlite"
+    bundle_report = "v1/repos/{repo_key}/{report_key}/bundle_report.sqlite"
 
     def path(self, **kwargs):
         return self.value.format(**kwargs)
@@ -28,13 +28,13 @@ class BundleReportLoader:
         self.storage_service = storage_service
         self.repo_key = repo_key
 
-    def load(self, commit_sha: str) -> Optional[BundleReport]:
+    def load(self, report_key: str) -> Optional[BundleReport]:
         """
-        Loads the `BundleReport` for the given commit SHA from storage
+        Loads the `BundleReport` for the given report key from storage
         or returns `None` if no such report exists.
         """
         path = StoragePaths.bundle_report.path(
-            repo_key=self.repo_key, commit_sha=commit_sha
+            repo_key=self.repo_key, report_key=report_key
         )
         file = NamedTemporaryFile(mode="w+b", delete=False)
 
@@ -45,12 +45,12 @@ class BundleReportLoader:
         except FileNotInStorageError:
             return None
 
-    def save(self, bundle_report: BundleReport, commit_sha: str):
+    def save(self, bundle_report: BundleReport, report_key: str):
         """
-        Saves a `BundleReport` for the given commit SHA into storage.
+        Saves a `BundleReport` for the given report key into storage.
         """
         storage_path = StoragePaths.bundle_report.path(
-            repo_key=self.repo_key, commit_sha=commit_sha
+            repo_key=self.repo_key, report_key=report_key
         )
         with open(bundle_report.db_path, "rb") as f:
             self.storage_service.write_file(BUCKET_NAME, storage_path, f)
