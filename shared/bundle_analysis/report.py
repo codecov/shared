@@ -80,12 +80,14 @@ class BundleReport:
         self.db_session.close()
         os.unlink(self.db_path)
 
-    def ingest(self, path: str):
+    def ingest(self, path: str) -> int:
         """
         Ingest the bundle stats JSON at the given file path.
+        Returns session ID of ingested data.
         """
-        parse(self.db_session, path)
+        session_id = parse(self.db_session, path)
         self.db_session.commit()
+        return session_id
 
     def metadata(self) -> Dict[models.MetadataKey, Any]:
         metadata = self.db_session.query(models.Metadata).all()

@@ -12,7 +12,8 @@ sample_bundle_stats_path = (
 
 def test_create_bundle_report():
     bundle_report = BundleReport()
-    bundle_report.ingest(sample_bundle_stats_path)
+    session_id = bundle_report.ingest(sample_bundle_stats_path)
+    assert session_id == 1
 
     assert bundle_report.metadata() == {
         MetadataKey.SCHEMA_VERSION: 1,
