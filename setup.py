@@ -30,7 +30,7 @@ setup(
         "minio~=7.0",
         "oauth2",
         "protobuf>=4.21.6",
-        "tlslite-ng",
+        "tlslite-ng>=0.8.0b1",
         "statsd>=3.3.0",
         "prometheus-client",
         "analytics-python==1.3.0b1",
