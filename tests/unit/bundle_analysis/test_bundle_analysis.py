@@ -32,6 +32,7 @@ def test_create_bundle_report():
     ]
 
     assert bundle_report.total_size() == 150572
+    assert bundle_report.session_count() == 1
     bundle_report.cleanup()
 
 

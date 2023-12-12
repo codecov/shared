@@ -4,7 +4,7 @@ import tempfile
 from typing import Any, Dict, Iterator, Optional
 
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SQLAlchemySession
 from sqlalchemy.sql import func
 
 from shared.bundle_analysis import models
@@ -14,7 +14,7 @@ from shared.bundle_analysis.parser import parse
 class Bundle:
     def __init__(self, asset: models.Asset):
         self.asset = asset
-        self.db_session = Session.object_session(self.asset)
+        self.db_session = SQLAlchemySession.object_session(self.asset)
 
     @property
     def name(self):
@@ -99,3 +99,6 @@ class BundleReport:
         return self.db_session.query(
             func.sum(models.Asset.size).label("asset_size")
         ).scalar()
+
+    def session_count(self) -> int:
+        return self.db_session.query(models.Session).count()
