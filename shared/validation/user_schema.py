@@ -1,4 +1,9 @@
-flag_name = {"type": "string", "minlength": 1, "maxlength": 45, "regex": r"^[\w\.\-]+$"}
+flag_name = {
+    "type": "string",
+    "minlength": 1,
+    "maxlength": 1024,
+    "regex": r"^[^\'\"]+$",
+}
 
 branches_structure = {
     "type": "list",
