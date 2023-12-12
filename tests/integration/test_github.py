@@ -260,10 +260,12 @@ class TestGithubTestCase(object):
                 "base": {
                     "branch": "master",
                     "commitid": "68946ef98daec68c7798459150982fc799c87d85",
+                    "slug": "ThiagoCodecov/example-python",
                 },
                 "head": {
                     "branch": "reason/some-testing",
                     "commitid": "119c1907fb266f374b8440bbd70dccbea54daf8f",
+                    "slug": "ThiagoCodecov/example-python",
                 },
                 "number": "1",
                 "id": "1",
@@ -284,10 +286,12 @@ class TestGithubTestCase(object):
             "base": {
                 "branch": "master",
                 "commitid": "335ec9958daf0242bc8945659bb120c05800eacf",
+                "slug": "ThiagoCodecov/example-python",
             },
             "head": {
                 "branch": "thiago/f/big-pt",
                 "commitid": "d55dc4ef748fd11537e50c9abed4ab1864fa1d94",
+                "slug": "ThiagoCodecov/example-python",
             },
             "number": pull_id,
             "id": pull_id,
@@ -1174,10 +1178,12 @@ class TestGithubTestCase(object):
             "base": {
                 "branch": "master",
                 "commitid": "30cc1ed751a59fa9e7ad8e79fff41a6fe11ef5dd",
+                "slug": "ThiagoCodecov/example-python",
             },
             "head": {
                 "branch": "thiago/test-1",
                 "commitid": "2e2600aa09525e2e1e1d98b09de61454d29c94bb",
+                "slug": "ThiagoCodecov/example-python",
             },
             "number": "15",
             "id": "15",
@@ -1187,6 +1193,35 @@ class TestGithubTestCase(object):
             "labels": [],
         }
         res = await valid_handler.get_pull_request(pull_id)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_pull_request_from_fork(self, valid_handler, codecov_vcr):
+        handler = Github(
+            repo=dict(name="codecov-api"),
+            owner=dict(username="codecov"),
+            token=valid_handler.token,
+        )
+        pull_id = "285"
+        expected_result = {
+            "base": {
+                "branch": "main",
+                "commitid": "109eea9a085f5856a20ae5f1714b8c4786c3327b",
+                "slug": "codecov/codecov-api",
+            },
+            "head": {
+                "branch": "python-3-12",
+                "commitid": "67a44e176ffd419f066c1cc34cff391e2a1304e2",
+                "slug": "FraBle/codecov-api",
+            },
+            "number": "285",
+            "id": "285",
+            "state": "open",
+            "title": "chore: Switch to Python 3.12",
+            "author": {"id": "1584268", "username": "FraBle"},
+            "labels": [],
+        }
+        res = await handler.get_pull_request(pull_id)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -1203,10 +1238,12 @@ class TestGithubTestCase(object):
             "base": {
                 "branch": "master",
                 "commitid": "77141afbd13a1273f87cf02f7f32265ea19a3b77",
+                "slug": "codecov/codecov-api-archive",
             },
             "head": {
                 "branch": "ce-1314/gh-status-handler",
                 "commitid": "a178a13c65f44d5b81c807f3c0fa2cb4922f020f",
+                "slug": "codecov/codecov-api-archive",
             },
             "number": "110",
             "id": "110",
