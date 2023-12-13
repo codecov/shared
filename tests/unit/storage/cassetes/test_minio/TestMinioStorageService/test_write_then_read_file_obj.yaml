@@ -1,0 +1,140 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Host:
+      - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.17
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20231127T174559Z
+    method: GET
+    uri: http://minio:9000/archivetest
+  response:
+    body:
+      string: '<?xml version="1.0" encoding="UTF-8"?>
+
+        <LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></LocationConstraint>'
+    headers:
+      Accept-Ranges:
+      - bytes
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 27 Nov 2023 17:45:59 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 179B8BF2CA2E0FA8
+      X-Minio-Deployment-Id:
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      H4sICNfVZGUC/3RtcGx0ZGZfczRuAMvJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsv
+      Sk1MiU/LzElVOLwQABQu+7guAAAA
+    headers:
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '78'
+      Content-Type:
+      - text/plain
+      Host:
+      - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.17
+      x-amz-content-sha256:
+      - c86fad2423c5df8e776df1dec71483bd284d536c313ecc7d1982cc0fa824fc7d
+      x-amz-date:
+      - 20231127T174559Z
+    method: PUT
+    uri: http://minio:9000/archivetest/test_write_then_read_file/result
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '0'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Date:
+      - Mon, 27 Nov 2023 17:45:59 GMT
+      ETag:
+      - '"3ce641b98515e97b7c35610829b224b0"'
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 179B8BF2CA849418
+      X-Minio-Deployment-Id:
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Host:
+      - minio:9000
+      User-Agent:
+      - MinIO (Darwin; arm64) minio-py/7.1.17
+      x-amz-content-sha256:
+      - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      x-amz-date:
+      - 20231127T174559Z
+    method: GET
+    uri: http://minio:9000/archivetest/test_write_then_read_file/result
+  response:
+    body:
+      string: !!binary |
+        H4sICNfVZGUC/3RtcGx0ZGZfczRuAMvJL0rNVcgsKC7NVUjJz8kvUihJLS6JLy/KLEmNL8lIzYsv
+        Sk1MiU/LzElVOLwQABQu+7guAAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '78'
+      Content-Security-Policy:
+      - block-all-mixed-content
+      Content-Type:
+      - text/plain
+      Date:
+      - Mon, 27 Nov 2023 17:45:59 GMT
+      ETag:
+      - '"3ce641b98515e97b7c35610829b224b0"'
+      Last-Modified:
+      - Mon, 27 Nov 2023 17:45:59 GMT
+      Server:
+      - Minio/RELEASE.2019-04-09T01-22-30Z
+      Vary:
+      - Origin
+      X-Amz-Request-Id:
+      - 179B8BF2CAEC3B40
+      X-Minio-Deployment-Id:
+      - 3db02b4e-899f-4daa-a9d3-fea142b68ee9
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,7 +1,7 @@
 import logging
 from dataclasses import asdict, dataclass
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
 from shared.config import get_config
 
@@ -96,26 +96,33 @@ class LineSession(object):
 
 @dataclass
 class CoverageDatapoint(object):
-    __slots__ = ("sessionid", "coverage", "coverage_type", "labels")
+    __slots__ = ("sessionid", "coverage", "coverage_type", "label_ids")
     sessionid: int
     coverage: Decimal
     coverage_type: Optional[str]
-    labels: List[str]
+    label_ids: List[int]
 
     def astuple(self):
         return (
             self.sessionid,
             self.coverage,
             self.coverage_type,
-            self.labels,
+            self.label_ids,
         )
+
+    def __post_init__(self):
+        if self.label_ids is not None:
+            possibly_cast_to_int = (
+                lambda el: int(el) if (type(el) == str and el.isnumeric()) else el
+            )
+            self.label_ids = [possibly_cast_to_int(el) for el in self.label_ids]
 
     def key_sorting_tuple(self):
         return (
             self.sessionid,
             str(self.coverage),
             self.coverage_type if self.coverage_type is not None else "",
-            self.labels if self.labels is not None else [],
+            self.label_ids if self.label_ids is not None else [],
         )
 
 
@@ -324,6 +331,10 @@ class NetworkFile(object):
             self.session_totals.to_database(),
             self.diff_totals.astuple() if self.diff_totals else None,
         )
+
+
+class ReportHeader(TypedDict):
+    labels_index: Dict[int, str]
 
 
 @dataclass

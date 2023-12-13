@@ -5,7 +5,7 @@ from io import BytesIO
 import boto3
 from botocore.exceptions import ClientError
 
-from shared.storage.base import BaseStorageService
+from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
@@ -111,7 +111,7 @@ class AWSStorageService(BaseStorageService):
 
         return self.write_file(bucket_name=bucket_name, path=path, data=file_contents)
 
-    def read_file(self, bucket_name, path):
+    def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 
         Args:
@@ -136,10 +136,17 @@ class AWSStorageService(BaseStorageService):
                 raise
         content = obj["Body"].read()
         try:
-            decompressed_content = gzip.decompress(content)
-            return decompressed_content
+            content = gzip.decompress(content)
         except OSError:
+            pass
+        if file_obj is None:
             return content
+        else:
+            chunks = [
+                content[i : i + CHUNK_SIZE] for i in range(0, len(content), CHUNK_SIZE)
+            ]
+            for chunk in chunks:
+                file_obj.write(chunk)
 
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage

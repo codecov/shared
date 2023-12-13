@@ -66,14 +66,27 @@ def test_merge_branch(b1, b2, res):
     )
 
 
+# This immitates what a report.labels_index looks like
+# It's an map idx -> label, so we can go from CoverageDatapoint.label_id to the actual label
+# typically via Report.lookup_label_by_id
+def lookup_label(label_id: int) -> str:
+    lookup_table = {1: "banana", 2: "apple", 3: "simpletest"}
+    return lookup_table[label_id]
+
+
 def test_merge_datapoints():
-    c_1 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, labels=None)
-    c_2 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=["banana"]
+    c_1 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=None)
+    c_1_copy = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, label_ids=None
     )
-    c_3 = CoverageDatapoint(
-        sessionid=1, coverage=1, coverage_type=None, labels=["apple"]
+    c_2 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=[1])
+    c_2_copy = CoverageDatapoint(
+        sessionid=1, coverage=1, coverage_type=None, label_ids=[1]
     )
+    c_2_other_session = CoverageDatapoint(
+        sessionid=2, coverage=1, coverage_type=None, label_ids=[1]
+    )
+    c_3 = CoverageDatapoint(sessionid=1, coverage=1, coverage_type=None, label_ids=[2])
     assert [c_1, c_2] == merge_datapoints(
         [c_1],
         [c_2],
@@ -82,9 +95,12 @@ def test_merge_datapoints():
         [c_2],
         [c_1],
     )
-    assert [c_1, c_3, c_2] == merge_datapoints([c_2, c_1], [c_3])
+    assert [c_1, c_2, c_3] == merge_datapoints([c_2, c_1], [c_3])
     assert [c_1, c_2] == merge_datapoints([c_2, c_1], None)
     assert [c_1, c_2] == merge_datapoints([c_2, c_1], [None])
+    assert [c_1, c_2, c_2_other_session] == merge_datapoints(
+        [c_1, c_2, c_2_other_session], [c_1_copy, c_2_copy, c_2_other_session]
+    )
 
 
 @pytest.mark.unit
@@ -230,8 +246,8 @@ def test_merge_missed_branches(sessions, res):
         # types
         ((1, None, [[1, 1]]), (1, "b", [[1, 1]]), (1, "b", [LineSession(1, 1)])),
         (
-            (1, None, [[1, 1]], None, None, [(1, 1, None, ["banana"])]),
-            (1, "b", [[1, 1]], None, None, [(1, 1, "b", ["simpletest"])]),
+            (1, None, [[1, 1]], None, None, [(1, 1, None, [1])]),
+            (1, "b", [[1, 1]], None, None, [(1, 1, "b", [3])]),
             (
                 1,
                 "b",
@@ -240,13 +256,16 @@ def test_merge_missed_branches(sessions, res):
                 None,  # complexity
                 [
                     CoverageDatapoint(
-                        sessionid=1, coverage=1, coverage_type=None, labels=["banana"]
+                        sessionid=1,
+                        coverage=1,
+                        coverage_type=None,
+                        label_ids=[1],
                     ),
                     CoverageDatapoint(
                         sessionid=1,
                         coverage=1,
                         coverage_type="b",
-                        labels=["simpletest"],
+                        label_ids=[3],
                     ),
                 ],
             ),

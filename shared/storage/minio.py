@@ -2,7 +2,9 @@ import gzip
 import json
 import logging
 import os
+import shutil
 import sys
+import tempfile
 from io import BytesIO
 
 from minio import Minio
@@ -15,7 +17,7 @@ from minio.credentials import (
 from minio.deleteobjects import DeleteObject
 from minio.error import MinioException, S3Error
 
-from shared.storage.base import BaseStorageService
+from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
@@ -139,20 +141,33 @@ class MinioStorageService(BaseStorageService):
         *,
         is_already_gzipped: bool = False,
     ):
-        if not is_already_gzipped:
-            out = BytesIO()
-            with gzip.GzipFile(fileobj=out, mode="w", compresslevel=9) as gz:
-                if isinstance(data, str):
-                    data = data.encode()
-                gz.write(data)
-        else:
-            out = BytesIO(data)
+        if isinstance(data, str):
+            data = data.encode()
 
-        try:
+        if isinstance(data, bytes):
+            if not is_already_gzipped:
+                out = BytesIO()
+                with gzip.GzipFile(fileobj=out, mode="w", compresslevel=9) as gz:
+                    gz.write(data)
+            else:
+                out = BytesIO(data)
+
             # get file size
             out.seek(0, os.SEEK_END)
             out_size = out.tell()
+        else:
+            # data is already a file-like object
+            if not is_already_gzipped:
+                _, filename = tempfile.mkstemp()
+                with gzip.open(filename, "wb") as f:
+                    shutil.copyfileobj(data, f)
+                out = open(filename, "rb")
+            else:
+                out = data
 
+            out_size = os.stat(filename).st_size
+
+        try:
             # reset pos for minio reading.
             out.seek(0)
 
@@ -188,15 +203,18 @@ class MinioStorageService(BaseStorageService):
             raise
         return self.write_file(bucket_name, path, file_contents)
 
-    def read_file(self, bucket_name, path):
+    def read_file(self, bucket_name, path, file_obj=None):
         try:
             res = self.minio_client.get_object(bucket_name, path)
-            data = BytesIO()
-            for d in res.stream(32 * 1024):
-                data.write(d)
-
-            data.seek(0)
-            return data.getvalue()
+            if file_obj is None:
+                data = BytesIO()
+                for d in res.stream(CHUNK_SIZE):
+                    data.write(d)
+                data.seek(0)
+                return data.getvalue()
+            else:
+                for d in res.stream(CHUNK_SIZE):
+                    file_obj.write(d)
         except S3Error as e:
             if e.code == "NoSuchKey":
                 raise FileNotInStorageError(

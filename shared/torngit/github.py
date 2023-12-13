@@ -1135,12 +1135,21 @@ class Github(TorngitBaseAdapter):
                 id=str(pull["user"]["id"]) if pull["user"] else None,
                 username=pull["user"]["login"] if pull["user"] else None,
             ),
-            base=dict(branch=pull["base"]["ref"], commitid=pull["base"]["sha"]),
-            head=dict(branch=pull["head"]["ref"], commitid=pull["head"]["sha"]),
+            base=dict(
+                branch=pull["base"]["ref"],
+                commitid=pull["base"]["sha"],
+                slug=pull["base"]["repo"]["full_name"],
+            ),
+            head=dict(
+                branch=pull["head"]["ref"],
+                commitid=pull["head"]["sha"],
+                slug=pull["head"]["repo"]["full_name"],
+            ),
             state="merged" if pull["merged"] else pull["state"],
             title=pull["title"],
             id=str(pull["number"]),
             number=str(pull["number"]),
+            labels=[label["name"] for label in pull.get("labels", [])],
         )
 
     async def get_pull_request(self, pullid, token=None):

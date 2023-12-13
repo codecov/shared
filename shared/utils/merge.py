@@ -201,9 +201,17 @@ def merge_datapoints(
 ):
     if d1 is None and d2 is None:
         return None
+    # Remove duplicates
+    # str(dp) -> dp
+    index_of_dps = dict()
+    both_lists = filter(None, (d1 or []) + (d2 or []))
+    for dp in both_lists:
+        key = str(dp)
+        index_of_dps[key] = dp
+    dps_no_duplicates = index_of_dps.values()
     # the sorting doesn't really matter how as long as it is a consistent thing
     return sorted(
-        filter(None, (d1 or []) + (d2 or [])),
+        dps_no_duplicates,
         key=lambda x: x.key_sorting_tuple(),
     )
 

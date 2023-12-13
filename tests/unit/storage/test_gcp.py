@@ -1,5 +1,6 @@
 import gzip
 import io
+import tempfile
 
 import pytest
 from google.cloud import storage as google_storage
@@ -62,6 +63,24 @@ class TestGCPStorateService(BaseTestCase):
         assert writing_result
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == data
+
+    def test_write_then_read_file_obj(self, codecov_vcr):
+        storage = GCPStorageService(gcp_config)
+        path = "test_write_then_read_file_obj/result"
+        data = "lorem ipsum dolor test_write_then_read_file á"
+        _, local_path = tempfile.mkstemp()
+        with open(local_path, "w") as f:
+            f.write(data)
+        f = open(local_path, "rb")
+        bucket_name = "testing"
+        writing_result = storage.write_file(bucket_name, path, f)
+        assert writing_result
+
+        _, local_path = tempfile.mkstemp()
+        with open(local_path, "wb") as f:
+            storage.read_file(bucket_name, path, file_obj=f)
+        with open(local_path, "rb") as f:
+            assert f.read().decode() == data
 
     def test_manually_then_read_then_write_then_read_file(self, codecov_vcr):
         bucket_name = "testingarchive02"
