@@ -4,7 +4,7 @@ import tempfile
 from typing import Any, Dict, Iterator, Optional
 
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SQLAlchemySession
 from sqlalchemy.sql import func
 
 from shared.bundle_analysis import models
@@ -14,7 +14,7 @@ from shared.bundle_analysis.parser import parse
 class Bundle:
     def __init__(self, asset: models.Asset):
         self.asset = asset
-        self.db_session = Session.object_session(self.asset)
+        self.db_session = SQLAlchemySession.object_session(self.asset)
 
     @property
     def name(self):
@@ -80,12 +80,14 @@ class BundleReport:
         self.db_session.close()
         os.unlink(self.db_path)
 
-    def ingest(self, path: str):
+    def ingest(self, path: str) -> int:
         """
         Ingest the bundle stats JSON at the given file path.
+        Returns session ID of ingested data.
         """
-        parse(self.db_session, path)
+        session_id = parse(self.db_session, path)
         self.db_session.commit()
+        return session_id
 
     def metadata(self) -> Dict[models.MetadataKey, Any]:
         metadata = self.db_session.query(models.Metadata).all()
@@ -99,3 +101,6 @@ class BundleReport:
         return self.db_session.query(
             func.sum(models.Asset.size).label("asset_size")
         ).scalar()
+
+    def session_count(self) -> int:
+        return self.db_session.query(models.Session).count()

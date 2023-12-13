@@ -51,7 +51,7 @@ class Parser:
         self.module = None
         self.module_chunk_unique_external_ids = []
 
-    def parse(self, path: str):
+    def parse(self, path: str) -> int:
         self.reset()
 
         self.session = Session(info={})
@@ -65,6 +65,8 @@ class Parser:
             # of top-level keys inside the JSON (i.e. we couldn't associate a chunk
             # to an asset above if we parse the chunk before the asset)
             self._create_associations()
+
+        return self.session.id
 
     def _parse_event(self, event: Tuple[str, str, str]):
         prefix, _, value = event
@@ -185,4 +187,4 @@ class Parser:
 
 def parse(db_session: DbSession, path: str):
     parser = Parser(db_session)
-    parser.parse(path)
+    return parser.parse(path)

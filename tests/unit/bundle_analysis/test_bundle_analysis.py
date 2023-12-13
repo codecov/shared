@@ -12,7 +12,8 @@ sample_bundle_stats_path = (
 
 def test_create_bundle_report():
     bundle_report = BundleReport()
-    bundle_report.ingest(sample_bundle_stats_path)
+    session_id = bundle_report.ingest(sample_bundle_stats_path)
+    assert session_id == 1
 
     assert bundle_report.metadata() == {
         MetadataKey.SCHEMA_VERSION: 1,
@@ -32,6 +33,7 @@ def test_create_bundle_report():
     ]
 
     assert bundle_report.total_size() == 150572
+    assert bundle_report.session_count() == 1
     bundle_report.cleanup()
 
 
@@ -43,11 +45,11 @@ def test_save_load_bundle_report():
         storage_service=MemoryStorageService({}),
         repo_key="testing",
     )
-    test_sha = "eeaedb769885e9547f517fa2c2eea41849663454"
-    loader.save(bundle_report, test_sha)
+    test_key = "eeaedb769885e9547f517fa2c2eea41849663454"
+    loader.save(bundle_report, test_key)
 
     db_path = bundle_report.db_path
-    bundle_report = loader.load(test_sha)
+    bundle_report = loader.load(test_key)
 
     initial_data = open(db_path, "rb").read()
     loaded_data = open(bundle_report.db_path, "rb").read()
