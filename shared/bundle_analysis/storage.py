@@ -1,8 +1,8 @@
+import tempfile
 from enum import Enum
-from tempfile import NamedTemporaryFile
 from typing import Optional
 
-from shared.bundle_analysis.report import BundleReport
+from shared.bundle_analysis.report import BundleAnalysisReport
 from shared.config import get_config
 from shared.storage.base import BaseStorageService
 from shared.storage.exceptions import FileNotInStorageError
@@ -17,9 +17,9 @@ class StoragePaths(Enum):
         return self.value.format(**kwargs)
 
 
-class BundleReportLoader:
+class BundleAnalysisReportLoader:
     """
-    Loads and saves `BundleReport`s into the underlying storage service.
+    Loads and saves `BundleAnalysisReport`s into the underlying storage service.
     Requires a `repo_key` that uniquely and permanently (i.e. maybe not the name/slug)
     that identifies a repo in the storage layer.
     """
@@ -28,29 +28,29 @@ class BundleReportLoader:
         self.storage_service = storage_service
         self.repo_key = repo_key
 
-    def load(self, report_key: str) -> Optional[BundleReport]:
+    def load(self, report_key: str) -> Optional[BundleAnalysisReport]:
         """
-        Loads the `BundleReport` for the given report key from storage
+        Loads the `BundleAnalysisReport` for the given report key from storage
         or returns `None` if no such report exists.
         """
         path = StoragePaths.bundle_report.path(
             repo_key=self.repo_key, report_key=report_key
         )
-        file = NamedTemporaryFile(mode="w+b", delete=False)
+        _, db_path = tempfile.mkstemp()
 
-        try:
-            self.storage_service.read_file(BUCKET_NAME, path, file_obj=file)
-            bundle_report = BundleReport(file.name)
-            return bundle_report
-        except FileNotInStorageError:
-            return None
+        with open(db_path, "w+b") as f:
+            try:
+                self.storage_service.read_file(BUCKET_NAME, path, file_obj=f)
+            except FileNotInStorageError:
+                return None
+        return BundleAnalysisReport(db_path)
 
-    def save(self, bundle_report: BundleReport, report_key: str):
+    def save(self, report: BundleAnalysisReport, report_key: str):
         """
-        Saves a `BundleReport` for the given report key into storage.
+        Saves a `BundleAnalysisReport` for the given report key into storage.
         """
         storage_path = StoragePaths.bundle_report.path(
             repo_key=self.repo_key, report_key=report_key
         )
-        with open(bundle_report.db_path, "rb") as f:
+        with open(report.db_path, "rb") as f:
             self.storage_service.write_file(BUCKET_NAME, storage_path, f)
