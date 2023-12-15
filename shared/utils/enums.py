@@ -43,5 +43,5 @@ class TaskConfigGroup(Enum):
     synchronize = "synchronize"
     timeseries = "timeseries"
     upload = "upload"
-    upload_test_result = "upload_test_result"
+    test_results = "test_results"
     verify_bot = "verify_bot"
