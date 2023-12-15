@@ -7,10 +7,22 @@ from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm import backref, relationship, sessionmaker
 
 SCHEMA = """
+create table bundles (
+    id integer primary key,
+    name text
+);
+
+--- only allow 1 null name (the default bundle)
+create unique index bundles_name_index on bundles (ifnull(name, 'codecov-default-bundle-name'));
+
 create table sessions (
     id integer primary key,
-    info text not null
+    info text not null,
+    bundle_id integer, --- this is nullable just temporarily while parsing
+    foreign key (bundle_id) references bundles (id)
 );
+
+create index sessions_bundle_id_index on sessions (bundle_id);
 
 create table metadata (
     key text primary key,
@@ -26,7 +38,7 @@ create table assets (
     foreign key (session_id) references sessions (id)
 );
 
-create index assets_session_id on assets (session_id);
+create index assets_session_id_index on assets (session_id);
 create index assets_name_index on assets (name);
 
 create table chunks (
@@ -94,6 +106,19 @@ chunks_modules = Table(
 # model definitions
 
 
+class Bundle(Base):
+    """
+    A bundle is a top-level wrapper of various assets.  A large application
+    may have multiple bundles being built and we'd like to track all of them
+    separately.
+    """
+
+    __tablename__ = "bundles"
+
+    id = Column(types.Integer, primary_key=True)
+    name = Column(types.Text, nullable=False)
+
+
 class Session(Base):
     """
     A session represents a single bundle stats file that we ingest.
@@ -104,7 +129,10 @@ class Session(Base):
     __tablename__ = "sessions"
 
     id = Column(types.Integer, primary_key=True)
+    bundle_id = Column(types.Integer, ForeignKey("bundles.id"), nullable=False)
     info = Column(types.JSON)
+
+    bundle = relationship("Bundle", backref=backref("sessions"))
 
 
 class Metadata(Base):

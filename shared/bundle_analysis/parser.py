@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import ijson
 from sqlalchemy.orm import Session as DbSession
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session as DbSession
 from shared.bundle_analysis.models import (
     SCHEMA,
     Asset,
+    Bundle,
     Chunk,
     Module,
     Session,
@@ -66,6 +67,7 @@ class Parser:
             # to an asset above if we parse the chunk before the asset)
             self._create_associations()
 
+        assert self.session.bundle is not None
         return self.session.id
 
     def _parse_event(self, event: Tuple[str, str, str]):
@@ -78,6 +80,15 @@ class Parser:
             self._parse_chunks_event(*event)
         elif prefix_path[0] == "modules":
             self._parse_modules_event(*event)
+
+        # bundle name
+        elif prefix == "bundleName":
+            bundle = self.db_session.query(Bundle).filter_by(name=value).first()
+            if bundle is None:
+                bundle = Bundle(name=value)
+                self.db_session.add(bundle)
+                self.session.bundle = bundle
+                self.db_session.flush()
 
         # session info
         elif prefix == "version":
@@ -183,8 +194,3 @@ class Parser:
                 [dict(chunk_id=chunk.id, module_id=module_id) for chunk in chunks]
             )
         self.db_session.execute(chunks_modules.insert(), inserts)
-
-
-def parse(db_session: DbSession, path: str):
-    parser = Parser(db_session)
-    return parser.parse(path)

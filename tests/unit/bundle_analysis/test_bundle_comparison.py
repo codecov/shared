@@ -3,13 +3,16 @@ from pathlib import Path
 import pytest
 
 from shared.bundle_analysis import (
+    AssetChange,
     BundleAnalysisComparison,
+    BundleAnalysisReport,
+    BundleAnalysisReportLoader,
     BundleChange,
-    BundleReport,
-    BundleReportLoader,
     MissingBaseReportError,
+    MissingBundleError,
     MissingHeadReportError,
 )
+from shared.bundle_analysis.models import Bundle, Session
 from shared.storage.memory import MemoryStorageService
 
 here = Path(__file__)
@@ -22,7 +25,7 @@ head_report_bundle_stats_path = (
 
 
 def test_bundle_analysis_comparison():
-    loader = BundleReportLoader(
+    loader = BundleAnalysisReportLoader(
         storage_service=MemoryStorageService({}),
         repo_key="testing",
     )
@@ -39,51 +42,84 @@ def test_bundle_analysis_comparison():
     with pytest.raises(MissingHeadReportError):
         comparison.head_report
 
-    base_report = BundleReport()
+    base_report = BundleAnalysisReport()
     base_report.ingest(base_report_bundle_stats_path)
 
-    head_report = BundleReport()
+    old_bundle = Bundle(name="old")
+    base_report.db_session.add(old_bundle)
+    base_report.db_session.commit()
+
+    head_report = BundleAnalysisReport()
     head_report.ingest(head_report_bundle_stats_path)
+
+    new_bundle = Bundle(name="new")
+    head_report.db_session.add(new_bundle)
+    head_report.db_session.commit()
 
     loader.save(base_report, "base-report")
     loader.save(head_report, "head-report")
 
-    changes = comparison.bundle_changes()
-    assert set(changes) == set(
+    bundle_changes = comparison.bundle_changes()
+    assert set(bundle_changes) == set(
         [
             BundleChange(
-                bundle_name="assets/other-*.svg",
+                bundle_name="sample",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=1100,
+            ),
+            BundleChange(
+                bundle_name="new",
                 change_type=BundleChange.ChangeType.ADDED,
+                size_delta=0,
+            ),
+            BundleChange(
+                bundle_name="old",
+                change_type=BundleChange.ChangeType.REMOVED,
+                size_delta=0,
+            ),
+        ]
+    )
+
+    bundle_comparison = comparison.bundle_comparison("sample")
+    asset_changes = bundle_comparison.asset_changes()
+    assert set(asset_changes) == set(
+        [
+            AssetChange(
+                asset_name="assets/other-*.svg",
+                change_type=AssetChange.ChangeType.ADDED,
                 size_delta=5126,
             ),
-            BundleChange(
-                bundle_name="assets/index-*.css",
-                change_type=BundleChange.ChangeType.CHANGED,
+            AssetChange(
+                asset_name="assets/index-*.css",
+                change_type=AssetChange.ChangeType.CHANGED,
                 size_delta=0,
             ),
-            BundleChange(
-                bundle_name="assets/LazyComponent-*.js",
-                change_type=BundleChange.ChangeType.CHANGED,
+            AssetChange(
+                asset_name="assets/LazyComponent-*.js",
+                change_type=AssetChange.ChangeType.CHANGED,
                 size_delta=0,
             ),
-            BundleChange(
-                bundle_name="assets/index-*.js",
-                change_type=BundleChange.ChangeType.CHANGED,
+            AssetChange(
+                asset_name="assets/index-*.js",
+                change_type=AssetChange.ChangeType.CHANGED,
                 size_delta=100,
             ),
-            BundleChange(
-                bundle_name="assets/index-*.js",
-                change_type=BundleChange.ChangeType.CHANGED,
+            AssetChange(
+                asset_name="assets/index-*.js",
+                change_type=AssetChange.ChangeType.CHANGED,
                 size_delta=0,
             ),
-            BundleChange(
-                bundle_name="assets/react-*.svg",
-                change_type=BundleChange.ChangeType.REMOVED,
+            AssetChange(
+                asset_name="assets/react-*.svg",
+                change_type=AssetChange.ChangeType.REMOVED,
                 size_delta=-4126,
             ),
         ]
     )
 
-    total_size_delta = comparison.total_size_delta()
+    total_size_delta = bundle_comparison.total_size_delta()
     assert total_size_delta == 1100
-    assert total_size_delta == sum([change.size_delta for change in changes])
+    assert total_size_delta == sum([change.size_delta for change in asset_changes])
+
+    with pytest.raises(MissingBundleError):
+        comparison.bundle_comparison("new")

@@ -8,10 +8,14 @@ from sqlalchemy.orm import Session as SQLAlchemySession
 from sqlalchemy.sql import func
 
 from shared.bundle_analysis import models
-from shared.bundle_analysis.parser import parse
+from shared.bundle_analysis.parser import Parser
 
 
-class Bundle:
+class AssetReport:
+    """
+    Report wrapper around a single asset (many of which can exist in a single bundle).
+    """
+
     def __init__(self, asset: models.Asset):
         self.asset = asset
         self.db_session = SQLAlchemySession.object_session(self.asset)
@@ -39,6 +43,42 @@ class Bundle:
 
 
 class BundleReport:
+    """
+    Report wrapper around a single bundle (many of which can exist in a single analysis report).
+    """
+
+    def __init__(self, bundle: models.Bundle):
+        self.bundle = bundle
+        self.db_session = SQLAlchemySession.object_session(self.bundle)
+
+    @property
+    def name(self):
+        return self.bundle.name
+
+    def asset_reports(self) -> Iterator[AssetReport]:
+        assets = (
+            self.db_session.query(models.Asset)
+            .join(models.Asset.session)
+            .join(models.Session.bundle)
+            .filter(models.Bundle.id == self.bundle.id)
+            .all()
+        )
+        return (AssetReport(asset) for asset in assets)
+
+    def total_size(self) -> int:
+        return (
+            self.db_session.query(func.sum(models.Asset.size).label("asset_size"))
+            .join(models.Session.bundle)
+            .filter(models.Session.bundle_id == self.bundle.id)
+            .scalar()
+        ) or 0
+
+
+class BundleAnalysisReport:
+    """
+    Report wrapper around multiple bundles for a single commit report.
+    """
+
     def __init__(self, db_path: Optional[str] = None):
         self.db_path = db_path
         if self.db_path is None:
@@ -85,7 +125,8 @@ class BundleReport:
         Ingest the bundle stats JSON at the given file path.
         Returns session ID of ingested data.
         """
-        session_id = parse(self.db_session, path)
+        parser = Parser(self.db_session)
+        session_id = parser.parse(path)
         self.db_session.commit()
         return session_id
 
@@ -93,14 +134,17 @@ class BundleReport:
         metadata = self.db_session.query(models.Metadata).all()
         return {models.MetadataKey(item.key): item.value for item in metadata}
 
-    def bundles(self) -> Iterator[Bundle]:
-        assets = self.db_session.query(models.Asset).all()
-        return (Bundle(asset) for asset in assets)
+    def bundle_reports(self) -> Iterator[BundleReport]:
+        bundles = self.db_session.query(models.Bundle).all()
+        return (BundleReport(bundle) for bundle in bundles)
 
-    def total_size(self) -> int:
-        return self.db_session.query(
-            func.sum(models.Asset.size).label("asset_size")
-        ).scalar()
+    def bundle_report(self, bundle_name: str) -> Optional[BundleReport]:
+        bundle = (
+            self.db_session.query(models.Bundle).filter_by(name=bundle_name).first()
+        )
+        if bundle is None:
+            return None
+        return BundleReport(bundle)
 
     def session_count(self) -> int:
         return self.db_session.query(models.Session).count()
