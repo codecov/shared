@@ -1143,7 +1143,11 @@ class Github(TorngitBaseAdapter):
             head=dict(
                 branch=pull["head"]["ref"],
                 commitid=pull["head"]["sha"],
-                slug=pull["head"]["repo"]["full_name"],
+                # Through empiric test data it seems that the "repo" key in "head" is set to None
+                # If the PR is from the same repo (e.g. not from a fork)
+                slug=pull["head"]["repo"]["full_name"]
+                if pull["head"]["repo"]
+                else pull["base"]["repo"]["full_name"],
             ),
             state="merged" if pull["merged"] else pull["state"],
             title=pull["title"],
