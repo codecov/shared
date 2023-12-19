@@ -7,7 +7,9 @@ from shared.config import get_config
 from shared.storage.base import BaseStorageService
 from shared.storage.exceptions import FileNotInStorageError
 
-BUCKET_NAME = get_config("bundle_analysis", "bucket_name", default="bundle-analysis")
+
+def get_bucket_name() -> str:
+    return get_config("bundle_analysis", "bucket_name", default="bundle-analysis")
 
 
 class StoragePaths(Enum):
@@ -27,6 +29,7 @@ class BundleAnalysisReportLoader:
     def __init__(self, storage_service: BaseStorageService, repo_key: str):
         self.storage_service = storage_service
         self.repo_key = repo_key
+        self.bucket_name = get_bucket_name()
 
     def load(self, report_key: str) -> Optional[BundleAnalysisReport]:
         """
@@ -40,7 +43,7 @@ class BundleAnalysisReportLoader:
 
         with open(db_path, "w+b") as f:
             try:
-                self.storage_service.read_file(BUCKET_NAME, path, file_obj=f)
+                self.storage_service.read_file(self.bucket_name, path, file_obj=f)
             except FileNotInStorageError:
                 return None
         return BundleAnalysisReport(db_path)
@@ -53,4 +56,4 @@ class BundleAnalysisReportLoader:
             repo_key=self.repo_key, report_key=report_key
         )
         with open(report.db_path, "rb") as f:
-            self.storage_service.write_file(BUCKET_NAME, storage_path, f)
+            self.storage_service.write_file(self.bucket_name, storage_path, f)
