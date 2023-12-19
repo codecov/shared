@@ -14,6 +14,7 @@ def get_bucket_name() -> str:
 
 class StoragePaths(Enum):
     bundle_report = "v1/repos/{repo_key}/{report_key}/bundle_report.sqlite"
+    upload = "v1/uploads/{upload_key}.json"
 
     def path(self, **kwargs):
         return self.value.format(**kwargs)
