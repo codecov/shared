@@ -3,23 +3,29 @@ from shared.validation.install import validate_install_configuration
 from shared.yaml.validation import UserGivenSecret
 
 
-def test_validate_install_configuration_empty():
+def test_validate_install_configuration_empty(mocker):
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration({}) == {}
+    assert mock_warning.call_count == 0
 
 
-def test_validate_install_configuration_simple():
+def test_validate_install_configuration_simple(mocker):
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(
         {"setup": {"codecov_url": "http://codecov.company.com"}}
     ) == {"setup": {"codecov_url": "http://codecov.company.com"}}
+    assert mock_warning.call_count == 0
 
 
-def test_validate_install_configuration_invalid():
+def test_validate_install_configuration_invalid(mocker):
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(
         {"setup": {"codecov_url": "http://codecov.company.com"}, "gitlab": 1}
     ) == {"setup": {"codecov_url": "http://codecov.company.com"}, "gitlab": 1}
+    assert mock_warning.call_count == 1
 
 
-def test_validate_install_configuration_with_user_yaml():
+def test_validate_install_configuration_with_user_yaml(mocker):
     user_input = {
         "setup": {"codecov_url": "http://codecov.company.com"},
         "site": {
@@ -43,6 +49,7 @@ def test_validate_install_configuration_with_user_yaml():
             ],
         },
     }
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(user_input) == {
         "setup": {"codecov_url": "http://codecov.company.com"},
         "site": {
@@ -66,6 +73,7 @@ def test_validate_install_configuration_with_user_yaml():
             ],
         },
     }
+    assert mock_warning.call_count == 0
 
 
 def test_validate_sample_production_config(mocker):
@@ -338,7 +346,7 @@ def test_validate_sample_production_config(mocker):
     assert res == expected_result
 
 
-def test_validate_install_configuration_with_user_yaml_with_user_secret():
+def test_validate_install_configuration_with_user_yaml_with_user_secret(mocker):
     value = "github/11934774/154468867/https://hooks.slack.com/services/first_key/BE7FWCVHV/dkbfscprianc7wrb"
     encoded_value = UserGivenSecret.encode(value)
     user_yaml_dict = {
@@ -355,33 +363,42 @@ def test_validate_install_configuration_with_user_yaml_with_user_secret():
         "setup": {"codecov_url": "http://codecov.company.com"},
         "site": user_yaml_dict,
     }
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(user_input) == {
         "setup": {"codecov_url": "http://codecov.company.com"},
         "site": user_yaml_dict,
     }
+    assert mock_warning.call_count == 0
 
 
-def test_validate_install_configuration_with_additional_yamls():
+def test_validate_install_configuration_with_additional_yamls(mocker):
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(
         {
             "setup": {"codecov_url": "http://codecov.company.com"},
-            "additional_user_yamls": {
-                "percentage": 30,
-                "name": "banana",
-                "override": {"comment": False},
-            },
+            "additional_user_yamls": [
+                {
+                    "percentage": 30,
+                    "name": "banana",
+                    "override": {"comment": False},
+                }
+            ],
         }
     ) == {
         "setup": {"codecov_url": "http://codecov.company.com"},
-        "additional_user_yamls": {
-            "percentage": 30,
-            "name": "banana",
-            "override": {"comment": False},
-        },
+        "additional_user_yamls": [
+            {
+                "percentage": 30,
+                "name": "banana",
+                "override": {"comment": False},
+            }
+        ],
     }
+    assert mock_warning.call_count == 0
 
 
 def test_pubsub_config(mocker):
+    mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(
         {
             "setup": {
@@ -401,6 +418,7 @@ def test_pubsub_config(mocker):
             }
         },
     }
+    assert mock_warning.call_count == 0
 
 
 def test_admins(mocker):
