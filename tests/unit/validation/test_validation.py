@@ -465,12 +465,12 @@ class TestUserYamlValidation(BaseTestCase):
         assert result == expected_result
 
     def test_validate_flag_too_long(self):
-        user_input = {"flags": {"abcdefg" * 7: {"paths": ["banana"]}}}
+        user_input = {"flags": {"abcdefg" * 500: {"paths": ["banana"]}}}
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
         assert exc.value.error_location == [
             "flags",
-            "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefg",
+            "abcdefg" * 500,
         ]
 
     def test_validate_parser_only_field(self):
