@@ -68,6 +68,7 @@ class BundleReport:
     def total_size(self) -> int:
         return (
             self.db_session.query(func.sum(models.Asset.size).label("asset_size"))
+            .join(models.Asset.session)
             .join(models.Session.bundle)
             .filter(models.Session.bundle_id == self.bundle.id)
             .scalar()
