@@ -22,7 +22,7 @@ path_list_structure = {
 flag_list_structure = {
     "type": "list",
     "nullable": True,
-    "schema": {"type": "string", "regex": r"^[\w\.\-]{1,45}$"},
+    "schema": {"type": "string", "regex": r"^[^\'\"]{1,1024}$"},
 }
 
 status_common_config = {
