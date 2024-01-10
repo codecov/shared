@@ -25,7 +25,7 @@ setup(
         "boto3>=1.9.218",
         "cerberus",
         "colour>=0.1.5",
-        "cryptography>=41.0.3",
+        "cryptography>=41.0.6",
         "google-cloud-storage>=2.10.0",
         "minio~=7.0",
         "oauth2",
