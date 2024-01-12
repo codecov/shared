@@ -4,7 +4,7 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from typing import List, Optional
+from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
 import httpx
@@ -1397,6 +1397,20 @@ class Github(TorngitBaseAdapter):
                 token=token,
             )
             return res
+
+    async def get_repo_languages(self, token=None) -> List[str]:
+        """
+        Gets the languages belonging to this repository.
+        Reference:
+            https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-languages
+        Returns:
+            List[str]: A list of language names
+        """
+        async with self.get_client() as client:
+            res = await self.api(
+                client, "get", "/repos/{}/languages".format(self.slug), token=token
+            )
+        return list(k.lower() for k, v in res.items())
 
     async def update_check_run(
         self,

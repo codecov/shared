@@ -518,6 +518,12 @@ class TestGitlabTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_repo_languages(self, valid_handler, codecov_vcr):
+        expected_result = ["python"]
+        res = await valid_handler.get_repo_languages()
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_repository_subgroup(self, valid_handler, codecov_vcr):
         # test get_repository for repo in a subgroup
         expected_result = {

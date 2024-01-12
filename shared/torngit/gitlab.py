@@ -947,6 +947,22 @@ class Gitlab(TorngitBaseAdapter):
             ),
         )
 
+    async def get_repo_languages(self, token=None) -> List[str]:
+        """
+        Gets the languages belonging to this repository.
+        Reference:
+            https://docs.gitlab.com/ee/api/projects.html#languages
+        Returns:
+            List[str]: A list of language names
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        res = await self.api(
+            "get",
+            "/projects/%s/languages" % (self.data["repo"]["service_id"]),
+            token=token,
+        )
+        return list(k.lower() for k, v in res.items())
+
     async def get_source(self, path, ref, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository

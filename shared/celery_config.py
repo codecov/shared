@@ -11,6 +11,9 @@ from shared.utils.enums import TaskConfigGroup
 # <identifier> is the task name (usually same as task class)
 sync_teams_task_name = f"app.tasks.{TaskConfigGroup.sync_teams.value}.SyncTeams"
 sync_repos_task_name = f"app.tasks.{TaskConfigGroup.sync_repos.value}.SyncRepos"
+sync_languages_task_name = (
+    f"app.tasks.{TaskConfigGroup.sync_languages.value}.SyncLanguages"
+)
 delete_owner_task_name = f"app.tasks.{TaskConfigGroup.delete_owner.value}.DeleteOwner"
 notify_task_name = f"app.tasks.{TaskConfigGroup.notify.value}.Notify"
 pulls_task_name = f"app.tasks.{TaskConfigGroup.pulls.value}.Sync"

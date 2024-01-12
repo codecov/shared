@@ -32,6 +32,16 @@ def generic_valid_handler():
 
 
 @pytest.fixture
+def valid_repo_no_languages():
+    return Github(
+        repo=dict(name="test-no-languages"),
+        owner=dict(username="codecove2e"),
+        token=dict(key=10 * "a280", refresh_token=10 * "a180"),
+        on_token_refresh=lambda token: token,
+    )
+
+
+@pytest.fixture
 def valid_but_no_permissions_handler():
     return Github(
         repo=dict(name="worker"),
@@ -947,6 +957,18 @@ class TestGithubTestCase(object):
         print(res)
         assert res["owner"] == expected_result["owner"]
         assert res["repo"] == expected_result["repo"]
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_repo_languages(self, generic_valid_handler, codecov_vcr):
+        expected_result = ["shell", "makefile", "python"]
+        res = await generic_valid_handler.get_repo_languages()
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_repo_no_languages(self, valid_repo_no_languages, codecov_vcr):
+        expected_result = []
+        res = await valid_repo_no_languages.get_repo_languages()
         assert res == expected_result
 
     @pytest.mark.asyncio

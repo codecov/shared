@@ -385,6 +385,9 @@ class TorngitBaseAdapter(object):
     async def get_repository(self, token=None):
         raise NotImplementedError()
 
+    async def get_repo_languages(self, token=None):
+        raise NotImplementedError()
+
     async def get_source(self, path, ref, token=None):
         raise NotImplementedError()
 

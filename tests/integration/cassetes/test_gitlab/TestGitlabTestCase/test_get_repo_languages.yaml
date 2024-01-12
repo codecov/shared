@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - gitlab.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/187725/languages
+  response:
+    content: '{"Python":100.0}'
+    headers:
+      Accept-Ranges:
+      - bytes
+      CF-Cache-Status:
+      - MISS
+      CF-RAY:
+      - 84471cbfba0167cc-MIA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '16'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 12 Jan 2024 17:27:48 GMT
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=wV1SedSVFW7JkdWKOkASpH36wHw3Hr31jBP7JPqFe3NsyLOvas4xtVT%2FWFR8ZaNGP%2BT9f5tadCS8zgTnp3FtaoyFDSVrPUmBrGSahUxErPxXRhlFNz1BEoLr81k%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=z5Nay76qSKw_zi99u6P66tX4XaUIfLXGPAC6zhTmU8c-1705080468609-0-604800000;
+        path=/; domain=.gitlab.com; HttpOnly; Secure; SameSite=None
+      cache-control:
+      - max-age=0, private, must-revalidate
+      content-security-policy:
+      - default-src 'none'
+      etag:
+      - W/"a865996219ecdc57d7499d3bb4309309"
+      gitlab-lb:
+      - haproxy-main-16-lb-gprd
+      gitlab-sv:
+      - localhost
+      ratelimit-limit:
+      - '2000'
+      ratelimit-observed:
+      - '1'
+      ratelimit-remaining:
+      - '1999'
+      ratelimit-reset:
+      - '1705080528'
+      ratelimit-resettime:
+      - Fri, 12 Jan 2024 17:28:48 GMT
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      strict-transport-security:
+      - max-age=31536000
+      vary:
+      - Origin, Accept-Encoding
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-gitlab-meta:
+      - '{"correlation_id":"9e405f2c77754b1b37ba1b30b2a15b74","version":"1"}'
+      x-request-id:
+      - 9e405f2c77754b1b37ba1b30b2a15b74
+      x-runtime:
+      - '0.078590'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
