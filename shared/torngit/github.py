@@ -4,7 +4,7 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from typing import Dict, List, Optional
+from typing import List, Optional
 from urllib.parse import parse_qs, urlencode
 
 import httpx
