@@ -426,6 +426,15 @@ class TestUnitBitbucket(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
+    async def test_get_repo_no_languages(self):
+        expected_result = []
+        handler = Bitbucket(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_repo_languages(None, None)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_pull_rquest_files(self, valid_handler):
         handler = Bitbucket(
             repo=dict(name="test-repo"),
