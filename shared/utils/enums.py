@@ -40,7 +40,7 @@ class TaskConfigGroup(Enum):
     sync_plans = "sync_plans"
     sync_repos = "sync_repos"
     sync_teams = "sync_teams"
-    sync_languages = "sync_languages"
+    sync_repo_languages = "sync_repo_languages"
     synchronize = "synchronize"
     timeseries = "timeseries"
     upload = "upload"
