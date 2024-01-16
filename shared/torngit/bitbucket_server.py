@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import datetime
 from json import dumps, loads
+from typing import List
 from urllib.parse import parse_qsl
 
 import oauth2 as oauth
@@ -287,6 +288,22 @@ class BitbucketServer(TorngitBaseAdapter):
                 name=res["slug"],
             ),
         )
+
+    async def get_repo_languages(self, token=None, language: str = None) -> List[str]:
+        """
+        Gets the languages belonging to this repository. Bitbucket has no way to
+        track languages, so we'll return a list with the existing language
+        Param:
+            language: the language belonging to the repository.language key
+        Returns:
+            List[str]: A list of language names
+        """
+        languages = []
+
+        if language:
+            languages.append(language.lower())
+
+        return languages
 
     async def get_source(self, path, ref, token=None):
         content, start = [], 0

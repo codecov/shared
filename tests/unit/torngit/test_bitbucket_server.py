@@ -74,6 +74,24 @@ class TestBitbucketServer(object):
             await valid_handler.api(method, url)
 
     @pytest.mark.asyncio
+    async def test_get_repo_languages(self):
+        expected_result = ["javascript"]
+        handler = BitbucketServer(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_repo_languages(None, "JavaScript")
+        assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_repo_no_languages(self):
+        expected_result = []
+        handler = BitbucketServer(
+            repo=dict(name="example-python", private=True),
+        )
+        res = await handler.get_repo_languages(None, None)
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_get_source_object_not_found(self, valid_handler, mocker):
         response_dict = {"status": 404, "content-type": "application/json"}
         content = json.dumps({})

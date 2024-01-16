@@ -1398,6 +1398,20 @@ class Github(TorngitBaseAdapter):
             )
             return res
 
+    async def get_repo_languages(self, token=None) -> List[str]:
+        """
+        Gets the languages belonging to this repository.
+        Reference:
+            https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-languages
+        Returns:
+            List[str]: A list of language names
+        """
+        async with self.get_client() as client:
+            res = await self.api(
+                client, "get", "/repos/{}/languages".format(self.slug), token=token
+            )
+        return list(k.lower() for k in res.keys())
+
     async def update_check_run(
         self,
         check_run_id,
