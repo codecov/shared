@@ -94,7 +94,10 @@ def test_celery_config():
         ("app.tasks.status.SetError", TaskConfigGroup.status.value),
         ("app.tasks.status.SetPending", TaskConfigGroup.status.value),
         ("app.tasks.sync_repos.SyncRepos", TaskConfigGroup.sync_repos.value),
-        ("app.tasks.sync_repo_languages.SyncLanguages", TaskConfigGroup.sync_repo_languages.value),
+        (
+            "app.tasks.sync_repo_languages.SyncLanguages",
+            TaskConfigGroup.sync_repo_languages.value,
+        ),
         ("app.tasks.sync_teams.SyncTeams", TaskConfigGroup.sync_teams.value),
         ("app.tasks.synchronize.Synchronize", TaskConfigGroup.synchronize.value),
         ("app.tasks.timeseries.backfill", TaskConfigGroup.timeseries.value),

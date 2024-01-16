@@ -961,7 +961,7 @@ class Gitlab(TorngitBaseAdapter):
             "/projects/%s/languages" % (self.data["repo"]["service_id"]),
             token=token,
         )
-        return list(k.lower() for k, v in res.items())
+        return list(k.lower() for k in res.keys())
 
     async def get_source(self, path, ref, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)

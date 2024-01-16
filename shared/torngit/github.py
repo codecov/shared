@@ -1410,7 +1410,7 @@ class Github(TorngitBaseAdapter):
             res = await self.api(
                 client, "get", "/repos/{}/languages".format(self.slug), token=token
             )
-        return list(k.lower() for k, v in res.items())
+        return list(k.lower() for k in res.keys())
 
     async def update_check_run(
         self,
