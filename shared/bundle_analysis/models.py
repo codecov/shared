@@ -46,8 +46,7 @@ create table chunks (
     external_id text not null,
     unique_external_id text not null,
     entry boolean not null,
-    initial boolean not null,
-    unique (unique_external_id)
+    initial boolean not null
 );
 
 create table assets_chunks (
