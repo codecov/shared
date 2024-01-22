@@ -43,11 +43,12 @@ create index assets_name_index on assets (name);
 
 create table chunks (
     id integer primary key,
+    session_id integer not null,
     external_id text not null,
     unique_external_id text not null,
     entry boolean not null,
     initial boolean not null,
-    unique (unique_external_id)
+    foreign key (session_id) references sessions (id)
 );
 
 create table assets_chunks (
@@ -60,8 +61,10 @@ create table assets_chunks (
 
 create table modules (
     id integer primary key,
+    session_id integer not null,
     name text not null,
-    size integer not null
+    size integer not null,
+    foreign key (session_id) references sessions (id)
 );
 
 create table chunks_modules (
@@ -160,7 +163,9 @@ class Asset(Base):
     size = Column(types.Integer, nullable=False)
 
     session = relationship("Session", backref=backref("assets"))
-    chunks = relationship("Chunk", secondary=assets_chunks, back_populates="assets")
+    chunks = relationship(
+        "Chunk", secondary=assets_chunks, back_populates="assets", cascade="all, delete"
+    )
 
 
 class Chunk(Base):
@@ -171,13 +176,22 @@ class Chunk(Base):
     __tablename__ = "chunks"
 
     id = Column(types.Integer, primary_key=True)
+    session_id = Column(types.Integer, ForeignKey("sessions.id"), nullable=False)
     external_id = Column(types.Text, nullable=False)
     unique_external_id = Column(types.Text, nullable=False)
     entry = Column(types.Boolean, nullable=False)
     initial = Column(types.Boolean, nullable=False)
 
-    assets = relationship("Asset", secondary=assets_chunks, back_populates="chunks")
-    modules = relationship("Module", secondary=chunks_modules, back_populates="chunks")
+    session = relationship("Session", backref=backref("chunks"))
+    assets = relationship(
+        "Asset", secondary=assets_chunks, back_populates="chunks", cascade="all, delete"
+    )
+    modules = relationship(
+        "Module",
+        secondary=chunks_modules,
+        back_populates="chunks",
+        cascade="all, delete",
+    )
 
 
 class Module(Base):
@@ -188,10 +202,17 @@ class Module(Base):
     __tablename__ = "modules"
 
     id = Column(types.Integer, primary_key=True)
+    session_id = Column(types.Integer, ForeignKey("sessions.id"), nullable=False)
     name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
 
-    chunks = relationship("Chunk", secondary=chunks_modules, back_populates="modules")
+    session = relationship("Session", backref=backref("modules"))
+    chunks = relationship(
+        "Chunk",
+        secondary=chunks_modules,
+        back_populates="modules",
+        cascade="all, delete",
+    )
 
 
 class MetadataKey(Enum):
