@@ -53,6 +53,7 @@ class Parser:
         self.module_chunk_unique_external_ids = []
 
     def parse(self, path: str) -> int:
+        print("THIS IS PARSING")
         self.reset()
 
         self.session = Session(info={})
