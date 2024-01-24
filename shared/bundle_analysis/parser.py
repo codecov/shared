@@ -71,8 +71,7 @@ class Parser:
                 .one_or_none()
             )
             if old_session:
-                models = [Asset, Chunk, Module]
-                for model in models:
+                for model in [Asset, Chunk, Module]:
                     to_be_deleted = self.db_session.query(model).filter(
                         model.session == old_session
                     )
