@@ -8,6 +8,10 @@ sample_bundle_stats_path = (
     Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats.json"
 )
 
+sample_bundle_stats_path_2 = (
+    Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats_other.json"
+)
+
 
 def test_create_bundle_report():
     try:
@@ -68,5 +72,42 @@ def test_save_load_bundle_report():
         assert db_path != report.db_path
         assert len(initial_data) > 0
         assert initial_data == loaded_data
+    finally:
+        report.cleanup()
+
+
+def test_reupload_bundle_report():
+    try:
+        report = BundleAnalysisReport()
+
+        # Upload the first stats file
+        report.ingest(sample_bundle_stats_path)
+
+        assert report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: 1,
+        }
+
+        bundle_reports = list(report.bundle_reports())
+        assert len(bundle_reports) == 1
+
+        bundle_report = report.bundle_report("sample")
+
+        assert bundle_report.total_size() == 150572
+        assert report.session_count() == 1
+
+        # Re-upload another file of the same name, it should fully replace the previous
+        report.ingest(sample_bundle_stats_path_2)
+
+        assert report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: 1,
+        }
+
+        bundle_reports = list(report.bundle_reports())
+        assert len(bundle_reports) == 1
+
+        bundle_report = report.bundle_report("sample")
+
+        assert bundle_report.total_size() == 151672
+        assert report.session_count() == 1
     finally:
         report.cleanup()
