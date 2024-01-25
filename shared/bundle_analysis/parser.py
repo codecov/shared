@@ -62,6 +62,24 @@ class Parser:
             for event in ijson.parse(f):
                 self._parse_event(event)
 
+            # Delete old session/asset/chunk/module with the same bundle name if applicable
+            old_session = (
+                self.db_session.query(Session)
+                .filter(
+                    Session.bundle == self.session.bundle, Session.id != self.session.id
+                )
+                .one_or_none()
+            )
+            if old_session:
+                for model in [Asset, Chunk, Module]:
+                    to_be_deleted = self.db_session.query(model).filter(
+                        model.session == old_session
+                    )
+                    for item in to_be_deleted:
+                        self.db_session.delete(item)
+                self.db_session.delete(old_session)
+                self.db_session.flush()
+
             # this happens last so that we could potentially handle any ordering
             # of top-level keys inside the JSON (i.e. we couldn't associate a chunk
             # to an asset above if we parse the chunk before the asset)
@@ -87,8 +105,8 @@ class Parser:
             if bundle is None:
                 bundle = Bundle(name=value)
                 self.db_session.add(bundle)
-                self.session.bundle = bundle
-                self.db_session.flush()
+            self.session.bundle = bundle
+            self.db_session.flush()
 
         # session info
         elif prefix == "version":
@@ -127,7 +145,7 @@ class Parser:
         if (prefix, event) == ("chunks.item", "start_map"):
             # new chunk
             assert self.chunk is None
-            self.chunk = Chunk()
+            self.chunk = Chunk(session=self.session)
         elif prefix == "chunks.item.id":
             self.chunk.external_id = value
         elif prefix == "chunks.item.uniqueId":
@@ -152,7 +170,7 @@ class Parser:
         if (prefix, event) == ("modules.item", "start_map"):
             # new module
             assert self.module is None
-            self.module = Module()
+            self.module = Module(session=self.session)
         elif prefix == "modules.item.name":
             self.module.name = value
         elif prefix == "modules.item.size":
@@ -174,7 +192,10 @@ class Parser:
         # associate chunks to assets
         inserts = []
         for chunk_id, asset_names in self.chunk_asset_names_index.items():
-            assets = self.db_session.query(Asset).filter(Asset.name.in_(asset_names))
+            assets = self.db_session.query(Asset).filter(
+                Asset.session == self.session,
+                Asset.name.in_(asset_names),
+            )
             inserts.extend(
                 [dict(asset_id=asset.id, chunk_id=chunk_id) for asset in assets]
             )
@@ -188,7 +209,8 @@ class Parser:
             chunk_unique_external_ids,
         ) in self.module_chunk_unique_external_ids_index.items():
             chunks = self.db_session.query(Chunk).filter(
-                Chunk.unique_external_id.in_(chunk_unique_external_ids)
+                Chunk.session == self.session,
+                Chunk.unique_external_id.in_(chunk_unique_external_ids),
             )
             inserts.extend(
                 [dict(chunk_id=chunk.id, module_id=module_id) for chunk in chunks]
