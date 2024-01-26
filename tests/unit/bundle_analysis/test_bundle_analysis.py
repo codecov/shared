@@ -124,7 +124,7 @@ def test_bundle_report_no_assets():
     bundle_report = report.bundle_report("b5")
     asset_reports = list(bundle_report.asset_reports())
 
-    assert len(asset_reports) == 0
+    assert asset_reports is None
     assert bundle_report.total_size == 0
 
 
