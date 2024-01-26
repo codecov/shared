@@ -199,7 +199,8 @@ class Parser:
             inserts.extend(
                 [dict(asset_id=asset.id, chunk_id=chunk_id) for asset in assets]
             )
-        self.db_session.execute(assets_chunks.insert(), inserts)
+        if inserts:
+            self.db_session.execute(assets_chunks.insert(), inserts)
 
         # associate modules to chunks
         # FIXME: this isn't quite right - need to sort out how non-JS assets reference chunks
@@ -215,4 +216,5 @@ class Parser:
             inserts.extend(
                 [dict(chunk_id=chunk.id, module_id=module_id) for chunk in chunks]
             )
-        self.db_session.execute(chunks_modules.insert(), inserts)
+        if inserts:
+            self.db_session.execute(chunks_modules.insert(), inserts)

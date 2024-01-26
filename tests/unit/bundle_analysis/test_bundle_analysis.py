@@ -111,3 +111,48 @@ def test_reupload_bundle_report():
         assert report.session_count() == 1
     finally:
         report.cleanup()
+
+
+def test_bundle_report_no_assets():
+    report_path = (
+        Path(__file__).parent.parent.parent
+        / "samples"
+        / "sample_bundle_stats_no_assets.json"
+    )
+    report = BundleAnalysisReport()
+    report.ingest(report_path)
+    bundle_report = report.bundle_report("b5")
+    asset_reports = list(bundle_report.asset_reports())
+
+    assert len(asset_reports) == 0
+    assert bundle_report.total_size == 0
+
+
+def test_bundle_report_no_chunks():
+    report_path = (
+        Path(__file__).parent.parent.parent
+        / "samples"
+        / "sample_bundle_stats_no_chunks.json"
+    )
+    report = BundleAnalysisReport()
+    report.ingest(report_path)
+    bundle_report = report.bundle_report("b5")
+    asset_reports = list(bundle_report.asset_reports())
+
+    assert len(asset_reports) == 2
+    assert bundle_report.total_size == 686
+
+
+def test_bundle_report_no_modules():
+    report_path = (
+        Path(__file__).parent.parent.parent
+        / "samples"
+        / "sample_bundle_stats_no_modules.json"
+    )
+    report = BundleAnalysisReport()
+    report.ingest(report_path)
+    bundle_report = report.bundle_report("b5")
+    asset_reports = list(bundle_report.asset_reports())
+
+    assert len(asset_reports) == 2
+    assert bundle_report.total_size == 686
