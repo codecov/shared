@@ -209,7 +209,7 @@ jobs:
       - name: Run tests
         run: |
           . venv/bin/activate
-          python -m pytest --cov=./
+          python -m pytest --cov=./ --junitxml=junit.xml
 
       # Don't upload on forks for now.
       - name: upload using codecovcli
@@ -217,24 +217,28 @@ jobs:
         run: |
           . venv/bin/activate
           codecovcli upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
+          codecovcli do-upload --report-type "test_results" --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
 
       - name: upload using codecovcli staging
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           . venv/bin/activate
           codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_STAGING_URL }} do-upload --report-type "test_results" --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_ORG_TOKEN_STAGING }} --fail-on-error
 
       - name: upload using codecovcli qa
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           . venv/bin/activate
           codecovcli -u ${{ secrets.CODECOV_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_QA_URL }} do-upload --report-type "test_results" --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_QA_TOKEN }} --fail-on-error
 
       - name: upload using codecovcli public qa
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           . venv/bin/activate
           codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} upload-process --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+          codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload --report-type "test_results" --flag python${{ matrix.python-version }} --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
 
 
   mutation:
