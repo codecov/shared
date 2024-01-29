@@ -1,3 +1,4 @@
+import json
 from typing import Optional, Tuple
 
 import ijson
@@ -80,6 +81,9 @@ class Parser:
                 self.db_session.delete(old_session)
                 self.db_session.flush()
 
+            # save top level bundle stats info
+            self.session.info = json.dumps(self.info)
+
             # this happens last so that we could potentially handle any ordering
             # of top-level keys inside the JSON (i.e. we couldn't associate a chunk
             # to an asset above if we parse the chunk before the asset)
@@ -121,6 +125,8 @@ class Parser:
             self.info["plugin_name"] = value
         elif prefix == "plugin.version":
             self.info["plugin_version"] = value
+        elif prefix == "duration":
+            self.info["duration"] = value
 
     def _parse_assets_event(self, prefix: str, event: str, value: str):
         if (prefix, event) == ("assets.item", "start_map"):
@@ -199,7 +205,8 @@ class Parser:
             inserts.extend(
                 [dict(asset_id=asset.id, chunk_id=chunk_id) for asset in assets]
             )
-        self.db_session.execute(assets_chunks.insert(), inserts)
+        if inserts:
+            self.db_session.execute(assets_chunks.insert(), inserts)
 
         # associate modules to chunks
         # FIXME: this isn't quite right - need to sort out how non-JS assets reference chunks
@@ -215,4 +222,5 @@ class Parser:
             inserts.extend(
                 [dict(chunk_id=chunk.id, module_id=module_id) for chunk in chunks]
             )
-        self.db_session.execute(chunks_modules.insert(), inserts)
+        if inserts:
+            self.db_session.execute(chunks_modules.insert(), inserts)

@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 import tempfile
@@ -73,6 +74,14 @@ class BundleReport:
             .filter(models.Session.bundle_id == self.bundle.id)
             .scalar()
         ) or 0
+
+    def info(self) -> dict:
+        session = (
+            self.db_session.query(models.Session)
+            .filter(models.Session.bundle_id == self.bundle.id)
+            .first()
+        )
+        return json.loads(session.info)
 
 
 class BundleAnalysisReport:
