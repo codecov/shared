@@ -76,7 +76,12 @@ class BundleReport:
         ) or 0
 
     def info(self) -> dict:
-        return json.loads(self.bundle.info)
+        session = (
+            self.db_session.query(models.Session)
+            .filter(models.Session.bundle_id == self.bundle.id)
+            .first()
+        )
+        return json.loads(session.info)
 
 
 class BundleAnalysisReport:
