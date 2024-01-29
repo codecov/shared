@@ -156,3 +156,18 @@ def test_bundle_report_no_modules():
 
     assert len(asset_reports) == 2
     assert bundle_report.total_size() == 144731
+
+
+def test_bundle_report_info():
+    report = BundleAnalysisReport()
+    report.ingest(sample_bundle_stats_path)
+    bundle_report = report.bundle_report("sample")
+    bundle_report_info = bundle_report.info()
+
+    assert bundle_report_info["version"] == "1"
+    assert bundle_report_info["bundler_name"] == "rollup"
+    assert bundle_report_info["bundler_version"] == "3.29.4"
+    assert bundle_report_info["built_at"] == 1701451048604
+    assert bundle_report_info["plugin_name"] == "codecov-vite-bundle-analysis-plugin"
+    assert bundle_report_info["plugin_version"] == "1.0.0"
+    assert bundle_report_info["duration"] == 331
