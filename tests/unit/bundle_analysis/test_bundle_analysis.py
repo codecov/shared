@@ -125,7 +125,7 @@ def test_bundle_report_no_assets():
     asset_reports = list(bundle_report.asset_reports())
 
     assert asset_reports == []
-    assert bundle_report.total_size == 0
+    assert bundle_report.total_size() == 0
 
 
 def test_bundle_report_no_chunks():
@@ -140,7 +140,7 @@ def test_bundle_report_no_chunks():
     asset_reports = list(bundle_report.asset_reports())
 
     assert len(asset_reports) == 2
-    assert bundle_report.total_size == 686
+    assert bundle_report.total_size() == 686
 
 
 def test_bundle_report_no_modules():
@@ -155,4 +155,4 @@ def test_bundle_report_no_modules():
     asset_reports = list(bundle_report.asset_reports())
 
     assert len(asset_reports) == 2
-    assert bundle_report.total_size == 686
+    assert bundle_report.total_size() == 686
