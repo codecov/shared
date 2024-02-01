@@ -1,9 +1,11 @@
 import gzip
 import io
 import tempfile
+from unittest.mock import MagicMock, patch
 
 import pytest
 from google.cloud import storage as google_storage
+from google.resumable_media.common import DataCorruption
 
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 from shared.storage.gcp import GCPStorageService
@@ -235,3 +237,39 @@ class TestGCPStorateService(BaseTestCase):
         assert sorted(expected_result_2, key=lambda x: x["size"]) == sorted(
             results_2, key=lambda x: x["size"]
         )
+
+    @patch("shared.storage.gcp.storage")
+    def test_read_file_retry_success(self, mock_storage):
+
+        storage = GCPStorageService(gcp_config)
+        mock_storage.Client.assert_called()
+        mock_blob = MagicMock(
+            name="fake_blob",
+            download_as_bytes=MagicMock(
+                side_effect=[
+                    DataCorruption(response="checksum match failed"),
+                    b"contents",
+                ]
+            ),
+        )
+        mock_storage.Blob.return_value = mock_blob
+        response = storage.read_file("root_bucket", "path/to/blob", None)
+        assert response == b"contents"
+
+    @patch("shared.storage.gcp.storage")
+    def test_read_file_retry_fail_twice(self, mock_storage):
+
+        storage = GCPStorageService(gcp_config)
+        mock_storage.Client.assert_called()
+        mock_blob = MagicMock(
+            name="fake_blob",
+            download_as_bytes=MagicMock(
+                side_effect=[
+                    DataCorruption(response="checksum match failed"),
+                    DataCorruption(response="checksum match failed"),
+                ]
+            ),
+        )
+        mock_storage.Blob.return_value = mock_blob
+        with pytest.raises(DataCorruption):
+            response = storage.read_file("root_bucket", "path/to/blob", None)

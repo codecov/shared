@@ -109,7 +109,7 @@ class GCPStorageService(BaseStorageService):
             file_contents = data
         return self.write_file(bucket_name, path, file_contents)
 
-    def read_file(self, bucket_name, path, file_obj=None):
+    def read_file(self, bucket_name, path, file_obj=None, *, retry=0):
         """Reads the content of a file
 
         Args:
@@ -134,11 +134,16 @@ class GCPStorageService(BaseStorageService):
                 blob.content_encoding = "gzip"
                 blob.patch()
             if file_obj is None:
-                return blob.download_as_string()
+                return blob.download_as_bytes(checksum="crc32c")
             else:
-                blob.download_to_file(file_obj)
+                blob.download_to_file(file_obj, checksum="crc32c")
         except google.cloud.exceptions.NotFound:
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
+        except google.resumable_media.common.DataCorruption:
+            if retry == 0:
+                log.info("Download checksum failed. Trying again")
+                return self.read_file(bucket_name, path, file_obj, retry=1)
+            raise
 
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage (what happens if the file doesnt exist?)
