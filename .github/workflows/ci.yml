@@ -204,7 +204,7 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r requirements.txt
           python setup.py develop
-          pip install codecov-cli>=0.4.6
+          pip install 'codecov-cli>=0.4.6'
 
       - name: Run tests
         run: |
