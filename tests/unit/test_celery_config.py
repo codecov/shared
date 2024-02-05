@@ -39,6 +39,7 @@ def test_celery_config():
         "app.tasks.profiling.*",
         "app.tasks.pulls.Sync",
         "app.tasks.remove_webhook.RemoveOldHook",
+        "app.tasks.save_commit_measurements.SaveCommitMeasurements",
         "app.tasks.static_analysis.*",
         "app.tasks.status.*",
         "app.tasks.sync_plans.SyncPlans",
@@ -97,6 +98,10 @@ def test_celery_config():
         (
             "app.tasks.sync_repo_languages.SyncLanguages",
             TaskConfigGroup.sync_repo_languages.value,
+        ),
+        (
+            "app.tasks.save_commit_measurements.SaveCommitMeasurements",
+            TaskConfigGroup.save_commit_measurements.value,
         ),
         ("app.tasks.sync_teams.SyncTeams", TaskConfigGroup.sync_teams.value),
         ("app.tasks.synchronize.Synchronize", TaskConfigGroup.synchronize.value),
