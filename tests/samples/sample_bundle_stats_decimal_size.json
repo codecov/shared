@@ -1,0 +1,201 @@
+{
+    "version": "1",
+    "plugin": {
+      "name": "codecov-vite-bundle-analysis-plugin",
+      "version": "1.0.0"
+    },
+    "builtAt": 1701451048604,
+    "duration": 331,
+    "bundler": { "name": "rollup", "version": "3.29.4" },
+    "bundleName": "sample",
+    "assets": [
+      {
+        "name": "assets/react-35ef61ed.svg",
+        "size": 4126.0,
+        "normalized": "assets/react-*.svg"
+      },
+      {
+        "name": "assets/index-d526a0c5.css",
+        "size": 1421.1,
+        "normalized": "assets/index-*.css"
+      },
+      {
+        "name": "assets/LazyComponent-fcbb0922.js",
+        "size": 294.2,
+        "normalized": "assets/LazyComponent-*.js"
+      },
+      {
+        "name": "assets/index-c8676264.js",
+        "size": 154.3,
+        "normalized": "assets/index-*.js"
+      },
+      {
+        "name": "assets/index-666d2e09.js",
+        "size": 144577.4,
+        "normalized": "assets/index-*.js"
+      }
+    ],
+    "chunks": [
+      {
+        "id": "LazyComponent",
+        "uniqueId": "0-LazyComponent",
+        "entry": false,
+        "initial": true,
+        "files": ["assets/LazyComponent-fcbb0922.js"],
+        "names": ["LazyComponent"]
+      },
+      {
+        "id": "index",
+        "uniqueId": "1-index",
+        "entry": false,
+        "initial": true,
+        "files": ["assets/index-c8676264.js"],
+        "names": ["index"]
+      },
+      {
+        "id": "index",
+        "uniqueId": "2-index",
+        "entry": true,
+        "initial": false,
+        "files": ["assets/index-666d2e09.js"],
+        "names": ["index"]
+      }
+    ],
+    "modules": [
+      {
+        "name": "./src/LazyComponent/LazyComponent.tsx",
+        "size": 497.5,
+        "chunkUniqueIds": ["0-LazyComponent"]
+      },
+      {
+        "name": "./src/IndexedLazyComponent/IndexedLazyComponent.tsx",
+        "size": 189.6,
+        "chunkUniqueIds": ["1-index"]
+      },
+      {
+        "name": "./src/IndexedLazyComponent/index.ts",
+        "size": 0.7,
+        "chunkUniqueIds": ["1-index"]
+      },
+      {
+        "name": "./vite/modulepreload-polyfill",
+        "size": 1548.8,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "./commonjsHelpers.js",
+        "size": 140.9,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/jsx-runtime.js?commonjs-module",
+        "size": 31.11,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react-jsx-runtime.production.min.js?commonjs-exports",
+        "size": 40.12,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/index.js?commonjs-module",
+        "size": 26.13,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react.production.min.js?commonjs-exports",
+        "size": 30.14,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react.production.min.js",
+        "size": 7591.15,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/index.js",
+        "size": 144.16,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react-jsx-runtime.production.min.js",
+        "size": 919.17,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/jsx-runtime.js",
+        "size": 103.18,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/client.js?commonjs-exports",
+        "size": 16,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/index.js?commonjs-module",
+        "size": 29,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/cjs/react-dom.production.min.js?commonjs-exports",
+        "size": 33,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/index.js?commonjs-module",
+        "size": 30,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/cjs/scheduler.production.min.js?commonjs-exports",
+        "size": 34,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/cjs/scheduler.production.min.js",
+        "size": 4315,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/index.js",
+        "size": 94,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/cjs/react-dom.production.min.js",
+        "size": 132340,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/index.js",
+        "size": 755,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/client.js",
+        "size": 102,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "./vite/preload-helper",
+        "size": 2488,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "./src/assets/react.svg",
+        "size": 45,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../../../../../vite.svg",
+        "size": 51,
+        "chunkUniqueIds": ["2-index"]
+      },
+      { "name": "./src/App.css", "size": 17, "chunkUniqueIds": ["2-index"] },
+      { "name": "./src/App.tsx", "size": 1977, "chunkUniqueIds": ["2-index"] },
+      { "name": "./src/index.css", "size": 17, "chunkUniqueIds": ["2-index"] },
+      { "name": "./src/main.tsx", "size": 181, "chunkUniqueIds": ["2-index"] },
+      { "name": "./index.html", "size": 0, "chunkUniqueIds": ["2-index"] }
+    ]
+  }
