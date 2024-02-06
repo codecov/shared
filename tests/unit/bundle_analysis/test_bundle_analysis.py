@@ -171,3 +171,16 @@ def test_bundle_report_info():
     assert bundle_report_info["plugin_name"] == "codecov-vite-bundle-analysis-plugin"
     assert bundle_report_info["plugin_version"] == "1.0.0"
     assert bundle_report_info["duration"] == 331
+
+
+def test_bundle_report_size_integer():
+    report_path = (
+        Path(__file__).parent.parent.parent
+        / "samples"
+        / "sample_bundle_stats_decimal_size.json"
+    )
+    report = BundleAnalysisReport()
+    report.ingest(report_path)
+    bundle_report = report.bundle_report("sample")
+
+    assert bundle_report.total_size() == 150572
