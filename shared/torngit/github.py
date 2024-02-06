@@ -36,7 +36,10 @@ log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
 
-GITHUB_REPO_COUNT_QUERY = """
+
+class GitHubGraphQLQueries(object):
+    _queries = dict(
+        REPO_TOTALCOUNT="""
 query {
     viewer {
         repositories(
@@ -47,11 +50,46 @@ query {
         }
     }
 }
-"""
+""",
+        REPOS_FROM_NODEIDS="""
+query GetReposFromNodeIds($node_ids: [ID!]!) {
+    nodes(ids: $node_ids) {
+        __typename 
+        ... on Repository {
+            # databaseId == service_id
+            databaseId
+            name
+            primaryLanguage {
+                name
+            }
+            isPrivate
+            defaultBranchRef {
+                name
+            }
+            owner {
+                # This ID is actually the node_id, not the ownerid
+                id
+                login
+            }
+        }
+    }
+}
+""",
+    )
+
+    def get(self, query_name: str) -> Optional[str]:
+        return self._queries.get(query_name, None)
+
+    def prepare(self, query_name: str, variables: dict) -> Optional[dict]:
+        # If Query was an object we could validate the variables
+        query = self.get(query_name)
+        if query is not None:
+            return {"query": query, "variables": variables}
 
 
 class Github(TorngitBaseAdapter):
     service = "github"
+    graphql = GitHubGraphQLQueries()
     urls = dict(
         repo="{username}/{name}",
         owner="{username}",
@@ -587,10 +625,46 @@ class Github(TorngitBaseAdapter):
             client,
             "post",
             "/graphql",
-            body=dict(query=GITHUB_REPO_COUNT_QUERY),
+            body=dict(query=self.graphql.get("REPO_TOTALCOUNT")),
             token=token,
         )
         return res["data"]["viewer"]["repositories"]["totalCount"]
+
+    async def get_repos_from_nodeids_generator(
+        self, repo_node_ids: List[str], expected_owner_username, *, token=None
+    ):
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        async with self.get_client() as client:
+            query = self.graphql.prepare(
+                "REPOS_FROM_NODEIDS", variables={"node_ids": repo_node_ids}
+            )
+            res = await self.api(
+                client,
+                "post",
+                "/graphql",
+                body=query,
+                token=token,
+            )
+            for raw_repo_data in res["data"]["nodes"]:
+                primary_language = raw_repo_data.get("primaryLanguage")
+                default_branch = raw_repo_data.get("defaultBranchRef")
+                repo = {
+                    "service_id": raw_repo_data["databaseId"],
+                    "name": raw_repo_data["name"],
+                    "language": self._validate_language(
+                        primary_language.get("name") if primary_language else None
+                    ),
+                    "private": raw_repo_data["isPrivate"],
+                    "branch": default_branch.get("name") if default_branch else None,
+                    "owner": {
+                        "node_id": raw_repo_data["owner"]["id"],
+                        "username": raw_repo_data["owner"]["login"],
+                    },
+                }
+                repo["owner"]["is_expected_owner"] = (
+                    repo["owner"]["username"] == expected_owner_username
+                )
+                yield repo
 
     async def list_repos_using_installation(self, username=None):
         """

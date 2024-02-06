@@ -1815,3 +1815,39 @@ class TestGithubTestCase(object):
         )
         res = await ghapp_handler.request_webhook_redelivery(17322555251)
         assert res is True
+
+    @pytest.mark.asyncio
+    async def test_get_repos_from_nodeids_generator(self, valid_handler, codecov_vcr):
+        repo_node_ids = ["R_kgDOHrbKcg", "R_kgDOLEJx2g"]
+        expected = [
+            {
+                "service_id": 515295858,
+                "name": "example-python",
+                "language": "shell",
+                "private": False,
+                "branch": "master",
+                "owner": {
+                    "node_id": "U_kgDOBZOfKw",
+                    "username": "codecove2e",
+                    "is_expected_owner": True,
+                },
+            },
+            {
+                "service_id": 742552026,
+                "name": "test-no-languages",
+                "language": None,
+                "private": False,
+                "branch": None,
+                "owner": {
+                    "node_id": "U_kgDOBZOfKw",
+                    "username": "codecove2e",
+                    "is_expected_owner": True,
+                },
+            },
+        ]
+        received = []
+        async for repo in valid_handler.get_repos_from_nodeids_generator(
+            repo_node_ids, "codecove2e"
+        ):
+            received.append(repo)
+        assert received == expected
