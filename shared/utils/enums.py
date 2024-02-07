@@ -34,7 +34,6 @@ class TaskConfigGroup(Enum):
     profiling = "profiling"
     pulls = "pulls"
     remove_webhook = "remove_webhook"
-    save_commit_measurements = "save_commit_measurements"
     send_email = "send_email"
     static_analysis = "static_analysis"
     status = "status"
