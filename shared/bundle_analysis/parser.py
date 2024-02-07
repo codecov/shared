@@ -138,7 +138,7 @@ class Parser:
         elif prefix == "assets.item.normalized":
             self.asset.normalized_name = value
         elif prefix == "assets.item.size":
-            self.asset.size = value
+            self.asset.size = int(value)
         elif (prefix, event) == ("assets.item", "end_map"):
             # save asset
             self.db_session.add(self.asset)
@@ -180,7 +180,7 @@ class Parser:
         elif prefix == "modules.item.name":
             self.module.name = value
         elif prefix == "modules.item.size":
-            self.module.size = value
+            self.module.size = int(value)
         elif prefix == "modules.item.chunkUniqueIds.item":
             self.module_chunk_unique_external_ids.append(value)
         elif (prefix, event) == ("modules.item", "end_map"):
