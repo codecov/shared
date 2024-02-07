@@ -14,9 +14,6 @@ sync_repos_task_name = f"app.tasks.{TaskConfigGroup.sync_repos.value}.SyncRepos"
 sync_repo_languages_task_name = (
     f"app.tasks.{TaskConfigGroup.sync_repo_languages.value}.SyncLanguages"
 )
-save_commit_measurements_task_name = (
-    f"app.tasks.{TaskConfigGroup.save_commit_measurements.value}.SaveCommitMeasurements"
-)
 delete_owner_task_name = f"app.tasks.{TaskConfigGroup.delete_owner.value}.DeleteOwner"
 notify_task_name = f"app.tasks.{TaskConfigGroup.notify.value}.Notify"
 pulls_task_name = f"app.tasks.{TaskConfigGroup.pulls.value}.Sync"
@@ -69,6 +66,7 @@ profiling_normalization_task_name = (
     f"app.tasks.{TaskConfigGroup.profiling.value}.normalizer"
 )
 
+# Timeseries tasks
 timeseries_backfill_task_name = f"app.tasks.{TaskConfigGroup.timeseries.value}.backfill"
 timeseries_backfill_dataset_task_name = (
     f"app.tasks.{TaskConfigGroup.timeseries.value}.backfill_dataset"
@@ -77,6 +75,9 @@ timeseries_backfill_commits_task_name = (
     f"app.tasks.{TaskConfigGroup.timeseries.value}.backfill_commits"
 )
 timeseries_delete_task_name = f"app.tasks.{TaskConfigGroup.timeseries.value}.delete"
+timeseries_save_commit_measurements_task_name = (
+    f"app.tasks.{TaskConfigGroup.timeseries.value}.save_commit_measurements"
+)
 
 static_analysis_task_name = (
     f"app.tasks.{TaskConfigGroup.static_analysis.value}.check_suite"
@@ -209,6 +210,10 @@ class BaseCeleryConfig(object):
             "soft_time_limit": timeseries_soft_time_limit,
             "time_limit": timeseries_hard_time_limit,
         },
+        timeseries_save_commit_measurements_task_name: {
+            "soft_time_limit": timeseries_soft_time_limit,
+            "time_limit": timeseries_hard_time_limit,
+        },
         gh_app_webhook_check_task_name: {
             "soft_time_limit": gh_webhook_retry_soft_time_limit,
             "time_limit": gh_webhook_retry_hard_time_limit,
@@ -239,15 +244,6 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.sync_repo_languages.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        save_commit_measurements_task_name: {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.save_commit_measurements.value,
                 "queue",
                 default=task_default_queue,
             )
