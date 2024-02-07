@@ -210,6 +210,10 @@ class BaseCeleryConfig(object):
             "soft_time_limit": timeseries_soft_time_limit,
             "time_limit": timeseries_hard_time_limit,
         },
+        timeseries_save_commit_measurements_task_name: {
+            "soft_time_limit": timeseries_soft_time_limit,
+            "time_limit": timeseries_hard_time_limit,
+        },
         gh_app_webhook_check_task_name: {
             "soft_time_limit": gh_webhook_retry_soft_time_limit,
             "time_limit": gh_webhook_retry_hard_time_limit,
