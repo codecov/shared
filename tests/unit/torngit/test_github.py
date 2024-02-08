@@ -1451,3 +1451,184 @@ class TestUnitGithub(object):
                 "refresh_token": "new_refresh_token",
             }
         )
+
+    @pytest.mark.asyncio
+    async def test__get_owner_from_nodeid(self, ghapp_handler):
+        with respx.mock:
+            mocked_route = respx.post("https://api.github.com/graphql").mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    headers={"Content-Type": "application/json"},
+                    json={
+                        "data": {
+                            "node": {
+                                "__typename": "Organization",
+                                "name": "Codecov",
+                                "login": "codecov",
+                                "databaseId": 8226205,
+                            },
+                        }
+                    },
+                )
+            )
+            node_id = "U_kgDOBfIxWg"
+            async with ghapp_handler.get_client() as client:
+                res = await ghapp_handler._get_owner_from_nodeid(
+                    client=client, token=MagicMock(), owner_node_id=node_id
+                )
+            assert res == {"username": "codecov", "service_id": 8226205}
+            assert mocked_route.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_get_repos_from_nodeids(self, ghapp_handler):
+        # Mocking different responses from the graphQL API
+        # because it all goes to the same endpoint but this test expects a 2nd call
+        # with owner by node_id query
+        def mock_route_side_effect(request):
+            content_string = request.content.decode()
+            if "query GetReposFromNodeIds" in content_string:
+                return httpx.Response(
+                    status_code=200,
+                    json={
+                        "data": {
+                            "nodes": [
+                                {
+                                    "__typename": "Repository",
+                                    "databaseId": 460565350,
+                                    "name": "codecov-cli",
+                                    "primaryLanguage": {"name": "Python"},
+                                    "isPrivate": False,
+                                    "defaultBranchRef": {"name": "main"},
+                                    "owner": {
+                                        "id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                                        "login": "codecov",
+                                    },
+                                },
+                                None,
+                                {
+                                    "__typename": "Repository",
+                                    "databaseId": 665728948,
+                                    "name": "worker",
+                                    "primaryLanguage": {"name": "Python"},
+                                    "isPrivate": False,
+                                    "defaultBranchRef": {"name": "main"},
+                                    "owner": {
+                                        "id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                                        "login": "codecov",
+                                    },
+                                },
+                                {
+                                    "__typename": "Repository",
+                                    "databaseId": 553624697,
+                                    "name": "components-demo",
+                                    "primaryLanguage": {"name": "Python"},
+                                    "isPrivate": False,
+                                    "defaultBranchRef": {"name": "main"},
+                                    "owner": {
+                                        "id": "U_kgDOBfIxWg",
+                                        "login": "giovanni-guidini",
+                                    },
+                                },
+                                {
+                                    "__typename": "Organization",
+                                    "name": "Codecov",
+                                    "login": "codecov",
+                                    "databaseId": 8226205,
+                                },
+                                {
+                                    "__typename": "User",
+                                    "login": "giovanni-guidini",
+                                    "databaseId": 99758426,
+                                },
+                            ]
+                        },
+                        "extensions": {
+                            "warnings": [
+                                {
+                                    "type": "DEPRECATION",
+                                    "message": "The id MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU= is deprecated. Update your cache to use the next_global_id from the data payload.",
+                                    "data": {
+                                        "legacy_global_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                                        "next_global_id": "O_kgDOAH2FnQ",
+                                    },
+                                    "link": "https://docs.github.com",
+                                }
+                            ]
+                        },
+                    },
+                )
+            if "query GetOwnerFromNodeId" in content_string:
+                return httpx.Response(
+                    status_code=200,
+                    json={
+                        "data": {
+                            "node": {
+                                "__typename": "Organization",
+                                "name": "Codecov",
+                                "login": "codecov",
+                                "databaseId": 8226205,
+                            },
+                        }
+                    },
+                )
+            raise Exception("Unexpected request")
+
+        # Actual test
+        with respx.mock:
+            mocked_route = respx.post("https://api.github.com/graphql").mock(
+                side_effect=mock_route_side_effect
+            )
+            node_ids = [
+                "R_kgDOG3OrZg",  # codecov/codecov-cli
+                "R_kgDOJ643tA",  # codecov/worker
+                "R_kgDOIP-keQ",  # giovanni-guidini/components-demo
+                "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",  # codecov
+                "U_kgDOBfIxWg",  # giovanni-guidini
+            ]
+            request = ghapp_handler.get_repos_from_nodeids_generator(
+                repo_node_ids=node_ids, expected_owner_username="giovanni-guidini"
+            )
+            repos = []
+            async for repo in request:
+                repos.append(repo)
+            assert repos == [
+                {
+                    "branch": "main",
+                    "language": "python",
+                    "name": "codecov-cli",
+                    "owner": {
+                        "is_expected_owner": False,
+                        "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                        "service_id": 8226205,
+                        "username": "codecov",
+                    },
+                    "service_id": 460565350,
+                    "private": False,
+                },
+                {
+                    "branch": "main",
+                    "language": "python",
+                    "name": "worker",
+                    "owner": {
+                        "is_expected_owner": False,
+                        "node_id": "MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=",
+                        "service_id": 8226205,
+                        "username": "codecov",
+                    },
+                    "service_id": 665728948,
+                    "private": False,
+                },
+                {
+                    "branch": "main",
+                    "language": "python",
+                    "name": "components-demo",
+                    "owner": {
+                        "is_expected_owner": True,
+                        "node_id": "U_kgDOBfIxWg",
+                        "username": "giovanni-guidini",
+                    },
+                    "service_id": 553624697,
+                    "private": False,
+                },
+            ]
+            assert mocked_route.call_count == 2

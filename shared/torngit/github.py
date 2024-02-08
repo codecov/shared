@@ -36,7 +36,10 @@ log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
 
-GITHUB_REPO_COUNT_QUERY = """
+
+class GitHubGraphQLQueries(object):
+    _queries = dict(
+        REPO_TOTALCOUNT="""
 query {
     viewer {
         repositories(
@@ -47,11 +50,61 @@ query {
         }
     }
 }
-"""
+""",
+        REPOS_FROM_NODEIDS="""
+query GetReposFromNodeIds($node_ids: [ID!]!) {
+    nodes(ids: $node_ids) {
+        __typename 
+        ... on Repository {
+            # databaseId == service_id
+            databaseId
+            name
+            primaryLanguage {
+                name
+            }
+            isPrivate
+            defaultBranchRef {
+                name
+            }
+            owner {
+                # This ID is actually the node_id, not the ownerid
+                id
+                login
+            }
+        }
+    }
+}
+""",
+        OWNER_FROM_NODEID="""
+query GetOwnerFromNodeId($node_id: ID!) {
+    node(id: $node_id) {
+        __typename
+        ... on Organization {
+            login
+            databaseId
+        }
+        ... on User {
+            login
+            databaseId
+        }
+    }
+}
+""",
+    )
+
+    def get(self, query_name: str) -> Optional[str]:
+        return self._queries.get(query_name, None)
+
+    def prepare(self, query_name: str, variables: dict) -> Optional[dict]:
+        # If Query was an object we could validate the variables
+        query = self.get(query_name)
+        if query is not None:
+            return {"query": query, "variables": variables}
 
 
 class Github(TorngitBaseAdapter):
     service = "github"
+    graphql = GitHubGraphQLQueries()
     urls = dict(
         repo="{username}/{name}",
         owner="{username}",
@@ -587,10 +640,91 @@ class Github(TorngitBaseAdapter):
             client,
             "post",
             "/graphql",
-            body=dict(query=GITHUB_REPO_COUNT_QUERY),
+            body=dict(query=self.graphql.get("REPO_TOTALCOUNT")),
             token=token,
         )
         return res["data"]["viewer"]["repositories"]["totalCount"]
+
+    async def _get_owner_from_nodeid(self, client, token, owner_node_id: str):
+        query = self.graphql.prepare(
+            "OWNER_FROM_NODEID", variables={"node_id": owner_node_id}
+        )
+        res = await self.api(
+            client,
+            "post",
+            "/graphql",
+            body=query,
+            token=token,
+        )
+        owner_data = res["data"]["node"]
+        return {"username": owner_data["login"], "service_id": owner_data["databaseId"]}
+
+    async def get_repos_from_nodeids_generator(
+        self, repo_node_ids: List[str], expected_owner_username, *, token=None
+    ):
+        """Gets a list of repos from github graphQL API when the node_ids for the repos are known.
+        Also gets the owner info (also from graphQL API) if the owner is not the expected one.
+        The expected owner is one we are sure to have the info for available.
+
+        Couldn't find how to use pagination with this endpoint, so we will implement it ourselves
+        believing that the max number of node_ids we can use is 100.
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        owners_seen = dict()
+        async with self.get_client() as client:
+            max_index = len(repo_node_ids)
+            curr_index = 0
+            PAGE_SIZE = 100
+            while curr_index < max_index:
+                chunk = repo_node_ids[curr_index : curr_index + PAGE_SIZE]
+                curr_index += PAGE_SIZE
+                query = self.graphql.prepare(
+                    "REPOS_FROM_NODEIDS", variables={"node_ids": chunk}
+                )
+                res = await self.api(
+                    client,
+                    "post",
+                    "/graphql",
+                    body=query,
+                    token=token,
+                )
+                for raw_repo_data in res["data"]["nodes"]:
+                    if (
+                        raw_repo_data is None
+                        or raw_repo_data["__typename"] != "Repository"
+                    ):
+                        continue
+                    primary_language = raw_repo_data.get("primaryLanguage")
+                    default_branch = raw_repo_data.get("defaultBranchRef")
+                    repo = {
+                        "service_id": raw_repo_data["databaseId"],
+                        "name": raw_repo_data["name"],
+                        "language": self._validate_language(
+                            primary_language.get("name") if primary_language else None
+                        ),
+                        "private": raw_repo_data["isPrivate"],
+                        "branch": default_branch.get("name")
+                        if default_branch
+                        else None,
+                        "owner": {
+                            "node_id": raw_repo_data["owner"]["id"],
+                            "username": raw_repo_data["owner"]["login"],
+                        },
+                    }
+                    is_expected_owner = (
+                        repo["owner"]["username"] == expected_owner_username
+                    )
+                    if not is_expected_owner:
+                        ownerid = repo["owner"]["node_id"]
+                        if ownerid not in owners_seen:
+                            owner_info = await self._get_owner_from_nodeid(
+                                client, token, ownerid
+                            )
+                            owners_seen[ownerid] = owner_info
+                        repo["owner"] = {**repo["owner"], **owners_seen[ownerid]}
+
+                    repo["owner"]["is_expected_owner"] = is_expected_owner
+                    yield repo
 
     async def list_repos_using_installation(self, username=None):
         """
