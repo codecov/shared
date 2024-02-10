@@ -4,7 +4,7 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from typing import List, Optional
+from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
 import httpx
@@ -810,6 +810,44 @@ class Github(TorngitBaseAdapter):
             for future in asyncio.as_completed(futures):
                 next_page = await future
                 yield next_page
+
+    # GH App Installation
+    async def get_gh_app_installation(self, installation_id: int, token=None) -> Dict:
+        """
+        Gets gh app installation from the source.
+        Reference:
+            https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-an-installation-for-the-authenticated-app
+        Args:
+            installation_id (int): Installation id belonging to the github app
+        Returns:
+            Dict: a dictionary that adheres to gh's response value in the link above
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        url = f"/app/installations/{installation_id}"
+        async with self.get_client() as client:
+            try:
+                return await self.api(client, "get", url, token=token)
+            except TorngitClientError as ce:
+                if ce.code == 404:
+                    raise TorngitObjectNotFoundError(
+                        response_data=ce.response_data,
+                        message=f"Cannot find gh app with installation_id {installation_id}",
+                    )
+                raise
+
+    async def get_repo_languages(self, token=None) -> List[str]:
+        """
+        Gets the languages belonging to this repository.
+        Reference:
+            https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repository-languages
+        Returns:
+            List[str]: A list of language names
+        """
+        async with self.get_client() as client:
+            res = await self.api(
+                client, "get", "/repos/{}/languages".format(self.slug), token=token
+            )
+        return list(k.lower() for k in res.keys())
 
     async def list_teams(self, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
