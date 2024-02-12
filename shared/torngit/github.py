@@ -1092,6 +1092,7 @@ class Github(TorngitBaseAdapter):
     # Source
     # ------
     async def get_source(self, path, ref, token=None):
+        print("ENTERING GITHUB GET_SOURCE")
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
         try:
@@ -1112,6 +1113,12 @@ class Github(TorngitBaseAdapter):
                     message=f"Path {path} not found at {ref}",
                 )
             raise
+
+        print("FULL RESPONSE", content)
+        print("RAW", content.get("raw_url"))
+        print("CONTENT", content.get("content"))
+
+        print("EXITING GITHUB GET_SOURCE")
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
 
     async def get_commit_diff(self, commit, context=None, token=None):
