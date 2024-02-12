@@ -1117,7 +1117,7 @@ class Github(TorngitBaseAdapter):
                     print("FETCHING FROM URL")
                     res = await self.api(
                         client=client,
-                        client="get",
+                        method="get",
                         url=content["download_url"]
                     )
 
