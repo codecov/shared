@@ -8,6 +8,23 @@ from shared.torngit.exceptions import (
 )
 from shared.torngit.github import Github
 
+# This is a fake key
+fake_private_key = """-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQDCFqq2ygFh9UQU/6PoDJ6L9e4ovLPCHtlBt7vzDwyfwr3XGxln
+0VbfycVLc6unJDVEGZ/PsFEuS9j1QmBTTEgvCLR6RGpfzmVuMO8wGVEO52pH73h9
+rviojaheX/u3ZqaA0di9RKy8e3L+T0ka3QYgDx5wiOIUu1wGXCs6PhrtEwICBAEC
+gYBu9jsi0eVROozSz5dmcZxUAzv7USiUcYrxX007SUpm0zzUY+kPpWLeWWEPaddF
+VONCp//0XU8hNhoh0gedw7ZgUTG6jYVOdGlaV95LhgY6yXaQGoKSQNNTY+ZZVT61
+zvHOlPynt3GZcaRJOlgf+3hBF5MCRoWKf+lDA5KiWkqOYQJBAMQp0HNVeTqz+E0O
+6E0neqQDQb95thFmmCI7Kgg4PvkS5mz7iAbZa5pab3VuyfmvnVvYLWejOwuYSp0U
+9N8QvUsCQQD9StWHaVNM4Lf5zJnB1+lJPTXQsmsuzWvF3HmBkMHYWdy84N/TdCZX
+Cxve1LR37lM/Vijer0K77wAx2RAN/ppZAkB8+GwSh5+mxZKydyPaPN29p6nC6aLx
+3DV2dpzmhD0ZDwmuk8GN+qc0YRNOzzJ/2UbHH9L/lvGqui8I6WLOi8nDAkEA9CYq
+ewfdZ9LcytGz7QwPEeWVhvpm0HQV9moetFWVolYecqBP4QzNyokVnpeUOqhIQAwe
+Z0FJEQ9VWsG+Df0noQJBALFjUUZEtv4x31gMlV24oiSWHxIRX4fEND/6LpjleDZ5
+C/tY+lZIEO1Gg/FxSMB+hwwhwfSuE3WohZfEcSy+R48=
+-----END RSA PRIVATE KEY-----"""
+
 
 @pytest.fixture
 def valid_handler():
@@ -113,7 +130,6 @@ class TestGithubTestCase(object):
             )
         )
         res = await handler.get_authenticated_user(code)
-        print(res)
         assert res == {
             "login": "ThiagoCodecov",
             "id": 44376991,
@@ -166,7 +182,6 @@ class TestGithubTestCase(object):
             )
         )
         res = await handler.get_authenticated_user(code)
-        print(res)
         assert res == {
             "login": "ThiagoCodecov",
             "id": 44376991,
@@ -334,7 +349,6 @@ class TestGithubTestCase(object):
             "119c1907fb266f374b8440bbd70dccbea54daf8f",
         ]
         res = await valid_handler.get_pull_request_commits("1")
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -384,7 +398,6 @@ class TestGithubTestCase(object):
         }
 
         commit = await valid_handler.get_commit("6895b64")
-        print(commit)
         assert commit["author"] == expected_result["author"]
         assert commit == expected_result
 
@@ -414,7 +427,6 @@ class TestGithubTestCase(object):
         commit = await valid_handler.get_commit(
             "75f355d8d14ba3d7761c728b4d2607cde0eef065"
         )
-        print(commit)
         assert commit["author"] == expected_result["author"]
         assert commit == expected_result
 
@@ -568,7 +580,6 @@ class TestGithubTestCase(object):
                 commit_sha, status, context, f"{status} - {i} - {context}", target_url
             )
         res = await valid_handler.get_commit_statuses(commit_sha)
-        print(res._statuses)
         assert res._statuses == [
             {
                 "time": "2020-10-14T21:43:30Z",
@@ -650,7 +661,6 @@ class TestGithubTestCase(object):
             "aaaaaaaaaa",
             target_url,
         )
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -664,7 +674,6 @@ class TestGithubTestCase(object):
             "thiago/test-1",
         ]
         branches = sorted(await valid_handler.get_branches())
-        print(sorted(map(lambda a: a[0], branches)))
         assert sorted(map(lambda a: a[0], branches)) == expected_result
 
     @pytest.mark.asyncio
@@ -674,14 +683,12 @@ class TestGithubTestCase(object):
             "sha": "38c2d0214f2a48c9212a140f5311977059a15b35",
         }
         branch = await valid_handler.get_branch("main")
-        print(branch)
         assert branch == expected_result
 
     @pytest.mark.asyncio
     async def test_get_branch_not_existent(self, valid_handler, codecov_vcr):
         with pytest.raises(TorngitClientGeneralError) as e:
             branch = await valid_handler.get_branch("none")
-            print(branch)
             assert e[0] == 404
             assert e[1]["message"] == "Branch not found"
 
@@ -710,7 +717,6 @@ class TestGithubTestCase(object):
             "last_response": {"code": None, "status": "unused", "message": None},
         }
         res = await valid_handler.post_webhook(name, url, events, secret)
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -744,7 +750,6 @@ class TestGithubTestCase(object):
         res = await valid_handler.edit_webhook(
             "255680134", new_name, url, events, secret
         )
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -889,7 +894,6 @@ class TestGithubTestCase(object):
         }
 
         res = await valid_handler.get_compare(base, head)
-        print(res)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         assert res == expected_result
 
@@ -954,7 +958,6 @@ class TestGithubTestCase(object):
             },
         }
         res = await valid_handler.get_repository()
-        print(res)
         assert res["owner"] == expected_result["owner"]
         assert res["repo"] == expected_result["repo"]
         assert res == expected_result
@@ -970,6 +973,78 @@ class TestGithubTestCase(object):
         expected_result = []
         res = await valid_repo_no_languages.get_repo_languages()
         assert res == expected_result
+
+    @pytest.mark.asyncio
+    async def test_get_gh_app_installation(
+        self, mocker, generic_valid_handler, codecov_vcr
+    ):
+        expected_response = {
+            "id": 12345678,
+            "account": {
+                "login": "fake-test-user",
+                "id": 72693746,
+                "node_id": "AMSDFU7234Msdf7N#",
+                "avatar_url": "https://avatars.githubusercontent.com/u/72693746?v=4",
+                "gravatar_id": "",
+                "url": "https://api.github.com/users/fake-test-user",
+                "html_url": "https://github.com/fake-test-user",
+                "followers_url": "https://api.github.com/users/fake-test-user/followers",
+                "following_url": "https://api.github.com/users/fake-test-user/following{/other_user}",
+                "gists_url": "https://api.github.com/users/fake-test-user/gists{/gist_id}",
+                "starred_url": "https://api.github.com/users/fake-test-user/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/fake-test-user/subscriptions",
+                "organizations_url": "https://api.github.com/users/fake-test-user/orgs",
+                "repos_url": "https://api.github.com/users/fake-test-user/repos",
+                "events_url": "https://api.github.com/users/fake-test-user/events{/privacy}",
+                "received_events_url": "https://api.github.com/users/fake-test-user/received_events",
+                "type": "User",
+                "site_admin": False,
+            },
+            "repository_selection": "all",
+            "access_tokens_url": "https://api.github.com/app/installations/12345678/access_tokens",
+            "repositories_url": "https://api.github.com/installation/repositories",
+            "html_url": "https://github.com/settings/installations/12345678",
+            "app_id": 345678,
+            "app_slug": "local-github-app-adrian",
+            "target_id": 72693746,
+            "target_type": "User",
+            "permissions": {
+                "checks": "write",
+                "contents": "write",
+                "metadata": "read",
+                "statuses": "write",
+                "pull_requests": "write",
+                "administration": "read",
+            },
+            "events": [],
+            "created_at": "2024-02-11T20:39:08.000Z",
+            "updated_at": "2024-02-11T20:39:09.000Z",
+            "single_file_name": None,
+            "has_multiple_single_files": False,
+            "single_file_paths": [],
+            "suspended_by": None,
+            "suspended_at": None,
+        }
+
+        mocker.patch("shared.github.get_pem", return_value=fake_private_key)
+
+        res = await generic_valid_handler.get_gh_app_installation(
+            installation_id=12345678
+        )
+        assert res == expected_response
+
+    @pytest.mark.asyncio
+    async def test_get_gh_app_installation_non_existent(
+        self, mocker, generic_valid_handler, codecov_vcr
+    ):
+        mocker.patch("shared.github.get_pem", return_value=fake_private_key)
+
+        with pytest.raises(TorngitObjectNotFoundError) as e:
+            await generic_valid_handler.get_gh_app_installation(
+                installation_id=12345678
+            )
+            assert e[0] == 404
+            assert e[1]["message"] == "Cannot find gh app with installation_id 12345678"
 
     @pytest.mark.asyncio
     async def test_get_source_master(self, valid_handler, codecov_vcr):
@@ -1005,7 +1080,6 @@ class TestGithubTestCase(object):
         }
         path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
         res = await valid_handler.get_source(path, ref)
-        print(res)
         assert res["content"].split(b"\n") == expected_result["content"].split(b"\n")
         assert res == expected_result
 
@@ -1161,7 +1235,6 @@ class TestGithubTestCase(object):
             {"name": "unit.coverage.xml", "path": "unit.coverage.xml", "type": "file"},
         ]
         res = await valid_handler.list_top_level_files("master")
-        print(sorted(res, key=lambda x: x["path"]))
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -1419,7 +1492,6 @@ class TestGithubTestCase(object):
                 }
             ],
         }
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -1547,7 +1619,6 @@ class TestGithubTestCase(object):
                 }
             ],
         }
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -1773,7 +1844,6 @@ class TestGithubTestCase(object):
                 }
             ],
         }
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
