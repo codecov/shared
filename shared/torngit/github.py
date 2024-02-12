@@ -1106,6 +1106,24 @@ class Github(TorngitBaseAdapter):
                     ref=ref,
                     token=token,
                 )
+
+                print("FULL RESPONSE", content)
+                print("RAW", content.get("download_url"))
+                print("CONTENT", content.get("content"))
+
+                # When file size is greated than 1MB, content would not populate,
+                # instead we have to retrieve it from the download_url
+                if not content.get("content") and content.get("download_url") and content.get("encoding") == "none":
+                    print("FETCHING FROM URL")
+                    res = await self.api(
+                        client=client,
+                        client="get",
+                        url=content["download_url"]
+                    )
+
+                    print("RESPONSE: ", res, type(res))
+                    return dict(content=res, commitid=content["sha"])
+
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -1113,10 +1131,6 @@ class Github(TorngitBaseAdapter):
                     message=f"Path {path} not found at {ref}",
                 )
             raise
-
-        print("FULL RESPONSE", content)
-        print("RAW", content.get("raw_url"))
-        print("CONTENT", content.get("content"))
 
         print("EXITING GITHUB GET_SOURCE")
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
