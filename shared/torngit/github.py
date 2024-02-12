@@ -1092,7 +1092,6 @@ class Github(TorngitBaseAdapter):
     # Source
     # ------
     async def get_source(self, path, ref, token=None):
-        print("ENTERING GITHUB GET_SOURCE")
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
         try:
@@ -1107,22 +1106,14 @@ class Github(TorngitBaseAdapter):
                     token=token,
                 )
 
-                print("FULL RESPONSE", content)
-                print("RAW", content.get("download_url"))
-                print("CONTENT", content.get("content"))
-
                 # When file size is greated than 1MB, content would not populate,
                 # instead we have to retrieve it from the download_url
                 if not content.get("content") and content.get("download_url") and content.get("encoding") == "none":
-                    print("FETCHING FROM URL")
-                    res = await self.api(
+                    content["content"] = await self.api(
                         client=client,
                         method="get",
                         url=content["download_url"]
                     )
-
-                    print("RESPONSE: ", res, type(res))
-                    return dict(content=res, commitid=content["sha"])
 
         except TorngitClientError as ce:
             if ce.code == 404:
@@ -1132,7 +1123,6 @@ class Github(TorngitBaseAdapter):
                 )
             raise
 
-        print("EXITING GITHUB GET_SOURCE")
         return dict(content=b64decode(content["content"]), commitid=content["sha"])
 
     async def get_commit_diff(self, commit, context=None, token=None):
