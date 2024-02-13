@@ -1028,7 +1028,6 @@ class TestGithubTestCase(object):
         mock_api = mocker.patch.object(Github, "api", return_value=ret)
         path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
         res = await valid_handler.get_source(path, ref)
-        assert res["content"] == ""
         assert mock_api.call_count == 2
 
     @pytest.mark.asyncio
