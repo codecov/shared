@@ -238,6 +238,10 @@ config_schema = {
                     "enabled": {"type": "boolean"},
                 },
             },
+            "push_webhook_ignore_repo_names": {
+                "type": "list",
+                "schema": {"type": "string"},
+            },
         },
     },
     "services": {
