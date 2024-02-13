@@ -104,7 +104,10 @@ def test_celery_config():
         ("app.tasks.timeseries.backfill_commits", TaskConfigGroup.timeseries.value),
         ("app.tasks.timeseries.backfill_dataset", TaskConfigGroup.timeseries.value),
         ("app.tasks.timeseries.delete", TaskConfigGroup.timeseries.value),
-        ("app.tasks.timeseries.save_commit_measurements", TaskConfigGroup.timeseries.value),
+        (
+            "app.tasks.timeseries.save_commit_measurements",
+            TaskConfigGroup.timeseries.value,
+        ),
         ("app.tasks.upload.Upload", TaskConfigGroup.upload.value),
         ("app.tasks.upload.UploadProcessor", TaskConfigGroup.upload.value),
         ("app.tasks.upload.UploadFinisher", TaskConfigGroup.upload.value),
