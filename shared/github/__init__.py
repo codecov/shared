@@ -28,6 +28,21 @@ class InvalidInstallationError(Exception):
     pass
 
 
+# TODO: use this fn in the get_github_integration_token below and test it separately
+def get_github_jwt_token(service: str) -> Optional[str]:
+    # https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/
+    now = int(time())
+    payload = {
+        # issued at time
+        "iat": now,
+        # JWT expiration time (max 10 minutes)
+        "exp": now + int(get_config(service, "integration", "expires", default=500)),
+        # Integration's GitHub identifier
+        "iss": get_config(service, "integration", "id"),
+    }
+    return jwt.encode(payload, get_pem(service), algorithm="RS256")
+
+
 def get_github_integration_token(service, integration_id=None) -> Optional[str]:
     # https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/
     now = int(time())

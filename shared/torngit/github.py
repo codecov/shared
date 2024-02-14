@@ -4,13 +4,14 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from typing import List, Optional
+from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
 import httpx
 from httpx import Response
 
 from shared.config import get_config
+from shared.github import get_github_jwt_token
 from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
@@ -165,6 +166,7 @@ class Github(TorngitBaseAdapter):
         Makes a single http request to GitHub and returns the parsed response
         """
         token_to_use = token or self.token
+
         if not token_to_use:
             raise TorngitMisconfiguredCredentials()
         response = await self.make_http_call(*args, token_to_use=token_to_use, **kwargs)
@@ -810,6 +812,42 @@ class Github(TorngitBaseAdapter):
             for future in asyncio.as_completed(futures):
                 next_page = await future
                 yield next_page
+
+    # GH App Installation
+    async def get_gh_app_installation(self, installation_id: int) -> Dict:
+        """
+        Gets gh app installation from the source.
+        Reference:
+            https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-an-installation-for-the-authenticated-app
+        Args:
+            installation_id (int): Installation id belonging to the github app
+        Returns:
+            Dict: a dictionary that adheres to gh's response value in the link above
+        """
+        jwt_token = get_github_jwt_token(service=self.service)
+        url = f"/app/installations/{installation_id}"
+        headers = {
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {self.token['key']}",
+            "X-GitHub-Api-Version": "2022-11-28",
+        }
+
+        async with self.get_client() as client:
+            try:
+                return await self.api(
+                    client,
+                    "get",
+                    url,
+                    token={"key": jwt_token},
+                    headers=headers,
+                )
+            except TorngitClientError as ce:
+                if ce.code == 404:
+                    raise TorngitObjectNotFoundError(
+                        response_data=ce.response_data,
+                        message=f"Cannot find gh app with installation_id {installation_id}",
+                    )
+                raise
 
     async def list_teams(self, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
