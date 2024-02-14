@@ -1106,7 +1106,7 @@ class Github(TorngitBaseAdapter):
                     token=token,
                 )
 
-                # When file size is greated than 1MB, content would not populate,
+                # When file size is greater than 1MB, content would not populate,
                 # instead we have to retrieve it from the download_url
                 if (
                     not content.get("content")
