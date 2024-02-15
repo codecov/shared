@@ -54,7 +54,7 @@ test_env.rust_tests:
 	sudo apt-get install gcc lsb-release wget software-properties-common
 	wget https://apt.llvm.org/llvm.sh
 	chmod +x llvm.sh
-	sudo ./llvm.sh 15
+	sudo ./llvm.sh 16
 	RUSTFLAGS="-C instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
-	llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
-	llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+	llvm-profdata-16 merge -sparse ribs-*.profraw -o ribs.profdata
+	llvm-cov-16 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
