@@ -39,6 +39,7 @@ class FeatureFlagVariant(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["name"], name="feature_flag_variant_name")
         ]
+        indexes = [models.Index(fields=["feature_flag"])]
 
 
 class FeatureFlagOwnerOverride(models.Model):
@@ -54,6 +55,7 @@ class FeatureFlagOwnerOverride(models.Model):
 
     class Meta:
         db_table = "feature_flag_owner_overrides"
+        indexes = [models.Index(fields=["feature"]), models.Index(fields=["variant"])]
 
 
 class FeatureFlagRepoOverride(models.Model):
@@ -69,3 +71,4 @@ class FeatureFlagRepoOverride(models.Model):
 
     class Meta:
         db_table = "feature_flag_repo_overrides"
+        indexes = [models.Index(fields=["feature"]), models.Index(fields=["variant"])]
