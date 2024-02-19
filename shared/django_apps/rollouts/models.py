@@ -32,7 +32,7 @@ class FeatureFlagVariant(models.Model):
     )
     proportion = models.DecimalField(default=0, decimal_places=3, max_digits=3)
     enabled = models.BooleanField(default=False)
-    # TODO: maybe add more fields for more granularity on feature variants. EG: featureA uses value 10 vs uses value 100
+    # TODO: maybe add more fields for more granularity on feature variants. EG: featureA uses value 10 vs featureB uses value 100
 
     class Meta:
         db_table = "feature_flag_variants"
@@ -46,7 +46,7 @@ class FeatureFlagOwnerOverride(models.Model):
     feature = models.ForeignKey(
         "FeatureFlag", on_delete=models.CASCADE, related_name="owner_overrides"
     )
-    variants = models.ForeignKey(
+    variant = models.ForeignKey(
         "FeatureFlagVariant",
         on_delete=models.CASCADE,
         related_name="owner_overrides",
