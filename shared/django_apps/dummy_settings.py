@@ -9,6 +9,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "shared.django_apps.pg_telemetry",
     "shared.django_apps.ts_telemetry",
+    "shared.django_apps.rollouts",
 ]
 
 MIDDLEWARE = []
