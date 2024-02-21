@@ -6,10 +6,25 @@ from typing import Any, Dict, Iterator, Optional
 
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session as SQLAlchemySession
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
 from shared.bundle_analysis import models
 from shared.bundle_analysis.parser import Parser
+
+
+def db_query(f):
+    def wrapper(*args, **kw):
+        if not args[0].db_session:
+            raise Exception(f"No DB session found for {f}")
+
+        engine = args[0].db_session.get_bind()
+        Session = sessionmaker(engine)
+        with Session() as session:
+            args[0].db_session = session
+            return f(*args, **kw)
+
+    return wrapper
 
 
 class AssetReport:
@@ -33,6 +48,7 @@ class AssetReport:
     def size(self):
         return self.asset.size
 
+    @db_query
     def modules(self):
         return (
             self.db_session.query(models.Module)
@@ -56,6 +72,7 @@ class BundleReport:
     def name(self):
         return self.bundle.name
 
+    @db_query
     def asset_reports(self) -> Iterator[AssetReport]:
         assets = (
             self.db_session.query(models.Asset)
@@ -66,6 +83,7 @@ class BundleReport:
         )
         return (AssetReport(asset) for asset in assets)
 
+    @db_query
     def total_size(self) -> int:
         return (
             self.db_session.query(func.sum(models.Asset.size).label("asset_size"))
@@ -75,6 +93,7 @@ class BundleReport:
             .scalar()
         ) or 0
 
+    @db_query
     def info(self) -> dict:
         session = (
             self.db_session.query(models.Session)
