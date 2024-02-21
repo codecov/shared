@@ -32,6 +32,8 @@ class FeatureFlagVariant(models.Model):
     )
     proportion = models.DecimalField(default=0, decimal_places=3, max_digits=3)
     enabled = models.BooleanField(default=False)
+    override_owner_ids = fields.ArrayField(base_field=models.IntegerField(), default=list)
+    override_repo_ids = fields.ArrayField(base_field=models.IntegerField(), default=list)
     # TODO: maybe add more fields for more granularity on feature variants. EG: featureA uses value 10 vs featureB uses value 100
 
     class Meta:
@@ -41,34 +43,3 @@ class FeatureFlagVariant(models.Model):
         ]
         indexes = [models.Index(fields=["feature_flag"])]
 
-
-class FeatureFlagOwnerOverride(models.Model):
-    feature = models.ForeignKey(
-        "FeatureFlag", on_delete=models.CASCADE, related_name="owner_overrides"
-    )
-    variant = models.ForeignKey(
-        "FeatureFlagVariant",
-        on_delete=models.CASCADE,
-        related_name="owner_overrides",
-    )
-    owner_ids = fields.ArrayField(base_field=models.IntegerField())
-
-    class Meta:
-        db_table = "feature_flag_owner_overrides"
-        indexes = [models.Index(fields=["feature"]), models.Index(fields=["variant"])]
-
-
-class FeatureFlagRepoOverride(models.Model):
-    feature = models.ForeignKey(
-        "FeatureFlag", on_delete=models.CASCADE, related_name="repo_overrides"
-    )
-    variant = models.ForeignKey(
-        "FeatureFlagVariant",
-        on_delete=models.CASCADE,
-        related_name="repo_overrides",
-    )
-    repo_ids = fields.ArrayField(base_field=models.IntegerField())
-
-    class Meta:
-        db_table = "feature_flag_repo_overrides"
-        indexes = [models.Index(fields=["feature"]), models.Index(fields=["variant"])]
