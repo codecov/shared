@@ -14,7 +14,7 @@ def default_random_salt():
 
 class FeatureFlag(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
-    proportion = models.DecimalField(default=0, decimal_places=3, max_digits=3)
+    proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
     salt = models.CharField(max_length=10000, default=default_random_salt)
 
     class Meta:
@@ -30,7 +30,7 @@ class FeatureFlagVariant(models.Model):
     feature_flag = models.ForeignKey(
         "FeatureFlag", on_delete=models.CASCADE, related_name="variants"
     )
-    proportion = models.DecimalField(default=0, decimal_places=3, max_digits=3)
+    proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
     enabled = models.BooleanField(default=False)
 
     # Weak foreign keys to Owner and Respository models respectively
