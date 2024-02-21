@@ -48,5 +48,6 @@ setup(
         "sqlalchemy==1.*",
         "ijson==3.*",
         "codecov-ribs",
+        "cachetools",
     ],
 )
