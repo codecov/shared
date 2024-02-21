@@ -5,8 +5,6 @@ import tempfile
 from typing import Any, Dict, Iterator, Optional
 
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session as SQLAlchemySession
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
 from shared.bundle_analysis import models
