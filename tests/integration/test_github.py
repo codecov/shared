@@ -1097,6 +1097,14 @@ class TestGithubTestCase(object):
         mock_refresh.assert_called_once()
 
     @pytest.mark.asyncio
+    async def test_get_source_large_file(self, valid_handler, codecov_vcr, mocker):
+        ret = {"content": "", "download_url": "url", "encoding": "none", "sha": "sha"}
+        mock_api = mocker.patch.object(Github, "api", return_value=ret)
+        path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
+        res = await valid_handler.get_source(path, ref)
+        assert mock_api.call_count == 2
+
+    @pytest.mark.asyncio
     async def test_list_repos(self, valid_handler, codecov_vcr):
         res = await valid_handler.list_repos()
         assert len(res) == 115

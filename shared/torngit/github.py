@@ -1143,6 +1143,20 @@ class Github(TorngitBaseAdapter):
                     ref=ref,
                     token=token,
                 )
+
+                # When file size is greater than 1MB, content would not populate,
+                # instead we have to retrieve it from the download_url
+                if (
+                    not content.get("content")
+                    and content.get("download_url")
+                    and content.get("encoding") == "none"
+                ):
+                    content["content"] = await self.api(
+                        client=client, method="get", url=content["download_url"]
+                    )
+                else:
+                    content["content"] = b64decode(content["content"])
+
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -1150,7 +1164,8 @@ class Github(TorngitBaseAdapter):
                     message=f"Path {path} not found at {ref}",
                 )
             raise
-        return dict(content=b64decode(content["content"]), commitid=content["sha"])
+
+        return dict(content=content["content"], commitid=content["sha"])
 
     async def get_commit_diff(self, commit, context=None, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
