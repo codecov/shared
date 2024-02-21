@@ -32,14 +32,19 @@ class FeatureFlagVariant(models.Model):
     )
     proportion = models.DecimalField(default=0, decimal_places=3, max_digits=3)
     enabled = models.BooleanField(default=False)
-    override_owner_ids = fields.ArrayField(base_field=models.IntegerField(), default=list)
-    override_repo_ids = fields.ArrayField(base_field=models.IntegerField(), default=list)
-    # TODO: maybe add more fields for more granularity on feature variants. EG: featureA uses value 10 vs featureB uses value 100
 
+    # Weak foreign keys to Owner and Respository models respectively
+    override_owner_ids = fields.ArrayField(
+        base_field=models.IntegerField(), default=list
+    )
+    override_repo_ids = fields.ArrayField(
+        base_field=models.IntegerField(), default=list
+    )
+
+    # TODO: maybe add more fields for more granularity on feature variants. EG: featureA uses value 10 vs featureB uses value 100
     class Meta:
         db_table = "feature_flag_variants"
         constraints = [
             models.UniqueConstraint(fields=["name"], name="feature_flag_variant_name")
         ]
         indexes = [models.Index(fields=["feature_flag"])]
-
