@@ -21,14 +21,10 @@ class FeatureFlag(models.Model):
 
     name = models.CharField(max_length=200, primary_key=True)
     proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
-    salt = models.CharField(max_length=10000, default=default_random_salt)
+    salt = models.CharField(max_length=32, default=default_random_salt)
 
     class Meta:
         db_table = "feature_flags"
-        constraints = [
-            models.UniqueConstraint(fields=["name"], name="feature_flag_name")
-        ]
-        # TODO: assert that variant proportions sum to 1
 
 
 class FeatureFlagVariant(models.Model):
@@ -40,25 +36,21 @@ class FeatureFlagVariant(models.Model):
     the proportions of the corresponding `FeatureFlagVariant`s sum to 1.
     """
 
-    name = models.CharField(max_length=200, primary_key=True)  
+    name = models.CharField(max_length=200, primary_key=True)
     feature_flag = models.ForeignKey(
         "FeatureFlag", on_delete=models.CASCADE, related_name="variants"
     )
     proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
-    enabled = models.BooleanField(default=False)
+    value = models.JSONField(default=False)
 
-    # Weak foreign keys to Owner and Respository models respectively
-    override_owner_ids = fields.ArrayField(
-        base_field=models.IntegerField(), default=list
+    # Weak foreign keys to Owner and Respository models respectively. Could be either a slug or ID
+    override_owner_keys = fields.ArrayField(
+        base_field=models.CharField(max_length=200), default=list, blank=True
     )
-    override_repo_ids = fields.ArrayField(
-        base_field=models.IntegerField(), default=list
+    override_repo_keys = fields.ArrayField(
+        base_field=models.CharField(max_length=200), default=list, blank=True
     )
 
-    # TODO: maybe add more fields for more granularity on feature variants. EG: featureA uses value 10 vs featureB uses value 100
     class Meta:
         db_table = "feature_flag_variants"
-        constraints = [
-            models.UniqueConstraint(fields=["name"], name="feature_flag_variant_name")
-        ]
         indexes = [models.Index(fields=["feature_flag"])]
