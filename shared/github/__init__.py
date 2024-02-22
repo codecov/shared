@@ -111,7 +111,6 @@ def get_github_integration_token(
         log.info(
             "Requested and received a Github Integration token",
             extra=dict(
-                valid_from=datetime.fromtimestamp(payload["iat"]).isoformat(),
                 expires_at=res_json.get("expires_at"),
                 permissions=res_json.get("permissions"),
                 repository_selection=res_json.get("repository_selection"),
