@@ -171,13 +171,14 @@ class Feature:
     @ttl_cache(maxsize=64, ttl=1)  # 5 minute time-to-live cache
     def _fetch_and_set_from_db(self, args=None):
         """
-        Updates the instance with the newest values from database, and clears other caches so 
+        Updates the instance with the newest values from database, and clears other caches so
         that their values can be recalculated.
         """
         new_feature_flag = FeatureFlag.objects.filter(pk=self.name).first()
-        new_ff_variants = sorted(list(
-            FeatureFlagVariant.objects.filter(feature_flag=self.name)
-        ), key=lambda x: x.name)
+        new_ff_variants = sorted(
+            list(FeatureFlagVariant.objects.filter(feature_flag=self.name)),
+            key=lambda x: x.name,
+        )
 
         if not new_feature_flag:
             # create default feature flag
@@ -187,7 +188,9 @@ class Feature:
         clear_cache = False
 
         # Either completely new or different from what we got last time
-        if (not self.feature_flag) or self._is_different(new_feature_flag, self.feature_flag):
+        if (not self.feature_flag) or self._is_different(
+            new_feature_flag, self.feature_flag
+        ):
             self.feature_flag = new_feature_flag
             clear_cache = True
         if (not self.ff_variants) or len(self.ff_variants) != len(new_ff_variants):
@@ -199,20 +202,19 @@ class Feature:
                     self.ff_variants = new_ff_variants
                     clear_cache = True
                     break
-            
 
         if clear_cache:
             self._check_value.cache_clear()
 
             if hasattr(self, "_buckets"):
-                del self._buckets # clears @cached_property
+                del self._buckets  # clears @cached_property
 
         if not self._is_valid_rollout():
             log.warning(
                 "Feature flag is using invalid values for rollout",
                 extra=dict(feature_flag_name=self.name),
             )
-    
+
     # NOTE: `@lru_cache` on instance methods is ordinarily a bad idea:
     # - the cache is not per-instance; it's shared by all class instances
     # - by holding references to function arguments in the cache, it prolongs
@@ -224,7 +226,7 @@ class Feature:
     @lru_cache(maxsize=64)
     def _check_value(self, identifier, default):
         """
-        This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that 
+        This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that
         variant values can be returned using the most up-to-date values from the database
         """
         identifier = str(identifier)  # just in case
@@ -251,7 +253,9 @@ class Feature:
         fields = inst1._meta.get_fields()
 
         for field in fields:
-            if isinstance(field, str) and getattr(inst1, field) != getattr(inst2, field):
+            if isinstance(field, str) and getattr(inst1, field) != getattr(
+                inst2, field
+            ):
                 return False
 
         return True
