@@ -40,7 +40,7 @@ class BundleAnalysisReportLoader:
         path = StoragePaths.bundle_report.path(
             repo_key=self.repo_key, report_key=report_key
         )
-        _, db_path = tempfile.mkstemp()
+        _, db_path = tempfile.mkstemp(prefix="bundle_analysis_")
 
         with open(db_path, "w+b") as f:
             try:
