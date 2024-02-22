@@ -1,16 +1,24 @@
+import logging
+from functools import cached_property
+
 import mmh3
-from cachetools.func import ttl_cache
+from cachetools.func import lru_cache, ttl_cache
 
 from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
+
+log = logging.getLogger("__name__")
 
 
 class Feature:
     """
     Represents a feature and its rollout parameters, fetched from the database (see django_apps/rollouts/models.py).
     Given an identifier (repo_id, owner_id, etc..), it can decide which variant of a feature (if any)
-    should be enabled for the request. The parameters are fetched and updated roughly every
-    5 minutes, meaning it can take up to 5 minutes for changes to show up here. You can modify
-    the values via Django Admin.
+    should be used for the request. Each variant will have a `value` that will be returned if that variant is
+    decided to be used. For example: if you want an ON and OFF variant for your feature, you could have the values
+    be true and false respectively
+
+    The parameters are fetched and updated roughly every 5 minutes, meaning it can take up to 5 minutes for changes
+    to show up here. You can modify these values in the database via Django Admin.
 
     If you instantiate a `Feature` instance with a new name, the associated database entry
     will be created for you. Otherwise, the existing database entry will be used to populate
@@ -28,7 +36,7 @@ class Feature:
         #   name: my_feature_on
         #   feature_flag: my_feature
         #   proportion: 1
-        #   enabled: True
+        #   enabled: true
 
     A simple A/B test rolled out to 10% of users (5% test, 5% control):
         MY_EXPERIMENT_BY_USER = Feature(
@@ -41,17 +49,17 @@ class Feature:
         #   name: MY_EXPERIMENT_BY_USER_TEST
         #   feature_flag: MY_EXPERIMENT_BY_USER
         #   proportion: 0.5
-        #   enabled: True
+        #   enabled: true
         #
         # FeatureFlagVariant:
         #   name: MY_EXPERIMENT_BY_USER_CONTROL
         #   feature_flag: MY_EXPERIMENT_BY_USER
         #   proportion: 0.5
-        #   enabled: False
+        #   enabled: false
 
     After creating a feature, you can instrument it in code like so:
         from shared.rollouts.features import MY_EXPERIMENT_BY_USER
-        if MY_EXPERIMENT_BY_USER.is_enabled(user_id, default=False):
+        if MY_EXPERIMENT_BY_USER.check_value(user_id, default=False) == True:
             new_behavior()
         else:
             old_behavior()
@@ -74,37 +82,33 @@ class Feature:
         assert not proportion or proportion >= 0 and proportion <= 1.0
         assert not salt or isinstance(salt, str)
 
-        ff_query = FeatureFlag.objects.filter(pk=name)
+        self.name = name
+        self.feature_flag = None
+        self.ff_variants = None
 
-        if len(ff_query) == 0:
-            # create default feature flag
-            args = {name: name}
-            if proportion:
-                args["proportion"] = proportion
-            if salt:
-                args["salt"] = salt
+        args = {"name": name}
+        if proportion:
+            args["proportion"] = proportion
+        if salt:
+            args["salt"] = salt
 
-            self.feature_flag = FeatureFlag(**args)
-            self.feature_flag.save()
-        else:
-            # ignore constructor args if db entry already exists.
-            self.feature_flag = ff_query.first()
+        # so it is hashable
+        args = tuple(sorted(args.items()))
 
-        self.ff_variants = list(
-            FeatureFlagVariant.objects.filter(feature_flag=self.feature_flag.name)
-        )
+        self._fetch_and_set_from_db(args)
 
-    def _fetch_and_set_from_db(self):
+    def check_value(self, identifier, default=False):
         """
-        Updates the class with the newest values from database.
+        Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
+        that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
+        feature variants via Django Admin.
         """
-        self.feature_flag = FeatureFlag.objects.filter(
-            pk=self.feature_flag.name
-        ).first()
-        self.ff_variants = list(
-            FeatureFlagVariant.objects.filter(feature_flag=self.feature_flag.name)
-        )
+        # Will only run and refresh values from the database every ~5 minutes due to TTL cache
+        self._fetch_and_set_from_db()
 
+        return self._check_value(identifier, default)
+
+    @cached_property
     def _buckets(self):
         """
         Calculates the bucket boundaries for feature variants. Simple logic but
@@ -133,7 +137,7 @@ class Feature:
 
     def _get_override_variant(self, identifier):
         """
-        Retrieves the FeatureFlagVariant applicable to the given identifer according to
+        Retrieves the feature variant applicable to the given identifer according to
         defined overrides. Returns None if no override is found.
         """
         for variant in self.ff_variants:
@@ -146,16 +150,70 @@ class Feature:
 
     def _is_valid_rollout(self):
         """
-        Checks if the FeatureFlagVariant entries were given invalid values, which is very
-        possible since these values can be modified via Django Admin. Due to the TTL cache,
-        the values within this class will only be updated once every 5 minutes.
+        Checks if the database entries were given valid values, which is very
+        possible since these values can be modified via Django Admin.
         """
-        return sum(map(lambda x: x.proportion, self.ff_variants)) == 1.0 and not (
-            True
-            in map(lambda x: x.proportion < 0 or x.proportion > 1, self.ff_variants)
+        return (
+            (sum(map(lambda x: x.proportion, self.ff_variants)) == 1.0)
+            and (
+                not (
+                    True
+                    in map(
+                        lambda x: x.proportion < 0 or x.proportion > 1, self.ff_variants
+                    )
+                )
+            )
+            and (
+                self.feature_flag.proportion <= 1 and self.feature_flag.proportion >= 0
+            )
         )
 
-    # NOTE: `@ttl_cache` on instance methods is ordinarily a bad idea:
+    @ttl_cache(maxsize=64, ttl=1)  # 5 minute time-to-live cache
+    def _fetch_and_set_from_db(self, args=None):
+        """
+        Updates the instance with the newest values from database, and clears other caches so 
+        that their values can be recalculated.
+        """
+        new_feature_flag = FeatureFlag.objects.filter(pk=self.name).first()
+        new_ff_variants = sorted(list(
+            FeatureFlagVariant.objects.filter(feature_flag=self.name)
+        ), key=lambda x: x.name)
+
+        if not new_feature_flag:
+            # create default feature flag
+            new_feature_flag = FeatureFlag(**dict(args))
+            new_feature_flag.save()
+
+        clear_cache = False
+
+        # Either completely new or different from what we got last time
+        if (not self.feature_flag) or self._is_different(new_feature_flag, self.feature_flag):
+            self.feature_flag = new_feature_flag
+            clear_cache = True
+        if (not self.ff_variants) or len(self.ff_variants) != len(new_ff_variants):
+            self.ff_variants = new_ff_variants
+            clear_cache = True
+        else:
+            for ind in range(len(new_ff_variants)):
+                if self._is_different(new_ff_variants[ind], self.ff_variants[ind]):
+                    self.ff_variants = new_ff_variants
+                    clear_cache = True
+                    break
+            
+
+        if clear_cache:
+            self._check_value.cache_clear()
+
+            if hasattr(self, "_buckets"):
+                del self._buckets # clears @cached_property
+
+        if not self._is_valid_rollout():
+            log.warning(
+                "Feature flag is using invalid values for rollout",
+                extra=dict(feature_flag_name=self.name),
+            )
+    
+    # NOTE: `@lru_cache` on instance methods is ordinarily a bad idea:
     # - the cache is not per-instance; it's shared by all class instances
     # - by holding references to function arguments in the cache, it prolongs
     #   their lifetimes. Since `self` is a function argument, the cache will
@@ -163,34 +221,37 @@ class Feature:
     #   cache which could be a significant memory leak.
     # In this case, we are okay with sharing a cache across instances, and the
     # instances are all global constants so they won't be torn down anyway.
-    @ttl_cache(maxsize=64, ttl=300)  # 5 minute ttl
-    def is_enabled(self, identifier, default=False):
-
-        # Refresh values from the database. This should only run when the TTL expires,
-        # as otherwise, the result of `is_enabled()` should be cached and this function
-        # is skipped.
-        self._fetch_and_set_from_db()
-
-        if not self._is_valid_rollout():
-            # log something
-            return False
-
+    @lru_cache(maxsize=64)
+    def _check_value(self, identifier, default):
+        """
+        This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that 
+        variant values can be returned using the most up-to-date values from the database
+        """
         identifier = str(identifier)  # just in case
 
         # check if an override exists
         override_variant = self._get_override_variant(identifier)
 
         if override_variant:
-            return override_variant.enabled
+            return override_variant.value
 
         if self.feature_flag.proportion == 1.0 and len(self.ff_variants) == 1:
             # This feature is fully rolled out, since it only has one variant,
             # we can skip the hashing and just return its value.
-            return self.ff_variants.first().enabled
+            return self.ff_variants[0].value
 
         key = mmh3.hash128(self.feature_flag.name + identifier + self.feature_flag.salt)
-        for bucket, variant in self._buckets():
+        for bucket, variant in self._buckets:
             if key <= bucket:
-                return variant.enabled
+                return variant.value
 
         return default
+
+    def _is_different(self, inst1, inst2):
+        fields = inst1._meta.get_fields()
+
+        for field in fields:
+            if isinstance(field, str) and getattr(inst1, field) != getattr(inst2, field):
+                return False
+
+        return True
