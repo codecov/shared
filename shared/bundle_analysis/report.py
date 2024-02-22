@@ -25,6 +25,10 @@ class ModuleReport:
         return self.module.name
 
     @property
+    def hashed_name(self):
+        return self.module.hashed_name
+
+    @property
     def size(self):
         return self.module.size
 
@@ -59,7 +63,7 @@ class AssetReport:
                 .filter(models.Asset.id == self.asset.id)
                 .all()
             )
-            return (ModuleReport(self.db_path, module) for module in modules)
+            return [ModuleReport(self.db_path, module) for module in modules]
 
 
 class BundleReport:
