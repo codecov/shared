@@ -142,8 +142,8 @@ class Feature:
         """
         for variant in self.ff_variants:
             if (
-                identifier in variant.override_owner_ids
-                or identifier in variant.override_repo_ids
+                identifier in variant.override_owner_keys
+                or identifier in variant.override_repo_keys
             ):
                 return variant
         return None
