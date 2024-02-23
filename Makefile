@@ -45,3 +45,24 @@ test_env.mutation:
 	mutmut run --use-patch-file data.patch || true
 	mkdir /tmp/artifacts;
 	mutmut junitxml > /tmp/artifacts/mut.xml
+
+test_env.rust_tests:
+	curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+	source $HOME/.cargo/env
+	sudo apt-get update
+	sudo apt-get install gcc lsb-release wget software-properties-common
+	wget https://apt.llvm.org/llvm.sh
+	chmod +x llvm.sh
+	sudo ./llvm.sh 15
+	RUSTFLAGS="-C instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
+	llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
+	llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+
+test_env.build:
+	docker-compose build
+
+test_env.up:
+	docker-compose up -d
+
+test_env.test:
+	docker-compose exec shared python -m pytest --cov=./

@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  shared:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - postgres
+    volumes:
+      - ./shared/:/app/shared
+      - ./tests/:/app/tests
+    command:
+      - sleep
+      - "86400"
+#    env_file:
+#      - .testenv
+  postgres:
+    image: postgres:14.7-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 2048M
+
