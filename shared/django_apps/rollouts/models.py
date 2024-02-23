@@ -43,12 +43,12 @@ class FeatureFlagVariant(models.Model):
     proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
     value = models.JSONField(default=False)
 
-    # Weak foreign keys to Owner and Respository models respectively. Could be either a slug or ID
-    override_owner_keys = fields.ArrayField(
-        base_field=models.CharField(max_length=200), default=list, blank=True
+    # Weak foreign keys to Owner and Respository models respectively
+    override_owner_ids = fields.ArrayField(
+        base_field=models.IntegerField(), default=list, blank=True
     )
-    override_repo_keys = fields.ArrayField(
-        base_field=models.CharField(max_length=200), default=list, blank=True
+    override_repo_ids = fields.ArrayField(
+        base_field=models.IntegerField(), default=list, blank=True
     )
 
     class Meta:
