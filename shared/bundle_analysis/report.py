@@ -25,10 +25,6 @@ class ModuleReport:
         return self.module.name
 
     @property
-    def hashed_name(self):
-        return self.module.hashed_name
-
-    @property
     def size(self):
         return self.module.size
 
