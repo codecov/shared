@@ -177,7 +177,7 @@ class Feature:
         new_feature_flag = FeatureFlag.objects.filter(pk=self.name).first()
         new_ff_variants = sorted(
             list(FeatureFlagVariant.objects.filter(feature_flag=self.name)),
-            key=lambda x: x.name,
+            key=lambda x: x.variant_id,
         )
 
         if not new_feature_flag:

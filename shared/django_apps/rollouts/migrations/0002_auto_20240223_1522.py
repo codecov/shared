@@ -11,7 +11,7 @@ def seed_initial_features(apps, schema_editor):
         name="list_repos_generator", proportion=0.0
     )
     FeatureFlagVariant.objects.create(
-        name="list_repos_generator_enabled",
+        name="enabled",
         feature_flag=list_repos_generator,
         proportion=1.0,
         value=True,
@@ -22,7 +22,7 @@ def seed_initial_features(apps, schema_editor):
         name="use_label_index_in_report_processing", proportion=0.0
     )
     FeatureFlagVariant.objects.create(
-        name="use_label_index_in_report_processing_enabled",
+        name="enabled",
         feature_flag=use_label_index_in_report_processing,
         proportion=1.0,
         value=True,
