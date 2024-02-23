@@ -58,3 +58,12 @@ test_env.rust_tests:
 	RUSTFLAGS="-C instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
 	llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
 	llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+
+test_env.build:
+	docker-compose build
+
+test_env.up:
+	docker-compose up -d
+
+test_env.test:
+	docker-compose exec shared python -m pytest --cov=./

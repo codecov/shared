@@ -312,3 +312,23 @@ jobs:
         if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
           codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }}  upload-process --flag rust --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
+
+  test-docker:
+    name: Test Docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install docker compose
+        run: |
+          sudo curl -SL https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+      - name: Build
+        run: |
+          make test_env.build
+      - name: Bring containers up
+        run: |
+          make test_env.up
+      - name: Run tests
+        run: |
+          make test_env.test
