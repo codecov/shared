@@ -26,6 +26,9 @@ class FeatureFlag(models.Model):
     class Meta:
         db_table = "feature_flags"
 
+    def __str__(self):
+        return self.name
+
 
 class FeatureFlagVariant(models.Model):
     """
@@ -36,7 +39,8 @@ class FeatureFlagVariant(models.Model):
     the proportions of the corresponding `FeatureFlagVariant`s sum to 1.
     """
 
-    name = models.CharField(max_length=200, primary_key=True)
+    variant_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
     feature_flag = models.ForeignKey(
         "FeatureFlag", on_delete=models.CASCADE, related_name="variants"
     )
@@ -54,3 +58,6 @@ class FeatureFlagVariant(models.Model):
     class Meta:
         db_table = "feature_flag_variants"
         indexes = [models.Index(fields=["feature_flag"])]
+
+    def __str__(self):
+        return self.feature_flag.__str__() + ": " + self.name
