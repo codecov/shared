@@ -36,7 +36,7 @@ class Feature:
         #   name: my_feature_on
         #   feature_flag: my_feature
         #   proportion: 1
-        #   enabled: true
+        #   value: true
 
     A simple A/B test rolled out to 10% of users (5% test, 5% control):
         MY_EXPERIMENT_BY_USER = Feature(
@@ -49,13 +49,13 @@ class Feature:
         #   name: MY_EXPERIMENT_BY_USER_TEST
         #   feature_flag: MY_EXPERIMENT_BY_USER
         #   proportion: 0.5
-        #   enabled: true
+        #   value: true
         #
         # FeatureFlagVariant:
         #   name: MY_EXPERIMENT_BY_USER_CONTROL
         #   feature_flag: MY_EXPERIMENT_BY_USER
         #   proportion: 0.5
-        #   enabled: false
+        #   value: false
 
     After creating a feature, you can instrument it in code like so:
         from shared.rollouts.features import MY_EXPERIMENT_BY_USER
@@ -182,8 +182,7 @@ class Feature:
 
         if not new_feature_flag:
             # create default feature flag
-            new_feature_flag = FeatureFlag(**dict(args))
-            new_feature_flag.save()
+            new_feature_flag = FeatureFlag.objects.create(**dict(args))
 
         clear_cache = False
 
