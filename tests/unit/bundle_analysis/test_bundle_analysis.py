@@ -45,6 +45,11 @@ def test_create_bundle_report():
             ("assets/index-*.js", "assets/index-666d2e09.js", 144577, 28),
         ]
 
+        for ar in asset_reports:
+            for module in ar.modules():
+                assert type(module.name) == str
+                assert type(module.size) == int
+
         assert bundle_report.total_size() == 150572
         assert report.session_count() == 1
     finally:

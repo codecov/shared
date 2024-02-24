@@ -13,5 +13,6 @@ from shared.bundle_analysis.report import (
     AssetReport,
     BundleAnalysisReport,
     BundleReport,
+    ModuleReport,
 )
 from shared.bundle_analysis.storage import BundleAnalysisReportLoader, StoragePaths

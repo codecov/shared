@@ -11,6 +11,24 @@ from shared.bundle_analysis import models
 from shared.bundle_analysis.parser import Parser
 
 
+class ModuleReport:
+    """
+    Report wrapper around a single module (many of which can exist in a single Asset via Chunks)
+    """
+
+    def __init__(self, db_path: str, module: models.Module):
+        self.db_path = db_path
+        self.module = module
+
+    @property
+    def name(self):
+        return self.module.name
+
+    @property
+    def size(self):
+        return self.module.size
+
+
 class AssetReport:
     """
     Report wrapper around a single asset (many of which can exist in a single bundle).
@@ -34,13 +52,14 @@ class AssetReport:
 
     def modules(self):
         with models.get_db_session(self.db_path) as session:
-            return (
+            modules = (
                 session.query(models.Module)
                 .join(models.Module.chunks)
                 .join(models.Chunk.assets)
                 .filter(models.Asset.id == self.asset.id)
                 .all()
             )
+            return [ModuleReport(self.db_path, module) for module in modules]
 
 
 class BundleReport:
@@ -144,20 +163,23 @@ class BundleAnalysisReport:
         return session_id
 
     def metadata(self) -> Dict[models.MetadataKey, Any]:
-        metadata = self.db_session.query(models.Metadata).all()
-        return {models.MetadataKey(item.key): item.value for item in metadata}
+        with models.get_db_session(self.db_path) as session:
+            metadata = session.query(models.Metadata).all()
+            return {models.MetadataKey(item.key): item.value for item in metadata}
 
     def bundle_reports(self) -> Iterator[BundleReport]:
         bundles = self.db_session.query(models.Bundle).all()
-        return (BundleReport(self.db_path, bundle) for bundle in bundles)
+        with models.get_db_session(self.db_path) as session:
+            bundles = session.query(models.Bundle).all()
+            return (BundleReport(self.db_path, bundle) for bundle in bundles)
 
     def bundle_report(self, bundle_name: str) -> Optional[BundleReport]:
-        bundle = (
-            self.db_session.query(models.Bundle).filter_by(name=bundle_name).first()
-        )
-        if bundle is None:
-            return None
-        return BundleReport(self.db_path, bundle)
+        with models.get_db_session(self.db_path) as session:
+            bundle = session.query(models.Bundle).filter_by(name=bundle_name).first()
+            if bundle is None:
+                return None
+            return BundleReport(self.db_path, bundle)
 
     def session_count(self) -> int:
-        return self.db_session.query(models.Session).count()
+        with models.get_db_session(self.db_path) as session:
+            return session.query(models.Session).count()
