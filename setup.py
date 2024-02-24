@@ -2,7 +2,6 @@ from codecs import open
 from os import path
 
 from setuptools import find_packages, setup
-from setuptools_rust import Binding, RustExtension
 
 here = path.abspath(path.dirname(__file__))
 
@@ -12,7 +11,6 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name="shared",
     version="0.11.2",
-    rust_extensions=[RustExtension("shared.rustyribs", binding=Binding.PyO3)],
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
@@ -49,5 +47,6 @@ setup(
         "django>=4.2.3",
         "sqlalchemy==1.*",
         "ijson==3.*",
+        "codecov-ribs",
     ],
 )

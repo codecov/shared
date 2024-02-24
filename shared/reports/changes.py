@@ -1,12 +1,13 @@
-from shared import ribs
+import cc_rustyribs
+
 from shared.reports.types import Change
 
 
 def run_comparison_using_rust(base_report, head_report, diff):
-    return ribs.run_comparison(
+    return cc_rustyribs.run_comparison(
         base_report.rust_report.get_report(),
         head_report.rust_report.get_report(),
-        ribs.rustify_diff(diff),
+        cc_rustyribs.rustify_diff(diff),
     )
 
 

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from cc_rustyribs import rustify_diff
 
 from shared.reports.changes import (
     _get_changes_from_comparison,
@@ -9,7 +10,6 @@ from shared.reports.changes import (
 )
 from shared.reports.readonly import ReadOnlyReport
 from shared.reports.types import Change
-from shared.ribs import rustify_diff
 
 current_file = Path(__file__)
 
