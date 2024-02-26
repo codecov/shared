@@ -1,7 +1,7 @@
 from random import choice
 
-from django.contrib.postgres import fields
 from django.db import models
+from django_better_admin_arrayfield.models.fields import ArrayField
 
 
 # TODO: move to utils
@@ -48,10 +48,10 @@ class FeatureFlagVariant(models.Model):
     value = models.JSONField(default=False)
 
     # Weak foreign keys to Owner and Respository models respectively
-    override_owner_ids = fields.ArrayField(
+    override_owner_ids = ArrayField(
         base_field=models.IntegerField(), default=list, blank=True
     )
-    override_repo_ids = fields.ArrayField(
+    override_repo_ids = ArrayField(
         base_field=models.IntegerField(), default=list, blank=True
     )
 
