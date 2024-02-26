@@ -169,6 +169,7 @@ class BundleAnalysisReport:
 
     def bundle_reports(self) -> Iterator[BundleReport]:
         with models.get_db_session(self.db_path) as session:
+            print("got session for bundle_reports")
             bundles = session.query(models.Bundle).all()
             return (BundleReport(self.db_path, bundle) for bundle in bundles)
 
