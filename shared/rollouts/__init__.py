@@ -168,7 +168,7 @@ class Feature:
             )
         )
 
-    @ttl_cache(maxsize=64, ttl=300)  # 5 minute time-to-live cache
+    @ttl_cache(maxsize=64, ttl=1)  # 5 minute time-to-live cache
     def _fetch_and_set_from_db(self, args=None):
         """
         Updates the instance with the newest values from database, and clears other caches so
@@ -228,7 +228,6 @@ class Feature:
         This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that
         variant values can be returned using the most up-to-date values from the database
         """
-        identifier = str(identifier)  # just in case
 
         # check if an override exists
         override_variant = self._get_override_variant(identifier)
@@ -241,7 +240,7 @@ class Feature:
             # we can skip the hashing and just return its value.
             return self.ff_variants[0].value
 
-        key = mmh3.hash128(self.feature_flag.name + identifier + self.feature_flag.salt)
+        key = mmh3.hash128(self.feature_flag.name + str(identifier) + self.feature_flag.salt)
         for bucket, variant in self._buckets:
             if key <= bucket:
                 return variant.value
