@@ -168,7 +168,6 @@ class BundleAnalysisReport:
             return {models.MetadataKey(item.key): item.value for item in metadata}
 
     def bundle_reports(self) -> Iterator[BundleReport]:
-        bundles = self.db_session.query(models.Bundle).all()
         with models.get_db_session(self.db_path) as session:
             bundles = session.query(models.Bundle).all()
             return (BundleReport(self.db_path, bundle) for bundle in bundles)
