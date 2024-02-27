@@ -24,12 +24,20 @@ TEST = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": f"{BASE_DIR}/dummy_default.sqlite",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "POSTGRES_USER",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "postgres",
+        "PORT": 5432,
     },
     "timeseries": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": f"{BASE_DIR}/dummy_timeseries.sqlite",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "POSTGRES_USER",
+        "USER": "timescale",
+        "PASSWORD": "timescale",
+        "HOST": "timescale",
+        "PORT": 5432,
     },
 }
 

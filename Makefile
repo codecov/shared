@@ -39,24 +39,12 @@ test_env.install_cli:
 	pip install codecov-cli
 
 test_env.mutation:
-	. venv/bin/activate
-	git diff origin/main ${full_sha} > data.patch
-	pip install mutmut[patch]
-	mutmut run --use-patch-file data.patch || true
-	mkdir /tmp/artifacts;
-	mutmut junitxml > /tmp/artifacts/mut.xml
-
-test_env.rust_tests:
-	curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
-	source $HOME/.cargo/env
-	sudo apt-get update
-	sudo apt-get install gcc lsb-release wget software-properties-common
-	wget https://apt.llvm.org/llvm.sh
-	chmod +x llvm.sh
-	sudo ./llvm.sh 15
-	RUSTFLAGS="-C instrument-coverage" LLVM_PROFILE_FILE="ribs-%m.profraw" cargo +nightly test --no-default-features
-	llvm-profdata-15 merge -sparse ribs-*.profraw -o ribs.profdata
-	llvm-cov-15 show --ignore-filename-regex='/.cargo/registry' --instr-profile=ribs.profdata --object `ls target/debug/deps/ribs-* | grep -v "\.d" | grep -v "\.o"` > app.coverage.txt
+	docker-compose exec shared sh -c 'git fetch --no-tags --prune --depth=1 origin main:refs/remotes/origin/main'
+	docker-compose exec shared sh -c 'git diff origin/main ${full_sha} > data.patch'
+	docker-compose exec shared sh -c 'pip install mutmut[patch]'
+	docker-compose exec shared sh -c 'mutmut run --use-patch-file data.patch || true'
+	docker-compose exec shared sh -c 'mkdir /tmp/artifacts;'
+	docker-compose exec shared sh -c 'mutmut junitxml > /tmp/artifacts/mut.xml'
 
 test_env.build:
 	docker-compose build
@@ -65,4 +53,4 @@ test_env.up:
 	docker-compose up -d
 
 test_env.test:
-	docker-compose exec shared python -m pytest --cov=./
+	docker-compose exec shared python -m pytest --cov=./ --junitxml=junit.xml

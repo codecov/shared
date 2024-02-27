@@ -1,5 +1,9 @@
 version: "3"
 
+volumes:
+  postgres-volume:
+  timescale-volume:
+
 services:
   shared:
     build:
@@ -12,18 +16,31 @@ services:
       - ./tests/:/app/tests
     command:
       - sleep
-      - "86400"
-#    env_file:
-#      - .testenv
+      - "86400" # so the container doesn't exit
+
   postgres:
     image: postgres:14.7-alpine
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - type: tmpfs
         target: /var/lib/postgresql/data
         tmpfs:
-          size: 2048M
+          size: 1024M
 
+
+  timescale:
+    image: timescale/timescaledb-ha:pg14-latest
+    environment:
+      - POSTGRES_USER=timescale
+      - POSTGRES_PASSWORD=timescale
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 1024M
+    ports:
+      - "5433:5432"

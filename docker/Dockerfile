@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-ARG PYTHON_IMAGE=python:3.12-slim-bullseye
+ARG PYTHON_IMAGE=python:3.10-slim-bullseye
 
 FROM $PYTHON_IMAGE as build
 
@@ -22,9 +22,8 @@ ENV PATH=/root/.cargo/bin:$PATH
 WORKDIR /app
 COPY . /app
 
-
-RUN     pip install setuptools_rust && \
-    	pip install -r tests/requirements.txt && \
-    	pip install -r requirements.txt && \
-        python setup.py develop && \
-        pip install codecov-cli
+RUN pip install setuptools_rust && \
+    pip install -r tests/requirements.txt && \
+    pip install -r requirements.txt && \
+    python setup.py develop && \
+    pip install codecov-cli
