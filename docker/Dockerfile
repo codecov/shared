@@ -16,14 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && pip install --upgrade pip
 
-RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
-ENV PATH=/root/.cargo/bin:$PATH
-
 WORKDIR /app
 COPY . /app
 
-RUN pip install setuptools_rust && \
-    pip install -r tests/requirements.txt && \
+RUN pip install -r tests/requirements.txt && \
     pip install -r requirements.txt && \
     python setup.py develop && \
     pip install codecov-cli
