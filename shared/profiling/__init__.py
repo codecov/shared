@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from shared.ribs import load_profiling_data
+from cc_rustyribs import load_profiling_data
 
 
 def load_profiling(summary_data: dict) -> "ProfilingSummaryDataAnalyzer":

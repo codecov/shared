@@ -2,6 +2,8 @@ import logging
 import os
 import random
 
+from cc_rustyribs import FilterAnalyzer, SimpleAnalyzer, parse_report
+
 from shared.helpers.flag import Flag
 from shared.metrics import metrics, sentry
 from shared.reports.resources import (
@@ -10,7 +12,6 @@ from shared.reports.resources import (
     ReportTotals,
     chunks_from_storage_contains_header,
 )
-from shared.ribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 from shared.utils.match import match
 
 log = logging.getLogger(__name__)

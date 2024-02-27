@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
+from cc_rustyribs import rustify_diff
 
 from shared.profiling import (
     ProfilingDataFullAnalyzer,
@@ -16,7 +17,6 @@ from shared.reports.resources import (
     ReportLine,
     Session,
 )
-from shared.ribs import rustify_diff
 
 here = Path(__file__)
 
