@@ -1,0 +1,45 @@
+version: "3"
+
+volumes:
+  postgres-volume:
+  timescale-volume:
+
+services:
+  shared:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - postgres
+      - timescale
+    volumes:
+      - ./shared/:/app/shared
+      - ./tests/:/app/tests
+    command:
+      - sleep
+      - "86400" # so the container doesn't exit
+
+  postgres:
+    image: postgres:14.7-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 1024M
+
+
+  timescale:
+    image: timescale/timescaledb-ha:pg14-latest
+    environment:
+      - POSTGRES_USER=timescale
+      - POSTGRES_PASSWORD=timescale
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+        tmpfs:
+          size: 1024M
