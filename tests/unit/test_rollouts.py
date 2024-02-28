@@ -24,9 +24,12 @@ class TestFeature(TestCase):
             "complex",
             0.5,
         )
+
         # # To make the math simpler, let's pretend our hash function can only
         # # return 200 different values.
         with patch.object(Feature, "HASHSPACE", 200):
+
+            complex_feature.check_value("garbage")  # to force fetch values from db
 
             # Because the top-level feature proportion is 0.5, we are only using the
             # first 50% of our 200 hash values as our test population: [0..100]
