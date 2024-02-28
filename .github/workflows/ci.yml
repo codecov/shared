@@ -16,49 +16,12 @@ jobs:
     name: Run Lint
     uses: codecov/gha-workflows/.github/workflows/lint.yml@v1.0.0
 
-  build:
-    name: Build Shared
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9", "3.10"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Cache Requirements
-        id: cache-requirements
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-requirements
-        with:
-          path: |
-            venv
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/tests/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ steps.setup-python.outputs.python-version }}
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: Install requirements
-        if: ${{ steps.cache-requirements.outputs.cache-hit != 'true' }}
-        run: |
-          python -m venv venv
-          . venv/bin/activate
-          pip install -r tests/requirements.txt
-          pip install -r requirements.txt
-          python setup.py develop
-          pip install codecov-cli
   codecovstartup:
     name: Codecov Startup
     needs: build
     uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.0
     secrets: inherit
+
   ats:
     name: ATS
     if: ${{ !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
@@ -184,7 +147,6 @@ jobs:
         run: |
           docker-compose exec shared codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} upload-process --flag shared-docker-uploader --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} --fail-on-error
           docker-compose exec shared codecovcli -u ${{ secrets.CODECOV_PUBLIC_QA_URL }} do-upload --report-type "test_results" --flag shared-docker-uploader --token ${{ secrets.CODECOV_PUBLIC_QA_TOKEN }} || true
-
 
   mutation:
     name: Run Mutations
