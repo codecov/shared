@@ -6,8 +6,7 @@ export CODECOV_TOKEN=${CODECOV_UPLOAD_TOKEN}
 .ONESHELL:
 
 test:
-	. venv/bin/activate
-	python -m pytest --cov=./
+	docker compose exec shared python -m pytest --cov=./ 
 
 lint:
 	make lint.install

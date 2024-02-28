@@ -11,6 +11,7 @@ services:
       dockerfile: docker/Dockerfile
     depends_on:
       - postgres
+      - timescale
     volumes:
       - ./shared/:/app/shared
       - ./tests/:/app/tests
@@ -42,5 +43,3 @@ services:
         target: /var/lib/postgresql/data
         tmpfs:
           size: 1024M
-    ports:
-      - "5433:5432"

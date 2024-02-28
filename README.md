@@ -18,15 +18,12 @@ Whenever getting new code into `shared`, one needs to wait for a new version to 
 
 ## Getting started
 
-To get started, you will need a few things due the presence of a rust extension on this package:
+To get started, ensure that you have:
 
-1. Have rust installed in your system
-2. Have a virtualenv (whichever one you prefer)
-3. Run
+1. Docker installed on your machine
+2. Run
 ```
-pip install setuptools-rust pip-tools
-python setup.py develop
-pip install -r requirements.txt -r tests/requirements.txt
+docker compose up
 ```
 
 ## Releasing a new version on shared
@@ -44,7 +41,7 @@ To release a new version, you need to:
 
 ## Running tests
 
-In order to run tests, from inside the virtualenv this repo is in:
+In order to run tests from within your docker container, run:
 
 ```
 make test
