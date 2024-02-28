@@ -93,9 +93,7 @@ class Feature:
             args["salt"] = salt
 
         # so it is hashable
-        args = tuple(sorted(args.items()))
-
-        self._fetch_and_set_from_db(args)
+        self.args = tuple(sorted(args.items()))
 
     def check_value(self, identifier, default=False):
         """
@@ -104,7 +102,12 @@ class Feature:
         feature variants via Django Admin.
         """
         # Will only run and refresh values from the database every ~5 minutes due to TTL cache
-        self._fetch_and_set_from_db()
+        self._fetch_and_set_from_db(self.args)
+
+        if (
+            self.args
+        ):  # to create a default when `check_value()` is run for the first time
+            self.args = None
 
         return self._check_value(identifier, default)
 
