@@ -2,6 +2,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
+from .db_settings import *
 
 ALLOWED_HOSTS = []
 
@@ -35,8 +36,8 @@ DATABASES = {
     "timeseries": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "POSTGRES_USER",
-        "USER": "timescale",
-        "PASSWORD": "timescale",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
         "HOST": "timescale",
         "PORT": 5432,
     },
