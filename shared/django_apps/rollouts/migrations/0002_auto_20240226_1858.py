@@ -15,7 +15,6 @@ def seed_initial_features(apps, schema_editor):
         feature_flag=list_repos_generator,
         proportion=1.0,
         value=True,
-        override_repo_ids=[5537, 1720, 1676],
     )
 
     use_label_index_in_report_processing = FeatureFlag.objects.create(
@@ -26,10 +25,6 @@ def seed_initial_features(apps, schema_editor):
         feature_flag=use_label_index_in_report_processing,
         proportion=1.0,
         value=True,
-        override_repo_ids=[
-            16621196,
-            16273544,
-        ],
     )
 
 
