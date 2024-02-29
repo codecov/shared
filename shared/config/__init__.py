@@ -79,7 +79,7 @@ default_config = {
             "iam_endpoint": None,
             "hash_key": "ab164bf3f7d947f2a0681b215404873e",
         },
-        "database_url": "postgres://postgres:@postgres:5432/postgres",
+        "database_url": "postgresql://postgres:@postgres:5432/postgres",
     },
     "site": LEGACY_DEFAULT_SITE_CONFIG,
     "setup": {

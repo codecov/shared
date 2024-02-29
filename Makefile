@@ -37,14 +37,6 @@ requirements.install:
 test_env.install_cli:
 	pip install codecov-cli
 
-test_env.mutation:
-	docker-compose exec shared sh -c 'git fetch --no-tags --prune --depth=1 origin main:refs/remotes/origin/main'
-	docker-compose exec shared sh -c 'git diff origin/main ${full_sha} > data.patch'
-	docker-compose exec shared sh -c 'pip install mutmut[patch]'
-	docker-compose exec shared sh -c 'mutmut run --use-patch-file data.patch || true'
-	docker-compose exec shared sh -c 'mkdir /tmp/artifacts;'
-	docker-compose exec shared sh -c 'mutmut junitxml > /tmp/artifacts/mut.xml'
-
 test_env.build:
 	docker-compose build
 
