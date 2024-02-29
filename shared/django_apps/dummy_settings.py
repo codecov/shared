@@ -2,7 +2,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
-from .db_settings import *
+from shared.django_apps.db_settings import *
 
 ALLOWED_HOSTS = []
 
@@ -11,6 +11,9 @@ INSTALLED_APPS = [
     "shared.django_apps.pg_telemetry",
     "shared.django_apps.ts_telemetry",
     "shared.django_apps.rollouts",
+    # API models
+    "shared.django_apps.codecov_auth",
+    "shared.django_apps.core"
 ]
 
 MIDDLEWARE = []

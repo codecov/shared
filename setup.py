@@ -50,5 +50,8 @@ setup(
         "codecov-ribs",
         "cachetools",
         "django-better-admin-arrayfield",
+        # API Deps
+        "django-prometheus",
+        "django-model-utils"
     ],
 )
