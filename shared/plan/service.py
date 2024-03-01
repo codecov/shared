@@ -2,8 +2,9 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from codecov.commands.exceptions import ValidationError
-from plan.constants import (
+from shared.django_apps.codecov_auth.models import Owner
+from shared.django_apps.codecov.commands.exceptions import ValidationError
+from shared.plan.constants import (
     BASIC_PLAN,
     FREE_PLAN,
     FREE_PLAN_REPRESENTATIONS,
@@ -18,11 +19,16 @@ from plan.constants import (
     TrialDaysAmount,
     TrialStatus,
 )
-from services import sentry
 
-from shared.django_apps.codecov_auth.models import Owner
 
 log = logging.getLogger(__name__)
+
+# This originally belongs to the sentry service in API but this is a temporary fn to avoid importing the whole service
+def is_sentry_user(owner: Owner) -> bool:
+    """
+    Returns true if the given owner has been linked with a Sentry user.
+    """
+    return owner.sentry_user_id is not None
 
 
 # TODO: Consider moving some of these methods to the billing directory as they overlap billing functionality
@@ -127,7 +133,7 @@ class PlanService:
 
         available_plans += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
 
-        if owner and sentry.is_sentry_user(owner=owner):
+        if owner and is_sentry_user(owner=owner):
             available_plans += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
 
             # If number of activated users is less than or equal to TEAM_PLAN_MAX_USERS

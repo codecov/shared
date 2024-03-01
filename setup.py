@@ -53,5 +53,6 @@ setup(
         # API Deps
         "django-prometheus",
         "django-model-utils",
+        "factory-boy"
     ],
 )

@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from codecov.commands.exceptions import ValidationError
-from codecov_auth.tests.factories import OwnerFactory
+from shared.django_apps.codecov.commands.exceptions import ValidationError
+from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
 from django.test import TestCase
 from freezegun import freeze_time
-from plan.constants import (
+from shared.plan.constants import (
     BASIC_PLAN,
     FREE_PLAN,
     FREE_PLAN_REPRESENTATIONS,
@@ -18,7 +18,7 @@ from plan.constants import (
     TrialDaysAmount,
     TrialStatus,
 )
-from plan.service import PlanService
+from shared.plan.service import PlanService
 
 
 @freeze_time("2023-06-19")
