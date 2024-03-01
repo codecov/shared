@@ -22,6 +22,7 @@ services:
   postgres:
     image: postgres:14.7-alpine
     environment:
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_HOST_AUTH_METHOD=trust
@@ -30,7 +31,6 @@ services:
         target: /var/lib/postgresql/data
         tmpfs:
           size: 1024M
-
 
   timescale:
     image: timescale/timescaledb-ha:pg14-latest
