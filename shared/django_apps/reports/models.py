@@ -3,15 +3,14 @@ import uuid
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
+from shared.django_apps.reports.managers import CommitReportManager
+from shared.django_apps.utils.config import should_write_data_to_storage_config_check
+from shared.django_apps.utils.services import get_short_service_name
+from shared.django_apps.codecov.models import BaseCodecovModel
 from shared.reports.enums import UploadState, UploadType
-
-from codecov.models import BaseCodecovModel
-# from reports.managers import CommitReportManager
-# from upload.constants import ci
-# from utils.config import should_write_data_to_storage_config_check
-# from utils.model_utils import ArchiveField
-# from utils.services import get_short_service_name
+from shared.upload.constants import ci
 
 log = logging.getLogger(__name__)
 
@@ -54,8 +53,7 @@ class CommitReport(
         null=True, max_length=100, choices=ReportType.choices
     )
 
-    # Missing Keys/Methods
-    # objects = CommitReportManager()
+    objects = CommitReportManager()
 
 
 class ReportResults(
@@ -81,28 +79,28 @@ class ReportDetails(
         db_column="files_array_storage_path", null=True
     )
 
-    # Missing Keys/Methods
-    # def get_repository(self):
-    #     return self.report.commit.repository
+    def get_repository(self):
+        return self.report.commit.repository
 
-    # def get_commitid(self):
-    #     return self.report.commit.commitid
+    def get_commitid(self):
+        return self.report.commit.commitid
 
-    # def should_write_to_storage(self) -> bool:
-    #     if (
-    #         self.report is None
-    #         or self.report.commit is None
-    #         or self.report.commit.repository is None
-    #         or self.report.commit.repository.author is None
-    #     ):
-    #         return False
-    #     is_codecov_repo = self.report.commit.repository.author.username == "codecov"
-    #     return should_write_data_to_storage_config_check(
-    #         master_switch_key="report_details_files_array",
-    #         is_codecov_repo=is_codecov_repo,
-    #         repoid=self.report.commit.repository.repoid,
-    #     )
+    def should_write_to_storage(self) -> bool:
+        if (
+            self.report is None
+            or self.report.commit is None
+            or self.report.commit.repository is None
+            or self.report.commit.repository.author is None
+        ):
+            return False
+        is_codecov_repo = self.report.commit.repository.author.username == "codecov"
+        return should_write_data_to_storage_config_check(
+            master_switch_key="report_details_files_array",
+            is_codecov_repo=is_codecov_repo,
+            repoid=self.report.commit.repository.repoid,
+        )
 
+    # TODO: This needs porting as it is very tethered to the archive service
     # files_array = ArchiveField(
     #     should_write_to_storage_fn=should_write_to_storage,
     #     default_value_class=list,
@@ -176,45 +174,44 @@ class ReportSession(
     class Meta:
         db_table = "reports_upload"
 
-    # Missing Keys/Methods
-    # @property
-    # def download_url(self):
-    #     repository = self.report.commit.repository
-    #     return (
-    #         reverse(
-    #             "upload-download",
-    #             kwargs={
-    #                 "service": get_short_service_name(repository.author.service),
-    #                 "owner_username": repository.author.username,
-    #                 "repo_name": repository.name,
-    #             },
-    #         )
-    #         + f"?path={self.storage_path}"
-    #     )
+    @property
+    def download_url(self):
+        repository = self.report.commit.repository
+        return (
+            reverse(
+                "upload-download",
+                kwargs={
+                    "service": get_short_service_name(repository.author.service),
+                    "owner_username": repository.author.username,
+                    "repo_name": repository.name,
+                },
+            )
+            + f"?path={self.storage_path}"
+        )
 
-    # @property
-    # def ci_url(self):
-    #     if self.build_url:
-    #         # build_url was saved in the database
-    #         return self.build_url
+    @property
+    def ci_url(self):
+        if self.build_url:
+            # build_url was saved in the database
+            return self.build_url
 
-    #     # otherwise we need to construct it ourself (if possible)
-    #     build_url = ci.get(self.provider, {}).get("build_url")
-    #     if not build_url:
-    #         return
-    #     repository = self.report.commit.repository
-    #     data = {
-    #         "service_short": get_short_service_name(repository.author.service),
-    #         "owner": repository.author,
-    #         "upload": self,
-    #         "repo": repository,
-    #         "commit": self.report.commit,
-    #     }
-    #     return build_url.format(**data)
+        # otherwise we need to construct it ourself (if possible)
+        build_url = ci.get(self.provider, {}).get("build_url")
+        if not build_url:
+            return
+        repository = self.report.commit.repository
+        data = {
+            "service_short": get_short_service_name(repository.author.service),
+            "owner": repository.author,
+            "upload": self,
+            "repo": repository,
+            "commit": self.report.commit,
+        }
+        return build_url.format(**data)
 
-    # @property
-    # def flag_names(self):
-    #     return [flag.flag_name for flag in self.flags.all()]
+    @property
+    def flag_names(self):
+        return [flag.flag_name for flag in self.flags.all()]
 
 
 class UploadLevelTotals(AbstractTotals):

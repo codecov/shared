@@ -8,8 +8,10 @@ from datetime import datetime
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.postgres.indexes import GinIndex, OpClass
+from django.utils.functional import cached_property
 from django.db import models
 from django.db.models.functions import Lower, Substr, Upper
+from django.forms import ValidationError
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
@@ -18,6 +20,8 @@ from model_utils import FieldTracker
 from shared.django_apps.codecov.models import BaseCodecovModel
 
 from shared.django_apps.core.encoders import ReportJSONEncoder
+from shared.django_apps.core.managers import RepositoryManager
+from shared.django_apps.utils.config import should_write_data_to_storage_config_check
 
 class DateTimeWithoutTZField(models.DateTimeField):
     def db_type(self, connection):
@@ -150,6 +154,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
         ]
         verbose_name_plural = "Repositories"
 
+    objects = RepositoryManager()
 
     def __str__(self):
         return f"Repo<{self.author}/{self.name}>"
@@ -158,11 +163,9 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
     def service(self):
         return self.author.service
 
-    # Missing Key/Methods
-    # objects = RepositoryManager()
-    # def clean(self):
-    #     if self.using_integration is None:
-    #         raise ValidationError("using_integration cannot be null")
+    def clean(self):
+        if self.using_integration is None:
+            raise ValidationError("using_integration cannot be null")
 
 
 class Branch(ExportModelOperationsMixin("core.branch"), models.Model):
@@ -230,36 +233,33 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
     state = models.TextField(
         null=True, choices=CommitStates.choices
     )  # Really an ENUM in db
-    # # Use custom JSON to properly serialize custom data classes on reports
-    _report = models.JSONField(null=True, db_column="report", encoder=ReportJSONEncoder)
-    _report_storage_path = models.URLField(null=True, db_column="report_storage_path")
 
     def save(self, *args, **kwargs):
         self.updatestamp = timezone.now()
         super().save(*args, **kwargs)
 
-    # Missing Key/Methods
-    # @cached_property
-    # def parent_commit(self):
-    #     return Commit.objects.filter(
-    #         repository=self.repository, commitid=self.parent_commit_id
-    #     ).first()
+    @cached_property
+    def parent_commit(self):
+        return Commit.objects.filter(
+            repository=self.repository, commitid=self.parent_commit_id
+        ).first()
 
-    # @cached_property
-    # def commitreport(self):
-    #     reports = list(self.reports.all())
-    #     # This is almost always prefetched w/ `filter(code=None)` and
-    #     # `filter(Q(report_type=None) | Q(report_type=CommitReport.ReportType.COVERAGE))`
-    #     # (in which case `.all()` returns the already filtered results)
-    #     # In the case that the reports were not prefetched we'll filter again in memory.
-    #     reports = [
-    #         report
-    #         for report in reports
-    #         if report.code is None
-    #         and (report.report_type is None or report.report_type == "coverage")
-    #     ]
-    #     return reports[0] if reports else None
+    @cached_property
+    def commitreport(self):
+        reports = list(self.reports.all())
+        # This is almost always prefetched w/ `filter(code=None)` and
+        # `filter(Q(report_type=None) | Q(report_type=CommitReport.ReportType.COVERAGE))`
+        # (in which case `.all()` returns the already filtered results)
+        # In the case that the reports were not prefetched we'll filter again in memory.
+        reports = [
+            report
+            for report in reports
+            if report.code is None
+            and (report.report_type is None or report.report_type == "coverage")
+        ]
+        return reports[0] if reports else None
 
+    #TODO: needs porting; property heavily tethered to report service
     # @cached_property
     # def full_report(self) -> Optional[Report]:
     #     # TODO: we should probably remove use of this method since it inverts the
@@ -306,26 +306,28 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
             ),
         ]
 
-    # Missing Key/Methods
-    # def get_repository(self):
-    #     return self.repository
+    def get_repository(self):
+        return self.repository
 
-    # def get_commitid(self):
-    #     return self.commitid
+    def get_commitid(self):
+        return self.commitid
 
-    # @property
-    # def external_id(self):
-    #     return self.commitid
+    @property
+    def external_id(self):
+        return self.commitid
 
-    # def should_write_to_storage(self) -> bool:
-    #     if self.repository is None or self.repository.author is None:
-    #         return False
-    #     is_codecov_repo = self.repository.author.username == "codecov"
-    #     return should_write_data_to_storage_config_check(
-    #         "commit_report", is_codecov_repo, self.repository.repoid
-    #     )
+    def should_write_to_storage(self) -> bool:
+        if self.repository is None or self.repository.author is None:
+            return False
+        is_codecov_repo = self.repository.author.username == "codecov"
+        return should_write_data_to_storage_config_check(
+            "commit_report", is_codecov_repo, self.repository.repoid
+        )
 
-    # Missing Key/Method
+    # Use custom JSON to properly serialize custom data classes on reports
+    _report = models.JSONField(null=True, db_column="report", encoder=ReportJSONEncoder)
+    _report_storage_path = models.URLField(null=True, db_column="report_storage_path")
+    # TODO: This needs porting as it is very tethered to the archive service
     # report = ArchiveField(
     #     should_write_to_storage_fn=should_write_to_storage,
     #     json_encoder=ReportJSONEncoder,
@@ -395,29 +397,29 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
             ),
         ]
 
-    # Missing Key/Methods
-    # def get_repository(self):
-    #     return self.repository
+    def get_repository(self):
+        return self.repository
 
-    # def get_commitid(self):
-    #     return None
+    def get_commitid(self):
+        return None
 
-    # @property
-    # def external_id(self):
-    #     return self.pullid
+    @property
+    def external_id(self):
+        return self.pullid
 
-    # def should_write_to_storage(self) -> bool:
-    #     if self.repository is None or self.repository.author is None:
-    #         return False
-    #     is_codecov_repo = self.repository.author.username == "codecov"
-    #     return should_write_data_to_storage_config_check(
-    #         master_switch_key="pull_flare",
-    #         is_codecov_repo=is_codecov_repo,
-    #         repoid=self.repository.repoid,
-    #     )
+    def should_write_to_storage(self) -> bool:
+        if self.repository is None or self.repository.author is None:
+            return False
+        is_codecov_repo = self.repository.author.username == "codecov"
+        return should_write_data_to_storage_config_check(
+            master_switch_key="pull_flare",
+            is_codecov_repo=is_codecov_repo,
+            repoid=self.repository.repoid,
+        )
 
     _flare = models.JSONField(db_column="flare", null=True)
     _flare_storage_path = models.URLField(db_column="flare_storage_path", null=True)
+    # TODO: This needs porting as it is very tethered to the archive service
     # flare = ArchiveField(
     #     should_write_to_storage_fn=should_write_to_storage, default_value_class=dict
     # )
