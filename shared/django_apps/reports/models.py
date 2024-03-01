@@ -5,10 +5,11 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
+
+from shared.django_apps.codecov.models import BaseCodecovModel
 from shared.django_apps.reports.managers import CommitReportManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
 from shared.django_apps.utils.services import get_short_service_name
-from shared.django_apps.codecov.models import BaseCodecovModel
 from shared.reports.enums import UploadState, UploadType
 from shared.upload.constants import ci
 

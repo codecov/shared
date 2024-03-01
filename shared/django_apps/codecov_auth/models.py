@@ -4,23 +4,27 @@ import os
 import uuid
 from dataclasses import asdict
 from datetime import datetime
+from hashlib import md5
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.db import models
 from django.db.models.manager import BaseManager
-from django_prometheus.models import ExportModelOperationsMixin
 from django.forms import ValidationError
 from django.utils import timezone
-from shared.config import get_config
-from hashlib import md5
+from django_prometheus.models import ExportModelOperationsMixin
 
+from shared.config import get_config
 from shared.django_apps.codecov.models import BaseCodecovModel
-from shared.django_apps.codecov_auth.constants import AVATAR_GITHUB_BASE_URL, AVATARIO_BASE_URL, BITBUCKET_BASE_URL, GRAVATAR_BASE_URL
+from shared.django_apps.codecov_auth.constants import (
+    AVATAR_GITHUB_BASE_URL,
+    AVATARIO_BASE_URL,
+    BITBUCKET_BASE_URL,
+    GRAVATAR_BASE_URL,
+)
 from shared.django_apps.codecov_auth.managers import OwnerManager
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.core.models import DateTimeWithoutTZField, Repository
 from shared.plan.constants import USER_PLAN_REPRESENTATIONS, PlanName
-
 
 # Large number to represent Infinity as float('int') is not JSON serializable
 INFINITY = 99999999

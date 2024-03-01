@@ -37,9 +37,7 @@ class Migration(migrations.Migration):
                 ("totals", models.JSONField(null=True)),
                 (
                     "report",
-                    models.JSONField(
-                        encoder=ReportJSONEncoder, null=True
-                    ),
+                    models.JSONField(encoder=ReportJSONEncoder, null=True),
                 ),
                 ("merged", models.BooleanField(null=True)),
                 ("deleted", models.BooleanField(null=True)),

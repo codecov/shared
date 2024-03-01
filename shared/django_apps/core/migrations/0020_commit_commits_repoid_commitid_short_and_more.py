@@ -4,6 +4,7 @@ import django.contrib.postgres.indexes
 import django.db.models.functions.text
 from django.contrib.postgres.operations import BtreeGinExtension, TrigramExtension
 from django.db import migrations, models
+
 from shared.django_apps.migration_utils import RiskyAddIndex
 
 

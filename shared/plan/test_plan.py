@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from django.test import TestCase
-from freezegun import freeze_time
-
 from codecov.commands.exceptions import ValidationError
 from codecov_auth.tests.factories import OwnerFactory
+from django.test import TestCase
+from freezegun import freeze_time
 from plan.constants import (
     BASIC_PLAN,
     FREE_PLAN,

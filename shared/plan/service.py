@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 from codecov.commands.exceptions import ValidationError
-from shared.django_apps.codecov_auth.models import Owner
 from plan.constants import (
     BASIC_PLAN,
     FREE_PLAN,
@@ -20,6 +19,8 @@ from plan.constants import (
     TrialStatus,
 )
 from services import sentry
+
+from shared.django_apps.codecov_auth.models import Owner
 
 log = logging.getLogger(__name__)
 

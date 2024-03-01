@@ -1,5 +1,3 @@
-from django.db import models
-
 # Create your models here.
 import random
 import string
@@ -8,20 +6,19 @@ from datetime import datetime
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.postgres.indexes import GinIndex, OpClass
-from django.utils.functional import cached_property
 from django.db import models
 from django.db.models.functions import Lower, Substr, Upper
 from django.forms import ValidationError
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django_prometheus.models import ExportModelOperationsMixin
-
 from model_utils import FieldTracker
 
 from shared.django_apps.codecov.models import BaseCodecovModel
-
 from shared.django_apps.core.encoders import ReportJSONEncoder
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
+
 
 class DateTimeWithoutTZField(models.DateTimeField):
     def db_type(self, connection):
@@ -259,7 +256,7 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
         ]
         return reports[0] if reports else None
 
-    #TODO: needs porting; property heavily tethered to report service
+    # TODO: needs porting; property heavily tethered to report service
     # @cached_property
     # def full_report(self) -> Optional[Report]:
     #     # TODO: we should probably remove use of this method since it inverts the

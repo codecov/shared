@@ -2,6 +2,7 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
+
 from shared.django_apps.migration_utils import RiskyAlterField
 
 

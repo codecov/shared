@@ -1,5 +1,6 @@
 from shared.config import get_config
 
+
 def should_write_data_to_storage_config_check(
     master_switch_key: str, is_codecov_repo: bool, repoid: int
 ) -> bool:
