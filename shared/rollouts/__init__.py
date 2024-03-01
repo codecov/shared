@@ -122,13 +122,12 @@ class Feature:
             self.args = None
 
         if owner_id and not repo_id:
-            self._check_value(owner_id, IdentifierType.OWNERID, default)
-        elif repo_id and not owner_id:
-            self._check_value(repo_id, IdentifierType.REPOID, default)
-        else:
-            raise Exception(
-                "Must pass in exactly one of owner_id or repo_id to check_value()"
-            )
+            return self._check_value(owner_id, IdentifierType.OWNERID, default)
+        if repo_id and not owner_id:
+            return self._check_value(repo_id, IdentifierType.REPOID, default)
+        raise Exception(
+            "Must pass in exactly one of owner_id or repo_id to check_value()"
+        )
 
     @sync_to_async
     def check_value_async(self, identifier, default=False):

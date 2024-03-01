@@ -29,7 +29,7 @@ class TestFeature(TestCase):
         # # return 200 different values.
         with patch.object(Feature, "HASHSPACE", 200):
 
-            complex_feature.check_value("garbage")  # to force fetch values from db
+            complex_feature.check_value(owner_id=1234)  # to force fetch values from db
 
             # Because the top-level feature proportion is 0.5, we are only using the
             # first 50% of our 200 hash values as our test population: [0..100]
@@ -54,7 +54,7 @@ class TestFeature(TestCase):
         # should skip the hashing and bucket stuff and just return the single
         # possible value.
         feature = Feature("rolled_out", 1.0)
-        assert feature.check_value("any", default=False) == True
+        assert feature.check_value(owner_id=123, default=False) == True
         assert not hasattr(feature.__dict__, "_buckets")
 
     def test_overrides(self):
@@ -83,8 +83,8 @@ class TestFeature(TestCase):
             1.0,
         )
 
-        assert feature.check_value(321, default=1) == 2
-        assert feature.check_value(123, default=2) == 1
+        assert feature.check_value(owner_id=321, default=1) == 2
+        assert feature.check_value(owner_id=123, default=2) == 1
         assert not hasattr(feature.__dict__, "_buckets")
 
     def test_not_in_test_gets_default(self):
@@ -101,7 +101,7 @@ class TestFeature(TestCase):
         # If the feature is only 10% rolled out, 2**128-1 is way past the end of
         # the test population and should get a default value back.
         with patch("mmh3.hash128", return_value=2**128 - 1):
-            assert feature.check_value("not in test", default="default") == "default"
+            assert feature.check_value(owner_id=123, default="default") == "default"
 
     def test_return_values_for_each_bucket(self):
         return_values_for_each_bucket = FeatureFlag.objects.create(
@@ -131,5 +131,5 @@ class TestFeature(TestCase):
             # the buckets are [0..50] and [51..100]. Mock the hash function to
             # return a value in the first bucket and then a value in the second.
             with patch("mmh3.hash128", side_effect=[33, 66]):
-                assert feature.check_value("any1", default="c") == "first bucket"
-                assert feature.check_value("any2", default="c") == "second bucket"
+                assert feature.check_value(owner_id=123, default="c") == "first bucket"
+                assert feature.check_value(owner_id=123, default="c") == "second bucket"
