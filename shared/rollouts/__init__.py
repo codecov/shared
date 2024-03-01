@@ -107,7 +107,7 @@ class Feature:
         # so it is hashable
         self.args = tuple(sorted(args.items()))
 
-    def check_value(self, identifier, identifier_type: IdentifierType, default=False):
+    def check_value(self, owner_id=None, repo_id=None, default=False):
         """
         Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
@@ -121,7 +121,14 @@ class Feature:
         ):  # to create a default when `check_value()` is run for the first time
             self.args = None
 
-        return self._check_value(identifier, identifier_type, default)
+        if owner_id and not repo_id:
+            self._check_value(owner_id, IdentifierType.OWNERID, default)
+        elif repo_id and not owner_id:
+            self._check_value(repo_id, IdentifierType.REPOID, default)
+        else:
+            raise Exception(
+                "Must pass in exactly one of owner_id or repo_id to check_value()"
+            )
 
     @sync_to_async
     def check_value_async(self, identifier, default=False):
