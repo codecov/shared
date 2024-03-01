@@ -17,6 +17,8 @@ from model_utils import FieldTracker
 
 from shared.django_apps.codecov.models import BaseCodecovModel
 
+from shared.django_apps.core.encoders import ReportJSONEncoder
+
 class DateTimeWithoutTZField(models.DateTimeField):
     def db_type(self, connection):
         return "timestamp"
@@ -228,6 +230,9 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
     state = models.TextField(
         null=True, choices=CommitStates.choices
     )  # Really an ENUM in db
+    # # Use custom JSON to properly serialize custom data classes on reports
+    _report = models.JSONField(null=True, db_column="report", encoder=ReportJSONEncoder)
+    _report_storage_path = models.URLField(null=True, db_column="report_storage_path")
 
     def save(self, *args, **kwargs):
         self.updatestamp = timezone.now()
@@ -320,9 +325,7 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
     #         "commit_report", is_codecov_repo, self.repository.repoid
     #     )
 
-    # # Use custom JSON to properly serialize custom data classes on reports
-    # _report = models.JSONField(null=True, db_column="report", encoder=ReportJSONEncoder)
-    # _report_storage_path = models.URLField(null=True, db_column="report_storage_path")
+    # Missing Key/Method
     # report = ArchiveField(
     #     should_write_to_storage_fn=should_write_to_storage,
     #     json_encoder=ReportJSONEncoder,
@@ -413,8 +416,8 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
     #         repoid=self.repository.repoid,
     #     )
 
-    # _flare = models.JSONField(db_column="flare", null=True)
-    # _flare_storage_path = models.URLField(db_column="flare_storage_path", null=True)
+    _flare = models.JSONField(db_column="flare", null=True)
+    _flare_storage_path = models.URLField(db_column="flare_storage_path", null=True)
     # flare = ArchiveField(
     #     should_write_to_storage_fn=should_write_to_storage, default_value_class=dict
     # )

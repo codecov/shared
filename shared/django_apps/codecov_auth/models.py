@@ -9,7 +9,7 @@ from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
 
 from shared.django_apps.codecov.models import BaseCodecovModel
-from shared.django_apps.core.models import DateTimeWithoutTZField, Repository
+from shared.django_apps.core.models import DateTimeWithoutTZField
 from shared.plan.constants import PlanName
 
 
@@ -26,11 +26,6 @@ SERVICE_CODECOV_ENTERPRISE = "enterprise"
 DEFAULT_AVATAR_SIZE = 55
 
 log = logging.getLogger(__name__)
-
-class DateTimeWithoutTZField(models.DateTimeField):
-    def db_type(self, connection):
-        return "timestamp"
-
 
 # TODO use this to refactor avatar_url
 class Service(models.TextChoices):

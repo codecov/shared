@@ -13,7 +13,7 @@ INSTALLED_APPS = [
     "shared.django_apps.rollouts",
     # API models
     "shared.django_apps.codecov_auth",
-    "shared.django_apps.core"
+    "shared.django_apps.core",
 ]
 
 MIDDLEWARE = []
@@ -22,6 +22,8 @@ TEMPLATES = []
 
 TELEMETRY_VANILLA_DB = "default"
 TELEMETRY_TIMESCALE_DB = "timeseries"
+
+AUTH_USER_MODEL = "codecov_auth.User"
 
 TEST = True
 
