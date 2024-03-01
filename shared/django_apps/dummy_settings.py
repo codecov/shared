@@ -2,7 +2,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
-from .db_settings import *
+from shared.django_apps.db_settings import *
 
 ALLOWED_HOSTS = []
 
