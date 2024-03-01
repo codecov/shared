@@ -27,7 +27,7 @@ TEST = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "POSTGRES_USER",
+        "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "password",
         "HOST": "postgres",
@@ -35,7 +35,7 @@ DATABASES = {
     },
     "timeseries": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "POSTGRES_USER",
+        "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "timescale",

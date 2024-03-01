@@ -9,6 +9,21 @@ class Migration(migrations.Migration):
         ("rollouts", "0002_auto_20240226_1858"),
     ]
 
+    # BEGIN;
+    # --
+    # -- Alter field proportion on featureflag
+    # --
+    # -- (no-op)
+    # --
+    # -- Alter field proportion on featureflagvariant
+    # --
+    # -- (no-op)
+    # --
+    # -- Alter field value on featureflagvariant
+    # --
+    # -- (no-op)
+    # COMMIT;
+
     operations = [
         migrations.AlterField(
             model_name="featureflag",
