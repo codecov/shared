@@ -110,8 +110,8 @@ class FeatureExposure(models.Model):
         self.full_clean()
         super(FeatureExposure, self).save(*args, **kwargs)
 
-    # don't use indexes for now
-    # class Meta:
-    #     indexes = [
-    #         models.Index(fields=['feature_flag', 'timestamp'], name='feature_flag_timestamp_idx'),
-    #     ]
+    class Meta:
+        db_table = "feature_exposures"
+        # indexes = [ # don't use indexes for now
+        #     models.Index(fields=['feature_flag', 'timestamp'], name='feature_flag_timestamp_idx'),
+        # ]
