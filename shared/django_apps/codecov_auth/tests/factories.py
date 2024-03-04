@@ -15,8 +15,8 @@ from shared.django_apps.codecov_auth.models import (
     User,
     UserToken,
 )
-from shared.plan.constants import TrialStatus
 from shared.encryption.oauth import get_encryptor_from_configuration
+from shared.plan.constants import TrialStatus
 
 encryptor = get_encryptor_from_configuration()
 

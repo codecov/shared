@@ -2,8 +2,8 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from shared.django_apps.codecov_auth.models import Owner
 from shared.django_apps.codecov.commands.exceptions import ValidationError
+from shared.django_apps.codecov_auth.models import Owner
 from shared.plan.constants import (
     BASIC_PLAN,
     FREE_PLAN,
@@ -19,7 +19,6 @@ from shared.plan.constants import (
     TrialDaysAmount,
     TrialStatus,
 )
-
 
 log = logging.getLogger(__name__)
 

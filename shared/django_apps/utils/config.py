@@ -1,4 +1,8 @@
+import os
+
 from shared.config import get_config
+
+RUN_ENV = os.environ.get("RUN_ENV", "PRODUCTION")
 
 
 def should_write_data_to_storage_config_check(
