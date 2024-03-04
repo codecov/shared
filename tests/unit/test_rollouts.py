@@ -24,10 +24,7 @@ class TestFeature(TestCase):
         FeatureFlagVariant.objects.create(
             name="complex_c", feature_flag=complex, proportion=1 / 3, value=3
         )
-        complex_feature = Feature(
-            "complex",
-            0.5,
-        )
+        complex_feature = Feature("complex")
 
         # # To make the math simpler, let's pretend our hash function can only
         # # return 200 different values.
@@ -57,7 +54,7 @@ class TestFeature(TestCase):
         # If the feature is 100% rolled out and only has one variant, then we
         # should skip the hashing and bucket stuff and just return the single
         # possible value.
-        feature = Feature("rolled_out", 1.0)
+        feature = Feature("rolled_out")
         assert feature.check_value(owner_id=123, default=False) == True
         assert not hasattr(feature.__dict__, "_buckets")
 
@@ -84,7 +81,6 @@ class TestFeature(TestCase):
         # hashing and just return the value for that variant.
         feature = Feature(
             "overrides",
-            1.0,
         )
 
         assert feature.check_value(owner_id=321, default=1) == 2
@@ -101,7 +97,7 @@ class TestFeature(TestCase):
             proportion=1.0,
             value=True,
         )
-        feature = Feature("not_in_test", 0.1)
+        feature = Feature("not_in_test")
         # If the feature is only 10% rolled out, 2**128-1 is way past the end of
         # the test population and should get a default value back.
         with patch("mmh3.hash128", return_value=2**128 - 1):
@@ -124,10 +120,7 @@ class TestFeature(TestCase):
             value="second bucket",
         )
 
-        feature = Feature(
-            "return_values_for_each_bucket",
-            1.0,
-        )
+        feature = Feature("return_values_for_each_bucket")
         # To make the math simpler, let's pretend our hash function can only
         # return 100 different values.
         with patch.object(Feature, "HASHSPACE", 100):
