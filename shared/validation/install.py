@@ -242,6 +242,7 @@ config_schema = {
                 "type": "list",
                 "schema": {"type": "string"},
             },
+            "guest_access": {"type": "boolean"},
         },
     },
     "services": {
