@@ -114,7 +114,7 @@ class TestUnitGithub(object):
             with pytest.raises(TorngitRateLimitError) as excinfo:
                 async with handler.get_client() as client:
                     res = await handler.api(client, "get", "/endpoint")
-            assert excinfo.value.code == status_code
+            assert excinfo.value.code == 403
             assert excinfo.value.message == "Github API rate limit error: Forbidden"
             assert excinfo.value.reset == "1350085394"
 
@@ -135,7 +135,7 @@ class TestUnitGithub(object):
             with pytest.raises(TorngitClientError) as excinfo:
                 async with handler.get_client() as client:
                     res = await handler.api(client, "get", "/endpoint")
-            assert excinfo.value.code == status_code
+            assert excinfo.value.code == 403
 
     @pytest.mark.asyncio
     async def test_api_client_error_server_error(self, valid_handler, mocker):
