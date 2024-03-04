@@ -2,6 +2,7 @@ import logging
 from functools import cached_property
 
 import mmh3
+from asgiref.sync import sync_to_async
 from cachetools.func import lru_cache, ttl_cache
 
 from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
@@ -101,6 +102,18 @@ class Feature:
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
         feature variants via Django Admin.
         """
+        # Will only run and refresh values from the database every ~5 minutes due to TTL cache
+        self._fetch_and_set_from_db(self.args)
+
+        if (
+            self.args
+        ):  # to create a default when `check_value()` is run for the first time
+            self.args = None
+
+        return self._check_value(identifier, default)
+
+    @sync_to_async
+    def check_value_async(self, identifier, default=False):
         # Will only run and refresh values from the database every ~5 minutes due to TTL cache
         self._fetch_and_set_from_db(self.args)
 
