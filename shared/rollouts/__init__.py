@@ -114,15 +114,7 @@ class Feature:
 
     @sync_to_async
     def check_value_async(self, identifier, default=False):
-        # Will only run and refresh values from the database every ~5 minutes due to TTL cache
-        self._fetch_and_set_from_db(self.args)
-
-        if (
-            self.args
-        ):  # to create a default when `check_value()` is run for the first time
-            self.args = None
-
-        return self._check_value(identifier, default)
+        return self.check_value(identifier, default)
 
     @cached_property
     def _buckets(self):
