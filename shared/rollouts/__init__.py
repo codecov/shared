@@ -2,6 +2,7 @@ import logging
 from functools import cached_property
 
 import mmh3
+from asgiref.sync import sync_to_async
 from cachetools.func import lru_cache, ttl_cache
 
 from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
@@ -110,6 +111,10 @@ class Feature:
             self.args = None
 
         return self._check_value(identifier, default)
+
+    @sync_to_async
+    def check_value_async(self, identifier, default=False):
+        return self.check_value(identifier, default)
 
     @cached_property
     def _buckets(self):
