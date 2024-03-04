@@ -126,7 +126,7 @@ class Feature:
         if repo_id and not owner_id:
             return self._check_value(repo_id, IdentifierType.REPOID, default)
         raise Exception(
-            "Must pass in exactly one of owner_id or repo_id to check_value()"
+            "Must pass in exactly one of owner_id or repo_id keyword arguments to check_value()"
         )
 
     @sync_to_async
@@ -295,7 +295,7 @@ class Feature:
     def create_exposure(self, variant, identifier, identifier_type: IdentifierType):
         """
         Creates an exposure record indicating that a feature variant has been applied to
-        an entity (repo or owner).
+        an entity (repo or owner) at a current point in time.
         """
         args = {
             "feature_flag": self.feature_flag,
