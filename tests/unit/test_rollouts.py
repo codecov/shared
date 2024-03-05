@@ -1,12 +1,14 @@
 from unittest.mock import PropertyMock, patch
 
-from django.test import TestCase
+import pytest
+from django.test import TransactionTestCase
 
+from shared.django_apps.executor import run_in_executor
 from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
 from shared.rollouts import Feature
 
 
-class TestFeature(TestCase):
+class TestFeature(TransactionTestCase):
     def test_buckets(self):
         complex = FeatureFlag.objects.create(
             name="complex", proportion=0.5, salt="random_salt"
@@ -133,3 +135,22 @@ class TestFeature(TestCase):
             with patch("mmh3.hash128", side_effect=[33, 66]):
                 assert feature.check_value("any1", default="c") == "first bucket"
                 assert feature.check_value("any2", default="c") == "second bucket"
+
+    @pytest.mark.asyncio
+    async def test_async_with_models(self):
+        @run_in_executor
+        def init_models():
+            simple_feature = FeatureFlag.objects.create(
+                name="simple_feature", proportion=1.0, salt="random_salt"
+            )
+            FeatureFlagVariant.objects.create(
+                name="simple_feature_enabled",
+                feature_flag=simple_feature,
+                proportion=1.0,
+                value=True,
+            )
+
+        init_models()
+
+        feature = Feature("simple_feature", 1.0)
+        assert feature.check_value("any", default=False) == True

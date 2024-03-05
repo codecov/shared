@@ -5,6 +5,7 @@ import mmh3
 from asgiref.sync import sync_to_async
 from cachetools.func import lru_cache, ttl_cache
 
+from shared.django_apps.executor import run_in_executor
 from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
 
 log = logging.getLogger("__name__")
@@ -112,10 +113,6 @@ class Feature:
 
         return self._check_value(identifier, default)
 
-    @sync_to_async
-    def check_value_async(self, identifier, default=False):
-        return self.check_value(identifier, default)
-
     @cached_property
     def _buckets(self):
         """
@@ -182,17 +179,23 @@ class Feature:
         Updates the instance with the newest values from database, and clears other caches so
         that their values can be recalculated.
         """
-        new_feature_flag = FeatureFlag.objects.filter(pk=self.name).first()
-        new_ff_variants = sorted(
-            list(FeatureFlagVariant.objects.filter(feature_flag=self.name)),
-            key=lambda x: x.variant_id,
-        )
 
-        if not new_feature_flag:
-            # create default feature flag
-            new_feature_flag = FeatureFlag.objects.create(**dict(args))
+        @run_in_executor
+        def _get_django_models():
+            new_feature_flag = FeatureFlag.objects.filter(pk=self.name).first()
+            new_ff_variants = sorted(
+                list(FeatureFlagVariant.objects.filter(feature_flag=self.name)),
+                key=lambda x: x.variant_id,
+            )
+
+            if not new_feature_flag:
+                # create default feature flag
+                new_feature_flag = FeatureFlag.objects.create(**dict(args))
+
+            return (new_feature_flag, new_ff_variants)
 
         clear_cache = False
+        new_feature_flag, new_ff_variants = _get_django_models()
 
         # Either completely new or different from what we got last time
         if (not self.feature_flag) or self._is_different(
