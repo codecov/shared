@@ -27,7 +27,7 @@ def test_validate_install_configuration_invalid(mocker):
 
 def test_validate_install_configuration_with_user_yaml(mocker):
     user_input = {
-        "setup": {"codecov_url": "http://codecov.company.com"},
+        "setup": {"codecov_url": "http://codecov.company.com", "guest_access": False},
         "site": {
             "coverage": {
                 "status": {
@@ -51,7 +51,7 @@ def test_validate_install_configuration_with_user_yaml(mocker):
     }
     mock_warning = mocker.patch.object(install_log, "warning")
     assert validate_install_configuration(user_input) == {
-        "setup": {"codecov_url": "http://codecov.company.com"},
+        "setup": {"codecov_url": "http://codecov.company.com", "guest_access": False},
         "site": {
             "coverage": {
                 "status": {
