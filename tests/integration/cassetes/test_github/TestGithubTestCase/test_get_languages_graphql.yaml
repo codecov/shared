@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"query": "\nquery Repos($owner: String!, $cursor: String, $first: Int!)
+      {\n  repositoryOwner(login: $owner) {\n    repositories(\n      first: $first\n      ownerAffiliations:
+      OWNER\n      isFork: false\n      isLocked: false\n      orderBy: {field: NAME,
+      direction: ASC}\n      after: $cursor\n    ) {\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n      nodes
+      {\n        name\n        languages(first: 100) {\n          edges {\n            node
+      {\n              name\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n",
+      "variables": {"owner": "adrian-codecov", "cursor": null, "first": 100}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '648'
+      content-type:
+      - application/json
+      host:
+      - api.github.com
+      user-agent:
+      - Default
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    content: '{"data":{"repositoryOwner":{"repositories":{"pageInfo":{"hasNextPage":false,"endCursor":"Y3Vyc29yOnYyOpKxdGVzdC1uby1sYW5ndWFnZXPOLEIluA=="},"nodes":[{"name":"another-test","languages":{"edges":[{"node":{"name":"JavaScript","id":"MDg6TGFuZ3VhZ2UxNDA="}},{"node":{"name":"HTML","id":"MDg6TGFuZ3VhZ2U0MTc="}},{"node":{"name":"CSS","id":"MDg6TGFuZ3VhZ2UzMDg="}}]}},{"name":"new-test-repo","languages":{"edges":[{"node":{"name":"HTML","id":"MDg6TGFuZ3VhZ2U0MTc="}},{"node":{"name":"CSS","id":"MDg6TGFuZ3VhZ2UzMDg="}},{"node":{"name":"JavaScript","id":"MDg6TGFuZ3VhZ2UxNDA="}}]}},{"name":"test-no-languages","languages":{"edges":[]}}]}}}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 06 Mar 2024 20:22:24 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding, Accept, X-Requested-With
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v4
+      X-GitHub-Request-Id:
+      - DB8A:54C4:313396:5D9263:65E8D080
+      X-OAuth-Scopes:
+      - admin:enterprise, admin:gpg_key, admin:org
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4592'
+      X-RateLimit-Reset:
+      - '1709758667'
+      X-RateLimit-Resource:
+      - graphql
+      X-RateLimit-Used:
+      - '408'
+      X-XSS-Protection:
+      - '0'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
