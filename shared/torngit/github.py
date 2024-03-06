@@ -1637,7 +1637,7 @@ class Github(TorngitBaseAdapter):
         return list(k.lower() for k in res.keys())
 
     async def get_languages_graphql(
-        self, owner_username: str, token=None
+        self, owner_username: str, token=None, first=100
     ) -> List[RepoWithLanguages]:
         """
         Gets the languages belonging to repositories of a specific owner.
@@ -1650,7 +1650,6 @@ class Github(TorngitBaseAdapter):
         # Initially set to none and true
         endCursor = None
         hasNextPage = True
-        first = 100
         all_repositories = []
 
         async with self.get_client() as client:
