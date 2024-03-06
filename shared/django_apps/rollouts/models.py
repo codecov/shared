@@ -20,7 +20,12 @@ class FeatureFlag(models.Model):
     """
 
     name = models.CharField(max_length=200, primary_key=True)
-    proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
+    proportion = models.DecimalField(
+        default=0,
+        decimal_places=3,
+        max_digits=4,
+        help_text="Values are between 0 and 1. Eg: 0.5 means 50% of users",
+    )
     salt = models.CharField(max_length=32, default=default_random_salt)
 
     class Meta:
@@ -44,8 +49,16 @@ class FeatureFlagVariant(models.Model):
     feature_flag = models.ForeignKey(
         "FeatureFlag", on_delete=models.CASCADE, related_name="variants"
     )
-    proportion = models.DecimalField(default=0, decimal_places=3, max_digits=4)
-    value = models.JSONField(default=False)
+    proportion = models.DecimalField(
+        default=0,
+        decimal_places=3,
+        max_digits=4,
+        help_text="Values are between 0 and 1. Eg: 0.5 means 50% of users. The sum of all variants' proportions for a feature should equal to 1.",
+    )
+    value = models.JSONField(
+        default=False,
+        help_text="Accepts JSON values. Eg: `true`, `false`, `10`, `['abc', 'def']`, `{'k': 'v'}`",
+    )
 
     # Weak foreign keys to Owner and Respository models respectively
     override_owner_ids = ArrayField(
