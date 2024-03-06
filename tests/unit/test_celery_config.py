@@ -43,6 +43,7 @@ def test_celery_config():
         "app.tasks.status.*",
         "app.tasks.sync_plans.SyncPlans",
         "app.tasks.sync_repo_languages.SyncLanguages",
+        "app.tasks.sync_repo_languages_gql.SyncLanguagesGQL",
         "app.tasks.sync_repos.SyncRepos",
         "app.tasks.sync_teams.SyncTeams",
         "app.tasks.synchronize.Synchronize",
@@ -97,6 +98,10 @@ def test_celery_config():
         (
             "app.tasks.sync_repo_languages.SyncLanguages",
             TaskConfigGroup.sync_repo_languages.value,
+        ),
+        (
+            "app.tasks.sync_repo_languages_gql.SyncLanguagesGQL",
+            TaskConfigGroup.sync_repo_languages_gql.value,
         ),
         ("app.tasks.sync_teams.SyncTeams", TaskConfigGroup.sync_teams.value),
         ("app.tasks.synchronize.Synchronize", TaskConfigGroup.synchronize.value),
