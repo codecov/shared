@@ -1644,7 +1644,7 @@ class Github(TorngitBaseAdapter):
         Reference:
             https://docs.github.com/en/graphql/reference/objects#repository
         Returns:
-            List[str]: A list of repositories and their languages names
+            List[RepoWithLanguages]: A list of repositories and their languages names
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # Initially set to none and true
@@ -1670,7 +1670,6 @@ class Github(TorngitBaseAdapter):
                     body=query,
                     token=token,
                 )
-                print("123", res)
                 repositories = res["data"]["repositoryOwner"]["repositories"]
                 hasNextPage = repositories["pageInfo"]["hasNextPage"]
                 endCursor = repositories["pageInfo"]["endCursor"]
