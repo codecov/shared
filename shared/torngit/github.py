@@ -1669,19 +1669,25 @@ class Github(TorngitBaseAdapter):
                     body=query,
                     token=token,
                 )
-                repositories = res["data"]["repositoryOwner"]["repositories"]
-                hasNextPage = repositories["pageInfo"]["hasNextPage"]
-                endCursor = repositories["pageInfo"]["endCursor"]
+                repoOwner = res["data"]["repositoryOwner"]
+                if not repoOwner:
+                    hasNextPage = False
+                else:
+                    repositories = repoOwner["repositories"]
+                    hasNextPage = repositories["pageInfo"]["hasNextPage"]
+                    endCursor = repositories["pageInfo"]["endCursor"]
 
-                for repo in repositories["nodes"]:
-                    languages = repo["languages"]["edges"]
-                    res_languages = []
-                    for language in languages:
-                        res_languages.append(language["node"]["name"])
+                    for repo in repositories["nodes"]:
+                        languages = repo["languages"]["edges"]
+                        res_languages = []
+                        for language in languages:
+                            res_languages.append(language["node"]["name"])
 
-                    all_repositories.append(
-                        RepoWithLanguages(name=repo["name"], languages=res_languages)
-                    )
+                        all_repositories.append(
+                            RepoWithLanguages(
+                                name=repo["name"], languages=res_languages
+                            )
+                        )
 
         return all_repositories
 
