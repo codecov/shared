@@ -4,6 +4,7 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
+from dataclasses import dataclass
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
@@ -17,7 +18,6 @@ from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
-    TorngitCantRefreshTokenError,
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitMisconfiguredCredentials,
@@ -36,6 +36,12 @@ from shared.utils.urls import url_concat
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
+
+
+@dataclass
+class RepoWithLanguages:
+    name: str
+    languages: List[str]
 
 
 class GitHubGraphQLQueries(object):
@@ -89,6 +95,36 @@ query GetOwnerFromNodeId($node_id: ID!) {
             databaseId
         }
     }
+}
+""",
+        REPO_LANGUAGES_FROM_OWNER="""
+query Repos($owner: String!, $cursor: String, $first: Int!) {
+  repositoryOwner(login: $owner) {
+    repositories(
+      first: $first
+      ownerAffiliations: OWNER
+      isFork: false
+      isLocked: false
+      orderBy: {field: NAME, direction: ASC}
+      after: $cursor
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        name
+        languages(first: 100) {
+          edges {
+            node {
+              name
+              id
+            }
+          }
+        }
+      }
+    }
+  }
 }
 """,
     )
@@ -1585,6 +1621,7 @@ class Github(TorngitBaseAdapter):
             )
             return res
 
+    # TODO: deprecated - favour the get_languages_graphql() method instead
     async def get_repo_languages(self, token=None) -> List[str]:
         """
         Gets the languages belonging to this repository.
@@ -1598,6 +1635,61 @@ class Github(TorngitBaseAdapter):
                 client, "get", "/repos/{}/languages".format(self.slug), token=token
             )
         return list(k.lower() for k in res.keys())
+
+    async def get_languages_graphql(
+        self, owner_username: str, token=None, first=100
+    ) -> List[RepoWithLanguages]:
+        """
+        Gets the languages belonging to repositories of a specific owner.
+        Reference:
+            https://docs.github.com/en/graphql/reference/objects#repository
+        Returns:
+            List[RepoWithLanguages]: A list of repositories and their languages names
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        # Initially set to none and true
+        endCursor = None
+        hasNextPage = True
+        all_repositories = []
+
+        async with self.get_client() as client:
+            while hasNextPage:
+                query = self.graphql.prepare(
+                    "REPO_LANGUAGES_FROM_OWNER",
+                    variables={
+                        "owner": owner_username,
+                        "cursor": endCursor,
+                        "first": first,
+                    },
+                )
+                res = await self.api(
+                    client,
+                    "post",
+                    "/graphql",
+                    body=query,
+                    token=token,
+                )
+                repoOwner = res["data"]["repositoryOwner"]
+                if not repoOwner:
+                    hasNextPage = False
+                else:
+                    repositories = repoOwner["repositories"]
+                    hasNextPage = repositories["pageInfo"]["hasNextPage"]
+                    endCursor = repositories["pageInfo"]["endCursor"]
+
+                    for repo in repositories["nodes"]:
+                        languages = repo["languages"]["edges"]
+                        res_languages = []
+                        for language in languages:
+                            res_languages.append(language["node"]["name"])
+
+                        all_repositories.append(
+                            RepoWithLanguages(
+                                name=repo["name"], languages=res_languages
+                            )
+                        )
+
+        return all_repositories
 
     async def update_check_run(
         self,

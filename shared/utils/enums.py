@@ -41,6 +41,7 @@ class TaskConfigGroup(Enum):
     sync_repos = "sync_repos"
     sync_teams = "sync_teams"
     sync_repo_languages = "sync_repo_languages"
+    sync_repo_languages_gql = "sync_repo_languages_gql"
     synchronize = "synchronize"
     timeseries = "timeseries"
     upload = "upload"

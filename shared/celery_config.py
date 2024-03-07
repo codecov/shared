@@ -14,6 +14,9 @@ sync_repos_task_name = f"app.tasks.{TaskConfigGroup.sync_repos.value}.SyncRepos"
 sync_repo_languages_task_name = (
     f"app.tasks.{TaskConfigGroup.sync_repo_languages.value}.SyncLanguages"
 )
+sync_repo_languages_gql_task_name = (
+    f"app.tasks.{TaskConfigGroup.sync_repo_languages_gql.value}.SyncLanguagesGQL"
+)
 delete_owner_task_name = f"app.tasks.{TaskConfigGroup.delete_owner.value}.DeleteOwner"
 notify_task_name = f"app.tasks.{TaskConfigGroup.notify.value}.Notify"
 pulls_task_name = f"app.tasks.{TaskConfigGroup.pulls.value}.Sync"
@@ -244,6 +247,15 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.sync_repo_languages.value,
+                "queue",
+                default=task_default_queue,
+            )
+        },
+        sync_repo_languages_gql_task_name: {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.sync_repo_languages_gql.value,
                 "queue",
                 default=task_default_queue,
             )
