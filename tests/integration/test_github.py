@@ -6,7 +6,7 @@ from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
     TorngitRepoNotFoundError,
 )
-from shared.torngit.github import Github
+from shared.torngit.github import Github, RepoWithLanguages
 
 # This is a fake key
 fake_private_key = """-----BEGIN RSA PRIVATE KEY-----
@@ -963,9 +963,19 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_repo_languages(self, generic_valid_handler, codecov_vcr):
-        expected_result = ["shell", "makefile", "python"]
-        res = await generic_valid_handler.get_repo_languages()
+    async def test_get_languages_graphql(self, valid_handler, codecov_vcr):
+        expected_result = [
+            RepoWithLanguages(
+                name="another-test", languages=["JavaScript", "HTML", "CSS"]
+            ),
+            RepoWithLanguages(
+                name="new-test-repo", languages=["HTML", "CSS", "JavaScript"]
+            ),
+            RepoWithLanguages(name="test-no-languages", languages=[]),
+        ]
+        owner_username = "adrian-codecov"
+
+        res = await valid_handler.get_languages_graphql(owner_username=owner_username)
         assert res == expected_result
 
     @pytest.mark.asyncio
