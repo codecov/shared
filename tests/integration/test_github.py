@@ -965,8 +965,8 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_repo_with_languages_graphql(self, valid_handler, codecov_vcr):
         expected_result = {
-            "another-test": ["JavaScript", "HTML", "CSS"],
-            "new-test-repo": ["HTML", "CSS", "JavaScript"],
+            "another-test": ["javascript", "html", "css"],
+            "new-test-repo": ["html", "css", "javascript"],
             "test-no-languages": [],
         }
         owner_username = "adrian-codecov"
