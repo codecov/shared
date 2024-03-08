@@ -1674,7 +1674,7 @@ class Github(TorngitBaseAdapter):
                         languages = repo["languages"]["edges"]
                         res_languages = []
                         for language in languages:
-                            res_languages.append(language["node"]["name"])
+                            res_languages.append(language["node"]["name"].lower())
 
                         all_repositories[repo["name"]] = res_languages
 
