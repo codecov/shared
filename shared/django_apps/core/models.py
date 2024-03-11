@@ -25,14 +25,20 @@ class DateTimeWithoutTZField(models.DateTimeField):
         return "timestamp"
 
 
-class Version(ExportModelOperationsMixin("core.version"), models.Model):
+class BaseCoreModel(models.Model):
+    class Meta:
+        abstract = True
+        app_label = "shared-core"
+
+
+class Version(ExportModelOperationsMixin("core.version"), BaseCoreModel):
     version = models.TextField(primary_key=True)
 
     class Meta:
         db_table = "version"
 
 
-class Constants(ExportModelOperationsMixin("core.constants"), models.Model):
+class Constants(ExportModelOperationsMixin("core.constants"), BaseCoreModel):
     key = models.CharField(primary_key=True)
     value = models.CharField()
 
@@ -46,7 +52,7 @@ def _gen_image_token():
     )
 
 
-class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
+class Repository(ExportModelOperationsMixin("core.repository"), BaseCoreModel):
     class Languages(models.TextChoices):
         JAVASCRIPT = "javascript"
         SHELL = "shell"
@@ -165,7 +171,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
             raise ValidationError("using_integration cannot be null")
 
 
-class Branch(ExportModelOperationsMixin("core.branch"), models.Model):
+class Branch(ExportModelOperationsMixin("core.branch"), BaseCoreModel):
     name = models.TextField(primary_key=True, db_column="branch")
     repository = models.ForeignKey(
         "core.Repository",
@@ -198,7 +204,7 @@ class Branch(ExportModelOperationsMixin("core.branch"), models.Model):
         ]
 
 
-class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
+class Commit(ExportModelOperationsMixin("core.commit"), BaseCoreModel):
     class CommitStates(models.TextChoices):
         COMPLETE = "complete"
         PENDING = "pending"
@@ -338,7 +344,7 @@ class PullStates(models.TextChoices):
     CLOSED = "closed"
 
 
-class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
+class Pull(ExportModelOperationsMixin("core.pull"), BaseCoreModel):
     repository = models.ForeignKey(
         "core.Repository",
         db_column="repoid",
@@ -427,7 +433,7 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
 
 
 class CommitNotification(
-    ExportModelOperationsMixin("core.commit_notification"), models.Model
+    ExportModelOperationsMixin("core.commit_notification"), BaseCoreModel
 ):
     class NotificationTypes(models.TextChoices):
         COMMENT = "comment"
@@ -476,7 +482,9 @@ class CommitNotification(
         db_table = "commit_notifications"
 
 
-class CommitError(ExportModelOperationsMixin("core.commit_error"), BaseCodecovModel):
+class CommitError(
+    ExportModelOperationsMixin("core.commit_error"), BaseCoreModel, BaseCodecovModel
+):
     commit = models.ForeignKey(
         "Commit",
         related_name="errors",
