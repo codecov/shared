@@ -355,10 +355,9 @@ class Github(TorngitBaseAdapter):
                 elif res.status_code >= 500:
                     metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Github is having 5xx issues")
-                elif (
-                    res.status_code == 403
-                    and int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
-                ):
+                elif (res.status_code == 403 or res.status_code == 429) and int(
+                    res.headers.get("X-RateLimit-Remaining", -1)
+                ) == 0:
                     message = f"Github API rate limit error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
                     raise TorngitRateLimitError(
@@ -367,9 +366,8 @@ class Github(TorngitBaseAdapter):
                         reset=res.headers.get("X-RateLimit-Reset"),
                     )
                 elif (
-                    res.status_code == 403
-                    and res.headers.get("Retry-After") is not None
-                ):
+                    res.status_code == 403 or res.status_code == 429
+                ) and res.headers.get("Retry-After") is not None:
                     # https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#secondary-rate-limits
                     message = f"Github API rate limit error: secondary rate limit"
                     retry_after = int(res.headers.get("Retry-After"))
