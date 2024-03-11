@@ -93,12 +93,17 @@ class TestUnitGithub(object):
             await valid_handler.api(client, method, url)
         assert mock_refresh.call_count == 1
 
+    @pytest.mark.parametrize(
+        "status_code, error_message", [(403, "Forbidden"), (429, "Too Many Requests")]
+    )
     @pytest.mark.asyncio
-    async def test_api_client_error_ratelimit_reached(self):
+    async def test_api_client_error_ratelimit_reached_429(
+        self, status_code, error_message
+    ):
         with respx.mock:
             my_route = respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
-                    status_code=403,
+                    status_code=status_code,
                     headers={
                         "X-RateLimit-Remaining": "0",
                         "X-RateLimit-Reset": "1350085394",
@@ -114,15 +119,22 @@ class TestUnitGithub(object):
                 async with handler.get_client() as client:
                     res = await handler.api(client, "get", "/endpoint")
             assert excinfo.value.code == 403
-            assert excinfo.value.message == "Github API rate limit error: Forbidden"
+            assert (
+                excinfo.value.message == f"Github API rate limit error: {error_message}"
+            )
             assert excinfo.value.reset == "1350085394"
 
+    @pytest.mark.parametrize("status_code", [403, 429])
     @pytest.mark.asyncio
-    async def test_api_client_error_ratelimit_missing_header(self):
+    async def test_api_client_error_ratelimit_missing_header(self, status_code):
         with respx.mock:
             my_route = respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
-                    status_code=403, headers={"X-RateLimit-Reset": "1350085394"}
+                    status_code=status_code,
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": "1350085394",
+                    },
                 )
             )
             handler = Github(

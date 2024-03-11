@@ -4,7 +4,6 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
-from dataclasses import dataclass
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
@@ -36,12 +35,6 @@ from shared.utils.urls import url_concat
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
-
-
-@dataclass
-class RepoWithLanguages:
-    name: str
-    languages: List[str]
 
 
 class GitHubGraphQLQueries(object):
@@ -362,10 +355,9 @@ class Github(TorngitBaseAdapter):
                 elif res.status_code >= 500:
                     metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Github is having 5xx issues")
-                elif (
-                    res.status_code == 403
-                    and int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
-                ):
+                elif (res.status_code == 403 or res.status_code == 429) and int(
+                    res.headers.get("X-RateLimit-Remaining", -1)
+                ) == 0:
                     message = f"Github API rate limit error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
                     raise TorngitRateLimitError(
@@ -374,9 +366,8 @@ class Github(TorngitBaseAdapter):
                         reset=res.headers.get("X-RateLimit-Reset"),
                     )
                 elif (
-                    res.status_code == 403
-                    and res.headers.get("Retry-After") is not None
-                ):
+                    res.status_code == 403 or res.status_code == 429
+                ) and res.headers.get("Retry-After") is not None:
                     # https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#secondary-rate-limits
                     message = f"Github API rate limit error: secondary rate limit"
                     retry_after = int(res.headers.get("Retry-After"))
@@ -1621,7 +1612,7 @@ class Github(TorngitBaseAdapter):
             )
             return res
 
-    # TODO: deprecated - favour the get_languages_graphql() method instead
+    # TODO: deprecated - favour the get_repos_with_languages_graphql() method instead
     async def get_repo_languages(self, token=None) -> List[str]:
         """
         Gets the languages belonging to this repository.
@@ -1636,21 +1627,21 @@ class Github(TorngitBaseAdapter):
             )
         return list(k.lower() for k in res.keys())
 
-    async def get_languages_graphql(
+    async def get_repos_with_languages_graphql(
         self, owner_username: str, token=None, first=100
-    ) -> List[RepoWithLanguages]:
+    ) -> dict[str, List[str]]:
         """
         Gets the languages belonging to repositories of a specific owner.
         Reference:
             https://docs.github.com/en/graphql/reference/objects#repository
         Returns:
-            List[RepoWithLanguages]: A list of repositories and their languages names
+            dict[str, str]: A dictionary with repo_name: [languages]
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # Initially set to none and true
         endCursor = None
         hasNextPage = True
-        all_repositories = []
+        all_repositories = {}
 
         async with self.get_client() as client:
             while hasNextPage:
@@ -1681,13 +1672,9 @@ class Github(TorngitBaseAdapter):
                         languages = repo["languages"]["edges"]
                         res_languages = []
                         for language in languages:
-                            res_languages.append(language["node"]["name"])
+                            res_languages.append(language["node"]["name"].lower())
 
-                        all_repositories.append(
-                            RepoWithLanguages(
-                                name=repo["name"], languages=res_languages
-                            )
-                        )
+                        all_repositories[repo["name"]] = res_languages
 
         return all_repositories
 
