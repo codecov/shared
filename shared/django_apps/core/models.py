@@ -19,30 +19,29 @@ from shared.django_apps.core.encoders import ReportJSONEncoder
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
 
+# Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error
+CORE_APP_LABEL = "shared-core"
+
 
 class DateTimeWithoutTZField(models.DateTimeField):
     def db_type(self, connection):
         return "timestamp"
 
 
-class BaseCoreModel(models.Model):
-    class Meta:
-        abstract = True
-        app_label = "shared-core"
-
-
-class Version(ExportModelOperationsMixin("core.version"), BaseCoreModel):
+class Version(ExportModelOperationsMixin("core.version"), models.Model):
     version = models.TextField(primary_key=True)
 
     class Meta:
+        app_label = CORE_APP_LABEL
         db_table = "version"
 
 
-class Constants(ExportModelOperationsMixin("core.constants"), BaseCoreModel):
+class Constants(ExportModelOperationsMixin("core.constants"), models.Model):
     key = models.CharField(primary_key=True)
     value = models.CharField()
 
     class Meta:
+        app_label = CORE_APP_LABEL
         db_table = "constants"
 
 
@@ -52,7 +51,7 @@ def _gen_image_token():
     )
 
 
-class Repository(ExportModelOperationsMixin("core.repository"), BaseCoreModel):
+class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
     class Languages(models.TextChoices):
         JAVASCRIPT = "javascript"
         SHELL = "shell"
@@ -142,6 +141,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), BaseCoreModel):
 
     class Meta:
         db_table = "repos"
+        app_label = CORE_APP_LABEL
         ordering = ["-repoid"]
         indexes = [
             models.Index(
@@ -171,7 +171,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), BaseCoreModel):
             raise ValidationError("using_integration cannot be null")
 
 
-class Branch(ExportModelOperationsMixin("core.branch"), BaseCoreModel):
+class Branch(ExportModelOperationsMixin("core.branch"), models.Model):
     name = models.TextField(primary_key=True, db_column="branch")
     repository = models.ForeignKey(
         "core.Repository",
@@ -191,6 +191,7 @@ class Branch(ExportModelOperationsMixin("core.branch"), BaseCoreModel):
 
     class Meta:
         db_table = "branches"
+        app_label = CORE_APP_LABEL
         constraints = [
             models.UniqueConstraint(
                 fields=["name", "repository"], name="branches_repoid_branch"
@@ -204,7 +205,7 @@ class Branch(ExportModelOperationsMixin("core.branch"), BaseCoreModel):
         ]
 
 
-class Commit(ExportModelOperationsMixin("core.commit"), BaseCoreModel):
+class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
     class CommitStates(models.TextChoices):
         COMPLETE = "complete"
         PENDING = "pending"
@@ -274,6 +275,7 @@ class Commit(ExportModelOperationsMixin("core.commit"), BaseCoreModel):
 
     class Meta:
         db_table = "commits"
+        app_label = CORE_APP_LABEL
         constraints = [
             models.UniqueConstraint(
                 fields=["repository", "commitid"], name="commits_repoid_commitid"
@@ -344,7 +346,7 @@ class PullStates(models.TextChoices):
     CLOSED = "closed"
 
 
-class Pull(ExportModelOperationsMixin("core.pull"), BaseCoreModel):
+class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
     repository = models.ForeignKey(
         "core.Repository",
         db_column="repoid",
@@ -374,6 +376,7 @@ class Pull(ExportModelOperationsMixin("core.pull"), BaseCoreModel):
 
     class Meta:
         db_table = "pulls"
+        app_label = CORE_APP_LABEL
         ordering = ["-pullid"]
         constraints = [
             models.UniqueConstraint(
@@ -433,7 +436,7 @@ class Pull(ExportModelOperationsMixin("core.pull"), BaseCoreModel):
 
 
 class CommitNotification(
-    ExportModelOperationsMixin("core.commit_notification"), BaseCoreModel
+    ExportModelOperationsMixin("core.commit_notification"), models.Model
 ):
     class NotificationTypes(models.TextChoices):
         COMMENT = "comment"
@@ -479,12 +482,11 @@ class CommitNotification(
         super().save(*args, **kwargs)
 
     class Meta:
+        app_label = CORE_APP_LABEL
         db_table = "commit_notifications"
 
 
-class CommitError(
-    ExportModelOperationsMixin("core.commit_error"), BaseCoreModel, BaseCodecovModel
-):
+class CommitError(ExportModelOperationsMixin("core.commit_error"), BaseCodecovModel):
     commit = models.ForeignKey(
         "Commit",
         related_name="errors",
@@ -492,3 +494,6 @@ class CommitError(
     )
     error_code = models.CharField(max_length=100)
     error_params = models.JSONField(default=dict)
+
+    class Meta:
+        app_label = CORE_APP_LABEL
