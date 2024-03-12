@@ -55,5 +55,8 @@ setup(
         "django-model-utils",
         "factory-boy",
         "python-redis-lock",
+        "django-model-utils==4.3.1",
+        "requests==2.31.0",
+        "sentry-sdk>=1.40.0",
     ],
 )

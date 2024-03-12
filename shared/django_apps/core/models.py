@@ -3,6 +3,7 @@ import random
 import string
 import uuid
 from datetime import datetime
+from typing import Optional
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.postgres.indexes import GinIndex, OpClass
@@ -18,9 +19,11 @@ from shared.django_apps.codecov.models import BaseCodecovModel
 from shared.django_apps.core.encoders import ReportJSONEncoder
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
+from shared.django_apps.utils.model_utils import ArchiveField
+from shared.reports.resources import Report
 
 # Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error
-CORE_APP_LABEL = "shared-core"
+CORE_APP_LABEL = "core"
 
 
 class DateTimeWithoutTZField(models.DateTimeField):
@@ -263,15 +266,14 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
         ]
         return reports[0] if reports else None
 
-    # TODO: needs porting; property heavily tethered to report service
-    # @cached_property
-    # def full_report(self) -> Optional[Report]:
-    #     # TODO: we should probably remove use of this method since it inverts the
-    #     # dependency tree (services should be importing models and not the other
-    #     # way around).  The caching should be preserved somehow though.
-    #     from services.report import build_report_from_commit
+    @cached_property
+    def full_report(self) -> Optional[Report]:
+        # TODO: we should probably remove use of this method since it inverts the
+        # dependency tree (services should be importing models and not the other
+        # way around).  The caching should be preserved somehow though.
+        from shared.reports.api_report_service import build_report_from_commit
 
-    #     return build_report_from_commit(self)
+        return build_report_from_commit(self)
 
     class Meta:
         db_table = "commits"
@@ -332,12 +334,11 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
     # Use custom JSON to properly serialize custom data classes on reports
     _report = models.JSONField(null=True, db_column="report", encoder=ReportJSONEncoder)
     _report_storage_path = models.URLField(null=True, db_column="report_storage_path")
-    # TODO: This needs porting as it is very tethered to the archive service
-    # report = ArchiveField(
-    #     should_write_to_storage_fn=should_write_to_storage,
-    #     json_encoder=ReportJSONEncoder,
-    #     default_value_class=dict,
-    # )
+    report = ArchiveField(
+        should_write_to_storage_fn=should_write_to_storage,
+        json_encoder=ReportJSONEncoder,
+        default_value_class=dict,
+    )
 
 
 class PullStates(models.TextChoices):
@@ -425,10 +426,9 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
 
     _flare = models.JSONField(db_column="flare", null=True)
     _flare_storage_path = models.URLField(db_column="flare_storage_path", null=True)
-    # TODO: This needs porting as it is very tethered to the archive service
-    # flare = ArchiveField(
-    #     should_write_to_storage_fn=should_write_to_storage, default_value_class=dict
-    # )
+    flare = ArchiveField(
+        should_write_to_storage_fn=should_write_to_storage, default_value_class=dict
+    )
 
     def save(self, *args, **kwargs):
         self.updatestamp = timezone.now()

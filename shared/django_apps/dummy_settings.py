@@ -13,6 +13,9 @@ INSTALLED_APPS = [
     "shared.django_apps.ts_telemetry",
     "shared.django_apps.rollouts",
     # API models
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
     "django.contrib.postgres",
     "shared.django_apps.codecov_auth",
     "shared.django_apps.core",
