@@ -1,8 +1,12 @@
-from unittest.mock import PropertyMock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 from django.test import TestCase
 
-from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
+from shared.django_apps.rollouts.models import (
+    FeatureExposure,
+    FeatureFlag,
+    FeatureFlagVariant,
+)
 from shared.rollouts import Feature
 
 
@@ -133,3 +137,49 @@ class TestFeature(TestCase):
             with patch("mmh3.hash128", side_effect=[33, 66]):
                 assert feature.check_value(owner_id=123, default="c") == "first bucket"
                 assert feature.check_value(owner_id=123, default="c") == "second bucket"
+
+
+class TestFeatureExposures(TestCase):
+    def test_exposure_created(self):
+        complex = FeatureFlag.objects.create(
+            name="my_feature", proportion=1.0, salt="random_salt"
+        )
+        enabled = FeatureFlagVariant.objects.create(
+            name="enabled", feature_flag=complex, proportion=1.0, value=True
+        )
+        FeatureFlagVariant.objects.create(
+            name="disabled", feature_flag=complex, proportion=0, value=False
+        )
+
+        owner_id = 123123123
+
+        MY_FEATURE = Feature("my_feature")
+        MY_FEATURE.check_value(owner_id=owner_id)
+
+        exposure = FeatureExposure.objects.all().first()
+
+        assert exposure is not None
+        assert exposure.owner == owner_id
+        assert exposure.feature_flag == complex
+        assert exposure.feature_flag_variant == enabled
+
+    def test_exposure_not_created(self):
+        complex = FeatureFlag.objects.create(
+            name="my_feature", proportion=1.0, salt="random_salt"
+        )
+        FeatureFlagVariant.objects.create(
+            name="enabled", feature_flag=complex, proportion=0, value=True
+        )
+
+        with patch.object(Feature, "create_exposure") as create_exposure:
+            owner_id = 123123123
+
+            MY_FEATURE = Feature("my_feature")
+            MY_FEATURE.check_value(owner_id=owner_id)
+
+            exposure = FeatureExposure.objects.first()
+
+            # Should not create an exposure because the owner was not exposed to any
+            # explicit variant, it was assigned the default behaviour
+            assert exposure is None
+            create_exposure.assert_not_called()
