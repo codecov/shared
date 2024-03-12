@@ -24,13 +24,13 @@ class IdentifierType(Enum):
 class Feature:
     """
     Represents a feature and its rollout parameters, fetched from the database (see django_apps/rollouts/models.py).
-    Given an identifier (repo_id, owner_id, etc..), it can decide which variant of a feature (if any)
+    Given an identifier (repo_id, owner_id, etc..), it will decide which variant of a feature (if any)
     should be used for the request. Each variant will have a `value` that will be returned if that variant is
     decided to be used. For example: if you want an ON and OFF variant for your feature, you could have the values
     be true and false respectively
 
-    The parameters are fetched and updated roughly every 5 minutes, meaning it can take up to 5 minutes for changes
-    to show up here. You can modify these values in the database via Django Admin.
+    You can modify the parameters of your feature flag via Django Admin. The parameters are fetched and updated roughly
+    every 5 minutes, meaning it can take up to 5 minutes for changes to show up here.
 
     If you instantiate a `Feature` instance with a new name, the associated database entry
     will be created for you. Otherwise, the existing database entry will be used to populate
@@ -40,10 +40,16 @@ class Feature:
     Examples:
 
     A simple on/off feature rolled out to 20% of repos:
-        # By default, features have no variants — you create them via Django Admin. You also create the `on` variant there.
-        MY_FEATURE_BY_REPO = Feature("my_feature", 0.2)
+        # By default, features have no variants — you create them via Django Admin. You can create the `on`
+        # variant there, along with setting the proportion and salt for the flag.
+        MY_FEATURE_BY_REPO = Feature("my_feature")
 
         # DB:
+        # FeatureFlag:
+        #   name: my_feature
+        #   proportion: 0.0 # default value
+        #   salt: ajsdopijaejapvjghiujnarapsjf # default is randomly generated
+        #
         # FeatureFlagVariant:
         #   name: my_feature_on
         #   feature_flag: my_feature
@@ -51,21 +57,23 @@ class Feature:
         #   value: true
 
     A simple A/B test rolled out to 10% of users (5% test, 5% control):
-        MY_EXPERIMENT_BY_USER = Feature(
-            "my_experiment",
-            0.1,
-        )
+        MY_EXPERIMENT_BY_USER = Feature("my_experiment")
 
         # DB:
+        # FeatureFlag:
+        #   name: my_experiment
+        #   proportion: 0.1
+        #   salt: foajdisjfosdjrandomfsfsdfsfsfs
+        #
         # FeatureFlagVariant:
-        #   name: MY_EXPERIMENT_BY_USER_TEST
-        #   feature_flag: MY_EXPERIMENT_BY_USER
+        #   name: test
+        #   feature_flag: my_experiment
         #   proportion: 0.5
         #   value: true
         #
         # FeatureFlagVariant:
-        #   name: MY_EXPERIMENT_BY_USER_CONTROL
-        #   feature_flag: MY_EXPERIMENT_BY_USER
+        #   name: control
+        #   feature_flag: my_experiment
         #   proportion: 0.5
         #   value: false
 
@@ -77,10 +85,7 @@ class Feature:
             old_behavior()
 
     Parameters:
-    - `name`: a unique name for the experiment.
-    - `proportion`: a float between 0 and 1 representing how much of the
-      population should get a variant of the feature. 0.5 means 50%.
-    - `salt`: a way to effectively re-shuffle which bucket each id falls into
+    - `name`: a unique name for the experiment
 
     If you discover a bug and roll back your feature, it's good practice to
     change the salt to any other string before restarting the rollout. Changing
@@ -90,22 +95,10 @@ class Feature:
 
     HASHSPACE = 2**128
 
-    def __init__(self, name, proportion=None, salt=None):
-        assert not proportion or proportion >= 0 and proportion <= 1.0
-        assert not salt or isinstance(salt, str)
-
+    def __init__(self, name):
         self.name = name
         self.feature_flag = None
         self.ff_variants = None
-
-        args = {"name": name}
-        if proportion:
-            args["proportion"] = proportion
-        if salt:
-            args["salt"] = salt
-
-        # so it is hashable
-        self.args = tuple(sorted(args.items()))
 
     def check_value(self, owner_id=None, repo_id=None, default=False):
         """
@@ -114,12 +107,7 @@ class Feature:
         feature variants via Django Admin.
         """
         # Will only run and refresh values from the database every ~5 minutes due to TTL cache
-        self._fetch_and_set_from_db(self.args)
-
-        if (
-            self.args
-        ):  # to create a default when `check_value()` is run for the first time
-            self.args = None
+        self._fetch_and_set_from_db()
 
         if owner_id and not repo_id:
             return self._check_value(owner_id, IdentifierType.OWNERID, default)
@@ -146,9 +134,9 @@ class Feature:
         - A salt
 
         The range of possible hash values is divvied up into buckets based on the
-        `proportion` and `variants` members. The hash for this repo will fall into
-        one of those buckets and the corresponding variant (or default value) will
-        be returned.
+        `proportion` of the feature flag and its `variants`. The hash for this repo
+        will fall into one of those buckets and the corresponding variant (or default
+        value) will be returned.
         """
         test_population = int(self.feature_flag.proportion * Feature.HASHSPACE)
 
@@ -200,7 +188,7 @@ class Feature:
         )
 
     @ttl_cache(maxsize=64, ttl=300)  # 5 minute time-to-live cache
-    def _fetch_and_set_from_db(self, args=None):
+    def _fetch_and_set_from_db(self):
         """
         Updates the instance with the newest values from database, and clears other caches so
         that their values can be recalculated.
@@ -213,7 +201,7 @@ class Feature:
 
         if not new_feature_flag:
             # create default feature flag
-            new_feature_flag = FeatureFlag.objects.create(**dict(args))
+            new_feature_flag = FeatureFlag.objects.create(name=self.name)
 
         clear_cache = False
 
