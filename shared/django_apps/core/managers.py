@@ -52,7 +52,7 @@ class RepositoryQuerySet(QuerySet):
         are not changing as the most recent commit is uploading coverage
         reports.
         """
-        from core.models import Commit
+        from shared.django_apps.core.models import Commit
 
         timestamp = timezone.now() - timezone.timedelta(hours=1)
 
@@ -100,7 +100,7 @@ class RepositoryQuerySet(QuerySet):
         """
         Annotates queryset with coverage of latest commit totals before cerain date.
         """
-        from core.models import Commit
+        from shared.django_apps.core.models import Commit
 
         # Parsing the date given in parameters so we receive a datetime rather than a string
         timestamp = parser.parse(before_date)
@@ -132,7 +132,7 @@ class RepositoryQuerySet(QuerySet):
         branch) of each repository. Depends on having called "with_latest_commit_totals_before" with
         "include_previous_totals=True".
         """
-        from core.models import Commit
+        from shared.django_apps.core.models import Commit
 
         return self.annotate(
             latest_coverage=Cast(
@@ -242,7 +242,7 @@ class RepositoryQuerySet(QuerySet):
         - latest_commit_at as the true_coverage except NULL are transformed to 1/1/1900
         This make sure when we order the repo with no commit appears last.
         """
-        from core.models import Commit
+        from shared.django_apps.core.models import Commit
 
         latest_commit_at = Subquery(
             Commit.objects.filter(repository_id=OuterRef("pk"))
@@ -260,7 +260,7 @@ class RepositoryQuerySet(QuerySet):
         """
         Annotates the queryset with the oldest commit timestamp.
         """
-        from core.models import Commit
+        from shared.django_apps.core.models import Commit
 
         commits = Commit.objects.filter(repository_id=OuterRef("pk")).order_by(
             "timestamp"
@@ -270,7 +270,7 @@ class RepositoryQuerySet(QuerySet):
         )
 
     def get_or_create_from_git_repo(self, git_repo, owner):
-        from codecov_auth.models import Owner
+        from shared.django_apps.codecov_auth.models import Owner
 
         repo, created = self.get_or_create(
             author=owner,

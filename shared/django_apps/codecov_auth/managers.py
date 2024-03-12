@@ -23,7 +23,7 @@ class OwnerQuerySet(QuerySet):
         if a given user is activated in organization "owner", false
         otherwise.
         """
-        from codecov_auth.models import Owner
+        from shared.django_apps.codecov_auth.models import Owner
 
         return self.annotate(
             activated=Coalesce(
@@ -47,7 +47,7 @@ class OwnerQuerySet(QuerySet):
         if a given user is an admin in organization "owner", and
         false otherwise.
         """
-        from codecov_auth.models import Owner
+        from shared.django_apps.codecov_auth.models import Owner
 
         return self.annotate(
             is_admin=Coalesce(
