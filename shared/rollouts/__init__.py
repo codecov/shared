@@ -1,13 +1,24 @@
 import logging
+from enum import Enum
 from functools import cached_property
 
 import mmh3
 from asgiref.sync import sync_to_async
 from cachetools.func import lru_cache, ttl_cache
+from django.utils import timezone
 
-from shared.django_apps.rollouts.models import FeatureFlag, FeatureFlagVariant
+from shared.django_apps.rollouts.models import (
+    FeatureExposure,
+    FeatureFlag,
+    FeatureFlagVariant,
+)
 
 log = logging.getLogger("__name__")
+
+
+class IdentifierType(Enum):
+    OWNERID = "ownerid"
+    REPOID = "repoid"
 
 
 class Feature:
@@ -96,7 +107,7 @@ class Feature:
         # so it is hashable
         self.args = tuple(sorted(args.items()))
 
-    def check_value(self, identifier, default=False):
+    def check_value(self, owner_id=None, repo_id=None, default=False):
         """
         Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
@@ -110,7 +121,13 @@ class Feature:
         ):  # to create a default when `check_value()` is run for the first time
             self.args = None
 
-        return self._check_value(identifier, default)
+        if owner_id and not repo_id:
+            return self._check_value(owner_id, IdentifierType.OWNERID, default)
+        if repo_id and not owner_id:
+            return self._check_value(repo_id, IdentifierType.REPOID, default)
+        raise Exception(
+            "Must pass in exactly one of owner_id or repo_id keyword arguments to check_value()"
+        )
 
     @sync_to_async
     def check_value_async(self, identifier, default=False):
@@ -143,15 +160,21 @@ class Feature:
 
         return buckets
 
-    def _get_override_variant(self, identifier):
+    def _get_override_variant(self, identifier, identifier_type: IdentifierType):
         """
         Retrieves the feature variant applicable to the given identifer according to
         defined overrides. Returns None if no override is found.
         """
         for variant in self.ff_variants:
             if (
-                identifier in variant.override_owner_ids
-                or identifier in variant.override_repo_ids
+                identifier_type == IdentifierType.OWNERID
+                and identifier in variant.override_owner_ids
+            ):
+                return variant
+
+            if (
+                identifier_type == IdentifierType.REPOID
+                and identifier in variant.override_repo_ids
             ):
                 return variant
         return None
@@ -231,14 +254,14 @@ class Feature:
     # In this case, we are okay with sharing a cache across instances, and the
     # instances are all global constants so they won't be torn down anyway.
     @lru_cache(maxsize=64)
-    def _check_value(self, identifier, default):
+    def _check_value(self, identifier, identifier_type: IdentifierType, default):
         """
         This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that
         variant values can be returned using the most up-to-date values from the database
         """
 
         # check if an override exists
-        override_variant = self._get_override_variant(identifier)
+        override_variant = self._get_override_variant(identifier, identifier_type)
 
         if override_variant:
             return override_variant.value
@@ -253,6 +276,7 @@ class Feature:
         )
         for bucket, variant in self._buckets:
             if key <= bucket:
+                self.create_exposure(variant, identifier, identifier_type)
                 return variant.value
 
         return default
@@ -267,3 +291,19 @@ class Feature:
                 return False
 
         return True
+
+    def create_exposure(self, variant, identifier, identifier_type: IdentifierType):
+        """
+        Creates an exposure record indicating that a feature variant has been applied to
+        an entity (repo or owner) at a current point in time.
+        """
+        args = {
+            "feature_flag": self.feature_flag,
+            "feature_flag_variant": variant,
+            "timestamp": timezone.now(),
+        }
+        if identifier_type == IdentifierType.OWNERID:
+            args["owner"] = identifier
+        elif identifier_type == IdentifierType.REPOID:
+            args["repo"] = identifier
+        FeatureExposure.objects.create(**args)
