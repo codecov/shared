@@ -129,7 +129,18 @@ class TestFeature(TestCase):
             # return a value in the first bucket and then a value in the second.
             with patch("mmh3.hash128", side_effect=[33, 66]):
                 assert feature.check_value(owner_id=123, default="c") == "first bucket"
-                assert feature.check_value(owner_id=123, default="c") == "second bucket"
+                assert feature.check_value(owner_id=124, default="c") == "second bucket"
+
+    def test_default_feature_flag_created(self):
+        name = "my_default_feature"
+        my_default_feature = Feature(name)
+
+        my_default_feature.check_value(owner_id=123123123)
+
+        feature_flag = FeatureFlag.objects.filter(name=name).first()
+
+        assert feature_flag is not None
+        assert feature_flag.proportion == 0
 
 
 class TestFeatureExposures(TestCase):
@@ -146,8 +157,8 @@ class TestFeatureExposures(TestCase):
 
         owner_id = 123123123
 
-        MY_FEATURE = Feature("my_feature")
-        MY_FEATURE.check_value(owner_id=owner_id)
+        my_feature = Feature("my_feature")
+        my_feature.check_value(owner_id=owner_id)
 
         exposure = FeatureExposure.objects.all().first()
 
@@ -167,8 +178,8 @@ class TestFeatureExposures(TestCase):
         with patch.object(Feature, "create_exposure") as create_exposure:
             owner_id = 123123123
 
-            MY_FEATURE = Feature("my_feature")
-            MY_FEATURE.check_value(owner_id=owner_id)
+            my_feature = Feature("my_feature")
+            my_feature.check_value(owner_id=owner_id)
 
             exposure = FeatureExposure.objects.first()
 

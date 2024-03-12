@@ -100,8 +100,6 @@ class Feature:
         self.feature_flag = None
         self.ff_variants = None
 
-        self.args = ("name", name)
-
     def check_value(self, owner_id=None, repo_id=None, default=False):
         """
         Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
@@ -109,12 +107,7 @@ class Feature:
         feature variants via Django Admin.
         """
         # Will only run and refresh values from the database every ~5 minutes due to TTL cache
-        self._fetch_and_set_from_db(self.args)
-
-        if (
-            self.args
-        ):  # to create a default when `check_value()` is run for the first time
-            self.args = None
+        self._fetch_and_set_from_db()
 
         if owner_id and not repo_id:
             return self._check_value(owner_id, IdentifierType.OWNERID, default)
@@ -195,7 +188,7 @@ class Feature:
         )
 
     @ttl_cache(maxsize=64, ttl=300)  # 5 minute time-to-live cache
-    def _fetch_and_set_from_db(self, args=None):
+    def _fetch_and_set_from_db(self):
         """
         Updates the instance with the newest values from database, and clears other caches so
         that their values can be recalculated.
@@ -208,7 +201,7 @@ class Feature:
 
         if not new_feature_flag:
             # create default feature flag
-            new_feature_flag = FeatureFlag.objects.create(**dict(args))
+            new_feature_flag = FeatureFlag.objects.create(name=self.name)
 
         clear_cache = False
 
