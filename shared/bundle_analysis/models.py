@@ -86,6 +86,9 @@ def get_db_session(path: str) -> DbSession:
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
+
+    print("RETURNING DA SESSION", session)
+
     return session
 
 
