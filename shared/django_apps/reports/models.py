@@ -311,3 +311,15 @@ class TestInstance(BaseCodecovModel):
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_testinstance"
+
+
+class TestResultReportTotals(BaseCodecovModel):
+    passed = models.IntegerField()
+    skipped = models.IntegerField()
+    failed = models.IntegerField()
+
+    report = models.OneToOneField(CommitReport, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+        db_table = "reports_testresultreporttotals"
