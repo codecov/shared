@@ -184,6 +184,7 @@ class BundleAnalysisComparison:
     @cached_property
     def base_report(self) -> BundleAnalysisReport:
         base_report = self.loader.load(self.base_report_key)
+        print("WHAT IS MY DB PATH", self.base_report.db_path)
         if base_report is None:
             raise MissingBaseReportError()
         return base_report
