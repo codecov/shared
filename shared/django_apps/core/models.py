@@ -22,7 +22,8 @@ from shared.django_apps.utils.config import should_write_data_to_storage_config_
 from shared.django_apps.utils.model_utils import ArchiveField
 from shared.reports.resources import Report
 
-# Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error
+# Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error\
+# Needs to be called the same as the API app
 CORE_APP_LABEL = "core"
 
 
