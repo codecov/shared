@@ -27,6 +27,10 @@ from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.core.models import DateTimeWithoutTZField, Repository
 from shared.plan.constants import USER_PLAN_REPRESENTATIONS, PlanName
 
+# Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error\
+# Needs to be called the same as the API app
+CODECOV_AUTH_APP_LABEL = "codecov_auth"
+
 # Large number to represent Infinity as float('int') is not JSON serializable
 INFINITY = 99999999
 
@@ -37,9 +41,12 @@ SERVICE_BITBUCKET_SERVER = "bitbucket_server"
 SERVICE_GITLAB = "gitlab"
 SERVICE_CODECOV_ENTERPRISE = "enterprise"
 
+
 DEFAULT_AVATAR_SIZE = 55
 
+
 log = logging.getLogger(__name__)
+
 
 # TODO use this to refactor avatar_url
 class Service(models.TextChoices):
@@ -82,6 +89,7 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
 
     class Meta:
         db_table = "users"
+        app_label = CODECOV_AUTH_APP_LABEL
 
     @property
     def is_active(self):
@@ -118,6 +126,7 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
 class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     class Meta:
         db_table = "owners"
+        app_label = CODECOV_AUTH_APP_LABEL
         ordering = ["ownerid"]
         constraints = [
             models.UniqueConstraint(
@@ -504,6 +513,9 @@ class GithubAppInstallation(
         related_name="github_app_installations",
     )
 
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
     def is_configured(self) -> bool:
         """Returns whether this installation is properly configured and can be used"""
         if self.name == GITHUB_APP_INSTALLATION_DEFAULT_NAME:
@@ -544,6 +556,7 @@ class OwnerInstallationNameToUseForTask(
     task_name = models.TextField(null=False, blank=False)
 
     class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
         constraints = [
             # Only 1 app name per task per owner_id
             models.UniqueConstraint(
@@ -567,6 +580,9 @@ class SentryUser(
     email = models.TextField(null=True)
     name = models.TextField(null=True)
 
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
 
 class OktaUser(ExportModelOperationsMixin("codecov_auth.okta_user"), BaseCodecovModel):
     user = models.ForeignKey(
@@ -579,6 +595,9 @@ class OktaUser(ExportModelOperationsMixin("codecov_auth.okta_user"), BaseCodecov
     okta_id = models.TextField(null=False, unique=True)
     email = models.TextField(null=True)
     name = models.TextField(null=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
 
 
 class TokenTypeChoices(models.TextChoices):
@@ -600,6 +619,9 @@ class OrganizationLevelToken(
     token_type = models.CharField(
         max_length=50, choices=TokenTypeChoices.choices, default=TokenTypeChoices.UPLOAD
     )
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -633,9 +655,13 @@ class OwnerProfile(
         Owner, on_delete=models.CASCADE, null=True, related_name="profiles_with_default"
     )
 
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
 
 class Session(ExportModelOperationsMixin("codecov_auth.session"), models.Model):
     class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
         db_table = "sessions"
         ordering = ["-lastseen"]
 
@@ -678,6 +704,9 @@ class RepositoryToken(
         max_length=40, unique=True, editable=False, default=_generate_key
     )
 
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
     @classmethod
     def generate_key(cls):
         return _generate_key()
@@ -688,6 +717,9 @@ class UserToken(
 ):
     class TokenType(models.TextChoices):
         API = "api"
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
 
     name = models.CharField(max_length=100, null=False, blank=False)
     owner = models.ForeignKey(

@@ -9,11 +9,16 @@ from django_prometheus.models import ExportModelOperationsMixin
 from shared.django_apps.codecov.models import BaseCodecovModel
 from shared.django_apps.reports.managers import CommitReportManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
+from shared.django_apps.utils.model_utils import ArchiveField
 from shared.django_apps.utils.services import get_short_service_name
 from shared.reports.enums import UploadState, UploadType
 from shared.upload.constants import ci
 
 log = logging.getLogger(__name__)
+
+# Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error\
+# Needs to be called the same as the API app
+REPORTS_APP_LABEL = "reports"
 
 
 class ReportType(models.TextChoices):
@@ -54,6 +59,9 @@ class CommitReport(
         null=True, max_length=100, choices=ReportType.choices
     )
 
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+
     objects = CommitReportManager()
 
 
@@ -70,6 +78,9 @@ class ReportResults(
     completed_at = models.DateTimeField(null=True)
     result = models.JSONField(default=dict)
 
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+
 
 class ReportDetails(
     ExportModelOperationsMixin("reports.report_details"), BaseCodecovModel
@@ -79,6 +90,9 @@ class ReportDetails(
     _files_array_storage_path = models.URLField(
         db_column="files_array_storage_path", null=True
     )
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
 
     def get_repository(self):
         return self.report.commit.repository
@@ -101,15 +115,17 @@ class ReportDetails(
             repoid=self.report.commit.repository.repoid,
         )
 
-    # TODO: This needs porting as it is very tethered to the archive service
-    # files_array = ArchiveField(
-    #     should_write_to_storage_fn=should_write_to_storage,
-    #     default_value_class=list,
-    # )
+    files_array = ArchiveField(
+        should_write_to_storage_fn=should_write_to_storage,
+        default_value_class=list,
+    )
 
 
 class ReportLevelTotals(AbstractTotals):
     report = models.OneToOneField(CommitReport, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
 
 
 class UploadError(ExportModelOperationsMixin("reports.upload_error"), BaseCodecovModel):
@@ -123,6 +139,7 @@ class UploadError(ExportModelOperationsMixin("reports.upload_error"), BaseCodeco
     error_params = models.JSONField(default=dict)
 
     class Meta:
+        app_label = REPORTS_APP_LABEL
         db_table = "reports_uploaderror"
 
 
@@ -136,6 +153,7 @@ class UploadFlagMembership(
     id = models.BigAutoField(primary_key=True)
 
     class Meta:
+        app_label = REPORTS_APP_LABEL
         db_table = "reports_uploadflagmembership"
 
 
@@ -147,6 +165,9 @@ class RepositoryFlag(
     )
     flag_name = models.CharField(max_length=1024)
     deleted = models.BooleanField(null=True)
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
 
 
 class ReportSession(
@@ -173,6 +194,7 @@ class ReportSession(
     upload_type_id = models.IntegerField(null=True, choices=UploadType.choices())
 
     class Meta:
+        app_label = REPORTS_APP_LABEL
         db_table = "reports_upload"
 
     @property
@@ -221,6 +243,7 @@ class UploadLevelTotals(AbstractTotals):
     )
 
     class Meta:
+        app_label = REPORTS_APP_LABEL
         db_table = "reports_uploadleveltotals"
 
 
@@ -251,6 +274,7 @@ class Test(models.Model):
     flags_hash = models.TextField()
 
     class Meta:
+        app_label = REPORTS_APP_LABEL
         db_table = "reports_test"
         constraints = [
             models.UniqueConstraint(
@@ -285,4 +309,5 @@ class TestInstance(BaseCodecovModel):
     failure_message = models.TextField(null=True)
 
     class Meta:
+        app_label = REPORTS_APP_LABEL
         db_table = "reports_testinstance"
