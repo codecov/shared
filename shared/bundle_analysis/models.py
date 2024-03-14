@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy
 from sqlalchemy import Column, ForeignKey, Table, create_engine, types
@@ -87,12 +87,8 @@ Base = declarative_base()
 
 
 class LegacySessionManager:
-    def __init__(self, path):
-        print("LEGACY make SQLAlchemy session object")
-        engine = create_engine(f"sqlite:///{path}")
-        Session = sessionmaker()
-        Session.configure(bind=engine)
-        self.session = Session()
+    def __init__(self, session: DbSession):
+        self.session = session
 
     def __enter__(self):
         print("LEGACY entering")
@@ -104,7 +100,7 @@ class LegacySessionManager:
         return True
 
 
-def _use_current_sqlalchemy_session_manager():
+def _use_modern_sqlalchemy_session_manager():
     try:
         version = sqlalchemy.__version__
         major = int(version.split(".")[0])
@@ -117,23 +113,18 @@ def _use_current_sqlalchemy_session_manager():
         return False
 
 
-if _use_current_sqlalchemy_session_manager():
-    log.info("USING CURRENT MANAGER")
-    print("USING CURRENT MANAGER")
+use_modern_sqlalchemy_session_manager = _use_modern_sqlalchemy_session_manager()
 
-    def get_db_session(path: str) -> DbSession:
-        engine = create_engine(f"sqlite:///{path}")
-        Session = sessionmaker()
-        Session.configure(bind=engine)
-        session = Session()
+
+def get_db_session(path: str, auto_close: Optional[bool] = True) -> DbSession:
+    engine = create_engine(f"sqlite:///{path}")
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    session = Session()
+    if not auto_close or use_modern_sqlalchemy_session_manager:
         return session
-
-else:
-    log.info("USING LEGACY MANAGER")
-    print("USING LEGACY MANAGER")
-
-    def get_db_session(path):
-        return LegacySessionManager(path)
+    else:
+        return LegacySessionManager(session)
 
 
 # table definitions for many-to-many joins
