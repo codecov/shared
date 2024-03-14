@@ -187,7 +187,7 @@ class Feature:
             )
         )
 
-    @ttl_cache(maxsize=64, ttl=1)  # 5 minute time-to-live cache
+    @ttl_cache(maxsize=64, ttl=300)  # 5 minute time-to-live cache
     def _fetch_and_set_from_db(self):
         """
         Updates the instance with the newest values from database, and clears other caches so
