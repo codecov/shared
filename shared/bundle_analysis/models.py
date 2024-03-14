@@ -1,10 +1,15 @@
+import logging
 from enum import Enum
 from typing import List
 
+import sqlalchemy
 from sqlalchemy import Column, ForeignKey, Table, create_engine, types
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm import backref, relationship, sessionmaker
+
+log = logging.getLogger(__name__)
+
 
 SCHEMA = """
 create table bundles (
@@ -81,12 +86,54 @@ SCHEMA_VERSION = 1
 Base = declarative_base()
 
 
-def get_db_session(path: str) -> DbSession:
-    engine = create_engine(f"sqlite:///{path}")
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-    return session
+class LegacySessionManager:
+    def __init__(self, path):
+        print("LEGACY make SQLAlchemy session object")
+        engine = create_engine(f"sqlite:///{path}")
+        Session = sessionmaker()
+        Session.configure(bind=engine)
+        self.session = Session()
+
+    def __enter__(self):
+        print("LEGACY entering")
+        return self.session
+
+    def __exit__(self, type, value, traceback):
+        print("LEGACY doing self.db_session.close()")
+        self.session.close()
+        return True
+
+
+def _use_current_sqlalchemy_session_manager():
+    try:
+        version = sqlalchemy.__version__
+        major = int(version.split(".")[0])
+        minor = int(version.split(".")[1])
+        return major >= 2 or (major == 1 and minor >= 4)
+    except Exception as e:
+        log.info(
+            f"Can't determine which SQLAlchemy session manager to use, falling back to legacy: {e}"
+        )
+        return False
+
+
+if _use_current_sqlalchemy_session_manager():
+    log.info("USING CURRENT MANAGER")
+    print("USING CURRENT MANAGER")
+
+    def get_db_session(path: str) -> DbSession:
+        engine = create_engine(f"sqlite:///{path}")
+        Session = sessionmaker()
+        Session.configure(bind=engine)
+        session = Session()
+        return session
+
+else:
+    log.info("USING LEGACY MANAGER")
+    print("USING LEGACY MANAGER")
+
+    def get_db_session(path):
+        return LegacySessionManager(path)
 
 
 # table definitions for many-to-many joins
