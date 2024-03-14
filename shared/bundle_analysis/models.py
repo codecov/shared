@@ -86,16 +86,26 @@ SCHEMA_VERSION = 1
 Base = declarative_base()
 
 
+
+"""
+Create a custom context manager for SQLAlchemy session because worker is currently
+stuck on SQLAlchemy version <1.4, and built in context manager for session is introduced
+in 1.4 (which is also what codecov-api uses).
+It is a lot of work to upgrade worker's SQLAlchemy version because it is too closely tied
+into its postgres DB support.
+When worker fully migrates to Django for postgres, we can simply upgrade the SQLAlchemy
+version to support modern functionalities and delete this legacy code.
+For now if the SQLAlchemy version is <1.4 it will go through the custom LegacySessionManager
+context manager object to handle opening and closing its sessions.
+"""
 class LegacySessionManager:
     def __init__(self, session: DbSession):
         self.session = session
 
     def __enter__(self):
-        print("LEGACY entering")
         return self.session
 
     def __exit__(self, type, value, traceback):
-        print("LEGACY doing self.db_session.close()")
         self.session.close()
         return True
 
