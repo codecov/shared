@@ -115,7 +115,7 @@ class BundleAnalysisReport:
         self.db_path = db_path
         if self.db_path is None:
             _, self.db_path = tempfile.mkstemp(prefix="bundle_analysis_")
-        self.db_session = models.get_db_session(self.db_path)
+        self.db_session = models.get_db_session(self.db_path, auto_close=False)
         self._setup()
 
     def _setup(self):
