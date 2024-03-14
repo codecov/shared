@@ -1,10 +1,15 @@
+import logging
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
+import sqlalchemy
 from sqlalchemy import Column, ForeignKey, Table, create_engine, types
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm import backref, relationship, sessionmaker
+
+log = logging.getLogger(__name__)
+
 
 SCHEMA = """
 create table bundles (
@@ -81,12 +86,55 @@ SCHEMA_VERSION = 1
 Base = declarative_base()
 
 
-def get_db_session(path: str) -> DbSession:
+
+"""
+Create a custom context manager for SQLAlchemy session because worker is currently
+stuck on SQLAlchemy version <1.4, and built in context manager for session is introduced
+in 1.4 (which is also what codecov-api uses).
+It is a lot of work to upgrade worker's SQLAlchemy version because it is too closely tied
+into its postgres DB support.
+When worker fully migrates to Django for postgres, we can simply upgrade the SQLAlchemy
+version to support modern functionalities and delete this legacy code.
+For now if the SQLAlchemy version is <1.4 it will go through the custom LegacySessionManager
+context manager object to handle opening and closing its sessions.
+"""
+class LegacySessionManager:
+    def __init__(self, session: DbSession):
+        self.session = session
+
+    def __enter__(self):
+        return self.session
+
+    def __exit__(self, type, value, traceback):
+        self.session.close()
+        return True
+
+
+def _use_modern_sqlalchemy_session_manager():
+    try:
+        version = sqlalchemy.__version__
+        major = int(version.split(".")[0])
+        minor = int(version.split(".")[1])
+        return major >= 2 or (major == 1 and minor >= 4)
+    except Exception as e:
+        log.info(
+            f"Can't determine which SQLAlchemy session manager to use, falling back to legacy: {e}"
+        )
+        return False
+
+
+use_modern_sqlalchemy_session_manager = _use_modern_sqlalchemy_session_manager()
+
+
+def get_db_session(path: str, auto_close: Optional[bool] = True) -> DbSession:
     engine = create_engine(f"sqlite:///{path}")
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
-    return session
+    if not auto_close or use_modern_sqlalchemy_session_manager:
+        return session
+    else:
+        return LegacySessionManager(session)
 
 
 # table definitions for many-to-many joins
