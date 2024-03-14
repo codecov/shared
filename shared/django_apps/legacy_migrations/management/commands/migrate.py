@@ -83,7 +83,7 @@ class Command(MigrateCommand):
 
     def handle(self, *args, **options):
         log.info("Codecov is starting migrations...")
-        print("inside the overwritten migrate comman")
+        print("inside the overwritten migrate command")
         database = options["database"]
         db_connection = connections[database]
         options["run_syncdb"] = False
