@@ -212,6 +212,8 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     sentry_user_id = models.TextField(null=True, blank=True, unique=True)
     sentry_user_data = models.JSONField(null=True)
 
+    fake_field = models.TextField(null=True, blank=True, unique=True)
+
     user = models.ForeignKey(
         User,
         null=True,
