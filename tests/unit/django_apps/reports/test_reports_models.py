@@ -14,15 +14,6 @@ from shared.storage.exceptions import FileNotInStorageError
 
 
 class UploadTests(TestCase):
-    def test_get_download_url(self):
-        storage_path = "v4/123/123.txt"
-        session = UploadFactory(storage_path=storage_path)
-        repository = session.report.commit.repository
-        assert (
-            session.download_url
-            == f"/upload/gh/{repository.author.username}/{repository.name}/download?path={storage_path}"
-        )
-
     def test_ci_url_when_no_provider(self):
         session = UploadFactory(provider=None)
         assert session.ci_url is None

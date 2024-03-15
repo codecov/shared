@@ -5,7 +5,8 @@ from factory.django import DjangoModelFactory
 
 from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
 from shared.django_apps.reports import models
-from shared.django_apps.reports.models import ReportResults\
+from shared.django_apps.reports.models import ReportResults
+
 
 # TODO: deduplicate this from graphql_api.types.enums
 class UploadErrorEnum(enum.Enum):
@@ -28,6 +29,7 @@ class UploadFactory(DjangoModelFactory):
     build_code = factory.Sequence(lambda n: f"{n}")
     report = factory.SubFactory(CommitReportFactory)
     state = "processed"
+
 
 class RepositoryFlagFactory(DjangoModelFactory):
     class Meta:
