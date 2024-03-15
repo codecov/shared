@@ -3,7 +3,6 @@ import uuid
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
 
 from shared.django_apps.codecov.models import BaseCodecovModel

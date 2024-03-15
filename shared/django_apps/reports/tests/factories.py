@@ -7,9 +7,6 @@ from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFac
 from shared.django_apps.reports import models
 from shared.django_apps.reports.models import ReportResults\
 
-from reports import models as ProxyModels
-
-
 # TODO: deduplicate this from graphql_api.types.enums
 class UploadErrorEnum(enum.Enum):
     FILE_NOT_IN_STORAGE = "file_not_in_storage"
@@ -31,11 +28,6 @@ class UploadFactory(DjangoModelFactory):
     build_code = factory.Sequence(lambda n: f"{n}")
     report = factory.SubFactory(CommitReportFactory)
     state = "processed"
-
-class ProxyUploadFactory(DjangoModelFactory):
-    class Meta:
-        model = ProxyModels.ProxyReportSession
-
 
 class RepositoryFlagFactory(DjangoModelFactory):
     class Meta:
