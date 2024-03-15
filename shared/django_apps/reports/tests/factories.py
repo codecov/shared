@@ -1,9 +1,9 @@
 import enum
 
 import factory
-from core.tests.factories import CommitFactory, RepositoryFactory
 from factory.django import DjangoModelFactory
 
+from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
 from shared.django_apps.reports import models
 from shared.django_apps.reports.models import ReportResults
 

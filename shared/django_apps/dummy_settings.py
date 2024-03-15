@@ -23,6 +23,13 @@ INSTALLED_APPS = [
     "shared.django_apps.reports",
 ]
 
+# Migrated from API to get Minio working
+MINIO_ACCESS_KEY = get_config("services", "minio", "access_key_id")
+MINIO_SECRET_KEY = get_config("services", "minio", "secret_access_key")
+MINIO_LOCATION = "codecov.s3.amazonaws.com"
+MINIO_HASH_KEY = get_config("services", "minio", "hash_key")
+ARCHIVE_BUCKET_NAME = "codecov"
+
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

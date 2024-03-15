@@ -86,7 +86,6 @@ SCHEMA_VERSION = 1
 Base = declarative_base()
 
 
-
 """
 Create a custom context manager for SQLAlchemy session because worker is currently
 stuck on SQLAlchemy version <1.4, and built in context manager for session is introduced
@@ -98,6 +97,8 @@ version to support modern functionalities and delete this legacy code.
 For now if the SQLAlchemy version is <1.4 it will go through the custom LegacySessionManager
 context manager object to handle opening and closing its sessions.
 """
+
+
 class LegacySessionManager:
     def __init__(self, session: DbSession):
         self.session = session
