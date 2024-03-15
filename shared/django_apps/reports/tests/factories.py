@@ -5,7 +5,9 @@ from factory.django import DjangoModelFactory
 
 from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
 from shared.django_apps.reports import models
-from shared.django_apps.reports.models import ReportResults
+from shared.django_apps.reports.models import ReportResults\
+
+from reports import models as ProxyModels
 
 
 # TODO: deduplicate this from graphql_api.types.enums
@@ -29,6 +31,10 @@ class UploadFactory(DjangoModelFactory):
     build_code = factory.Sequence(lambda n: f"{n}")
     report = factory.SubFactory(CommitReportFactory)
     state = "processed"
+
+class ProxyUploadFactory(DjangoModelFactory):
+    class Meta:
+        model = ProxyModels.ProxyReportSession
 
 
 class RepositoryFlagFactory(DjangoModelFactory):

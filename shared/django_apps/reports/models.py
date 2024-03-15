@@ -198,21 +198,6 @@ class ReportSession(
         db_table = "reports_upload"
 
     @property
-    def download_url(self):
-        repository = self.report.commit.repository
-        return (
-            reverse(
-                "upload-download",
-                kwargs={
-                    "service": get_short_service_name(repository.author.service),
-                    "owner_username": repository.author.username,
-                    "repo_name": repository.name,
-                },
-            )
-            + f"?path={self.storage_path}"
-        )
-
-    @property
     def ci_url(self):
         if self.build_url:
             # build_url was saved in the database
