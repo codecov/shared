@@ -8,7 +8,7 @@ from shared.bundle_analysis.comparison import (
     MissingBundleError,
     MissingHeadReportError,
 )
-from shared.bundle_analysis.parser import Parser
+from shared.bundle_analysis.parser import Parser, ParserError
 from shared.bundle_analysis.report import (
     AssetReport,
     BundleAnalysisReport,
