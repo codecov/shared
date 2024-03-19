@@ -102,7 +102,10 @@ class Parser:
         except Exception as e:
             # Inject the plugin name to the Exception object so we have visibilitity on which plugin
             # is causing the trouble.
-            e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
+            print("SAVING bundle_analysis_plugin_name", self.info)
+            e.bundle_analysis_plugin_name = self.info.get(
+                "plugin_name", "unknown_plugin_name"
+            )
             raise e
 
     def _parse_info(self, event: Tuple[str, str, str]):
