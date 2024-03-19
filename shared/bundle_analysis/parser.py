@@ -57,6 +57,12 @@ class Parser:
         try:
             self.reset()
 
+            # Retrieve the info section first before parsing all the other things
+            # this way when an error is raised we know which bundle plugin caused it
+            with open(path, "rb") as f:
+                for event in ijson.parse(f):
+                    self._parse_info(event)
+
             self.session = Session(info={})
             self.db_session.add(self.session)
 
@@ -99,9 +105,8 @@ class Parser:
             e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
             raise e
 
-    def _parse_event(self, event: Tuple[str, str, str]):
+    def _parse_info(self, event: Tuple[str, str, str]):
         prefix, _, value = event
-        prefix_path = prefix.split(".")
 
         # session info
         if prefix == "version":
@@ -119,8 +124,12 @@ class Parser:
         elif prefix == "duration":
             self.info["duration"] = value
 
+    def _parse_event(self, event: Tuple[str, str, str]):
+        prefix, _, value = event
+        prefix_path = prefix.split(".")
+
         # asset / chunks / modules
-        elif prefix_path[0] == "assets":
+        if prefix_path[0] == "assets":
             self._parse_assets_event(*event)
         elif prefix_path[0] == "chunks":
             self._parse_chunks_event(*event)
