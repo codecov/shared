@@ -16,6 +16,10 @@ from shared.bundle_analysis.models import (
 )
 
 
+class ParserError(Exception):
+    pass
+
+
 class Parser:
     """
     This does a streaming JSON parse of the stats JSON file referenced by `path`.
@@ -102,8 +106,11 @@ class Parser:
         except Exception as e:
             # Inject the plugin name to the Exception object so we have visibilitity on which plugin
             # is causing the trouble.
-            e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
-            raise e
+            parser_error = ParserError(e)
+            parser_error.bundle_analysis_plugin_name = self.info.get(
+                "plugin_name", "unknown"
+            )
+            raise parser_error
 
     def _parse_info(self, event: Tuple[str, str, str]):
         prefix, _, value = event
