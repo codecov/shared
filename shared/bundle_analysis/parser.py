@@ -68,7 +68,8 @@ class Parser:
 
             with open(path, "rb") as f:
                 for event in ijson.parse(f):
-                    self._parse_event(event)
+                    print("PARSING EVENT")
+                    self._parse_item(event)
 
                 # Delete old session/asset/chunk/module with the same bundle name if applicable
                 old_session = (
@@ -127,7 +128,7 @@ class Parser:
         elif prefix == "duration":
             self.info["duration"] = value
 
-    def _parse_event(self, event: Tuple[str, str, str]):
+    def _parse_item(self, event: Tuple[str, str, str]):
         prefix, _, value = event
         prefix_path = prefix.split(".")
 
