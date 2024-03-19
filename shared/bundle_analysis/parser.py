@@ -68,8 +68,7 @@ class Parser:
 
             with open(path, "rb") as f:
                 for event in ijson.parse(f):
-                    print("PARSING EVENT")
-                    self._parse_item(event)
+                    self._parse_event(event)
 
                 # Delete old session/asset/chunk/module with the same bundle name if applicable
                 old_session = (
@@ -103,10 +102,7 @@ class Parser:
         except Exception as e:
             # Inject the plugin name to the Exception object so we have visibilitity on which plugin
             # is causing the trouble.
-            print("SAVING bundle_analysis_plugin_name", self.info)
-            e.bundle_analysis_plugin_name = self.info.get(
-                "plugin_name", "unknown_plugin_name"
-            )
+            e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
             raise e
 
     def _parse_info(self, event: Tuple[str, str, str]):
@@ -128,7 +124,7 @@ class Parser:
         elif prefix == "duration":
             self.info["duration"] = value
 
-    def _parse_item(self, event: Tuple[str, str, str]):
+    def _parse_event(self, event: Tuple[str, str, str]):
         prefix, _, value = event
         prefix_path = prefix.split(".")
 
