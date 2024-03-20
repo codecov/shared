@@ -502,4 +502,12 @@ schema = {
             "label_name": {"type": "string"},
         },
     },
+    "test_analytics": {
+        "type": ["dict"],
+        "schema": {
+            "shorten_paths": {
+                "type": "boolean",
+            },
+        },
+    },
 }
