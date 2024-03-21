@@ -214,7 +214,9 @@ class Gitlab(TorngitBaseAdapter):
                     client, "GET", base_url, **current_kwargs
                 )
                 count_so_far += 1
-                yield None if current_result.status_code == 204 else current_result.json()
+                yield (
+                    None if current_result.status_code == 204 else current_result.json()
+                )
                 if (
                     max_number_of_pages is not None
                     and count_so_far >= max_number_of_pages
@@ -275,9 +277,9 @@ class Gitlab(TorngitBaseAdapter):
             "/projects/%s/hooks" % self.data["repo"]["service_id"],
             body=dict(
                 url=url,
-                enable_ssl_verification=self.verify_ssl
-                if isinstance(self.verify_ssl, bool)
-                else True,
+                enable_ssl_verification=(
+                    self.verify_ssl if isinstance(self.verify_ssl, bool) else True
+                ),
                 token=secret,
                 **events,
             ),
@@ -293,9 +295,9 @@ class Gitlab(TorngitBaseAdapter):
             "/projects/%s/hooks/%s" % (self.data["repo"]["service_id"], hookid),
             body=dict(
                 url=url,
-                enable_ssl_verification=self.verify_ssl
-                if type(self.verify_ssl) is bool
-                else True,
+                enable_ssl_verification=(
+                    self.verify_ssl if type(self.verify_ssl) is bool else True
+                ),
                 token=secret,
                 **events,
             ),
@@ -544,9 +546,9 @@ class Gitlab(TorngitBaseAdapter):
                 ),
                 base=dict(branch=pull["target_branch"] or "", commitid=parent),
                 head=dict(branch=pull["source_branch"] or "", commitid=pull["sha"]),
-                state="open"
-                if pull["state"] in ("opened", "reopened")
-                else pull["state"],
+                state=(
+                    "open" if pull["state"] in ("opened", "reopened") else pull["state"]
+                ),
                 title=pull["title"],
                 id=str(pull["iid"]),
                 number=str(pull["iid"]),
@@ -720,6 +722,21 @@ class Gitlab(TorngitBaseAdapter):
                 )
             raise
         return True
+
+    async def create_issue(
+        self,
+        title: str,
+        body: str,
+        token=None,
+    ):
+        token = self.get_token_by_type_if_none(token, TokenType.comment)
+        # https://docs.gitlab.com/ee/api/issues.html#new-issue
+        return await self.api(
+            "post",
+            "/projects/%s/issues" % (self.data["repo"]["service_id"]),
+            body=dict(title=title, description=body),
+            token=token,
+        )
 
     async def get_commit(self, commit: str, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-a-single-commit

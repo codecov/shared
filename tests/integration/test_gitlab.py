@@ -93,6 +93,72 @@ class TestGitlabTestCase(object):
         assert await valid_handler.delete_comment("1", "113977323") is True
 
     @pytest.mark.asyncio
+    async def test_create_issue(self, valid_handler, codecov_vcr):
+        expected_result = {
+            "_links": {
+                "award_emoji": "https://gitlab.com/api/v4/projects/47404140/issues/1/award_emoji",
+                "closed_as_duplicate_of": None,
+                "notes": "https://gitlab.com/api/v4/projects/47404140/issues/1/notes",
+                "project": "https://gitlab.com/api/v4/projects/47404140",
+                "self": "https://gitlab.com/api/v4/projects/47404140/issues/1",
+            },
+            "assignee": None,
+            "assignees": [],
+            "author": {
+                "avatar_url": "https://secure.gravatar.com/avatar/3ac36fef4d4df2f206b857afe97511b650a91ff2894fe89153e88c038944abf9?s=80&d=identicon",
+                "id": 20580921,
+                "locked": False,
+                "name": "test",
+                "state": "active",
+                "username": "project_47404140_bot_6604c7333678afe52958382883eb26bc",
+                "web_url": "https://gitlab.com/project_47404140_bot_6604c7333678afe52958382883eb26bc",
+            },
+            "blocking_issues_count": 0,
+            "closed_at": None,
+            "closed_by": None,
+            "confidential": False,
+            "created_at": "2024-03-21T14:40:24.642Z",
+            "description": "Hello world",
+            "discussion_locked": None,
+            "downvotes": 0,
+            "due_date": None,
+            "has_tasks": True,
+            "id": 143635777,
+            "iid": 1,
+            "issue_type": "issue",
+            "labels": [],
+            "merge_requests_count": 0,
+            "milestone": None,
+            "moved_to_id": None,
+            "project_id": 47404140,
+            "references": {
+                "full": "joseph-sentry/example-python#1",
+                "relative": "#1",
+                "short": "#1",
+            },
+            "service_desk_reply_to": None,
+            "severity": "UNKNOWN",
+            "state": "opened",
+            "subscribed": True,
+            "task_completion_status": {"completed_count": 0, "count": 0},
+            "task_status": "0 of 0 checklist items completed",
+            "time_stats": {
+                "human_time_estimate": None,
+                "human_total_time_spent": None,
+                "time_estimate": 0,
+                "total_time_spent": 0,
+            },
+            "title": "Issue here",
+            "type": "ISSUE",
+            "updated_at": "2024-03-21T14:40:24.642Z",
+            "upvotes": 0,
+            "user_notes_count": 0,
+            "web_url": "https://gitlab.com/joseph-sentry/example-python/-/issues/1",
+        }
+        res = await valid_handler.create_issue("Issue here", "Hello world")
+        assert res == expected_result
+
+    @pytest.mark.asyncio
     async def test_delete_comment_not_found(self, valid_handler, codecov_vcr):
         with pytest.raises(TorngitObjectNotFoundError):
             await valid_handler.delete_comment("1", 113977999)

@@ -56,9 +56,11 @@ class TorngitBaseAdapter(object):
         else:
             timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
         return httpx.AsyncClient(
-            verify=self.verify_ssl
-            if not isinstance(self.verify_ssl, bool)
-            else self.verify_ssl,
+            verify=(
+                self.verify_ssl
+                if not isinstance(self.verify_ssl, bool)
+                else self.verify_ssl
+            ),
             timeout=timeout,
         )
 
@@ -267,6 +269,15 @@ class TorngitBaseAdapter(object):
     async def edit_comment(
         self, pullid: str, commentid: str, body: str, token=None
     ) -> dict:
+        raise NotImplementedError()
+
+    # ISSUE LOGIC
+    async def create_issue(
+        self,
+        title: str,
+        body: str,
+        token=None,
+    ):
         raise NotImplementedError()
 
     # PULL REQUEST LOGIC

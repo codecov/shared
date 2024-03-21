@@ -732,9 +732,9 @@ class Github(TorngitBaseAdapter):
                             primary_language.get("name") if primary_language else None
                         ),
                         "private": raw_repo_data["isPrivate"],
-                        "branch": default_branch.get("name")
-                        if default_branch
-                        else None,
+                        "branch": (
+                            default_branch.get("name") if default_branch else None
+                        ),
                         "owner": {
                             "node_id": raw_repo_data["owner"]["id"],
                             "username": raw_repo_data["owner"]["login"],
@@ -1069,6 +1069,30 @@ class Github(TorngitBaseAdapter):
             raise
         return True
 
+    # Issues
+    # ------
+    async def create_issue(
+        self,
+        title: str,
+        body: str,
+        token=None,
+    ):
+        token = self.get_token_by_type_if_none(token, TokenType.tokenless)
+        # https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
+
+        async with self.get_client() as client:
+            res = await self.api(
+                client,
+                "post",
+                "/repos/%s/issues" % self.slug,
+                body=dict(
+                    title=title,
+                    body=body,
+                ),
+                token=token,
+            )
+            return res
+
     # Commit Status
     # -------------
     async def set_commit_status(
@@ -1239,11 +1263,11 @@ class Github(TorngitBaseAdapter):
                 % (
                     f.get("previous_filename") or f.get("filename"),
                     f.get("filename"),
-                    "\ndeleted file mode 100644"
-                    if f["status"] == "removed"
-                    else "\nnew file mode 100644"
-                    if f["status"] == "added"
-                    else "",
+                    (
+                        "\ndeleted file mode 100644"
+                        if f["status"] == "removed"
+                        else "\nnew file mode 100644" if f["status"] == "added" else ""
+                    ),
                     "--- "
                     + (
                         "/dev/null"
@@ -1359,9 +1383,11 @@ class Github(TorngitBaseAdapter):
                 commitid=pull["head"]["sha"],
                 # Through empiric test data it seems that the "repo" key in "head" is set to None
                 # If the PR is from the same repo (e.g. not from a fork)
-                slug=pull["head"]["repo"]["full_name"]
-                if pull["head"]["repo"]
-                else pull["base"]["repo"]["full_name"],
+                slug=(
+                    pull["head"]["repo"]["full_name"]
+                    if pull["head"]["repo"]
+                    else pull["base"]["repo"]["full_name"]
+                ),
             ),
             state="merged" if pull["merged"] else pull["state"],
             title=pull["title"],
