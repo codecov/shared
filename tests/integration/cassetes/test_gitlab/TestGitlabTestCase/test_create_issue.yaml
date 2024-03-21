@@ -1,0 +1,75 @@
+interactions:
+- request:
+    body: '{"title": "Issue here", "description": "Hello world"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '53'
+      content-type:
+      - application/json
+      host:
+      - gitlab.com
+      user-agent:
+      - Default
+    method: POST
+    uri: https://gitlab.com/api/v4/projects/187725/issues
+  response:
+    content: '{"id":143635777,"iid":1,"project_id":47404140,"title":"Issue here","description":"Hello
+      world","state":"opened","created_at":"2024-03-21T14:40:24.642Z","updated_at":"2024-03-21T14:40:24.642Z","closed_at":null,"closed_by":null,"labels":[],"milestone":null,"assignees":[],"author":{"id":20580921,"username":"project_47404140_bot_6604c7333678afe52958382883eb26bc","name":"test","state":"active","locked":false,"avatar_url":"https://secure.gravatar.com/avatar/3ac36fef4d4df2f206b857afe97511b650a91ff2894fe89153e88c038944abf9?s=80\u0026d=identicon","web_url":"https://gitlab.com/project_47404140_bot_6604c7333678afe52958382883eb26bc"},"type":"ISSUE","assignee":null,"user_notes_count":0,"merge_requests_count":0,"upvotes":0,"downvotes":0,"due_date":null,"confidential":false,"discussion_locked":null,"issue_type":"issue","web_url":"https://gitlab.com/joseph-sentry/example-python/-/issues/1","time_stats":{"time_estimate":0,"total_time_spent":0,"human_time_estimate":null,"human_total_time_spent":null},"task_completion_status":{"count":0,"completed_count":0},"blocking_issues_count":0,"has_tasks":true,"task_status":"0
+      of 0 checklist items completed","_links":{"self":"https://gitlab.com/api/v4/projects/47404140/issues/1","notes":"https://gitlab.com/api/v4/projects/47404140/issues/1/notes","award_emoji":"https://gitlab.com/api/v4/projects/47404140/issues/1/award_emoji","project":"https://gitlab.com/api/v4/projects/47404140","closed_as_duplicate_of":null},"references":{"short":"#1","relative":"#1","full":"joseph-sentry/example-python#1"},"severity":"UNKNOWN","subscribed":true,"moved_to_id":null,"service_desk_reply_to":null}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 867eb267bc59a204-YYZ
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1627'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 21 Mar 2024 14:40:24 GMT
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=sKmIYfDM182jAazjbBd18cwxCpWEyNWw39xW8q0kJpbGXKs6dFsWI3l83bUW8CITb1FIhyeyd1Qu8FOk%2FOJiczADqYmgkg%2Fe%2FWO9Vlg4B1oD9lDRAuhA%2BJfeCOY%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=RWtsyWUloWV4Y1k154kV1kFXaLxt5Cj5Xh3dHgCgPuc-1711032024969-0.0.1.1-604800000;
+        path=/; domain=.gitlab.com; HttpOnly; Secure; SameSite=None
+      cache-control:
+      - max-age=0, private, must-revalidate
+      content-security-policy:
+      - default-src 'none'
+      etag:
+      - W/"a540a0735dfca47240fbbdb62a0ed518"
+      gitlab-lb:
+      - haproxy-main-26-lb-gprd
+      gitlab-sv:
+      - api-gke-us-east1-d
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      strict-transport-security:
+      - max-age=31536000
+      vary:
+      - Origin
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-gitlab-meta:
+      - '{"correlation_id":"1692060331a0f8186c2d3fec1eba0b25","version":"1"}'
+      x-request-id:
+      - 1692060331a0f8186c2d3fec1eba0b25
+      x-runtime:
+      - '0.619664'
+    http_version: HTTP/1.1
+    status_code: 201
+version: 1
