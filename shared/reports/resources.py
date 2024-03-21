@@ -1021,18 +1021,27 @@ class Report(object):
         else:
             return list(self._files)
 
-    def next_session_number(self):
+    def next_session_number(self, parallel_idx=None):
+        if parallel_idx:  # rollout here
+            return parallel_idx
+
         start_number = len(self.sessions)
         while start_number in self.sessions or str(start_number) in self.sessions:
             start_number += 1
         return start_number
 
-    def add_session(self, session):
-        sessionid = self.next_session_number()
+    def add_session(self, session, parallel_idx=None):
+        sessionid = self.next_session_number(parallel_idx)
         self.sessions[sessionid] = session
         if self._totals:
             # add session to totals
-            self._totals = dataclasses.replace(self._totals, sessions=sessionid + 1)
+            if parallel_idx:
+                self._totals = dataclasses.replace(
+                    self._totals, sessions=max(sessionid + 1, self._totals.sessions)
+                )
+            else:
+                self._totals = dataclasses.replace(self._totals, sessions=sessionid + 1)
+
         return sessionid, session
 
     def __iter__(self):
@@ -1065,6 +1074,10 @@ class Report(object):
 
     @sentry.trace
     def merge(self, new_report, joined=True):
+        print("BEFORE MERGING", self._files)
+        print(self.files)
+        print(self.sessions)
+
         """combine report data from another"""
         if new_report is None:
             return
@@ -1081,6 +1094,10 @@ class Report(object):
                 self.append(_file, joined)
 
         self._totals = self._process_totals()
+
+        print("AFTER MERGING", self._files)
+        print(self.files)
+        print(self.sessions)
 
     def is_empty(self):
         """returns boolean if the report has no content"""

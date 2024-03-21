@@ -95,10 +95,16 @@ class Feature:
 
     HASHSPACE = 2**128
 
-    def __init__(self, name):
+    def __init__(self, name, refresh=False):
         self.name = name
         self.feature_flag = None
         self.ff_variants = None
+
+        self.refresh = refresh  # to be used only during development
+        if refresh:
+            log.warn(
+                "Refresh for Feature should only be turned on in development environments, and should not be used in production"
+            )
 
     def check_value(self, owner_id=None, repo_id=None, default=False):
         """
@@ -106,6 +112,10 @@ class Feature:
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
         feature variants via Django Admin.
         """
+
+        if self.refresh:
+            self._fetch_and_set_from_db.cache_clear()
+
         # Will only run and refresh values from the database every ~5 minutes due to TTL cache
         self._fetch_and_set_from_db()
 
