@@ -15,7 +15,7 @@ def test_show_secret_case():
             "status": {"project": {"default": {"base": "auto"}}},
             "notify": {"irc": {"user_given_title": {"password": encoded_value}}},
         },
-        "ignore": ["Pods/.*"],
+        "ignore": ["Pods/.*", "**/*bundle"],
     }
     expected_result = {
         "coverage": {
@@ -31,7 +31,7 @@ def test_show_secret_case():
                 }
             },
         },
-        "ignore": ["Pods/.*"],
+        "ignore": ["Pods/.*", "(?s:.*/[^\\/]*bundle)\\Z"],
     }
     result = validate_yaml(
         user_input, show_secrets_for=("github", "11934774", "154468867")
