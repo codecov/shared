@@ -645,7 +645,9 @@ class Github(TorngitBaseAdapter):
 
         log.info(
             "Fetched page of repos using installation",
-            extra=dict(page_size=page_size, page=page, repos=repos),
+            extra=dict(
+                page_size=page_size, page=page, repo_names=[repo.name for repo in repos]
+            ),
         )
 
         return self._process_repository_page(repos)
@@ -674,7 +676,7 @@ class Github(TorngitBaseAdapter):
             extra=dict(
                 page_size=page_size,
                 page=page,
-                repos=repos,
+                repo_names=[repo.name for repo in repos],
                 username=username,
             ),
         )
