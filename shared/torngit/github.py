@@ -301,9 +301,9 @@ class Github(TorngitBaseAdapter):
                         current_retry=current_retry,
                         time_taken=timer.ms,
                         body=logged_body,
-                        rlx=res.headers.get("X-RateLimit-Remaining"),
-                        rly=res.headers.get("X-RateLimit-Limit"),
-                        rlr=res.headers.get("X-RateLimit-Reset"),
+                        rl_remaining=res.headers.get("X-RateLimit-Remaining"),
+                        rl_limit=res.headers.get("X-RateLimit-Limit"),
+                        rl_reset_time=res.headers.get("X-RateLimit-Reset"),
                         retry_after=res.headers.get("Retry-After"),
                         **log_dict,
                     ),
@@ -641,7 +641,14 @@ class Github(TorngitBaseAdapter):
             headers={"Accept": "application/vnd.github.machine-man-preview+json"},
         )
 
-        return self._process_repository_page(res.get("repositories", []))
+        repos = res.get("repositories", [])
+
+        log.info(
+            "Fetched page of repos using installation",
+            extra=dict(page_size=page_size, page=page, repos=repos),
+        )
+
+        return self._process_repository_page(repos)
 
     async def _fetch_page_of_repos(
         self, client, username, token, page_size=100, page=0
@@ -661,6 +668,16 @@ class Github(TorngitBaseAdapter):
                 f"/users/{username}/repos?per_page={page_size}&page={page}",
                 token=token,
             )
+
+        log.info(
+            "Fetched page of repos",
+            extra=dict(
+                page_size=page_size,
+                page=page,
+                repos=repos,
+                username=username,
+            ),
+        )
 
         return self._process_repository_page(repos)
 
@@ -732,9 +749,9 @@ class Github(TorngitBaseAdapter):
                             primary_language.get("name") if primary_language else None
                         ),
                         "private": raw_repo_data["isPrivate"],
-                        "branch": default_branch.get("name")
-                        if default_branch
-                        else None,
+                        "branch": (
+                            default_branch.get("name") if default_branch else None
+                        ),
                         "owner": {
                             "node_id": raw_repo_data["owner"]["id"],
                             "username": raw_repo_data["owner"]["login"],
@@ -1239,11 +1256,11 @@ class Github(TorngitBaseAdapter):
                 % (
                     f.get("previous_filename") or f.get("filename"),
                     f.get("filename"),
-                    "\ndeleted file mode 100644"
-                    if f["status"] == "removed"
-                    else "\nnew file mode 100644"
-                    if f["status"] == "added"
-                    else "",
+                    (
+                        "\ndeleted file mode 100644"
+                        if f["status"] == "removed"
+                        else "\nnew file mode 100644" if f["status"] == "added" else ""
+                    ),
                     "--- "
                     + (
                         "/dev/null"
@@ -1359,9 +1376,11 @@ class Github(TorngitBaseAdapter):
                 commitid=pull["head"]["sha"],
                 # Through empiric test data it seems that the "repo" key in "head" is set to None
                 # If the PR is from the same repo (e.g. not from a fork)
-                slug=pull["head"]["repo"]["full_name"]
-                if pull["head"]["repo"]
-                else pull["base"]["repo"]["full_name"],
+                slug=(
+                    pull["head"]["repo"]["full_name"]
+                    if pull["head"]["repo"]
+                    else pull["base"]["repo"]["full_name"]
+                ),
             ),
             state="merged" if pull["merged"] else pull["state"],
             title=pull["title"],
