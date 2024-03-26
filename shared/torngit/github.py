@@ -196,6 +196,11 @@ class Github(TorngitBaseAdapter):
         """
         token_to_use = token or self.token
 
+        log.info(
+            "Making Github API call",
+            extra=dict(has_token=bool(token), has_self_token=bool(self.token)),
+        )
+
         if not token_to_use:
             raise TorngitMisconfiguredCredentials()
         response = await self.make_http_call(*args, token_to_use=token_to_use, **kwargs)
