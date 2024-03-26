@@ -100,7 +100,7 @@ class TestUserYamlValidation(BaseTestCase):
                     "ignore": [
                         "^agent/uiserver/bindata_assetfs.go.*",
                         "(?s:vendor/.*/[^\\/]*)\\Z",
-                        "(?s:.*/[^\\/]*\\.pb\\.go.*)\\Z",
+                        "(?s:.*/[^\\/]*\\.pb\\.go)\\Z",
                     ],
                 },
             ),
@@ -1128,7 +1128,7 @@ def test_profiling_schema():
                 "^/path/to/file.extension.*",
                 "^/path/to/dir.*",
                 "^/path/{src|bin}/regex.{txt|php|cpp}.*",
-                "(?s:/path/using/globs/.*/file\\.extension.*)\\Z",
+                "(?s:/path/using/globs/.*/file\\.extension)\\Z",
             ],
         }
     }

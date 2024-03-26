@@ -69,7 +69,7 @@ def test_validate_install_configuration_with_user_yaml(mocker):
             "ignore": [
                 "^agent/uiserver/bindata_assetfs.go.*",
                 "(?s:vendor/.*/[^\\/]*)\\Z",
-                "(?s:.*/[^\\/]*\\.pb\\.go.*)\\Z",
+                "(?s:.*/[^\\/]*\\.pb\\.go)\\Z",
             ],
         },
     }
