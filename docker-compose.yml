@@ -3,6 +3,8 @@ version: "3"
 volumes:
   postgres-volume:
   timescale-volume:
+  redis-volume:
+  archive-volume:
 
 services:
   shared:
@@ -12,6 +14,7 @@ services:
     depends_on:
       - postgres
       - timescale
+      - minio
     volumes:
       - ./shared/:/app/shared
       - ./tests/:/app/tests
@@ -20,8 +23,9 @@ services:
       - "86400" # so the container doesn't exit
 
   postgres:
-    image: postgres:14.7-alpine
+    image: postgres:14.4-alpine
     environment:
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_HOST_AUTH_METHOD=trust
@@ -31,6 +35,10 @@ services:
         tmpfs:
           size: 1024M
 
+  redis:
+    image: redis:4.0-alpine
+    volumes:
+      - redis-volume:/data
 
   timescale:
     image: timescale/timescaledb-ha:pg14-latest
@@ -43,3 +51,14 @@ services:
         target: /var/lib/postgresql/data
         tmpfs:
           size: 1024M
+
+  minio:
+    image: minio/minio:RELEASE.2019-04-09T01-22-30Z
+    command: server /export
+    ports:
+      - "9000:9000"
+    environment:
+      - MINIO_ACCESS_KEY=codecov-default-key
+      - MINIO_SECRET_KEY=codecov-default-secret
+    volumes:
+      - archive-volume:/export

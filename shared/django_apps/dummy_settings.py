@@ -8,17 +8,60 @@ ALLOWED_HOSTS = []
 
 # Install apps so that you can make migrations for them
 INSTALLED_APPS = [
+    "shared.django_apps.legacy_migrations",
     "shared.django_apps.pg_telemetry",
     "shared.django_apps.ts_telemetry",
     "shared.django_apps.rollouts",
+    # API models
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.messages",
+    "django.contrib.postgres",
+    "shared.django_apps.codecov_auth",
+    "shared.django_apps.core",
+    "shared.django_apps.reports",
 ]
 
-MIDDLEWARE = []
+# Migrated from API to get Minio working
+MINIO_ACCESS_KEY = get_config("services", "minio", "access_key_id")
+MINIO_SECRET_KEY = get_config("services", "minio", "secret_access_key")
+MINIO_LOCATION = "codecov.s3.amazonaws.com"
+MINIO_HASH_KEY = get_config("services", "minio", "hash_key")
+ARCHIVE_BUCKET_NAME = "codecov"
 
-TEMPLATES = []
+MIDDLEWARE = [
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+]
+
+# Migrated from API
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        },
+    }
+]
+
 
 TELEMETRY_VANILLA_DB = "default"
 TELEMETRY_TIMESCALE_DB = "timeseries"
+
+# Needed for migrations that depend on settings.auth_user_model
+AUTH_USER_MODEL = "codecov_auth.User"
+
+# Needed as certain migrations refer to it
+SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)
 
 TEST = True
 

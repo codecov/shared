@@ -16,6 +16,15 @@ def get_redis_url() -> str:
     return f"redis://{hostname}:{port}"
 
 
+def get_redis_connection() -> Redis:
+    url = get_redis_url()
+    return _get_redis_instance_from_url(url)
+
+
+def _get_redis_instance_from_url(url):
+    return Redis.from_url(url)
+
+
 CachedEndpoint = Union[Literal["check"], Literal["compare"], Literal["status"]]
 
 
