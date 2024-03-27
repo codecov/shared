@@ -7,6 +7,7 @@ class UploadState(CodecovDatabaseEnum):
     ERROR = (3,)
     FULLY_OVERWRITTEN = (4,)
     PARTIALLY_OVERWRITTEN = (5,)
+    PARALLEL_PROCESSED = (6,)
 
     def __init__(self, db_id):
         self.db_id = db_id
