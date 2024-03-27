@@ -1022,7 +1022,9 @@ class Report(object):
             return list(self._files)
 
     def next_session_number(self, parallel_idx=None):
-        if parallel_idx:  # rollout here
+        # parallel_idx is only passed in when the PARALLEL_UPLOAD_PROCESSING_BY_REPO
+        # flag is enabled
+        if parallel_idx:
             return parallel_idx
 
         start_number = len(self.sessions)
@@ -1074,10 +1076,6 @@ class Report(object):
 
     @sentry.trace
     def merge(self, new_report, joined=True):
-        print("BEFORE MERGING", self._files)
-        print(self.files)
-        print(self.sessions)
-
         """combine report data from another"""
         if new_report is None:
             return
@@ -1094,10 +1092,6 @@ class Report(object):
                 self.append(_file, joined)
 
         self._totals = self._process_totals()
-
-        print("AFTER MERGING", self._files)
-        print(self.files)
-        print(self.sessions)
 
     def is_empty(self):
         """returns boolean if the report has no content"""
