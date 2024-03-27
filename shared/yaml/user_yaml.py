@@ -1,11 +1,24 @@
 import logging
 from copy import deepcopy
-from typing import Any, List
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, List, Optional
 
 from shared.components import Component
-from shared.config import get_config
+from shared.config import (
+    PATCH_CENTRIC_DEFAULT_CONFIG,
+    PATCH_CENTRIC_DEFAULT_TIME_START,
+    get_config,
+)
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class OwnerContext(object):
+    ownerid: Optional[int] = None
+    owner_onboarding_date: Optional[datetime] = None
+    owner_plan: Optional[str] = None
 
 
 class UserYaml(object):
@@ -103,7 +116,15 @@ class UserYaml(object):
         return f"UserYaml<{self.inner_dict}>"
 
     @classmethod
-    def get_final_yaml(cls, *, owner_yaml, repo_yaml, commit_yaml=None, ownerid=None):
+    def get_final_yaml(
+        cls,
+        *,
+        owner_yaml,
+        repo_yaml,
+        commit_yaml=None,
+        ownerid=None,
+        owner_context: Optional[OwnerContext] = None,
+    ):
         """Given a owner yaml, repo yaml and user yaml, determines what yaml we need to use
 
         The answer is usually a "deep merge" between the site-level yaml, the
@@ -122,20 +143,34 @@ class UserYaml(object):
             owner_yaml (nullable dict): The yaml that is on the owner level (ie at the owner table)
             repo_yaml (nullable dict): [description]
             commit_yaml (nullable dict): [description] (default: {None})
+            ownerid: Optional[int] - [DEPRECATED] The ownerid. Used to get this owner's additional_user_yaml (configured via install yml, so self-hosted)
+            owner_context: Optional[OwnerContext] - Information about the owner that we are getting the yaml for.
+                This is used to control defaults and prevent overrides the owner can't do based on their user plan.
 
         Returns:
             dict - The dict we are supposed to use when concerning that user/commit
         """
+        if ownerid is None:
+            # Ownerid is kept as an arg to avoid breaking change to the interface of the function
+            # Passing the info in the owner_context is preferred.
+            ownerid = owner_context.ownerid if owner_context else None
         resulting_yaml = get_config("site", default={})
         if ownerid is not None and get_config("additional_user_yamls", default={}):
             additional_yaml = _get_possible_additional_user_yaml(ownerid)
             resulting_yaml = merge_yamls(resulting_yaml, additional_yaml)
+
+        if owner_context and owner_context.owner_onboarding_date:
+            resulting_yaml = _fix_yaml_defaults_based_on_owner_onboarding_date(
+                resulting_yaml, owner_context.owner_onboarding_date
+            )
+
         if owner_yaml is not None:
             resulting_yaml = merge_yamls(resulting_yaml, owner_yaml)
+
         if commit_yaml is not None:
-            return cls(merge_yamls(resulting_yaml, commit_yaml))
-        if repo_yaml is not None:
-            return cls(merge_yamls(resulting_yaml, repo_yaml))
+            resulting_yaml = merge_yamls(resulting_yaml, commit_yaml)
+        elif repo_yaml is not None:
+            resulting_yaml = merge_yamls(resulting_yaml, repo_yaml)
         return cls(resulting_yaml)
 
 
@@ -148,6 +183,22 @@ def _get_possible_additional_user_yaml(ownerid):
         if key < accumulated_percentage:
             return auy["override"]
     return {}
+
+
+def _fix_yaml_defaults_based_on_owner_onboarding_date(
+    current_yaml: dict, owner_onboarding_date: datetime
+) -> dict:
+    """Changes the site defaults based on the owner_onboarding_date.
+    Owners onboarded (Owner.created_at) after PATCH_CENTRIC_DEFAULT_TIME_START use the
+    patch_centric_default_config instead of legacy_default_site_config.
+
+    Owners can still override the defaults through owner_yaml, repo_yaml and commit_yaml.
+    """
+    res = deepcopy(current_yaml)
+    if owner_onboarding_date > PATCH_CENTRIC_DEFAULT_TIME_START:
+        adding = deepcopy(PATCH_CENTRIC_DEFAULT_CONFIG)
+        res.update(adding)
+    return res
 
 
 def merge_yamls(d1, d2):
