@@ -19,6 +19,7 @@ setup(
     url="https://github.com/codecov/shared",
     author="Codecov",
     author_email="support@codecov.io",
+    python_requires=">=3.11",
     install_requires=[
         "boto3>=1.9.218",
         "cerberus",
