@@ -19,6 +19,7 @@ class AWSStorageService(BaseStorageService):
             aws_access_key_id=aws_config.get("aws_access_key_id"),
             aws_secret_access_key=aws_config.get("aws_secret_access_key"),
             region_name=aws_config.get("region_name"),
+            endpoint_url=aws_config.get("endpoint_url"),
         )
 
     def create_root_storage(self, bucket_name="archive", region="us-east-1"):
