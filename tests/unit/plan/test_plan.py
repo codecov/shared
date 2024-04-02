@@ -396,7 +396,7 @@ class AvailablePlansBeforeTrial(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_non_trial(
         self, is_sentry_user
     ):
@@ -414,7 +414,7 @@ class AvailablePlansBeforeTrial(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_team_plan_non_trial(
         self, is_sentry_user
     ):
@@ -432,7 +432,7 @@ class AvailablePlansBeforeTrial(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_plan_non_trial(self, is_sentry_user):
         is_sentry_user.return_value = True
         self.current_org.plan = PlanName.SENTRY_MONTHLY.value
@@ -512,7 +512,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_expired_trial_less_than_10_users(
         self, is_sentry_user
     ):
@@ -530,7 +530,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_team_plan_expired_trial_less_than_10_users(
         self, is_sentry_user
     ):
@@ -548,7 +548,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_plan_expired_trial_less_than_10_users(
         self, is_sentry_user
     ):
@@ -597,7 +597,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_expired_trial_more_than_10_users(
         self, is_sentry_user
     ):
@@ -614,7 +614,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_plan_expired_trial_more_than_10_users(
         self, is_sentry_user
     ):
@@ -755,7 +755,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can not do Team plan when at 11 activated users
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
 
-    @patch("services.sentry.is_sentry_user")
+    @patch("shared.plan.service.is_sentry_user")
     def test_sentry_user(self, is_sentry_user):
         is_sentry_user.return_value = True
 
