@@ -95,7 +95,7 @@ jobs:
 #          echo "- ${{ steps.skip.outputs.test_count }} tests skipped" >> $GITHUB_STEP_SUMMARY
 #          echo "- Skipped tests took ${{ steps.skip.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
   #      - name: Upload coverage to Codecov
-#        uses: codecov/codecov-action@v4-beta
+#        uses: codecov/codecov-action@v4
 #        env:
 #          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
 #        with:
