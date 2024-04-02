@@ -31,9 +31,11 @@ MINIO_HASH_KEY = get_config("services", "minio", "hash_key")
 ARCHIVE_BUCKET_NAME = "codecov"
 
 MIDDLEWARE = [
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
 ]
 
 # Migrated from API
