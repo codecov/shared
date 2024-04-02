@@ -51,8 +51,8 @@ class TestPathPatternSchemaField(BaseTestCase):
         res = ps.validate("a/*/b")
         compiled = re.compile(res)
         assert compiled.match("a/path/b") is not None
-        assert compiled.match("a/path/b/file_2.py") is not None
-        assert compiled.match("a/path/b/more_path/some_file.py") is not None
+        assert compiled.match("a/path/b/file_2.py") is None
+        assert compiled.match("a/path/b/more_path/some_file.py") is None
         assert compiled.match("a/b") is None
         assert compiled.match("a/path/path2/b") is None
 
@@ -73,11 +73,11 @@ class TestPathPatternSchemaField(BaseTestCase):
         res = ps.validate("a/**/b")
         compiled = re.compile(res)
         assert compiled.match("a/path/b") is not None
-        assert compiled.match("a/path/b/some_file.py") is not None
-        assert compiled.match("a/path/b/more_path/some_file.py") is not None
+        assert compiled.match("a/path/b/some_file.py") is None
+        assert compiled.match("a/path/b/more_path/some_file.py") is None
         assert compiled.match("a/path/path2/b") is not None
-        assert compiled.match("a/path/path2/b/some_file.py") is not None
-        assert compiled.match("a/path/path2/b/more_path/some_file.py") is not None
+        assert compiled.match("a/path/path2/b/some_file.py") is None
+        assert compiled.match("a/path/path2/b/more_path/some_file.py") is None
         assert compiled.match("a/c") is None
 
     def test_path_with_leading_period_slash(self):
@@ -101,6 +101,26 @@ class TestPathPatternSchemaField(BaseTestCase):
         res = ps.validate(user_input)
         compiled = re.compile(res)
         assert compiled.match("Snapshots/Snapshots/ViewController.swift") is not None
+
+    def test_double_star_prefix(self):
+        user_input = "**/*bundle"
+        ps = PathPatternSchemaField()
+        res = ps.validate(user_input)
+        compiled = re.compile(res)
+        paths_to_match = [
+            "app/Bundle/ignoreme.bundle",
+            "tests/test_bundle/sample_bundle",
+        ]
+        paths_not_to_match = [
+            "app/Bundle/BundleCart.py",
+            "app/Bundle/__init__.py",
+            "app/Bundle/mybundle.py",
+            "tests/test_bundle/test_bundle_cart.py",
+        ]
+        for path in paths_to_match:
+            assert compiled.match(path) is not None
+        for path in paths_not_to_match:
+            assert compiled.match(path) is None
 
 
 class TestLayoutStructure(BaseTestCase):

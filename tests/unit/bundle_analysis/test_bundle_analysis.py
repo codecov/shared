@@ -1,4 +1,7 @@
 from pathlib import Path
+from unittest.mock import patch
+
+import pytest
 
 from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
 from shared.bundle_analysis.models import MetadataKey
@@ -189,3 +192,17 @@ def test_bundle_report_size_integer():
     bundle_report = report.bundle_report("sample")
 
     assert bundle_report.total_size() == 150572
+
+
+def test_bundle_parser_error():
+    with patch(
+        "shared.bundle_analysis.parser.Parser._parse_assets_event",
+        side_effect=Exception("MockError"),
+    ):
+        report = BundleAnalysisReport()
+        with pytest.raises(Exception) as excinfo:
+            report.ingest(sample_bundle_stats_path)
+            assert (
+                excinfo.bundle_analysis_plugin_name
+                == "codecov-vite-bundle-analysis-plugin"
+            )

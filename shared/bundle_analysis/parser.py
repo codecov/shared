@@ -54,48 +54,81 @@ class Parser:
         self.module_chunk_unique_external_ids = []
 
     def parse(self, path: str) -> int:
-        self.reset()
+        try:
+            self.reset()
 
-        self.session = Session(info={})
-        self.db_session.add(self.session)
+            # Retrieve the info section first before parsing all the other things
+            # this way when an error is raised we know which bundle plugin caused it
+            with open(path, "rb") as f:
+                for event in ijson.parse(f):
+                    self._parse_info(event)
 
-        with open(path, "rb") as f:
-            for event in ijson.parse(f):
-                self._parse_event(event)
+            self.session = Session(info={})
+            self.db_session.add(self.session)
 
-            # Delete old session/asset/chunk/module with the same bundle name if applicable
-            old_session = (
-                self.db_session.query(Session)
-                .filter(
-                    Session.bundle == self.session.bundle, Session.id != self.session.id
-                )
-                .one_or_none()
-            )
-            if old_session:
-                for model in [Asset, Chunk, Module]:
-                    to_be_deleted = self.db_session.query(model).filter(
-                        model.session == old_session
+            with open(path, "rb") as f:
+                for event in ijson.parse(f):
+                    self._parse_event(event)
+
+                # Delete old session/asset/chunk/module with the same bundle name if applicable
+                old_session = (
+                    self.db_session.query(Session)
+                    .filter(
+                        Session.bundle == self.session.bundle,
+                        Session.id != self.session.id,
                     )
-                    for item in to_be_deleted:
-                        self.db_session.delete(item)
-                self.db_session.delete(old_session)
-                self.db_session.flush()
+                    .one_or_none()
+                )
+                if old_session:
+                    for model in [Asset, Chunk, Module]:
+                        to_be_deleted = self.db_session.query(model).filter(
+                            model.session == old_session
+                        )
+                        for item in to_be_deleted:
+                            self.db_session.delete(item)
+                    self.db_session.delete(old_session)
+                    self.db_session.flush()
 
-            # save top level bundle stats info
-            self.session.info = json.dumps(self.info)
+                # save top level bundle stats info
+                self.session.info = json.dumps(self.info)
 
-            # this happens last so that we could potentially handle any ordering
-            # of top-level keys inside the JSON (i.e. we couldn't associate a chunk
-            # to an asset above if we parse the chunk before the asset)
-            self._create_associations()
+                # this happens last so that we could potentially handle any ordering
+                # of top-level keys inside the JSON (i.e. we couldn't associate a chunk
+                # to an asset above if we parse the chunk before the asset)
+                self._create_associations()
 
-        assert self.session.bundle is not None
-        return self.session.id
+                assert self.session.bundle is not None
+                return self.session.id
+        except Exception as e:
+            # Inject the plugin name to the Exception object so we have visibilitity on which plugin
+            # is causing the trouble.
+            e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
+            raise e
+
+    def _parse_info(self, event: Tuple[str, str, str]):
+        prefix, _, value = event
+
+        # session info
+        if prefix == "version":
+            self.info["version"] = value
+        elif prefix == "bundler.name":
+            self.info["bundler_name"] = value
+        elif prefix == "bundler.version":
+            self.info["bundler_version"] = value
+        elif prefix == "builtAt":
+            self.info["built_at"] = value
+        elif prefix == "plugin.name":
+            self.info["plugin_name"] = value
+        elif prefix == "plugin.version":
+            self.info["plugin_version"] = value
+        elif prefix == "duration":
+            self.info["duration"] = value
 
     def _parse_event(self, event: Tuple[str, str, str]):
         prefix, _, value = event
-
         prefix_path = prefix.split(".")
+
+        # asset / chunks / modules
         if prefix_path[0] == "assets":
             self._parse_assets_event(*event)
         elif prefix_path[0] == "chunks":
@@ -111,22 +144,6 @@ class Parser:
                 self.db_session.add(bundle)
             self.session.bundle = bundle
             self.db_session.flush()
-
-        # session info
-        elif prefix == "version":
-            self.info["version"] = value
-        elif prefix == "bundler.name":
-            self.info["bundler_name"] = value
-        elif prefix == "bundler.version":
-            self.info["bundler_version"] = value
-        elif prefix == "builtAt":
-            self.info["built_at"] = value
-        elif prefix == "plugin.name":
-            self.info["plugin_name"] = value
-        elif prefix == "plugin.version":
-            self.info["plugin_version"] = value
-        elif prefix == "duration":
-            self.info["duration"] = value
 
     def _parse_assets_event(self, prefix: str, event: str, value: str):
         if (prefix, event) == ("assets.item", "start_map"):
