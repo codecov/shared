@@ -37,7 +37,7 @@ class MinioStorageService(BaseStorageService):
             self.minio_config["verify_ssl"],
             self.minio_config.get("iam_auth", False),
             self.minio_config["iam_endpoint"],
-            self.minio_config["region"],
+            self.minio_config.get("region"),
         )
         log.debug("Done setting up minio client")
 
