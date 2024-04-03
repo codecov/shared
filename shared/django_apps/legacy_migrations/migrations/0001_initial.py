@@ -3,12 +3,8 @@
 from django.conf import settings
 from django.db import migrations
 
-from shared.django_apps.legacy_migrations.migrations.legacy_sql.main.main import (
-    run_sql as main_run_sql,
-)
-from shared.django_apps.legacy_migrations.migrations.legacy_sql.upgrades.main import (
-    run_sql as upgrade_run_sql,
-)
+from .legacy_sql.main.main import run_sql as main_run_sql
+from .legacy_sql.upgrades.main import run_sql as upgrade_run_sql
 
 BASE_VERSION = "base"
 
