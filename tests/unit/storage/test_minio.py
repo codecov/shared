@@ -212,7 +212,7 @@ class TestMinioStorageService(BaseTestCase):
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
         mocked_minio_client.assert_called_with(
-            "cute_url_no_ports", credentials=mocker.ANY, secure=False
+            "cute_url_no_ports", credentials=mocker.ANY, secure=False, region=None
         )
 
     def test_minio_with_ports(self, mocker):
