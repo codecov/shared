@@ -5,6 +5,7 @@ import os
 import re
 from base64 import b64decode
 from copy import deepcopy
+from datetime import datetime
 from typing import Any, List, Tuple
 
 from yaml import safe_load as yaml_load
@@ -17,6 +18,53 @@ class MissingConfigException(Exception):
 
 
 log = logging.getLogger(__name__)
+
+LEGACY_DEFAULT_SITE_CONFIG = {
+    "codecov": {"require_ci_to_pass": True},
+    "coverage": {
+        "precision": 2,
+        "round": "down",
+        "range": "60...80",
+        "status": {
+            "project": True,
+            "patch": True,
+            "changes": False,
+            "default_rules": {"flag_coverage_not_uploaded_behavior": "include"},
+        },
+    },
+    "comment": {
+        "layout": "reach,diff,flags,tree,reach",
+        "behavior": "default",
+        "show_carryforward_flags": False,
+    },
+    "slack_app": True,
+    "github_checks": {"annotations": True},
+}
+
+PATCH_CENTRIC_DEFAULT_TIME_START = datetime.fromisoformat("2024-04-30 00:00:00.000")
+
+PATCH_CENTRIC_DEFAULT_CONFIG = {
+    **LEGACY_DEFAULT_SITE_CONFIG,
+    "coverage": {
+        "precision": 2,
+        "round": "down",
+        # The range is created with the transformed version (in the legacy it's transformed by validation)
+        # Because this bit of dict will not be validated.
+        "range": [60.0, 80.0],
+        "status": {
+            "project": False,
+            "patch": True,
+            "changes": False,
+            "default_rules": {"flag_coverage_not_uploaded_behavior": "include"},
+        },
+    },
+    "comment": {
+        "layout": "condensed_header, flags, tree, component",
+        "hide_project_coverage": True,
+        "behavior": "default",
+        "show_carryforward_flags": False,
+    },
+}
 
 default_config = {
     "services": {
@@ -31,27 +79,7 @@ default_config = {
         },
         "database_url": "postgres://postgres:@postgres:5432/postgres",
     },
-    "site": {
-        "codecov": {"require_ci_to_pass": True},
-        "coverage": {
-            "precision": 2,
-            "round": "down",
-            "range": "60...80",
-            "status": {
-                "project": True,
-                "patch": True,
-                "changes": False,
-                "default_rules": {"flag_coverage_not_uploaded_behavior": "include"},
-            },
-        },
-        "comment": {
-            "layout": "reach,diff,flags,tree,reach",
-            "behavior": "default",
-            "show_carryforward_flags": False,
-        },
-        "slack_app": True,
-        "github_checks": {"annotations": True},
-    },
+    "site": LEGACY_DEFAULT_SITE_CONFIG,
     "setup": {
         "segment": {"enabled": False, "key": "JustARandomTestValueMeaningless"},
         "timeseries": {"enabled": False},

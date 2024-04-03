@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.core.exceptions import SynchronousOnlyOperation
 from django.test import TestCase
 
 from shared.django_apps.rollouts.models import (
@@ -141,6 +142,19 @@ class TestFeature(TestCase):
 
         assert feature_flag is not None
         assert feature_flag.proportion == 0
+
+    def test_sync_feature_call(self):
+        testing_feature = Feature("testing_dummy_feature")
+        assert testing_feature.check_value(owner_id="hi", default=False) == False
+
+    async def test_async_feature_call_fail(self):
+        testing_feature = Feature("testing_dummy_feature")
+        with self.assertRaises(SynchronousOnlyOperation):
+            testing_feature.check_value(owner_id="hi", default=False) == False
+
+    async def test_async_feature_call_success(self):
+        testing_feature = Feature("testing_dummy_feature")
+        await testing_feature.check_value_async(owner_id="hi", default=False) == False
 
 
 class TestFeatureExposures(TestCase):

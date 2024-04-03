@@ -212,7 +212,7 @@ class PathPatternSchemaField(object):
             filepath to see if it matches
         - glob - The user inputs a glob (as the glob that we use in unix, using `*` and `**`)
 
-    This class tries to determinw which type of pattern the user inputted. We say "try", because
+    This class tries to determine which type of pattern the user inputted. We say "try", because
         some paths can be more than one type, and we try our best to see what the user meant.
 
     For example, `a.*` could match `a/folder1/path/file.py` as a regex, but not as a glob.
@@ -234,8 +234,7 @@ class PathPatternSchemaField(object):
 
     def validate_glob(self, value):
         if not value.endswith("$") and not value.endswith("*"):
-            # Adding support for a prefix-based list of paths
-            value = value + "**"
+            log.warning("Old glob behavior would have interpreted this glob as prefix")
         return translate_glob_to_regex(value)
 
     def validate_path_prefix(self, value):

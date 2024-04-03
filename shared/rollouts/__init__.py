@@ -118,8 +118,8 @@ class Feature:
         )
 
     @sync_to_async
-    def check_value_async(self, identifier, default=False):
-        return self.check_value(identifier, default)
+    def check_value_async(self, owner_id=None, repo_id=None, default=False):
+        return self.check_value(owner_id=owner_id, repo_id=repo_id, default=default)
 
     @cached_property
     def _buckets(self):
