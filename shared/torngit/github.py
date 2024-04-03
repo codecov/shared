@@ -653,7 +653,7 @@ class Github(TorngitBaseAdapter):
             extra=dict(
                 page_size=page_size,
                 page=page,
-                repo_names=[repo["name"] for repo in repos],
+                repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
             ),
         )
 
@@ -683,7 +683,7 @@ class Github(TorngitBaseAdapter):
             extra=dict(
                 page_size=page_size,
                 page=page,
-                repo_names=[repo["name"] for repo in repos],
+                repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
                 username=username,
             ),
         )
