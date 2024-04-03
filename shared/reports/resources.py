@@ -1021,25 +1021,20 @@ class Report(object):
         else:
             return list(self._files)
 
-    def next_session_number(self, parallel_idx=None):
-        # parallel_idx is only passed in when the PARALLEL_UPLOAD_PROCESSING_BY_REPO
-        # flag is enabled
-        if parallel_idx:
-            return parallel_idx
-
+    def next_session_number(self):
         start_number = len(self.sessions)
         while start_number in self.sessions or str(start_number) in self.sessions:
             start_number += 1
         return start_number
 
-    def add_session(self, session, parallel_idx=None):
-        sessionid = self.next_session_number(parallel_idx)
+    def add_session(self, session, use_id_from_session=False):
+        sessionid = session.id if use_id_from_session else self.next_session_number()
         self.sessions[sessionid] = session
         if self._totals:
             # add session to totals
-            if parallel_idx:
+            if use_id_from_session:
                 self._totals = dataclasses.replace(
-                    self._totals, sessions=max(sessionid + 1, self._totals.sessions)
+                    self._totals, sessions=self._totals.sessions + 1
                 )
             else:
                 self._totals = dataclasses.replace(self._totals, sessions=sessionid + 1)

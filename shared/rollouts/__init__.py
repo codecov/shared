@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from cachetools.func import lru_cache, ttl_cache
 from django.utils import timezone
 
+from shared.config import get_config
 from shared.django_apps.rollouts.models import (
     FeatureExposure,
     FeatureFlag,
@@ -95,15 +96,17 @@ class Feature:
 
     HASHSPACE = 2**128
 
-    def __init__(self, name, refresh=False):
+    def __init__(self, name):
         self.name = name
         self.feature_flag = None
         self.ff_variants = None
 
-        self.refresh = refresh  # to be used only during development
-        if refresh:
+        self.refresh = get_config(
+            "setup", "skip_feature_cache", default=False
+        )  # to be used only during development
+        if self.refresh:
             log.warn(
-                "Refresh for Feature should only be turned on in development environments, and should not be used in production"
+                "skip_feature_cache for Feature should only be turned on in development environments, and should not be used in production"
             )
 
     def check_value(self, owner_id=None, repo_id=None, default=False):

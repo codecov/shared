@@ -31,6 +31,9 @@ upload_finisher_task_name = f"app.tasks.{TaskConfigGroup.upload.value}.UploadFin
 test_results_processor_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.TestResultsProcessor"
 )
+parallel_verification_task_name = (
+    f"app.tasks.{TaskConfigGroup.upload.value}.ParallelVerification"
+)
 
 
 manual_upload_completion_trigger_task_name = (
