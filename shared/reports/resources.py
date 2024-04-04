@@ -1027,12 +1027,18 @@ class Report(object):
             start_number += 1
         return start_number
 
-    def add_session(self, session):
-        sessionid = self.next_session_number()
+    def add_session(self, session, use_id_from_session=False):
+        sessionid = session.id if use_id_from_session else self.next_session_number()
         self.sessions[sessionid] = session
         if self._totals:
             # add session to totals
-            self._totals = dataclasses.replace(self._totals, sessions=sessionid + 1)
+            if use_id_from_session:
+                self._totals = dataclasses.replace(
+                    self._totals, sessions=self._totals.sessions + 1
+                )
+            else:
+                self._totals = dataclasses.replace(self._totals, sessions=sessionid + 1)
+
         return sessionid, session
 
     def __iter__(self):

@@ -37,6 +37,7 @@ class MinioStorageService(BaseStorageService):
             self.minio_config["verify_ssl"],
             self.minio_config.get("iam_auth", False),
             self.minio_config["iam_endpoint"],
+            self.minio_config.get("region"),
         )
         log.debug("Done setting up minio client")
 
@@ -52,6 +53,7 @@ class MinioStorageService(BaseStorageService):
         verify_ssl: bool = False,
         iam_auth: bool = False,
         iam_endpoint: str = None,
+        region: str = None,
     ):
         """
             Initialize the minio client
@@ -74,6 +76,7 @@ class MinioStorageService(BaseStorageService):
             verify_ssl (bool, optional): Whether minio should verify ssl
             iam_auth (bool, optional): Whether to use iam_auth
             iam_endpoint (str, optional): The endpoint to try to fetch EC2 metadata
+            region (str, optional): The region of the host where minio lives
         """
         if port is not None:
             host = "{}:{}".format(host, port)
@@ -82,6 +85,7 @@ class MinioStorageService(BaseStorageService):
             return Minio(
                 host,
                 secure=verify_ssl,
+                region=region,
                 credentials=ChainedProvider(
                     providers=[
                         IamAwsProvider(custom_endpoint=iam_endpoint),
@@ -91,7 +95,7 @@ class MinioStorageService(BaseStorageService):
                 ),
             )
         return Minio(
-            host, access_key=access_key, secret_key=secret_key, secure=verify_ssl
+            host, access_key=access_key, secret_key=secret_key, secure=verify_ssl, region=region
         )
 
     # writes the initial storage bucket to storage via minio.
