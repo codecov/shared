@@ -198,7 +198,11 @@ class Github(TorngitBaseAdapter):
 
         log.info(
             "Making Github API call",
-            extra=dict(has_token=bool(token), has_self_token=bool(self.token)),
+            extra=dict(
+                has_token=bool(token),
+                has_self_token=bool(self.token),
+                is_same_token=(token == self.token),
+            ),
         )
 
         if not token_to_use:
