@@ -212,7 +212,7 @@ class TestMinioStorageService(BaseTestCase):
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
         mocked_minio_client.assert_called_with(
-            "cute_url_no_ports", credentials=mocker.ANY, secure=False
+            "cute_url_no_ports", credentials=mocker.ANY, secure=False, region=None
         )
 
     def test_minio_with_ports(self, mocker):
@@ -229,5 +229,23 @@ class TestMinioStorageService(BaseTestCase):
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
         mocked_minio_client.assert_called_with(
-            "cute_url_no_ports:9000", credentials=mocker.ANY, secure=False
+            "cute_url_no_ports:9000", credentials=mocker.ANY, secure=False, region=None
+        )
+
+    def test_minio_with_region(self, mocker):
+        mocked_minio_client = mocker.patch("shared.storage.minio.Minio")
+        minio_no_ports_config = {
+            "access_key_id": "hodor",
+            "secret_access_key": "haha",
+            "verify_ssl": False,
+            "host": "cute_url_no_ports",
+            "port": "9000",
+            "iam_auth": True,
+            "iam_endpoint": None,
+            "region": "example"
+        }
+        storage = MinioStorageService(minio_no_ports_config)
+        assert storage.minio_config == minio_no_ports_config
+        mocked_minio_client.assert_called_with(
+            "cute_url_no_ports:9000", credentials=mocker.ANY, secure=False, region="example"
         )
