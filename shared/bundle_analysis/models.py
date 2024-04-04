@@ -85,7 +85,6 @@ SCHEMA_VERSION = 1
 
 Base = declarative_base()
 
-
 """
 Create a custom context manager for SQLAlchemy session because worker is currently
 stuck on SQLAlchemy version <1.4, and built in context manager for session is introduced

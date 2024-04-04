@@ -219,6 +219,7 @@ config_schema = {
                 },
             },
             "upload_processing_delay": {"type": "integer"},
+            "skip_feature_cache": {"type": "boolean"},
             "timeseries": {
                 "type": "dict",
                 "schema": {"enabled": {"type": "boolean"}},

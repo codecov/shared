@@ -32,7 +32,6 @@ test_results_processor_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.TestResultsProcessor"
 )
 
-
 manual_upload_completion_trigger_task_name = (
     f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
 )
