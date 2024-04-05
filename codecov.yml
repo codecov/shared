@@ -11,18 +11,6 @@ ignore:
 beta_groups:
   - "labels"
 
-services:
-  minio:
-    hash_key: 12345bf3f7d947f2a0681b2154067890
-    verify_ssl: false
-    host: "minio"
-    port: 9000
-    # bucket: <bucket-name>
-    # region: <bucket-region>
-    access_key_id: codecov-default-key
-    secret_access_key: codecov-default-secret
-    client_uploads: true
-
 flag_management:
   individual_flags:
     - name: "smart-labels"
