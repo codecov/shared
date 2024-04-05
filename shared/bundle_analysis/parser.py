@@ -86,6 +86,7 @@ class Parser:
                         )
                         for item in to_be_deleted:
                             self.db_session.delete(item)
+                            self.db_session.flush()
                     self.db_session.delete(old_session)
                     self.db_session.flush()
 

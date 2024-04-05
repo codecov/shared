@@ -1272,7 +1272,9 @@ class Github(TorngitBaseAdapter):
                     (
                         "\ndeleted file mode 100644"
                         if f["status"] == "removed"
-                        else "\nnew file mode 100644" if f["status"] == "added" else ""
+                        else "\nnew file mode 100644"
+                        if f["status"] == "added"
+                        else ""
                     ),
                     "--- "
                     + (
