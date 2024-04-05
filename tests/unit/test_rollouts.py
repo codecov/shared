@@ -39,7 +39,11 @@ class TestFeature(TestCase):
             # should be [0..33], [34..66], and [67..100]. Anything from [101..200]
             # is not part of the rollout yet.
             buckets = complex_feature._buckets
-            assert list(map(lambda x: x[0], buckets)) == [33, 66, 99]
+            assert list(map(lambda x: (x[0], x[1]), buckets)) == [
+                (0, 33),
+                (66, 99),
+                (133, 166),
+            ]
 
     def test_fully_rolled_out(self):
         rolled_out = FeatureFlag.objects.create(

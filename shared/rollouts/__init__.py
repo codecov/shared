@@ -151,15 +151,30 @@ class Feature:
         will fall into one of those buckets and the corresponding variant (or default
         value) will be returned.
         """
-        test_population = int(self.feature_flag.proportion * Feature.HASHSPACE)
 
         buckets = []
         quantile = 0
+
         for variant in self.ff_variants:
+            test_population = int(variant.proportion * Feature.HASHSPACE)
+
+            start = int(quantile * Feature.HASHSPACE)
+            end = int(start + (test_population * self.feature_flag.proportion))
+
             quantile += variant.proportion
-            buckets.append((int(quantile * test_population), variant))
+            buckets.append((start, end, variant))
 
         return buckets
+
+        # test_population = int(self.feature_flag.proportion * Feature.HASHSPACE)
+
+        # buckets = []
+        # quantile = 0
+        # for variant in self.ff_variants:
+        #     quantile += variant.proportion
+        #     buckets.append((int(quantile * test_population), variant))
+
+        # return buckets
 
     def _get_override_variant(self, identifier, identifier_type: IdentifierType):
         """
@@ -275,8 +290,8 @@ class Feature:
         key = mmh3.hash128(
             self.feature_flag.name + str(identifier) + self.feature_flag.salt
         )
-        for bucket, variant in self._buckets:
-            if key <= bucket:
+        for bucket_start, bucket_end, variant in self._buckets:
+            if bucket_start <= key and key < bucket_end:
                 self.create_exposure(variant, identifier, identifier_type)
                 return variant.value
 
