@@ -33,11 +33,11 @@ class TestFeature(TestCase):
 
             complex_feature.check_value(owner_id=1234)  # to force fetch values from db
 
-            # Because the top-level feature proportion is 0.5, we are only using the
-            # first 50% of our 200 hash values as our test population: [0..100]
-            # Each feature variant has a proportion of 1/3, so our three buckets
-            # should be [0..33], [34..66], and [67..100]. Anything from [101..200]
-            # is not part of the rollout yet.
+            # Because each feature variant has a proportion of 1/3, our three
+            # buckets should be [0, 66], [66, 133], [133, 200]. However, our top-level
+            # feature proportion is only 0.5, so each bucket size should be then
+            # halved: [0, 33], [66, 99], [133, 166]
+
             buckets = complex_feature._buckets
             assert list(map(lambda x: (x[0], x[1]), buckets)) == [
                 (0, 33),
