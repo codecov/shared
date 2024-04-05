@@ -150,6 +150,9 @@ class Feature:
         `proportion` of the feature flag and its `variants`. The hash for this repo
         will fall into one of those buckets and the corresponding variant (or default
         value) will be returned.
+
+        Each bucket in the buckets array represents a range: (0, 1000, `enabled_variant`). In
+        this case, hashes that land in [0, 1000) will be assigned `enabled_variant`
         """
 
         buckets = []
