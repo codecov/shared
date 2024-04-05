@@ -16,6 +16,7 @@ from shared.utils.ReportEncoder import ReportEncoder
 log = logging.getLogger(__name__)
 
 
+# TODO deduplicate this logic from worker, api, shared
 class MinioEndpoints(Enum):
     chunks = "{version}/repos/{repo_hash}/commits/{commitid}/chunks.txt"
     json_data = "{version}/repos/{repo_hash}/commits/{commitid}/json_data/{table}/{field}/{external_id}.json"
