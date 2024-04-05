@@ -847,7 +847,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async with self.get_client() as client:
             repo_count = await self._fetch_number_of_repos(client, token)
-            page_size = 100
+            page_size = 10
             pages = repo_count // page_size
 
             if repo_count % page_size > 0:
