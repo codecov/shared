@@ -241,7 +241,6 @@ class Feature:
 
         if clear_cache:
             self._check_value.cache_clear()
-            print("this ran right?")
 
             if hasattr(self, "_buckets"):
                 del self._buckets  # clears @cached_property
