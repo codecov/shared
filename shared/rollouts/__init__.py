@@ -156,25 +156,15 @@ class Feature:
         quantile = 0
 
         for variant in self.ff_variants:
-            test_population = int(variant.proportion * Feature.HASHSPACE)
+            variant_test_population = int(variant.proportion * Feature.HASHSPACE)
 
             start = int(quantile * Feature.HASHSPACE)
-            end = int(start + (test_population * self.feature_flag.proportion))
+            end = int(start + (variant_test_population * self.feature_flag.proportion))
 
             quantile += variant.proportion
             buckets.append((start, end, variant))
 
         return buckets
-
-        # test_population = int(self.feature_flag.proportion * Feature.HASHSPACE)
-
-        # buckets = []
-        # quantile = 0
-        # for variant in self.ff_variants:
-        #     quantile += variant.proportion
-        #     buckets.append((int(quantile * test_population), variant))
-
-        # return buckets
 
     def _get_override_variant(self, identifier, identifier_type: IdentifierType):
         """
@@ -251,6 +241,7 @@ class Feature:
 
         if clear_cache:
             self._check_value.cache_clear()
+            print("this ran right?")
 
             if hasattr(self, "_buckets"):
                 del self._buckets  # clears @cached_property
