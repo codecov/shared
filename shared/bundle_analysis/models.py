@@ -257,7 +257,6 @@ class Module(Base):
         "Chunk",
         secondary=chunks_modules,
         back_populates="modules",
-        cascade="all, delete",
     )
 
 
