@@ -95,7 +95,11 @@ class MinioStorageService(BaseStorageService):
                 ),
             )
         return Minio(
-            host, access_key=access_key, secret_key=secret_key, secure=verify_ssl, region=region
+            host,
+            access_key=access_key,
+            secret_key=secret_key,
+            secure=verify_ssl,
+            region=region,
         )
 
     # writes the initial storage bucket to storage via minio.
