@@ -196,7 +196,7 @@ class TestFeature(TestCase):
                 assert d == "d"
 
                 my_feature_flag.proportion = (
-                    1.0  # buckets are now: [(0,66), (66, 132), (133, 199)]
+                    1.0  # buckets are now: [(0,66), (66, 133), (133, 200)]
                 )
                 my_feature_flag.save()
 
