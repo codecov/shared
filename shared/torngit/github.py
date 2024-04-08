@@ -857,13 +857,19 @@ class Github(TorngitBaseAdapter):
 
             if using_installation:
                 futures = [
-                    self._fetch_page_of_repos_using_installation(client, page=page)
+                    self._fetch_page_of_repos_using_installation(
+                        client, page=page, page_size=page_size
+                    )
                     for page in range(1, pages + 1)
                 ]
             else:
                 futures = [
                     self._fetch_page_of_repos(
-                        client, token=token, username=username, page=page
+                        client,
+                        token=token,
+                        username=username,
+                        page=page,
+                        page_size=page_size,
                     )
                     for page in range(1, pages + 1)
                 ]
