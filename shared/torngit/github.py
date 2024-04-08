@@ -263,7 +263,7 @@ class Github(TorngitBaseAdapter):
         **args,
     ) -> Response:
         _headers = {
-            "Accept": "application/json",
+            "Accept": "application/vnd.github+json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
         if token_to_use:
@@ -280,6 +280,7 @@ class Github(TorngitBaseAdapter):
                 bot=token_to_use.get("username"),
                 repo_slug=self.slug,
                 loggable_token=self.loggable_token(token_to_use),
+                token=token_to_use,
             )
             url = self.api_url + url
 
