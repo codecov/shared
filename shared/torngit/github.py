@@ -689,6 +689,7 @@ class Github(TorngitBaseAdapter):
                 page=page,
                 repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
                 username=username,
+                token=token,
             ),
         )
 
