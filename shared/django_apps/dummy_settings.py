@@ -8,17 +8,32 @@ ALLOWED_HOSTS = []
 
 # Install apps so that you can make migrations for them
 INSTALLED_APPS = [
+    "shared.django_apps.legacy_migrations",
     "shared.django_apps.pg_telemetry",
     "shared.django_apps.ts_telemetry",
     "shared.django_apps.rollouts",
+    # API models
+    "django.contrib.admin",
+    "django.contrib.contenttypes",
+    "django.contrib.postgres",
+    "shared.django_apps.codecov_auth",
+    "shared.django_apps.core",
+    "shared.django_apps.reports",
 ]
 
 MIDDLEWARE = []
 
 TEMPLATES = []
 
+
 TELEMETRY_VANILLA_DB = "default"
 TELEMETRY_TIMESCALE_DB = "timeseries"
+
+# Needed for migrations that depend on settings.auth_user_model
+AUTH_USER_MODEL = "codecov_auth.User"
+
+# Needed as certain migrations refer to it
+SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)
 
 TEST = True
 

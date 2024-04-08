@@ -50,5 +50,11 @@ setup(
         "codecov-ribs",
         "cachetools",
         "django-better-admin-arrayfield",
+        # API Deps
+        "django-prometheus",
+        "python-redis-lock",
+        "django-model-utils==4.3.1",
+        "requests==2.31.0",
+        "sentry-sdk>=1.40.0",
     ],
 )
