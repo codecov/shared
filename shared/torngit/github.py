@@ -263,7 +263,7 @@ class Github(TorngitBaseAdapter):
         **args,
     ) -> Response:
         _headers = {
-            "Accept": "application/vnd.github+json",
+            "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
         if token_to_use:
