@@ -641,7 +641,7 @@ class Github(TorngitBaseAdapter):
         return list(map(process, page))
 
     async def _fetch_page_of_repos_using_installation(
-        self, client, page_size=100, page=0
+        self, client, page_size=100, page=1
     ):
         # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
         res = await self.api(
@@ -665,7 +665,7 @@ class Github(TorngitBaseAdapter):
         return self._process_repository_page(repos)
 
     async def _fetch_page_of_repos(
-        self, client, username, token, page_size=100, page=0
+        self, client, username, token, page_size=100, page=1
     ):
         # https://developer.github.com/v3/repos/#list-your-repositories
         if username is None:
@@ -854,6 +854,8 @@ class Github(TorngitBaseAdapter):
 
             if repo_count % page_size > 0:
                 pages += 1
+
+            log.info("NUM PAGES", extra=dict(pages=pages))
 
             if using_installation:
                 futures = [
