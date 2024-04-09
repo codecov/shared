@@ -92,6 +92,23 @@ class TestFeature(TestCase):
         assert feature.check_value(owner_id=123, default=2) == 1
         assert not hasattr(feature.__dict__, "_buckets")
 
+    def test_override_no_proportion(self):
+        overrides = FeatureFlag.objects.create(
+            name="overrides_no_proportion", proportion=0, salt="random_salt"
+        )
+        FeatureFlagVariant.objects.create(
+            name="single_variant",
+            feature_flag=overrides,
+            proportion=0,
+            value=2,
+            override_owner_ids=[321, 123],
+        )
+
+        feature = Feature("overrides_no_proportion")
+
+        assert feature.check_value(owner_id=321, default=1) == 2
+        assert feature.check_value(owner_id=123, default=1) == 2
+
     def test_not_in_test_gets_default(self):
         not_in_test = FeatureFlag.objects.create(
             name="not_in_test", proportion=0.1, salt="random_salt"
