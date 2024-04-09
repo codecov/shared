@@ -109,7 +109,7 @@ class Feature:
                 "skip_feature_cache for Feature should only be turned on in development environments, and should not be used in production"
             )
 
-    def check_value(self, owner_id=None, repo_id=None, default=False):
+    def check_value(self, *, owner_id=None, repo_id=None, default=False):
         """
         Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
@@ -131,7 +131,7 @@ class Feature:
         )
 
     @sync_to_async
-    def check_value_async(self, owner_id=None, repo_id=None, default=False):
+    def check_value_async(self, *, owner_id=None, repo_id=None, default=False):
         return self.check_value(owner_id=owner_id, repo_id=repo_id, default=default)
 
     @cached_property
