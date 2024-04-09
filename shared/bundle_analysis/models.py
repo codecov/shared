@@ -231,9 +231,7 @@ class Chunk(Base):
     initial = Column(types.Boolean, nullable=False)
 
     session = relationship("Session", backref=backref("chunks"))
-    assets = relationship(
-        "Asset", secondary=assets_chunks, back_populates="chunks", cascade="all, delete"
-    )
+    assets = relationship("Asset", secondary=assets_chunks, back_populates="chunks")
     modules = relationship(
         "Module",
         secondary=chunks_modules,
@@ -259,7 +257,6 @@ class Module(Base):
         "Chunk",
         secondary=chunks_modules,
         back_populates="modules",
-        cascade="all, delete",
     )
 
 
