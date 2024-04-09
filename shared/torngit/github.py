@@ -855,7 +855,10 @@ class Github(TorngitBaseAdapter):
             if repo_count % page_size > 0:
                 pages += 1
 
-            log.info("NUM PAGES", extra=dict(pages=pages))
+            log.info(
+                "NUM PAGES",
+                extra=dict(pages=pages, repo_count=repo_count, page_size=page_size),
+            )
 
             if using_installation:
                 futures = [
