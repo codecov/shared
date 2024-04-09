@@ -44,7 +44,6 @@ query {
     viewer {
         repositories(
             ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
-            affiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
         ) {
             totalCount
         }
