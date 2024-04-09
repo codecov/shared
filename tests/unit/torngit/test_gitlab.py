@@ -239,10 +239,10 @@ class TestUnitGitlab(object):
                 )
                 await valid_handler.refresh_token(valid_handler.get_client())
             assert exp.code == 555
-        mocked_refresh.call_count == 1
+        assert mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
-    async def test_gitlab_refresh_fail_terminates_bad_request(
+    async def test_gitlab_refresh_fail_terminates_no_refresh_token_saved(
         self, mocker, valid_handler
     ):
         valid_handler._token = {"access_token": "old_token_without_refresh"}
@@ -256,7 +256,7 @@ class TestUnitGitlab(object):
                 await valid_handler.refresh_token(valid_handler.get_client())
             assert exp.code == 555
             assert exp.response_data is None
-        mocked_refresh.call_count == 1
+        assert mocked_refresh.call_count == 0
 
     @pytest.mark.asyncio
     async def test_gitlab_double_refresh(self, mocker, valid_handler):
@@ -333,9 +333,9 @@ class TestUnitGitlab(object):
         assert valid_handler._token["key"] == "new_access_token"
         assert valid_handler._token["refresh_token"] == "new_refresh_token"
         assert mock_refresh_callback.call_count == 1
-        assert mock_refresh_callback.called_with(
+        mock_refresh_callback.assert_called_with(
             {
-                "access_token": "new_access_token",
+                "key": "new_access_token",
                 "refresh_token": "new_refresh_token",
             }
         )

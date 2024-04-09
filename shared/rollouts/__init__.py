@@ -150,14 +150,22 @@ class Feature:
         `proportion` of the feature flag and its `variants`. The hash for this repo
         will fall into one of those buckets and the corresponding variant (or default
         value) will be returned.
+
+        Each bucket in the buckets array represents a range: (0, 1000, `enabled_variant`). In
+        this case, hashes that land in [0, 1000) will be assigned `enabled_variant`
         """
-        test_population = int(self.feature_flag.proportion * Feature.HASHSPACE)
 
         buckets = []
         quantile = 0
+
         for variant in self.ff_variants:
+            variant_test_population = int(variant.proportion * Feature.HASHSPACE)
+
+            start = int(quantile * Feature.HASHSPACE)
+            end = int(start + (variant_test_population * self.feature_flag.proportion))
+
             quantile += variant.proportion
-            buckets.append((int(quantile * test_population), variant))
+            buckets.append((start, end, variant))
 
         return buckets
 
@@ -275,8 +283,8 @@ class Feature:
         key = mmh3.hash128(
             self.feature_flag.name + str(identifier) + self.feature_flag.salt
         )
-        for bucket, variant in self._buckets:
-            if key <= bucket:
+        for bucket_start, bucket_end, variant in self._buckets:
+            if bucket_start <= key and key < bucket_end:
                 self.create_exposure(variant, identifier, identifier_type)
                 return variant.value
 

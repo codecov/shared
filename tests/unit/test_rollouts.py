@@ -27,19 +27,23 @@ class TestFeature(TestCase):
         )
         complex_feature = Feature("complex")
 
-        # # To make the math simpler, let's pretend our hash function can only
-        # # return 200 different values.
+        # To make the math simpler, let's pretend our hash function can only
+        # return 200 different values.
         with patch.object(Feature, "HASHSPACE", 200):
 
             complex_feature.check_value(owner_id=1234)  # to force fetch values from db
 
-            # Because the top-level feature proportion is 0.5, we are only using the
-            # first 50% of our 200 hash values as our test population: [0..100]
-            # Each feature variant has a proportion of 1/3, so our three buckets
-            # should be [0..33], [34..66], and [67..100]. Anything from [101..200]
-            # is not part of the rollout yet.
+            # Because each feature variant has a proportion of 1/3, our three
+            # buckets should be [0, 66], [66, 133], [133, 200]. However, our top-level
+            # feature proportion is only 0.5, so each bucket size should be then
+            # halved: [0, 33], [66, 99], [133, 166]
+
             buckets = complex_feature._buckets
-            assert list(map(lambda x: x[0], buckets)) == [33, 66, 99]
+            assert list(map(lambda x: (x[0], x[1]), buckets)) == [
+                (0, 33),
+                (66, 99),
+                (133, 166),
+            ]
 
     def test_fully_rolled_out(self):
         rolled_out = FeatureFlag.objects.create(
@@ -155,6 +159,56 @@ class TestFeature(TestCase):
     async def test_async_feature_call_success(self):
         testing_feature = Feature("testing_dummy_feature")
         await testing_feature.check_value_async(owner_id="hi", default=False) == False
+
+    def test_rollout_proportion_changes_dont_affect_variant_assignments(self):
+        my_feature_flag = FeatureFlag.objects.create(
+            name="my_feature1", proportion=0.5, salt="random_salt"
+        )
+        FeatureFlagVariant.objects.create(
+            name="var1", feature_flag=my_feature_flag, proportion=1 / 3, value=1
+        )
+        FeatureFlagVariant.objects.create(
+            name="var2", feature_flag=my_feature_flag, proportion=1 / 3, value=2
+        )
+        FeatureFlagVariant.objects.create(
+            name="var3", feature_flag=my_feature_flag, proportion=1 / 3, value=3
+        )
+        my_feature = Feature("my_feature1")
+
+        # The purpose of this test is to ensure that even when the feature_flag proportion
+        # changes, users assignments to variants never change. ie, if user `a` was ever assigned
+        # to variant 1, then for any feature_flag proportion, user `a` will either be
+        # assigned to variant 1, or is not participating in the rollout (default value).
+        # https://github.com/codecov/engineering-team/issues/1515
+
+        # To make the math simpler, let's pretend our hash function can only
+        # return 200 different values.
+        with patch.object(Feature, "HASHSPACE", 200):
+            with patch("mmh3.hash128", side_effect=[30, 90, 150, 40, 30, 90, 150, 40]):
+                a = my_feature.check_value(owner_id=123, default="c")
+                b = my_feature.check_value(owner_id=124, default="c")
+                c = my_feature.check_value(owner_id=125, default="c")
+                d = my_feature.check_value(owner_id=126, default="d")
+
+                assert a == 1
+                assert b == 2
+                assert c == 3
+                assert d == "d"
+
+                my_feature_flag.proportion = (
+                    1.0  # buckets are now: [(0,66), (66, 133), (133, 200)]
+                )
+                my_feature_flag.save()
+
+                my_feature._fetch_and_set_from_db.cache_clear()  # clear the TTL
+                my_feature._fetch_and_set_from_db()  # refresh feature flag proportion and clear caches
+
+                assert a == my_feature.check_value(owner_id=123, default="c")
+                assert b == my_feature.check_value(owner_id=124, default="c")
+                assert c == my_feature.check_value(owner_id=125, default="c")
+                assert 1 == my_feature.check_value(
+                    owner_id=126, default="d"
+                )  # now in variant 1 since 40 \in (0,66)
 
 
 class TestFeatureExposures(TestCase):

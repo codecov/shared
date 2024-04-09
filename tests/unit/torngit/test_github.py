@@ -1312,7 +1312,7 @@ class TestUnitGithub(object):
                     valid_handler.get_client(), "original_request_url"
                 )
             assert exp.code == 555
-        mocked_refresh.call_count == 1
+        assert mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_github_refresh_fail_terminates_unauthorized(
@@ -1331,7 +1331,7 @@ class TestUnitGithub(object):
                     valid_handler.get_client(), "original_request_url"
                 )
             assert exp.code == 555
-        mocked_refresh.call_count == 1
+        assert mocked_refresh.call_count == 1
 
     @pytest.mark.asyncio
     async def test_github_refresh_fail_terminates_no_refresh_token(
@@ -1457,9 +1457,9 @@ class TestUnitGithub(object):
         assert valid_handler._token["key"] == "new_access_token"
         assert valid_handler._token["refresh_token"] == "new_refresh_token"
         assert mock_refresh_callback.call_count == 1
-        assert mock_refresh_callback.called_with(
+        mock_refresh_callback.assert_called_with(
             {
-                "access_token": "new_access_token",
+                "key": "new_access_token",
                 "refresh_token": "new_refresh_token",
             }
         )
