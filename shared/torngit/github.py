@@ -43,7 +43,7 @@ class GitHubGraphQLQueries(object):
 query {
     viewer {
         repositories(
-            ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
+            affiliations:[OWNER, ORGANIZATION_MEMBER, COLLABORATOR],&nbsp;ownerAffiliations:[OWNER, ORGANIZATION_MEMBER, COLLABORATOR]
         ) {
             totalCount
         }
