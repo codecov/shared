@@ -242,10 +242,13 @@ class TestMinioStorageService(BaseTestCase):
             "port": "9000",
             "iam_auth": True,
             "iam_endpoint": None,
-            "region": "example"
+            "region": "example",
         }
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
         mocked_minio_client.assert_called_with(
-            "cute_url_no_ports:9000", credentials=mocker.ANY, secure=False, region="example"
+            "cute_url_no_ports:9000",
+            credentials=mocker.ANY,
+            secure=False,
+            region="example",
         )

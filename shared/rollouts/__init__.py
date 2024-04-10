@@ -1,4 +1,6 @@
+import json
 import logging
+import os
 from enum import Enum
 from functools import cached_property
 
@@ -32,6 +34,12 @@ class Feature:
 
     You can modify the parameters of your feature flag via Django Admin. The parameters are fetched and updated roughly
     every 5 minutes, meaning it can take up to 5 minutes for changes to show up here.
+
+    If you manage your own deployment, you can disable or override feature checks with environment variables:
+    - If `CODECOV__FEATURE__{name.upper()}` is set, its value will be deserialized as JSON and returned for the
+      `Feature` with that name
+    - If `CODECOV__FEATURE__DISABLE` is set, checks will be skipped and default values will be returned every time
+      for every feature except those with overrides set via `CODECOV__FEATURE__{name.upper()}` env vars
 
     If you instantiate a `Feature` instance with a new name, the associated database entry
     will be created for you. Otherwise, the existing database entry will be used to populate
@@ -101,6 +109,23 @@ class Feature:
         self.feature_flag = None
         self.ff_variants = None
 
+        # See if this environment has disabled feature flagging entirely.
+        # These environments will always get default values.
+        self.env_disable = os.getenv(f"CODECOV__FEATURE__DISABLE") is not None
+
+        # See if this environment has provided an override for this feature in
+        # its environment variables. Since feature variant values are stored in
+        # the database as JSON, we read these overrides as JSON as well.
+        #
+        # We need to be able to tell the difference between the case where an
+        # override is _undefined_ and the case where the override is defined and
+        # set to `"null"`/`None`. Two cases:
+        # - If the override is defined, `hasattr(self, 'env_override') == True`
+        # - If the override is undefined, `hasattr(self, 'env_override') == False`
+        env_override = os.getenv(f"CODECOV__FEATURE__{name.upper()}")
+        if env_override is not None:
+            self.env_override = json.loads(env_override or '""')
+
         self.refresh = get_config(
             "setup", "skip_feature_cache", default=False
         )  # to be used only during development
@@ -109,12 +134,18 @@ class Feature:
                 "skip_feature_cache for Feature should only be turned on in development environments, and should not be used in production"
             )
 
-    def check_value(self, owner_id=None, repo_id=None, default=False):
+    def check_value(self, *, owner_id=None, repo_id=None, default=False):
         """
         Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
         feature variants via Django Admin.
         """
+
+        if hasattr(self, "env_override"):
+            return self.env_override
+
+        if self.env_disable:
+            return default
 
         if self.refresh:
             self._fetch_and_set_from_db.cache_clear()
@@ -131,7 +162,7 @@ class Feature:
         )
 
     @sync_to_async
-    def check_value_async(self, owner_id=None, repo_id=None, default=False):
+    def check_value_async(self, *, owner_id=None, repo_id=None, default=False):
         return self.check_value(owner_id=owner_id, repo_id=repo_id, default=default)
 
     @cached_property
@@ -150,14 +181,22 @@ class Feature:
         `proportion` of the feature flag and its `variants`. The hash for this repo
         will fall into one of those buckets and the corresponding variant (or default
         value) will be returned.
+
+        Each bucket in the buckets array represents a range: (0, 1000, `enabled_variant`). In
+        this case, hashes that land in [0, 1000) will be assigned `enabled_variant`
         """
-        test_population = int(self.feature_flag.proportion * Feature.HASHSPACE)
 
         buckets = []
         quantile = 0
+
         for variant in self.ff_variants:
+            variant_test_population = int(variant.proportion * Feature.HASHSPACE)
+
+            start = int(quantile * Feature.HASHSPACE)
+            end = int(start + (variant_test_population * self.feature_flag.proportion))
+
             quantile += variant.proportion
-            buckets.append((int(quantile * test_population), variant))
+            buckets.append((start, end, variant))
 
         return buckets
 
@@ -275,8 +314,8 @@ class Feature:
         key = mmh3.hash128(
             self.feature_flag.name + str(identifier) + self.feature_flag.salt
         )
-        for bucket, variant in self._buckets:
-            if key <= bucket:
+        for bucket_start, bucket_end, variant in self._buckets:
+            if bucket_start <= key and key < bucket_end:
                 self.create_exposure(variant, identifier, identifier_type)
                 return variant.value
 
