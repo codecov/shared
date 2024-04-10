@@ -258,6 +258,21 @@ class TestFeature(TestCase):
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
+    @patch.dict(os.environ, {"CODECOV__FEATURE__NUM_FEATURE": "30"})
+    @patch.dict(os.environ, {"CODECOV__FEATURE__DISABLE": ""})
+    def test_check_value_with_env_disable_and_env_override(self):
+        feature = Feature("num_feature")
+        with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
+            assert feature.check_value(owner_id=1, default=100) == 30
+            fetch_fn.assert_not_called()
+            assert not hasattr(feature.__dict__, "_buckets")
+
+        feature = Feature("other_feature")
+        with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
+            assert feature.check_value(owner_id=1, default=100) == 100
+            fetch_fn.assert_not_called()
+            assert not hasattr(feature.__dict__, "_buckets")
+
 
 class TestFeatureExposures(TestCase):
     def test_exposure_created(self):

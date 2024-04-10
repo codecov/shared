@@ -140,11 +140,11 @@ class Feature:
         feature variants via Django Admin.
         """
 
-        if self.env_disable:
-            return default
-
         if hasattr(self, "env_override"):
             return self.env_override
+
+        if self.env_disable:
+            return default
 
         if self.refresh:
             self._fetch_and_set_from_db.cache_clear()
