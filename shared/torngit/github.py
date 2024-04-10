@@ -285,7 +285,7 @@ class Github(TorngitBaseAdapter):
                 repo_slug=self.slug,
                 loggable_token=self.loggable_token(token_to_use),
                 token=token_to_use,
-                body=body,
+                buddy=body,
             )
             url = self.api_url + url
 
@@ -713,7 +713,9 @@ class Github(TorngitBaseAdapter):
         )
         log.info(
             "REPO STUFF FROM QUERY",
-            extra=dict(names=res["data"]["viewer"]["repositories"]),
+            extra=dict(
+                names=res["data"]["viewer"]["repositories"], query=query, token=token
+            ),
         )
         return res["data"]["viewer"]["repositories"]["totalCount"]
 
