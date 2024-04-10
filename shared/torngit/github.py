@@ -42,8 +42,14 @@ class GitHubGraphQLQueries(object):
         REPO_TOTALCOUNT="""
 query {
     viewer {
-        repositories {
+        repositories(
+            affiliations:[OWNER, ORGANIZATION_MEMBER, COLLABORATOR]
+            ownerAffiliations:[OWNER, ORGANIZATION_MEMBER, COLLABORATOR]
+        ) {
             totalCount
+            nodes {
+                name
+            }
         }
     }
 }
@@ -701,6 +707,10 @@ class Github(TorngitBaseAdapter):
             body=dict(query=self.graphql.get("REPO_TOTALCOUNT")),
             token=token,
         )
+        log.info(
+            "REPO STUFF FROM QUERY",
+            extra=dict(names=res["data"]["viewer"]["repositories"]),
+        )
         return res["data"]["viewer"]["repositories"]["totalCount"]
 
     async def _get_owner_from_nodeid(self, client, token, owner_node_id: str):
@@ -1282,9 +1292,7 @@ class Github(TorngitBaseAdapter):
                     (
                         "\ndeleted file mode 100644"
                         if f["status"] == "removed"
-                        else "\nnew file mode 100644"
-                        if f["status"] == "added"
-                        else ""
+                        else "\nnew file mode 100644" if f["status"] == "added" else ""
                     ),
                     "--- "
                     + (
