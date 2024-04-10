@@ -892,9 +892,27 @@ class Github(TorngitBaseAdapter):
                     for page in range(1, pages + 1)
                 ]
 
-            for future in asyncio.as_completed(futures):
-                next_page = await future
-                yield next_page
+            async with self.get_client() as client:
+                page = 0
+                while True:
+                    page += 1
+
+                    log.info(
+                        "Actual Pages",
+                        extra=dict(pages=pages),
+                    )
+                    repos = await self._fetch_page_of_repos(
+                        client, username, token, page=page
+                    )
+
+                    yield repos
+
+                    if len(repos) < 100:
+                        break
+
+            # for future in asyncio.as_completed(futures):
+            #     next_page = await future
+            #     yield next_page
 
     # GH App Installation
     async def get_gh_app_installation(self, installation_id: int) -> Dict:
