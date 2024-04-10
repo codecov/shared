@@ -899,10 +899,10 @@ class Github(TorngitBaseAdapter):
 
                     log.info(
                         "Actual Pages",
-                        extra=dict(pages=pages),
+                        extra=dict(page=page),
                     )
                     repos = await self._fetch_page_of_repos(
-                        client, username, token, page=page
+                        client, username, token, page=page, page_size=page_size
                     )
 
                     yield repos
