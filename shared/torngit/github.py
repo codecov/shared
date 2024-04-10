@@ -43,6 +43,7 @@ class GitHubGraphQLQueries(object):
 query {
     viewer {
         repositories(
+            first: 100
             affiliations:[OWNER, ORGANIZATION_MEMBER, COLLABORATOR]
             ownerAffiliations:[OWNER, ORGANIZATION_MEMBER, COLLABORATOR]
         ) {
