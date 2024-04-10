@@ -701,11 +701,13 @@ class Github(TorngitBaseAdapter):
         return self._process_repository_page(repos)
 
     async def _fetch_number_of_repos(self, client, token):
+        query = self.graphql.prepare("REPO_TOTALCOUNT", variables={})
+
         res = await self.api(
             client,
             "post",
             "/graphql",
-            body=dict(query=self.graphql.get("REPO_TOTALCOUNT")),
+            body=query,
             token=token,
         )
         log.info(
