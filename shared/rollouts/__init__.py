@@ -36,9 +36,10 @@ class Feature:
     every 5 minutes, meaning it can take up to 5 minutes for changes to show up here.
 
     If you manage your own deployment, you can disable or override feature checks with environment variables:
-    - If `CODECOV__FEATURE__DISABLE` is set, checks will be skipped and default values will be returned every time
     - If `CODECOV__FEATURE__{name.upper()}` is set, its value will be deserialized as JSON and returned for the
       `Feature` with that name
+    - If `CODECOV__FEATURE__DISABLE` is set, checks will be skipped and default values will be returned every time
+      for every feature except those with overrides set via `CODECOV__FEATURE__{name.upper()}` env vars
 
     If you instantiate a `Feature` instance with a new name, the associated database entry
     will be created for you. Otherwise, the existing database entry will be used to populate
