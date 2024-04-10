@@ -885,7 +885,7 @@ class Github(TorngitBaseAdapter):
         url = f"/app/installations/{installation_id}"
         headers = {
             "Accept": "application/vnd.github+json",
-            "Authorization": f"Bearer {self.token['key']}",
+            "Authorization": f"Bearer {jwt_token}",
             "X-GitHub-Api-Version": "2022-11-28",
         }
 
