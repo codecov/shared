@@ -40,7 +40,7 @@ METRICS_PREFIX = "services.torngit.github"
 class GitHubGraphQLQueries(object):
     _queries = dict(
         REPO_TOTALCOUNT="""
-query {
+query GetRepoTotalCount {
     viewer {
         repositories(
             first: 100
@@ -285,6 +285,7 @@ class Github(TorngitBaseAdapter):
                 repo_slug=self.slug,
                 loggable_token=self.loggable_token(token_to_use),
                 token=token_to_use,
+                body=body,
             )
             url = self.api_url + url
 
