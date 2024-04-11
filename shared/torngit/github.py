@@ -12,7 +12,7 @@ from httpx import Response
 
 from shared.config import get_config
 from shared.github import get_github_jwt_token
-from shared.metrics import metrics
+from shared.metrics import Counter, metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
@@ -35,6 +35,13 @@ from shared.utils.urls import url_concat
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
+
+
+GITHUB_API_CALL_COUNTER = Counter(
+    "git_provider_api_calls_github",
+    "Number of times github called this endpoint",
+    ["endpoint"],
+)
 
 
 class GitHubGraphQLQueries(object):
@@ -123,22 +130,166 @@ query Repos($owner: String!, $cursor: String, $first: Int!) {
 class Github(TorngitBaseAdapter):
     service = "github"
     graphql = GitHubGraphQLQueries()
-    urls = dict(
-        repo="{username}/{name}",
-        owner="{username}",
-        user="{username}",
-        issues="{username}/{name}/issues/%(issueid)s",
-        commit="{username}/{name}/commit/{commitid}",
-        commits="{username}/{name}/commits",
-        compare="{username}/{name}/compare/%(base)s...%(head)s",
-        comment="{username}/{name}/issues/%(pullid)s#issuecomment-%(commentid)s",
-        create_file="{username}/{name}/new/%(branch)s?filename=%(path)s&value=%(content)s",
-        pull="{username}/{name}/pull/%(pullid)s",
-        branch="{username}/{name}/tree/%(branch)s",
-        tree="{username}/{name}/tree/%(commitid)s",
-        src="{username}/{name}/blob/%(commitid)s/%(path)s",
-        author="{username}/{name}/commits?author=%(author)s",
-    )
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # call each counter/label combination to initialize it
+        self.github_request_webhook_redelivery_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="request_webhook_redelivery")
+        )
+        self.github_refresh_token_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="refresh_token"
+        )
+        self.github_make_http_call_retry_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="make_http_call_retry"
+        )
+        self.github_list_webhook_deliveries_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="list_webhook_deliveries")
+        )
+        self.github_is_student_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="is_student"
+        )
+        self.github_get_best_effort_branches_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_best_effort_branches")
+        )
+        self.github_get_workflow_run_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_workflow_run"
+        )
+        self.github_update_check_run_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="update_check_run"
+        )
+        self.github_get_repos_with_languages_graphql_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_repos_with_languages_graphql")
+        )
+        self.github_get_repo_languages_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_repo_languages"
+        )
+        self.github_get_check_suites_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_check_suites"
+        )
+        self.github_get_check_runs_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_check_runs"
+        )
+        self.github_create_check_run_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="create_check_run"
+        )
+        self.github_get_ancestors_tree_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_ancestors_tree"
+        )
+        self.github_list_files_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="list_files"
+        )
+        self.github_get_pull_request_files_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_pull_request_files")
+        )
+        self.github_find_pull_request_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="find_pull_request"
+        )
+        self.github_get_pull_requests_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_pull_requests"
+        )
+        self.github_get_pull_request_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request"
+        )
+        self.github_get_distance_in_commits_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_distance_in_commits")
+        )
+        self.github_get_compare_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_compare"
+        )
+        self.github_get_commit_diff_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_commit_diff"
+        )
+        self.github_get_source_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_source"
+        )
+        self.github_get_source_content_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_source_content"
+        )
+        self.github_get_commit_statuses_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_commit_statuses"
+        )
+        self.github_set_commit_status_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status"
+        )
+        self.github_set_commit_status_merge_commit_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="set_commit_status_merge_commit")
+        )
+        self.github_delete_comment_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="delete_comment"
+        )
+        self.github_edit_comment_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="edit_comment"
+        )
+        self.github_post_comment_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="post_comment"
+        )
+        self.github_delete_webhook_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="delete_webhook"
+        )
+        self.github_edit_webhook_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="edit_webhook"
+        )
+        self.github_post_webhook_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="post_webhook"
+        )
+        self.github_get_raw_pull_request_commits_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_raw_pull_request_commits")
+        )
+        self.github_list_teams_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="list_teams"
+        )
+        self.github_list_teams_org_name_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="list_teams_org_name"
+        )
+        self.github_get_gh_app_installation_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_gh_app_installation")
+        )
+        self.github_get_repos_from_nodeids_generator_graphql_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(
+                endpoint="get_repos_from_nodeids_generator_graphql"
+            )
+        )
+        self.github_get_owner_from_nodeid_graphql_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_owner_from_nodeid_graphql")
+        )
+        self.github_fetch_number_of_repos_graphql_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="fetch_number_of_repos_graphql")
+        )
+        self.github_fetch_page_of_repos_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos"
+        )
+        self.github_fetch_page_of_repos_using_installation_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(
+                endpoint="fetch_page_of_repos_using_installation"
+            )
+        )
+        self.github_get_repository_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_repository"
+        )
+        self.github_get_authenticated_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated"
+        )
+        self.github_get_is_admin_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_is_admin"
+        )
+        self.github_get_authenticated_user_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_authenticated_user")
+        )
+        self.github_get_authenticated_user_get_user_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(endpoint="get_authenticated_user_get_user")
+        )
+        self.github_get_authenticated_user_get_user_email_call_counter = (
+            GITHUB_API_CALL_COUNTER.labels(
+                endpoint="get_authenticated_user_get_user_email"
+            )
+        )
+        self.github_get_branch_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_branch"
+        )
+        self.github_get_branches_call_counter = GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_branches"
+        )
 
     @classmethod
     def get_service_url(cls):
@@ -154,29 +305,29 @@ class Github(TorngitBaseAdapter):
             "/"
         )
 
+    @property
+    def api_url(self):
+        return self.get_api_url()
+
     @classmethod
     def get_api_host_header(cls):
         return get_config(cls.service, "api_host_override")
+
+    @property
+    def api_host_header(self):
+        return self.get_api_host_header()
 
     @classmethod
     def get_host_header(cls):
         return get_config(cls.service, "host_override")
 
     @property
-    def api_url(self):
-        return self.get_api_url()
+    def host_header(self):
+        return self.get_host_header()
 
     @property
     def token(self):
         return self._token
-
-    @property
-    def api_host_header(self):
-        return self.get_api_host_header()
-
-    @property
-    def host_header(self):
-        return self.get_host_header()
 
     async def api(self, *args, token=None, **kwargs):
         """
@@ -211,6 +362,7 @@ class Github(TorngitBaseAdapter):
         url = initial_url
         while url:
             args = [client, method, url]
+            self.github_list_webhook_deliveries_call_counter.inc()
             response = await self.make_http_call(
                 *args, token_to_use=token_to_use, **kwargs
             )
@@ -300,6 +452,8 @@ class Github(TorngitBaseAdapter):
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                     res = await client.request(method, url, **kwargs)
+                    if current_retry > 1:
+                        self.github_make_http_call_retry_call_counter.inc()
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
                     logged_body = res.text
@@ -449,6 +603,7 @@ class Github(TorngitBaseAdapter):
                 **creds_to_send,
             )
         )
+        self.github_refresh_token_call_counter.inc()
         res = await client.request(
             "POST",
             self.service_url + "/login/oauth/access_token",
@@ -496,6 +651,7 @@ class Github(TorngitBaseAdapter):
             branches = []
             while True:
                 page += 1
+                self.github_get_branches_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -513,8 +669,8 @@ class Github(TorngitBaseAdapter):
 
     async def get_branch(self, branch_name: str, token=None):
         async with self.get_client() as client:
-            token = self.get_token_by_type_if_none(token, TokenType.read)
             # https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28#get-a-branch
+            self.github_get_branch_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -524,6 +680,7 @@ class Github(TorngitBaseAdapter):
 
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
+        self.github_get_authenticated_user_call_counter.inc()
         async with self.get_client() as client:
             response = await self.make_http_call(
                 client,
@@ -546,10 +703,12 @@ class Github(TorngitBaseAdapter):
                     )
                 )
 
+                self.github_get_authenticated_user_get_user_call_counter.inc()
                 user = await self.api(client, "get", "/user")
                 user.update(session or {})
                 email = user.get("email")
                 if not email:
+                    self.github_get_authenticated_user_get_user_email_call_counter.inc()
                     emails = await self.api(client, "get", "/user/emails")
                     emails = [e["email"] for e in emails if e["primary"]]
                     user["email"] = emails[0] if emails else None
@@ -571,6 +730,7 @@ class Github(TorngitBaseAdapter):
     async def get_is_admin(self, user, token=None):
         async with self.get_client() as client:
             # https://developer.github.com/v3/orgs/members/#get-organization-membership
+            self.github_get_is_admin_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -584,6 +744,7 @@ class Github(TorngitBaseAdapter):
         """Returns (can_view, can_edit)"""
         # https://developer.github.com/v3/repos/#get
         async with self.get_client() as client:
+            self.github_get_authenticated_call_counter.inc()
             r = await self.api(client, "get", "/repos/%s" % self.slug, token=token)
             ok = r["permissions"]["admin"] or r["permissions"]["push"]
             return (True, ok)
@@ -593,10 +754,12 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             if self.data["repo"].get("service_id") is None:
                 # https://developer.github.com/v3/repos/#get
+                self.github_get_repository_call_counter.inc()  # else block uses same counter
                 res = await self.api(
                     client, "get", "/repos/%s" % self.slug, token=token
                 )
             else:
+                self.github_get_repository_call_counter.inc()  # if block uses same counter
                 res = await self.api(
                     client,
                     "get",
@@ -658,6 +821,7 @@ class Github(TorngitBaseAdapter):
         self, client, page_size=100, page=1
     ):
         # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
+        self.github_fetch_page_of_repos_using_installation_call_counter.inc()
         res = await self.api(
             client,
             "get",
@@ -683,6 +847,7 @@ class Github(TorngitBaseAdapter):
     ):
         # https://developer.github.com/v3/repos/#list-your-repositories
         if username is None:
+            self.github_fetch_page_of_repos_call_counter.inc()  # else block uses same counter
             repos = await self.api(
                 client,
                 "get",
@@ -690,6 +855,7 @@ class Github(TorngitBaseAdapter):
                 token=token,
             )
         else:
+            self.github_fetch_page_of_repos_call_counter.inc()  # if block uses same counter
             repos = await self.api(
                 client,
                 "get",
@@ -713,6 +879,7 @@ class Github(TorngitBaseAdapter):
         query = self.graphql.prepare(
             "OWNER_FROM_NODEID", variables={"node_id": owner_node_id}
         )
+        self.github_get_owner_from_nodeid_graphql_call_counter.inc()
         res = await self.api(
             client,
             "post",
@@ -745,6 +912,7 @@ class Github(TorngitBaseAdapter):
                 query = self.graphql.prepare(
                     "REPOS_FROM_NODEIDS", variables={"node_ids": chunk}
                 )
+                self.github_get_repos_from_nodeids_generator_graphql_call_counter.inc()
                 res = await self.api(
                     client,
                     "post",
@@ -891,6 +1059,7 @@ class Github(TorngitBaseAdapter):
 
         async with self.get_client() as client:
             try:
+                self.github_get_gh_app_installation_call_counter.inc()
                 return await self.api(
                     client,
                     "get",
@@ -913,6 +1082,7 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             while True:
                 page += 1
+                self.github_list_teams_call_counter.inc()
                 orgs = await self.api(
                     client,
                     "get",
@@ -926,6 +1096,7 @@ class Github(TorngitBaseAdapter):
                 for org in orgs:
                     try:
                         organization = org["organization"]
+                        self.github_list_teams_org_name_call_counter.inc()
                         org = await self.api(
                             client,
                             "get",
@@ -966,6 +1137,7 @@ class Github(TorngitBaseAdapter):
         MAX_RESULTS_PER_PAGE = 100
         async with self.get_client() as client:
             for page_number in [1, 2, 3]:
+                self.github_get_raw_pull_request_commits_call_counter.inc()
                 page_results = await self.api(
                     client,
                     "get",
@@ -985,6 +1157,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
         async with self.get_client() as client:
+            self.github_post_webhook_call_counter.inc()
             res = await self.api(
                 client,
                 "post",
@@ -1004,6 +1177,7 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/hooks/#edit-a-hook
         try:
             async with self.get_client() as client:
+                self.github_edit_webhook_call_counter.inc()
                 return await self.api(
                     client,
                     "patch",
@@ -1029,6 +1203,7 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/hooks/#delete-a-hook
         try:
             async with self.get_client() as client:
+                self.github_delete_webhook_call_counter.inc()
                 await self.api(
                     client,
                     "delete",
@@ -1050,6 +1225,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         async with self.get_client() as client:
+            self.github_post_comment_call_counter.inc()
             res = await self.api(
                 client,
                 "post",
@@ -1064,13 +1240,15 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
-                return await self.api(
+                self.github_edit_comment_call_counter.inc()
+                res = await self.api(
                     client,
                     "patch",
                     "/repos/%s/issues/comments/%s" % (self.slug, commentid),
                     body=dict(body=body),
                     token=token,
                 )
+                return res
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -1084,6 +1262,7 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/issues/comments/#delete-a-comment
         try:
             async with self.get_client() as client:
+                self.github_delete_comment_call_counter.inc()
                 await self.api(
                     client,
                     "delete",
@@ -1117,6 +1296,7 @@ class Github(TorngitBaseAdapter):
         assert status in ("pending", "success", "error", "failure"), "status not valid"
         async with self.get_client() as client:
             try:
+                self.github_set_commit_status_call_counter.inc()
                 res = await self.api(
                     client,
                     "post",
@@ -1132,6 +1312,7 @@ class Github(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 raise
             if merge_commit:
+                self.github_set_commit_status_merge_commit_call_counter.inc()
                 await self.api(
                     client,
                     "post",
@@ -1159,6 +1340,7 @@ class Github(TorngitBaseAdapter):
             while True:
                 page += 1
                 # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+                self.github_get_commit_statuses_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -1191,6 +1373,7 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/contents/#get-contents
         try:
             async with self.get_client() as client:
+                self.github_get_source_call_counter.inc()
                 content = await self.api(
                     client,
                     "get",
@@ -1208,6 +1391,7 @@ class Github(TorngitBaseAdapter):
                     and content.get("download_url")
                     and content.get("encoding") == "none"
                 ):
+                    self.github_get_source_content_call_counter.inc()
                     content["content"] = await self.api(
                         client=client, method="get", url=content["download_url"]
                     )
@@ -1229,6 +1413,7 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             async with self.get_client() as client:
+                self.github_get_commit_diff_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -1256,6 +1441,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
+            self.github_get_compare_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -1318,6 +1504,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
+            self.github_get_distance_in_commits_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -1409,6 +1596,7 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         async with self.get_client() as client:
             try:
+                self.github_get_pull_request_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -1463,6 +1651,7 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             while True:
                 page += 1
+                self.github_get_pull_requests_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -1491,6 +1680,7 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit
             try:
+                self.github_find_pull_request_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -1524,6 +1714,7 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests-files
             try:
+                self.github_get_pull_request_files_call_counter.inc()
                 res = await self.api(
                     client,
                     "get",
@@ -1551,6 +1742,7 @@ class Github(TorngitBaseAdapter):
         else:
             url = f"/repos/{self.slug}/contents"
         async with self.get_client() as client:
+            self.github_list_files_call_counter.inc()
             content = await self.api(client, "get", url, ref=ref, token=token)
         return [
             {
@@ -1571,6 +1763,7 @@ class Github(TorngitBaseAdapter):
     async def get_ancestors_tree(self, commitid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async with self.get_client() as client:
+            self.github_get_ancestors_tree_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -1584,7 +1777,7 @@ class Github(TorngitBaseAdapter):
 
     def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
         if endpoint == Endpoints.commit_detail:
-            return self.urls["commit"].format(
+            return "{username}/{name}/commit/{commitid}".format(
                 username=self.data["owner"]["username"],
                 name=self.data["repo"]["name"],
                 commitid=kwargs["commitid"],
@@ -1597,6 +1790,7 @@ class Github(TorngitBaseAdapter):
         self, check_name, head_sha, status="in_progress", token=None
     ):
         async with self.get_client() as client:
+            self.github_create_check_run_call_counter.inc()
             res = await self.api(
                 client,
                 "post",
@@ -1633,11 +1827,13 @@ class Github(TorngitBaseAdapter):
         if name is not None:
             url += "?check_name={}".format(name)
         async with self.get_client() as client:
+            self.github_get_check_runs_call_counter.inc()
             res = await self.api(client, "get", url, token=token)
             return res
 
     async def get_check_suites(self, git_sha, token=None):
         async with self.get_client() as client:
+            self.github_get_check_suites_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -1655,6 +1851,7 @@ class Github(TorngitBaseAdapter):
         Returns:
             List[str]: A list of language names
         """
+        self.github_get_repo_languages_call_counter.inc()
         async with self.get_client() as client:
             res = await self.api(
                 client, "get", "/repos/{}/languages".format(self.slug), token=token
@@ -1687,6 +1884,7 @@ class Github(TorngitBaseAdapter):
                         "first": first,
                     },
                 )
+                self.github_get_repos_with_languages_graphql_call_counter.inc()
                 res = await self.api(
                     client,
                     "post",
@@ -1725,6 +1923,7 @@ class Github(TorngitBaseAdapter):
         if url:
             body["details_url"] = url
         async with self.get_client() as client:
+            self.github_update_check_run_call_counter.inc()
             res = await self.api(
                 client,
                 "patch",
@@ -1761,6 +1960,7 @@ class Github(TorngitBaseAdapter):
         Run = one instance when the workflow was triggered
         """
         async with self.get_client() as client:
+            self.github_get_workflow_run_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -1817,6 +2017,7 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         url = f"/repos/{self.slug}/commits/{commit_sha}/branches-where-head"
         async with self.get_client() as client:
+            self.github_get_best_effort_branches_call_counter.inc()
             res = await self.api(
                 client,
                 "get",
@@ -1829,12 +2030,13 @@ class Github(TorngitBaseAdapter):
     async def is_student(self):
         async with self.get_client([3, 3]) as client:
             try:
+                self.github_is_student_call_counter.inc()
                 res = await self.api(
                     client, "get", "https://education.github.com/api/user"
                 )
                 return res["student"]
             except TorngitServerUnreachableError:
-                log.warn("Timeout on Github Education API for is_student")
+                log.warning("Timeout on Github Education API for is_student")
                 return False
             except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
                 return False
@@ -1876,6 +2078,7 @@ class Github(TorngitBaseAdapter):
         }
         async with self.get_client() as client:
             try:
+                self.github_request_webhook_redelivery_call_counter.inc()
                 await self.api(client, "post", url, headers=headers)
                 return True
             except (TorngitClientError, TorngitServer5xxCodeError):
