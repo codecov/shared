@@ -5,6 +5,7 @@ from psqlextra.partitioning import (
     PostgresTimePartitionSize,
 )
 from psqlextra.partitioning.config import PostgresPartitioningConfig
+
 from shared.django_apps.user_measurements.models import UserMeasurement
 
 # Overlapping partitions will cause errors - https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE -> "create partitions"
