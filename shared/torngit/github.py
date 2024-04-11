@@ -870,7 +870,9 @@ class Github(TorngitBaseAdapter):
                         client, page=page
                     )
                     if using_installation
-                    else self._fetch_page_of_repos(client, username, token, page=page)
+                    else await self._fetch_page_of_repos(
+                        client, username, token, page=page
+                    )
                 )
 
                 log.info(
