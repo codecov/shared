@@ -861,17 +861,17 @@ class Github(TorngitBaseAdapter):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async with self.get_client() as client:
-            fn_to_use = (
-                self._fetch_page_of_repos_using_installation(client, page=page)
-                if using_installation
-                else self._fetch_page_of_repos(client, username, token, page=page)
-            )
-
             page = 0
             while True:
                 page += 1
 
-                repos = await fn_to_use
+                repos = (
+                    await self._fetch_page_of_repos_using_installation(
+                        client, page=page
+                    )
+                    if using_installation
+                    else self._fetch_page_of_repos(client, username, token, page=page)
+                )
 
                 log.info(
                     "Found a page",
