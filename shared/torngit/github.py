@@ -39,18 +39,6 @@ METRICS_PREFIX = "services.torngit.github"
 
 class GitHubGraphQLQueries(object):
     _queries = dict(
-        REPO_TOTALCOUNT="""
-query {
-    viewer {
-        repositories(
-            ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
-            affiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
-        ) {
-            totalCount
-        }
-    }
-}
-""",
         REPOS_FROM_NODEIDS="""
 query GetReposFromNodeIds($node_ids: [ID!]!) {
     nodes(ids: $node_ids) {
@@ -640,7 +628,7 @@ class Github(TorngitBaseAdapter):
         return list(map(process, page))
 
     async def _fetch_page_of_repos_using_installation(
-        self, client, page_size=100, page=0
+        self, client, page_size=100, page=1
     ):
         # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
         res = await self.api(
@@ -664,7 +652,7 @@ class Github(TorngitBaseAdapter):
         return self._process_repository_page(repos)
 
     async def _fetch_page_of_repos(
-        self, client, username, token, page_size=100, page=0
+        self, client, username, token, page_size=100, page=1
     ):
         # https://developer.github.com/v3/repos/#list-your-repositories
         if username is None:
@@ -693,16 +681,6 @@ class Github(TorngitBaseAdapter):
         )
 
         return self._process_repository_page(repos)
-
-    async def _fetch_number_of_repos(self, client, token):
-        res = await self.api(
-            client,
-            "post",
-            "/graphql",
-            body=dict(query=self.graphql.get("REPO_TOTALCOUNT")),
-            token=token,
-        )
-        return res["data"]["viewer"]["repositories"]["totalCount"]
 
     async def _get_owner_from_nodeid(self, client, token, owner_node_id: str):
         query = self.graphql.prepare(
@@ -846,29 +824,24 @@ class Github(TorngitBaseAdapter):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async with self.get_client() as client:
-            repo_count = await self._fetch_number_of_repos(client, token)
-            page_size = 100
-            pages = repo_count // page_size
+            page = 0
+            while True:
+                page += 1
 
-            if repo_count % page_size > 0:
-                pages += 1
-
-            if using_installation:
-                futures = [
-                    self._fetch_page_of_repos_using_installation(client, page=page)
-                    for page in range(1, pages + 1)
-                ]
-            else:
-                futures = [
-                    self._fetch_page_of_repos(
-                        client, token=token, username=username, page=page
+                repos = (
+                    await self._fetch_page_of_repos_using_installation(
+                        client, page=page
                     )
-                    for page in range(1, pages + 1)
-                ]
+                    if using_installation
+                    else await self._fetch_page_of_repos(
+                        client, username, token, page=page
+                    )
+                )
 
-            for future in asyncio.as_completed(futures):
-                next_page = await future
-                yield next_page
+                yield repos
+
+                if len(repos) < 100:
+                    break
 
     # GH App Installation
     async def get_gh_app_installation(self, installation_id: int) -> Dict:
@@ -1272,9 +1245,7 @@ class Github(TorngitBaseAdapter):
                     (
                         "\ndeleted file mode 100644"
                         if f["status"] == "removed"
-                        else "\nnew file mode 100644"
-                        if f["status"] == "added"
-                        else ""
+                        else "\nnew file mode 100644" if f["status"] == "added" else ""
                     ),
                     "--- "
                     + (
