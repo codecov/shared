@@ -43,6 +43,15 @@ GITHUB_API_CALL_COUNTER = Counter(
     ["endpoint"],
 )
 
+GITHUB_API_ENDPOINTS = {
+    "test_2": GITHUB_API_CALL_COUNTER.labels(endpoint="test_2"),
+    "test_4": GITHUB_API_CALL_COUNTER.labels(endpoint="test_4"),
+}
+
+GITHUB_API_CALL_COUNTER.labels(endpoint="test_3")
+GITHUB_API_CALL_COUNTER.labels(endpoint="test_3").inc()
+GITHUB_API_ENDPOINTS["test_4"].inc()
+
 
 class GitHubGraphQLQueries(object):
     _queries = dict(
@@ -146,6 +155,7 @@ class Github(TorngitBaseAdapter):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # call each counter/label combination to initialize it
+        GITHUB_API_CALL_COUNTER.labels(endpoint="test_1")
         self.github_request_webhook_redelivery_call_counter = (
             GITHUB_API_CALL_COUNTER.labels(endpoint="request_webhook_redelivery")
         )
