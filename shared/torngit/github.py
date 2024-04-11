@@ -861,58 +861,27 @@ class Github(TorngitBaseAdapter):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async with self.get_client() as client:
-            repo_count = await self._fetch_number_of_repos(client, token)
-            page_size = 10
-            pages = repo_count // page_size
-
-            if repo_count % page_size > 0:
-                pages += 1
-
-            log.info(
-                "NUM PAGES",
-                extra=dict(pages=pages, repo_count=repo_count, page_size=page_size),
+            fn_to_use = (
+                self._fetch_page_of_repos_using_installation(client, page=page)
+                if using_installation
+                else self._fetch_page_of_repos(client, username, token, page=page)
             )
 
-            if using_installation:
-                futures = [
-                    self._fetch_page_of_repos_using_installation(
-                        client, page=page, page_size=page_size
-                    )
-                    for page in range(1, pages + 1)
-                ]
-            else:
-                futures = [
-                    self._fetch_page_of_repos(
-                        client,
-                        token=token,
-                        username=username,
-                        page=page,
-                        page_size=page_size,
-                    )
-                    for page in range(1, pages + 1)
-                ]
+            page = 0
+            while True:
+                page += 1
 
-            async with self.get_client() as client:
-                page = 0
-                while True:
-                    page += 1
+                repos = await fn_to_use
 
-                    log.info(
-                        "Actual Pages",
-                        extra=dict(page=page),
-                    )
-                    repos = await self._fetch_page_of_repos(
-                        client, username, token, page=page, page_size=page_size
-                    )
+                log.info(
+                    "Found a page",
+                    extra=dict(page=page, repos=repos),
+                )
 
-                    yield repos
+                yield repos
 
-                    if len(repos) < 100:
-                        break
-
-            # for future in asyncio.as_completed(futures):
-            #     next_page = await future
-            #     yield next_page
+                if len(repos) < 100:
+                    break
 
     # GH App Installation
     async def get_gh_app_installation(self, installation_id: int) -> Dict:
