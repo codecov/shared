@@ -11,7 +11,7 @@ class UploadState(CodecovDatabaseEnum):
     # not used right now, but will be when parallel upload procesing is rolled out. The
     # purpose of this is to signify a `UploadProcessor` task has ran for an upload, but
     # has not quite fully merged into the final report in `UploadFinisher` task
-    PARALLEL_PROCESSED = (6,)
+    # PARALLEL_PROCESSED = (6,)
 
     def __init__(self, db_id):
         self.db_id = db_id
