@@ -1,4 +1,5 @@
 import pytest
+from prometheus_client import REGISTRY
 
 from shared.github import InvalidInstallationError, get_github_integration_token
 
@@ -23,6 +24,10 @@ C/tY+lZIEO1Gg/FxSMB+hwwhwfSuE3WohZfEcSy+R48=
 
 class TestGithubSpecificLogic(object):
     def test_get_github_integration_token_enterprise(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github_enterprise"
         mock_configuration._params[service] = {"url": "http://legit-github"}
         integration_id = 1
@@ -38,10 +43,19 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 0
 
     def test_get_github_integration_token_enterprise_host_override(
         self, mocker, mock_configuration
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github_enterprise"
         mock_configuration._params[service] = {
             "url": "https://legit-github",
@@ -61,8 +75,17 @@ class TestGithubSpecificLogic(object):
                 "Host": "some-other-github.com",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 0
 
     def test_get_github_integration_token_production(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
         integration_id = 1
@@ -78,10 +101,19 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
 
     def test_get_github_integration_token_production_host_override(
         self, mocker, mock_configuration
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         api_url = "https://legit-github"
         mock_configuration._params["github"] = {
@@ -102,8 +134,17 @@ class TestGithubSpecificLogic(object):
                 "Host": "api.github.com",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
 
     def test_get_github_integration_token_not_found(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
         integration_id = 1
@@ -120,10 +161,19 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
 
     def test_get_github_integration_token_unauthorized(
         self, mocker, mock_configuration
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
         integration_id = 1
@@ -144,3 +194,8 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
