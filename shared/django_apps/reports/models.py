@@ -301,6 +301,13 @@ class TestResultReportTotals(BaseCodecovModel):
     passed = models.IntegerField()
     skipped = models.IntegerField()
     failed = models.IntegerField()
+    
+    class TestResultsProcessingError(models.Choices):
+        NO_SUCCESS = "no_success"
+
+    error = models.CharField(
+        null=True, max_length=100, choices=TestResultsProcessingError.choices
+    )
 
     report = models.OneToOneField(CommitReport, on_delete=models.CASCADE)
 
