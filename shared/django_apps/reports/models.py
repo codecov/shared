@@ -282,6 +282,12 @@ class TestInstance(BaseCodecovModel):
         ERROR = "error"
         PASS = "pass"
 
+    class FlakeSymptomType(models.TextChoices):
+        FAILED_IN_DEFAULT_BRANCH = "failed_in_default_branch"
+        CONSECUTIVE_DIFF_OUTCOMES = "consecutive_diff_outcomes"
+        UNRELATED_MATCHING_FAILURES = "unrelated_matching_failures"
+        
+    flaky_status = models.CharField(null=True, max_length=100, choices=FlakeSymptomType.choices)
     duration_seconds = models.FloatField()
     outcome = models.CharField(max_length=100, choices=Outcome.choices)
     upload = models.ForeignKey(
@@ -302,7 +308,7 @@ class TestResultReportTotals(BaseCodecovModel):
     skipped = models.IntegerField()
     failed = models.IntegerField()
     
-    class TestResultsProcessingError(models.Choices):
+    class TestResultsProcessingError(models.TextChoices):
         NO_SUCCESS = "no_success"
 
     error = models.CharField(
