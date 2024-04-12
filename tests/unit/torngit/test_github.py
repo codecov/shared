@@ -971,6 +971,47 @@ class TestUnitGithub(object):
         assert mocked_response.call_count == 1
 
     @pytest.mark.asyncio
+    async def test_update_check_run_url_fallback(self, valid_handler):
+        url = "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"
+        valid_handler.data.update({"fallback_tokens": ["fallback_token"]})
+        with respx.mock:
+            mocked_response = respx.patch(
+                "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
+                json={
+                    "conclusion": "success",
+                    "status": "completed",
+                    "output": None,
+                    "details_url": "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
+                },
+                headers__contains={"Authorization": "token some_key"},
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=429,
+                    headers={"X-RateLimit-Remaining": "0"},
+                )
+            )
+            mocked_response_fallback = respx.patch(
+                url="https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
+                json={
+                    "conclusion": "success",
+                    "status": "completed",
+                    "output": None,
+                    "details_url": "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr",
+                },
+                headers__contains={"Authorization": "token fallback_token"},
+            ).mock(
+                return_value=httpx.Response(
+                    status_code=200,
+                    # response doesn't matter here
+                    json={},
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            )
+            res = await valid_handler.update_check_run(1256232357, "success", url=url)
+        assert mocked_response.call_count == 1
+        assert mocked_response_fallback.call_count == 1
+
+    @pytest.mark.asyncio
     async def test_get_general_exception_pickle(self, valid_handler, mocker):
         mock_refresh = mocker.patch.object(Github, "refresh_token")
         valid_handler._on_token_refresh = token_refresh_fake_callback
@@ -1346,7 +1387,7 @@ class TestUnitGithub(object):
         valid_handler._token = old_token
 
     @pytest.mark.asyncio
-    async def test_gihub_double_refresh(self, mocker, valid_handler):
+    async def test_github_double_refresh(self, mocker, valid_handler):
         def side_effect(request, *args, **kwargs):
             url_parts = urlparse(str(request.url))
             query = url_parts.query
