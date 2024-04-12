@@ -11,6 +11,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+    tty: true
     depends_on:
       - postgres
       - timescale
@@ -18,9 +19,6 @@ services:
     volumes:
       - ./shared/:/app/shared
       - ./tests/:/app/tests
-    command:
-      - sleep
-      - "86400" # so the container doesn't exit
 
   postgres:
     image: postgres:14.4-alpine
