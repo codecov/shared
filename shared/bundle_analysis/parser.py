@@ -69,20 +69,23 @@ class Parser:
                 for event in ijson.parse(f):
                     self._parse_event(event)
 
-                insert_asset = Asset.__table__.insert().values(
-                    self.asset_list
-                )
-                self.db_session.execute(insert_asset)
+                if self.asset_list:
+                    insert_asset = Asset.__table__.insert().values(
+                        self.asset_list
+                    )
+                    self.db_session.execute(insert_asset)
 
-                insert_chunks = Chunk.__table__.insert().values(
-                    self.chunk_list
-                )
-                self.db_session.execute(insert_chunks)
+                if self.chunk_list:
+                    insert_chunks = Chunk.__table__.insert().values(
+                        self.chunk_list
+                    )
+                    self.db_session.execute(insert_chunks)
                 
-                insert_modules = Module.__table__.insert().values(
-                    self.module_list
-                )
-                self.db_session.execute(insert_modules)
+                if self.module_list:
+                    insert_modules = Module.__table__.insert().values(
+                        self.module_list
+                    )
+                    self.db_session.execute(insert_modules)
 
                 self.db_session.flush()
 
