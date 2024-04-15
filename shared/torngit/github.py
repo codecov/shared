@@ -239,6 +239,17 @@ class Github(TorngitBaseAdapter):
                 )
                 return res.text
 
+    def _get_next_fallback_token(self, fallback_idx: int) -> Optional[str]:
+        """If additional fallback tokens were passed to this instance of GitHub
+        select the next token in line to retry the previous request.
+        """
+        fallback_tokens: List[str] = self.data.get("fallback_tokens", None)
+        if fallback_tokens is None:
+            # No tokens to fallback on
+            return None
+        if fallback_idx < len(fallback_tokens):
+            return fallback_tokens[fallback_idx]
+
     async def make_http_call(
         self,
         client,
@@ -283,7 +294,9 @@ class Github(TorngitBaseAdapter):
         )
         max_number_retries = 3
         tried_refresh = False
+        fallback_idx = 0
         for current_retry in range(1, max_number_retries + 1):
+            retry_reason = "retriable_status"
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                     res = await client.request(method, url, **kwargs)
@@ -334,10 +347,12 @@ class Github(TorngitBaseAdapter):
                 if token is not None:
                     # Assuming we could retry and the retry was successful
                     # Update headers and retry
-                    _headers["Authorization"] = "token %s" % token["key"]
+                    prefix, _ = _headers["Authorization"].split(" ")
+                    _headers["Authorization"] = f"{prefix} {token['key']}"
                     await self._on_token_refresh(token)
                     # Skip the rest of the validations and try again.
                     # It does consume one of the retries
+                    retry_reason = "token_was_refreshed"
                     continue
             if (
                 not statuses_to_retry
@@ -355,13 +370,23 @@ class Github(TorngitBaseAdapter):
                 elif (res.status_code == 403 or res.status_code == 429) and int(
                     res.headers.get("X-RateLimit-Remaining", -1)
                 ) == 0:
-                    message = f"Github API rate limit error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
-                    raise TorngitRateLimitError(
-                        response_data=res.text,
-                        message=message,
-                        reset=res.headers.get("X-RateLimit-Reset"),
-                    )
+                    fallback_token = self._get_next_fallback_token(fallback_idx)
+                    if fallback_token:
+                        fallback_idx += 1
+                        # Update header and try again
+                        # Consumes one of the retries
+                        prefix, _ = _headers["Authorization"].split(" ")
+                        _headers["Authorization"] = f"{prefix} {fallback_token}"
+                        retry_reason = "fallback_token_attempt"
+                        continue
+                    else:
+                        message = f"Github API rate limit error: {res.reason_phrase}"
+                        raise TorngitRateLimitError(
+                            response_data=res.text,
+                            message=message,
+                            reset=res.headers.get("X-RateLimit-Reset"),
+                        )
                 elif (
                     res.status_code == 403 or res.status_code == 429
                 ) and res.headers.get("Retry-After") is not None:
@@ -389,8 +414,10 @@ class Github(TorngitBaseAdapter):
                 return res
             else:
                 log.info(
-                    "Retrying due to retriable status",
-                    extra=dict(status=res.status_code, **log_dict),
+                    "Retrying request to GitHub",
+                    extra=dict(
+                        status=res.status_code, retry_reason=retry_reason, **log_dict
+                    ),
                 )
 
     async def refresh_token(
