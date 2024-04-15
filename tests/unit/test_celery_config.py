@@ -47,6 +47,7 @@ def test_celery_config():
         "app.tasks.sync_repos.SyncRepos",
         "app.tasks.sync_teams.SyncTeams",
         "app.tasks.synchronize.Synchronize",
+        "app.tasks.test_results.*",
         "app.tasks.timeseries.*",
         "app.tasks.upload.*",
         "app.tasks.verify_bot.VerifyBot",

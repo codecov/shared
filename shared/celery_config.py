@@ -35,6 +35,10 @@ test_results_processor_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.TestResultsProcessor"
 )
 
+test_results_finisher_task_name = (
+    f"app.tasks.{TaskConfigGroup.test_results.value}.TestResultsFinisherTask"
+)
+
 manual_upload_completion_trigger_task_name = (
     f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
 )
@@ -303,6 +307,15 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.upload.value,
+                "queue",
+                default=task_default_queue,
+            )
+        },
+        f"app.tasks.{TaskConfigGroup.test_results.value}.*": {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.test_results.value,
                 "queue",
                 default=task_default_queue,
             )
