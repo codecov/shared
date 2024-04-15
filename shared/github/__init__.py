@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 import jwt
 import requests
+from redis import Redis
 
 import shared.torngit as torngit
 from shared.config import get_config, load_file_from_path_at_config
@@ -125,3 +126,15 @@ def get_github_integration_token(
         return res_json["token"]
     else:
         return token
+
+
+def mark_installation_as_rate_limited(
+    redis_connection: Redis, installation_id: int, ttl_seconds: int
+) -> None:
+    redis_connection.set(
+        name=f"rate_limited_installations_{installation_id}", value=1, ex=ttl_seconds
+    )
+
+
+def is_installation_rate_limited(redis_connection: Redis, installation_id: int) -> bool:
+    return redis_connection.exists(f"rate_limited_installations_{installation_id}")
