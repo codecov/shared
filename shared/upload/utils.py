@@ -1,6 +1,6 @@
 from datetime import timedelta
-
 from enum import Enum
+
 from django.db.models import Q
 from django.utils import timezone
 
@@ -10,9 +10,10 @@ from shared.django_apps.reports.models import ReportSession, ReportType
 from shared.django_apps.user_measurements.models import UserMeasurement
 from shared.plan.service import PlanService
 
+
 class UploaderType(Enum):
-    LEGACY="legacy"
-    CLI="cli"
+    LEGACY = "legacy"
+    CLI = "cli"
 
 
 def query_monthly_coverage_measurements(plan_service: PlanService) -> int:
