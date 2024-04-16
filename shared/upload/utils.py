@@ -22,7 +22,7 @@ def query_monthly_coverage_measurements(plan_service: PlanService) -> int:
         owner=owner,
         private_repo=True,
         created_at__gte=timezone.now() - timedelta(days=30),
-        report_type="coverage",
+        report_type=ReportType.COVERAGE.value,
     )
     if (
         plan_service.trial_status == TrialStatus.EXPIRED.value
