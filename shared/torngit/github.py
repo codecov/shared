@@ -13,7 +13,11 @@ import httpx
 from httpx import Response
 
 from shared.config import get_config
-from shared.github import get_github_jwt_token, mark_installation_as_rate_limited
+from shared.github import (
+    get_github_integration_token,
+    get_github_jwt_token,
+    mark_installation_as_rate_limited,
+)
 from shared.metrics import Counter, metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import get_redis_connection, torngit_cache
@@ -31,7 +35,7 @@ from shared.torngit.exceptions import (
     TorngitUnauthorizedError,
 )
 from shared.torngit.status import Status
-from shared.typings.oauth_token_types import OauthConsumerToken, Token
+from shared.typings.oauth_token_types import GithubInstallationInfo, OauthConsumerToken
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -568,7 +572,9 @@ class Github(TorngitBaseAdapter):
         !side effect: Updates the self._token value
         !side effect: Consumes one of the fallback_tokens
         """
-        fallback_tokens: List[Token] = self.data.get("fallback_tokens", None)
+        fallback_tokens: List[GithubInstallationInfo] = self.data.get(
+            "fallback_tokens", None
+        )
         if fallback_tokens is None or fallback_tokens == []:
             # No tokens to fallback on
             return None
@@ -577,10 +583,15 @@ class Github(TorngitBaseAdapter):
             reset_timestamp=reset_timestamp, retry_in_seconds=retry_in_seconds
         )
         # ! side effect: consume one of the fallback tokens (makes it the token of this instance)
-        token_to_use = fallback_tokens.pop(0)
+        installation_info = fallback_tokens.pop(0)
+        # The function arg is 'integration_id'
+        installation_id = installation_info.pop("installation_id")
+        token_to_use = get_github_integration_token(
+            self.service, installation_id, **installation_info
+        )
         # ! side effect: update the token so subsequent requests won't fail
-        self._token = token_to_use
-        return token_to_use["key"]
+        self._token = dict(key=token_to_use, installation_id=installation_id)
+        return token_to_use
 
     async def make_http_call(
         self,

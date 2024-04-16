@@ -1080,6 +1080,10 @@ class TestUnitGithub(object):
         mocker.patch(
             "shared.torngit.github.get_redis_connection", return_value=mock_redis_conn
         )
+        mock_get_token = mocker.patch(
+            "shared.torngit.github.get_github_integration_token",
+            return_value="fallback_token",
+        )
 
         handler = Github(
             repo=dict(name="example-python"),
@@ -1091,7 +1095,9 @@ class TestUnitGithub(object):
                 key="client_id",
                 secret="client_secret",
             ),
-            fallback_tokens=[{"key": "fallback_token", "installation_id": 12342}],
+            fallback_tokens=[
+                {"installation_id": 12342, "app_id": 1200, "pem_path": "some_path"}
+            ],
         )
 
         url = "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"
@@ -1145,6 +1151,9 @@ class TestUnitGithub(object):
         # The installation from the original token (rate limited) is marked so
         mock_redis_conn.set.assert_called_with(
             name="rate_limited_installations_0", value=True, ex=300
+        )
+        mock_get_token.assert_called_with(
+            "github", 12342, app_id=1200, pem_path="some_path"
         )
         # The token in the GitHub instance is updated for subsequent requests
         assert handler._token == {
