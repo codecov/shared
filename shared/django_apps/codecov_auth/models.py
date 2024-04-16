@@ -520,6 +520,12 @@ class GithubAppInstallation(
             return False
         # The default app is configured in the installation YAML
         installation_default_app_id = get_config("github", "integration", "id")
+        if installation_default_app_id is None:
+            log.error(
+                "Can't find default app ID in the YAML. Assuming installation is configured to prevent the app from breaking itself.",
+                extra=dict(installation_id=self.id, installation_name=self.name),
+            )
+            return True
         return str(self.app_id) == str(installation_default_app_id)
 
     def repository_queryset(self) -> BaseManager[Repository]:
