@@ -12,6 +12,13 @@ INSTALLED_APPS = [
     "shared.django_apps.pg_telemetry",
     "shared.django_apps.ts_telemetry",
     "shared.django_apps.rollouts",
+    "shared.django_apps.user_measurements",
+    # Needed for makemigrations to work
+    "django.contrib.auth",
+    "django.contrib.messages",
+    # partitions
+    "psqlextra",
+    "django_prometheus",
     # API models
     "django.contrib.admin",
     "django.contrib.contenttypes",
@@ -21,10 +28,30 @@ INSTALLED_APPS = [
     "shared.django_apps.reports",
 ]
 
-MIDDLEWARE = []
+# Needed for makemigrations to work
+MIDDLEWARE = [
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+]
 
-TEMPLATES = []
-
+# Needed for makemigrations to work
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        },
+    }
+]
 
 TELEMETRY_VANILLA_DB = "default"
 TELEMETRY_TIMESCALE_DB = "timeseries"
@@ -41,7 +68,7 @@ TEST = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "psqlextra.backend",
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "password",
@@ -67,6 +94,12 @@ DATABASE_ROUTERS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = []
+
+# See https://django-postgres-extra.readthedocs.io/en/master/settings.html
+POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"
+
+# Allows to use the pgpartition command
+PSQLEXTRA_PARTITIONING_MANAGER = "user_measurements.partitioning.manager"
 
 
 # Internationalization

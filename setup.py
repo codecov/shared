@@ -50,6 +50,7 @@ setup(
         "codecov-ribs",
         "cachetools",
         "django-better-admin-arrayfield",
+        "django-postgres-extra>=2.0.8",
         # API Deps
         "django-prometheus",
         "python-redis-lock",
