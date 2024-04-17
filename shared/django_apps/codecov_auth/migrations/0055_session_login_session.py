@@ -3,8 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-from shared.django_apps.migration_utils import RiskyAddField
-
 
 class Migration(migrations.Migration):
     """
@@ -24,7 +22,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        RiskyAddField(
+        migrations.AddField(
             model_name="session",
             name="login_session",
             field=models.ForeignKey(
