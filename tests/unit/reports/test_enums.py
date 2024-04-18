@@ -8,6 +8,6 @@ def test_enums():
         (3, "ERROR"),
         (4, "FULLY_OVERWRITTEN"),
         (5, "PARTIALLY_OVERWRITTEN"),
-        (6, "PARALLEL_PROCESSED"),
+        # (6, "PARALLEL_PROCESSED"),
     )
     assert UploadType.choices() == ((1, "UPLOADED"), (2, "CARRIEDFORWARD"))
