@@ -595,7 +595,7 @@ class TestGithubAppInstallationModel(TransactionTestCase):
         )
 
 
-class TestGitguvAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
+class TestGitHubAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
     @pytest.fixture(autouse=True)
     def mock_no_default_app_id(self, mocker):
         mock_config_helper(mocker, configs={"github.integration.id": None})
