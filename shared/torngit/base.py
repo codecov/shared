@@ -50,33 +50,6 @@ class TorngitBaseAdapter(object):
         "xtend",
     )
 
-    def get_client(self, timeouts: List[int] = []) -> httpx.AsyncClient:
-        if timeouts:
-            timeout = httpx.Timeout(timeouts[1], connect=timeouts[0])
-        else:
-            timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
-        return httpx.AsyncClient(
-            verify=self.verify_ssl
-            if not isinstance(self.verify_ssl, bool)
-            else self.verify_ssl,
-            timeout=timeout,
-        )
-
-    def get_token_by_type(self, token_type: TokenType):
-        if self._token_type_mapping.get(token_type) is not None:
-            return self._token_type_mapping.get(token_type)
-        return self.token
-
-    def get_token_by_type_if_none(self, token: Optional[str], token_type: TokenType):
-        if token is not None:
-            return token
-        return self.get_token_by_type(token_type)
-
-    def _oauth_consumer_token(self):
-        if not self._oauth:
-            raise Exception("Oauth consumer token not present")
-        return self._oauth
-
     def __init__(
         self,
         oauth_consumer_token: OauthConsumerToken = None,
@@ -106,6 +79,33 @@ class TorngitBaseAdapter(object):
             self.data["owner"].get("ownerid"),
             self.data["repo"].get("repoid"),
         )
+
+    def get_client(self, timeouts: List[int] = []) -> httpx.AsyncClient:
+        if timeouts:
+            timeout = httpx.Timeout(timeouts[1], connect=timeouts[0])
+        else:
+            timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
+        return httpx.AsyncClient(
+            verify=self.verify_ssl
+            if not isinstance(self.verify_ssl, bool)
+            else self.verify_ssl,
+            timeout=timeout,
+        )
+
+    def get_token_by_type(self, token_type: TokenType):
+        if self._token_type_mapping.get(token_type) is not None:
+            return self._token_type_mapping.get(token_type)
+        return self.token
+
+    def get_token_by_type_if_none(self, token: Optional[str], token_type: TokenType):
+        if token is not None:
+            return token
+        return self.get_token_by_type(token_type)
+
+    def _oauth_consumer_token(self):
+        if not self._oauth:
+            raise Exception("Oauth consumer token not present")
+        return self._oauth
 
     def _validate_language(self, language):
         if language:

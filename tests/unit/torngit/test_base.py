@@ -1,5 +1,7 @@
 import textwrap
 
+import pytest
+
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 
 
@@ -39,6 +41,12 @@ class TestTorngitBaseAdapter(object):
         assert instance.get_token_by_type(TokenType.admin) == {"key": "admin"}
         assert instance.get_token_by_type(TokenType.comment) == {"key": "token"}
         assert instance.get_token_by_type(TokenType.status) == {"key": "token"}
+
+    def test_no_token(self):
+        instance = TorngitBaseAdapter()
+        with pytest.raises(Exception) as exp:
+            instance.token
+        assert str(exp.value) == "Oauth consumer token not present"
 
     def test_diff_to_json_no_newline(self):
         instance = TorngitBaseAdapter()

@@ -7,10 +7,10 @@ import httpx
 import pytest
 import respx
 from mock import MagicMock
+from prometheus_client import REGISTRY
 
 from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
-    TorngitCantRefreshTokenError,
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitMisconfiguredCredentials,
@@ -21,7 +21,7 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
-from shared.torngit.github import Github
+from shared.torngit.github import Github, count_and_get_url_template
 from shared.torngit.github import log as gh_log
 
 
@@ -63,7 +63,7 @@ def ghapp_handler():
 # to the tests that we want to see if Github refreshes the tokens
 # other tests won't retry to refresh (cause the handlers dont have callbacks by default)
 async def token_refresh_fake_callback(new_token: Dict) -> None:
-    print("Saving new token after refresh")
+    pass
 
 
 class TestUnitGithub(object):
@@ -193,11 +193,9 @@ class TestUnitGithub(object):
         assert res == "kowabunga"
         assert client.request.call_count == 1
         args, kwargs = client.request.call_args
-        print(args)
         assert len(args) == 2
         built_url = args[1]
         parsed_url = urlparse(built_url)
-        print(parsed_url)
         assert parsed_url.scheme == "https"
         assert parsed_url.netloc == "api.github.com"
         assert parsed_url.path == url
@@ -228,14 +226,11 @@ class TestUnitGithub(object):
         assert res == "kowabunga"
         assert client.request.call_count == 1
         args, kwargs = client.request.call_args
-        print(args)
-        print(kwargs)
         assert kwargs.get("headers") is not None
         assert kwargs.get("headers").get("Host") == "api.github.com"
         assert len(args) == 2
         built_url = args[1]
         parsed_url = urlparse(built_url)
-        print(parsed_url)
         assert parsed_url.scheme == "https"
         assert parsed_url.netloc == mock_host
         assert parsed_url.path == url
@@ -262,14 +257,11 @@ class TestUnitGithub(object):
         await valid_handler.make_http_call(client, method, url, **query_params)
         assert client.request.call_count == 1
         args, kwargs = client.request.call_args
-        print(args)
-        print(kwargs)
         assert kwargs.get("headers") is not None
         assert kwargs.get("headers").get("Host") == "github.com"
         assert len(args) == 2
         built_url = args[1]
         parsed_url = urlparse(built_url)
-        print(parsed_url)
         assert parsed_url.scheme == "https"
         assert parsed_url.netloc == mock_host
         assert parsed_url.path == "/random_url"
@@ -412,6 +404,10 @@ class TestUnitGithub(object):
 
     @pytest.mark.asyncio
     async def test_find_pull_request_success(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "find_pull_request"},
+        )
         handler = Github(
             repo=dict(name="repo_name"),
             owner=dict(username="username"),
@@ -481,9 +477,18 @@ class TestUnitGithub(object):
                     state="open",
                 ),
             )
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "find_pull_request"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_find_pr_by_pulls_failfast_if_no_commit(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "find_pull_request"},
+        )
         handler = Github(
             repo=dict(name="repo_name"),
             owner=dict(username="username"),
@@ -491,9 +496,18 @@ class TestUnitGithub(object):
         )
         res = await handler.find_pull_request(commit=None)
         assert res is None
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "find_pull_request"},
+        )
+        assert after - before == 0
 
     @pytest.mark.asyncio
     async def test_find_pr_by_pulls_failfast_if_no_slug(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "find_pull_request"},
+        )
         handler = Github(
             owner=dict(username="username"),
             token=dict(key="aaaaa"),
@@ -502,9 +516,18 @@ class TestUnitGithub(object):
         assert handler.slug is None
         res = await handler.find_pull_request(None, commit_sha, None)
         assert res is None
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "find_pull_request"},
+        )
+        assert after - before == 0
 
     @pytest.mark.asyncio
     async def test_find_pr_by_pulls_raise_exp_if_not_422(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "find_pull_request"},
+        )
         handler = Github(
             repo=dict(name="repo_name"),
             owner=dict(username="username"),
@@ -522,13 +545,22 @@ class TestUnitGithub(object):
                     headers={"Content-Type": "application/json; charset=utf-8"},
                 )
             )
-            client = handler.get_client()
             token = handler.get_token_by_type(TokenType.read)
             with pytest.raises(TorngitClientGeneralError):
                 await handler.find_pull_request(commit=commit_sha, token=token)
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "find_pull_request"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_distance_in_commits(self, mocker):
+
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_distance_in_commits"},
+        )
         handler = Github(
             repo=dict(name="repo_name"),
             owner=dict(username="username"),
@@ -566,9 +598,18 @@ class TestUnitGithub(object):
                 repos_default_branch, base_commit_sha
             )
             assert res == expected_result
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "get_distance_in_commits"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_null_distance_in_commits(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_distance_in_commits"},
+        )
         handler = Github(
             repo=dict(name="repo_name"),
             owner=dict(username="username"),
@@ -603,9 +644,17 @@ class TestUnitGithub(object):
                 repos_default_branch, base_commit_sha
             )
             assert res == expected_result
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "get_distance_in_commits"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_post_comment(self, respx_vcr, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "post_comment"}
+        )
         mocked_response = respx_vcr.post(
             url="https://api.github.com/repos/ThiagoCodecov/example-python/issues/1/comments",
             json={"body": "Hello world"},
@@ -682,9 +731,20 @@ class TestUnitGithub(object):
         res = await valid_handler.post_comment("1", "Hello world")
         assert res == expected_result
         assert mocked_response.called is True
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "post_comment"}
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_list_teams(self, valid_handler, respx_vcr):
+        before_first_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "list_teams"}
+        )
+        before_second_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_teams_org_name"},
+        )
         mocked_response = respx_vcr.get(
             url="https://api.github.com/user/memberships/orgs?state=active&page=1"
         ).respond(
@@ -867,9 +927,25 @@ class TestUnitGithub(object):
         res = await valid_handler.list_teams()
         assert res == expected_result
         assert mocked_response.called is True
+        after_first_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "list_teams"}
+        )
+        assert after_first_call - before_first_call == 1
+        after_second_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_teams_org_name"},
+        )
+        assert after_second_call - before_second_call == 2  # len(mocked_response[json]
 
     @pytest.mark.asyncio
     async def test_list_team_with_org_response_404(self, valid_handler, respx_vcr):
+        before_first_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "list_teams"}
+        )
+        before_second_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_teams_org_name"},
+        )
         mocked_response = respx_vcr.get(
             url="https://api.github.com/user/memberships/orgs?state=active&page=1"
         ).respond(
@@ -927,9 +1003,22 @@ class TestUnitGithub(object):
         res = await valid_handler.list_teams()
         assert res == []
         assert mocked_response.called is True
+        after_first_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "list_teams"}
+        )
+        assert after_first_call - before_first_call == 1
+        after_second_call = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_teams_org_name"},
+        )
+        assert after_second_call - before_second_call == 1  # len(mocked_response[json]
 
     @pytest.mark.asyncio
     async def test_update_check_run_no_url(self, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "update_check_run"},
+        )
         with respx.mock:
             mocked_response = respx.patch(
                 url="https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
@@ -946,9 +1035,18 @@ class TestUnitGithub(object):
             res = await valid_handler.update_check_run(1256232357, "success")
 
         assert mocked_response.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "update_check_run"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_update_check_run_url(self, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "update_check_run"},
+        )
         url = "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"
         with respx.mock:
             mocked_response = respx.patch(
@@ -969,6 +1067,11 @@ class TestUnitGithub(object):
             )
             res = await valid_handler.update_check_run(1256232357, "success", url=url)
         assert mocked_response.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "update_check_run"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_update_check_run_url_fallback(self, valid_handler):
@@ -1013,6 +1116,10 @@ class TestUnitGithub(object):
 
     @pytest.mark.asyncio
     async def test_get_general_exception_pickle(self, valid_handler, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_pull_requests"},
+        )
         mock_refresh = mocker.patch.object(Github, "refresh_token")
         valid_handler._on_token_refresh = token_refresh_fake_callback
         with respx.mock:
@@ -1036,6 +1143,11 @@ class TestUnitGithub(object):
 
         assert mocked_response.call_count == 2
         assert mock_refresh.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_pull_requests"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_api_no_token(self):
@@ -1054,6 +1166,11 @@ class TestUnitGithub(object):
 
     @pytest.mark.asyncio
     async def test_list_webhook_deliveries(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_webhook_deliveries"},
+        )
+
         def side_effect(request):
             assert request.headers.get("Accept") == "application/vnd.github+json"
             assert (
@@ -1131,9 +1248,18 @@ class TestUnitGithub(object):
             async for res in ghapp_handler.list_webhook_deliveries():
                 assert len(res) == 4
         assert mocked_response.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_webhook_deliveries"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_list_webhook_deliveries_multiple_pages(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_webhook_deliveries"},
+        )
         with respx.mock:
             mocked_response_1 = respx.get(
                 url="https://api.github.com/app/hook/deliveries?per_page=50"
@@ -1219,10 +1345,19 @@ class TestUnitGithub(object):
         assert len(aggregate_res) == 4
         assert mocked_response_1.call_count == 1
         assert mocked_response_2.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "list_webhook_deliveries"},
+        )
+        assert after - before == 2
 
     @pytest.mark.asyncio
     async def test_webhook_redelivery_success(self, ghapp_handler):
         delivery_id = 17323228732
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "request_webhook_redelivery"},
+        )
 
         def side_effect(request):
             assert request.headers.get("Accept") == "application/vnd.github+json"
@@ -1242,10 +1377,19 @@ class TestUnitGithub(object):
             ans = await ghapp_handler.request_webhook_redelivery(delivery_id)
             assert ans is True
         assert mocked_response.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "request_webhook_redelivery"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_webhook_redelivery_fail(self, ghapp_handler):
         delivery_id = 17323228732
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "request_webhook_redelivery"},
+        )
         with respx.mock:
             mocked_response = respx.post(
                 url=f"https://api.github.com/app/hook/deliveries/{delivery_id}/attempts"
@@ -1257,9 +1401,18 @@ class TestUnitGithub(object):
             ans = await ghapp_handler.request_webhook_redelivery(delivery_id)
             assert ans is False
         assert mocked_response.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "request_webhook_redelivery"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_404(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
         mock_refresh = mocker.patch.object(Github, "refresh_token")
         with respx.mock:
             my_route = respx.get(
@@ -1284,9 +1437,18 @@ class TestUnitGithub(object):
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
         assert mock_refresh.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_403(self):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
         with respx.mock:
             my_route = respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
@@ -1308,9 +1470,18 @@ class TestUnitGithub(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Github API rate limit error: Forbidden"
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "get_pull_request_files"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_403_secondary_limit(self):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
         with respx.mock:
             my_route = respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
@@ -1335,11 +1506,19 @@ class TestUnitGithub(object):
                 == "Github API rate limit error: secondary rate limit"
             )
             assert excinfo.value.retry_after == 60
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "get_pull_request_files"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_github_refresh_fail_terminates_unavailable(
         self, mocker, valid_handler
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
         with pytest.raises(TorngitRefreshTokenFailedError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post(
@@ -1354,11 +1533,18 @@ class TestUnitGithub(object):
                 )
             assert exp.code == 555
         assert mocked_refresh.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_github_refresh_fail_terminates_unauthorized(
         self, mocker, valid_handler
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
         with pytest.raises(TorngitRefreshTokenFailedError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post(
@@ -1373,6 +1559,10 @@ class TestUnitGithub(object):
                 )
             assert exp.code == 555
         assert mocked_refresh.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_github_refresh_fail_terminates_no_refresh_token(
@@ -1388,6 +1578,10 @@ class TestUnitGithub(object):
 
     @pytest.mark.asyncio
     async def test_github_double_refresh(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
+
         def side_effect(request, *args, **kwargs):
             url_parts = urlparse(str(request.url))
             query = url_parts.query
@@ -1431,9 +1625,17 @@ class TestUnitGithub(object):
 
         # Make sure that changing the token doesn't change the _oauth
         assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
+        assert after - before == 2
 
     @pytest.mark.asyncio
     async def test_github_is_student_timeout(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "is_student"}
+        )
+
         def side_effect(*args, **kwargs):
             raise httpx.TimeoutException("timeout")
 
@@ -1444,9 +1646,17 @@ class TestUnitGithub(object):
             res = await ghapp_handler.is_student()
             assert mocked_route.call_count == 1
             assert res == False
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "is_student"}
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_github_is_student_network_error(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "is_student"}
+        )
+
         def side_effect(*args, **kwargs):
             raise httpx.NetworkError("timeout")
 
@@ -1457,11 +1667,25 @@ class TestUnitGithub(object):
             res = await ghapp_handler.is_student()
             assert mocked_route.call_count == 1
             assert res == False
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "is_student"}
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_github_refresh_after_failed_request(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "get_is_admin"}
+        )
+        before_retries = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "make_http_call_retry"},
+        )
+        before_token_refresh = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
+
         def side_effect(request, *args, **kwargs):
-            print(f"Received request with headers {request.headers['Authorization']}")
             token = request.headers["Authorization"]
             if token == "token some_key":
                 return httpx.Response(
@@ -1504,9 +1728,26 @@ class TestUnitGithub(object):
                 "refresh_token": "new_refresh_token",
             }
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "get_is_admin"}
+        )
+        assert after - before == 1
+        after_retries = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "make_http_call_retry"},
+        )
+        assert after_retries - before_retries == 1
+        after_token_refresh = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total", labels={"endpoint": "refresh_token"}
+        )
+        assert after_token_refresh - before_token_refresh == 1
 
     @pytest.mark.asyncio
     async def test__get_owner_from_nodeid(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_owner_from_nodeid_graphql"},
+        )
         with respx.mock:
             mocked_route = respx.post("https://api.github.com/graphql").mock(
                 return_value=httpx.Response(
@@ -1531,9 +1772,22 @@ class TestUnitGithub(object):
                 )
             assert res == {"username": "codecov", "service_id": 8226205}
             assert mocked_route.call_count == 1
+            after = REGISTRY.get_sample_value(
+                "git_provider_api_calls_github_total",
+                labels={"endpoint": "get_owner_from_nodeid_graphql"},
+            )
+            assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_repos_from_nodeids(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_repos_from_nodeids_generator_graphql"},
+        )
+        before_get_owner = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_owner_from_nodeid_graphql"},
+        )
         # Mocking different responses from the graphQL API
         # because it all goes to the same endpoint but this test expects a 2nd call
         # with owner by node_id query
@@ -1685,3 +1939,32 @@ class TestUnitGithub(object):
                 },
             ]
             assert mocked_route.call_count == 2
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_repos_from_nodeids_generator_graphql"},
+        )
+        assert after - before == 1
+        after_get_owner = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_owner_from_nodeid_graphql"},
+        )
+        assert after_get_owner - before_get_owner == 1
+
+    @pytest.mark.asyncio
+    async def test_count_and_get_url_template(self, ghapp_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "make_http_call_retry"},
+        )
+        res = count_and_get_url_template(url_name="make_http_call_retry")
+        assert res == ""
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "make_http_call_retry"},
+        )
+        assert after - before == 1
+
+    @pytest.mark.asyncio
+    async def test_count_and_get_url_template_unrecognized(self, ghapp_handler):
+        with pytest.raises(KeyError):
+            count_and_get_url_template(url_name="whoops")
