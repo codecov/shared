@@ -470,6 +470,7 @@ class TestOrganizationLevelTokenModel(TransactionTestCase):
 
 
 class TestGithubAppInstallationModel(TransactionTestCase):
+
     DEFAULT_APP_ID = 12345
 
     @pytest.fixture(autouse=True)
@@ -592,3 +593,21 @@ class TestGithubAppInstallationModel(TransactionTestCase):
         assert (
             installation_default_name_not_default_id_configured.is_configured() == True
         )
+
+
+class TestGitHubAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
+    @pytest.fixture(autouse=True)
+    def mock_no_default_app_id(self, mocker):
+        mock_config_helper(mocker, configs={"github.integration.id": None})
+
+    def test_is_configured_no_default(self):
+        owner = OwnerFactory()
+        installation_default = GithubAppInstallation(
+            owner=owner,
+            repository_service_ids=None,
+            installation_id=123,
+            app_id=1200,
+            name=GITHUB_APP_INSTALLATION_DEFAULT_NAME,
+        )
+        installation_default.save()
+        assert installation_default.is_configured() == True
