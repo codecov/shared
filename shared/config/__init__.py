@@ -41,7 +41,7 @@ LEGACY_DEFAULT_SITE_CONFIG = {
     "github_checks": {"annotations": True},
 }
 
-PATCH_CENTRIC_DEFAULT_TIME_START = datetime.fromisoformat("2024-04-30 00:00:00.000")
+PATCH_CENTRIC_DEFAULT_TIME_START = datetime.fromisoformat("2024-04-30 00:00:00.000+00:00")
 
 PATCH_CENTRIC_DEFAULT_CONFIG = {
     **LEGACY_DEFAULT_SITE_CONFIG,

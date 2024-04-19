@@ -1,5 +1,7 @@
 import datetime
 
+from freezegun import freeze_time
+
 from shared.components import Component
 from shared.config import (
     LEGACY_DEFAULT_SITE_CONFIG,
@@ -342,14 +344,15 @@ class TestUserYaml(object):
             == expected_result
         )
 
+    @freeze_time("2024-04-30 00:00:00.000")
     def test_default_yaml_behavior_change(self):
         current_yaml = LEGACY_DEFAULT_SITE_CONFIG
         day_timedelta = datetime.timedelta(days=1)
         patch_centric_expected_onboarding_date = (
-            PATCH_CENTRIC_DEFAULT_TIME_START + day_timedelta
+            datetime.datetime.now(datetime.timezone.utc) + day_timedelta
         )
         no_change_expected_onboarding_date = (
-            PATCH_CENTRIC_DEFAULT_TIME_START - day_timedelta
+            datetime.datetime.now(datetime.timezone.utc) - day_timedelta
         )
         no_change = _fix_yaml_defaults_based_on_owner_onboarding_date(
             current_yaml, no_change_expected_onboarding_date
