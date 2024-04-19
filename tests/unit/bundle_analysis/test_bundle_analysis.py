@@ -15,6 +15,12 @@ sample_bundle_stats_path_2 = (
     Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats_other.json"
 )
 
+sample_bundle_stats_path_3 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_invalid_name.json"
+)
+
 
 def test_create_bundle_report():
     try:
@@ -206,3 +212,12 @@ def test_bundle_parser_error():
                 excinfo.bundle_analysis_plugin_name
                 == "codecov-vite-bundle-analysis-plugin"
             )
+
+
+def test_bundle_name_not_valid():
+    report = BundleAnalysisReport()
+    with pytest.raises(Exception) as excinfo:
+        report.ingest(sample_bundle_stats_path_3)
+        assert (
+            excinfo.bundle_analysis_plugin_name == "codecov-vite-bundle-analysis-plugin"
+        )
