@@ -35,6 +35,10 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github_enterprise"
         mock_configuration._params[service] = {"url": "http://legit-github"}
         integration_id = 1
@@ -54,13 +58,22 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         assert after - before == 0
+        assert e_after - e_before == 1
 
     def test_get_github_integration_token_enterprise_host_override(
         self, mocker, mock_configuration
     ):
         before = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
             labels={"endpoint": "get_github_integration_token"},
         )
         service = "github_enterprise"
@@ -86,11 +99,20 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         assert after - before == 0
+        assert e_after - e_before == 1
 
     def test_get_github_integration_token_production(self, mocker, mock_configuration):
         before = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
             labels={"endpoint": "get_github_integration_token"},
         )
         service = "github"
@@ -112,13 +134,22 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_get_github_integration_token_production_host_override(
         self, mocker, mock_configuration
     ):
         before = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
             labels={"endpoint": "get_github_integration_token"},
         )
         service = "github"
@@ -145,11 +176,20 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_get_github_integration_token_not_found(self, mocker, mock_configuration):
         before = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
             labels={"endpoint": "get_github_integration_token"},
         )
         service = "github"
@@ -172,13 +212,22 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_get_github_integration_token_unauthorized(
         self, mocker, mock_configuration
     ):
         before = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
             labels={"endpoint": "get_github_integration_token"},
         )
         service = "github"
@@ -205,7 +254,12 @@ class TestGithubSpecificLogic(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_github_integration_token"},
         )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_mark_installation_as_rate_limited(self, mocker):
         mock_redis = MagicMock(name="fake_redis")

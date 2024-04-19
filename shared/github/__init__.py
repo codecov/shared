@@ -66,7 +66,6 @@ def get_github_integration_token(
     app_id: Optional[str] = None,
     pem_path: Optional[str] = None,
 ) -> Optional[str]:
-    from shared.torngit.github import count_and_get_url_template  # circular imports
 
     # https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/
     token = get_github_jwt_token(service, app_id, pem_path)
@@ -74,16 +73,15 @@ def get_github_integration_token(
         if service == "github":
             api_endpoint = torngit.Github.get_api_url()
             host_override = torngit.Github.get_api_host_header()
-            url = count_and_get_url_template(
+            url = torngit.Github.count_and_get_url_template(
                 url_name="get_github_integration_token"
             ).substitute(api_endpoint=api_endpoint, integration_id=integration_id)
         else:
             api_endpoint = torngit.GithubEnterprise.get_api_url()
             host_override = torngit.GithubEnterprise.get_api_host_header()
-            url = "%s/app/installations/%s/access_tokens" % (
-                api_endpoint,
-                integration_id,
-            )
+            url = torngit.GithubEnterprise.count_and_get_url_template(
+                url_name="get_github_integration_token"
+            ).substitute(api_endpoint=api_endpoint, integration_id=integration_id)
 
         headers = {
             "Accept": "application/vnd.github.machine-man-preview+json",
