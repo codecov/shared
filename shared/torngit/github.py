@@ -1,10 +1,10 @@
 import asyncio
 import base64
-import datetime
 import hashlib
 import logging
 import os
 from base64 import b64decode
+from datetime import datetime, timezone
 from string import Template
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
@@ -546,7 +546,7 @@ class Github(TorngitBaseAdapter):
             if ttl_seconds is None:
                 # https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?apiVersion=2022-11-28#handle-rate-limit-errors-appropriately
                 ttl_seconds = int(reset_timestamp) - int(
-                    datetime.datetime.now(datetime.timezone.utc).timestamp()
+                    datetime.now(timezone.utc).timestamp()
                 )
             log.info(
                 "Marking installation as rate limited",
