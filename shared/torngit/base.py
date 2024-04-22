@@ -6,7 +6,11 @@ import httpx
 
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
-from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback
+from shared.typings.oauth_token_types import (
+    OauthConsumerToken,
+    OnRefreshCallback,
+    Token,
+)
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
@@ -24,7 +28,7 @@ class TorngitBaseAdapter(object):
     _aws_key = None
     _oauth: OauthConsumerToken = None
     _on_token_refresh: OnRefreshCallback = None
-    _token = None
+    _token: Token = None
     verify_ssl = None
 
     valid_languages = (
@@ -54,7 +58,7 @@ class TorngitBaseAdapter(object):
         self,
         oauth_consumer_token: OauthConsumerToken = None,
         timeouts=None,
-        token=None,
+        token: Token = None,
         token_type_mapping: Dict[TokenType, Dict] = None,
         on_token_refresh: OnRefreshCallback = None,
         verify_ssl=None,

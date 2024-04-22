@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import pickle
 from typing import Dict
 from urllib.parse import parse_qs, parse_qsl, urlparse
@@ -36,7 +37,7 @@ def valid_handler():
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="ThiagoCodecov"),
-        token=dict(key="some_key", refresh_token="refresh_token"),
+        token=dict(key="some_key", refresh_token="refresh_token", installation_id=0),
         oauth_consumer_token=dict(
             key="client_id",
             secret="client_secret",
@@ -49,7 +50,7 @@ def ghapp_handler():
     return Github(
         repo=dict(name="example-python", using_integration=True),
         owner=dict(username="codecov-e2e", integration_id=10000),
-        token=dict(key="integration_token"),
+        token=dict(key="integration_token", installation_id=1111),
         oauth_consumer_token=dict(
             key="client_id",
             secret="client_secret",
@@ -1074,9 +1075,40 @@ class TestUnitGithub(object):
         assert after - before == 1
 
     @pytest.mark.asyncio
-    async def test_update_check_run_url_fallback(self, valid_handler):
+    async def test_update_check_run_url_fallback(self, mocker):
+        mock_redis_conn = MagicMock(name="fake_redis")
+        mocker.patch(
+            "shared.torngit.github.get_redis_connection", return_value=mock_redis_conn
+        )
+        mock_get_token = mocker.patch(
+            "shared.torngit.github.get_github_integration_token",
+            return_value="fallback_token",
+        )
+
+        handler = Github(
+            repo=dict(name="example-python"),
+            owner=dict(username="ThiagoCodecov"),
+            token=dict(
+                key="some_key", refresh_token="refresh_token", installation_id=0
+            ),
+            oauth_consumer_token=dict(
+                key="client_id",
+                secret="client_secret",
+            ),
+            fallback_tokens=[
+                {"installation_id": 12342, "app_id": 1200, "pem_path": "some_path"}
+            ],
+        )
+
         url = "https://app.codecov.io/gh/codecov/example-python/compare/1?src=pr"
-        valid_handler.data.update({"fallback_tokens": ["fallback_token"]})
+        five_min_from_now = datetime.datetime.now(
+            datetime.timezone.utc
+        ) + datetime.timedelta(minutes=5)
+        timestamp = int(five_min_from_now.timestamp())
+        assert (
+            timestamp - int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+            == 300
+        )
         with respx.mock:
             mocked_response = respx.patch(
                 "https://api.github.com/repos/ThiagoCodecov/example-python/check-runs/1256232357",
@@ -1090,7 +1122,10 @@ class TestUnitGithub(object):
             ).mock(
                 return_value=httpx.Response(
                     status_code=429,
-                    headers={"X-RateLimit-Remaining": "0"},
+                    headers={
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Reset": str(timestamp),
+                    },
                 )
             )
             mocked_response_fallback = respx.patch(
@@ -1110,9 +1145,22 @@ class TestUnitGithub(object):
                     headers={"Content-Type": "application/json; charset=utf-8"},
                 )
             )
-            res = await valid_handler.update_check_run(1256232357, "success", url=url)
+            res = await handler.update_check_run(1256232357, "success", url=url)
         assert mocked_response.call_count == 1
         assert mocked_response_fallback.call_count == 1
+        # The installation from the original token (rate limited) is marked so
+        mock_redis_conn.set.assert_called_with(
+            name="rate_limited_installations_0", value=True, ex=300
+        )
+        mock_get_token.assert_called_with(
+            "github", 12342, app_id=1200, pem_path="some_path"
+        )
+        # The token in the GitHub instance is updated for subsequent requests
+        assert handler._token == {
+            "key": "fallback_token",
+            "installation_id": 12342,
+        }
+        assert handler.data["fallback_tokens"] == []
 
     @pytest.mark.asyncio
     async def test_get_general_exception_pickle(self, valid_handler, mocker):

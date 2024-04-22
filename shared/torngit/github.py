@@ -4,6 +4,7 @@ import hashlib
 import logging
 import os
 from base64 import b64decode
+from datetime import datetime, timezone
 from string import Template
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
@@ -12,10 +13,14 @@ import httpx
 from httpx import Response
 
 from shared.config import get_config
-from shared.github import get_github_jwt_token
+from shared.github import (
+    get_github_integration_token,
+    get_github_jwt_token,
+    mark_installation_as_rate_limited,
+)
 from shared.metrics import Counter, metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
-from shared.torngit.cache import torngit_cache
+from shared.torngit.cache import get_redis_connection, torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -30,7 +35,7 @@ from shared.torngit.exceptions import (
     TorngitUnauthorizedError,
 )
 from shared.torngit.status import Status
-from shared.typings.oauth_token_types import OauthConsumerToken
+from shared.typings.oauth_token_types import GithubInstallationInfo, OauthConsumerToken
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -411,6 +416,10 @@ class Github(TorngitBaseAdapter):
     service = "github"
     graphql = GitHubGraphQLQueries()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._redis_connection = get_redis_connection()
+
     @classmethod
     def get_service_url(cls):
         return get_config("github", "url", default="https://github.com").strip("/")
@@ -518,16 +527,71 @@ class Github(TorngitBaseAdapter):
                 )
                 return res.text
 
-    def _get_next_fallback_token(self, fallback_idx: int) -> Optional[str]:
+    def _possibly_mark_current_installation_as_rate_limited(
+        self,
+        *,
+        reset_timestamp: Optional[str] = None,
+        retry_in_seconds: Optional[int] = None,
+    ) -> None:
+        current_token = self.token
+        if current_token.get("installation_id") is not None:
+            installation_id = current_token["installation_id"]
+            if retry_in_seconds is None and reset_timestamp is None:
+                log.warning(
+                    "Can't mark installation as rate limited because TTL is missing",
+                    extra=dict(installation_id=installation_id),
+                )
+                return
+            ttl_seconds = retry_in_seconds
+            if ttl_seconds is None:
+                # https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?apiVersion=2022-11-28#handle-rate-limit-errors-appropriately
+                ttl_seconds = int(reset_timestamp) - int(
+                    datetime.now(timezone.utc).timestamp()
+                )
+            log.info(
+                "Marking installation as rate limited",
+                extra=dict(
+                    installation_id=installation_id,
+                    rate_limit_duration_seconds=ttl_seconds,
+                ),
+            )
+            mark_installation_as_rate_limited(
+                self._redis_connection, installation_id, ttl_seconds
+            )
+
+    def _get_next_fallback_token(
+        self,
+        *,
+        reset_timestamp: Optional[str] = None,
+        retry_in_seconds: Optional[int] = None,
+    ) -> Optional[str]:
         """If additional fallback tokens were passed to this instance of GitHub
         select the next token in line to retry the previous request.
+
+        !side effect: Marks the current token as rate limited in redis
+        !side effect: Updates the self._token value
+        !side effect: Consumes one of the fallback_tokens
         """
-        fallback_tokens: List[str] = self.data.get("fallback_tokens", None)
-        if fallback_tokens is None:
+        fallback_tokens: List[GithubInstallationInfo] = self.data.get(
+            "fallback_tokens", None
+        )
+        if fallback_tokens is None or fallback_tokens == []:
             # No tokens to fallback on
             return None
-        if fallback_idx < len(fallback_tokens):
-            return fallback_tokens[fallback_idx]
+        # ! side effect: mark current token as rate limited
+        self._possibly_mark_current_installation_as_rate_limited(
+            reset_timestamp=reset_timestamp, retry_in_seconds=retry_in_seconds
+        )
+        # ! side effect: consume one of the fallback tokens (makes it the token of this instance)
+        installation_info = fallback_tokens.pop(0)
+        # The function arg is 'integration_id'
+        installation_id = installation_info.pop("installation_id")
+        token_to_use = get_github_integration_token(
+            self.service, installation_id, **installation_info
+        )
+        # ! side effect: update the token so subsequent requests won't fail
+        self._token = dict(key=token_to_use, installation_id=installation_id)
+        return token_to_use
 
     async def make_http_call(
         self,
@@ -573,7 +637,6 @@ class Github(TorngitBaseAdapter):
         )
         max_number_retries = 3
         tried_refresh = False
-        fallback_idx = 0
         for current_retry in range(1, max_number_retries + 1):
             retry_reason = "retriable_status"
             try:
@@ -636,6 +699,46 @@ class Github(TorngitBaseAdapter):
                     # It does consume one of the retries
                     retry_reason = "token_was_refreshed"
                     continue
+            # Rate limit errors - we might fallback on other available tokens and retry
+            # If we do fallback the token with rate limit is marked as 'rate limited' in Redis
+            elif (res.status_code == 403 or res.status_code == 429) and (
+                (
+                    # Primary rate limit
+                    int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
+                    or
+                    # Secondary rate limit
+                    res.headers.get("Retry-After") is not None
+                )
+            ):
+                is_primary_rate_limit = (
+                    int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
+                )
+                metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
+                reset_timestamp = res.headers.get("X-RateLimit-Reset")
+                retry_after = res.headers.get("Retry-After")
+                fallback_token_key = self._get_next_fallback_token(
+                    reset_timestamp=reset_timestamp,
+                    retry_in_seconds=(
+                        int(retry_after) if retry_after is not None else None
+                    ),
+                )
+                if fallback_token_key:
+                    # Update header and try again
+                    # Consumes one of the retries
+                    prefix, _ = _headers["Authorization"].split(" ")
+                    _headers["Authorization"] = f"{prefix} {fallback_token_key}"
+                    retry_reason = "fallback_token_attempt"
+                    continue
+                else:
+                    message = f"Github API rate limit error: {res.reason_phrase if is_primary_rate_limit else 'secondary rate limit'}"
+                    raise TorngitRateLimitError(
+                        response_data=res.text,
+                        message=message,
+                        reset=res.headers.get("X-RateLimit-Reset"),
+                        retry_after=(
+                            int(retry_after) if retry_after is not None else None
+                        ),
+                    )
             if (
                 not statuses_to_retry
                 or res.status_code not in statuses_to_retry
@@ -649,38 +752,6 @@ class Github(TorngitBaseAdapter):
                 elif res.status_code >= 500:
                     metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Github is having 5xx issues")
-                elif (res.status_code == 403 or res.status_code == 429) and int(
-                    res.headers.get("X-RateLimit-Remaining", -1)
-                ) == 0:
-                    metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
-                    fallback_token = self._get_next_fallback_token(fallback_idx)
-                    if fallback_token:
-                        fallback_idx += 1
-                        # Update header and try again
-                        # Consumes one of the retries
-                        prefix, _ = _headers["Authorization"].split(" ")
-                        _headers["Authorization"] = f"{prefix} {fallback_token}"
-                        retry_reason = "fallback_token_attempt"
-                        continue
-                    else:
-                        message = f"Github API rate limit error: {res.reason_phrase}"
-                        raise TorngitRateLimitError(
-                            response_data=res.text,
-                            message=message,
-                            reset=res.headers.get("X-RateLimit-Reset"),
-                        )
-                elif (
-                    res.status_code == 403 or res.status_code == 429
-                ) and res.headers.get("Retry-After") is not None:
-                    # https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#secondary-rate-limits
-                    message = f"Github API rate limit error: secondary rate limit"
-                    retry_after = int(res.headers.get("Retry-After"))
-                    metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
-                    raise TorngitRateLimitError(
-                        response_data=res.text,
-                        message=message,
-                        retry_after=retry_after,
-                    )
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.unauthorizederror")

@@ -1,7 +1,14 @@
 import pytest
+from mock import MagicMock
 from prometheus_client import REGISTRY
+from redis import RedisError
 
-from shared.github import InvalidInstallationError, get_github_integration_token
+from shared.github import (
+    InvalidInstallationError,
+    get_github_integration_token,
+    is_installation_rate_limited,
+    mark_installation_as_rate_limited,
+)
 
 # DONT WORRY, this is generated for the purposes of validation, and is not the real
 # one on which the code ran
@@ -199,3 +206,42 @@ class TestGithubSpecificLogic(object):
             labels={"endpoint": "get_github_integration_token"},
         )
         assert after - before == 1
+
+    def test_mark_installation_as_rate_limited(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        INSTALLATION_ID = 1000
+        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 10)
+        assert mock_redis.set.called_with(
+            name=f"rate_limited_installations_{INSTALLATION_ID}",
+            value=1,
+            ex=10,
+        )
+
+    def test_mark_installation_as_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.set.side_effect = RedisError
+        INSTALLATION_ID = 1000
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 10)
+        assert mock_redis.set.called_with(
+            name=f"rate_limited_installations_{INSTALLATION_ID}",
+            value=1,
+            ex=10,
+        )
+
+    def test_is_installation_rate_limited(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        keys_in_redis = {"rate_limited_installations_999": 1}
+
+        def exists(key):
+            return key in keys_in_redis
+
+        mock_redis.exists.side_effect = exists
+        assert is_installation_rate_limited(mock_redis, 1000) == False
+        assert is_installation_rate_limited(mock_redis, 999) == True
+
+    def test_is_installation_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.exists.side_effect = RedisError
+        assert is_installation_rate_limited(mock_redis, 1000) == False
