@@ -1342,13 +1342,13 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
         async with self.get_client() as client:
-            url = count_and_get_url_template(url_name="post_webhook").substitute(
+            api_url = count_and_get_url_template(url_name="post_webhook").substitute(
                 slug=self.slug
             )
             res = await self.api(
                 client,
                 "post",
-                url,
+                api_url,
                 body=dict(
                     name="web",
                     active=True,
@@ -1364,13 +1364,13 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/hooks/#edit-a-hook
         try:
             async with self.get_client() as client:
-                url = count_and_get_url_template(url_name="edit_webhook").substitute(
-                    slug=self.slug, hookid=hookid
-                )
+                api_url = count_and_get_url_template(
+                    url_name="edit_webhook"
+                ).substitute(slug=self.slug, hookid=hookid)
                 return await self.api(
                     client,
                     "patch",
-                    url,
+                    api_url,
                     body=dict(
                         name="web",
                         active=True,
@@ -1473,13 +1473,13 @@ class Github(TorngitBaseAdapter):
         assert status in ("pending", "success", "error", "failure"), "status not valid"
         async with self.get_client() as client:
             try:
-                url = count_and_get_url_template(
+                api_url = count_and_get_url_template(
                     url_name="set_commit_status"
                 ).substitute(slug=self.slug, commit=commit)
                 res = await self.api(
                     client,
                     "post",
-                    url,
+                    api_url,
                     body=dict(
                         state=status,
                         target_url=url,
@@ -1491,13 +1491,13 @@ class Github(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 raise
             if merge_commit:
-                url = count_and_get_url_template(
+                api_url = count_and_get_url_template(
                     url_name="set_commit_status_merge_commit"
                 ).substitute(slug=self.slug, merge_commit=merge_commit[0])
                 await self.api(
                     client,
                     "post",
-                    url,
+                    api_url,
                     body=dict(
                         state=status,
                         target_url=url,
@@ -2086,10 +2086,10 @@ class Github(TorngitBaseAdapter):
         if url:
             body["details_url"] = url
         async with self.get_client() as client:
-            url = count_and_get_url_template(url_name="update_check_run").substitute(
-                slug=self.slug, check_run_id=check_run_id
-            )
-            res = await self.api(client, "patch", url, body=body, token=token)
+            api_url = count_and_get_url_template(
+                url_name="update_check_run"
+            ).substitute(slug=self.slug, check_run_id=check_run_id)
+            res = await self.api(client, "patch", api_url, body=body, token=token)
             return res
 
     # Get information for a GitHub Actions build/workflow run
