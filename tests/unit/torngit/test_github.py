@@ -22,7 +22,7 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
-from shared.torngit.github import Github, count_and_get_url_template
+from shared.torngit.github import Github
 from shared.torngit.github import log as gh_log
 
 
@@ -2004,7 +2004,7 @@ class TestUnitGithub(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "make_http_call_retry"},
         )
-        res = count_and_get_url_template(url_name="make_http_call_retry")
+        res = ghapp_handler.count_and_get_url_template(url_name="make_http_call_retry")
         assert res == ""
         after = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
@@ -2015,4 +2015,4 @@ class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_count_and_get_url_template_unrecognized(self, ghapp_handler):
         with pytest.raises(KeyError):
-            count_and_get_url_template(url_name="whoops")
+            ghapp_handler.count_and_get_url_template(url_name="whoops")
