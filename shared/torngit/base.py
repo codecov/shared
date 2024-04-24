@@ -11,6 +11,7 @@ from shared.typings.oauth_token_types import (
     OnRefreshCallback,
     Token,
 )
+from shared.typings.torngit import TorngitInstanceData
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
@@ -69,7 +70,7 @@ class TorngitBaseAdapter(object):
         self._on_token_refresh = on_token_refresh
         self._token_type_mapping = token_type_mapping or {}
         self._oauth = oauth_consumer_token
-        self.data = {"owner": {}, "repo": {}}
+        self.data: TorngitInstanceData = {"owner": {}, "repo": {}}
         self.verify_ssl = verify_ssl
         self.data.update(kwargs)
         # This has the side effect of initializing the torngit_cache
@@ -90,9 +91,11 @@ class TorngitBaseAdapter(object):
         else:
             timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
         return httpx.AsyncClient(
-            verify=self.verify_ssl
-            if not isinstance(self.verify_ssl, bool)
-            else self.verify_ssl,
+            verify=(
+                self.verify_ssl
+                if not isinstance(self.verify_ssl, bool)
+                else self.verify_ssl
+            ),
             timeout=timeout,
         )
 
