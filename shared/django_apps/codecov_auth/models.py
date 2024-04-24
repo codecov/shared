@@ -7,6 +7,7 @@ from datetime import datetime
 from hashlib import md5
 
 from django.contrib.postgres.fields import ArrayField, CITextField
+from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
 from django.db.models.manager import BaseManager
 from django.forms import ValidationError
@@ -683,6 +684,9 @@ class Session(ExportModelOperationsMixin("codecov_auth.session"), models.Model):
     lastseen = models.DateTimeField(null=True)
     # Really an ENUM in db
     type = models.TextField(choices=SessionType.choices)
+    login_session = models.ForeignKey(
+        DjangoSession, on_delete=models.CASCADE, blank=True, null=True
+    )
 
 
 def _generate_key():

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.contenttypes",
     "django.contrib.postgres",
+    "django.contrib.sessions",
     "shared.django_apps.codecov_auth",
     "shared.django_apps.core",
     "shared.django_apps.reports",
