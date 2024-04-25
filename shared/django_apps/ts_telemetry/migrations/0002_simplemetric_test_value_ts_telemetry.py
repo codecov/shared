@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ts_telemetry', '0001_initial'),
+        ("ts_telemetry", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='simplemetric',
-            name='test_value_ts_telemetry',
+            model_name="simplemetric",
+            name="test_value_ts_telemetry",
             field=models.TextField(null=True),
         ),
     ]

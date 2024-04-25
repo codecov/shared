@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reports', '0017_testinstance_flaky_status'),
+        ("reports", "0017_testinstance_flaky_status"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='commitreport',
-            name='test_value_report',
+            model_name="commitreport",
+            name="test_value_report",
             field=models.TextField(null=True),
         ),
     ]

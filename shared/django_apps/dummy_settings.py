@@ -86,22 +86,10 @@ DATABASES = {
     },
 }
 
-DATABASE_ROUTERS = [
-    "shared.django_apps.db_routers.TelemetryDatabaseRouter",
-    "shared.django_apps.db_routers.MultiDatabaseRouter",
-]
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = []
-
-# See https://django-postgres-extra.readthedocs.io/en/master/settings.html
-POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"
-
-# Allows to use the pgpartition command
-PSQLEXTRA_PARTITIONING_MANAGER = "user_measurements.partitioning.manager"
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0048_increment_version'),
+        ("core", "0048_increment_version"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pull',
-            name='test_value_core',
+            model_name="pull",
+            name="test_value_core",
             field=models.TextField(null=True),
         ),
     ]
