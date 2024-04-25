@@ -59,3 +59,4 @@ class SimpleMetric(BaseModel):
 
     name = models.TextField(null=False)
     value = models.FloatField(null=False)
+    test_value_ts_telemetry = models.TextField(null=False)

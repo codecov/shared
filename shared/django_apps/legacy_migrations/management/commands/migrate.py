@@ -83,6 +83,7 @@ class Command(MigrateCommand):
 
     def handle(self, *args, **options):
         log.info("Codecov is starting migrations...")
+        print("using the one from shared")
         database = options["database"]
         db_connection = connections[database]
         options["run_syncdb"] = False
