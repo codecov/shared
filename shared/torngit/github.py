@@ -34,7 +34,8 @@ from shared.torngit.exceptions import (
     TorngitUnauthorizedError,
 )
 from shared.torngit.status import Status
-from shared.typings.oauth_token_types import GithubInstallationInfo, OauthConsumerToken
+from shared.typings.oauth_token_types import OauthConsumerToken
+from shared.typings.torngit import GithubInstallationInfo
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -680,9 +681,10 @@ class Github(TorngitBaseAdapter):
         reset_timestamp: Optional[str] = None,
         retry_in_seconds: Optional[int] = None,
     ) -> None:
-        current_token = self.token
-        if current_token.get("installation_id") is not None:
-            installation_id = current_token["installation_id"]
+        current_installation = self.data.get("installation")
+        if current_installation and current_installation.get("installation_id"):
+            installation_id = current_installation["installation_id"]
+            app_id = current_installation.get("app_id")
             if retry_in_seconds is None and reset_timestamp is None:
                 log.warning(
                     "Can't mark installation as rate limited because TTL is missing",
@@ -699,11 +701,12 @@ class Github(TorngitBaseAdapter):
                 "Marking installation as rate limited",
                 extra=dict(
                     installation_id=installation_id,
+                    app_id=app_id,
                     rate_limit_duration_seconds=ttl_seconds,
                 ),
             )
             mark_installation_as_rate_limited(
-                self._redis_connection, installation_id, ttl_seconds
+                self._redis_connection, installation_id, ttl_seconds, app_id=app_id
             )
 
     def _get_next_fallback_token(
@@ -717,12 +720,12 @@ class Github(TorngitBaseAdapter):
 
         !side effect: Marks the current token as rate limited in redis
         !side effect: Updates the self._token value
-        !side effect: Consumes one of the fallback_tokens
+        !side effect: Consumes one of self.data.fallback_installations
         """
-        fallback_tokens: List[GithubInstallationInfo] = self.data.get(
-            "fallback_tokens", None
+        fallback_installations: List[GithubInstallationInfo] = self.data.get(
+            "fallback_installations", None
         )
-        if fallback_tokens is None or fallback_tokens == []:
+        if fallback_installations is None or fallback_installations == []:
             # No tokens to fallback on
             return None
         # ! side effect: mark current token as rate limited
@@ -730,14 +733,19 @@ class Github(TorngitBaseAdapter):
             reset_timestamp=reset_timestamp, retry_in_seconds=retry_in_seconds
         )
         # ! side effect: consume one of the fallback tokens (makes it the token of this instance)
-        installation_info = fallback_tokens.pop(0)
+        installation_info = fallback_installations.pop(0)
         # The function arg is 'integration_id'
         installation_id = installation_info.pop("installation_id")
         token_to_use = get_github_integration_token(
             self.service, installation_id, **installation_info
         )
         # ! side effect: update the token so subsequent requests won't fail
-        self._token = dict(key=token_to_use, installation_id=installation_id)
+        self.set_token(dict(key=token_to_use))
+        self.data["installation"] = {
+            # Put the installation_id back into the info
+            "installation_id": installation_id,
+            **installation_info,
+        }
         return token_to_use
 
     async def make_http_call(

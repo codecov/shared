@@ -24,6 +24,7 @@ from shared.torngit.exceptions import (
 )
 from shared.torngit.github import Github
 from shared.torngit.github import log as gh_log
+from shared.typings.torngit import GithubInstallationInfo
 
 
 @pytest.fixture
@@ -1088,14 +1089,15 @@ class TestUnitGithub(object):
         handler = Github(
             repo=dict(name="example-python"),
             owner=dict(username="ThiagoCodecov"),
-            token=dict(
-                key="some_key", refresh_token="refresh_token", installation_id=0
-            ),
+            token=dict(key="some_key", refresh_token="refresh_token"),
             oauth_consumer_token=dict(
                 key="client_id",
                 secret="client_secret",
             ),
-            fallback_tokens=[
+            installation=GithubInstallationInfo(
+                installation_id=1500,
+            ),
+            fallback_installations=[
                 {"installation_id": 12342, "app_id": 1200, "pem_path": "some_path"}
             ],
         )
@@ -1150,7 +1152,7 @@ class TestUnitGithub(object):
         assert mocked_response_fallback.call_count == 1
         # The installation from the original token (rate limited) is marked so
         mock_redis_conn.set.assert_called_with(
-            name="rate_limited_installations_0", value=True, ex=300
+            name="rate_limited_installations_default_app_1500", value=True, ex=300
         )
         mock_get_token.assert_called_with(
             "github", 12342, app_id=1200, pem_path="some_path"
@@ -1158,9 +1160,8 @@ class TestUnitGithub(object):
         # The token in the GitHub instance is updated for subsequent requests
         assert handler._token == {
             "key": "fallback_token",
-            "installation_id": 12342,
         }
-        assert handler.data["fallback_tokens"] == []
+        assert handler.data["fallback_installations"] == []
 
     @pytest.mark.asyncio
     async def test_get_general_exception_pickle(self, valid_handler, mocker):
@@ -1836,6 +1837,7 @@ class TestUnitGithub(object):
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_owner_from_nodeid_graphql"},
         )
+
         # Mocking different responses from the graphQL API
         # because it all goes to the same endpoint but this test expects a 2nd call
         # with owner by node_id query
