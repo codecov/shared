@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reports', '0017_testinstance_flaky_status'),
+        ("reports", "0017_testinstance_flaky_status"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='testinstance',
-            name='branch',
+            model_name="testinstance",
+            name="branch",
             field=models.TextField(null=True),
         ),
         migrations.AddField(
-            model_name='testinstance',
-            name='commitid',
+            model_name="testinstance",
+            name="commitid",
             field=models.TextField(null=True),
         ),
     ]
