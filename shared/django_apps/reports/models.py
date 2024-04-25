@@ -300,6 +300,9 @@ class TestInstance(BaseCodecovModel):
     )
     failure_message = models.TextField(null=True)
 
+    branch = models.TextField(null=True)
+    commitid = models.TextField(null=True)
+
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_testinstance"
