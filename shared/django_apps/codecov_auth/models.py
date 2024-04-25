@@ -149,6 +149,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     email = models.TextField(null=True)
     business_email = models.TextField(null=True)
     name = models.TextField(null=True)
+    test_value_auth = models.TextField(null=True)
     oauth_token = models.TextField(null=True)
     stripe_customer_id = models.TextField(null=True, blank=True)
     stripe_subscription_id = models.TextField(null=True, blank=True)

@@ -375,6 +375,7 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
     diff = models.JSONField(null=True)
     behind_by = models.IntegerField(null=True)
     behind_by_commit = models.TextField(null=True)
+    test_value_core = models.TextField(null=True)
 
     class Meta:
         db_table = "pulls"

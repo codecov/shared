@@ -57,6 +57,7 @@ class CommitReport(
     report_type = models.CharField(
         null=True, max_length=100, choices=ReportType.choices
     )
+    test_value_report = models.TextField(null=True)
 
     class Meta:
         app_label = REPORTS_APP_LABEL
