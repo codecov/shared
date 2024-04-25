@@ -1,5 +1,6 @@
 import pytest
 import vcr
+from prometheus_client import REGISTRY
 
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import TorngitClientError, TorngitObjectNotFoundError
@@ -976,45 +977,80 @@ class TestGitlabTestCase(object):
 
     @pytest.mark.asyncio
     async def test_make_paginated_call_no_limit(self, codecov_vcr):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "list_teams"},
+        )
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
             token=dict(key=16 * "f882"),
         )
-
+        url = handler.count_and_get_url_template("list_teams").substitute()
         res = handler.make_paginated_call(
-            "/groups", max_per_page=100, default_kwargs={}
+            url, max_per_page=100, default_kwargs={}, counter_name="list_teams"
         )
         res = [i async for i in res]
         assert len(res) == 1
         assert list(len(p) for p in res) == [8]
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "list_teams"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_make_paginated_call(self, codecov_vcr):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "list_teams"},
+        )
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
             token=dict(key=16 * "f882"),
         )
-        res = handler.make_paginated_call("/groups", max_per_page=4, default_kwargs={})
+        url = handler.count_and_get_url_template("list_teams").substitute()
+        res = handler.make_paginated_call(
+            url, max_per_page=4, default_kwargs={}, counter_name="list_teams"
+        )
         res = [i async for i in res]
         assert len(res) == 3
         assert list(len(p) for p in res) == [4, 4, 1]
         assert codecov_vcr.play_count == 3
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "list_teams"},
+        )
+        assert after - before == 3
 
     @pytest.mark.asyncio
     async def test_make_paginated_call_max_number_of_pages(self, codecov_vcr):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "list_teams"},
+        )
         handler = Gitlab(
             repo=dict(service_id="9715852"),
             owner=dict(username="1nf1n1t3l00p"),
             token=dict(key=16 * "f882"),
         )
+        url = handler.count_and_get_url_template("list_teams").substitute()
         res = handler.make_paginated_call(
-            "/groups", max_per_page=3, max_number_of_pages=2, default_kwargs={}
+            url,
+            max_per_page=3,
+            max_number_of_pages=2,
+            default_kwargs={},
+            counter_name="list_teams",
         )
         res = [i async for i in res]
         assert len(res) == 2
         assert list(len(p) for p in res) == [3, 3]
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "list_teams"},
+        )
+        assert after - before == 2
 
     @pytest.mark.asyncio
     async def test_get_authenticated_user(self, codecov_vcr):
