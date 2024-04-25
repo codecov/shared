@@ -1,6 +1,14 @@
 import pytest
+from mock import MagicMock
+from prometheus_client import REGISTRY
+from redis import RedisError
 
-from shared.github import InvalidInstallationError, get_github_integration_token
+from shared.github import (
+    InvalidInstallationError,
+    get_github_integration_token,
+    is_installation_rate_limited,
+    mark_installation_as_rate_limited,
+)
 
 # DONT WORRY, this is generated for the purposes of validation, and is not the real
 # one on which the code ran
@@ -23,6 +31,14 @@ C/tY+lZIEO1Gg/FxSMB+hwwhwfSuE3WohZfEcSy+R48=
 
 class TestGithubSpecificLogic(object):
     def test_get_github_integration_token_enterprise(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github_enterprise"
         mock_configuration._params[service] = {"url": "http://legit-github"}
         integration_id = 1
@@ -38,10 +54,28 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 0
+        assert e_after - e_before == 1
 
     def test_get_github_integration_token_enterprise_host_override(
         self, mocker, mock_configuration
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github_enterprise"
         mock_configuration._params[service] = {
             "url": "https://legit-github",
@@ -61,8 +95,26 @@ class TestGithubSpecificLogic(object):
                 "Host": "some-other-github.com",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 0
+        assert e_after - e_before == 1
 
     def test_get_github_integration_token_production(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
         integration_id = 1
@@ -78,10 +130,28 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_get_github_integration_token_production_host_override(
         self, mocker, mock_configuration
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         api_url = "https://legit-github"
         mock_configuration._params["github"] = {
@@ -102,8 +172,26 @@ class TestGithubSpecificLogic(object):
                 "Host": "api.github.com",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_get_github_integration_token_not_found(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
         integration_id = 1
@@ -120,10 +208,28 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
+        assert e_after - e_before == 0
 
     def test_get_github_integration_token_unauthorized(
         self, mocker, mock_configuration
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
         service = "github"
         mock_configuration._params["github_enterprise"] = {"url": "http://legit-github"}
         integration_id = 1
@@ -144,3 +250,52 @@ class TestGithubSpecificLogic(object):
                 "User-Agent": "Codecov",
             },
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        e_after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "get_github_integration_token"},
+        )
+        assert after - before == 1
+        assert e_after - e_before == 0
+
+    def test_mark_installation_as_rate_limited(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        INSTALLATION_ID = 1000
+        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 10)
+        assert mock_redis.set.called_with(
+            name=f"rate_limited_installations_{INSTALLATION_ID}",
+            value=1,
+            ex=10,
+        )
+
+    def test_mark_installation_as_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.set.side_effect = RedisError
+        INSTALLATION_ID = 1000
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 10)
+        assert mock_redis.set.called_with(
+            name=f"rate_limited_installations_{INSTALLATION_ID}",
+            value=1,
+            ex=10,
+        )
+
+    def test_is_installation_rate_limited(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        keys_in_redis = {"rate_limited_installations_999": 1}
+
+        def exists(key):
+            return key in keys_in_redis
+
+        mock_redis.exists.side_effect = exists
+        assert is_installation_rate_limited(mock_redis, 1000) == False
+        assert is_installation_rate_limited(mock_redis, 999) == True
+
+    def test_is_installation_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.exists.side_effect = RedisError
+        assert is_installation_rate_limited(mock_redis, 1000) == False

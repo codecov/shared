@@ -1,9 +1,10 @@
-import asyncio
 import base64
 import hashlib
 import logging
 import os
 from base64 import b64decode
+from datetime import datetime, timezone
+from string import Template
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
@@ -11,10 +12,14 @@ import httpx
 from httpx import Response
 
 from shared.config import get_config
-from shared.github import get_github_jwt_token
-from shared.metrics import metrics
+from shared.github import (
+    get_github_integration_token,
+    get_github_jwt_token,
+    mark_installation_as_rate_limited,
+)
+from shared.metrics import Counter, metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
-from shared.torngit.cache import torngit_cache
+from shared.torngit.cache import get_redis_connection, torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -29,12 +34,441 @@ from shared.torngit.exceptions import (
     TorngitUnauthorizedError,
 )
 from shared.torngit.status import Status
-from shared.typings.oauth_token_types import OauthConsumerToken
+from shared.typings.oauth_token_types import GithubInstallationInfo, OauthConsumerToken
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
 
 METRICS_PREFIX = "services.torngit.github"
+
+
+GITHUB_API_CALL_COUNTER = Counter(
+    "git_provider_api_calls_github",
+    "Number of times github called this endpoint",
+    ["endpoint"],
+)
+
+# Github Enterprise uses the same urls as Github, but has a separate Counter
+GITHUB_E_API_CALL_COUNTER = Counter(
+    "git_provider_api_calls_github_enterprise",
+    "Number of times github enterprise called this endpoint",
+    ["endpoint"],
+)
+
+
+GITHUB_API_ENDPOINTS = {
+    "request_webhook_redelivery": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="request_webhook_redelivery"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="request_webhook_redelivery"
+        ),
+        "url_template": Template("/app/hook/deliveries/${delivery_id}/attempts"),
+    },
+    "refresh_token": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="refresh_token"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="refresh_token"
+        ),
+        "url_template": Template("/login/oauth/access_token"),
+    },
+    "make_http_call_retry": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="make_http_call_retry"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="make_http_call_retry"
+        ),
+        "url_template": "",  # no url template, just counter
+    },
+    "list_webhook_deliveries": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="list_webhook_deliveries"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="list_webhook_deliveries"
+        ),
+        "url_template": Template("/app/hook/deliveries?per_page=50"),
+    },
+    "is_student": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="is_student"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="is_student"),
+        "url_template": Template("https://education.github.com/api/user"),
+    },
+    "get_best_effort_branches": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_best_effort_branches"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_best_effort_branches"
+        ),
+        "url_template": Template(
+            "/repos/${slug}/commits/${commit_sha}/branches-where-head"
+        ),
+    },
+    "get_workflow_run": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_workflow_run"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_workflow_run"
+        ),
+        "url_template": Template("/repos/${slug}/actions/runs/${run_id}"),
+    },
+    "update_check_run": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="update_check_run"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="update_check_run"
+        ),
+        "url_template": Template("/repos/${slug}/check-runs/${check_run_id}"),
+    },
+    "get_repos_with_languages_graphql": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_repos_with_languages_graphql"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repos_with_languages_graphql"
+        ),
+        "url_template": Template("/graphql"),
+    },
+    "get_repo_languages": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_repo_languages"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repo_languages"
+        ),
+        "url_template": Template("/repos/${slug}/languages"),
+    },
+    "get_check_suites": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_check_suites"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_check_suites"
+        ),
+        "url_template": Template("/repos/${slug}/commits/${git_sha}/check-suites"),
+    },
+    "create_check_run": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="create_check_run"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="create_check_run"
+        ),
+        "url_template": Template("/repos/${slug}/check-runs"),
+    },
+    "get_ancestors_tree": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_ancestors_tree"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_ancestors_tree"
+        ),
+        "url_template": Template("/repos/${slug}/commits"),
+    },
+    "list_files": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="list_files"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="list_files"),
+        "url_template": Template("/repos/${slug}/contents"),
+    },
+    "get_pull_request_files": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_pull_request_files"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_files"
+        ),
+        "url_template": Template("/repos/${slug}/pulls/${pullid}/files"),
+    },
+    "find_pull_request": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="find_pull_request"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="find_pull_request"
+        ),
+        "url_template": Template("/repos/${slug}/commits/${commit}/pulls"),
+    },
+    "get_pull_requests": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_pull_requests"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_requests"
+        ),
+        "url_template": Template("/repos/${slug}/pulls"),
+    },
+    "get_pull_request": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_pull_request"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request"
+        ),
+        "url_template": Template("/repos/${slug}/pulls/${pullid}"),
+    },
+    "get_distance_in_commits": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_distance_in_commits"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_distance_in_commits"
+        ),
+        "url_template": Template("/repos/${slug}/compare/${base_branch}...${base}"),
+    },
+    "get_compare": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_compare"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="get_compare"),
+        "url_template": Template("/repos/${slug}/compare/${base}...${head}"),
+    },
+    "get_commit_diff": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_commit_diff"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_commit_diff"
+        ),
+        "url_template": Template("/repos/${slug}/commits/${commit}"),
+    },
+    "get_source": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_source"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="get_source"),
+        "url_template": Template("/repos/${slug}/contents/${path}"),
+    },
+    "get_source_again": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_source_again"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_source_again"
+        ),
+        "url_template": "",  # no url template, just counter
+    },
+    "get_commit_statuses": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_commit_statuses"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_commit_statuses"
+        ),
+        "url_template": Template("/repos/${slug}/commits/${commit}/status"),
+    },
+    "set_commit_status": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="set_commit_status"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status"
+        ),
+        "url_template": Template("/repos/${slug}/statuses/${commit}"),
+    },
+    "set_commit_status_merge_commit": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status_merge_commit"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status_merge_commit"
+        ),
+        "url_template": Template("/repos/${slug}/statuses/${merge_commit}"),
+    },
+    "delete_comment": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="delete_comment"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="delete_comment"
+        ),
+        "url_template": Template("/repos/${slug}/issues/comments/${commentid}"),
+    },
+    "edit_comment": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="edit_comment"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="edit_comment"),
+        "url_template": Template("/repos/${slug}/issues/comments/${commentid}"),
+    },
+    "post_comment": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="post_comment"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="post_comment"),
+        "url_template": Template("/repos/${slug}/issues/${issueid}/comments"),
+    },
+    "delete_webhook": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="delete_webhook"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="delete_webhook"
+        ),
+        "url_template": Template("/repos/${slug}/hooks/${hookid}"),
+    },
+    "edit_webhook": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="edit_webhook"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="edit_webhook"),
+        "url_template": Template("/repos/${slug}/hooks/${hookid}"),
+    },
+    "post_webhook": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="post_webhook"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="post_webhook"),
+        "url_template": Template("/repos/${slug}/hooks"),
+    },
+    "get_raw_pull_request_commits": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_raw_pull_request_commits"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_raw_pull_request_commits"
+        ),
+        "url_template": Template(
+            "/repos/${slug}/pulls/${pullid}/commits?per_page=${max}&page=${page_n}"
+        ),
+    },
+    "list_teams": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="list_teams"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="list_teams"),
+        "url_template": Template("/user/memberships/orgs?state=active"),
+    },
+    "list_teams_org_name": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="list_teams_org_name"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="list_teams_org_name"
+        ),
+        "url_template": Template("/users/${login}"),
+    },
+    "get_gh_app_installation": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_gh_app_installation"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_gh_app_installation"
+        ),
+        "url_template": Template("/app/installations/${installation_id}"),
+    },
+    "get_repos_from_nodeids_generator_graphql": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_repos_from_nodeids_generator_graphql"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repos_from_nodeids_generator_graphql"
+        ),
+        "url_template": Template("/graphql"),
+    },
+    "get_owner_from_nodeid_graphql": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_owner_from_nodeid_graphql"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_owner_from_nodeid_graphql"
+        ),
+        "url_template": Template("/graphql"),
+    },
+    "fetch_number_of_repos_graphql": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="fetch_number_of_repos_graphql"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="fetch_number_of_repos_graphql"
+        ),
+        "url_template": Template("/graphql"),
+    },
+    "fetch_page_of_repos_without_username": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos_without_username"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos_without_username"
+        ),
+        "url_template": Template("/user/repos?per_page=${page_size}&page=${page}"),
+    },
+    "fetch_page_of_repos_with_username": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos_with_username"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos_with_username"
+        ),
+        "url_template": Template(
+            "/users/${username}/repos?per_page=${page_size}&page=${page}"
+        ),
+    },
+    "fetch_page_of_repos_using_installation": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos_using_installation"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="fetch_page_of_repos_using_installation"
+        ),
+        "url_template": Template(
+            "/installation/repositories?per_page=${page_size}&page=${page}"
+        ),
+    },
+    "get_authenticated": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_authenticated"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated"
+        ),
+        "url_template": Template("/repos/${slug}"),
+    },
+    "get_is_admin": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_is_admin"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="get_is_admin"),
+        "url_template": Template(
+            "/orgs/${owner_username}/memberships/${user_username}"
+        ),
+    },
+    "get_user_token": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_user_token"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_user_token"
+        ),
+        "url_template": Template("/login/oauth/access_token"),
+    },
+    "get_authenticated_user": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_authenticated_user"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated_user"
+        ),
+        "url_template": Template("/user"),
+    },
+    "get_authenticated_user_email": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated_user_email"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated_user_email"
+        ),
+        "url_template": Template("/user/emails"),
+    },
+    "get_branch": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_branch"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="get_branch"),
+        "url_template": Template("/repos/${slug}/branches/${branch_name}"),
+    },
+    "get_branches": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_branches"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(endpoint="get_branches"),
+        "url_template": Template("/repos/${slug}/branches"),
+    },
+    "get_repository_with_service_id": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_repository_with_service_id"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repository_with_service_id"
+        ),
+        "url_template": Template("/repositories/${service_id}"),
+    },
+    "get_repository_without_service_id": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_repository_without_service_id"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repository_without_service_id"
+        ),
+        "url_template": Template("/repos/${slug}"),
+    },
+    "get_check_runs_with_head_sha": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_check_runs_with_head_sha"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_check_runs_with_head_sha"
+        ),
+        "url_template": Template("/repos/${slug}/commits/${head_sha}/check-runs"),
+    },
+    "get_check_runs_with_check_suite_id": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_check_runs_with_check_suite_id"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_check_runs_with_check_suite_id"
+        ),
+        "url_template": Template(
+            "/repos/${slug}/check-suites/${check_suite_id}/check-runs"
+        ),
+    },
+    "list_files_with_dir_path": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="list_files_with_dir_path"),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="list_files_with_dir_path"
+        ),
+        "url_template": Template("/repos/${slug}/contents/${dir_path}"),
+    },
+    "get_github_integration_token": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="get_github_integration_token"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="get_github_integration_token"
+        ),
+        "url_template": Template(
+            "${api_endpoint}/app/installations/${integration_id}/access_tokens"
+        ),
+    },
+}
+
+
+# uncounted urls
+external_endpoint_template = Template("${username}/${name}/commit/${commitid}")
 
 
 class GitHubGraphQLQueries(object):
@@ -123,22 +557,10 @@ query Repos($owner: String!, $cursor: String, $first: Int!) {
 class Github(TorngitBaseAdapter):
     service = "github"
     graphql = GitHubGraphQLQueries()
-    urls = dict(
-        repo="{username}/{name}",
-        owner="{username}",
-        user="{username}",
-        issues="{username}/{name}/issues/%(issueid)s",
-        commit="{username}/{name}/commit/{commitid}",
-        commits="{username}/{name}/commits",
-        compare="{username}/{name}/compare/%(base)s...%(head)s",
-        comment="{username}/{name}/issues/%(pullid)s#issuecomment-%(commentid)s",
-        create_file="{username}/{name}/new/%(branch)s?filename=%(path)s&value=%(content)s",
-        pull="{username}/{name}/pull/%(pullid)s",
-        branch="{username}/{name}/tree/%(branch)s",
-        tree="{username}/{name}/tree/%(commitid)s",
-        src="{username}/{name}/blob/%(commitid)s/%(path)s",
-        author="{username}/{name}/commits?author=%(author)s",
-    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._redis_connection = get_redis_connection()
 
     @classmethod
     def get_service_url(cls):
@@ -154,29 +576,34 @@ class Github(TorngitBaseAdapter):
             "/"
         )
 
+    @property
+    def api_url(self):
+        return self.get_api_url()
+
     @classmethod
     def get_api_host_header(cls):
         return get_config(cls.service, "api_host_override")
+
+    @property
+    def api_host_header(self):
+        return self.get_api_host_header()
 
     @classmethod
     def get_host_header(cls):
         return get_config(cls.service, "host_override")
 
     @property
-    def api_url(self):
-        return self.get_api_url()
+    def host_header(self):
+        return self.get_host_header()
 
     @property
     def token(self):
         return self._token
 
-    @property
-    def api_host_header(self):
-        return self.get_api_host_header()
-
-    @property
-    def host_header(self):
-        return self.get_host_header()
+    @classmethod
+    def count_and_get_url_template(cls, url_name):
+        GITHUB_API_ENDPOINTS[url_name]["counter"].inc()
+        return GITHUB_API_ENDPOINTS[url_name]["url_template"]
 
     async def api(self, *args, token=None, **kwargs):
         """
@@ -199,7 +626,7 @@ class Github(TorngitBaseAdapter):
         return self._parse_response(response)
 
     async def paginated_api_generator(
-        self, client, method, initial_url, token=None, **kwargs
+        self, client, method, url_name, token=None, **kwargs
     ):
         """
         Generator that requests pages from GitHub and yields each page as they come.
@@ -208,7 +635,10 @@ class Github(TorngitBaseAdapter):
         token_to_use = token or self.token
         if not token_to_use:
             raise TorngitMisconfiguredCredentials()
-        url = initial_url
+        url = self.count_and_get_url_template(
+            url_name=url_name
+        ).substitute()  # counts first call
+        page = 1
         while url:
             args = [client, method, url]
             response = await self.make_http_call(
@@ -216,6 +646,11 @@ class Github(TorngitBaseAdapter):
             )
             yield self._parse_response(response)
             url = response.links.get("next", {}).get("url", "")
+            if page > 1:
+                _ = self.count_and_get_url_template(
+                    url_name=url_name
+                ).substitute()  # counts subsequent calls
+            page += 1
 
     def _parse_response(self, res: Response):
         if res.status_code == 204:
@@ -239,16 +674,71 @@ class Github(TorngitBaseAdapter):
                 )
                 return res.text
 
-    def _get_next_fallback_token(self, fallback_idx: int) -> Optional[str]:
+    def _possibly_mark_current_installation_as_rate_limited(
+        self,
+        *,
+        reset_timestamp: Optional[str] = None,
+        retry_in_seconds: Optional[int] = None,
+    ) -> None:
+        current_token = self.token
+        if current_token.get("installation_id") is not None:
+            installation_id = current_token["installation_id"]
+            if retry_in_seconds is None and reset_timestamp is None:
+                log.warning(
+                    "Can't mark installation as rate limited because TTL is missing",
+                    extra=dict(installation_id=installation_id),
+                )
+                return
+            ttl_seconds = retry_in_seconds
+            if ttl_seconds is None:
+                # https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?apiVersion=2022-11-28#handle-rate-limit-errors-appropriately
+                ttl_seconds = int(reset_timestamp) - int(
+                    datetime.now(timezone.utc).timestamp()
+                )
+            log.info(
+                "Marking installation as rate limited",
+                extra=dict(
+                    installation_id=installation_id,
+                    rate_limit_duration_seconds=ttl_seconds,
+                ),
+            )
+            mark_installation_as_rate_limited(
+                self._redis_connection, installation_id, ttl_seconds
+            )
+
+    def _get_next_fallback_token(
+        self,
+        *,
+        reset_timestamp: Optional[str] = None,
+        retry_in_seconds: Optional[int] = None,
+    ) -> Optional[str]:
         """If additional fallback tokens were passed to this instance of GitHub
         select the next token in line to retry the previous request.
+
+        !side effect: Marks the current token as rate limited in redis
+        !side effect: Updates the self._token value
+        !side effect: Consumes one of the fallback_tokens
         """
-        fallback_tokens: List[str] = self.data.get("fallback_tokens", None)
-        if fallback_tokens is None:
+        fallback_tokens: List[GithubInstallationInfo] = self.data.get(
+            "fallback_tokens", None
+        )
+        if fallback_tokens is None or fallback_tokens == []:
             # No tokens to fallback on
             return None
-        if fallback_idx < len(fallback_tokens):
-            return fallback_tokens[fallback_idx]
+        # ! side effect: mark current token as rate limited
+        self._possibly_mark_current_installation_as_rate_limited(
+            reset_timestamp=reset_timestamp, retry_in_seconds=retry_in_seconds
+        )
+        # ! side effect: consume one of the fallback tokens (makes it the token of this instance)
+        installation_info = fallback_tokens.pop(0)
+        # The function arg is 'integration_id'
+        installation_id = installation_info.pop("installation_id")
+        token_to_use = get_github_integration_token(
+            self.service, installation_id, **installation_info
+        )
+        # ! side effect: update the token so subsequent requests won't fail
+        self._token = dict(key=token_to_use, installation_id=installation_id)
+        return token_to_use
 
     async def make_http_call(
         self,
@@ -294,12 +784,14 @@ class Github(TorngitBaseAdapter):
         )
         max_number_retries = 3
         tried_refresh = False
-        fallback_idx = 0
         for current_retry in range(1, max_number_retries + 1):
             retry_reason = "retriable_status"
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                     res = await client.request(method, url, **kwargs)
+                    if current_retry > 1:
+                        # count retries without getting a url
+                        self.count_and_get_url_template(url_name="make_http_call_retry")
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
                     logged_body = res.text
@@ -354,6 +846,46 @@ class Github(TorngitBaseAdapter):
                     # It does consume one of the retries
                     retry_reason = "token_was_refreshed"
                     continue
+            # Rate limit errors - we might fallback on other available tokens and retry
+            # If we do fallback the token with rate limit is marked as 'rate limited' in Redis
+            elif (res.status_code == 403 or res.status_code == 429) and (
+                (
+                    # Primary rate limit
+                    int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
+                    or
+                    # Secondary rate limit
+                    res.headers.get("Retry-After") is not None
+                )
+            ):
+                is_primary_rate_limit = (
+                    int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
+                )
+                metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
+                reset_timestamp = res.headers.get("X-RateLimit-Reset")
+                retry_after = res.headers.get("Retry-After")
+                fallback_token_key = self._get_next_fallback_token(
+                    reset_timestamp=reset_timestamp,
+                    retry_in_seconds=(
+                        int(retry_after) if retry_after is not None else None
+                    ),
+                )
+                if fallback_token_key:
+                    # Update header and try again
+                    # Consumes one of the retries
+                    prefix, _ = _headers["Authorization"].split(" ")
+                    _headers["Authorization"] = f"{prefix} {fallback_token_key}"
+                    retry_reason = "fallback_token_attempt"
+                    continue
+                else:
+                    message = f"Github API rate limit error: {res.reason_phrase if is_primary_rate_limit else 'secondary rate limit'}"
+                    raise TorngitRateLimitError(
+                        response_data=res.text,
+                        message=message,
+                        reset=res.headers.get("X-RateLimit-Reset"),
+                        retry_after=(
+                            int(retry_after) if retry_after is not None else None
+                        ),
+                    )
             if (
                 not statuses_to_retry
                 or res.status_code not in statuses_to_retry
@@ -367,38 +899,6 @@ class Github(TorngitBaseAdapter):
                 elif res.status_code >= 500:
                     metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Github is having 5xx issues")
-                elif (res.status_code == 403 or res.status_code == 429) and int(
-                    res.headers.get("X-RateLimit-Remaining", -1)
-                ) == 0:
-                    metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
-                    fallback_token = self._get_next_fallback_token(fallback_idx)
-                    if fallback_token:
-                        fallback_idx += 1
-                        # Update header and try again
-                        # Consumes one of the retries
-                        prefix, _ = _headers["Authorization"].split(" ")
-                        _headers["Authorization"] = f"{prefix} {fallback_token}"
-                        retry_reason = "fallback_token_attempt"
-                        continue
-                    else:
-                        message = f"Github API rate limit error: {res.reason_phrase}"
-                        raise TorngitRateLimitError(
-                            response_data=res.text,
-                            message=message,
-                            reset=res.headers.get("X-RateLimit-Reset"),
-                        )
-                elif (
-                    res.status_code == 403 or res.status_code == 429
-                ) and res.headers.get("Retry-After") is not None:
-                    # https://docs.github.com/en/rest/overview/resources-in-the-rest-api?apiVersion=2022-11-28#secondary-rate-limits
-                    message = f"Github API rate limit error: secondary rate limit"
-                    retry_after = int(res.headers.get("Retry-After"))
-                    metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
-                    raise TorngitRateLimitError(
-                        response_data=res.text,
-                        message=message,
-                        retry_after=retry_after,
-                    )
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"
                     metrics.incr(f"{METRICS_PREFIX}.api.unauthorizederror")
@@ -449,9 +949,13 @@ class Github(TorngitBaseAdapter):
                 **creds_to_send,
             )
         )
+        url = (
+            self.service_url
+            + self.count_and_get_url_template(url_name="refresh_token").substitute()
+        )
         res = await client.request(
             "POST",
-            self.service_url + "/login/oauth/access_token",
+            url,
             params=params,
         )
         if res.status_code >= 300:
@@ -496,10 +1000,13 @@ class Github(TorngitBaseAdapter):
             branches = []
             while True:
                 page += 1
+                url = self.count_and_get_url_template(
+                    url_name="get_branches"
+                ).substitute(slug=self.slug)
                 res = await self.api(
                     client,
                     "get",
-                    "/repos/%s/branches" % self.slug,
+                    url,
                     per_page=100,
                     page=page,
                     token=token,
@@ -513,22 +1020,26 @@ class Github(TorngitBaseAdapter):
 
     async def get_branch(self, branch_name: str, token=None):
         async with self.get_client() as client:
-            token = self.get_token_by_type_if_none(token, TokenType.read)
             # https://docs.github.com/en/rest/branches/branches?apiVersion=2022-11-28#get-a-branch
-            res = await self.api(
-                client,
-                "get",
-                f"/repos/{self.slug}/branches/{branch_name}",
+            url = self.count_and_get_url_template(url_name="get_branch").substitute(
+                slug=self.slug, branch_name=branch_name
             )
+            res = await self.api(client, "get", url)
             return {"name": res["name"], "sha": res["commit"]["sha"]}
 
     async def get_authenticated_user(self, code):
         creds = self._oauth_consumer_token()
         async with self.get_client() as client:
+            url = (
+                self.service_url
+                + self.count_and_get_url_template(
+                    url_name="get_user_token"
+                ).substitute()
+            )
             response = await self.make_http_call(
                 client,
                 "get",
-                self.service_url + "/login/oauth/access_token",
+                url,
                 code=code,
                 client_id=creds["key"],
                 client_secret=creds["secret"],
@@ -545,12 +1056,17 @@ class Github(TorngitBaseAdapter):
                         refresh_token=session.get("refresh_token", None),
                     )
                 )
-
-                user = await self.api(client, "get", "/user")
+                url = self.count_and_get_url_template(
+                    url_name="get_authenticated_user"
+                ).substitute()
+                user = await self.api(client, "get", url)
                 user.update(session or {})
                 email = user.get("email")
+                url = self.count_and_get_url_template(
+                    url_name="get_authenticated_user_email"
+                ).substitute()
                 if not email:
-                    emails = await self.api(client, "get", "/user/emails")
+                    emails = await self.api(client, "get", url)
                     emails = [e["email"] for e in emails if e["primary"]]
                     user["email"] = emails[0] if emails else None
                 return user
@@ -571,20 +1087,21 @@ class Github(TorngitBaseAdapter):
     async def get_is_admin(self, user, token=None):
         async with self.get_client() as client:
             # https://developer.github.com/v3/orgs/members/#get-organization-membership
-            res = await self.api(
-                client,
-                "get",
-                "/orgs/%s/memberships/%s"
-                % (self.data["owner"]["username"], user["username"]),
-                token=token,
+            url = self.count_and_get_url_template(url_name="get_is_admin").substitute(
+                owner_username=self.data["owner"]["username"],
+                user_username=user["username"],
             )
+            res = await self.api(client, "get", url, token=token)
             return res["state"] == "active" and res["role"] == "admin"
 
     async def get_authenticated(self, token=None):
         """Returns (can_view, can_edit)"""
         # https://developer.github.com/v3/repos/#get
         async with self.get_client() as client:
-            r = await self.api(client, "get", "/repos/%s" % self.slug, token=token)
+            url = self.count_and_get_url_template(
+                url_name="get_authenticated"
+            ).substitute(slug=self.slug)
+            r = await self.api(client, "get", url, token=token)
             ok = r["permissions"]["admin"] or r["permissions"]["push"]
             return (True, ok)
 
@@ -593,16 +1110,15 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             if self.data["repo"].get("service_id") is None:
                 # https://developer.github.com/v3/repos/#get
-                res = await self.api(
-                    client, "get", "/repos/%s" % self.slug, token=token
-                )
+                url = self.count_and_get_url_template(
+                    url_name="get_repository_without_service_id"
+                ).substitute(slug=self.slug)
+                res = await self.api(client, "get", url, token=token)
             else:
-                res = await self.api(
-                    client,
-                    "get",
-                    "/repositories/%s" % self.data["repo"]["service_id"],
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="get_repository_with_service_id"
+                ).substitute(service_id=self.data["repo"]["service_id"])
+                res = await self.api(client, "get", url, token=token)
 
         username, repo = tuple(res["full_name"].split("/", 1))
         parent = res.get("parent")
@@ -658,10 +1174,13 @@ class Github(TorngitBaseAdapter):
         self, client, page_size=100, page=1
     ):
         # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
+        url = self.count_and_get_url_template(
+            url_name="fetch_page_of_repos_using_installation"
+        ).substitute(page_size=page_size, page=page)
         res = await self.api(
             client,
             "get",
-            f"/installation/repositories?per_page={page_size}&page={page}",
+            url,
             headers={"Accept": "application/vnd.github.machine-man-preview+json"},
         )
 
@@ -683,19 +1202,15 @@ class Github(TorngitBaseAdapter):
     ):
         # https://developer.github.com/v3/repos/#list-your-repositories
         if username is None:
-            repos = await self.api(
-                client,
-                "get",
-                f"/user/repos?per_page={page_size}&page={page}",
-                token=token,
-            )
+            url = self.count_and_get_url_template(
+                url_name="fetch_page_of_repos_without_username"
+            ).substitute(page_size=page_size, page=page)
+            repos = await self.api(client, "get", url, token=token)
         else:
-            repos = await self.api(
-                client,
-                "get",
-                f"/users/{username}/repos?per_page={page_size}&page={page}",
-                token=token,
-            )
+            url = self.count_and_get_url_template(
+                url_name="fetch_page_of_repos_with_username"
+            ).substitute(username=username, page_size=page_size, page=page)
+            repos = await self.api(client, "get", url, token=token)
 
         log.info(
             "Fetched page of repos",
@@ -713,13 +1228,10 @@ class Github(TorngitBaseAdapter):
         query = self.graphql.prepare(
             "OWNER_FROM_NODEID", variables={"node_id": owner_node_id}
         )
-        res = await self.api(
-            client,
-            "post",
-            "/graphql",
-            body=query,
-            token=token,
-        )
+        url = self.count_and_get_url_template(
+            url_name="get_owner_from_nodeid_graphql"
+        ).substitute()
+        res = await self.api(client, "post", url, body=query, token=token)
         owner_data = res["data"]["node"]
         return {"username": owner_data["login"], "service_id": owner_data["databaseId"]}
 
@@ -745,13 +1257,10 @@ class Github(TorngitBaseAdapter):
                 query = self.graphql.prepare(
                     "REPOS_FROM_NODEIDS", variables={"node_ids": chunk}
                 )
-                res = await self.api(
-                    client,
-                    "post",
-                    "/graphql",
-                    body=query,
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="get_repos_from_nodeids_generator_graphql"
+                ).substitute()
+                res = await self.api(client, "post", url, body=query, token=token)
                 for raw_repo_data in res["data"]["nodes"]:
                     if (
                         raw_repo_data is None
@@ -882,7 +1391,9 @@ class Github(TorngitBaseAdapter):
             Dict: a dictionary that adheres to gh's response value in the link above
         """
         jwt_token = get_github_jwt_token(service=self.service)
-        url = f"/app/installations/{installation_id}"
+        url = self.count_and_get_url_template(
+            url_name="get_gh_app_installation"
+        ).substitute(installation_id=installation_id)
         headers = {
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {jwt_token}",
@@ -913,25 +1424,20 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             while True:
                 page += 1
-                orgs = await self.api(
-                    client,
-                    "get",
-                    "/user/memberships/orgs?state=active",
-                    page=page,
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="list_teams"
+                ).substitute()
+                orgs = await self.api(client, "get", url, page=page, token=token)
                 if len(orgs) == 0:
                     break
                 # organization names
                 for org in orgs:
                     try:
                         organization = org["organization"]
-                        org = await self.api(
-                            client,
-                            "get",
-                            "/users/%s" % organization["login"],
-                            token=token,
-                        )
+                        url = self.count_and_get_url_template(
+                            url_name="list_teams_org_name"
+                        ).substitute(login=organization["login"])
+                        org = await self.api(client, "get", url, token=token)
                         data.append(
                             dict(
                                 name=organization.get("name", org["login"]),
@@ -966,13 +1472,15 @@ class Github(TorngitBaseAdapter):
         MAX_RESULTS_PER_PAGE = 100
         async with self.get_client() as client:
             for page_number in [1, 2, 3]:
-                page_results = await self.api(
-                    client,
-                    "get",
-                    "/repos/%s/pulls/%s/commits?per_page=%s&page=%s"
-                    % (self.slug, pullid, MAX_RESULTS_PER_PAGE, page_number),
-                    token=token,
+                url = self.count_and_get_url_template(
+                    url_name="get_raw_pull_request_commits"
+                ).substitute(
+                    slug=self.slug,
+                    pullid=pullid,
+                    max=MAX_RESULTS_PER_PAGE,
+                    page_n=page_number,
                 )
+                page_results = await self.api(client, "get", url, token=token)
                 if len(page_results):
                     all_commits.extend(page_results)
                 if len(page_results) < MAX_RESULTS_PER_PAGE:
@@ -985,10 +1493,13 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
         async with self.get_client() as client:
+            api_url = self.count_and_get_url_template(url_name="post_webhook").substitute(
+                slug=self.slug
+            )
             res = await self.api(
                 client,
                 "post",
-                "/repos/%s/hooks" % self.slug,
+                api_url,
                 body=dict(
                     name="web",
                     active=True,
@@ -1004,10 +1515,13 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/hooks/#edit-a-hook
         try:
             async with self.get_client() as client:
+                api_url = self.count_and_get_url_template(
+                    url_name="edit_webhook"
+                ).substitute(slug=self.slug, hookid=hookid)
                 return await self.api(
                     client,
                     "patch",
-                    "/repos/%s/hooks/%s" % (self.slug, hookid),
+                    api_url,
                     body=dict(
                         name="web",
                         active=True,
@@ -1029,12 +1543,10 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/hooks/#delete-a-hook
         try:
             async with self.get_client() as client:
-                await self.api(
-                    client,
-                    "delete",
-                    "/repos/%s/hooks/%s" % (self.slug, hookid),
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="delete_webhook"
+                ).substitute(slug=self.slug, hookid=hookid)
+                await self.api(client, "delete", url, token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -1050,13 +1562,10 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "post",
-                "/repos/%s/issues/%s/comments" % (self.slug, issueid),
-                body=dict(body=body),
-                token=token,
+            url = self.count_and_get_url_template(url_name="post_comment").substitute(
+                slug=self.slug, issueid=issueid
             )
+            res = await self.api(client, "post", url, body=dict(body=body), token=token)
             return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
@@ -1064,13 +1573,13 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
-                return await self.api(
-                    client,
-                    "patch",
-                    "/repos/%s/issues/comments/%s" % (self.slug, commentid),
-                    body=dict(body=body),
-                    token=token,
+                url = self.count_and_get_url_template(
+                    url_name="edit_comment"
+                ).substitute(slug=self.slug, commentid=commentid)
+                res = await self.api(
+                    client, "patch", url, body=dict(body=body), token=token
                 )
+                return res
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -1084,12 +1593,10 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/issues/comments/#delete-a-comment
         try:
             async with self.get_client() as client:
-                await self.api(
-                    client,
-                    "delete",
-                    "/repos/%s/issues/comments/%s" % (self.slug, commentid),
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="delete_comment"
+                ).substitute(slug=self.slug, commentid=commentid)
+                await self.api(client, "delete", url, token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -1117,10 +1624,13 @@ class Github(TorngitBaseAdapter):
         assert status in ("pending", "success", "error", "failure"), "status not valid"
         async with self.get_client() as client:
             try:
+                api_url = self.count_and_get_url_template(
+                    url_name="set_commit_status"
+                ).substitute(slug=self.slug, commit=commit)
                 res = await self.api(
                     client,
                     "post",
-                    "/repos/%s/statuses/%s" % (self.slug, commit),
+                    api_url,
                     body=dict(
                         state=status,
                         target_url=url,
@@ -1132,10 +1642,13 @@ class Github(TorngitBaseAdapter):
             except TorngitClientError as ce:
                 raise
             if merge_commit:
+                api_url = self.count_and_get_url_template(
+                    url_name="set_commit_status_merge_commit"
+                ).substitute(slug=self.slug, merge_commit=merge_commit[0])
                 await self.api(
                     client,
                     "post",
-                    "/repos/%s/statuses/%s" % (self.slug, merge_commit[0]),
+                    api_url,
                     body=dict(
                         state=status,
                         target_url=url,
@@ -1159,10 +1672,13 @@ class Github(TorngitBaseAdapter):
             while True:
                 page += 1
                 # https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+                url = self.count_and_get_url_template(
+                    url_name="get_commit_statuses"
+                ).substitute(slug=self.slug, commit=commit)
                 res = await self.api(
                     client,
                     "get",
-                    "/repos/%s/commits/%s/status" % (self.slug, commit),
+                    url,
                     page=page,
                     per_page=100,
                     token=token,
@@ -1191,15 +1707,10 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/contents/#get-contents
         try:
             async with self.get_client() as client:
-                content = await self.api(
-                    client,
-                    "get",
-                    "/repos/{0}/contents/{1}".format(
-                        self.slug, path.replace(" ", "%20")
-                    ),
-                    ref=ref,
-                    token=token,
+                url = self.count_and_get_url_template(url_name="get_source").substitute(
+                    slug=self.slug, path=path.replace(" ", "%20")
                 )
+                content = await self.api(client, "get", url, ref=ref, token=token)
 
                 # When file size is greater than 1MB, content would not populate,
                 # instead we have to retrieve it from the download_url
@@ -1208,6 +1719,8 @@ class Github(TorngitBaseAdapter):
                     and content.get("download_url")
                     and content.get("encoding") == "none"
                 ):
+                    # not a templated url, count separately
+                    self.count_and_get_url_template(url_name="get_source_again")
                     content["content"] = await self.api(
                         client=client, method="get", url=content["download_url"]
                     )
@@ -1229,10 +1742,13 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             async with self.get_client() as client:
+                url = self.count_and_get_url_template(
+                    url_name="get_commit_diff"
+                ).substitute(slug=self.slug, commit=commit)
                 res = await self.api(
                     client,
                     "get",
-                    "/repos/%s/commits/%s" % (self.slug, commit),
+                    url,
                     headers={"Accept": "application/vnd.github.v3.diff"},
                     token=token,
                 )
@@ -1256,12 +1772,10 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                "/repos/%s/compare/%s...%s" % (self.slug, base, head),
-                token=token,
+            url = self.count_and_get_url_template(url_name="get_compare").substitute(
+                slug=self.slug, base=base, head=head
             )
+            res = await self.api(client, "get", url, token=token)
         files = {}
         for f in res["files"]:
             diff = self.diff_to_json(
@@ -1318,12 +1832,10 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                "/repos/%s/compare/%s...%s" % (self.slug, base_branch, base),
-                token=token,
-            )
+            url = self.count_and_get_url_template(
+                url_name="get_distance_in_commits"
+            ).substitute(slug=self.slug, base_branch=base_branch, base=base)
+            res = await self.api(client, "get", url, token=token)
         behind_by = res.get("behind_by")
         behind_by_commit = res["base_commit"]["sha"] if "base_commit" in res else None
         if behind_by is None or behind_by_commit is None:
@@ -1409,12 +1921,10 @@ class Github(TorngitBaseAdapter):
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         async with self.get_client() as client:
             try:
-                res = await self.api(
-                    client,
-                    "get",
-                    "/repos/%s/pulls/%s" % (self.slug, pullid),
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="get_pull_request"
+                ).substitute(slug=self.slug, pullid=pullid)
+                res = await self.api(client, "get", url, token=token)
             except TorngitClientError as ce:
                 if ce.code == 404:
                     raise TorngitObjectNotFoundError(
@@ -1463,10 +1973,13 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             while True:
                 page += 1
+                url = self.count_and_get_url_template(
+                    url_name="get_pull_requests"
+                ).substitute(slug=self.slug)
                 res = await self.api(
                     client,
                     "get",
-                    "/repos/%s/pulls" % self.slug,
+                    url,
                     page=page,
                     per_page=25,
                     state=state,
@@ -1491,12 +2004,10 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit
             try:
-                res = await self.api(
-                    client,
-                    "get",
-                    f"/repos/{self.slug}/commits/{commit}/pulls",
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="find_pull_request"
+                ).substitute(slug=self.slug, commit=commit)
+                res = await self.api(client, "get", url, token=token)
                 prs_with_commit = [
                     data["number"] for data in res if data["state"] == state
                 ]
@@ -1524,12 +2035,10 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests-files
             try:
-                res = await self.api(
-                    client,
-                    "get",
-                    f"/repos/{self.slug}/pulls/{pullid}/files",
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="get_pull_request_files"
+                ).substitute(slug=self.slug, pullid=pullid)
+                res = await self.api(client, "get", url, token=token)
                 filenames = [data.get("filename") for data in res]
                 return filenames
             except TorngitClientError as ce:
@@ -1547,9 +2056,13 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
         if dir_path:
-            url = f"/repos/{self.slug}/contents/{dir_path}"
+            url = self.count_and_get_url_template(
+                url_name="list_files_with_dir_path"
+            ).substitute(slug=self.slug, dir_path=dir_path)
         else:
-            url = f"/repos/{self.slug}/contents"
+            url = self.count_and_get_url_template(url_name="list_files").substitute(
+                slug=self.slug
+            )
         async with self.get_client() as client:
             content = await self.api(client, "get", url, ref=ref, token=token)
         return [
@@ -1571,20 +2084,20 @@ class Github(TorngitBaseAdapter):
     async def get_ancestors_tree(self, commitid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                "/repos/%s/commits" % self.slug,
-                token=token,
-                sha=commitid,
-            )
+            url = self.count_and_get_url_template(
+                url_name="get_ancestors_tree"
+            ).substitute(slug=self.slug)
+            res = await self.api(client, "get", url, token=token, sha=commitid)
         start = res[0]["sha"]
         commit_mapping = {val["sha"]: [k["sha"] for k in val["parents"]] for val in res}
         return self.build_tree_from_commits(start, commit_mapping)
 
     def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
+        # used in parent obj to get_href
+        # I think this is for creating a clickable link,
+        # not a token-using call by us, so not counting these calls.
         if endpoint == Endpoints.commit_detail:
-            return self.urls["commit"].format(
+            return external_endpoint_template.substitute(
                 username=self.data["owner"]["username"],
                 name=self.data["repo"]["name"],
                 commitid=kwargs["commitid"],
@@ -1597,10 +2110,13 @@ class Github(TorngitBaseAdapter):
         self, check_name, head_sha, status="in_progress", token=None
     ):
         async with self.get_client() as client:
+            url = self.count_and_get_url_template(
+                url_name="create_check_run"
+            ).substitute(slug=self.slug)
             res = await self.api(
                 client,
                 "post",
-                "/repos/{}/check-runs".format(self.slug),
+                url,
                 body=dict(name=check_name, head_sha=head_sha, status=status),
                 token=token,
             )
@@ -1623,27 +2139,25 @@ class Github(TorngitBaseAdapter):
             )
         url = ""
         if check_suite_id is not None:
-            url = (
-                "/repos/{}/check-suites/{}/check-runs".format(
-                    self.slug, check_suite_id
-                ),
-            )
+            url = self.count_and_get_url_template(
+                url_name="get_check_runs_with_check_suite_id"
+            ).substitute(slug=self.slug, check_suite_id=check_suite_id)
         elif head_sha is not None:
-            url = "/repos/{}/commits/{}/check-runs".format(self.slug, head_sha)
+            url = self.count_and_get_url_template(
+                url_name="get_check_runs_with_head_sha"
+            ).substitute(slug=self.slug, head_sha=head_sha)
         if name is not None:
-            url += "?check_name={}".format(name)
+            url += f"?check_name={name}"
         async with self.get_client() as client:
             res = await self.api(client, "get", url, token=token)
             return res
 
     async def get_check_suites(self, git_sha, token=None):
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                "/repos/{}/commits/{}/check-suites".format(self.slug, git_sha),
-                token=token,
-            )
+            url = self.count_and_get_url_template(
+                url_name="get_check_suites"
+            ).substitute(slug=self.slug, git_sha=git_sha)
+            res = await self.api(client, "get", url, token=token)
             return res
 
     # TODO: deprecated - favour the get_repos_with_languages_graphql() method instead
@@ -1656,9 +2170,10 @@ class Github(TorngitBaseAdapter):
             List[str]: A list of language names
         """
         async with self.get_client() as client:
-            res = await self.api(
-                client, "get", "/repos/{}/languages".format(self.slug), token=token
-            )
+            url = self.count_and_get_url_template(
+                url_name="get_repo_languages"
+            ).substitute(slug=self.slug)
+            res = await self.api(client, "get", url, token=token)
         return list(k.lower() for k in res.keys())
 
     async def get_repos_with_languages_graphql(
@@ -1687,13 +2202,10 @@ class Github(TorngitBaseAdapter):
                         "first": first,
                     },
                 )
-                res = await self.api(
-                    client,
-                    "post",
-                    "/graphql",
-                    body=query,
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    url_name="get_repos_with_languages_graphql"
+                ).substitute()
+                res = await self.api(client, "post", url, body=query, token=token)
                 repoOwner = res["data"]["repositoryOwner"]
                 if not repoOwner:
                     hasNextPage = False
@@ -1725,13 +2237,10 @@ class Github(TorngitBaseAdapter):
         if url:
             body["details_url"] = url
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "patch",
-                "/repos/{}/check-runs/{}".format(self.slug, check_run_id),
-                body=body,
-                token=token,
-            )
+            api_url = self.count_and_get_url_template(
+                url_name="update_check_run"
+            ).substitute(slug=self.slug, check_run_id=check_run_id)
+            res = await self.api(client, "patch", api_url, body=body, token=token)
             return res
 
     # Get information for a GitHub Actions build/workflow run
@@ -1761,12 +2270,10 @@ class Github(TorngitBaseAdapter):
         Run = one instance when the workflow was triggered
         """
         async with self.get_client() as client:
-            res = await self.api(
-                client,
-                "get",
-                "/repos/%s/actions/runs/%s" % (self.slug, run_id),
-                token=token,
-            )
+            url = self.count_and_get_url_template(
+                url_name="get_workflow_run"
+            ).substitute(slug=self.slug, run_id=run_id)
+            res = await self.api(client, "get", url, token=token)
         return self.actions_run_info(res)
 
     def loggable_token(self, token) -> str:
@@ -1815,7 +2322,9 @@ class Github(TorngitBaseAdapter):
             List[str]: A list of branch names
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        url = f"/repos/{self.slug}/commits/{commit_sha}/branches-where-head"
+        url = self.count_and_get_url_template(
+            url_name="get_best_effort_branches"
+        ).substitute(slug=self.slug, commit_sha=commit_sha)
         async with self.get_client() as client:
             res = await self.api(
                 client,
@@ -1829,12 +2338,13 @@ class Github(TorngitBaseAdapter):
     async def is_student(self):
         async with self.get_client([3, 3]) as client:
             try:
-                res = await self.api(
-                    client, "get", "https://education.github.com/api/user"
-                )
+                url = self.count_and_get_url_template(
+                    url_name="is_student"
+                ).substitute()
+                res = await self.api(client, "get", url)
                 return res["student"]
             except TorngitServerUnreachableError:
-                log.warn("Timeout on Github Education API for is_student")
+                log.warning("Timeout on Github Education API for is_student")
                 return False
             except (TorngitUnauthorizedError, TorngitServer5xxCodeError):
                 return False
@@ -1849,17 +2359,16 @@ class Github(TorngitBaseAdapter):
         This is a generator function that yields the pages from webhook deliveries until all have been requested.
         Page size is 50.
         """
-        base_url = "/app/hook/deliveries"
-        url = base_url + "?per_page=50"
         headers = {
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {self.token['key']}",
         }
         async with self.get_client() as client:
+            # self.count_and_get_url_template is called in paginated_api_generator
             async for response in self.paginated_api_generator(
                 client,
                 "get",
-                url,
+                url_name="list_webhook_deliveries",
                 headers=headers,
             ):
                 yield response
@@ -1869,7 +2378,9 @@ class Github(TorngitBaseAdapter):
         Request redelivery of a webhook from github app. Returns True if request is successful, False otherwise.
         docs: https://docs.github.com/en/rest/apps/webhooks?apiVersion=2022-11-28#redeliver-a-delivery-for-an-app-webhook
         """
-        url = f"/app/hook/deliveries/{delivery_id}/attempts"
+        url = self.count_and_get_url_template(
+            url_name="request_webhook_redelivery"
+        ).substitute(delivery_id=delivery_id)
         headers = {
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {self.token['key']}",

@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 
 import pytest
+from prometheus_client import REGISTRY
 
 from shared.torngit.github_enterprise import GithubEnterprise
 
@@ -33,6 +34,10 @@ class TestGithubEnterprise(object):
 
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "post_comment"},
+        )
         client = mocker.MagicMock(
             __aenter__=mocker.AsyncMock(
                 return_value=mocker.MagicMock(
@@ -46,9 +51,7 @@ class TestGithubEnterprise(object):
                 )
             )
         )
-        mocked_fetch = mocker.patch.object(
-            GithubEnterprise, "get_client", return_value=client
-        )
+        mocker.patch.object(GithubEnterprise, "get_client", return_value=client)
         mock_configuration._params["github_enterprise"] = {
             "url": "https://github-enterprise.codecov.dev",
             "api_url": "https://api.github.dev",
@@ -71,6 +74,11 @@ class TestGithubEnterprise(object):
             },
             follow_redirects=False,
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_github_enterprise_total",
+            labels={"endpoint": "post_comment"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_api_client_change_api_host(self, mocker, mock_configuration):
@@ -84,9 +92,7 @@ class TestGithubEnterprise(object):
                 return_value=mocker.MagicMock(text="kowabunga", status_code=200)
             )
         )
-        mocked_fetch = mocker.patch.object(
-            GithubEnterprise, "get_client", return_value=client
-        )
+        mocker.patch.object(GithubEnterprise, "get_client", return_value=client)
         gl = GithubEnterprise(
             repo=dict(service_id="187725", name="codecov-test"),
             owner=dict(username="stevepeak", service_id="109479"),
@@ -99,14 +105,11 @@ class TestGithubEnterprise(object):
         assert res == "kowabunga"
         assert client.request.call_count == 1
         args, kwargs = client.request.call_args
-        print(args)
-        print(kwargs)
         assert kwargs.get("headers") is not None
         assert kwargs.get("headers").get("Host") == "api.ghe.com"
         assert len(args) == 2
         built_url = args[1]
         parsed_url = urlparse(built_url)
-        print(parsed_url)
         assert parsed_url.scheme == "https"
         assert parsed_url.netloc == mock_host
         assert parsed_url.path == url
@@ -125,9 +128,7 @@ class TestGithubEnterprise(object):
                 return_value=mocker.MagicMock(text="kowabunga", status_code=200)
             )
         )
-        mocked_fetch = mocker.patch.object(
-            GithubEnterprise, "get_client", return_value=client
-        )
+        mocker.patch.object(GithubEnterprise, "get_client", return_value=client)
         gl = GithubEnterprise(
             repo=dict(service_id="187725", name="codecov-test"),
             owner=dict(username="stevepeak", service_id="109479"),

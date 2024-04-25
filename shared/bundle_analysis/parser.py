@@ -1,4 +1,6 @@
 import json
+import logging
+import re
 from typing import Optional, Tuple
 
 import ijson
@@ -14,6 +16,8 @@ from shared.bundle_analysis.models import (
     assets_chunks,
     chunks_modules,
 )
+
+log = logging.getLogger(__name__)
 
 
 class Parser:
@@ -139,6 +143,9 @@ class Parser:
 
         # bundle name
         elif prefix == "bundleName":
+            if not re.fullmatch(r"^[\w\d_:/@\.{}\[\]$-]+$", value):
+                log.info(f'bundle name does not match regex: "{value}"')
+                raise Exception(f"invalid bundle name")
             bundle = self.db_session.query(Bundle).filter_by(name=value).first()
             if bundle is None:
                 bundle = Bundle(name=value)

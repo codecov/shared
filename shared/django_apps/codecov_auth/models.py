@@ -7,6 +7,7 @@ from datetime import datetime
 from hashlib import md5
 
 from django.contrib.postgres.fields import ArrayField, CITextField
+from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
 from django.db.models.manager import BaseManager
 from django.forms import ValidationError
@@ -521,6 +522,12 @@ class GithubAppInstallation(
             return False
         # The default app is configured in the installation YAML
         installation_default_app_id = get_config("github", "integration", "id")
+        if installation_default_app_id is None:
+            log.error(
+                "Can't find default app ID in the YAML. Assuming installation is configured to prevent the app from breaking itself.",
+                extra=dict(installation_id=self.id, installation_name=self.name),
+            )
+            return True
         return str(self.app_id) == str(installation_default_app_id)
 
     def repository_queryset(self) -> BaseManager[Repository]:
@@ -678,6 +685,9 @@ class Session(ExportModelOperationsMixin("codecov_auth.session"), models.Model):
     lastseen = models.DateTimeField(null=True)
     # Really an ENUM in db
     type = models.TextField(choices=SessionType.choices)
+    login_session = models.ForeignKey(
+        DjangoSession, on_delete=models.CASCADE, blank=True, null=True
+    )
 
 
 def _generate_key():

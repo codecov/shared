@@ -6,7 +6,11 @@ import httpx
 
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
-from shared.typings.oauth_token_types import OauthConsumerToken, OnRefreshCallback
+from shared.typings.oauth_token_types import (
+    OauthConsumerToken,
+    OnRefreshCallback,
+    Token,
+)
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
@@ -24,7 +28,7 @@ class TorngitBaseAdapter(object):
     _aws_key = None
     _oauth: OauthConsumerToken = None
     _on_token_refresh: OnRefreshCallback = None
-    _token = None
+    _token: Token = None
     verify_ssl = None
 
     valid_languages = (
@@ -49,6 +53,36 @@ class TorngitBaseAdapter(object):
         "objective-c",
         "xtend",
     )
+
+    def __init__(
+        self,
+        oauth_consumer_token: OauthConsumerToken = None,
+        timeouts=None,
+        token: Token = None,
+        token_type_mapping: Dict[TokenType, Dict] = None,
+        on_token_refresh: OnRefreshCallback = None,
+        verify_ssl=None,
+        **kwargs,
+    ):
+        self._timeouts = timeouts or [10, 30]
+        self._token = token
+        self._on_token_refresh = on_token_refresh
+        self._token_type_mapping = token_type_mapping or {}
+        self._oauth = oauth_consumer_token
+        self.data = {"owner": {}, "repo": {}}
+        self.verify_ssl = verify_ssl
+        self.data.update(kwargs)
+        # This has the side effect of initializing the torngit_cache
+        # (if not yet initialized)
+        torngit_cache.initialize()
+
+    def __repr__(self):
+        return "<%s slug=%s ownerid=%s repoid=%s>" % (
+            self.service,
+            self.slug,
+            self.data["owner"].get("ownerid"),
+            self.data["repo"].get("repoid"),
+        )
 
     def get_client(self, timeouts: List[int] = []) -> httpx.AsyncClient:
         if timeouts:
@@ -76,36 +110,6 @@ class TorngitBaseAdapter(object):
         if not self._oauth:
             raise Exception("Oauth consumer token not present")
         return self._oauth
-
-    def __init__(
-        self,
-        oauth_consumer_token: OauthConsumerToken = None,
-        timeouts=None,
-        token=None,
-        token_type_mapping: Dict[TokenType, Dict] = None,
-        on_token_refresh: OnRefreshCallback = None,
-        verify_ssl=None,
-        **kwargs,
-    ):
-        self._timeouts = timeouts or [10, 30]
-        self._token = token
-        self._on_token_refresh = on_token_refresh
-        self._token_type_mapping = token_type_mapping or {}
-        self._oauth = oauth_consumer_token
-        self.data = {"owner": {}, "repo": {}}
-        self.verify_ssl = verify_ssl
-        self.data.update(kwargs)
-        # This has the side effect of initializing the torngit_cache
-        # (if not yet initialized)
-        torngit_cache.initialize()
-
-    def __repr__(self):
-        return "<%s slug=%s ownerid=%s repoid=%s>" % (
-            self.service,
-            self.slug,
-            self.data["owner"].get("ownerid"),
-            self.data["repo"].get("repoid"),
-        )
 
     def _validate_language(self, language):
         if language:
