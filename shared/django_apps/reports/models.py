@@ -76,6 +76,7 @@ class ReportResults(
     state = models.TextField(null=True, choices=ReportResultsStates.choices)
     completed_at = models.DateTimeField(null=True)
     result = models.JSONField(default=dict)
+    random_field_reports = models.IntegerField(null=True)
 
     class Meta:
         app_label = REPORTS_APP_LABEL

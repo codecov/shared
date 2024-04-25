@@ -180,6 +180,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         null=True,
         default=TrialStatus.NOT_STARTED.value,
     )
+    random_field_auth = models.IntegerField(null=True)
     trial_fired_by = models.IntegerField(null=True)
     pretrial_users_count = models.SmallIntegerField(null=True, blank=True)
     free = models.SmallIntegerField(default=0)

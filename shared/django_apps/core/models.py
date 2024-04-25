@@ -375,6 +375,7 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
     diff = models.JSONField(null=True)
     behind_by = models.IntegerField(null=True)
     behind_by_commit = models.TextField(null=True)
+    random_field_pulls = models.IntegerField(null=True)
 
     class Meta:
         db_table = "pulls"
