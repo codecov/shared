@@ -4,6 +4,18 @@ from django.db import migrations
 from shared.django_apps.migration_utils import RiskyRunPython
 
 
+"""
+BEGIN;
+--
+-- Add field branch to testinstance
+--
+ALTER TABLE "reports_testinstance" ADD COLUMN "branch" text NULL;
+--
+-- Add field commitid to testinstance
+--
+ALTER TABLE "reports_testinstance" ADD COLUMN "commitid" text NULL;
+COMMIT;
+"""
 
 class Migration(migrations.Migration):
 
