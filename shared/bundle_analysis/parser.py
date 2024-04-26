@@ -34,16 +34,10 @@ class Parser:
         """
         Resets temporary parser state in order to parse a new file path.
         """
-        # asset name -> asset id
-        self.asset_index = {}
-
-        # chunk external id -> chunk internal id
-        self.chunk_index = {}
-
-        # chunk id -> asset name list
+        # chunk unique id -> asset name list
         self.chunk_asset_names_index = {}
 
-        # module id -> chunk external id list
+        # module name -> chunk external id list
         self.module_chunk_unique_external_ids_index = {}
 
         # misc. top-level info from the stats data (i.e. bundler version, bundle time, etc.)
@@ -57,6 +51,10 @@ class Parser:
         self.module = None
         self.module_chunk_unique_external_ids = []
 
+        self.asset_list = []
+        self.chunk_list = []
+        self.module_list = []
+
     def parse(self, path: str) -> int:
         try:
             self.reset()
@@ -69,10 +67,31 @@ class Parser:
 
             self.session = Session(info={})
             self.db_session.add(self.session)
+            self.db_session.flush()
 
             with open(path, "rb") as f:
                 for event in ijson.parse(f):
                     self._parse_event(event)
+
+                if self.asset_list:
+                    insert_asset = Asset.__table__.insert().values(
+                        self.asset_list
+                    )
+                    self.db_session.execute(insert_asset)
+
+                if self.chunk_list:
+                    insert_chunks = Chunk.__table__.insert().values(
+                        self.chunk_list
+                    )
+                    self.db_session.execute(insert_chunks)
+                
+                if self.module_list:
+                    insert_modules = Module.__table__.insert().values(
+                        self.module_list
+                    )
+                    self.db_session.execute(insert_modules)
+
+                self.db_session.flush()
 
                 # Delete old session/asset/chunk/module with the same bundle name if applicable
                 old_session = (
@@ -151,13 +170,12 @@ class Parser:
                 bundle = Bundle(name=value)
                 self.db_session.add(bundle)
             self.session.bundle = bundle
-            self.db_session.flush()
 
     def _parse_assets_event(self, prefix: str, event: str, value: str):
         if (prefix, event) == ("assets.item", "start_map"):
             # new asset
             assert self.asset is None
-            self.asset = Asset(session=self.session)
+            self.asset = Asset(session_id=self.session.id)
         elif prefix == "assets.item.name":
             self.asset.name = value
         elif prefix == "assets.item.normalized":
@@ -165,10 +183,13 @@ class Parser:
         elif prefix == "assets.item.size":
             self.asset.size = int(value)
         elif (prefix, event) == ("assets.item", "end_map"):
-            # save asset
-            self.db_session.add(self.asset)
-            self.db_session.flush()
-            self.asset_index[self.asset.name] = self.asset.id
+            self.asset_list.append(dict(
+                session_id=self.asset.session_id,
+                name=self.asset.name,
+                normalized_name=self.asset.normalized_name,
+                size=self.asset.size
+            ))
+
             # reset parser state
             self.asset = None
 
@@ -176,7 +197,7 @@ class Parser:
         if (prefix, event) == ("chunks.item", "start_map"):
             # new chunk
             assert self.chunk is None
-            self.chunk = Chunk(session=self.session)
+            self.chunk = Chunk(session_id=self.session.id)
         elif prefix == "chunks.item.id":
             self.chunk.external_id = value
         elif prefix == "chunks.item.uniqueId":
@@ -188,11 +209,15 @@ class Parser:
         elif prefix == "chunks.item.files.item":
             self.chunk_asset_names.append(value)
         elif (prefix, event) == ("chunks.item", "end_map"):
-            # save chunk
-            self.db_session.add(self.chunk)
-            self.db_session.flush()
-            self.chunk_index[self.chunk.external_id] = self.chunk.id
-            self.chunk_asset_names_index[self.chunk.id] = self.chunk_asset_names
+            self.chunk_list.append(dict(
+                session_id=self.chunk.session_id,
+                external_id=self.chunk.external_id,
+                unique_external_id=self.chunk.unique_external_id,
+                initial=self.chunk.initial,
+                entry=self.chunk.entry,
+            ))
+
+            self.chunk_asset_names_index[self.chunk.unique_external_id] = self.chunk_asset_names
             # reset parser state
             self.chunk = None
             self.chunk_asset_names = []
@@ -201,7 +226,7 @@ class Parser:
         if (prefix, event) == ("modules.item", "start_map"):
             # new module
             assert self.module is None
-            self.module = Module(session=self.session)
+            self.module = Module(session_id=self.session.id)
         elif prefix == "modules.item.name":
             self.module.name = value
         elif prefix == "modules.item.size":
@@ -209,11 +234,14 @@ class Parser:
         elif prefix == "modules.item.chunkUniqueIds.item":
             self.module_chunk_unique_external_ids.append(value)
         elif (prefix, event) == ("modules.item", "end_map"):
-            # save module
-            self.db_session.add(self.module)
-            self.db_session.flush()
+            self.module_list.append(dict(
+                session_id=self.module.session_id,
+                name=self.module.name,
+                size=self.module.size,
+            ))
+
             self.module_chunk_unique_external_ids_index[
-                self.module.id
+                self.module.name
             ] = self.module_chunk_unique_external_ids
             # reset parser state
             self.module = None
@@ -222,13 +250,31 @@ class Parser:
     def _create_associations(self):
         # associate chunks to assets
         inserts = []
-        for chunk_id, asset_names in self.chunk_asset_names_index.items():
-            assets = self.db_session.query(Asset).filter(
-                Asset.session == self.session,
-                Asset.name.in_(asset_names),
-            )
+        assets: list[Asset] = self.db_session.query(Asset).filter(
+            Asset.session_id == self.session.id,
+        ).all()
+
+        asset_name_to_id = {
+            asset.name: asset.id for asset in assets
+        }
+
+        chunks: list[Chunk] = self.db_session.query(Chunk).filter(
+            Chunk.session_id == self.session.id,
+        ).all()
+
+        chunk_unique_id_to_id = {
+            chunk.unique_external_id: chunk.id for chunk in chunks
+        }
+
+        modules = self.db_session.query(Module).filter(
+            Module.session_id == self.session.id,
+        ).all()
+
+        for chunk in chunks:
+            chunk_id = chunk.id
+            asset_names = self.chunk_asset_names_index[chunk.unique_external_id]        
             inserts.extend(
-                [dict(asset_id=asset.id, chunk_id=chunk_id) for asset in assets]
+                [dict(asset_id=asset_name_to_id[asset_name], chunk_id=chunk_id) for asset_name in asset_names]
             )
         if inserts:
             self.db_session.execute(assets_chunks.insert(), inserts)
@@ -236,16 +282,17 @@ class Parser:
         # associate modules to chunks
         # FIXME: this isn't quite right - need to sort out how non-JS assets reference chunks
         inserts = []
-        for (
-            module_id,
-            chunk_unique_external_ids,
-        ) in self.module_chunk_unique_external_ids_index.items():
-            chunks = self.db_session.query(Chunk).filter(
-                Chunk.session == self.session,
-                Chunk.unique_external_id.in_(chunk_unique_external_ids),
-            )
+
+        modules: list[Module] = self.db_session.query(Module).filter(
+            Module.session_id == self.session.id,
+        )
+        for module in modules:
+            module_id = module.id
+            chunk_unique_external_ids = self.module_chunk_unique_external_ids_index[module.name]
+
             inserts.extend(
-                [dict(chunk_id=chunk.id, module_id=module_id) for chunk in chunks]
+                [dict(chunk_id=chunk_unique_id_to_id[unique_external_id], module_id=module_id) for unique_external_id in chunk_unique_external_ids]
             )
         if inserts:
             self.db_session.execute(chunks_modules.insert(), inserts)
+
