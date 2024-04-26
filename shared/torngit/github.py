@@ -1501,9 +1501,9 @@ class Github(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # https://developer.github.com/v3/repos/hooks/#create-a-hook
         async with self.get_client() as client:
-            api_url = self.count_and_get_url_template(url_name="post_webhook").substitute(
-                slug=self.slug
-            )
+            api_url = self.count_and_get_url_template(
+                url_name="post_webhook"
+            ).substitute(slug=self.slug)
             res = await self.api(
                 client,
                 "post",

@@ -1,9 +1,9 @@
 import logging
 
 import redis_lock
-from django.conf import settings
 from django.core.management.commands.migrate import Command as MigrateCommand
 from django.db import connections
+from django.db import transaction as django_transaction
 from django.db.utils import ProgrammingError
 
 from shared.django_apps.utils.config import RUN_ENV
@@ -99,6 +99,7 @@ class Command(MigrateCommand):
                 self._fake_initial_migrations(cursor, args, options)
 
             super().handle(*args, **options)
+            django_transaction.commit(database)
         except:
             log.info("Codecov migrations failed.")
             raise
