@@ -130,7 +130,7 @@ def mark_installation_as_rate_limited(
     redis_connection: Redis,
     installation_id: int,
     ttl_seconds: int,
-    app_id: int | None,
+    app_id: Optional[int],
 ) -> None:
     """Marks a installation as being rate-limited in Redis.
     Use is_installation_rate_limited to check if it is rate-limited or not.
@@ -157,7 +157,7 @@ def mark_installation_as_rate_limited(
 
 
 def is_installation_rate_limited(
-    redis_connection: Redis, installation_id: int, app_id: int | None = None
+    redis_connection: Redis, installation_id: int, app_id: Optional[int] = None
 ) -> bool:
     app_id = app_id or "default_app"
     try:
