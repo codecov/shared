@@ -1,9 +1,9 @@
-from typing import Dict, List, TypedDict
+from typing import Dict, List, Optional, TypedDict
 
 
 class OwnerInfo(TypedDict):
     service_id: str
-    ownerid: int | None
+    ownerid: Optional[int]
     username: str
 
 
@@ -12,7 +12,7 @@ class RepoInfo(TypedDict):
     using_integration: bool
     service_id: str
     repoid: int
-    private: bool | None
+    private: Optional[bool]
 
 
 class GithubInstallationInfo(TypedDict):
@@ -21,12 +21,12 @@ class GithubInstallationInfo(TypedDict):
     installation_id: int
     # The default app (configured via yaml) doesn't need this info.
     # All other apps need app_id and pem_path
-    app_id: int | None = None
-    pem_path: str | None = None
+    app_id: Optional[int] = None
+    pem_path: Optional[str] = None
 
 
 class TorngitInstanceData(TypedDict):
     owner: OwnerInfo | Dict
     repo: RepoInfo | Dict
-    fallback_installations: List[GithubInstallationInfo] | None
-    installation: GithubInstallationInfo | None
+    fallback_installations: List[Optional[GithubInstallationInfo]]
+    installation: Optional[GithubInstallationInfo]
