@@ -37,7 +37,7 @@ httpx==0.23.0
     # via
     #   -r tests/requirements.in
     #   respx
-idna==3.3
+idna==3.7
     # via
     #   anyio
     #   requests
@@ -88,9 +88,7 @@ requests==2.31.0
 respx==0.19.2
     # via -r tests/requirements.in
 rfc3986[idna2008]==1.5.0
-    # via
-    #   httpx
-    #   rfc3986
+    # via httpx
 six==1.16.0
     # via python-dateutil
 sniffio==1.2.0
