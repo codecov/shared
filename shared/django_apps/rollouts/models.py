@@ -47,7 +47,10 @@ class FeatureFlag(models.Model):
     )
     # Represents if an experiment has been cleaned up and
     # is no longer running anymore
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(
+        default=True,
+        help_text="This should be on if the experiment is currently running. Otherwise turn it off if the experiment has finished and is cleaned up",
+    )
 
     rollout_identifier = models.CharField(
         max_length=1,
@@ -101,8 +104,8 @@ class FeatureFlagVariant(models.Model):
     override_emails = ArrayField(
         base_field=models.CharField(), default=list, blank=True
     )
-    # Org ids
-    override_orgs_ids = ArrayField(
+    # Org ids TODO
+    override_org_ids = ArrayField(
         base_field=models.IntegerField(), default=list, blank=True
     )
 
