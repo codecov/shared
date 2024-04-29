@@ -81,6 +81,7 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=1,
             override_owner_ids=[123],
+            override_repo_ids=[321],
         )
         FeatureFlagVariant.objects.create(
             name="overrides_b",
@@ -88,10 +89,11 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=2,
             override_owner_ids=[321],
+            override_repo_ids=[123],
         )
 
         # If an identifier was manually opted into a specific variant, skip the
-        # hashing and just return the value for that variant.
+        # hashing/bucket calculation and just return the value for that variant.
         feature = Feature(
             "overrides",
         )
@@ -123,7 +125,7 @@ class TestFeature(TestCase):
         )
 
         # If an identifier was manually opted into a specific variant, skip the
-        # hashing and just return the value for that variant.
+        # hashing/bucket calculation and just return the value for that variant.
         feature = Feature(
             "overrides",
         )
@@ -145,6 +147,7 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=1,
             override_repo_ids=[123],
+            override_owner_ids=[321],
         )
         FeatureFlagVariant.objects.create(
             name="overrides_b",
@@ -152,10 +155,11 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=2,
             override_repo_ids=[321],
+            override_owner_ids=[123],
         )
 
         # If an identifier was manually opted into a specific variant, skip the
-        # hashing and just return the value for that variant.
+        # hashing/bucket calculation and just return the value for that variant.
         feature = Feature(
             "overrides",
         )
@@ -177,6 +181,7 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=1,
             override_org_ids=[123],
+            override_owner_ids=[321],
         )
         FeatureFlagVariant.objects.create(
             name="overrides_b",
@@ -184,10 +189,11 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=2,
             override_org_ids=[321],
+            override_owner_ids=[123],
         )
 
         # If an identifier was manually opted into a specific variant, skip the
-        # hashing and just return the value for that variant.
+        # hashing/bucket calculation and just return the value for that variant.
         feature = Feature(
             "overrides",
         )

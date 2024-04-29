@@ -104,7 +104,7 @@ class FeatureFlagVariant(models.Model):
     override_emails = ArrayField(
         base_field=models.CharField(), default=list, blank=True
     )
-    # Org ids TODO
+    # Foreign key to Owner model (orgs and users are both Owner model)
     override_org_ids = ArrayField(
         base_field=models.IntegerField(), default=list, blank=True
     )
