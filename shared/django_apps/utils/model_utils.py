@@ -1,8 +1,10 @@
 import json
 import logging
+from random import choice
 from typing import Any, Callable, Optional
 
 from shared.api_archive.archive import ArchiveService
+from shared.django_apps.rollouts.models import RolloutIdentifier
 from shared.storage.exceptions import FileNotInStorageError
 from shared.utils.ReportEncoder import ReportEncoder
 
@@ -144,3 +146,24 @@ class ArchiveField:
         else:
             setattr(obj, self.db_field_name, value)
         setattr(obj, self.cached_value_property_name, value)
+
+
+def default_random_salt():
+    chars = []
+    ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for _ in range(16):
+        chars.append(choice(ALPHABET))
+    return "".join(chars)
+
+
+def rollout_identifier_to_override_string(rollout_identifer: RolloutIdentifier):
+    if rollout_identifer == RolloutIdentifier.OWNER_ID:
+        return "override_owner_ids"
+    elif rollout_identifer == RolloutIdentifier.REPO_ID:
+        return "override_repo_ids"
+    elif rollout_identifer == RolloutIdentifier.EMAIL:
+        return "override_emails"
+    elif rollout_identifer == RolloutIdentifier.ORG_ID:
+        return "override_org_ids"
+    else:
+        return ""
