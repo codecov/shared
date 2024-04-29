@@ -56,3 +56,4 @@ class SimpleMetric(BaseModel):
 
     name = models.TextField(null=False)
     value = models.FloatField(null=False)
+    random_field = models.TextField(null=True)
