@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="featureflagvariant",
-            name="override_orgs_ids",
+            name="override_org_ids",
             field=django_better_admin_arrayfield.models.fields.ArrayField(
                 base_field=models.IntegerField(), blank=True, default=list, size=None
             ),
