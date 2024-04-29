@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, TypedDict
+from typing import Dict, List, Optional, TypedDict, Union
 
 
 class OwnerInfo(TypedDict):
@@ -26,7 +26,7 @@ class GithubInstallationInfo(TypedDict):
 
 
 class TorngitInstanceData(TypedDict):
-    owner: OwnerInfo | Dict
-    repo: RepoInfo | Dict
+    owner: Union[OwnerInfo, Dict]
+    repo: Union[RepoInfo, Dict]
     fallback_installations: List[Optional[GithubInstallationInfo]]
     installation: Optional[GithubInstallationInfo]
