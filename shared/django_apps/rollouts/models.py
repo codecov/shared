@@ -52,6 +52,9 @@ class FeatureFlag(models.Model):
         help_text="This should be on if the experiment is currently running. Otherwise turn it off if the experiment has finished and is cleaned up",
     )
 
+    # The field we're rolling out over. Users with the same identifier
+    # will always receive the same variant. EG: if you rollout over org_id,
+    # then users in the same org see the same variant
     rollout_identifier = models.CharField(
         max_length=1,
         choices=RolloutIdentifier.choices,
