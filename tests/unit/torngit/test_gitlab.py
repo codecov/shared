@@ -1,20 +1,18 @@
 import asyncio
 from unittest.mock import MagicMock
 from urllib.parse import parse_qs
-from urllib.request import Request
 
 import httpx
 import pytest
 import respx
+from prometheus_client import REGISTRY
 
 from shared.torngit.base import TokenType
 from shared.torngit.exceptions import (
     TorngitCantRefreshTokenError,
     TorngitClientError,
-    TorngitClientGeneralError,
     TorngitObjectNotFoundError,
     TorngitRefreshTokenFailedError,
-    TorngitServer5xxCodeError,
 )
 from shared.torngit.gitlab import Gitlab
 
@@ -54,6 +52,10 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_commit_statuses"},
+        )
         mocked_fetch = mocker.patch.object(
             Gitlab,
             "api",
@@ -79,9 +81,18 @@ class TestUnitGitlab(object):
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
         assert res == "failure"
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_commit_statuses"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses_success(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_commit_statuses"},
+        )
         mocked_fetch = mocker.patch.object(
             Gitlab,
             "api",
@@ -113,9 +124,18 @@ class TestUnitGitlab(object):
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
         assert res == "success"
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_commit_statuses"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_commit_statuses_pending(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_commit_statuses"},
+        )
         mocked_fetch = mocker.patch.object(
             Gitlab,
             "api",
@@ -147,11 +167,24 @@ class TestUnitGitlab(object):
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
         assert res == "pending"
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_commit_statuses"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_find_pull_request_by_commit_endpoint_doesnt_find_old_does(
         self, mocker, valid_handler
     ):
+        before_1 = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "find_pull_request_with_commit"},
+        )
+        before_2 = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "find_pull_request"},
+        )
         commit_sha = "c739768fcac68144a3a6d82305b9c4106934d31a"
         first_result = []
         second_result = [{"sha": "aaaa", "iid": 123}, {"sha": commit_sha, "iid": 986}]
@@ -159,6 +192,16 @@ class TestUnitGitlab(object):
         mocker.patch.object(Gitlab, "api", side_effect=results)
         res = await valid_handler.find_pull_request(commit_sha)
         assert res == 986
+        after_1 = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "find_pull_request_with_commit"},
+        )
+        after_2 = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "find_pull_request"},
+        )
+        assert after_1 - before_1 == 1
+        assert after_2 - before_2 == 1
 
     def test_get_token_by_type_if_none(self):
         instance = Gitlab(
@@ -199,6 +242,10 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_gitlab_get_source_path_with_spaces(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_source"},
+        )
         with respx.mock:
             mocked_route = respx.get(
                 "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=master"
@@ -210,11 +257,20 @@ class TestUnitGitlab(object):
             )
             await valid_handler.get_source("tests with space.py", "master")
         assert mocked_route.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_source"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_fail_terminates_unavailable(
         self, mocker, valid_handler
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
         with pytest.raises(TorngitRefreshTokenFailedError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
@@ -225,11 +281,20 @@ class TestUnitGitlab(object):
                 await valid_handler.refresh_token(valid_handler.get_client())
             assert exp.code == 555
         mocked_refresh.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_fail_terminates_bad_request(
         self, mocker, valid_handler
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
         with pytest.raises(TorngitRefreshTokenFailedError) as exp:
             with respx.mock:
                 mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
@@ -240,11 +305,20 @@ class TestUnitGitlab(object):
                 await valid_handler.refresh_token(valid_handler.get_client())
             assert exp.code == 555
         assert mocked_refresh.call_count == 1
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_fail_terminates_no_refresh_token_saved(
         self, mocker, valid_handler
     ):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
         valid_handler._token = {"access_token": "old_token_without_refresh"}
         with pytest.raises(TorngitCantRefreshTokenError) as exp:
             with respx.mock:
@@ -257,9 +331,19 @@ class TestUnitGitlab(object):
             assert exp.code == 555
             assert exp.response_data is None
         assert mocked_refresh.call_count == 0
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+        assert after - before == 0
 
     @pytest.mark.asyncio
     async def test_gitlab_double_refresh(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+
         def side_effect(request, *args, **kwargs):
             parsed_content = parse_qs(request.content)
             refresh_token = parsed_content[b"refresh_token"][0]
@@ -295,9 +379,19 @@ class TestUnitGitlab(object):
 
         # Make sure that changing the token doesn't change the _oauth
         assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+        assert after - before == 2
 
     @pytest.mark.asyncio
     async def test_gitlab_refresh_after_failed_request(self, mocker, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+
         def side_effect(request, *args, **kwargs):
             token = request.headers["Authorization"]
             if token == "Bearer access_token":
@@ -339,6 +433,11 @@ class TestUnitGitlab(object):
                 "refresh_token": "new_refresh_token",
             }
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "refresh_token"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_distance_in_commits(self):
@@ -356,6 +455,10 @@ class TestUnitGitlab(object):
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_404(self):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
         with respx.mock:
             my_route = respx.get(
                 "https://gitlab.com/api/v4/projects/187725/merge_requests/4/diffs"
@@ -378,9 +481,18 @@ class TestUnitGitlab(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_get_pull_request_files_403(self):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
         with respx.mock:
             my_route = respx.get(
                 "https://gitlab.com/api/v4/projects/187725/merge_requests/4/diffs"
@@ -403,9 +515,18 @@ class TestUnitGitlab(object):
                 res = await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Gitlab API: 403"
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "get_pull_request_files"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_post_webhook(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "post_webhook"},
+        )
         m = mocker.patch("shared.torngit.gitlab.Gitlab.api")
 
         handler = Gitlab(
@@ -431,9 +552,18 @@ class TestUnitGitlab(object):
             },
             "token": {"key": "a280a280a280a280a280a280a280a280a280a280"},
         }
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "post_webhook"},
+        )
+        assert after - before == 1
 
     @pytest.mark.asyncio
     async def test_edit_webhook(self, mocker):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "edit_webhook"},
+        )
         m = mocker.patch("shared.torngit.gitlab.Gitlab.api")
 
         handler = Gitlab(
@@ -460,3 +590,29 @@ class TestUnitGitlab(object):
             },
             "token": {"key": "a280a280a280a280a280a280a280a280a280a280"},
         }
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "edit_webhook"},
+        )
+        assert after - before == 1
+
+    @pytest.mark.asyncio
+    async def test_count_and_get_url_template(self, valid_handler):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "fetch_and_handle_errors_retry"},
+        )
+        res = valid_handler.count_and_get_url_template(
+            url_name="fetch_and_handle_errors_retry"
+        )
+        assert res == ""
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "fetch_and_handle_errors_retry"},
+        )
+        assert after - before == 1
+
+    @pytest.mark.asyncio
+    async def test_count_and_get_url_template_unrecognized(self, valid_handler):
+        with pytest.raises(KeyError):
+            valid_handler.count_and_get_url_template(url_name="whoops")

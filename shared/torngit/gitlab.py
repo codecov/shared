@@ -2,13 +2,14 @@ import json
 import logging
 import os
 from base64 import b64decode
+from string import Template
 from typing import List
 from urllib.parse import quote, urlencode
 
 import httpx
 
 from shared.config import get_config
-from shared.metrics import metrics
+from shared.metrics import Counter, metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
@@ -29,24 +30,242 @@ log = logging.getLogger(__name__)
 METRICS_PREFIX = "services.torngit.gitlab"
 
 
+GITLAB_API_CALL_COUNTER = Counter(
+    "git_provider_api_calls_gitlab",
+    "Number of times gitlab called this endpoint",
+    ["endpoint"],
+)
+
+
+GITLAB_API_ENDPOINTS = {
+    "fetch_and_handle_errors_retry": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="fetch_and_handle_errors_retry"
+        ),
+        "url_template": "",  # no url template, just counter
+    },
+    "get_best_effort_branches": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_best_effort_branches"),
+        "url_template": Template(
+            "/projects/${service_id}/repository/commits/${commit_sha}/refs?type=branch"
+        ),
+    },
+    "get_ancestors_tree": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_ancestors_tree"),
+        "url_template": Template("/projects/${service_id}/repository/commits"),
+    },
+    "list_files": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_files"),
+        "url_template": Template("/projects/${service_id}/repository/tree"),
+    },
+    "get_compare": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_compare"),
+        "url_template": Template(
+            "/projects/${service_id}/repository/compare/?from=${base}&to=${head}"
+        ),
+    },
+    "get_source": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_source"),
+        "url_template": Template("/projects/${service_id}/repository/files/${path}"),
+    },
+    "get_repo_languages": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_repo_languages"),
+        "url_template": Template("/projects/${service_id}/languages"),
+    },
+    "get_repository_without_service_id": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="get_repository_without_service_id"
+        ),
+        "url_template": Template("/projects/${slug}"),
+    },
+    "get_repository_with_service_id": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="get_repository_with_service_id"
+        ),
+        "url_template": Template("/projects/${service_id}"),
+    },
+    "get_commit_diff": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_commit_diff"),
+        "url_template": Template(
+            "/projects/${service_id}/repository/commits/${commit}/diff"
+        ),
+    },
+    "get_is_admin": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_is_admin"),
+        "url_template": Template("/groups/${service_id}/members/all/${user_id}"),
+    },
+    "get_authenticated": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authenticated"),
+        "url_template": Template("/projects/${service_id}"),
+    },
+    "find_pull_request_with_commit": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="find_pull_request_with_commit"
+        ),
+        "url_template": Template(
+            "/projects/${service_id}/repository/commits/${commit}/merge_requests"
+        ),
+    },
+    "find_pull_request": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="find_pull_request"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests?state=${gitlab_state}"
+        ),
+    },
+    "get_pull_requests": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_requests"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests?state=${state}"
+        ),
+    },
+    "get_branch": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_branch"),
+        "url_template": Template("/projects/${service_id}/repository/branches/${name}"),
+    },
+    "get_branches": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_branches"),
+        "url_template": Template("/projects/${service_id}/repository/branches"),
+    },
+    "get_pull_request_commits": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_request_commits"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests/${pullid}/commits"
+        ),
+    },
+    "get_commit": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_commit"),
+        "url_template": Template(
+            "/projects/${service_id}/repository/commits/${commit}"
+        ),
+    },
+    "get_authors": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authors"),
+        "url_template": Template("/users"),
+    },
+    "delete_comment": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="delete_comment"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests/${pullid}/notes/${commentid}"
+        ),
+    },
+    "edit_comment": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="edit_comment"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests/${pullid}/notes/${commentid}"
+        ),
+    },
+    "post_comment": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="post_comment"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests/${pullid}/notes"
+        ),
+    },
+    "get_commit_statuses": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_commit_statuses"),
+        "url_template": Template(
+            "/projects/${service_id}/repository/commits/${commit}/statuses"
+        ),
+    },
+    "set_commit_status": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="set_commit_status"),
+        "url_template": Template("/projects/${service_id}/statuses/${commit}"),
+    },
+    "set_commit_status_merge_commit": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status_merge_commit"
+        ),
+        "url_template": Template("/projects/${service_id}/statuses/${merge_commit}"),
+    },
+    "get_pull_request_files": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_request_files"),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests/${pullid}/diffs"
+        ),
+    },
+    "get_pull_request": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_request"),
+        "url_template": Template("/projects/${service_id}/merge_requests/${pullid}"),
+    },
+    "get_pull_request_get_commits": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_get_commits"
+        ),
+        "url_template": Template(
+            "/projects/${service_id}/merge_requests/${pullid}/commits"
+        ),
+    },
+    "get_pull_request_get_parent": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_get_parent"
+        ),
+        "url_template": Template(
+            "/projects/${service_id}/repository/commits/${first_commit}"
+        ),
+    },
+    "list_repos_get_user": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_user"),
+        "url_template": Template("/user"),
+    },
+    "list_repos_get_groups": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_groups"),
+        "url_template": Template("/groups/${username}"),
+    },
+    "list_repos_get_user_and_groups": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_user_and_groups"
+        ),
+        "url_template": Template("/groups?per_page=100"),
+    },
+    "list_repos_get_owned_projects": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_owned_projects"
+        ),
+        "url_template": Template("/projects?owned=true&per_page=50&page=${page}"),
+    },
+    "list_repos_get_projects": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_projects"),
+        "url_template": Template(
+            "/groups/${group_id}/projects?per_page=50&page=${page}"
+        ),
+    },
+    "get_owner_info_from_repo": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_owner_info_from_repo"),
+        "url_template": Template("/users?username=${username}"),
+    },
+    "delete_webhook": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="delete_webhook"),
+        "url_template": Template("/projects/${service_id}/hooks/${hookid}"),
+    },
+    "edit_webhook": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="edit_webhook"),
+        "url_template": Template("/projects/${service_id}/hooks/${hookid}"),
+    },
+    "post_webhook": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="post_webhook"),
+        "url_template": Template("/projects/${service_id}/hooks"),
+    },
+    "get_authenticated_user": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authenticated_user"),
+        "url_template": Template("/oauth/token"),
+    },
+    "refresh_token": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="refresh_token"),
+        "url_template": Template("/oauth/token"),
+    },
+    "list_teams": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_teams"),
+        "url_template": Template("/groups"),
+    },
+}
+
+# uncounted urls
+external_endpoint_template = Template("${username}/${name}/commit/${commitid}")
+
+
 class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
     api_url = "https://gitlab.com/api/v{}"
-    urls = dict(
-        owner="{username}",
-        user="{username}",
-        repo="{username}/{name}",
-        issues="{username}/{name}/issues/%(issueid)s",
-        commit="{username}/{name}/commit/{commitid}",
-        commits="{username}/{name}/commits",
-        compare="{username}/{name}/compare/%(base)s...%(head)s",
-        create_file="{username}/{name}/new/%(branch)s?file_name=%(path)s&content=%(content)s",
-        src="{username}/{name}/blob/%(commitid)s/%(path)s",
-        branch="{username}/{name}/tree/%(branch)s",
-        pull="{username}/{name}/merge_requests/%(pullid)s",
-        tree="{username}/{name}/tree/%(commitid)s",
-    )
 
     @property
     def redirect_uri(self):
@@ -55,6 +274,11 @@ class Gitlab(TorngitBaseAdapter):
             return from_config
         base = get_config("setup", "codecov_url", default="https://codecov.io")
         return base + "/login/gitlab"
+
+    @classmethod
+    def count_and_get_url_template(cls, url_name):
+        GITLAB_API_ENDPOINTS[url_name]["counter"].inc()
+        return GITLAB_API_ENDPOINTS[url_name]["url_template"]
 
     async def fetch_and_handle_errors(
         self,
@@ -87,11 +311,8 @@ class Gitlab(TorngitBaseAdapter):
             body = json.dumps(body)
         url = url_concat(url_path, args).replace(" ", "%20")
 
-        current_retry = 0
         max_retries = 2
-        while current_retry < max_retries:
-            current_retry += 1
-
+        for current_retry in range(1, max_retries + 1):
             if token or self.token:
                 headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
@@ -100,6 +321,9 @@ class Gitlab(TorngitBaseAdapter):
                     res = await client.request(
                         method.upper(), url, headers=headers, data=body
                     )
+                    if current_retry > 1:
+                        # count retries without getting a url
+                        self.count_and_get_url_template("fetch_and_handle_errors_retry")
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
                     logged_body = res.text
@@ -170,8 +394,9 @@ class Gitlab(TorngitBaseAdapter):
                 **creds_to_send,
             )
         )
+        url = self.count_and_get_url_template("refresh_token").substitute()
         res = await client.request(
-            "POST", self.service_url + "/oauth/token", data=params, params=params
+            "POST", self.service_url + url, data=params, params=params
         )
         if res.status_code >= 300:
             raise TorngitRefreshTokenFailedError(res)
@@ -196,6 +421,7 @@ class Gitlab(TorngitBaseAdapter):
         base_url,
         default_kwargs,
         max_per_page,
+        counter_name,
         max_number_of_pages=None,
         token=None,
     ):
@@ -214,6 +440,9 @@ class Gitlab(TorngitBaseAdapter):
                     client, "GET", base_url, **current_kwargs
                 )
                 count_so_far += 1
+                if count_so_far > 1:
+                    # count calls after initial call
+                    self.count_and_get_url_template(counter_name)
                 yield None if current_result.status_code == 204 else current_result.json()
                 if (
                     max_number_of_pages is not None
@@ -227,14 +456,13 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_authenticated_user(self, code, redirect_uri=None):
         """
-        Get's access_token and user's details from gitlab.
-
+        Gets access_token and user's details from gitlab.
         Exchanges the code for a proper access_token and refresh_token pair.
-        Get's user details from /user endpoint from GitLab.
+        Gets user details from /user endpoint from GitLab.
         Returns everything.
 
         Args:
-            code: the code to be redeemed for a access_token / refresh_token pair
+            code: the code to be redeemed for an access_token / refresh_token pair
             redirect_uri: !deprecated. The uri to redirect to. Needs to match redirect_uri used to get the code.
         """
         creds_from_token = self._oauth_consumer_token()
@@ -242,11 +470,11 @@ class Gitlab(TorngitBaseAdapter):
             client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
         )
         redirect_uri = redirect_uri or self.redirect_uri
-
+        url = self.count_and_get_url_template("get_authenticated_user").substitute()
         # http://doc.gitlab.com/ce/api/oauth2.html
         res = await self.api(
             "post",
-            self.service_url + "/oauth/token",
+            self.service_url + url,
             body=urlencode(
                 dict(
                     code=code,
@@ -270,9 +498,12 @@ class Gitlab(TorngitBaseAdapter):
     async def post_webhook(self, name, url, events, secret, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # http://doc.gitlab.com/ce/api/projects.html#add-project-hook
+        api_path = self.count_and_get_url_template("post_webhook").substitute(
+            service_id=self.data["repo"]["service_id"]
+        )
         res = await self.api(
             "post",
-            "/projects/%s/hooks" % self.data["repo"]["service_id"],
+            api_path,
             body=dict(
                 url=url,
                 enable_ssl_verification=self.verify_ssl
@@ -288,9 +519,12 @@ class Gitlab(TorngitBaseAdapter):
     async def edit_webhook(self, hookid, name, url, events, secret, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # http://doc.gitlab.com/ce/api/projects.html#edit-project-hook
+        api_path = self.count_and_get_url_template("edit_webhook").substitute(
+            service_id=self.data["repo"]["service_id"], hookid=hookid
+        )
         return await self.api(
             "put",
-            "/projects/%s/hooks/%s" % (self.data["repo"]["service_id"], hookid),
+            api_path,
             body=dict(
                 url=url,
                 enable_ssl_verification=self.verify_ssl
@@ -305,10 +539,13 @@ class Gitlab(TorngitBaseAdapter):
     async def delete_webhook(self, hookid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
         # http://docs.gitlab.com/ce/api/projects.html#delete-project-hook
+        url = self.count_and_get_url_template("delete_webhook").substitute(
+            service_id=self.data["repo"]["service_id"], hookid=hookid
+        )
         try:
             await self.api(
                 "delete",
-                "/projects/%s/hooks/%s" % (self.data["repo"]["service_id"], hookid),
+                url,
                 token=token,
             )
         except TorngitClientError as ce:
@@ -342,9 +579,10 @@ class Gitlab(TorngitBaseAdapter):
         elif repo["namespace"]["kind"] == "user":
             # we need to get the user id (namespace id != user id)
             username = repo["namespace"]["path"]
-            user_info = await self.api(
-                "get", "/users?username={}".format(username), token=token
-            )
+            url = self.count_and_get_url_template(
+                "get_owner_info_from_repo"
+            ).substitute(username=username)
+            user_info = await self.api("get", url, token=token)
             service_id = user_info[0].get("id") if user_info[0] else None
         elif repo["namespace"]["kind"] == "group":
             # we will use the namespace id as its the same as the group/subgroup id
@@ -361,7 +599,8 @@ class Gitlab(TorngitBaseAdapter):
         """
         V4 will return ALL projects, so we need to loop groups first
         """
-        user = await self.api("get", "/user", token=token)
+        user_url = self.count_and_get_url_template("list_repos_get_user").substitute()
+        user = await self.api("get", user_url, token=token)
         user["is_user"] = True
         if username:
             if username.lower() == user["username"].lower():
@@ -369,12 +608,16 @@ class Gitlab(TorngitBaseAdapter):
                 groups = [user]
             else:
                 # a group
-                groups = [
-                    (await self.api("get", "/groups/{}".format(username), token=token))
-                ]
+                groups_url = self.count_and_get_url_template(
+                    "list_repos_get_groups"
+                ).substitute(username=username)
+                groups = [(await self.api("get", groups_url, token=token))]
         else:
             # user and all groups
-            groups = await self.api("get", "/groups?per_page=100", token=token)
+            url = self.count_and_get_url_template(
+                "list_repos_get_user_and_groups"
+            ).substitute()
+            groups = await self.api("get", url, token=token)
             groups.append(user)
 
         data = []
@@ -384,20 +627,16 @@ class Gitlab(TorngitBaseAdapter):
                 page += 1
                 # http://doc.gitlab.com/ce/api/projects.html#projects
                 if group.get("is_user"):
-                    repos = await self.api(
-                        "get",
-                        "/projects?owned=true&per_page=50&page={}".format(page),
-                        token=token,
-                    )
+                    url = self.count_and_get_url_template(
+                        "list_repos_get_owned_projects"
+                    ).substitute(page=page)
+                    repos = await self.api("get", url, token=token)
                 else:
                     try:
-                        repos = await self.api(
-                            "get",
-                            "/groups/{}/projects?per_page=50&page={}".format(
-                                group["id"], page
-                            ),
-                            token=token,
-                        )
+                        url = self.count_and_get_url_template(
+                            "list_repos_get_projects"
+                        ).substitute(group_id=group["id"], page=page)
+                        repos = await self.api("get", url, token=token)
                     except TorngitClientError as e:
                         if e.code == 404:
                             log.warning(f"Group with id {group['id']} does not exist")
@@ -456,8 +695,13 @@ class Gitlab(TorngitBaseAdapter):
     async def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups
         all_groups = []
+        url = self.count_and_get_url_template("list_teams").substitute()
         async_generator = self.make_paginated_call(
-            "/groups", max_per_page=100, default_kwargs={}, token=token
+            url,
+            max_per_page=100,
+            default_kwargs={},
+            token=token,
+            counter_name="list_teams",
         )
         async for page in async_generator:
             groups = page
@@ -477,14 +721,11 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
+        url = self.count_and_get_url_template("get_pull_request").substitute(
+            service_id=self.data["repo"]["service_id"], pullid=pullid
+        )
         try:
-            pull = await self.api(
-                "get",
-                "/projects/{}/merge_requests/{}".format(
-                    self.data["repo"]["service_id"], pullid
-                ),
-                token=token,
-            )
+            pull = await self.api("get", url, token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -494,7 +735,6 @@ class Gitlab(TorngitBaseAdapter):
             raise
 
         if pull:
-            parent = None
             if pull.get("diff_refs", {}) and pull.get("diff_refs", {}).get("base_sha"):
                 parent = pull.get("diff_refs", {}).get("base_sha")
             else:
@@ -503,13 +743,10 @@ class Gitlab(TorngitBaseAdapter):
                     extra=dict(pullid=pullid, pull_information=pull),
                 )
                 # get list of commits and first one out
-                all_commits = await self.api(
-                    "get",
-                    "/projects/{}/merge_requests/{}/commits".format(
-                        self.data["repo"]["service_id"], pullid
-                    ),
-                    token=token,
-                )
+                url = self.count_and_get_url_template(
+                    "get_pull_request_get_commits"
+                ).substitute(service_id=self.data["repo"]["service_id"], pullid=pullid)
+                all_commits = await self.api("get", url, token=token)
                 log.info(
                     "List of commits is fetched for PR calculation",
                     extra=dict(
@@ -524,15 +761,13 @@ class Gitlab(TorngitBaseAdapter):
                     parent = first_commit["parent_ids"][0]
                 else:
                     # try querying the parent commit for this parent
-                    parent = (
-                        await self.api(
-                            "get",
-                            "/projects/{}/repository/commits/{}".format(
-                                self.data["repo"]["service_id"], first_commit["id"]
-                            ),
-                            token=token,
-                        )
-                    )["parent_ids"][0]
+                    url = self.count_and_get_url_template(
+                        "get_pull_request_get_parent"
+                    ).substitute(
+                        service_id=self.data["repo"]["service_id"],
+                        first_commit=first_commit["id"],
+                    )
+                    parent = (await self.api("get", url, token=token))["parent_ids"][0]
 
             if pull["state"] == "locked":
                 pull["state"] = "closed"
@@ -554,14 +789,11 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_pull_request_files(self, pullid, token=None):
         # https://docs.gitlab.com/ee/api/merge_requests.html#list-merge-request-diffs
+        url = self.count_and_get_url_template("get_pull_request_files").substitute(
+            service_id=self.data["repo"]["service_id"], pullid=pullid
+        )
         try:
-            diffs = await self.api(
-                "get",
-                "/projects/{}/merge_requests/{}/diffs".format(
-                    self.data["repo"]["service_id"], pullid
-                ),
-                token=token,
-            )
+            diffs = await self.api("get", url, token=token)
             filenames = [data.get("new_path") for data in diffs]
             return filenames
         except TorngitClientError as ce:
@@ -586,10 +818,13 @@ class Gitlab(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.status)
         # https://docs.gitlab.com/ce/api/commits.html#post-the-build-status-to-a-commit
         status = dict(error="failed", failure="failed").get(status, status)
+        api_path = self.count_and_get_url_template("set_commit_status").substitute(
+            service_id=self.data["repo"]["service_id"], commit=commit
+        )
         try:
             res = await self.api(
                 "post",
-                "/projects/%s/statuses/%s" % (self.data["repo"]["service_id"], commit),
+                api_path,
                 body=dict(
                     state=status,
                     target_url=url,
@@ -603,10 +838,14 @@ class Gitlab(TorngitBaseAdapter):
             raise
 
         if merge_commit:
+            api_path = self.count_and_get_url_template(
+                "set_commit_status_merge_commit"
+            ).substitute(
+                service_id=self.data["repo"]["service_id"], merge_commit=merge_commit[0]
+            )
             await self.api(
                 "post",
-                "/projects/%s/statuses/%s"
-                % (self.data["repo"]["service_id"], merge_commit[0]),
+                api_path,
                 body=dict(
                     state=status,
                     target_url=url,
@@ -620,12 +859,10 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_commit_statuses(self, commit, _merge=None, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-the-status-of-a-commit
-        statuses_response = await self.api(
-            "get",
-            "/projects/%s/repository/commits/%s/statuses"
-            % (self.data["repo"]["service_id"], commit),
-            token=token,
+        url = self.count_and_get_url_template("get_commit_statuses").substitute(
+            service_id=self.data["repo"]["service_id"], commit=commit
         )
+        statuses_response = await self.api("get", url, token=token)
 
         _states = dict(
             pending="pending",
@@ -675,25 +912,21 @@ class Gitlab(TorngitBaseAdapter):
     async def post_comment(self, pullid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # http://doc.gitlab.com/ce/api/notes.html#create-new-merge-request-note
-        return await self.api(
-            "post",
-            "/projects/%s/merge_requests/%s/notes"
-            % (self.data["repo"]["service_id"], pullid),
-            body=dict(body=body),
-            token=token,
+        url = self.count_and_get_url_template("post_comment").substitute(
+            service_id=self.data["repo"]["service_id"], pullid=pullid
         )
+        return await self.api("post", url, body=dict(body=body), token=token)
 
     async def edit_comment(self, pullid, commentid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # http://doc.gitlab.com/ce/api/notes.html#modify-existing-merge-request-note
+        url = self.count_and_get_url_template("edit_comment").substitute(
+            service_id=self.data["repo"]["service_id"],
+            pullid=pullid,
+            commentid=commentid,
+        )
         try:
-            return await self.api(
-                "put",
-                "/projects/%s/merge_requests/%s/notes/%s"
-                % (self.data["repo"]["service_id"], pullid, commentid),
-                body=dict(body=body),
-                token=token,
-            )
+            return await self.api("put", url, body=dict(body=body), token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -705,13 +938,13 @@ class Gitlab(TorngitBaseAdapter):
     async def delete_comment(self, pullid, commentid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
         # https://docs.gitlab.com/ce/api/notes.html#delete-a-merge-request-note
+        url = self.count_and_get_url_template("delete_comment").substitute(
+            service_id=self.data["repo"]["service_id"],
+            pullid=pullid,
+            commentid=commentid,
+        )
         try:
-            await self.api(
-                "delete",
-                "/projects/%s/merge_requests/%s/notes/%s"
-                % (self.data["repo"]["service_id"], pullid, commentid),
-                token=token,
-            )
+            await self.api("delete", url, token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 raise TorngitObjectNotFoundError(
@@ -724,13 +957,11 @@ class Gitlab(TorngitBaseAdapter):
     async def get_commit(self, commit: str, token=None):
         # http://doc.gitlab.com/ce/api/commits.html#get-a-single-commit
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        url = self.count_and_get_url_template("get_commit").substitute(
+            service_id=self.data["repo"]["service_id"], commit=commit
+        )
         try:
-            res = await self.api(
-                "get",
-                "/projects/%s/repository/commits/%s"
-                % (self.data["repo"]["service_id"], commit),
-                token=token,
-            )
+            res = await self.api("get", url, token=token)
         except TorngitClientError as ce:
             if ce.code == 404:
                 message = f"Commit {commit} not found in repo {self.data['repo']['service_id']}"
@@ -743,7 +974,8 @@ class Gitlab(TorngitBaseAdapter):
         name = res["author_name"]
         _id = None
         username = None
-        authors = await self.api("get", "/users", search=email or name, token=token)
+        url = self.count_and_get_url_template("get_authors").substitute()
+        authors = await self.api("get", url, search=email or name, token=token)
         if authors:
             for author in authors:
                 if author["name"] == name or author.get("email") == email:
@@ -763,50 +995,40 @@ class Gitlab(TorngitBaseAdapter):
     async def get_pull_request_commits(self, pullid, token=None):
         # http://doc.gitlab.com/ce/api/merge_requests.html#get-single-mr-commits
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        commits = await self.api(
-            "get",
-            "/projects/{}/merge_requests/{}/commits".format(
-                self.data["repo"]["service_id"], pullid
-            ),
-            token=token,
+        url = self.count_and_get_url_template("get_pull_request_commits").substitute(
+            service_id=self.data["repo"]["service_id"], pullid=pullid
         )
+        commits = await self.api("get", url, token=token)
         return [c["id"] for c in commits]
 
     async def get_branches(self, token=None):
         # http://doc.gitlab.com/ce/api/projects.html#list-branches
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        res = await self.api(
-            "get",
-            "/projects/%s/repository/branches" % self.data["repo"]["service_id"],
-            token=token,
+        url = self.count_and_get_url_template("get_branches").substitute(
+            service_id=self.data["repo"]["service_id"]
         )
+        res = await self.api("get", url, token=token)
         return [(b["name"], b["commit"]["id"]) for b in res]
 
     async def get_branch(self, name, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ee/api/branches.html
-        branch = await self.api(
-            "get",
-            "/projects/%s/repository/branches/%s"
-            % (self.data["repo"]["service_id"], name),
-            token=token,
+        url = self.count_and_get_url_template("get_branch").substitute(
+            service_id=self.data["repo"]["service_id"], name=name
         )
+        branch = await self.api("get", url, token=token)
         return {"name": branch["name"], "sha": branch["commit"]["id"]}
 
     async def get_pull_requests(self, state="open", token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # ONLY searchable by branch.
-        state = {"merged": "merged", "open": "opened", "close": "closed"}.get(
-            state, "all"
-        )
+        state = self.get_gitlab_pull_state_from_codecov_state(state=state)
         # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
-        res = await self.api(
-            "get",
-            "/projects/%s/merge_requests?state=%s"
-            % (self.data["repo"]["service_id"], state),
-            token=token,
+        url = self.count_and_get_url_template("get_pull_requests").substitute(
+            service_id=self.data["repo"]["service_id"], state=state
         )
+        res = await self.api("get", url, token=token)
         # first check if the sha matches
         return [pull["iid"] for pull in res]
 
@@ -821,14 +1043,11 @@ class Gitlab(TorngitBaseAdapter):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         gitlab_state = self.get_gitlab_pull_state_from_codecov_state(state)
         if commit is not None:
+            url = self.count_and_get_url_template(
+                "find_pull_request_with_commit"
+            ).substitute(service_id=self.data["repo"]["service_id"], commit=commit)
             try:
-                res = await self.api(
-                    "get",
-                    "/projects/{}/repository/commits/{}/merge_requests".format(
-                        self.data["repo"]["service_id"], commit
-                    ),
-                    token=token,
-                )
+                res = await self.api("get", url, token=token)
                 if len(res) > 1:
                     log.info("More than one pull request associated with commit")
                 for possible_pull in res:
@@ -840,12 +1059,10 @@ class Gitlab(TorngitBaseAdapter):
         # [TODO] pagination coming soon
         # http://doc.gitlab.com/ce/api/merge_requests.html#list-merge-requests
         try:
-            res = await self.api(
-                "get",
-                "/projects/%s/merge_requests?state=%s"
-                % (self.data["repo"]["service_id"], gitlab_state),
-                token=token,
+            url = self.count_and_get_url_template("find_pull_request").substitute(
+                service_id=self.data["repo"]["service_id"], gitlab_state=gitlab_state
             )
+            res = await self.api("get", url, token=token)
         except TorngitClientError as e:
             if e.code == 403:
                 # will get 403 if merge requests are disabled on gitlab
@@ -874,10 +1091,11 @@ class Gitlab(TorngitBaseAdapter):
         # http://doc.gitlab.com/ce/api/projects.html#get-single-project
         # http://doc.gitlab.com/ce/permissions/permissions.html
         can_edit = False
+        url = self.count_and_get_url_template("get_authenticated").substitute(
+            service_id=self.data["repo"]["service_id"]
+        )
         try:
-            res = await self.api(
-                "get", "/projects/%s" % self.data["repo"]["service_id"], token=token
-            )
+            res = await self.api("get", url, token=token)
             permission = max(
                 [
                     (res["permissions"]["group_access"] or {}).get("access_level") or 0,
@@ -900,24 +1118,19 @@ class Gitlab(TorngitBaseAdapter):
         # 40 = > Maintainer access
         # 50 = > Owner access  # Only valid for groups
         user_id = int(user["service_id"])
-        res = await self.api(
-            "get",
-            "/groups/{}/members/all/{}".format(
-                self.data["owner"]["service_id"], user_id
-            ),
-            token=token,
+        url = self.count_and_get_url_template("get_is_admin").substitute(
+            service_id=self.data["owner"]["service_id"], user_id=user_id
         )
+        res = await self.api("get", url, token=token)
         return bool(res["state"] == "active" and res["access_level"] > 39)
 
     async def get_commit_diff(self, commit, context=None, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # http://doc.gitlab.com/ce/api/commits.html#get-the-diff-of-a-commit
-        res = await self.api(
-            "get",
-            "/projects/%s/repository/commits/%s/diff"
-            % (self.data["repo"]["service_id"], commit),
-            token=token,
+        url = self.count_and_get_url_template("get_commit_diff").substitute(
+            service_id=self.data["repo"]["service_id"], commit=commit
         )
+        res = await self.api("get", url, token=token)
         return self.diff_to_json(res)
 
     async def get_repository(self, token=None):
@@ -926,13 +1139,15 @@ class Gitlab(TorngitBaseAdapter):
         if self.data["repo"].get("service_id") is None:
             # convert from codecov ':' separator to gitlab '/' separator for groups/subgroups
             slug = self.slug.replace(":", "/")
-            res = await self.api(
-                "get", "/projects/" + slug.replace("/", "%2F"), token=token
-            )
+            url = self.count_and_get_url_template(
+                "get_repository_without_service_id"
+            ).substitute(slug=slug.replace("/", "%2F"))
+            res = await self.api("get", url, token=token)
         else:
-            res = await self.api(
-                "get", "/projects/" + self.data["repo"]["service_id"], token=token
-            )
+            url = self.count_and_get_url_template(
+                "get_repository_with_service_id"
+            ).substitute(service_id=self.data["repo"]["service_id"])
+            res = await self.api("get", url, token=token)
 
         owner_service_id, owner_username = await self.get_owner_info_from_repo(res)
         repo_name = res["path"]
@@ -956,23 +1171,23 @@ class Gitlab(TorngitBaseAdapter):
             List[str]: A list of language names
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        res = await self.api(
-            "get",
-            "/projects/%s/languages" % (self.data["repo"]["service_id"]),
-            token=token,
+        url = self.count_and_get_url_template("get_repo_languages").substitute(
+            service_id=self.data["repo"]["service_id"]
         )
+        res = await self.api("get", url, token=token)
         return list(k.lower() for k in res.keys())
 
     async def get_source(self, path, ref, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ce/api/repository_files.html#get-file-from-repository
+        url = self.count_and_get_url_template("get_source").substitute(
+            service_id=self.data["repo"]["service_id"],
+            path=urlencode(dict(a=path), quote_via=quote)[2:],
+        )
         try:
             res = await self.api(
                 "get",
-                "/projects/{}/repository/files/{}".format(
-                    self.data["repo"]["service_id"],
-                    urlencode(dict(a=path), quote_via=quote)[2:],
-                ),
+                url,
                 ref=ref,
                 token=token,
             )
@@ -991,13 +1206,10 @@ class Gitlab(TorngitBaseAdapter):
     ):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://docs.gitlab.com/ee/api/repositories.html#compare-branches-tags-or-commits
-        compare = await self.api(
-            "get",
-            "/projects/{}/repository/compare/?from={}&to={}".format(
-                self.data["repo"]["service_id"], base, head
-            ),
-            token=token,
+        url = self.count_and_get_url_template("get_compare").substitute(
+            service_id=self.data["repo"]["service_id"], base=base, head=head
         )
+        compare = await self.api("get", url, token=token)
 
         return dict(
             diff=self.diff_to_json(compare["diffs"]),
@@ -1018,11 +1230,15 @@ class Gitlab(TorngitBaseAdapter):
     async def list_files(self, ref, dir_path, token=None):
         # https://docs.gitlab.com/ee/api/repositories.html#list-repository-tree
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        url = self.count_and_get_url_template("list_files").substitute(
+            service_id=self.data["repo"]["service_id"]
+        )
         async_generator = self.make_paginated_call(
-            f"/projects/{self.data['repo']['service_id']}/repository/tree",
+            base_url=url,
             default_kwargs=dict(ref=ref, path=dir_path),
             max_per_page=100,
             token=token,
+            counter_name="list_files",
         )
         all_results = []
         async for page in async_generator:
@@ -1038,19 +1254,20 @@ class Gitlab(TorngitBaseAdapter):
 
     async def get_ancestors_tree(self, commitid, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        res = await self.api(
-            "get",
-            "/projects/%s/repository/commits" % self.data["repo"]["service_id"],
-            token=token,
-            ref_name=commitid,
+        url = self.count_and_get_url_template("get_ancestors_tree").substitute(
+            service_id=self.data["repo"]["service_id"]
         )
+        res = await self.api("get", url, token=token, ref_name=commitid)
         start = res[0]["id"]
         commit_mapping = {val["id"]: val["parent_ids"] for val in res}
         return self.build_tree_from_commits(start, commit_mapping)
 
     def get_external_endpoint(self, endpoint: Endpoints, **kwargs):
+        # used in parent obj to get_href
+        # I think this is for creating a clickable link,
+        # not a token-using call by us, so not counting these calls.
         if endpoint == Endpoints.commit_detail:
-            return self.urls["commit"].format(
+            return external_endpoint_template.substitute(
                 username=self.data["owner"]["username"].replace(":", "/"),
                 name=self.data["repo"]["name"],
                 commitid=kwargs["commitid"],
@@ -1068,11 +1285,15 @@ class Gitlab(TorngitBaseAdapter):
             List[str]: A list of branch names
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        url = self.count_and_get_url_template("get_best_effort_branches").substitute(
+            service_id=self.data["repo"]["service_id"], commit_sha=commit_sha
+        )
         async_generator = self.make_paginated_call(
-            f"/projects/{self.data['repo']['service_id']}/repository/commits/{commit_sha}/refs?type=branch",
+            base_url=url,
             default_kwargs=dict(),
             max_per_page=100,
             token=token,
+            counter_name="get_best_effort_branches",
         )
         all_results = []
         async for page in async_generator:
