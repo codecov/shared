@@ -1,11 +1,17 @@
 import os
 
 from shared.config import get_config
-from shared.torngit.gitlab import Gitlab
+from shared.torngit.gitlab import GITLAB_API_ENDPOINTS, Gitlab
 
 
 class GitlabEnterprise(Gitlab):
     service = "gitlab_enterprise"
+
+    @classmethod
+    def count_and_get_url_template(cls, url_name):
+        # Gitlab Enterprise uses the same urls as Gitlab, but has a separate Counter
+        GITLAB_API_ENDPOINTS[url_name]["enterprise_counter"].inc()
+        return GITLAB_API_ENDPOINTS[url_name]["url_template"]
 
     @property
     def redirect_uri(self):

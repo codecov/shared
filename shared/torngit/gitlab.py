@@ -37,43 +37,69 @@ GITLAB_API_CALL_COUNTER = Counter(
 )
 
 
+# Gitlab Enterprise uses the same urls as Gitlab, but has a separate Counter
+GITLAB_E_API_CALL_COUNTER = Counter(
+    "git_provider_api_calls_gitlab_enterprise",
+    "Number of times gitlab enterprise called this endpoint",
+    ["endpoint"],
+)
+
+
 GITLAB_API_ENDPOINTS = {
     "fetch_and_handle_errors_retry": {
         "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="fetch_and_handle_errors_retry"
+        ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
             endpoint="fetch_and_handle_errors_retry"
         ),
         "url_template": "",  # no url template, just counter
     },
     "get_best_effort_branches": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_best_effort_branches"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_best_effort_branches"
+        ),
         "url_template": Template(
             "/projects/${service_id}/repository/commits/${commit_sha}/refs?type=branch"
         ),
     },
     "get_ancestors_tree": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_ancestors_tree"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_ancestors_tree"
+        ),
         "url_template": Template("/projects/${service_id}/repository/commits"),
     },
     "list_files": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_files"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="list_files"),
         "url_template": Template("/projects/${service_id}/repository/tree"),
     },
     "get_compare": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_compare"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_compare"),
         "url_template": Template(
             "/projects/${service_id}/repository/compare/?from=${base}&to=${head}"
         ),
     },
     "get_source": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_source"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_source"),
         "url_template": Template("/projects/${service_id}/repository/files/${path}"),
     },
     "get_repo_languages": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_repo_languages"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repo_languages"
+        ),
         "url_template": Template("/projects/${service_id}/languages"),
     },
     "get_repository_without_service_id": {
         "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="get_repository_without_service_id"
+        ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
             endpoint="get_repository_without_service_id"
         ),
         "url_template": Template("/projects/${slug}"),
@@ -82,24 +108,37 @@ GITLAB_API_ENDPOINTS = {
         "counter": GITLAB_API_CALL_COUNTER.labels(
             endpoint="get_repository_with_service_id"
         ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_repository_with_service_id"
+        ),
         "url_template": Template("/projects/${service_id}"),
     },
     "get_commit_diff": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_commit_diff"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_commit_diff"
+        ),
         "url_template": Template(
             "/projects/${service_id}/repository/commits/${commit}/diff"
         ),
     },
     "get_is_admin": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_is_admin"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_is_admin"),
         "url_template": Template("/groups/${service_id}/members/all/${user_id}"),
     },
     "get_authenticated": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authenticated"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated"
+        ),
         "url_template": Template("/projects/${service_id}"),
     },
     "find_pull_request_with_commit": {
         "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="find_pull_request_with_commit"
+        ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
             endpoint="find_pull_request_with_commit"
         ),
         "url_template": Template(
@@ -108,86 +147,122 @@ GITLAB_API_ENDPOINTS = {
     },
     "find_pull_request": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="find_pull_request"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="find_pull_request"
+        ),
         "url_template": Template(
             "/projects/${service_id}/merge_requests?state=${gitlab_state}"
         ),
     },
     "get_pull_requests": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_requests"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_requests"
+        ),
         "url_template": Template(
             "/projects/${service_id}/merge_requests?state=${state}"
         ),
     },
     "get_branch": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_branch"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_branch"),
         "url_template": Template("/projects/${service_id}/repository/branches/${name}"),
     },
     "get_branches": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_branches"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_branches"),
         "url_template": Template("/projects/${service_id}/repository/branches"),
     },
     "get_pull_request_commits": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_request_commits"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_commits"
+        ),
         "url_template": Template(
             "/projects/${service_id}/merge_requests/${pullid}/commits"
         ),
     },
     "get_commit": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_commit"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_commit"),
         "url_template": Template(
             "/projects/${service_id}/repository/commits/${commit}"
         ),
     },
     "get_authors": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authors"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="get_authors"),
         "url_template": Template("/users"),
     },
     "delete_comment": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="delete_comment"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="delete_comment"
+        ),
         "url_template": Template(
             "/projects/${service_id}/merge_requests/${pullid}/notes/${commentid}"
         ),
     },
     "edit_comment": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="edit_comment"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="edit_comment"),
         "url_template": Template(
             "/projects/${service_id}/merge_requests/${pullid}/notes/${commentid}"
         ),
     },
     "post_comment": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="post_comment"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="post_comment"),
         "url_template": Template(
             "/projects/${service_id}/merge_requests/${pullid}/notes"
         ),
     },
     "get_commit_statuses": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_commit_statuses"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_commit_statuses"
+        ),
         "url_template": Template(
             "/projects/${service_id}/repository/commits/${commit}/statuses"
         ),
     },
     "set_commit_status": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="set_commit_status"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status"
+        ),
         "url_template": Template("/projects/${service_id}/statuses/${commit}"),
     },
     "set_commit_status_merge_commit": {
         "counter": GITLAB_API_CALL_COUNTER.labels(
             endpoint="set_commit_status_merge_commit"
         ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="set_commit_status_merge_commit"
+        ),
         "url_template": Template("/projects/${service_id}/statuses/${merge_commit}"),
     },
     "get_pull_request_files": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_request_files"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_files"
+        ),
         "url_template": Template(
             "/projects/${service_id}/merge_requests/${pullid}/diffs"
         ),
     },
     "get_pull_request": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pull_request"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request"
+        ),
         "url_template": Template("/projects/${service_id}/merge_requests/${pullid}"),
     },
     "get_pull_request_get_commits": {
         "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_get_commits"
+        ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
             endpoint="get_pull_request_get_commits"
         ),
         "url_template": Template(
@@ -198,20 +273,32 @@ GITLAB_API_ENDPOINTS = {
         "counter": GITLAB_API_CALL_COUNTER.labels(
             endpoint="get_pull_request_get_parent"
         ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pull_request_get_parent"
+        ),
         "url_template": Template(
             "/projects/${service_id}/repository/commits/${first_commit}"
         ),
     },
     "list_repos_get_user": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_user"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_user"
+        ),
         "url_template": Template("/user"),
     },
     "list_repos_get_groups": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_groups"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_groups"
+        ),
         "url_template": Template("/groups/${username}"),
     },
     "list_repos_get_user_and_groups": {
         "counter": GITLAB_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_user_and_groups"
+        ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
             endpoint="list_repos_get_user_and_groups"
         ),
         "url_template": Template("/groups?per_page=100"),
@@ -220,40 +307,61 @@ GITLAB_API_ENDPOINTS = {
         "counter": GITLAB_API_CALL_COUNTER.labels(
             endpoint="list_repos_get_owned_projects"
         ),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_owned_projects"
+        ),
         "url_template": Template("/projects?owned=true&per_page=50&page=${page}"),
     },
     "list_repos_get_projects": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_projects"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="list_repos_get_projects"
+        ),
         "url_template": Template(
             "/groups/${group_id}/projects?per_page=50&page=${page}"
         ),
     },
     "get_owner_info_from_repo": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_owner_info_from_repo"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_owner_info_from_repo"
+        ),
         "url_template": Template("/users?username=${username}"),
     },
     "delete_webhook": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="delete_webhook"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="delete_webhook"
+        ),
         "url_template": Template("/projects/${service_id}/hooks/${hookid}"),
     },
     "edit_webhook": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="edit_webhook"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="edit_webhook"),
         "url_template": Template("/projects/${service_id}/hooks/${hookid}"),
     },
     "post_webhook": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="post_webhook"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="post_webhook"),
         "url_template": Template("/projects/${service_id}/hooks"),
     },
     "get_authenticated_user": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authenticated_user"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_authenticated_user"
+        ),
         "url_template": Template("/oauth/token"),
     },
     "refresh_token": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="refresh_token"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="refresh_token"
+        ),
         "url_template": Template("/oauth/token"),
     },
     "list_teams": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_teams"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="list_teams"),
         "url_template": Template("/groups"),
     },
 }
