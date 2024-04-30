@@ -12,6 +12,9 @@ class UserMeasurement(PostgresPartitionedModel):
         method = PostgresPartitioningMethod.RANGE
         key = ["created_at"]
 
+    class Meta:
+        db_table_comment = "Store uploads on monthly partitions"
+
     id = models.BigAutoField(primary_key=True)
     repo = models.ForeignKey(
         Repository,
@@ -35,6 +38,9 @@ class UserMeasurement(PostgresPartitionedModel):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     uploader_used = models.CharField()
+    random_col = models.CharField(
+        null=True, max_length=100, choices=ReportType.choices
+    )
     private_repo = models.BooleanField()
     report_type = models.CharField(
         null=True, max_length=100, choices=ReportType.choices
