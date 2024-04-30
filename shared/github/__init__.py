@@ -142,6 +142,10 @@ def mark_installation_as_rate_limited(
     We require the `app_id` as well because it's possible (albeit unlikely) that 2 installation_id are
     the same for different apps.
     """
+    if ttl_seconds <= 0:
+        # ttl_seconds is the time until the RateLimit ends
+        # Makes no sense to mark an installation rate limited if it's not anymore
+        return
     app_id = app_id or "default_app"
     try:
         redis_connection.set(

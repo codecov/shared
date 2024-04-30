@@ -294,6 +294,16 @@ class TestGithubSpecificLogic(object):
             ex=10,
         )
 
+    def test_mark_installation_as_rate_limited_ttl_zero(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.set.side_effect = RedisError
+        INSTALLATION_ID = 1000
+        APP_ID = 250
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 0, app_id=APP_ID)
+        mock_redis.set.assert_not_called()
+
     def test_is_installation_rate_limited(self, mocker):
         mock_redis = MagicMock(name="fake_redis")
         keys_in_redis = {
