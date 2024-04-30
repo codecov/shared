@@ -1,5 +1,6 @@
 import pytest
 from mock import MagicMock
+from prometheus_client import REGISTRY
 
 from shared.torngit.gitlab_enterprise import GitlabEnterprise
 
@@ -66,6 +67,14 @@ class TestGitlabEnterprise(object):
 
     @pytest.mark.asyncio
     async def test_fetch_uses_proper_endpoint(self, mocker, mock_configuration):
+        before = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "post_comment"},
+        )
+        before_enterprise = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_enterprise_total",
+            labels={"endpoint": "post_comment"},
+        )
         mocked_fetch = mocker.patch.object(GitlabEnterprise, "api", return_value={})
         mock_configuration._params["gitlab_enterprise"] = {
             "url": "https://gitlab-enterprise.codecov.dev",
@@ -84,3 +93,13 @@ class TestGitlabEnterprise(object):
             body={"body": "body"},
             token={"key": "fake_token"},
         )
+        after = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_total",
+            labels={"endpoint": "post_comment"},
+        )
+        after_enterprise = REGISTRY.get_sample_value(
+            "git_provider_api_calls_gitlab_enterprise_total",
+            labels={"endpoint": "post_comment"},
+        )
+        assert after - before == 0
+        assert after_enterprise - before_enterprise == 1
