@@ -8,6 +8,8 @@ from shared.django_apps.rollouts.models import (
     FeatureExposure,
     FeatureFlag,
     FeatureFlagVariant,
+    Platform,
+    RolloutUniverse,
 )
 from shared.rollouts import Feature
 
@@ -32,7 +34,9 @@ class TestFeature(TestCase):
         # return 200 different values.
         with patch.object(Feature, "HASHSPACE", 200):
 
-            complex_feature.check_value(owner_id=1234)  # to force fetch values from db
+            complex_feature.check_value(
+                identifier=1234
+            )  # to force fetch values from db
 
             # Because each feature variant has a proportion of 1/3, our three
             # buckets should be [0, 66], [66, 133], [133, 200]. However, our top-level
@@ -61,12 +65,15 @@ class TestFeature(TestCase):
         # should skip the hashing and bucket stuff and just return the single
         # possible value.
         feature = Feature("rolled_out")
-        assert feature.check_value(owner_id=123, default=False) == True
+        assert feature.check_value(123, default=False) == True
         assert not hasattr(feature.__dict__, "_buckets")
 
-    def test_overrides(self):
+    def test_overrides_by_owner(self):
         overrides = FeatureFlag.objects.create(
-            name="overrides", proportion=1.0, salt="random_salt"
+            name="overrides",
+            proportion=1.0,
+            salt="random_salt",
+            rollout_universe=RolloutUniverse.OWNER_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -74,6 +81,7 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=1,
             override_owner_ids=[123],
+            override_repo_ids=[321],
         )
         FeatureFlagVariant.objects.create(
             name="overrides_b",
@@ -81,16 +89,117 @@ class TestFeature(TestCase):
             proportion=1 / 2,
             value=2,
             override_owner_ids=[321],
+            override_repo_ids=[123],
         )
 
         # If an identifier was manually opted into a specific variant, skip the
-        # hashing and just return the value for that variant.
+        # hashing/bucket calculation and just return the value for that variant.
         feature = Feature(
             "overrides",
         )
 
-        assert feature.check_value(owner_id=321, default=1) == 2
-        assert feature.check_value(owner_id=123, default=2) == 1
+        assert feature.check_value(321, default=1) == 2
+        assert feature.check_value(123, default=2) == 1
+        assert not hasattr(feature.__dict__, "_buckets")
+
+    def test_overrides_by_email(self):
+        overrides = FeatureFlag.objects.create(
+            name="overrides",
+            proportion=1.0,
+            salt="random_salt",
+            rollout_universe=RolloutUniverse.EMAIL,
+        )
+        FeatureFlagVariant.objects.create(
+            name="overrides_a",
+            feature_flag=overrides,
+            proportion=1 / 2,
+            value=1,
+            override_emails=["daniel.yu@sentry.io"],
+        )
+        FeatureFlagVariant.objects.create(
+            name="overrides_b",
+            feature_flag=overrides,
+            proportion=1 / 2,
+            value=2,
+            override_emails=["yu.daniel@sentry.io"],
+        )
+
+        # If an identifier was manually opted into a specific variant, skip the
+        # hashing/bucket calculation and just return the value for that variant.
+        feature = Feature(
+            "overrides",
+        )
+
+        assert feature.check_value("yu.daniel@sentry.io", default=1) == 2
+        assert feature.check_value("daniel.yu@sentry.io", default=2) == 1
+        assert not hasattr(feature.__dict__, "_buckets")
+
+    def test_overrides_by_repo(self):
+        overrides = FeatureFlag.objects.create(
+            name="overrides",
+            proportion=1.0,
+            salt="random_salt",
+            rollout_universe=RolloutUniverse.REPO_ID,
+        )
+        FeatureFlagVariant.objects.create(
+            name="overrides_a",
+            feature_flag=overrides,
+            proportion=1 / 2,
+            value=1,
+            override_repo_ids=[123],
+            override_owner_ids=[321],
+        )
+        FeatureFlagVariant.objects.create(
+            name="overrides_b",
+            feature_flag=overrides,
+            proportion=1 / 2,
+            value=2,
+            override_repo_ids=[321],
+            override_owner_ids=[123],
+        )
+
+        # If an identifier was manually opted into a specific variant, skip the
+        # hashing/bucket calculation and just return the value for that variant.
+        feature = Feature(
+            "overrides",
+        )
+
+        assert feature.check_value(321, default=1) == 2
+        assert feature.check_value(123, default=2) == 1
+        assert not hasattr(feature.__dict__, "_buckets")
+
+    def test_overrides_by_org(self):
+        overrides = FeatureFlag.objects.create(
+            name="overrides",
+            proportion=1.0,
+            salt="random_salt",
+            rollout_universe=RolloutUniverse.ORG_ID,
+        )
+        FeatureFlagVariant.objects.create(
+            name="overrides_a",
+            feature_flag=overrides,
+            proportion=1 / 2,
+            value=1,
+            override_org_ids=[123],
+            override_owner_ids=[321],
+        )
+        FeatureFlagVariant.objects.create(
+            name="overrides_b",
+            feature_flag=overrides,
+            proportion=1 / 2,
+            value=2,
+            override_org_ids=[321],
+            override_owner_ids=[123],
+        )
+
+        # If an identifier was manually opted into a specific variant, skip the
+        # hashing/bucket calculation and just return the value for that variant.
+        feature = Feature(
+            "overrides",
+        )
+
+        assert feature.check_value(321, default=1) == 2
+        assert feature.check_value(123, default=2) == 1
         assert not hasattr(feature.__dict__, "_buckets")
 
     def test_override_no_proportion(self):
@@ -107,8 +216,8 @@ class TestFeature(TestCase):
 
         feature = Feature("overrides_no_proportion")
 
-        assert feature.check_value(owner_id=321, default=1) == 2
-        assert feature.check_value(owner_id=123, default=1) == 2
+        assert feature.check_value(identifier=321, default=1) == 2
+        assert feature.check_value(identifier=123, default=1) == 2
 
     def test_not_in_test_gets_default(self):
         not_in_test = FeatureFlag.objects.create(
@@ -124,7 +233,7 @@ class TestFeature(TestCase):
         # If the feature is only 10% rolled out, 2**128-1 is way past the end of
         # the test population and should get a default value back.
         with patch("mmh3.hash128", return_value=2**128 - 1):
-            assert feature.check_value(owner_id=123, default="default") == "default"
+            assert feature.check_value(identifier=123, default="default") == "default"
 
     def test_return_values_for_each_bucket(self):
         return_values_for_each_bucket = FeatureFlag.objects.create(
@@ -151,14 +260,18 @@ class TestFeature(TestCase):
             # the buckets are [0..50] and [51..100]. Mock the hash function to
             # return a value in the first bucket and then a value in the second.
             with patch("mmh3.hash128", side_effect=[33, 66]):
-                assert feature.check_value(owner_id=123, default="c") == "first bucket"
-                assert feature.check_value(owner_id=124, default="c") == "second bucket"
+                assert (
+                    feature.check_value(identifier=123, default="c") == "first bucket"
+                )
+                assert (
+                    feature.check_value(identifier=124, default="c") == "second bucket"
+                )
 
     def test_default_feature_flag_created(self):
         name = "my_default_feature"
         my_default_feature = Feature(name)
 
-        my_default_feature.check_value(owner_id=123123123)
+        my_default_feature.check_value(identifier=123123123)
 
         feature_flag = FeatureFlag.objects.filter(name=name).first()
 
@@ -167,16 +280,16 @@ class TestFeature(TestCase):
 
     def test_sync_feature_call(self):
         testing_feature = Feature("testing_dummy_feature")
-        assert testing_feature.check_value(owner_id="hi", default=False) == False
+        assert testing_feature.check_value(identifier="hi", default=False) == False
 
     async def test_async_feature_call_fail(self):
         testing_feature = Feature("testing_dummy_feature")
         with self.assertRaises(SynchronousOnlyOperation):
-            testing_feature.check_value(owner_id="hi", default=False) == False
+            testing_feature.check_value(identifier="hi", default=False) == False
 
     async def test_async_feature_call_success(self):
         testing_feature = Feature("testing_dummy_feature")
-        await testing_feature.check_value_async(owner_id="hi", default=False) == False
+        await testing_feature.check_value_async(identifier="hi", default=False) == False
 
     def test_rollout_proportion_changes_dont_affect_variant_assignments(self):
         my_feature_flag = FeatureFlag.objects.create(
@@ -203,10 +316,10 @@ class TestFeature(TestCase):
         # return 200 different values.
         with patch.object(Feature, "HASHSPACE", 200):
             with patch("mmh3.hash128", side_effect=[30, 90, 150, 40, 30, 90, 150, 40]):
-                a = my_feature.check_value(owner_id=123, default="c")
-                b = my_feature.check_value(owner_id=124, default="c")
-                c = my_feature.check_value(owner_id=125, default="c")
-                d = my_feature.check_value(owner_id=126, default="d")
+                a = my_feature.check_value(identifier=123, default="c")
+                b = my_feature.check_value(identifier=124, default="c")
+                c = my_feature.check_value(identifier=125, default="c")
+                d = my_feature.check_value(identifier=126, default="d")
 
                 assert a == 1
                 assert b == 2
@@ -221,18 +334,18 @@ class TestFeature(TestCase):
                 my_feature._fetch_and_set_from_db.cache_clear()  # clear the TTL
                 my_feature._fetch_and_set_from_db()  # refresh feature flag proportion and clear caches
 
-                assert a == my_feature.check_value(owner_id=123, default="c")
-                assert b == my_feature.check_value(owner_id=124, default="c")
-                assert c == my_feature.check_value(owner_id=125, default="c")
+                assert a == my_feature.check_value(identifier=123, default="c")
+                assert b == my_feature.check_value(identifier=124, default="c")
+                assert c == my_feature.check_value(identifier=125, default="c")
                 assert 1 == my_feature.check_value(
-                    owner_id=126, default="d"
+                    identifier=126, default="d"
                 )  # now in variant 1 since 40 \in (0,66)
 
     @patch.dict(os.environ, {"CODECOV__FEATURE__DISABLE": ""})
     def test_check_value_with_env_disable(self):
         feature = Feature("my_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(owner_id=1, default=100) == 100
+            assert feature.check_value(identifier=1, default=100) == 100
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
@@ -242,19 +355,19 @@ class TestFeature(TestCase):
     def test_check_value_with_env_override(self):
         feature = Feature("num_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(owner_id=1, default=100) == 30
+            assert feature.check_value(identifier=1, default=100) == 30
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
         feature = Feature("str_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(owner_id=1, default="bar") == "foo"
+            assert feature.check_value(identifier=1, default="bar") == "foo"
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
         feature = Feature("null_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(owner_id=1, default=100) == None
+            assert feature.check_value(identifier=1, default=100) == None
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
@@ -263,13 +376,13 @@ class TestFeature(TestCase):
     def test_check_value_with_env_disable_and_env_override(self):
         feature = Feature("num_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(owner_id=1, default=100) == 30
+            assert feature.check_value(identifier=1, default=100) == 30
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
         feature = Feature("other_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(owner_id=1, default=100) == 100
+            assert feature.check_value(identifier=1, default=100) == 100
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
@@ -289,7 +402,7 @@ class TestFeatureExposures(TestCase):
         owner_id = 123123123
 
         my_feature = Feature("my_feature")
-        my_feature.check_value(owner_id=owner_id)
+        my_feature.check_value(identifier=owner_id)
 
         exposure = FeatureExposure.objects.all().first()
 
@@ -310,7 +423,7 @@ class TestFeatureExposures(TestCase):
             owner_id = 123123123
 
             my_feature = Feature("my_feature")
-            my_feature.check_value(owner_id=owner_id)
+            my_feature.check_value(identifier=owner_id)
 
             exposure = FeatureExposure.objects.first()
 
@@ -318,3 +431,54 @@ class TestFeatureExposures(TestCase):
             # explicit variant, it was assigned the default behaviour
             assert exposure is None
             create_exposure.assert_not_called()
+
+    def test_frontend_flag_does_not_log_exposures(self):
+        complex = FeatureFlag.objects.create(
+            name="my_feature",
+            proportion=1.0,
+            salt="random_salt",
+            platform=Platform.FRONTEND,
+        )
+        FeatureFlagVariant.objects.create(
+            name="enabled", feature_flag=complex, proportion=1.0, value=True
+        )
+        FeatureFlagVariant.objects.create(
+            name="disabled", feature_flag=complex, proportion=0, value=False
+        )
+
+        with patch.object(Feature, "create_exposure") as create_exposure:
+            owner_id = 123123123
+
+            my_feature = Feature("my_feature")
+            my_feature.check_value(identifier=owner_id)
+
+            exposure = FeatureExposure.objects.all().first()
+
+            assert exposure == None
+            create_exposure.assert_not_called()
+
+    def test_backend_flag_does_log_exposures(self):
+        complex = FeatureFlag.objects.create(
+            name="my_feature",
+            proportion=1.0,
+            salt="random_salt",
+            platform=Platform.BACKEND,
+        )
+        enabled = FeatureFlagVariant.objects.create(
+            name="enabled", feature_flag=complex, proportion=1.0, value=True
+        )
+        FeatureFlagVariant.objects.create(
+            name="disabled", feature_flag=complex, proportion=0, value=False
+        )
+
+        owner_id = 123123123
+
+        my_feature = Feature("my_feature")
+        my_feature.check_value(identifier=owner_id)
+
+        exposure = FeatureExposure.objects.all().first()
+
+        assert exposure is not None
+        assert exposure.owner == owner_id
+        assert exposure.feature_flag == complex
+        assert exposure.feature_flag_variant == enabled

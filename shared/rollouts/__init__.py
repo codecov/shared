@@ -3,6 +3,7 @@ import logging
 import os
 from enum import Enum
 from functools import cached_property
+from typing import Optional
 
 import mmh3
 from asgiref.sync import sync_to_async
@@ -14,22 +15,20 @@ from shared.django_apps.rollouts.models import (
     FeatureExposure,
     FeatureFlag,
     FeatureFlagVariant,
+    Platform,
+    RolloutUniverse,
 )
+from shared.django_apps.utils.model_utils import rollout_universe_to_override_string
 
 log = logging.getLogger("__name__")
-
-
-class IdentifierType(Enum):
-    OWNERID = "ownerid"
-    REPOID = "repoid"
 
 
 class Feature:
     """
     Represents a feature and its rollout parameters, fetched from the database (see django_apps/rollouts/models.py).
-    Given an identifier (repo_id, owner_id, etc..), it will decide which variant of a feature (if any)
-    should be used for the request. Each variant will have a `value` that will be returned if that variant is
-    decided to be used. For example: if you want an ON and OFF variant for your feature, you could have the values
+    Given an identifier (repo_id, owner_id, etc..), it will decide which variant of a feature should be
+    used for the request. Each variant will have a `value` that will be returned if that variant is decided to
+    be used. For example: if you want an ON and OFF variant for your feature, you could have the values
     be true and false respectively
 
     You can modify the parameters of your feature flag via Django Admin. The parameters are fetched and updated roughly
@@ -94,7 +93,7 @@ class Feature:
             old_behavior()
 
     Parameters:
-    - `name`: a unique name for the experiment
+    - `name`: the unique name of your feature flag you created in django admin
 
     If you discover a bug and roll back your feature, it's good practice to
     change the salt to any other string before restarting the rollout. Changing
@@ -104,10 +103,15 @@ class Feature:
 
     HASHSPACE = 2**128
 
-    def __init__(self, name):
+    def __init__(
+        self,
+        name,
+        feature_flag: Optional[FeatureFlag] = None,
+        ff_variants: Optional[list[FeatureFlagVariant]] = None,
+    ):
         self.name = name
-        self.feature_flag = None
-        self.ff_variants = None
+        self.feature_flag = feature_flag
+        self.ff_variants = ff_variants
 
         # See if this environment has disabled feature flagging entirely.
         # These environments will always get default values.
@@ -130,11 +134,11 @@ class Feature:
             "setup", "skip_feature_cache", default=False
         )  # to be used only during development
         if self.refresh:
-            log.warn(
+            log.warning(
                 "skip_feature_cache for Feature should only be turned on in development environments, and should not be used in production"
             )
 
-    def check_value(self, *, owner_id=None, repo_id=None, default=False):
+    def check_value(self, identifier, default=False):
         """
         Returns the value of the applicable feature variant for an identifier. This is commonly a boolean for feature variants
         that represent an ON variant and an OFF variant, but could be other values aswell. You can modify the values in
@@ -153,17 +157,24 @@ class Feature:
         # Will only run and refresh values from the database every ~5 minutes due to TTL cache
         self._fetch_and_set_from_db()
 
-        if owner_id and not repo_id:
-            return self._check_value(owner_id, IdentifierType.OWNERID, default)
-        if repo_id and not owner_id:
-            return self._check_value(repo_id, IdentifierType.REPOID, default)
-        raise Exception(
-            "Must pass in exactly one of owner_id or repo_id keyword arguments to check_value()"
-        )
+        return self._check_value(identifier, default)
 
     @sync_to_async
-    def check_value_async(self, *, owner_id=None, repo_id=None, default=False):
-        return self.check_value(owner_id=owner_id, repo_id=repo_id, default=default)
+    def check_value_async(self, identifier, default=False):
+        return self.check_value(identifier, default)
+
+    def check_value_no_fetch(self, identifier, default=False):
+        """
+        Same as `check_value()` except does not make any DB calls, and assumes the flag data has been passed into the class
+        during object initialization.
+        """
+        if hasattr(self, "env_override"):
+            return self.env_override
+
+        if self.env_disable:
+            return default
+
+        return self._check_value_no_lru(identifier, False)
 
     @cached_property
     def _buckets(self):
@@ -200,29 +211,22 @@ class Feature:
 
         return buckets
 
-    def _get_override_variant(self, identifier, identifier_type: IdentifierType):
+    def _get_override_variant(self, identifier, identifier_override_field):
         """
         Retrieves the feature variant applicable to the given identifer according to
-        defined overrides. Returns None if no override is found.
+        the defined applicable overrides. Returns None if no override is found.
         """
         for variant in self.ff_variants:
-            if (
-                identifier_type == IdentifierType.OWNERID
-                and identifier in variant.override_owner_ids
-            ):
-                return variant
-
-            if (
-                identifier_type == IdentifierType.REPOID
-                and identifier in variant.override_repo_ids
-            ):
+            if identifier in getattr(variant, identifier_override_field):
                 return variant
         return None
 
     def _is_valid_rollout(self):
         """
         Checks if the database entries were given valid values, which is very
-        possible since these values can be modified via Django Admin.
+        possible since these values can be modified via Django Admin. Sum of
+        variants should equal to 1, and proportions should never be greater than
+        1 or less than 0.
         """
         return (
             (sum(map(lambda x: x.proportion, self.ff_variants)) == 1.0)
@@ -294,14 +298,35 @@ class Feature:
     # In this case, we are okay with sharing a cache across instances, and the
     # instances are all global constants so they won't be torn down anyway.
     @lru_cache(maxsize=64)
-    def _check_value(self, identifier, identifier_type: IdentifierType, default):
+    def _check_value(self, identifier, default):
         """
         This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that
-        variant values can be returned using the most up-to-date values from the database
+        variant values can be returned using the most up-to-date values from the database.
+        """
+        return self._check_value_impl(identifier, default)
+
+    def _check_value_no_lru(self, identifier, default):
+        """
+        Same as `_check_value()` except no lru cache. This is used by the `/internal/features` endpoint and can't
+        use lru as it would prevent class instances from getting garbage collected, as the endpoint instantiates
+        the `Feature` class on every request.
         """
 
+        # don't log exposures for flag evaluations from the endpoint
+        return self._check_value_impl(identifier, default, log_exposures=False)
+
+    def _check_value_impl(self, identifier, default, log_exposures=True):
+        """
+        This is the core logic of how a feature flag variant is assigned to a user based on some identifier, and
+        returns the variant's value.
+        """
         # check if an override exists
-        override_variant = self._get_override_variant(identifier, identifier_type)
+        identifier_override_field = rollout_universe_to_override_string(
+            self.feature_flag.rollout_universe
+        )
+        override_variant = self._get_override_variant(
+            identifier, identifier_override_field
+        )
 
         if override_variant:
             return override_variant.value
@@ -316,7 +341,11 @@ class Feature:
         )
         for bucket_start, bucket_end, variant in self._buckets:
             if bucket_start <= key and key < bucket_end:
-                self.create_exposure(variant, identifier, identifier_type)
+                # only log exposures for backend flags because frontend has no SQL metrics and
+                # flag evaluations should be cached client-side anyways
+                if self.feature_flag.platform == Platform.BACKEND and log_exposures:
+                    self.create_exposure(variant, identifier)
+
                 return variant.value
 
         return default
@@ -332,18 +361,21 @@ class Feature:
 
         return True
 
-    def create_exposure(self, variant, identifier, identifier_type: IdentifierType):
+    def create_exposure(self, variant, identifier):
         """
         Creates an exposure record indicating that a feature variant has been applied to
-        an entity (repo or owner) at a current point in time.
+        an entity (repo or owner) at a current point in time. This method should only
+        be used for backend feature flags, as we're only collecting `telemetry_simple`
+        SQL metrics for backend services.
         """
         args = {
             "feature_flag": self.feature_flag,
             "feature_flag_variant": variant,
             "timestamp": timezone.now(),
         }
-        if identifier_type == IdentifierType.OWNERID:
+        if self.feature_flag.rollout_universe == RolloutUniverse.OWNER_ID:
             args["owner"] = identifier
-        elif identifier_type == IdentifierType.REPOID:
+        elif self.feature_flag.rollout_universe == RolloutUniverse.REPO_ID:
             args["repo"] = identifier
+
         FeatureExposure.objects.create(**args)
