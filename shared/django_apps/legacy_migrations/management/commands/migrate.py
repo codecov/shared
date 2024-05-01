@@ -32,6 +32,21 @@ class Command(MigrateCommand):
     def _fake_initial_migrations(self, cursor, args, options):
         try:
             cursor.execute("SELECT * FROM django_migrations;")
+            
+            if options['database'] == 'timeseries':
+                cursor.execute("SELECT * FROM django_migrations where app = auth and name = 0001;")
+                if not exists the above
+                    ao = {**options}
+                    ao["fake"] = True
+                    ao["app_label"] = "auth"
+                    ao["migration_name"] = "0001"
+    
+                    cto = {**options}
+                    cto["fake"] = True
+                    cto["app_label"] = "contenttypes"
+                    cto["migration_name"] = "0001"
+                    super().handle(*args, **ao)
+                    super().handle(*args, **cto)
         except ProgrammingError:
             codecov_auth_options = {**options}
             codecov_auth_options["fake"] = True
