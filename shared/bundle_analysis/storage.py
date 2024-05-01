@@ -1,3 +1,4 @@
+import logging
 import tempfile
 from enum import Enum
 from typing import Optional
@@ -5,7 +6,9 @@ from typing import Optional
 from shared.bundle_analysis.report import BundleAnalysisReport
 from shared.config import get_config
 from shared.storage.base import BaseStorageService
-from shared.storage.exceptions import FileNotInStorageError
+from shared.storage.exceptions import FileNotInStorageError, PutRequestRateLimitError
+
+log = logging.getLogger(__name__)
 
 
 def get_bucket_name() -> str:
@@ -56,5 +59,12 @@ class BundleAnalysisReportLoader:
         storage_path = StoragePaths.bundle_report.path(
             repo_key=self.repo_key, report_key=report_key
         )
-        with open(report.db_path, "rb") as f:
-            self.storage_service.write_file(self.bucket_name, storage_path, f)
+        try:
+            with open(report.db_path, "rb") as f:
+                self.storage_service.write_file(self.bucket_name, storage_path, f)
+        except Exception as e:
+            log.info(f"Bundle analysis GCS save file error: {e}")
+            if "TooManyRequests" in str(e):
+                raise PutRequestRateLimitError("GCS Rate Limit Error for Saving File")
+            else:
+                raise e
