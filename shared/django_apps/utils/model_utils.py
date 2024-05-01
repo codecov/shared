@@ -4,7 +4,7 @@ from random import choice
 from typing import Any, Callable, Optional
 
 from shared.api_archive.archive import ArchiveService
-from shared.django_apps.rollouts.models import RolloutIdentifier
+from shared.django_apps.rollouts.models import RolloutUniverse
 from shared.storage.exceptions import FileNotInStorageError
 from shared.utils.ReportEncoder import ReportEncoder
 
@@ -156,14 +156,14 @@ def default_random_salt():
     return "".join(chars)
 
 
-def rollout_identifier_to_override_string(rollout_identifer: RolloutIdentifier):
-    if rollout_identifer == RolloutIdentifier.OWNER_ID:
+def rollout_identifier_to_override_string(rollout_identifer: RolloutUniverse):
+    if rollout_identifer == RolloutUniverse.OWNER_ID:
         return "override_owner_ids"
-    elif rollout_identifer == RolloutIdentifier.REPO_ID:
+    elif rollout_identifer == RolloutUniverse.REPO_ID:
         return "override_repo_ids"
-    elif rollout_identifer == RolloutIdentifier.EMAIL:
+    elif rollout_identifer == RolloutUniverse.EMAIL:
         return "override_emails"
-    elif rollout_identifer == RolloutIdentifier.ORG_ID:
+    elif rollout_identifer == RolloutUniverse.ORG_ID:
         return "override_org_ids"
     else:
         return ""

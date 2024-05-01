@@ -14,11 +14,11 @@ class Platform(models.TextChoices):
 # who share the same identifier will always be assigned the same variant.
 # EG: two users from the same org will receive the same variant when rolling
 # out over ORG_ID
-class RolloutIdentifier(models.TextChoices):
-    OWNER_ID = "U", "Owner ID"
-    REPO_ID = "R", "Repo ID"
-    ORG_ID = "O", "Org ID"
-    EMAIL = "E", "Email"
+class RolloutUniverse(models.TextChoices):
+    OWNER_ID = "OWNER_ID", "Owner ID"
+    REPO_ID = "REPO_ID", "Repo ID"
+    ORG_ID = "ORG_ID", "Org ID"
+    EMAIL = "EMAIL", "Email"
 
 
 def default_random_salt():
@@ -56,9 +56,9 @@ class FeatureFlag(models.Model):
     # will always receive the same variant. EG: if you rollout over org_id,
     # then users in the same org see the same variant
     rollout_identifier = models.CharField(
-        max_length=1,
-        choices=RolloutIdentifier.choices,
-        default=RolloutIdentifier.OWNER_ID,
+        max_length=30,
+        choices=RolloutUniverse.choices,
+        default=RolloutUniverse.OWNER_ID,
     )
 
     class Meta:

@@ -3,6 +3,7 @@ import logging
 import os
 from enum import Enum
 from functools import cached_property
+from typing import Optional
 
 import mmh3
 from asgiref.sync import sync_to_async
@@ -15,7 +16,7 @@ from shared.django_apps.rollouts.models import (
     FeatureFlag,
     FeatureFlagVariant,
     Platform,
-    RolloutIdentifier,
+    RolloutUniverse,
 )
 from shared.django_apps.utils.model_utils import rollout_identifier_to_override_string
 
@@ -102,10 +103,15 @@ class Feature:
 
     HASHSPACE = 2**128
 
-    def __init__(self, name):
+    def __init__(
+        self,
+        name,
+        feature_flag: Optional[FeatureFlag] = None,
+        ff_variants: Optional[list[FeatureFlagVariant]] = None,
+    ):
         self.name = name
-        self.feature_flag = None
-        self.ff_variants = None
+        self.feature_flag = feature_flag
+        self.ff_variants = ff_variants
 
         # See if this environment has disabled feature flagging entirely.
         # These environments will always get default values.
@@ -128,7 +134,7 @@ class Feature:
             "setup", "skip_feature_cache", default=False
         )  # to be used only during development
         if self.refresh:
-            log.warn(
+            log.warning(
                 "skip_feature_cache for Feature should only be turned on in development environments, and should not be used in production"
             )
 
@@ -156,6 +162,19 @@ class Feature:
     @sync_to_async
     def check_value_async(self, identifier, default=False):
         return self.check_value(identifier, default)
+
+    def check_value_no_fetch(self, identifier):
+        """
+        Same as `check_value()` except does not make any DB calls, and assumes the flag data has been passed into the class
+        during object initialization.
+        """
+        if hasattr(self, "env_override"):
+            return self.env_override
+
+        if self.env_disable:
+            return False
+
+        return self._check_value_no_lru(identifier, False)
 
     @cached_property
     def _buckets(self):
@@ -282,9 +301,25 @@ class Feature:
     def _check_value(self, identifier, default):
         """
         This function will have its cache invalidated when `_fetch_and_set_from_db()` pulls new data so that
-        variant values can be returned using the most up-to-date values from the database
+        variant values can be returned using the most up-to-date values from the database.
+        """
+        return self._check_value_impl(identifier, default)
+
+    def _check_value_no_lru(self, identifier, default):
+        """
+        Same as `_check_value()` except no lru cache. This is used by the `/internal/features` endpoint and can't
+        use lru as it would prevent class instances from getting garbage collected, as the endpoint instantiates
+        the `Feature` class on every request.
         """
 
+        # don't log exposures for flag evaluations from the endpoint
+        return self._check_value_impl(identifier, default, log_exposures=False)
+
+    def _check_value_impl(self, identifier, default, log_exposures=True):
+        """
+        This is the core logic of how a feature flag variant is assigned to a user based on some identifier, and
+        returns the variant's value.
+        """
         # check if an override exists
         identifier_override_field = rollout_identifier_to_override_string(
             self.feature_flag.rollout_identifier
@@ -308,7 +343,7 @@ class Feature:
             if bucket_start <= key and key < bucket_end:
                 # only log exposures for backend flags because frontend has no SQL metrics and
                 # flag evaluations should be cached client-side anyways
-                if self.feature_flag.platform == Platform.BACKEND:
+                if self.feature_flag.platform == Platform.BACKEND and log_exposures:
                     self.create_exposure(variant, identifier)
 
                 return variant.value
@@ -338,9 +373,9 @@ class Feature:
             "feature_flag_variant": variant,
             "timestamp": timezone.now(),
         }
-        if self.feature_flag.rollout_identifier == RolloutIdentifier.OWNER_ID:
+        if self.feature_flag.rollout_identifier == RolloutUniverse.OWNER_ID:
             args["owner"] = identifier
-        elif self.feature_flag.rollout_identifier == RolloutIdentifier.REPO_ID:
+        elif self.feature_flag.rollout_identifier == RolloutUniverse.REPO_ID:
             args["repo"] = identifier
 
         FeatureExposure.objects.create(**args)

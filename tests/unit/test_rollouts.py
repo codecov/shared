@@ -9,7 +9,7 @@ from shared.django_apps.rollouts.models import (
     FeatureFlag,
     FeatureFlagVariant,
     Platform,
-    RolloutIdentifier,
+    RolloutUniverse,
 )
 from shared.rollouts import Feature
 
@@ -73,7 +73,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutIdentifier.OWNER_ID,
+            rollout_identifier=RolloutUniverse.OWNER_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -107,7 +107,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutIdentifier.EMAIL,
+            rollout_identifier=RolloutUniverse.EMAIL,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -139,7 +139,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutIdentifier.REPO_ID,
+            rollout_identifier=RolloutUniverse.REPO_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -173,7 +173,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutIdentifier.ORG_ID,
+            rollout_identifier=RolloutUniverse.ORG_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
