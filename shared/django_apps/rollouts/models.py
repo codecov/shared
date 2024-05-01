@@ -55,7 +55,7 @@ class FeatureFlag(models.Model):
     # The field we're rolling out over. Users with the same identifier
     # will always receive the same variant. EG: if you rollout over org_id,
     # then users in the same org see the same variant
-    rollout_identifier = models.CharField(
+    rollout_universe = models.CharField(
         max_length=30,
         choices=RolloutUniverse.choices,
         default=RolloutUniverse.OWNER_ID,

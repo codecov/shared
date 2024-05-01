@@ -18,7 +18,7 @@ from shared.django_apps.rollouts.models import (
     Platform,
     RolloutUniverse,
 )
-from shared.django_apps.utils.model_utils import rollout_identifier_to_override_string
+from shared.django_apps.utils.model_utils import rollout_universe_to_override_string
 
 log = logging.getLogger("__name__")
 
@@ -321,8 +321,8 @@ class Feature:
         returns the variant's value.
         """
         # check if an override exists
-        identifier_override_field = rollout_identifier_to_override_string(
-            self.feature_flag.rollout_identifier
+        identifier_override_field = rollout_universe_to_override_string(
+            self.feature_flag.rollout_universe
         )
         override_variant = self._get_override_variant(
             identifier, identifier_override_field
@@ -373,9 +373,9 @@ class Feature:
             "feature_flag_variant": variant,
             "timestamp": timezone.now(),
         }
-        if self.feature_flag.rollout_identifier == RolloutUniverse.OWNER_ID:
+        if self.feature_flag.rollout_universe == RolloutUniverse.OWNER_ID:
             args["owner"] = identifier
-        elif self.feature_flag.rollout_identifier == RolloutUniverse.REPO_ID:
+        elif self.feature_flag.rollout_universe == RolloutUniverse.REPO_ID:
             args["repo"] = identifier
 
         FeatureExposure.objects.create(**args)

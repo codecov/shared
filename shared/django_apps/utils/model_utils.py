@@ -156,14 +156,14 @@ def default_random_salt():
     return "".join(chars)
 
 
-def rollout_identifier_to_override_string(rollout_identifer: RolloutUniverse):
-    if rollout_identifer == RolloutUniverse.OWNER_ID:
+def rollout_universe_to_override_string(rollout_universe: RolloutUniverse):
+    if rollout_universe == RolloutUniverse.OWNER_ID:
         return "override_owner_ids"
-    elif rollout_identifer == RolloutUniverse.REPO_ID:
+    elif rollout_universe == RolloutUniverse.REPO_ID:
         return "override_repo_ids"
-    elif rollout_identifer == RolloutUniverse.EMAIL:
+    elif rollout_universe == RolloutUniverse.EMAIL:
         return "override_emails"
-    elif rollout_identifer == RolloutUniverse.ORG_ID:
+    elif rollout_universe == RolloutUniverse.ORG_ID:
         return "override_org_ids"
     else:
         return ""

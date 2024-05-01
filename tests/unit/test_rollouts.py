@@ -73,7 +73,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutUniverse.OWNER_ID,
+            rollout_universe=RolloutUniverse.OWNER_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -107,7 +107,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutUniverse.EMAIL,
+            rollout_universe=RolloutUniverse.EMAIL,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -139,7 +139,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutUniverse.REPO_ID,
+            rollout_universe=RolloutUniverse.REPO_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",
@@ -173,7 +173,7 @@ class TestFeature(TestCase):
             name="overrides",
             proportion=1.0,
             salt="random_salt",
-            rollout_identifier=RolloutUniverse.ORG_ID,
+            rollout_universe=RolloutUniverse.ORG_ID,
         )
         FeatureFlagVariant.objects.create(
             name="overrides_a",

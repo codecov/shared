@@ -22,10 +22,10 @@ class Migration(migrations.Migration):
     # ALTER TABLE "feature_flags" ADD COLUMN "platform" varchar(1) DEFAULT 'B' NOT NULL;
     # ALTER TABLE "feature_flags" ALTER COLUMN "platform" DROP DEFAULT;
     # --
-    # -- Add field rollout_identifier to featureflag
+    # -- Add field rollout_universe to featureflag
     # --
-    # ALTER TABLE "feature_flags" ADD COLUMN "rollout_identifier" varchar(30) DEFAULT 'OWNER_ID' NOT NULL;
-    # ALTER TABLE "feature_flags" ALTER COLUMN "rollout_identifier" DROP DEFAULT;
+    # ALTER TABLE "feature_flags" ADD COLUMN "rollout_universe" varchar(30) DEFAULT 'OWNER_ID' NOT NULL;
+    # ALTER TABLE "feature_flags" ALTER COLUMN "rollout_universe" DROP DEFAULT;
     # --
     # -- Add field override_emails to featureflagvariant
     # --
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="featureflag",
-            name="rollout_identifier",
+            name="rollout_universe",
             field=models.CharField(
                 choices=[
                     ("OWNER_ID", "Owner ID"),
