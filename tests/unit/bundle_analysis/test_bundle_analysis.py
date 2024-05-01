@@ -5,6 +5,7 @@ import pytest
 
 from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
 from shared.bundle_analysis.models import MetadataKey
+from shared.storage.exceptions import PutRequestRateLimitError
 from shared.storage.memory import MemoryStorageService
 
 sample_bundle_stats_path = (
@@ -223,7 +224,7 @@ def test_bundle_name_not_valid():
         )
 
 
-def test_bundle_rate_limit_error():
+def test_bundle_file_save_rate_limit_error():
     with patch(
         "shared.storage.memory.MemoryStorageService.write_file",
         side_effect=Exception("TooManyRequests"),
@@ -240,3 +241,24 @@ def test_bundle_rate_limit_error():
             loader.save(report, test_key)
 
             assert str(excinfo) == "TooManyRequests"
+            assert type(excinfo) == PutRequestRateLimitError
+
+
+def test_bundle_file_save_unknown_error():
+    with patch(
+        "shared.storage.memory.MemoryStorageService.write_file",
+        side_effect=Exception("UnknownError"),
+    ):
+        with pytest.raises(Exception) as excinfo:
+            report = BundleAnalysisReport()
+            report.ingest(sample_bundle_stats_path)
+
+            loader = BundleAnalysisReportLoader(
+                storage_service=MemoryStorageService({}),
+                repo_key="testing",
+            )
+            test_key = "8d1099f1-ba73-472f-957f-6908eced3f42"
+            loader.save(report, test_key)
+
+            assert str(excinfo) == "UnknownError"
+            assert type(excinfo) == Exception
