@@ -163,7 +163,7 @@ class Feature:
     def check_value_async(self, identifier, default=False):
         return self.check_value(identifier, default)
 
-    def check_value_no_fetch(self, identifier):
+    def check_value_no_fetch(self, identifier, default=False):
         """
         Same as `check_value()` except does not make any DB calls, and assumes the flag data has been passed into the class
         during object initialization.
@@ -172,7 +172,7 @@ class Feature:
             return self.env_override
 
         if self.env_disable:
-            return False
+            return default
 
         return self._check_value_no_lru(identifier, False)
 
