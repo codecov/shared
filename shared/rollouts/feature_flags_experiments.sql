@@ -6,6 +6,8 @@ These SQL queries are used for the following two dashboards:
 https://metabase.codecov.dev/question/175-experiment-dashboard-by-repo-id?variant_name=&metric=&start_date=
 https://metabase.codecov.dev/question/170-experiment-dashboard-by-owner-id?variant_name=&metric=&start_date=
 
+The code that gets executed on Metabase lives within Metabase, but ideally changes should be also checked-in to this file so that we have a version history.
+
 The relevant tables are: `feature_exposures`, `telemetry_simple`, `feature_flags`, and `feature_flag_variants`. We bucket the timestamps based on the hour which is how we're able to correlate
 feature exposures with the telemetry simple metrics. 
 
