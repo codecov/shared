@@ -4,3 +4,7 @@ class BucketAlreadyExistsError(Exception):
 
 class FileNotInStorageError(Exception):
     pass
+
+
+class PutRequestRateLimitError(Exception):
+    pass
