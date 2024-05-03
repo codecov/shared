@@ -694,20 +694,22 @@ class Github(TorngitBaseAdapter):
             ttl_seconds = retry_in_seconds
             if ttl_seconds is None:
                 # https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?apiVersion=2022-11-28#handle-rate-limit-errors-appropriately
-                ttl_seconds = int(reset_timestamp) - int(
-                    datetime.now(timezone.utc).timestamp()
+                ttl_seconds = max(
+                    0,
+                    int(reset_timestamp) - int(datetime.now(timezone.utc).timestamp()),
                 )
-            log.info(
-                "Marking installation as rate limited",
-                extra=dict(
-                    installation_id=installation_id,
-                    app_id=app_id,
-                    rate_limit_duration_seconds=ttl_seconds,
-                ),
-            )
-            mark_installation_as_rate_limited(
-                self._redis_connection, installation_id, ttl_seconds, app_id=app_id
-            )
+            if ttl_seconds > 0:
+                log.info(
+                    "Marking installation as rate limited",
+                    extra=dict(
+                        installation_id=installation_id,
+                        app_id=app_id,
+                        rate_limit_duration_seconds=ttl_seconds,
+                    ),
+                )
+                mark_installation_as_rate_limited(
+                    self._redis_connection, installation_id, ttl_seconds, app_id=app_id
+                )
 
     def _get_next_fallback_token(
         self,
