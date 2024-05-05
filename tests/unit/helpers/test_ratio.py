@@ -8,3 +8,4 @@ from shared.helpers.numeric import ratio
 )
 def test_ratio(x, y, percent):
     assert ratio(x, y) == percent
+

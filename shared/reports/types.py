@@ -15,7 +15,7 @@ class ReportTotals(object):
     hits: int = 0
     misses: int = 0
     partials: int = 0
-    coverage: int = 0
+    coverage: Optional[str] = 0
     branches: int = 0
     methods: int = 0
     messages: int = 0
