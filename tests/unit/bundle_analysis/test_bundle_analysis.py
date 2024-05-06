@@ -262,3 +262,15 @@ def test_bundle_file_save_unknown_error():
 
             assert str(excinfo) == "UnknownError"
             assert type(excinfo) == Exception
+
+
+def test_bundle_analysis_report_total_size():
+    report_path = (
+        Path(__file__).parent.parent.parent
+        / "samples"
+        / "sample_bundle_stats_decimal_size.json"
+    )
+    bundle_analysis_report = BundleAnalysisReport()
+    bundle_analysis_report.ingest(report_path)
+
+    assert bundle_analysis_report.total_size() == 150572

@@ -182,3 +182,6 @@ class BundleAnalysisReport:
     def session_count(self) -> int:
         with models.get_db_session(self.db_path) as session:
             return session.query(models.Session).count()
+
+    def total_size(self) -> int:
+        return sum([report.total_size() for report in self.bundle_reports()])
