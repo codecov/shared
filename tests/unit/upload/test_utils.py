@@ -33,10 +33,10 @@ class CoverageMeasurement(TestCase):
             report = CommitReportFactory.create(commit=commit, report_type=report_type)
             upload = UploadFactory.create(report=report)
             insert_coverage_measurement(
-                owner=owner,
-                repo=repo,
-                commit=commit,
-                upload=upload,
+                owner_id=owner.ownerid,
+                repo_id=repo.repoid,
+                commit_id=commit.id,
+                upload_id=upload.id,
                 uploader_used="CLI",
                 private_repo=repo.private,
                 report_type=report.report_type,

@@ -4,9 +4,8 @@ from enum import Enum
 from django.db.models import Q
 from django.utils import timezone
 
-from shared.django_apps.codecov_auth.models import Owner, TrialStatus
-from shared.django_apps.core.models import Commit, Repository
-from shared.django_apps.reports.models import ReportSession, ReportType
+from shared.django_apps.codecov_auth.models import TrialStatus
+from shared.django_apps.reports.models import ReportType
 from shared.django_apps.user_measurements.models import UserMeasurement
 from shared.plan.service import PlanService
 
@@ -17,9 +16,9 @@ class UploaderType(Enum):
 
 
 def query_monthly_coverage_measurements(plan_service: PlanService) -> int:
-    owner = plan_service.current_org
+    owner_id = plan_service.current_org.ownerid
     queryset = UserMeasurement.objects.filter(
-        owner=owner,
+        owner_id=owner_id,
         private_repo=True,
         created_at__gte=timezone.now() - timedelta(days=30),
         report_type=ReportType.COVERAGE.value,
@@ -37,19 +36,19 @@ def query_monthly_coverage_measurements(plan_service: PlanService) -> int:
 
 
 def insert_coverage_measurement(
-    owner: Owner,
-    repo: Repository,
-    commit: Commit,
-    upload: ReportSession,
+    owner_id: int,
+    repo_id: int,
+    commit_id: int,
+    upload_id: int,
     uploader_used: str,
     private_repo: bool,
     report_type: ReportType,
 ):
     return UserMeasurement.objects.create(
-        repo=repo,
-        commit=commit,
-        upload=upload,
-        owner=owner,
+        repo_id=repo_id,
+        commit_id=commit_id,
+        upload_id=upload_id,
+        owner_id=owner_id,
         uploader_used=uploader_used,
         private_repo=private_repo,
         report_type=report_type,
