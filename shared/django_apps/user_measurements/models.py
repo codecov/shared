@@ -32,7 +32,7 @@ class UserMeasurement(PostgresPartitionedModel):
                 name="owner_private_repo",
             ),
             models.Index(
-                fields=["owner_id", "private_repo", "report_type", "created_at"],
-                name="owner_repo_report_created_at",
+                fields=["owner_id", "private_repo", "report_type"],
+                name="owner_private_repo_report_type",
             ),
         ]
