@@ -25,6 +25,8 @@ class Migration(migrations.Migration):
     ]
 
     def populate_test_instances(apps, schema_editor):
+        print("Not running due to performance")
+        return
         TestInstance = apps.get_model("reports", "TestInstance")
 
         test_instances = TestInstance.objects.select_related(
