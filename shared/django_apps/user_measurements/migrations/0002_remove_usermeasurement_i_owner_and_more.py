@@ -2,6 +2,13 @@
 
 from django.db import migrations, models
 
+from shared.django_apps.migration_utils import (
+    RiskyAddField,
+    RiskyAddIndex,
+    RiskyRemoveField,
+    RiskyRemoveIndex,
+)
+
 
 class Migration(migrations.Migration):
     """
@@ -78,73 +85,73 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RiskyRemoveIndex(
+        RiskyRemoveIndex(
             model_name="usermeasurement",
             name="i_owner",
         ),
-        migrations.RiskyRemoveIndex(
+        RiskyRemoveIndex(
             model_name="usermeasurement",
             name="owner_repo",
         ),
-        migrations.RiskyRemoveIndex(
+        RiskyRemoveIndex(
             model_name="usermeasurement",
             name="owner_private_repo",
         ),
-        migrations.RiskyRemoveIndex(
+        RiskyRemoveIndex(
             model_name="usermeasurement",
             name="owner_private_repo_report_type",
         ),
-        migrations.RiskyRemoveField(
+        RiskyRemoveField(
             model_name="usermeasurement",
             name="commit",
         ),
-        migrations.RiskyRemoveField(
+        RiskyRemoveField(
             model_name="usermeasurement",
             name="owner",
         ),
-        migrations.RiskyRemoveField(
+        RiskyRemoveField(
             model_name="usermeasurement",
             name="repo",
         ),
-        migrations.RiskyRemoveField(
+        RiskyRemoveField(
             model_name="usermeasurement",
             name="upload",
         ),
-        migrations.RiskyAddField(
+        RiskyAddField(
             model_name="usermeasurement",
             name="commit_id",
             field=models.IntegerField(null=True),
         ),
-        migrations.RiskyAddField(
+        RiskyAddField(
             model_name="usermeasurement",
             name="owner_id",
             field=models.IntegerField(null=True),
         ),
-        migrations.RiskyAddField(
+        RiskyAddField(
             model_name="usermeasurement",
             name="repo_id",
             field=models.IntegerField(null=True),
         ),
-        migrations.RiskyAddField(
+        RiskyAddField(
             model_name="usermeasurement",
             name="upload_id",
             field=models.IntegerField(null=True),
         ),
-        migrations.RiskyAddIndex(
+        RiskyAddIndex(
             model_name="usermeasurement",
             index=models.Index(fields=["owner_id"], name="i_owner"),
         ),
-        migrations.RiskyAddIndex(
+        RiskyAddIndex(
             model_name="usermeasurement",
             index=models.Index(fields=["owner_id", "repo_id"], name="owner_repo"),
         ),
-        migrations.RiskyAddIndex(
+        RiskyAddIndex(
             model_name="usermeasurement",
             index=models.Index(
                 fields=["owner_id", "private_repo"], name="owner_private_repo"
             ),
         ),
-        migrations.RiskyAddIndex(
+        RiskyAddIndex(
             model_name="usermeasurement",
             index=models.Index(
                 fields=["owner_id", "private_repo", "report_type"],
