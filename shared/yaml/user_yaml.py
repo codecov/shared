@@ -119,10 +119,10 @@ class UserYaml(object):
     def get_final_yaml(
         cls,
         *,
-        owner_yaml,
-        repo_yaml,
-        commit_yaml=None,
-        ownerid=None,
+        owner_yaml: Optional[dict[str, Any]] = None,
+        repo_yaml: Optional[dict[str, Any]] = None,
+        commit_yaml: Optional[dict[str, Any]] = None,
+        ownerid: int = None,
         owner_context: Optional[OwnerContext] = None,
     ):
         """Given a owner yaml, repo yaml and user yaml, determines what yaml we need to use
