@@ -11,6 +11,74 @@ from shared.django_apps.migration_utils import (
 
 
 class Migration(migrations.Migration):
+    """
+    BEGIN;
+    --
+    -- Remove index i_owner from usermeasurement
+    --
+    DROP INDEX IF EXISTS "i_owner";
+    --
+    -- Remove index owner_repo from usermeasurement
+    --
+    DROP INDEX IF EXISTS "owner_repo";
+    --
+    -- Remove index owner_private_repo from usermeasurement
+    --
+    DROP INDEX IF EXISTS "owner_private_repo";
+    --
+    -- Remove index owner_private_repo_report_type from usermeasurement
+    --
+    DROP INDEX IF EXISTS "owner_private_repo_report_type";
+    --
+    -- Remove field commit from usermeasurement
+    --
+    ALTER TABLE "user_measurements" DROP COLUMN "commit_id" CASCADE;
+    --
+    -- Remove field owner from usermeasurement
+    --
+    ALTER TABLE "user_measurements" DROP COLUMN "owner_id" CASCADE;
+    --
+    -- Remove field repo from usermeasurement
+    --
+    ALTER TABLE "user_measurements" DROP COLUMN "repo_id" CASCADE;
+    --
+    -- Remove field upload from usermeasurement
+    --
+    ALTER TABLE "user_measurements" DROP COLUMN "upload_id" CASCADE;
+    --
+    -- Add field commit_id to usermeasurement
+    --
+    ALTER TABLE "user_measurements" ADD COLUMN "commit_id" integer NULL;
+    --
+    -- Add field owner_id to usermeasurement
+    --
+    ALTER TABLE "user_measurements" ADD COLUMN "owner_id" integer NULL;
+    --
+    -- Add field repo_id to usermeasurement
+    --
+    ALTER TABLE "user_measurements" ADD COLUMN "repo_id" integer NULL;
+    --
+    -- Add field upload_id to usermeasurement
+    --
+    ALTER TABLE "user_measurements" ADD COLUMN "upload_id" integer NULL;
+    --
+    -- Create index i_owner on field(s) owner_id of model usermeasurement
+    --
+    CREATE INDEX "i_owner" ON "user_measurements" ("owner_id");
+    --
+    -- Create index owner_repo on field(s) owner_id, repo_id of model usermeasurement
+    --
+    CREATE INDEX "owner_repo" ON "user_measurements" ("owner_id", "repo_id");
+    --
+    -- Create index owner_private_repo on field(s) owner_id, private_repo of model usermeasurement
+    --
+    CREATE INDEX "owner_private_repo" ON "user_measurements" ("owner_id", "private_repo");
+    --
+    -- Create index owner_repo_report_created_at on field(s) owner_id, private_repo, report_type, created_at of model usermeasurement
+    --
+    CREATE INDEX "owner_repo_report_created_at" ON "user_measurements" ("owner_id", "private_repo", "report_type", "created_at");
+    COMMIT;
+    """
 
     dependencies = [
         ("user_measurements", "0001_initial"),
