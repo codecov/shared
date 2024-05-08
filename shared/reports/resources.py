@@ -23,7 +23,7 @@ from shared.reports.types import (
 )
 from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
-from shared.utils.merge import line_type, merge_all, merge_line
+from shared.utils.merge import LineType, line_type, merge_all, merge_line
 from shared.utils.migrate import migrate_totals
 from shared.utils.ReportEncoder import ReportEncoder
 from shared.utils.sessions import Session, SessionType
@@ -425,18 +425,16 @@ class ReportFile(object):
             self._totals = self._process_totals()
         return self._totals
 
-    def _process_totals(self):
-        """return dict of totals"""
+    def _process_totals(self) -> ReportTotals:
         cov, types, messages = [], [], []
-        _cov, _types, _messages = cov.append, types.append, messages.append
         for ln, line in self.lines:
-            _cov(line_type(line.coverage))
-            _types(line.type)
-            _messages(len(line.messages or []))
-        hits = cov.count(0)
-        misses = cov.count(1)
-        partials = cov.count(2)
-        lines = hits + misses + partials
+            cov.append(line_type(line.coverage))
+            types.append(line.type)
+            messages.append(len(line.messages or []))
+        hits = cov.count(LineType.hit)
+        misses = cov.count(LineType.miss)
+        partials = cov.count(LineType.partial)
+        total_lines = hits + misses + partials
 
         def sum_of_complexity(l):
             # (hit, total)
@@ -455,11 +453,11 @@ class ReportFile(object):
 
         return ReportTotals(
             files=0,
-            lines=lines,
+            lines=total_lines,
             hits=hits,
             misses=misses,
             partials=partials,
-            coverage=ratio(hits, lines) if lines else None,
+            coverage=ratio(hits, total_lines) if total_lines else None,
             branches=types.count("b"),
             methods=types.count("m"),
             messages=sum(messages),
