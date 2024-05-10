@@ -14,11 +14,11 @@ concurrency:
 jobs:
   lint:
     name: Run Lint
-    uses: codecov/gha-workflows/.github/workflows/lint.yml@v1.0.0
+    uses: codecov/gha-workflows/.github/workflows/lint.yml@v1.2.19
 
   codecovstartup:
     name: Codecov Startup
-    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.0
+    uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.19
     secrets: inherit
 
   ats:
@@ -40,12 +40,12 @@ jobs:
       - name: Bring containers up
         run: |
           make test_env.up
-# Need the action to support venv
-#      - name: Run ATS
-#        uses: codecov/codecov-ats@v0
-#        env:
-#          CODECOV_STATIC_TOKEN: ${{ secrets.STATIC_TOKEN }}
-#          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+      # Need the action to support venv
+      #      - name: Run ATS
+      #        uses: codecov/codecov-ats@v0
+      #        env:
+      #          CODECOV_STATIC_TOKEN: ${{ secrets.STATIC_TOKEN }}
+      #          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
       - name: Run Static Analysis
         run: |
           docker-compose exec shared codecovcli create-commit --token=${{ secrets.CODECOV_ORG_TOKEN }}
@@ -53,54 +53,54 @@ jobs:
       - name: Run Label Analysis
         run: |
           docker-compose exec shared codecovcli label-analysis --base-sha=$(git merge-base HEAD^ origin/main) --token=${{ secrets.STATIC_TOKEN }}
-# Leaving the below for now. We have some super sus test names that defeat shell escaping. If we figure out a path forward we can change to the output mode and get these stats more effectively
-#      - name: Run Tests
-#        id: tests
-#        run: |
-#          . venv/bin/activate
-#          START=$(date +%s)
-#          TESTS_TO_RUN=$(jq -r '.ats_tests_to_run | map(@sh) | join(" ")' analysis.json --raw-output)
-#          TEST_COUNT=$(jq -r '.ats_tests_to_run | length' analysis.json)
-#          RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
-#          python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
-#          END=$(date +%s)
-#          DURATION=$((END - START))
-#          echo duration=$DURATION>> "$GITHUB_OUTPUT"
-#          echo test_count=$TEST_COUNT>> "$GITHUB_OUTPUT"
+      # Leaving the below for now. We have some super sus test names that defeat shell escaping. If we figure out a path forward we can change to the output mode and get these stats more effectively
+      #      - name: Run Tests
+      #        id: tests
+      #        run: |
+      #          . venv/bin/activate
+      #          START=$(date +%s)
+      #          TESTS_TO_RUN=$(jq -r '.ats_tests_to_run | map(@sh) | join(" ")' analysis.json --raw-output)
+      #          TEST_COUNT=$(jq -r '.ats_tests_to_run | length' analysis.json)
+      #          RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
+      #          python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
+      #          END=$(date +%s)
+      #          DURATION=$((END - START))
+      #          echo duration=$DURATION>> "$GITHUB_OUTPUT"
+      #          echo test_count=$TEST_COUNT>> "$GITHUB_OUTPUT"
 
       - name: Upload Coverage
         run: |
           docker-compose exec shared codecovcli upload-process --flag smart-labels --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
 
-#      - name: Run Skip Tests
-#        id: skip
-#        run: |
-#          . venv/bin/activate
-#          START=$(date +%s)
-#          TESTS_TO_RUN=$(jq -r '.ats_tests_to_skip | map(@sh) | join(" ")' analysis.json --raw-output)
-#          TEST_COUNT=$(jq -r '.ats_tests_to_skip | length' analysis.json)
-#          RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
-#          python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
-#          END=$(date +%s)
-#          DURATION=$((END - START))
-#          echo duration=$DURATION>> "$GITHUB_OUTPUT"
-#          echo test_count=$TEST_COUNT>> "$GITHUB_OUTPUT"
-#
-#
-#      - name: Summary
-#        run: |
-#          echo "### ATS Summary" >> $GITHUB_STEP_SUMMARY
-#          echo "" >> $GITHUB_STEP_SUMMARY
-#          echo "- ${{ steps.tests.outputs.test_count }} tests ran in ${{ steps.tests.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
-#          echo "- ${{ steps.skip.outputs.test_count }} tests skipped" >> $GITHUB_STEP_SUMMARY
-#          echo "- Skipped tests took ${{ steps.skip.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
+  #      - name: Run Skip Tests
+  #        id: skip
+  #        run: |
+  #          . venv/bin/activate
+  #          START=$(date +%s)
+  #          TESTS_TO_RUN=$(jq -r '.ats_tests_to_skip | map(@sh) | join(" ")' analysis.json --raw-output)
+  #          TEST_COUNT=$(jq -r '.ats_tests_to_skip | length' analysis.json)
+  #          RUNNER_OPTIONS=$(jq -r '.runner_options | join(" ")' analysis.json | tr -d '\n')
+  #          python -m pytest $(echo $RUNNER_OPTIONS) --cov=./ $(echo $TESTS_TO_RUN)
+  #          END=$(date +%s)
+  #          DURATION=$((END - START))
+  #          echo duration=$DURATION>> "$GITHUB_OUTPUT"
+  #          echo test_count=$TEST_COUNT>> "$GITHUB_OUTPUT"
+  #
+  #
+  #      - name: Summary
+  #        run: |
+  #          echo "### ATS Summary" >> $GITHUB_STEP_SUMMARY
+  #          echo "" >> $GITHUB_STEP_SUMMARY
+  #          echo "- ${{ steps.tests.outputs.test_count }} tests ran in ${{ steps.tests.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
+  #          echo "- ${{ steps.skip.outputs.test_count }} tests skipped" >> $GITHUB_STEP_SUMMARY
+  #          echo "- Skipped tests took ${{ steps.skip.outputs.duration }} seconds" >> $GITHUB_STEP_SUMMARY
   #      - name: Upload coverage to Codecov
-#        uses: codecov/codecov-action@v4-beta
-#        env:
-#          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
-#        with:
-#          flags: smart-labels
-#          plugins: pycoverage,compress-pycoverage
+  #        uses: codecov/codecov-action@v4-beta
+  #        env:
+  #          CODECOV_TOKEN: ${{ secrets.CODECOV_ORG_TOKEN }}
+  #        with:
+  #          flags: smart-labels
+  #          plugins: pycoverage,compress-pycoverage
 
   test:
     name: Test
@@ -121,7 +121,7 @@ jobs:
       - name: Run tests
         run: |
           make test_env.test
-      
+
       # Don't upload on forks for now.
       - name: upload using codecovcli
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
