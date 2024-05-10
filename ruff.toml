@@ -37,7 +37,7 @@ target-version = "py310"
 
 [lint]
 # Currently only enabled F541: https://docs.astral.sh/ruff/rules/
-select = ["F541"]
+select = ["F541", "I"]
 ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
