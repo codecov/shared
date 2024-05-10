@@ -36,7 +36,7 @@ indent-width = 4
 target-version = "py310"
 
 [lint]
-# Currently only enabled F541: https://docs.astral.sh/ruff/rules/
+# Currently only enabled for F541 and I (isort) rules: https://docs.astral.sh/ruff/rules/
 select = ["F541", "I"]
 ignore = []
 
