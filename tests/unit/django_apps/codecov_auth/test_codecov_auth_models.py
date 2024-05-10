@@ -470,7 +470,6 @@ class TestOrganizationLevelTokenModel(TransactionTestCase):
 
 
 class TestGithubAppInstallationModel(TransactionTestCase):
-
     DEFAULT_APP_ID = 12345
 
     @pytest.fixture(autouse=True)

@@ -33,7 +33,6 @@ class TestFeature(TestCase):
         # To make the math simpler, let's pretend our hash function can only
         # return 200 different values.
         with patch.object(Feature, "HASHSPACE", 200):
-
             complex_feature.check_value(
                 identifier=1234
             )  # to force fetch values from db

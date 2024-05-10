@@ -551,7 +551,9 @@ class Gitlab(TorngitBaseAdapter):
                 if count_so_far > 1:
                     # count calls after initial call
                     self.count_and_get_url_template(counter_name)
-                yield None if current_result.status_code == 204 else current_result.json()
+                yield (
+                    None if current_result.status_code == 204 else current_result.json()
+                )
                 if (
                     max_number_of_pages is not None
                     and count_so_far >= max_number_of_pages

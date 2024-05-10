@@ -859,13 +859,11 @@ class Github(TorngitBaseAdapter):
             # Rate limit errors - we might fallback on other available tokens and retry
             # If we do fallback the token with rate limit is marked as 'rate limited' in Redis
             elif (res.status_code == 403 or res.status_code == 429) and (
-                (
-                    # Primary rate limit
-                    int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
-                    or
-                    # Secondary rate limit
-                    res.headers.get("Retry-After") is not None
-                )
+                # Primary rate limit
+                int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
+                or
+                # Secondary rate limit
+                res.headers.get("Retry-After") is not None
             ):
                 is_primary_rate_limit = (
                     int(res.headers.get("X-RateLimit-Remaining", -1)) == 0

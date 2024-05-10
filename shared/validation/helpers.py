@@ -12,7 +12,6 @@ class Invalid(Exception):
 
 
 class CoverageRangeSchemaField(object):
-
     """
     Pattern for the user to input a range like 60..90 (which means from 60 to 90)
 
@@ -301,7 +300,6 @@ class CustomFixPathSchemaField(object):
 
 
 class UserGivenBranchRegex(object):
-
     asterisk_to_regexp = re.compile(r"(?<!\.)\*")
 
     def validate(self, value):
@@ -321,7 +319,6 @@ class UserGivenBranchRegex(object):
 
 
 class LayoutStructure(object):
-
     acceptable_objects = set(
         [
             "changes",

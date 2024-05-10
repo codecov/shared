@@ -66,7 +66,6 @@ def get_github_integration_token(
     app_id: Optional[str] = None,
     pem_path: Optional[str] = None,
 ) -> Optional[str]:
-
     # https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/
     token = get_github_jwt_token(service, app_id, pem_path)
     if integration_id:

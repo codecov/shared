@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("rollouts", "0003_alter_featureflag_proportion_and_more"),
     ]

@@ -14,7 +14,6 @@ from shared.django_apps.core.models import DateTimeWithoutTZField
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []

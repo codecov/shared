@@ -23,7 +23,7 @@ class AnalyticsToolManager:
         *,
         is_enterprise=False,
         event_data: Optional[dict] = None,
-        context=None
+        context=None,
     ):
         if event_data is None:
             event_data = {}
