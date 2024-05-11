@@ -164,7 +164,5 @@ PSQLEXTRA_PARTITIONING_MANAGER = (
 )
 
 DATABASE_ROUTERS = [
-    "shared.django_apps.db_routers.TelemetryDatabaseRouter",
     "shared.django_apps.db_routers.MultiDatabaseRouter",
-    # TODO: port the timeseries DB router here when moving the timeseries app
 ]
