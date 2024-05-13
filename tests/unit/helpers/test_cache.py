@@ -11,7 +11,6 @@ from shared.helpers.cache import (
     RedisBackend,
     make_hash_sha256,
 )
-
 from shared.helpers.cache import log as cache_log
 
 
