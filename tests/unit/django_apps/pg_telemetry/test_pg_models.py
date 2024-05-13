@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 from django.test import TestCase
 
 from shared.django_apps.pg_telemetry.models import SimpleMetric as PgSimpleMetric
-from shared.django_apps.ts_telemetry.models import SimpleMetric as TsSimpleMetric
 
 
 class TestPgSimpleMetricModel(TestCase):
@@ -34,8 +33,3 @@ class TestPgSimpleMetricModel(TestCase):
         assert fetched.repo_id == 1
         assert fetched.owner_id == 2
         assert fetched.commit_id == 3
-
-        # Assert that the record is only found in `PgSimpleMetric` and not
-        # `TsSimpleMetric`
-        fetched_from_ts = TsSimpleMetric.objects.filter(timestamp=timestamp).first()
-        assert fetched_from_ts is None
