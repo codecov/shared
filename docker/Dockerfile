@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-ARG PYTHON_IMAGE=python:3.10-slim-bullseye
+ARG PYTHON_IMAGE=python:3.12.2-slim-bullseye
 
 FROM $PYTHON_IMAGE as build
 
