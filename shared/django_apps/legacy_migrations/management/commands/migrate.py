@@ -75,10 +75,8 @@ class Command(MigrateCommand):
 
     def _fake_initial_timeseries_migrations(self, cursor, args, options):
         try:
-            cursor.execute("SELECT * FROM django_migrations;")
-
-            # If this query is less than 2, it definitely doesn't have their initial migrations, so
-            # we would run the initial timeseries migration
+            # If this query doesn't recognize django_migration, nor has less than 2 entries in auth/contenttypes,
+            # it definitely doesn't have their initial migrations so we would run the initial timeseries migration
             cursor.execute(
                 "SELECT COUNT(*) FROM django_migrations WHERE app = 'auth' or app = 'contenttypes';"
             )
