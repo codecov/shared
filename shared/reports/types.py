@@ -15,7 +15,9 @@ class ReportTotals(object):
     hits: int = 0
     misses: int = 0
     partials: int = 0
-    coverage: int = 0
+    # The coverage is a string of a float that's rounded to 5 decimal places (or "100", "0")
+    # i.e. "98.76543", "100", "0" are all valid.
+    coverage: Optional[str] = 0
     branches: int = 0
     methods: int = 0
     messages: int = 0

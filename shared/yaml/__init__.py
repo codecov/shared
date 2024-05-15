@@ -1,12 +1,12 @@
 """
-    Package for user yaml things
+Package for user yaml things
 
-    This package depends on:
+This package depends on:
 
-    - shared.config
-    - shared.validation
+- shared.config
+- shared.validation
 
-    And therefore should not be imported by those
+And therefore should not be imported by those
 """
 
 from copy import deepcopy

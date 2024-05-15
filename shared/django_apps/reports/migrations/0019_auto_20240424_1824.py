@@ -19,12 +19,13 @@ COMMIT;
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0018_testinstance_branch_testinstance_commitid"),
     ]
 
     def populate_test_instances(apps, schema_editor):
+        print("Not running due to performance")
+        return
         TestInstance = apps.get_model("reports", "TestInstance")
 
         test_instances = TestInstance.objects.select_related(

@@ -21,7 +21,6 @@ def _contain_any_of_the_flags(expected_flags, actual_flags):
 
 
 class FilteredReportFile(object):
-
     __slots__ = ["report_file", "session_ids", "_totals", "_cached_lines"]
 
     def __init__(self, report_file, session_ids):

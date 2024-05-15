@@ -96,7 +96,7 @@ class BundleComparison:
                 matches += self._match_assets(asset_reports, [])
 
         changes = []
-        for (base_asset_report, head_asset_report) in matches:
+        for base_asset_report, head_asset_report in matches:
             if base_asset_report is None:
                 change = AssetChange(
                     asset_name=head_asset_report.name,

@@ -37,7 +37,7 @@ class TestConfig(object):
                 "iam_endpoint": None,
                 "hash_key": "ab164bf3f7d947f2a0681b215404873e",
             },
-            "database_url": "postgres://postgres:@postgres:5432/postgres",
+            "database_url": "postgresql://postgres:@postgres:5432/postgres",
         }
         assert get_config("setup", "segment", "enabled") is False
         assert (
@@ -396,8 +396,8 @@ class TestConfig(object):
                 "BITBUCKET__CLIENT_SECRET": "BITBUCKET__CLIENT_SECRET",
                 "SERVICES__GCP__GOOGLE_CREDENTIALS_LOCATION": "/secret/gcs-credentials/path.json",
                 "GITHUB__INTEGRATION__PEM": "/secrets/github-pem/github.pem",
-                "SERVICES__DATABASE_URL": "postgres://user:pass@127.0.0.1:5432/postgres",
-                "SERVICES__TIMESERIES_DATABASE_URL": "postgres://user:pass@timescale:5432/timescale",
+                "SERVICES__DATABASE_URL": "postgresql://user:pass@127.0.0.1:5432/postgres",
+                "SERVICES__TIMESERIES_DATABASE_URL": "postgresql://user:pass@timescale:5432/timescale",
                 "BITBUCKET__BOT__KEY": "BITBUCKET__BOT__KEY",
                 "SERVICES__MINIO__ACCESS_KEY_ID": "SERVICES__MINIO__ACCESS_KEY_ID",
                 "SERVICES__MINIO__SECRET_ACCESS_KEY": "SERVICES__MINIO__SECRET_ACCESS_KEY",
@@ -436,8 +436,8 @@ class TestConfig(object):
                 "gcp": {
                     "google_credentials_location": "/secret/gcs-credentials/path.json"
                 },
-                "database_url": "postgres://user:pass@127.0.0.1:5432/postgres",
-                "timeseries_database_url": "postgres://user:pass@timescale:5432/timescale",
+                "database_url": "postgresql://user:pass@127.0.0.1:5432/postgres",
+                "timeseries_database_url": "postgresql://user:pass@timescale:5432/timescale",
                 "redis_url": "SERVICES__REDIS_URL:11234",
             },
             "setup": {

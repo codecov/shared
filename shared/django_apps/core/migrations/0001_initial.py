@@ -14,7 +14,6 @@ from shared.django_apps.core.models import DateTimeWithoutTZField, _gen_image_to
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [migrations.swappable_dependency(settings.AUTH_USER_MODEL)]

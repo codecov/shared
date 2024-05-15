@@ -6,7 +6,6 @@ from shared.django_apps.core.encoders import ReportJSONEncoder
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0026_auto_20230605_1134"),
     ]

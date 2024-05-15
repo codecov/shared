@@ -200,7 +200,6 @@ class MinioStorageService(BaseStorageService):
     """
 
     def append_to_file(self, bucket_name, path, data):
-
         try:
             file_contents = "\n".join(
                 (self.read_file(bucket_name, path).decode(), data)
