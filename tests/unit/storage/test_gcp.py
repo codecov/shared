@@ -148,7 +148,7 @@ class TestGCPStorateService(BaseTestCase):
 
     def test_read_file_application_gzip(self, request, codecov_vcr):
         storage = GCPStorageService(gcp_config)
-        path = f"gzipped_file/test_006.txt"
+        path = "gzipped_file/test_006.txt"
         bucket_name = "testingarchive004"
         content_to_upload = "content to write\nThis is crazy\nWhy does this work"
         bucket = storage.storage_client.get_bucket(bucket_name)
@@ -240,7 +240,6 @@ class TestGCPStorateService(BaseTestCase):
 
     @patch("shared.storage.gcp.storage")
     def test_read_file_retry_success(self, mock_storage):
-
         storage = GCPStorageService(gcp_config)
         mock_storage.Client.assert_called()
         mock_blob = MagicMock(
@@ -258,7 +257,6 @@ class TestGCPStorateService(BaseTestCase):
 
     @patch("shared.storage.gcp.storage")
     def test_read_file_retry_fail_twice(self, mock_storage):
-
         storage = GCPStorageService(gcp_config)
         mock_storage.Client.assert_called()
         mock_blob = MagicMock(

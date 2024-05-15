@@ -19,7 +19,6 @@ COMMIT;
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("reports", "0018_testinstance_branch_testinstance_commitid"),
     ]

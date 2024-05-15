@@ -6,7 +6,6 @@ from shared.django_apps.core.models import DateTimeWithoutTZField
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("codecov_auth", "0028_owner_sentry_user_data_owner_sentry_user_id"),
     ]

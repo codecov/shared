@@ -7,6 +7,7 @@ from shared.django_apps.codecov_auth.models import Owner
 # Needs to be called the same as the API app
 LEGACY_MIGRATIONS_APP_LABEL = "legacy_migrations"
 
+
 # Create your models here.
 class YamlHistory(
     ExportModelOperationsMixin("legacy_migrations.yaml_history"), models.Model

@@ -9,9 +9,9 @@ from shared.helpers.cache import (
     LogMapping,
     OurOwnCache,
     RedisBackend,
+    make_hash_sha256,
 )
 from shared.helpers.cache import log as cache_log
-from shared.helpers.cache import make_hash_sha256
 
 
 class RandomCounter(object):

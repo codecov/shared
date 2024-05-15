@@ -158,7 +158,7 @@ class Parser:
         elif prefix == "bundleName":
             if not re.fullmatch(r"^[\w\d_:/@\.{}\[\]$-]+$", value):
                 log.info(f'bundle name does not match regex: "{value}"')
-                raise Exception(f"invalid bundle name")
+                raise Exception("invalid bundle name")
             bundle = self.db_session.query(Bundle).filter_by(name=value).first()
             if bundle is None:
                 bundle = Bundle(name=value)
@@ -215,9 +215,9 @@ class Parser:
                 )
             )
 
-            self.chunk_asset_names_index[
-                self.chunk.unique_external_id
-            ] = self.chunk_asset_names
+            self.chunk_asset_names_index[self.chunk.unique_external_id] = (
+                self.chunk_asset_names
+            )
             # reset parser state
             self.chunk = None
             self.chunk_asset_names = []
@@ -242,9 +242,9 @@ class Parser:
                 )
             )
 
-            self.module_chunk_unique_external_ids_index[
-                self.module.name
-            ] = self.module_chunk_unique_external_ids
+            self.module_chunk_unique_external_ids_index[self.module.name] = (
+                self.module_chunk_unique_external_ids
+            )
             # reset parser state
             self.module = None
             self.module_chunk_unique_external_ids = []

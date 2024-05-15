@@ -389,7 +389,7 @@ class TestUnitGithub(object):
             my_route = respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
                     status_code=200,
-                    content="\xC4pple".encode("latin-1"),
+                    content="\xc4pple".encode("latin-1"),
                     headers={
                         "Content-Type": "application/vnd.github.v3.diff; charset=utf-8"
                     },
@@ -402,7 +402,7 @@ class TestUnitGithub(object):
             )
             async with handler.get_client() as client:
                 res = await handler.api(client, "get", "/endpoint")
-            assert res == "\xC4pple".encode("latin-1").decode("utf-8", errors="replace")
+            assert res == "\xc4pple".encode("latin-1").decode("utf-8", errors="replace")
 
     @pytest.mark.asyncio
     async def test_find_pull_request_success(self, mocker):
@@ -558,7 +558,6 @@ class TestUnitGithub(object):
 
     @pytest.mark.asyncio
     async def test_distance_in_commits(self, mocker):
-
         before = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
             labels={"endpoint": "get_distance_in_commits"},
@@ -1648,7 +1647,7 @@ class TestUnitGithub(object):
                     headers={"Content-Type": "application/x-www-form-urlencoded"},
                     text="access_token=newer_access_token&token_type=bearer&refresh_token=newer_refresh_token",
                 )
-            pytest.fail(f"Wrong token received")
+            pytest.fail("Wrong token received")
 
         assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
 

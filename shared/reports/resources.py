@@ -687,7 +687,6 @@ class Report(object):
         self.header = {**self.header, "labels_index": value}
 
     def lookup_label_by_id(self, label_id: int) -> str:
-
         if self.labels_index is None:
             raise LabelIndexNotFoundError()
         if label_id not in self.labels_index:
@@ -726,8 +725,11 @@ class Report(object):
                     yield fname, make_network_file(file.totals)
         else:
             for fname, data in self._files.items():
-                yield fname, make_network_file(
-                    data.file_totals, data.session_totals, data.diff_totals
+                yield (
+                    fname,
+                    make_network_file(
+                        data.file_totals, data.session_totals, data.diff_totals
+                    ),
                 )
 
     def __repr__(self):
@@ -1147,20 +1149,26 @@ class Report(object):
                     changed_coverage = changed_coverages.get(name)
                     if changed_coverage:
                         # changed file
-                        yield name, ReportTotals(
-                            lines=_NetworkFile.totals.lines,
-                            coverage=float(changed_coverage),
+                        yield (
+                            name,
+                            ReportTotals(
+                                lines=_NetworkFile.totals.lines,
+                                coverage=float(changed_coverage),
+                            ),
                         )
                     else:
                         diff = _NetworkFile.diff_totals
                         if diff and diff.lines > 0:  # lines > 0
                             # diff file
-                            yield name, ReportTotals(
-                                lines=_NetworkFile.totals.lines,
-                                coverage=-1
-                                if float(diff.coverage)
-                                < float(_NetworkFile.totals.coverage)
-                                else 1,
+                            yield (
+                                name,
+                                ReportTotals(
+                                    lines=_NetworkFile.totals.lines,
+                                    coverage=-1
+                                    if float(diff.coverage)
+                                    < float(_NetworkFile.totals.coverage)
+                                    else 1,
+                                ),
                             )
 
                         else:
@@ -1236,7 +1244,6 @@ class Report(object):
                     in_past = path in self
                     in_future = future_state != "deleted" and path in future_report
                     if in_past and in_future:
-
                         # get the future version
                         future_file = future_report.get(path, bind=False)
                         # if modified

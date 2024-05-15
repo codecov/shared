@@ -115,7 +115,7 @@ class Feature:
 
         # See if this environment has disabled feature flagging entirely.
         # These environments will always get default values.
-        self.env_disable = os.getenv(f"CODECOV__FEATURE__DISABLE") is not None
+        self.env_disable = os.getenv("CODECOV__FEATURE__DISABLE") is not None
 
         # See if this environment has provided an override for this feature in
         # its environment variables. Since feature variant values are stored in
