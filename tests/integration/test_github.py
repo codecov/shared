@@ -1923,7 +1923,7 @@ class TestGithubTestCase(object):
                 "name": "test-no-languages",
                 "language": None,
                 "private": False,
-                "branch": None,
+                "branch": "master",
                 "owner": {
                     "node_id": "U_kgDOBZOfKw",
                     "username": "codecove2e",
