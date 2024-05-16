@@ -7,7 +7,6 @@ from shared.django_apps.core.models import DateTimeWithoutTZField
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0023_alter_commitnotification_decoration_type"),
     ]

@@ -29,7 +29,6 @@ def seed_initial_features(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("rollouts", "0001_initial"),
     ]

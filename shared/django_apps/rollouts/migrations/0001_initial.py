@@ -8,7 +8,6 @@ import shared.django_apps.rollouts.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []

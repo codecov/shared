@@ -22,6 +22,7 @@ from shared.plan.constants import (
 
 log = logging.getLogger(__name__)
 
+
 # This originally belongs to the sentry service in API but this is a temporary fn to avoid importing the whole service
 def is_sentry_user(owner: Owner) -> bool:
     """

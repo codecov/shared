@@ -66,7 +66,6 @@ $$ language plpgsql;
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("legacy_migrations", "0003_auto_20230120_1837"),
     ]

@@ -357,7 +357,7 @@ class TestUnitGitlab(object):
                     status_code=200,
                     content='{"access_token": "newer_access_token","token_type": "bearer","refresh_token": "newer_refresh_token"}',
                 )
-            pytest.fail(f"Wrong token received")
+            pytest.fail("Wrong token received")
 
         assert valid_handler._oauth == dict(key="client_id", secret="client_secret")
 

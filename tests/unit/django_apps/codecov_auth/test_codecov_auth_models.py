@@ -161,7 +161,7 @@ class TestOwnerModel(TransactionTestCase):
         mock_gitlab_url.return_value = "gitlab_url"
         self.owner.service = "gitlab"
         self.assertEqual(self.owner.avatar_url, "gitlab_url")
-        self.assertTrue(mock_gitlab_url.called_once())
+        mock_gitlab_url.assert_called_once()
 
     @patch("shared.django_apps.codecov_auth.models.get_config")
     def test_gravatar_url(self, mock_get_config):
@@ -470,7 +470,6 @@ class TestOrganizationLevelTokenModel(TransactionTestCase):
 
 
 class TestGithubAppInstallationModel(TransactionTestCase):
-
     DEFAULT_APP_ID = 12345
 
     @pytest.fixture(autouse=True)

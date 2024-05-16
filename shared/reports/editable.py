@@ -11,7 +11,6 @@ log = logging.getLogger(__name__)
 
 
 class EditableReportFile(ReportFile):
-
     __slots__ = ("_details",)
 
     @classmethod
@@ -130,9 +129,9 @@ class EditableReport(Report):
         super().merge(new_report, joined)
         for file in self:
             if isinstance(file, ReportFile):
-                self._chunks[
-                    self._files.get(file.name).file_index
-                ] = EditableReportFile.from_ReportFile(file)
+                self._chunks[self._files.get(file.name).file_index] = (
+                    EditableReportFile.from_ReportFile(file)
+                )
 
     @metrics.timer("services.report.EditableReport.turn_chunks_into_reports")
     def turn_chunks_into_reports(self):
