@@ -1285,7 +1285,7 @@ class Github(TorngitBaseAdapter):
                         ),
                         "private": raw_repo_data["isPrivate"],
                         "branch": (
-                            default_branch.get("name") if default_branch else None
+                            default_branch.get("name") if default_branch else "master"
                         ),
                         "owner": {
                             "node_id": raw_repo_data["owner"]["id"],
