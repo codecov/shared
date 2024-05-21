@@ -30,7 +30,7 @@ class AbstractTotals(
     ExportModelOperationsMixin("reports.abstract_totals"), BaseCodecovModel
 ):
     branches = models.IntegerField()
-    coverage = models.DecimalField(max_digits=7, decimal_places=2)
+    coverage = models.DecimalField(max_digits=8, decimal_places=5)
     hits = models.IntegerField()
     lines = models.IntegerField()
     methods = models.IntegerField()
