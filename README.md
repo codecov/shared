@@ -47,6 +47,25 @@ In order to run tests from within your docker container, run:
 make test
 ```
 
+## Running migrations
+
+If you make changes to the models in `shared/django_apps/` you will need to create migrations to reflect those changes in the database.
+
+Make sure the shared container is running and shell into it
+```bash
+$ docker compose up
+$ docker compose exec -it shared /bin/bash
+```
+
+Now you can create a migration (from within the container)
+
+```bash
+$ cd shared/django_apps/
+$ python manage.py makemigrations
+```
+
+To learn more about migrations visit [Django Docs](https://docs.djangoproject.com/en/5.0/topics/migrations/)
+
 ## Managing shared dependencies
 
 As a normal python package, `shared` can include dependencies of its own.
