@@ -123,3 +123,35 @@ def test_bundle_analysis_comparison():
 
     with pytest.raises(MissingBundleError):
         comparison.bundle_comparison("new")
+
+
+def test_bundle_analysis_total_size_delta():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    base_report = BundleAnalysisReport()
+    base_report.ingest(base_report_bundle_stats_path)
+
+    old_bundle = Bundle(name="old")
+    base_report.db_session.add(old_bundle)
+    base_report.db_session.commit()
+
+    head_report = BundleAnalysisReport()
+    head_report.ingest(head_report_bundle_stats_path)
+
+    new_bundle = Bundle(name="new")
+    head_report.db_session.add(new_bundle)
+    head_report.db_session.commit()
+
+    loader.save(base_report, "base-report")
+    loader.save(head_report, "head-report")
+
+    assert comparison.total_size_delta == 1100
