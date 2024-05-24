@@ -3,7 +3,8 @@ from enum import Enum
 from typing import List, Optional
 
 import sqlalchemy
-from sqlalchemy import Column, Enum as SQLAlchemyEnum, ForeignKey, Table, create_engine, types
+from sqlalchemy import Column, ForeignKey, Table, create_engine, types
+from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm import backref, relationship, sessionmaker
@@ -206,6 +207,7 @@ class AssetType(Enum):
     FONT = "font"
     IMAGE = "image"
     UNKNOWN = "unknown"
+
 
 class Asset(Base):
     """
