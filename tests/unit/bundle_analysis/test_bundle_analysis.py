@@ -48,7 +48,13 @@ def test_create_bundle_report():
         ] == [
             ("assets/react-*.svg", "assets/react-35ef61ed.svg", 4126, 0, "IMAGE"),
             ("assets/index-*.css", "assets/index-d526a0c5.css", 1421, 0, "STYLESHEET"),
-            ("assets/LazyComponent-*.js", "assets/LazyComponent-fcbb0922.js", 294, 1, "JAVASCRIPT"),
+            (
+                "assets/LazyComponent-*.js",
+                "assets/LazyComponent-fcbb0922.js",
+                294,
+                1,
+                "JAVASCRIPT",
+            ),
             ("assets/index-*.js", "assets/index-c8676264.js", 154, 2, "JAVASCRIPT"),
             # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
             # Made a similar note in the parser code where the associations are made
