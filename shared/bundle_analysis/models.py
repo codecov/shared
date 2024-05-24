@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List, Optional
 
 import sqlalchemy
-from sqlalchemy import Column, ForeignKey, Table, create_engine, types
+from sqlalchemy import Column, Enum as SQLAlchemyEnum, ForeignKey, Table, create_engine, types
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm import backref, relationship, sessionmaker
@@ -40,6 +40,8 @@ create table assets (
     name text not null,
     normalized_name text not null,
     size integer not null,
+    uuid text not null,
+    asset_type text not null,
     foreign key (session_id) references sessions (id)
 );
 
@@ -197,6 +199,14 @@ class Metadata(Base):
     value = Column(types.JSON)
 
 
+class AssetType(Enum):
+    JAVASCRIPT = "javascript"
+    TYPESCRIPT = "typescript"
+    STYLESHEET = "stylesheet"
+    FONT = "font"
+    IMAGE = "image"
+    UNKNOWN = "unknown"
+
 class Asset(Base):
     """
     These are the top-level artifacts that the bundling process produces.
@@ -209,7 +219,8 @@ class Asset(Base):
     name = Column(types.Text, nullable=False)
     normalized_name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
-
+    uuid = Column(types.Text, nullable=False)
+    asset_type = Column(SQLAlchemyEnum(AssetType))
     session = relationship("Session", backref=backref("assets"))
     chunks = relationship(
         "Chunk", secondary=assets_chunks, back_populates="assets", cascade="all, delete"
