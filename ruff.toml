@@ -36,9 +36,9 @@ indent-width = 4
 target-version = "py312"
 
 [lint]
-# Currently only enabled for F541 and I (isort) rules: https://docs.astral.sh/ruff/rules/
-select = ["F541", "I"]
-ignore = []
+# Currently only enabled for F (Pyflakes) and I (isort) rules: https://docs.astral.sh/ruff/rules/
+select = ["F", "I"]
+ignore = ["F841", "F401","F405", "F403"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]

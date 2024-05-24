@@ -23,7 +23,6 @@ from shared.utils.migrate import *
             {
                 "f": 203,
                 "h": 2549,
-                "m": 0,
                 "b": 574,
                 "n": 4076,
                 "p": 0,
@@ -69,7 +68,6 @@ def test_migrate_totals(totals, res):
             {
                 "f": 203,
                 "h": 2549,
-                "m": 0,
                 "b": 574,
                 "n": 4076,
                 "p": 0,

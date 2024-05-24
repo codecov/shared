@@ -943,7 +943,7 @@ class Report(object):
         """
         returns <ReportTotals> for the file if it exists
         """
-        if self._path_filter and not self._path_filter(filename):
+        if self._path_filter and not self._path_filter(path):
             # filtered out of report
             return _else
 
