@@ -202,7 +202,6 @@ class Metadata(Base):
 
 class AssetType(Enum):
     JAVASCRIPT = "javascript"
-    TYPESCRIPT = "typescript"
     STYLESHEET = "stylesheet"
     FONT = "font"
     IMAGE = "image"
