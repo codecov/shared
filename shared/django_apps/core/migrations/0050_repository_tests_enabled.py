@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     --
     ALTER TABLE "repos" ADD COLUMN "tests_enabled" boolean DEFAULT false NULL;
     ALTER TABLE "repos" ALTER COLUMN "tests_enabled" DROP DEFAULT;
-    COMMIT;   
+    COMMIT;
     """
 
     dependencies = [
