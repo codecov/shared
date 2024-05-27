@@ -131,8 +131,6 @@ class Parser:
 
         if extension in ["js"]:
             return AssetType.JAVASCRIPT
-        if extension in ["ts"]:
-            return AssetType.TYPESCRIPT
         if extension in ["css"]:
             return AssetType.STYLESHEET
         if extension in ["woff", "woff2", "ttf", "otf", "eot"]:
