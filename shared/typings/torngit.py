@@ -18,6 +18,7 @@ class RepoInfo(TypedDict):
 class GithubInstallationInfo(TypedDict):
     """Required info to get a token from Github for a given installation"""
 
+    id: int
     installation_id: int
     # The default app (configured via yaml) doesn't need this info.
     # All other apps need app_id and pem_path
