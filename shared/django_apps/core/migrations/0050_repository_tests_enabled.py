@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-from shared.django_apps.migration_utils import RiskyAlterField
+from shared.django_apps.migration_utils import RiskyAddField
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        RiskyAlterField(
+        RiskyAddField(
             model_name="repository",
             name="test_analytics_enabled",
             field=models.BooleanField(default=False, null=True),
