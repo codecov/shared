@@ -7,10 +7,10 @@ class Migration(migrations.Migration):
     """
     BEGIN;
     --
-    -- Add field tests_enabled to repository
+    -- Add field test_analytics_enabled to repository
     --
-    ALTER TABLE "repos" ADD COLUMN "tests_enabled" boolean DEFAULT false NULL;
-    ALTER TABLE "repos" ALTER COLUMN "tests_enabled" DROP DEFAULT;
+    ALTER TABLE "repos" ADD COLUMN "test_analytics_enabled" boolean DEFAULT false NULL;
+    ALTER TABLE "repos" ALTER COLUMN "test_analytics_enabled" DROP DEFAULT;
     COMMIT;
     """
 
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="repository",
-            name="tests_enabled",
+            name="test_analytics_enabled",
             field=models.BooleanField(default=False, null=True),
         ),
     ]
