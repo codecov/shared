@@ -139,6 +139,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
     deleted = models.BooleanField(default=False)
     bundle_analysis_enabled = models.BooleanField(default=False, null=True)
     coverage_enabled = models.BooleanField(default=False, null=True)
+    test_analytics_enabled = models.BooleanField(default=False, null=True)
 
     # tracks field changes being saved
     tracker = FieldTracker()
@@ -450,6 +451,9 @@ class CommitNotification(
         STATUS_PROJECT = "status_project"
         WEBHOOK = "webhook"
         CODECOV_SLACK_APP = "codecov_slack_app"
+        CHECKS_PROJECT = "checks_project"
+        CHECKS_CHANGES = "checks_changes"
+        CHECKS_PATCH = "checks_patch"
 
     class DecorationTypes(models.TextChoices):
         STANDARD = "standard"
@@ -467,6 +471,12 @@ class CommitNotification(
     id = models.BigAutoField(primary_key=True)
     commit = models.ForeignKey(
         "core.Commit", on_delete=models.CASCADE, related_name="notifications"
+    )
+    gh_app = models.ForeignKey(
+        "codecov_auth.GithubAppInstallation",
+        on_delete=models.CASCADE,
+        related_name="commit_notifications",
+        null=True,
     )
     notification_type = models.TextField(
         choices=NotificationTypes.choices
