@@ -41,6 +41,8 @@ select = ["F", "I"]
 ignore = ["F841", "F401","F405", "F403"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
+# The preferred method (for now) w.r.t. fixable rules is to manually update the makefile
+# with --fix and re-run 'make lint'
 fixable = ["ALL"]
 unfixable = []
 
