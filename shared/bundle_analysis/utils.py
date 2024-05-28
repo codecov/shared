@@ -15,7 +15,6 @@ def get_extension(filename: str) -> str:
     # Remove the dot in the extension
     file_extension = file_extension[1:]
     # At times file can be something like './index.js?module', remove the ?
-    if "?" in file_extension:
-        file_extension = file_extension.split("?")[0]
+    file_extension = file_extension.split("?")[0]
 
     return file_extension
