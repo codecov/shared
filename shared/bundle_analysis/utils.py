@@ -11,11 +11,11 @@ def get_extension(filename: str) -> str:
     _, file_extension = os.path.splitext(filename)
     # Return empty string if file has no extension
     if not file_extension or file_extension[0] != ".":
-        return file_extension
+        return ""
     # Remove the dot in the extension
     file_extension = file_extension[1:]
     # At times file can be something like './index.js?module', remove the ?
     if "?" in file_extension:
-        file_extension = file_extension[: file_extension.rfind("?")]
+        file_extension = file_extension.split("?")[0]
 
     return file_extension
