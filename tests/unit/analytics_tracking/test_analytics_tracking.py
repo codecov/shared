@@ -177,11 +177,11 @@ class TestPubSub(object):
             pubsub.topic, data=json.dumps(event.serialize()).encode("utf-8")
         )
 
-    def test_pubsub_track_event_with_datetime(mock_pubsub_publisher):
-        dt = datetime(2023, 9, 12, tzinfo=timezone.utc)
+    def test_pubsub_track_event_with_datetime(self, mock_pubsub_publisher):
+        other_timestamp = datetime(2023, 9, 12, tzinfo=timezone.utc)
         event = Event(
             event_name=Events.ACCOUNT_ACTIVATED_REPOSITORY.value,
-            dt=dt,
+            other_timestamp=other_timestamp,
             user_id="1234",
             repo_id="1234",
             branch="test_branch",
