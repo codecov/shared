@@ -2,8 +2,9 @@ import json
 import os
 import sqlite3
 import tempfile
-from typing import Any, Dict, Iterator, Optional
+from typing import Any, Dict, Iterator, Optional, Self
 
+from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql import func
 
@@ -169,6 +170,71 @@ class BundleAnalysisReport:
         session_id = parser.parse(path)
         self.db_session.commit()
         return session_id
+
+    def associate_previous_assets(self, prev_bundle_analysis_report: Self) -> None:
+        """
+        Only associate past asset if it is Javascript or Typescript types
+        and belonging to the same bundle name
+        Associated if one of the following is true
+        Rule 1. Previous and current asset have the same hashed name
+        Rule 2. Previous and current asset shared the same set of module names
+        """
+        for curr_bundle_report in self.bundle_reports():
+            for prev_bundle_report in prev_bundle_analysis_report.bundle_reports():
+                if curr_bundle_report.name == prev_bundle_report.name:
+                    associated_assets_found = []
+
+                    # Rule 1 check
+                    prev_asset_hashed_names = {
+                        a.hashed_name: a.uuid
+                        for a in prev_bundle_report.asset_reports()
+                    }
+                    for curr_asset in curr_bundle_report.asset_reports():
+                        if curr_asset.asset_type == models.AssetType.JAVASCRIPT:
+                            if curr_asset.hashed_name in prev_asset_hashed_names:
+                                associated_assets_found.append(
+                                    [
+                                        prev_asset_hashed_names[curr_asset.hashed_name],
+                                        curr_asset.uuid,
+                                    ]
+                                )
+
+                    # Rule 2 check
+                    prev_module_asset_mapping = {}
+                    for prev_asset in prev_bundle_report.asset_reports():
+                        if prev_asset.asset_type == models.AssetType.JAVASCRIPT:
+                            prev_modules = tuple(
+                                sorted(
+                                    frozenset([m.name for m in prev_asset.modules()])
+                                )
+                            )
+                            # NOTE: Assume two assets CANNOT have the exact same of modules
+                            # though in reality there can be rare cases of this
+                            # but we will deal with that later if it becomes a prevalent problem
+                            prev_module_asset_mapping[prev_modules] = prev_asset.uuid
+
+                    for curr_asset in curr_bundle_report.asset_reports():
+                        if curr_asset.asset_type == models.AssetType.JAVASCRIPT:
+                            curr_modules = tuple(
+                                sorted(
+                                    frozenset([m.name for m in curr_asset.modules()])
+                                )
+                            )
+                            if curr_modules in prev_module_asset_mapping:
+                                associated_assets_found.append(
+                                    [
+                                        prev_module_asset_mapping[curr_modules],
+                                        curr_asset.uuid,
+                                    ]
+                                )
+
+                    # Update the Assets table for the bundle
+                    # TODO: Use SQLalchemy ORM to update instead of raw SQL
+                    for pair in associated_assets_found:
+                        prev_uuid, curr_uuid = pair
+                        stmt = f"UPDATE assets SET uuid='{prev_uuid}' WHERE uuid='{curr_uuid}'"
+                        self.db_session.execute(text(stmt))
+                    self.db_session.commit()
 
     def metadata(self) -> Dict[models.MetadataKey, Any]:
         with models.get_db_session(self.db_path) as session:
