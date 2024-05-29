@@ -178,7 +178,7 @@ class TestPubSub(object):
         )
 
     def test_pubsub_track_event_with_datetime(mock_pubsub_publisher):
-        dt = (datetime(2023, 9, 12, tzinfo=timezone.utc),)
+        dt = datetime(2023, 9, 12, tzinfo=timezone.utc)
         event = Event(
             event_name=Events.ACCOUNT_ACTIVATED_REPOSITORY.value,
             dt=dt,
