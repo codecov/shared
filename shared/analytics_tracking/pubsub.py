@@ -1,6 +1,6 @@
-from datetime import datetime
 import json
 import logging
+from datetime import datetime
 
 from google.auth.exceptions import GoogleAuthError
 from google.cloud import pubsub_v1

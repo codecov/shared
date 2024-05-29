@@ -177,7 +177,7 @@ class TestPubSub(object):
             pubsub.topic, data=json.dumps(event.serialize()).encode("utf-8")
         )
 
-    def test_pubsub_track_event_with_datetime(self, mock_pubsub_publisher):
+    def test_pubsub_track_event_with_datetime(self, mocker, mock_pubsub_publisher, mock_pubsub):
         other_timestamp = datetime(2023, 9, 12, tzinfo=timezone.utc)
         event = Event(
             event_name=Events.ACCOUNT_ACTIVATED_REPOSITORY.value,
@@ -188,12 +188,11 @@ class TestPubSub(object):
         )
         pubsub = PubSub()
         pubsub.track_event(event)
-
         serialized_event = json.dumps(event.serialize(), cls=CustomJSONEncoder).encode(
             "utf-8"
         )
         mock_pubsub_publisher.publish.assert_called_with(
-            "test_topic", data=serialized_event
+            pubsub.topic, data=serialized_event
         )
 
 
