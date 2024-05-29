@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import uuid
 from typing import Optional, Tuple
 
 import ijson
@@ -9,6 +10,7 @@ from sqlalchemy.orm import Session as DbSession
 from shared.bundle_analysis.models import (
     SCHEMA,
     Asset,
+    AssetType,
     Bundle,
     Chunk,
     Module,
@@ -16,6 +18,7 @@ from shared.bundle_analysis.models import (
     assets_chunks,
     chunks_modules,
 )
+from shared.bundle_analysis.utils import get_extension
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +126,20 @@ class Parser:
             e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
             raise e
 
+    def _asset_type(self, name: str) -> AssetType:
+        extension = get_extension(name)
+
+        if extension in ["js"]:
+            return AssetType.JAVASCRIPT
+        if extension in ["css"]:
+            return AssetType.STYLESHEET
+        if extension in ["woff", "woff2", "ttf", "otf", "eot"]:
+            return AssetType.FONT
+        if extension in ["jpg", "jpeg", "png", "gif", "svg", "webp", "apng", "avif"]:
+            return AssetType.IMAGE
+
+        return AssetType.UNKNOWN
+
     def _parse_info(self, event: Tuple[str, str, str]):
         prefix, _, value = event
 
@@ -183,6 +200,8 @@ class Parser:
                     name=self.asset.name,
                     normalized_name=self.asset.normalized_name,
                     size=self.asset.size,
+                    uuid=str(uuid.uuid4()),
+                    asset_type=self._asset_type(self.asset.name),
                 )
             )
 

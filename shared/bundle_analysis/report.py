@@ -50,6 +50,14 @@ class AssetReport:
     def size(self):
         return self.asset.size
 
+    @property
+    def uuid(self):
+        return self.asset.uuid
+
+    @property
+    def asset_type(self):
+        return self.asset.asset_type
+
     def modules(self):
         with models.get_db_session(self.db_path) as session:
             modules = (
