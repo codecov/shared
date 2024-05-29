@@ -9,20 +9,20 @@ def walk(_dict, keys, _else=None):
             else:
                 _dict = getattr(_dict, key)
         return _dict
-    except:
+    except Exception:
         return _else
 
 
 def default_if_true(value):
     if value is True:
         yield "default", {}
-    elif type(value) is dict:
+    elif isinstance(value, dict):
         for key, data in value.items():
             if data is False:
                 continue
             elif data is True:
                 yield key, {}
-            elif type(data) is not dict or data.get("enabled") is False:
+            elif not isinstance(data, dict) or data.get("enabled") is False:
                 continue
             else:
                 yield key, data

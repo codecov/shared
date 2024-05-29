@@ -289,7 +289,7 @@ def cast_ints_float(value):
     When doing a merge we'd like to convert all ints to floats. this method takes in a value and
     converts it to flaot if type(value) is int
     """
-    return value if type(value) is not int else float(value)
+    return value if not isinstance(value, int) else float(value)
 
 
 class LineType(IntEnum):

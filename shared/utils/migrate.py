@@ -36,7 +36,7 @@ TOTALS_MAP_v1 = (
 
 def migrate_totals(totals):
     if totals:
-        if type(totals) is list:
+        if isinstance(totals, list):
             # v3
             return totals
 
@@ -48,7 +48,7 @@ def migrate_totals(totals):
             return data
 
         else:
-            tg = totals.get if type(totals) is dict else loads(totals).get
+            tg = totals.get if isinstance(totals, dict) else loads(totals).get
             # v2
             return [tg(k, 0) for k in TOTALS_MAP]
     return []
@@ -75,7 +75,7 @@ def v3_to_v2(report, path=None):
 
 
 def totals_to_dict(totals):
-    if type(totals) is dict:
+    if isinstance(totals, dict):
         # turn into list for zipping
         totals = [totals.get(k, 0) for k in TOTALS_MAP]
 

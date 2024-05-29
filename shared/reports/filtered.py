@@ -118,7 +118,7 @@ class FilteredReportFile(object):
         if not c:
             # no coverage data provided
             return (0, 0)
-        elif type(c) is int:
+        elif isinstance(c, int):
             # coverage is of type int
             return (c, 0)
         else:

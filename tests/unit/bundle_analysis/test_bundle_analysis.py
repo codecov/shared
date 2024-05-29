@@ -87,8 +87,8 @@ def test_create_bundle_report():
 
         for ar in asset_reports:
             for module in ar.modules():
-                assert type(module.name) == str
-                assert type(module.size) == int
+                assert isinstance(module.name, str)
+                assert isinstance(module.size, int)
 
         assert bundle_report.total_size() == 150572
         assert report.session_count() == 1

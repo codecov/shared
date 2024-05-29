@@ -117,7 +117,7 @@ def test_report_to_flare():
         helper method to compare nested dicts, if an item of a dict is a list, the list is sorted and then compared
         agaisnt the expected result
         """
-        if type(result) == list:
+        if isinstance(result, list):
             sorted_list = sorted(result, key=lambda k: k["name"])
             sorted_expected = sorted(excpected, key=lambda k: k["name"])
             for i in range(len(sorted_list)):

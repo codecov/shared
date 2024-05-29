@@ -83,7 +83,7 @@ class Command(MigrateCommand):
             result = cursor.fetchone()
             if result[0] < 2:
                 self._run_initial_timeseries_migrations(args=args, options=options)
-        except:
+        except Exception:
             self._run_initial_codecov_migrations(args=args, options=options)
             self._run_initial_timeseries_migrations(args=args, options=options)
 
