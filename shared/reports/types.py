@@ -259,7 +259,7 @@ class SessionTotalsArray(object):
             return SessionTotalsArray()
         log.warning(
             "Tried to build SessionArray from unknown encoded data.",
-            dict(data=sessions_array, data_type=type(sessions_array)),
+            extra=dict(data=sessions_array, data_type=type(sessions_array)),
         )
         return None
 
