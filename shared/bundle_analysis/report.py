@@ -210,9 +210,9 @@ class BundleAnalysisReport:
                                     frozenset([m.name for m in prev_asset.modules()])
                                 )
                             )
-                            # NOTE: Assume two assets CANNOT have the exact same of modules
-                            # though in reality there can be rare cases of this
-                            # but we will deal with that later if it becomes a prevalent problem
+                            # NOTE: Assume two non-related assets CANNOT have the same set of modules
+                            # though in reality there can be rare cases of this but we
+                            # will deal with that later if it becomes a prevalent problem
                             prev_module_asset_mapping[prev_modules] = prev_asset.uuid
 
                     for curr_asset in curr_bundle_report.asset_reports():
