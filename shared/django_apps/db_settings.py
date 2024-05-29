@@ -1,5 +1,7 @@
 from urllib.parse import urlparse
 
+import django_prometheus
+
 from shared.config import get_config
 
 db_url = get_config("services", "database_url")
@@ -156,7 +158,7 @@ if TIMESERIES_ENABLED:
         }
 
 # See https://django-postgres-extra.readthedocs.io/en/master/settings.html
-POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"
+POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"  # type: ignore
 
 # Allows to use the pgpartition command
 PSQLEXTRA_PARTITIONING_MANAGER = (

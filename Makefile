@@ -45,3 +45,6 @@ test_env.up:
 
 test_env.test:
 	docker-compose exec shared python -m pytest --cov=./ --junitxml=junit.xml
+
+test_env.down:
+	docker-compose down
