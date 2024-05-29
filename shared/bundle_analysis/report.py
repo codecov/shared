@@ -2,7 +2,7 @@ import json
 import os
 import sqlite3
 import tempfile
-from typing import Any, Dict, Iterator, Optional, Self
+from typing import Any, Dict, Iterator, Optional
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
@@ -171,8 +171,10 @@ class BundleAnalysisReport:
         self.db_session.commit()
         return session_id
 
-    def associate_previous_assets(self, prev_bundle_analysis_report: Self) -> None:
+    def associate_previous_assets(self, prev_bundle_analysis_report: Any) -> None:
         """
+        Note: prev_bundle_analysis_report is of type BundleAnalysisReport,
+              typing.Self is not available in 3.10
         Only associate past asset if it is Javascript or Typescript types
         and belonging to the same bundle name
         Associated if one of the following is true
