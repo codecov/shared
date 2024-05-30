@@ -234,6 +234,10 @@ class BundleAnalysisComparison:
                 size_delta=-base_bundle_report.total_size(),
             )
 
+    @property
+    def total_size_delta(self) -> int:
+        return sum(bundle_change.size_delta for bundle_change in self.bundle_changes())
+
     def bundle_comparison(self, bundle_name: str) -> BundleComparison:
         """
         More detailed comparison (about asset changes) for a particular bundle that

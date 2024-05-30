@@ -455,6 +455,7 @@ schema = {
                 "nullable": True,
             },
             "require_changes": {"type": "boolean"},
+            "require_bundle_changes": {"type": "boolean"},
             "require_base": {"type": "boolean"},
             "require_head": {"type": "boolean"},
             "show_critical_paths": {"type": "boolean"},

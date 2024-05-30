@@ -104,7 +104,7 @@ def test_decrypt_token_key_normal_generated_with_secret_pair():
     assert res == {"key": value.split(":")[0], "secret": value.split(":")[1]}
 
 
-def test_decrypt_token_key_normal_generated_with_secret_pair():
+def test_decrypt_token_key_normal_generated_with_secret_pair_refresh():
     value = "jd3dsfsasq$^ew: :r8cndsbc-0wr$"
     legacy_encryptor = StandardEncryptor("aruba", "jamaica")
     enc_dict = {

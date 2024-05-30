@@ -59,7 +59,7 @@ def test_decrypt_token_key_secret_pair():
     assert res == {"key": "jd3ewr8cnd", "secret": "sbc-0wr$"}
 
 
-def test_decrypt_token_key_secret_pair():
+def test_decrypt_token_key_secret_pair_refresh():
     value = "jd3ewr8cnd: :sbc-0wr$"
     se = StandardEncryptor("aruba", "jamaica")
     encoded = se.encode(value)
