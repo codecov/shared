@@ -759,7 +759,7 @@ class Github(TorngitBaseAdapter):
         body=None,
         headers=None,
         token_to_use=None,
-        statuses_to_retry=None,
+        statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
         _headers = {
