@@ -45,7 +45,7 @@ def _sum(array):
         if not isinstance(array[0], (type(None), str)):
             try:
                 return sum(array)
-            except:
+            except Exception:
                 # https://sentry.io/codecov/v4/issues/159966549/
-                return sum([a if type(a) is int else 0 for a in array])
+                return sum([a if isinstance(a, int) else 0 for a in array])
     return None

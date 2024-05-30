@@ -82,7 +82,7 @@ class ReportFile(object):
         self.name = name
         # lines = [<details dict()>, <Line #1>, ....]
         if lines:
-            if type(lines) is list:
+            if isinstance(lines, list):
                 self._details = None
                 self._lines = lines
 
@@ -116,14 +116,14 @@ class ReportFile(object):
                 self.name,
                 len(self),
             )
-        except:
+        except Exception:
             return "<%s name=%s lines=n/a>" % (self.__class__.__name__, self.name)
 
     def _line(self, line):
         if isinstance(line, ReportLine):
             # line is already mapped to obj
             return line
-        elif type(line) is list:
+        elif isinstance(line, list):
             # line needs to be mapped to ReportLine
             # line = [1, 'b', [], null, null] = ReportLine.create()
             return ReportLine.create(*line)
@@ -224,9 +224,9 @@ class ReportFile(object):
         """Return a single line or None"""
         if ln == "totals":
             return self.totals
-        if type(ln) is slice:
+        if isinstance(ln, slice):
             return self._getslice(ln.start, ln.stop)
-        if not type(ln) is int:
+        if not isinstance(ln, int):
             raise TypeError("expecting type int got %s" % type(ln))
         elif ln < 1:
             raise ValueError("Line number must be greater then 0. Got %s" % ln)
@@ -237,7 +237,7 @@ class ReportFile(object):
 
     def __setitem__(self, ln, line):
         """Append line to file, without merging if previously set"""
-        if not type(ln) is int:
+        if not isinstance(ln, int):
             raise TypeError("expecting type int got %s" % type(ln))
         elif not isinstance(line, ReportLine):
             raise TypeError("expecting type ReportLine got %s" % type(line))
@@ -302,7 +302,7 @@ class ReportFile(object):
                 yield ln, line
 
     def __contains__(self, ln):
-        if not type(ln) is int:
+        if not isinstance(ln, int):
             raise TypeError("expecting type int got %s" % type(ln))
         try:
             return self.get(ln) is not None
@@ -313,7 +313,7 @@ class ReportFile(object):
         return self.totals.lines > 0
 
     def get(self, ln):
-        if not type(ln) is int:
+        if not isinstance(ln, int):
             raise TypeError("expecting type int got %s" % type(ln))
         elif ln < 1:
             raise ValueError("Line number must be greater then 0. Got %s" % ln)
@@ -340,7 +340,7 @@ class ReportFile(object):
         """Append a line to the report
         if the line exists it will merge it
         """
-        if not type(ln) is int:
+        if not isinstance(ln, int):
             raise TypeError("expecting type int got %s" % type(ln))
         elif not isinstance(line, ReportLine):
             raise TypeError("expecting type ReportLine got %s" % type(line))
@@ -442,7 +442,7 @@ class ReportFile(object):
             if not c:
                 # no coverage data provided
                 return (0, 0)
-            elif type(c) is int:
+            elif isinstance(c, int):
                 # coverage is of type int
                 return (c, 0)
             else:
@@ -738,7 +738,7 @@ class Report(object):
                 self.__class__.__name__,
                 len(getattr(self, "_files", [])),
             )
-        except:
+        except Exception:
             return "<%s files=n/a>" % self.__class__.__name__
 
     @property

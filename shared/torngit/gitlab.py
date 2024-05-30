@@ -638,7 +638,7 @@ class Gitlab(TorngitBaseAdapter):
             body=dict(
                 url=url,
                 enable_ssl_verification=self.verify_ssl
-                if type(self.verify_ssl) is bool
+                if isinstance(self.verify_ssl, bool)
                 else True,
                 token=secret,
                 **events,
@@ -668,7 +668,7 @@ class Gitlab(TorngitBaseAdapter):
         return True
 
     def diff_to_json(self, diff):
-        if type(diff) is list:
+        if isinstance(diff, list):
             for d in diff:
                 mode = ""
                 if d["deleted_file"]:

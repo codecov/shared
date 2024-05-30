@@ -114,9 +114,10 @@ class CoverageDatapoint(object):
 
     def __post_init__(self):
         if self.label_ids is not None:
-            possibly_cast_to_int = (
-                lambda el: int(el) if (type(el) == str and el.isnumeric()) else el
-            )
+
+            def possibly_cast_to_int(el):
+                return int(el) if isinstance(el, str) and el.isnumeric() else el
+
             self.label_ids = [possibly_cast_to_int(el) for el in self.label_ids]
 
     def key_sorting_tuple(self):
@@ -258,7 +259,7 @@ class SessionTotalsArray(object):
             return SessionTotalsArray()
         log.warning(
             "Tried to build SessionArray from unknown encoded data.",
-            dict(data=sessions_array, data_type=type(sessions_array)),
+            extra=dict(data=sessions_array, data_type=type(sessions_array)),
         )
         return None
 

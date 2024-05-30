@@ -281,7 +281,7 @@ def test_merge_line(l1, l2, expected_res):
     )
     try:
         assert res == ReportLine.create(*expected_res)
-    except:
+    except Exception:
         res.sessions.reverse()
         assert res == ReportLine.create(*expected_res)
 

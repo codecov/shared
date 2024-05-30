@@ -231,11 +231,9 @@ class Feature:
         return (
             (sum(map(lambda x: x.proportion, self.ff_variants)) == 1.0)
             and (
-                not (
-                    True
-                    in map(
-                        lambda x: x.proportion < 0 or x.proportion > 1, self.ff_variants
-                    )
+                True
+                not in map(
+                    lambda x: x.proportion < 0 or x.proportion > 1, self.ff_variants
                 )
             )
             and (
