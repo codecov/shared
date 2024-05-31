@@ -40,7 +40,7 @@ target-version = "py312"
 # Currently only enabled for F (Pyflakes), I (isort), E, W (pycodestyle:Error, Warning), PLC (Pylint:Convention) 
 # and PLE (Pylint:Error) rules: https://docs.astral.sh/ruff/rules/
 select = ["F", "I", "E", "PLC", "PLE",]
-ignore = ["F401", "E501"]
+ignore = ["E501"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 # The preferred method (for now) w.r.t. fixable rules is to manually update the makefile

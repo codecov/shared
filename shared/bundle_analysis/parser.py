@@ -2,13 +2,12 @@ import json
 import logging
 import re
 import uuid
-from typing import Optional, Tuple
+from typing import Tuple
 
 import ijson
 from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis.models import (
-    SCHEMA,
     Asset,
     AssetType,
     Bundle,

@@ -1,6 +1,5 @@
 import gzip
 import logging
-from io import BytesIO
 
 import boto3
 from botocore.exceptions import ClientError

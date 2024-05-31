@@ -1,4 +1,4 @@
-from typing import Any, Awaitable, Callable, Optional, TypedDict
+from typing import Awaitable, Callable, Optional, TypedDict
 
 
 class Token(TypedDict):

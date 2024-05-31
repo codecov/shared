@@ -1,7 +1,7 @@
 import logging
 import os
 import urllib.parse as urllib_parse
-from typing import List, Optional
+from typing import List
 
 import httpx
 from oauthlib import oauth1
