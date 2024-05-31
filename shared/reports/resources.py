@@ -163,7 +163,7 @@ class ReportFile(object):
                 [
                     fg(i)
                     for i, line in enumerate(
-                        [l for l in segment["lines"] if l[0] != "-"],
+                        [ln for ln in segment["lines"] if ln[0] != "-"],
                         start=int(segment["header"][2]) or 1,
                     )
                     if line[0] == "+"
@@ -436,9 +436,9 @@ class ReportFile(object):
         partials = cov.count(LineType.partial)
         total_lines = hits + misses + partials
 
-        def sum_of_complexity(l):
+        def sum_of_complexity(ln):
             # (hit, total)
-            c = l[1].complexity
+            c = ln[1].complexity
             if not c:
                 # no coverage data provided
                 return (0, 0)
@@ -1480,12 +1480,12 @@ def _ignore_to_func(ignore):
     if eof:
         if isinstance(eof, str):
             # Sometimes eof is 'N', not sure which cases
-            return lambda l: str(l) > eof or l in lines
+            return lambda ln: str(ln) > eof or ln in lines
         # This means the eof as a number: the last line of the file and
         # anything after that should be ignored
-        return lambda l: l > eof or l in lines
+        return lambda ln: ln > eof or ln in lines
     else:
-        return lambda l: l in lines
+        return lambda ln: ln in lines
 
 
 def _dumps_not_none(value):

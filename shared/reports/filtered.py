@@ -88,7 +88,7 @@ class FilteredReportFile(object):
                 [
                     (i, fg(i))
                     for i, line in enumerate(
-                        [l for l in segment["lines"] if l[0] != "-"],
+                        [ln for ln in segment["lines"] if ln[0] != "-"],
                         start=int(segment["header"][2]) or 1,
                     )
                     if line[0] == "+"
@@ -96,7 +96,7 @@ class FilteredReportFile(object):
             )
             for segment in all_file_segments
         ]
-        lines = [l for l in lines if l[1] is not None]
+        lines = [ln for ln in lines if ln[1] is not None]
         return self.calculate_totals_from_lines(lines)
 
     def get(self, ln):
@@ -112,9 +112,9 @@ class FilteredReportFile(object):
         return self.calculate_totals_from_lines(self.lines)
 
     @classmethod
-    def sum_of_complexity(cls, l):
+    def sum_of_complexity(cls, ln):
         # (hit, total)
-        c = l[1].complexity
+        c = ln[1].complexity
         if not c:
             # no coverage data provided
             return (0, 0)

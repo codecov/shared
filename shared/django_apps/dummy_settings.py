@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from shared.django_apps.db_settings import *
+from shared.django_apps.db_settings import *  # noqa: F403
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -61,7 +61,7 @@ TELEMETRY_TIMESCALE_DB = "timeseries"
 AUTH_USER_MODEL = "codecov_auth.User"
 
 # Needed as certain migrations refer to it
-SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)
+SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)  # noqa: F405
 
 TEST = True
 

@@ -219,8 +219,8 @@ class TorngitBaseAdapter(object):
                 elif sol4 == "@@ -":
                     # ex: "@@ -31,8 +31,8 @@ blah blah blah"
                     # ex: "@@ -0,0 +1 @@"
-                    l = get_start_of_line(source).groups()
-                    segment = dict(header=[l[0], l[1], l[2], l[3]], lines=[])
+                    ln = get_start_of_line(source).groups()
+                    segment = dict(header=[ln[0], ln[1], ln[2], ln[3]], lines=[])
                     _file["segments"].append(segment)
 
                 elif source == "":
