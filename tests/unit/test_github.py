@@ -198,8 +198,9 @@ class TestGithubSpecificLogic(object):
         mocked_post = mocker.patch("shared.github.requests.post")
         mocked_post.return_value.status_code = 404
         mocker.patch("shared.github.get_pem", return_value=fake_private_key)
-        with pytest.raises(InvalidInstallationError):
+        with pytest.raises(InvalidInstallationError) as exp:
             get_github_integration_token(service, integration_id)
+        assert exp.value.error_cause == "installation_not_found"
         mocked_post.assert_called_with(
             "https://api.github.com/app/installations/1/access_tokens",
             headers={
@@ -240,8 +241,9 @@ class TestGithubSpecificLogic(object):
             "documentation_url": "https://docs.github.com/rest/reference/apps#create-an-installation-access-token-for-an-app",
         }
         mocker.patch("shared.github.get_pem", return_value=fake_private_key)
-        with pytest.raises(InvalidInstallationError):
+        with pytest.raises(InvalidInstallationError) as exp:
             get_github_integration_token(service, integration_id)
+        assert exp.value.error_cause == "permission_error"
         mocked_post.assert_called_with(
             "https://api.github.com/app/installations/1/access_tokens",
             headers={
