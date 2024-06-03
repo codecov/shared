@@ -502,6 +502,8 @@ class GithubAppInstallation(
     # Same comments for app_id apply
     pem_path = models.TextField(null=True, blank=False)
 
+    is_suspended = models.BooleanField(null=False, default=False)
+
     owner = models.ForeignKey(
         Owner,
         null=False,
