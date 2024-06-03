@@ -2,7 +2,7 @@ import json
 import os
 import sqlite3
 import tempfile
-from typing import Any, Dict, Iterator, Optional, Set
+from typing import Any, Dict, Iterator, Optional, Set, Tuple
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
@@ -172,8 +172,8 @@ class BundleAnalysisReport:
         return session_id
 
     def _associate_bundle_report_assets_by_name(
-        self, curr_bundle_report, prev_bundle_report
-    ) -> Set:
+        self, curr_bundle_report: BundleReport, prev_bundle_report: BundleReport
+    ) -> Set[Tuple[str, str]]:
         """
         Rule 1
         Returns a set of pairs of UUIDs (the current asset UUID and prev asset UUID)
@@ -196,8 +196,8 @@ class BundleAnalysisReport:
         return ret
 
     def _associate_bundle_report_assets_by_module_names(
-        self, curr_bundle_report, prev_bundle_report
-    ) -> Set:
+        self, curr_bundle_report: BundleReport, prev_bundle_report: BundleReport
+    ) -> Set[Tuple[str, str]]:
         """
         Rule 2
         Returns a set of pairs of UUIDs (the current asset UUID and prev asset UUID)
