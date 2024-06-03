@@ -171,10 +171,10 @@ class BundleAnalysisReport:
         self.db_session.commit()
         return session_id
 
-    def associate_previous_assets(self, prev_bundle_analysis_report: Any) -> None:
+    def associate_previous_assets(
+        self, prev_bundle_analysis_report: Any
+    ) -> "BundleAnalysisReport":
         """
-        Note: prev_bundle_analysis_report is of type BundleAnalysisReport,
-              typing.Self is not available in 3.10
         Only associate past asset if it is Javascript or Typescript types
         and belonging to the same bundle name
         Associated if one of the following is true
@@ -232,6 +232,7 @@ class BundleAnalysisReport:
 
                     # Update the Assets table for the bundle
                     # TODO: Use SQLalchemy ORM to update instead of raw SQL
+                    # https://github.com/codecov/engineering-team/issues/1846
                     for pair in associated_assets_found:
                         prev_uuid, curr_uuid = pair
                         stmt = f"UPDATE assets SET uuid='{prev_uuid}' WHERE uuid='{curr_uuid}'"
