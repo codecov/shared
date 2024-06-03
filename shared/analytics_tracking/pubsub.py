@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 
 from google.auth.exceptions import GoogleAuthError
 from google.cloud import pubsub_v1
@@ -9,6 +10,13 @@ from shared.analytics_tracking.events import Event
 from shared.config import get_config
 
 log = logging.getLogger("__name__")
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
 
 
 class PubSub(BaseAnalyticsTool):
@@ -48,5 +56,8 @@ class PubSub(BaseAnalyticsTool):
             return
         if self.publisher is not None:
             self.publisher.publish(
-                self.topic, data=json.dumps(event.serialize()).encode("utf-8")
+                self.topic,
+                data=json.dumps(event.serialize(), cls=CustomJSONEncoder).encode(
+                    "utf-8"
+                ),
             )
