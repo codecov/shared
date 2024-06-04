@@ -1,3 +1,5 @@
+"""Configuration options that affect an entire instance of Codecov"""
+
 import logging
 
 from shared.utils.enums import TaskConfigGroup
@@ -15,66 +17,72 @@ def check_task_config_key(field, value, error):
     error(field, "Not a valid TaskConfigGroup")
 
 
+# Bot is a git provider account configured to be used in place of another
+bot_details_fields = {
+    # This is a PAT for some provider account that is going to be used as a bot
+    "key": {"type": "string", "required": True},
+    # This is used only for Bitbucket (uses Oauth1)
+    "secret": {"type": "string"},
+    # Identifies the bot in the logs
+    "username": {"type": "string"},
+}
+
+# Credentials used by the OAuth App used when logging into Codecov UI
+# note: the OAuth App acts in behalf of the user. The user will need to authorize it
+# and enter user's own credentials for logging into the git provider
+oauth_credential_fields = {
+    "client_id": {"type": "string"},
+    "client_secret": {"type": "string"},
+    # The URI to redirect the user after authorization is granted to the OAuth App
+    "redirect_uri": {"type": "string"},
+}
+
+# Default app [GitHub exclusive] - Credentials for a GitHub app used by this installation
+# note: these credentials are used to get access_tokens for installations
+GitHub_app_fields = {
+    "expires": {"type": "integer"},
+    "id": {"type": "integer", "required": True},
+    "pem": {"type": ["string", "dict"], "required": True},
+}
+
 default_service_fields = {
     "verify_ssl": {"type": "boolean"},
     "ssl_pem": {"type": "string"},
-    "client_id": {"type": "string"},
-    "client_secret": {"type": "string"},
-    "integration": {
-        "type": "dict",
-        "schema": {
-            "expires": {"type": "integer"},
-            "id": {"type": "integer"},
-            "pem": {"type": ["string", "dict"]},
-        },
-    },
+    **oauth_credential_fields,
     "url": {"type": "string"},
     "api_url": {"type": "string"},
+    # bot [enterprise (self-hosted)] - Bot that is used for all repos belonging to a given service.
+    # bot [cloud] - Used as public bot fallback if bots.tokenless is not provided.
     "bot": {
         "type": "dict",
-        "schema": {
-            "key": {"type": "string"},
-            "secret": {"type": "string"},
-            "username": {"type": "string"},
-        },
+        "schema": bot_details_fields,
     },
+    # global_upload_token [enterprise (self-hosted)] - Master upload token.
+    # Any upload (for any repo) made to the instance using this token will be validated.
     "global_upload_token": {"type": "string"},
     "organizations": {"type": "list", "schema": {"type": "string"}},
     "webhook_secret": {"type": "string"},
+    # bots - Function-specific bots used as fallbacks for public repos
+    # Certain functions in the torngit adapter will use one of these tokens if none is present.
+    # 'bots.tokenless' is the default fallback
     "bots": {
         "type": "dict",
         "schema": {
             "read": {
                 "type": "dict",
-                "schema": {
-                    "key": {"type": "string"},
-                    "secret": {"type": "string"},
-                    "username": {"type": "string"},
-                },
+                "schema": bot_details_fields,
             },
             "comment": {
                 "type": "dict",
-                "schema": {
-                    "key": {"type": "string"},
-                    "secret": {"type": "string"},
-                    "username": {"type": "string"},
-                },
+                "schema": bot_details_fields,
             },
             "status": {
                 "type": "dict",
-                "schema": {
-                    "key": {"type": "string"},
-                    "secret": {"type": "string"},
-                    "username": {"type": "string"},
-                },
+                "schema": bot_details_fields,
             },
             "tokenless": {
                 "type": "dict",
-                "schema": {
-                    "key": {"type": "string"},
-                    "secret": {"type": "string"},
-                    "username": {"type": "string"},
-                },
+                "schema": bot_details_fields,
             },
         },
     },
@@ -243,6 +251,7 @@ config_schema = {
                 "type": "list",
                 "schema": {"type": "string"},
             },
+            # guest_access [enterprise (self-hosted)] - Wether to allow non-logged in users to access the UI in this Codecov instance
             "guest_access": {"type": "boolean"},
         },
     },
@@ -357,7 +366,23 @@ config_schema = {
             },
         },
     },
-    "github": {"type": "dict", "schema": {**default_service_fields}},
+    "github": {
+        "type": "dict",
+        "schema": {
+            **default_service_fields,
+            # integration - Credentials for the default Codecov App
+            "integration": {
+                "type": "dict",
+                "schema": GitHub_app_fields,
+            },
+            # dedicated_apps - Dedicated apps are used in specific tasks.
+            # They can have a different set of permissions than the default Codecov App, allowing us to provide different opt-in services
+            "dedicated_apps": {
+                "type": "dict",
+                "valuesrules": {"type": "dict", "schema": GitHub_app_fields},
+            },
+        },
+    },
     "bitbucket": {"type": "dict", "schema": {**default_service_fields}},
     "bitbucket_server": {"type": "dict", "schema": {**default_service_fields}},
     "github_enterprise": {"type": "dict", "schema": {**default_service_fields}},
