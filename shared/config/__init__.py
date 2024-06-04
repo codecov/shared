@@ -131,7 +131,7 @@ class ConfigHelper(object):
             elif re.match(r"^-?\d+\.\d+$", data):
                 try:
                     return float(data)
-                except ValueError as e:
+                except ValueError:
                     pass
 
         return data

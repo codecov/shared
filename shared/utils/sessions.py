@@ -1,7 +1,6 @@
 from enum import Enum
 
 from shared.reports.types import ReportTotals
-from shared.utils.migrate import migrate_totals
 
 
 class SessionType(Enum):

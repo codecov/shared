@@ -26,6 +26,7 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    "**test**"
 ]
 
 # Same as Black.
@@ -39,7 +40,7 @@ target-version = "py312"
 # Currently only enabled for F (Pyflakes), I (isort), E (pycodestyle:Error), PLC (Pylint:Convention) 
 # and PLE (Pylint:Error) rules: https://docs.astral.sh/ruff/rules/
 select = ["F", "I", "E", "PLC", "PLE"]
-ignore = ["F841", "F401","F405", "F403", "E501", "E712", "E711", "E741"]
+ignore = ["E501"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 # The preferred method (for now) w.r.t. fixable rules is to manually update the makefile

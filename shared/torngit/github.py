@@ -1659,7 +1659,7 @@ class Github(TorngitBaseAdapter):
                     ),
                     token=token,
                 )
-            except TorngitClientError as ce:
+            except TorngitClientError:
                 raise
             if merge_commit:
                 api_url = self.count_and_get_url_template(
