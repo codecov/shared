@@ -1,6 +1,6 @@
 import logging
 from time import time
-from typing import Optional
+from typing import Literal, Optional
 from urllib.parse import urlparse
 
 import jwt
@@ -39,8 +39,13 @@ def get_pem(*, pem_name: Optional[str] = None, pem_path: Optional[str] = None) -
     raise Exception("No PEM provided to get installation token")
 
 
+InstallationErrorCause = Literal["installation_not_found"] | Literal["permission_error"]
+
+
 class InvalidInstallationError(Exception):
-    pass
+    def __init__(self, error_cause: InstallationErrorCause, *args: object) -> None:
+        super().__init__(*args)
+        self.error_cause = error_cause
 
 
 def get_github_jwt_token(
@@ -92,15 +97,21 @@ def get_github_integration_token(
 
         res = requests.post(url, headers=headers)
         if res.status_code in (404, 403):
+            error_cause: InstallationErrorCause = (
+                "installation_not_found"
+                if res.status_code == 404
+                else "permission_error"
+            )
             log.warning(
                 "Integration could not be found to fetch token from or unauthorized",
                 extra=dict(
                     git_service=service,
                     integration_id=integration_id,
                     api_endpoint=api_endpoint,
+                    error_cause=error_cause,
                 ),
             )
-            raise InvalidInstallationError()
+            raise InvalidInstallationError(error_cause)
         try:
             res.raise_for_status()
         except requests.exceptions.HTTPError:
