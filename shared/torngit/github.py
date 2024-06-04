@@ -759,7 +759,7 @@ class Github(TorngitBaseAdapter):
         body=None,
         headers=None,
         token_to_use=None,
-        statuses_to_retry=None,
+        statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
         _headers = {
@@ -2361,7 +2361,7 @@ class Github(TorngitBaseAdapter):
                 url = self.count_and_get_url_template(
                     url_name="is_student"
                 ).substitute()
-                res = await self.api(client, "get", url)
+                res = await self.api(client, "get", url, statuses_to_retry=[])
                 return res["student"]
             except TorngitServerUnreachableError:
                 log.warning("Timeout on Github Education API for is_student")
