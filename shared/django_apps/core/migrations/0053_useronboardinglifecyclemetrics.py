@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0051_repository_test_analytics_enabled"),
+        ("core", "0052_increment_version"),
     ]
 
     operations = [
