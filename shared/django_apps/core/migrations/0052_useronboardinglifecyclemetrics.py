@@ -4,19 +4,44 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0051_repository_test_analytics_enabled'),
+        ("core", "0051_repository_test_analytics_enabled"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UserOnboardingLifeCycleMetrics',
+            name="UserOnboardingLifeCycleMetrics",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('orgid', models.IntegerField()),
-                ('event', models.TextField(choices=[('user_selected_org', 'User Selected Org'), ('user_installed_gh_app', 'User Installed Gh App'), ('user_installed_gl_app', 'User Installed Gl App'), ('user_installed_bb_app', 'User Installed Bb App'), ('user_installed_sentry_app', 'User Installed Sentry App'), ('user_visited_coverage_onboarding', 'User Visited Coverage Onboarding'), ('user_visited_bundle_onboarding', 'User Visited Bundle Onboarding'), ('user_copied_codecov_token', 'User Copied Codecov Token'), ('user_copied_step_two_text', 'User Copied Step Two Text'), ('user_clicked_docs_link', 'User Clicked Docs Link'), ('user_completed_first_upload', 'User Completed First Upload')])),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("orgid", models.IntegerField()),
+                (
+                    "event",
+                    models.TextField(
+                        choices=[
+                            ("user_selected_org", "User Selected Org"),
+                            ("user_installed_gh_app", "User Installed Gh App"),
+                            ("user_installed_gl_app", "User Installed Gl App"),
+                            ("user_installed_bb_app", "User Installed Bb App"),
+                            ("user_installed_sentry_app", "User Installed Sentry App"),
+                            (
+                                "user_visited_coverage_onboarding",
+                                "User Visited Coverage Onboarding",
+                            ),
+                            (
+                                "user_visited_bundle_onboarding",
+                                "User Visited Bundle Onboarding",
+                            ),
+                            ("user_copied_codecov_token", "User Copied Codecov Token"),
+                            ("user_copied_step_two_text", "User Copied Step Two Text"),
+                            ("user_clicked_docs_link", "User Clicked Docs Link"),
+                            (
+                                "user_completed_first_upload",
+                                "User Completed First Upload",
+                            ),
+                        ]
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]
