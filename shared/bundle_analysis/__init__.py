@@ -16,3 +16,21 @@ from shared.bundle_analysis.report import (
     ModuleReport,
 )
 from shared.bundle_analysis.storage import BundleAnalysisReportLoader, StoragePaths
+
+__all__ = [
+    "models",
+    "AssetChange",
+    "BundleAnalysisComparison",
+    "BundleChange",
+    "BundleComparison",
+    "MissingBaseReportError",
+    "MissingBundleError",
+    "MissingHeadReportError",
+    "Parser",
+    "AssetReport",
+    "BundleAnalysisReport",
+    "BundleReport",
+    "ModuleReport",
+    "BundleAnalysisReportLoader",
+    "StoragePaths",
+]

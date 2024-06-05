@@ -150,10 +150,10 @@ class BitbucketServer(TorngitBaseAdapter):
                     _file["segments"].append(segment)
                     for seg in hunk["segments"]:
                         t = seg["type"][0]
-                        for l in seg["lines"]:
+                        for ln in seg["lines"]:
                             segment["lines"].append(
                                 ("-" if t == "R" else "+" if t == "A" else " ")
-                                + l["line"]
+                                + ln["line"]
                             )
 
         if results:

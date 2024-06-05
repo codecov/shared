@@ -18,6 +18,7 @@ from shared.github import (
     mark_installation_as_rate_limited,
 )
 from shared.metrics import Counter, metrics
+from shared.rollouts.features import LIST_REPOS_PAGE_SIZE
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import get_redis_connection, torngit_cache
 from shared.torngit.enums import Endpoints
@@ -758,7 +759,7 @@ class Github(TorngitBaseAdapter):
         body=None,
         headers=None,
         token_to_use=None,
-        statuses_to_retry=None,
+        statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
         _headers = {
@@ -1258,10 +1259,12 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             max_index = len(repo_node_ids)
             curr_index = 0
-            PAGE_SIZE = 100
+            page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
+                identifier=self.data["owner"].get("ownerid"), default=100
+            )
             while curr_index < max_index:
-                chunk = repo_node_ids[curr_index : curr_index + PAGE_SIZE]
-                curr_index += PAGE_SIZE
+                chunk = repo_node_ids[curr_index : curr_index + page_size]
+                curr_index += page_size
                 query = self.graphql.prepare(
                     "REPOS_FROM_NODEIDS", variables={"node_ids": chunk}
                 )
@@ -1313,16 +1316,19 @@ class Github(TorngitBaseAdapter):
         """
         data = []
         page = 0
+        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
+            identifier=self.data["owner"].get("ownerid"), default=100
+        )
         async with self.get_client() as client:
             while True:
                 page += 1
                 repos = await self._fetch_page_of_repos_using_installation(
-                    client, page=page
+                    client, page=page, page_size=page_size
                 )
 
                 data.extend(repos)
 
-                if len(repos) < 100:
+                if len(repos) < page_size:
                     break
 
             return data
@@ -1344,17 +1350,20 @@ class Github(TorngitBaseAdapter):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         page = 0
+        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
+            identifier=self.data["owner"].get("ownerid"), default=100
+        )
         data = []
         async with self.get_client() as client:
             while True:
                 page += 1
                 repos = await self._fetch_page_of_repos(
-                    client, username, token, page=page
+                    client, username, token, page=page, page_size=page_size
                 )
 
                 data.extend(repos)
 
-                if len(repos) < 100:
+                if len(repos) < page_size:
                     break
 
             return data
@@ -1367,6 +1376,9 @@ class Github(TorngitBaseAdapter):
         rolling out in the worker.
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
+            identifier=self.data["owner"].get("ownerid"), default=100
+        )
         async with self.get_client() as client:
             page = 0
             while True:
@@ -1374,17 +1386,17 @@ class Github(TorngitBaseAdapter):
 
                 repos = (
                     await self._fetch_page_of_repos_using_installation(
-                        client, page=page
+                        client, page=page, page_size=page_size
                     )
                     if using_installation
                     else await self._fetch_page_of_repos(
-                        client, username, token, page=page
+                        client, username, token, page=page, page_size=page_size
                     )
                 )
 
                 yield repos
 
-                if len(repos) < 100:
+                if len(repos) < page_size:
                     break
 
     # GH App Installation
@@ -1647,7 +1659,7 @@ class Github(TorngitBaseAdapter):
                     ),
                     token=token,
                 )
-            except TorngitClientError as ce:
+            except TorngitClientError:
                 raise
             if merge_commit:
                 api_url = self.count_and_get_url_template(
@@ -2349,7 +2361,7 @@ class Github(TorngitBaseAdapter):
                 url = self.count_and_get_url_template(
                     url_name="is_student"
                 ).substitute()
-                res = await self.api(client, "get", url)
+                res = await self.api(client, "get", url, statuses_to_retry=[])
                 return res["student"]
             except TorngitServerUnreachableError:
                 log.warning("Timeout on Github Education API for is_student")

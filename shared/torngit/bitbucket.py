@@ -1,7 +1,7 @@
 import logging
 import os
 import urllib.parse as urllib_parse
-from typing import List, Optional
+from typing import List
 
 import httpx
 from oauthlib import oauth1
@@ -802,7 +802,7 @@ class Bitbucket(TorngitBaseAdapter):
         self, commit=None, branch=None, state="open", token=None
     ):
         state = {"open": "OPEN", "merged": "MERGED", "close": "DECLINED"}.get(state, "")
-        pulls, page = [], 0
+        page = 0
         async with self.get_client() as client:
             if commit or branch:
                 while True:

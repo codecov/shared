@@ -300,7 +300,7 @@ class SessionTotalsArray(object):
         return self.session_count > 0
 
     def append(self, totals: SessionTotals):
-        if totals == None:
+        if totals is None:
             log.warning("Trying to append None session total to SessionTotalsArray")
             return
         new_totals_index = self.session_count
