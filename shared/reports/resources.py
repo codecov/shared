@@ -145,9 +145,9 @@ class ReportFile(object):
         func = self._line_modifier
         for ln, line in enumerate(self._lines, start=1):
             if line:
-                line = self._line(line)
+                line = self._line(line)  # noqa: PLW2901
                 if func:
-                    line = func(line)
+                    line = func(line)  # noqa: PLW2901
                     if not line:
                         continue
                 yield ln, line
@@ -196,9 +196,9 @@ class ReportFile(object):
         func = self._line_modifier
         for line in self._lines:
             if line:
-                line = self._line(line)
+                line = self._line(line)  # noqa: PLW2901
                 if func:
-                    line = func(line)
+                    line = func(line)  # noqa: PLW2901
                     if not line:
                         yield None
                 yield line
@@ -294,9 +294,9 @@ class ReportFile(object):
         func = self._line_modifier
         for ln, line in enumerate(self._lines[start - 1 : stop - 1], start=start):
             if line:
-                line = self._line(line)
+                line = self._line(line)  # noqa: PLW2901
                 if func:
-                    line = func(line)
+                    line = func(line)  # noqa: PLW2901
                     if not line:
                         continue
                 yield ln, line
@@ -1377,7 +1377,7 @@ class Report(object):
             data["totals"] = file_totals
             network_file = self._files[filename]
             if file_totals.lines == 0:
-                file_totals = dataclasses.replace(
+                file_totals = dataclasses.replace(  # noqa: PLW2901
                     file_totals, coverage=None, complexity=None, complexity_total=None
                 )
             network_file.diff_totals = file_totals

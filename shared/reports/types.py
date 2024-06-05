@@ -251,7 +251,6 @@ class SessionTotalsArray(object):
             for idx, session_totals in enumerate(sessions_array):
                 if session_totals is not None:
                     non_null_items[idx] = session_totals
-            non_null_items = non_null_items
             return cls(session_count=session_count, non_null_items=non_null_items)
         elif isinstance(sessions_array, cls):
             return sessions_array

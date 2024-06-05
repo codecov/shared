@@ -478,7 +478,7 @@ class GitHubGraphQLQueries(object):
         REPOS_FROM_NODEIDS="""
 query GetReposFromNodeIds($node_ids: [ID!]!) {
     nodes(ids: $node_ids) {
-        __typename 
+        __typename
         ... on Repository {
             # databaseId == service_id
             databaseId
@@ -1457,7 +1457,7 @@ class Github(TorngitBaseAdapter):
                         url = self.count_and_get_url_template(
                             url_name="list_teams_org_name"
                         ).substitute(login=organization["login"])
-                        org = await self.api(client, "get", url, token=token)
+                        org = await self.api(client, "get", url, token=token)  # noqa: PLW2901
                         data.append(
                             dict(
                                 name=organization.get("name", org["login"]),
