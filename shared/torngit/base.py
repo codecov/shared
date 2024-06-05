@@ -17,11 +17,16 @@ get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
 
 class TokenType(Enum):
-    read = auto()
-    admin = auto()
-    comment = auto()
-    status = auto()
-    tokenless = auto()
+    read = "read"
+    admin = "admin"
+    comment = "comment"
+    status = "status"
+    tokenless = "tokenless"
+    commit = "commit"
+    pull = "pull"
+
+
+TokenTypeMapping = Dict[TokenType, Token]
 
 
 class TorngitBaseAdapter(object):
@@ -60,7 +65,7 @@ class TorngitBaseAdapter(object):
         oauth_consumer_token: OauthConsumerToken = None,
         timeouts=None,
         token: Token = None,
-        token_type_mapping: Dict[TokenType, Dict] = None,
+        token_type_mapping: TokenTypeMapping = None,
         on_token_refresh: OnRefreshCallback = None,
         verify_ssl=None,
         **kwargs,
@@ -109,28 +114,28 @@ class TorngitBaseAdapter(object):
             return token
         return self.get_token_by_type(token_type)
 
-    def _oauth_consumer_token(self):
+    def _oauth_consumer_token(self) -> OauthConsumerToken:
         if not self._oauth:
             raise Exception("Oauth consumer token not present")
         return self._oauth
 
-    def _validate_language(self, language):
+    def _validate_language(self, language: str) -> str | None:
         if language:
             language = language.lower()
             if language in self.valid_languages:
                 return language
 
-    def set_token(self, token: OauthConsumerToken):
+    def set_token(self, token: OauthConsumerToken) -> None:
         self._token = token
 
     @property
-    def token(self):
+    def token(self) -> Token:
         if not self._token:
             self._token = self._oauth_consumer_token()
         return self._token
 
     @property
-    def slug(self):
+    def slug(self) -> str | None:
         if self.data.get("owner") and self.data.get("repo"):
             if self.data["owner"].get("username") and self.data["repo"].get("name"):
                 return "%s/%s" % (
