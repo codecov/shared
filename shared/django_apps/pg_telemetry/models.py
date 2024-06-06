@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.db import models
+from psqlextra.models import PostgresPartitionedModel
+from psqlextra.types import PostgresPartitioningMethod
 
 
-class BaseModel(models.Model):
+class BaseModel(PostgresPartitionedModel):
     """
     Base model for timeseries metrics. It provides a timestamp field which
     represents the time that the data sample was captured at and a few metadata
@@ -12,6 +14,10 @@ class BaseModel(models.Model):
     This is the Postgres version. After data flows through both Postgres and
     Timescale for a time, we'll pick one.
     """
+
+    class PartitioningMeta:
+        method = PostgresPartitioningMethod.RANGE
+        key = ["timestamp"]
 
     class Meta:
         abstract = True
