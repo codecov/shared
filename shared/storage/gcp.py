@@ -1,6 +1,5 @@
 import gzip
 import logging
-from io import BytesIO
 
 import google.cloud.exceptions
 from google.cloud import storage

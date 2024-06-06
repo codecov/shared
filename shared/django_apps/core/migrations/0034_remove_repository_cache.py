@@ -2,8 +2,6 @@
 
 from django.db import migrations
 
-from shared.django_apps.migration_utils import RiskyRemoveField
-
 
 class Migration(migrations.Migration):
     dependencies = [

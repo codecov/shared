@@ -1,6 +1,5 @@
 import gzip
 import logging
-from io import BytesIO
 
 import boto3
 from botocore.exceptions import ClientError
@@ -167,9 +166,9 @@ class AWSStorageService(BaseStorageService):
             bool: True if the deletion was succesful
         """
         try:
-            response = self.storage_client.delete_object(Bucket=bucket_name, Key=path)
+            self.storage_client.delete_object(Bucket=bucket_name, Key=path)
             return True
-        except ClientError as e:
+        except ClientError:
             raise
 
     def delete_files(self, bucket_name, paths=[]):
@@ -195,7 +194,7 @@ class AWSStorageService(BaseStorageService):
             response = self.storage_client.delete_objects(
                 Bucket=bucket_name, Delete=objects_to_delete
             )
-        except ClientError as e:
+        except ClientError:
             raise
         deletes = [error.get("Key") for error in response.get("Deleted")]
         return [key in deletes for key in paths]
@@ -215,7 +214,7 @@ class AWSStorageService(BaseStorageService):
             response = self.storage_client.list_objects(
                 Bucket=bucket_name, Prefix=prefix
             )
-        except ClientError as e:
+        except ClientError:
             raise
         contents = response.get("Contents")
         return [

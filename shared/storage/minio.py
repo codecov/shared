@@ -228,7 +228,7 @@ class MinioStorageService(BaseStorageService):
                     f"File {path} does not exist in {bucket_name}"
                 )
             raise e
-        except MinioException as e:
+        except MinioException:
             raise
 
     """
