@@ -1479,7 +1479,7 @@ class Github(TorngitBaseAdapter):
     # Commits
     # -------
     async def get_pull_request_commits(self, pullid, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         commits = await self._get_raw_pull_request_commits(pullid, token)
         return [commit_info["sha"] for commit_info in commits]
 
@@ -1758,7 +1758,7 @@ class Github(TorngitBaseAdapter):
         return dict(content=content["content"], commitid=content["sha"])
 
     async def get_commit_diff(self, commit, context=None, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             async with self.get_client() as client:
@@ -1789,7 +1789,7 @@ class Github(TorngitBaseAdapter):
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
             url = self.count_and_get_url_template(url_name="get_compare").substitute(
@@ -1849,7 +1849,7 @@ class Github(TorngitBaseAdapter):
     async def get_distance_in_commits(
         self, base_branch, base, context=None, with_commits=True, token=None
     ):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
             url = self.count_and_get_url_template(
@@ -1869,7 +1869,7 @@ class Github(TorngitBaseAdapter):
         )
 
     async def get_commit(self, commit, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             async with self.get_client() as client:
@@ -1937,7 +1937,7 @@ class Github(TorngitBaseAdapter):
         )
 
     async def get_pull_request(self, pullid, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         async with self.get_client() as client:
             try:
@@ -1987,7 +1987,7 @@ class Github(TorngitBaseAdapter):
             return result
 
     async def get_pull_requests(self, state="open", token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         # https://developer.github.com/v3/pulls/#list-pull-requests
         page, pulls = 0, []
         async with self.get_client() as client:
@@ -2020,7 +2020,7 @@ class Github(TorngitBaseAdapter):
     ):
         if not self.slug or not commit:
             return None
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit
             try:
@@ -2051,7 +2051,7 @@ class Github(TorngitBaseAdapter):
     async def get_pull_request_files(self, pullid, token=None):
         if not self.slug:
             return None
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests-files
             try:
@@ -2102,7 +2102,7 @@ class Github(TorngitBaseAdapter):
         return "other"
 
     async def get_ancestors_tree(self, commitid, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         async with self.get_client() as client:
             url = self.count_and_get_url_template(
                 url_name="get_ancestors_tree"
