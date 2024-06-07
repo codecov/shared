@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0052_increment_version'),
+        ("core", "0052_increment_version"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UserOnboardingLifeCycleMetrics',
+            name="UserOnboardingLifeCycleMetrics",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('orgid', models.IntegerField()),
-                ('event', models.TextField()),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("orgid", models.IntegerField()),
+                ("event", models.TextField()),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]
