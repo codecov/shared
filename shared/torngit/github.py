@@ -739,6 +739,7 @@ class Github(TorngitBaseAdapter):
         installation_info = fallback_installations.pop(0)
         # The function arg is 'integration_id'
         installation_id = installation_info.pop("installation_id")
+        obj_id = installation_info.pop("id", None)
         token_to_use = get_github_integration_token(
             self.service, installation_id, **installation_info
         )
@@ -747,6 +748,7 @@ class Github(TorngitBaseAdapter):
         self.data["installation"] = {
             # Put the installation_id back into the info
             "installation_id": installation_id,
+            "id": obj_id,
             **installation_info,
         }
         return token_to_use
