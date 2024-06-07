@@ -72,7 +72,7 @@ class FilteredReportFile(object):
             return self._cached_lines
         ret = []
         for ln, line in self.report_file.lines:
-            line = self.line_modifier(line)
+            line = self.line_modifier(line)  # noqa: PLW2901
             if line:
                 ret.append((ln, line))
         self._cached_lines = ret
