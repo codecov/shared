@@ -511,20 +511,7 @@ class CommitError(ExportModelOperationsMixin("core.commit_error"), BaseCodecovMo
 
 
 class UserOnboardingLifeCycleMetrics(models.Model):
-    class EventChoices(models.TextChoices):
-        USER_SELECTED_ORG = ("user_selected_org",)
-        USER_INSTALLED_GH_APP = ("user_installed_gh_app",)
-        USER_INSTALLED_GL_APP = ("user_installed_gl_app",)
-        USER_INSTALLED_BB_APP = ("user_installed_bb_app",)
-        USER_INSTALLED_SENTRY_APP = ("user_installed_sentry_app",)
-        USER_VISITED_COVERAGE_ONBOARDING = ("user_visited_coverage_onboarding",)
-        USER_VISITED_BUNDLE_ONBOARDING = ("user_visited_bundle_onboarding",)
-        USER_COPIED_CODECOV_TOKEN = ("user_copied_codecov_token",)
-        USER_COPIED_STEP_TWO_TEXT = ("user_copied_step_two_text",)
-        USER_CLICKED_DOCS_LINK = ("user_clicked_docs_link",)
-        USER_COMPLETED_FIRST_UPLOAD = ("user_completed_first_upload",)
-
     id = models.BigAutoField(primary_key=True)
     orgid = models.IntegerField()
-    event = models.TextField(choices=EventChoices.choices)
+    event = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
