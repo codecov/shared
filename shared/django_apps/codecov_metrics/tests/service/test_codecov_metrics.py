@@ -1,9 +1,8 @@
 # tests.py
 from django.test import TestCase
 from django.utils import timezone
-from ...models import UserOnboardingLifeCycleMetrics
-from ..service import UserOnboardingMetricsService
-
+from shared.django_apps.codecov_metrics.models import UserOnboardingLifeCycleMetrics
+from shared.django_apps.codecov_metrics.service import UserOnboardingMetricsService
 
 class UserOnboardingMetricsServiceTest(TestCase):
     def setUp(self):
