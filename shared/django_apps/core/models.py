@@ -508,10 +508,3 @@ class CommitError(ExportModelOperationsMixin("core.commit_error"), BaseCodecovMo
 
     class Meta:
         app_label = CORE_APP_LABEL
-
-
-class UserOnboardingLifeCycleMetrics(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    orgid = models.IntegerField()
-    event = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
