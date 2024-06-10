@@ -7,6 +7,6 @@ CODECOV_METRICS_APP_LABEL = "codecov_metrics"
 
 class UserOnboardingLifeCycleMetrics(models.Model):
     id = models.BigAutoField(primary_key=True)
-    orgid = models.IntegerField()
+    org_id = models.IntegerField()
     event = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
