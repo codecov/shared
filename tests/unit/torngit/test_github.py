@@ -1097,7 +1097,12 @@ class TestUnitGithub(object):
                 installation_id=1500,
             ),
             fallback_installations=[
-                {"installation_id": 12342, "app_id": 1200, "pem_path": "some_path"}
+                {
+                    "installation_id": 12342,
+                    "app_id": 1200,
+                    "pem_path": "some_path",
+                    "id": 20,
+                }
             ],
         )
 
