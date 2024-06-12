@@ -10,3 +10,4 @@ class UserOnboardingLifeCycleMetrics(models.Model):
     org_id = models.IntegerField()
     event = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    additional_data = models.JSONField(blank=True, null=True)
