@@ -96,6 +96,45 @@ def test_create_bundle_report():
         report.cleanup()
 
 
+def test_bundle_report_asset_filtering():
+    try:
+        report = BundleAnalysisReport()
+        session_id = report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+
+        assert report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: 1,
+        }
+
+        bundle_reports = list(report.bundle_reports())
+        assert len(bundle_reports) == 1
+
+        bundle_report = report.bundle_report("invalid")
+        assert bundle_report is None
+        bundle_report = report.bundle_report("sample")
+
+        asset_reports = list(bundle_report.asset_reports(
+            asset_types=[AssetType.JAVASCRIPT],
+            chunk_entry=True,
+            chunk_initial=True,
+        ))
+
+        for ar in asset_reports:
+            for module in ar.modules():
+                assert isinstance(module.name, str)
+                assert isinstance(module.size, int)
+
+        assert len(asset_reports) == 1
+        assert bundle_report.total_size(
+            asset_types=[AssetType.JAVASCRIPT],
+            chunk_entry=True,
+            chunk_initial=True,
+        ) == 144577
+
+    finally:
+        report.cleanup()
+
+
 def test_save_load_bundle_report():
     try:
         report = BundleAnalysisReport()

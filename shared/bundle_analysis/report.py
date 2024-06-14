@@ -2,13 +2,26 @@ import json
 import os
 import sqlite3
 import tempfile
-from typing import Any, Dict, Iterator, Optional, Set, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
 
-from shared.bundle_analysis import models
+from shared.bundle_analysis.models import (
+    SCHEMA,
+    SCHEMA_VERSION,
+    Asset,
+    AssetType,
+    Bundle,
+    Chunk,
+    Metadata,
+    MetadataKey,
+    Module,
+    Session,
+    get_db_session,
+)
 from shared.bundle_analysis.parser import Parser
 
 
@@ -17,7 +30,7 @@ class ModuleReport:
     Report wrapper around a single module (many of which can exist in a single Asset via Chunks)
     """
 
-    def __init__(self, db_path: str, module: models.Module):
+    def __init__(self, db_path: str, module: Module):
         self.db_path = db_path
         self.module = module
 
@@ -35,7 +48,7 @@ class AssetReport:
     Report wrapper around a single asset (many of which can exist in a single bundle).
     """
 
-    def __init__(self, db_path: str, asset: models.Asset):
+    def __init__(self, db_path: str, asset: Asset):
         self.db_path = db_path
         self.asset = asset
 
@@ -60,12 +73,12 @@ class AssetReport:
         return self.asset.asset_type
 
     def modules(self):
-        with models.get_db_session(self.db_path) as session:
+        with get_db_session(self.db_path) as session:
             modules = (
-                session.query(models.Module)
-                .join(models.Module.chunks)
-                .join(models.Chunk.assets)
-                .filter(models.Asset.id == self.asset.id)
+                session.query(Module)
+                .join(Module.chunks)
+                .join(Chunk.assets)
+                .filter(Asset.id == self.asset.id)
                 .all()
             )
             return [ModuleReport(self.db_path, module) for module in modules]
@@ -76,7 +89,7 @@ class BundleReport:
     Report wrapper around a single bundle (many of which can exist in a single analysis report).
     """
 
-    def __init__(self, db_path: str, bundle: models.Bundle):
+    def __init__(self, db_path: str, bundle: Bundle):
         self.db_path = db_path
         self.bundle = bundle
 
@@ -84,32 +97,71 @@ class BundleReport:
     def name(self):
         return self.bundle.name
 
-    def asset_reports(self) -> Iterator[AssetReport]:
-        with models.get_db_session(self.db_path) as session:
-            assets = (
-                session.query(models.Asset)
-                .join(models.Asset.session)
-                .join(models.Session.bundle)
-                .filter(models.Bundle.id == self.bundle.id)
-                .all()
-            )
-            return (AssetReport(self.db_path, asset) for asset in assets)
+    def _asset_filter(
+        self,
+        query: Query,
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> Query:
+        # Filter in assets having chunks with requested initial value
+        if chunk_initial is not None:
+            query = query.join(Asset.chunks).filter(Chunk.initial == chunk_initial)
+        # Filter in assets having chunks with requested entry value
+        if chunk_entry is not None:
+            query = query.join(Asset.chunks).filter(Chunk.entry == chunk_entry)
+        # Filter in assets belonging to requested asset types
+        if asset_types is not None:
+            query = query.filter(Asset.asset_type.in_(asset_types))
+        return query
 
-    def total_size(self) -> int:
-        with models.get_db_session(self.db_path) as session:
-            return (
-                session.query(func.sum(models.Asset.size).label("asset_size"))
-                .join(models.Asset.session)
-                .join(models.Session.bundle)
-                .filter(models.Session.bundle_id == self.bundle.id)
-                .scalar()
-            ) or 0
+    def asset_reports(
+        self,
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> Iterator[AssetReport]:
+        with get_db_session(self.db_path) as session:
+            assets = (
+                session.query(Asset)
+                .join(Asset.session)
+                .join(Session.bundle)
+                .filter(Bundle.id == self.bundle.id)
+            )
+            assets = self._asset_filter(
+                assets,
+                asset_types,
+                chunk_entry,
+                chunk_initial,
+            )
+            return (AssetReport(self.db_path, asset) for asset in assets.all())
+
+    def total_size(
+        self,
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> int:
+        with get_db_session(self.db_path) as session:
+            assets = (
+                session.query(func.sum(Asset.size).label("asset_size"))
+                .join(Asset.session)
+                .join(Session.bundle)
+                .filter(Bundle.id == self.bundle.id)
+            )
+            assets = self._asset_filter(
+                assets,
+                asset_types,
+                chunk_entry,
+                chunk_initial,
+            )
+            return assets.scalar() or 0
 
     def info(self) -> dict:
-        with models.get_db_session(self.db_path) as session:
+        with get_db_session(self.db_path) as session:
             result = (
-                session.query(models.Session)
-                .filter(models.Session.bundle_id == self.bundle.id)
+                session.query(Session)
+                .filter(Session.bundle_id == self.bundle.id)
                 .first()
             )
             return json.loads(result.info)
@@ -124,7 +176,7 @@ class BundleAnalysisReport:
         self.db_path = db_path
         if self.db_path is None:
             _, self.db_path = tempfile.mkstemp(prefix="bundle_analysis_")
-        self.db_session = models.get_db_session(self.db_path, auto_close=False)
+        self.db_session = get_db_session(self.db_path, auto_close=False)
         self._setup()
 
     def _setup(self):
@@ -133,18 +185,18 @@ class BundleAnalysisReport:
         """
         try:
             schema_version = (
-                self.db_session.query(models.Metadata)
-                .filter_by(key=models.MetadataKey.SCHEMA_VERSION.value)
+                self.db_session.query(Metadata)
+                .filter_by(key=MetadataKey.SCHEMA_VERSION.value)
                 .first()
             )
             self._migrate(schema_version.value)
         except OperationalError:
             # schema does not exist
             con = sqlite3.connect(self.db_path)
-            con.executescript(models.SCHEMA)
-            schema_version = models.Metadata(
-                key=models.MetadataKey.SCHEMA_VERSION.value,
-                value=models.SCHEMA_VERSION,
+            con.executescript(SCHEMA)
+            schema_version = Metadata(
+                key=MetadataKey.SCHEMA_VERSION.value,
+                value=SCHEMA_VERSION,
             )
             self.db_session.add(schema_version)
             self.db_session.commit()
@@ -155,7 +207,7 @@ class BundleAnalysisReport:
         such that the resulting schema is identical to `models.SCHEMA`
         """
         # we don't have any migrations yet
-        assert schema_version == models.SCHEMA_VERSION
+        assert schema_version == SCHEMA_VERSION
 
     def cleanup(self):
         self.db_session.close()
@@ -185,7 +237,7 @@ class BundleAnalysisReport:
             a.hashed_name: a.uuid for a in prev_bundle_report.asset_reports()
         }
         for curr_asset in curr_bundle_report.asset_reports():
-            if curr_asset.asset_type == models.AssetType.JAVASCRIPT:
+            if curr_asset.asset_type == AssetType.JAVASCRIPT:
                 if curr_asset.hashed_name in prev_asset_hashed_names:
                     ret.add(
                         (
@@ -208,7 +260,7 @@ class BundleAnalysisReport:
         ret = set()
         prev_module_asset_mapping = {}
         for prev_asset in prev_bundle_report.asset_reports():
-            if prev_asset.asset_type == models.AssetType.JAVASCRIPT:
+            if prev_asset.asset_type == AssetType.JAVASCRIPT:
                 prev_modules = tuple(
                     sorted(frozenset([m.name for m in prev_asset.modules()]))
                 )
@@ -218,7 +270,7 @@ class BundleAnalysisReport:
                 prev_module_asset_mapping[prev_modules] = prev_asset.uuid
 
         for curr_asset in curr_bundle_report.asset_reports():
-            if curr_asset.asset_type == models.AssetType.JAVASCRIPT:
+            if curr_asset.asset_type == AssetType.JAVASCRIPT:
                 curr_modules = tuple(
                     sorted(frozenset([m.name for m in curr_asset.modules()]))
                 )
@@ -269,23 +321,23 @@ class BundleAnalysisReport:
                         self.db_session.execute(text(stmt))
                     self.db_session.commit()
 
-    def metadata(self) -> Dict[models.MetadataKey, Any]:
-        with models.get_db_session(self.db_path) as session:
-            metadata = session.query(models.Metadata).all()
-            return {models.MetadataKey(item.key): item.value for item in metadata}
+    def metadata(self) -> Dict[MetadataKey, Any]:
+        with get_db_session(self.db_path) as session:
+            metadata = session.query(Metadata).all()
+            return {MetadataKey(item.key): item.value for item in metadata}
 
     def bundle_reports(self) -> Iterator[BundleReport]:
-        with models.get_db_session(self.db_path) as session:
-            bundles = session.query(models.Bundle).all()
+        with get_db_session(self.db_path) as session:
+            bundles = session.query(Bundle).all()
             return (BundleReport(self.db_path, bundle) for bundle in bundles)
 
     def bundle_report(self, bundle_name: str) -> Optional[BundleReport]:
-        with models.get_db_session(self.db_path) as session:
-            bundle = session.query(models.Bundle).filter_by(name=bundle_name).first()
+        with get_db_session(self.db_path) as session:
+            bundle = session.query(Bundle).filter_by(name=bundle_name).first()
             if bundle is None:
                 return None
             return BundleReport(self.db_path, bundle)
 
     def session_count(self) -> int:
-        with models.get_db_session(self.db_path) as session:
-            return session.query(models.Session).count()
+        with get_db_session(self.db_path) as session:
+            return session.query(Session).count()
