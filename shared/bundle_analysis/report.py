@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sqlite3
 import tempfile
@@ -11,6 +12,8 @@ from sqlalchemy.sql import func
 from shared.bundle_analysis import models
 from shared.bundle_analysis.db_migrations import BundleAnalysisMigration
 from shared.bundle_analysis.parser import Parser
+
+log = logging.getLogger(__name__)
 
 
 class ModuleReport:
@@ -156,6 +159,9 @@ class BundleAnalysisReport:
         such that the resulting schema is identical to `models.SCHEMA`
         """
         if from_version < to_version:
+            log.info(
+                f"Migrating Bundle Analysis DB schema from {from_version} to {to_version}"
+            )
             BundleAnalysisMigration(self.db_session, from_version, to_version)
 
     def cleanup(self):
