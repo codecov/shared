@@ -2,7 +2,7 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
-
+from shared.django_apps.migration_utils import RiskyAddIndex
 """
 BEGIN;
 --
@@ -60,14 +60,14 @@ class Migration(migrations.Migration):
             name="repoid",
             field=models.IntegerField(null=True),
         ),
-        migrations.AddIndex(
+        RiskyAddIndex(
             model_name="testinstance",
             index=models.Index(
                 fields=["commitid", "repoid", "branch"],
                 name="reports_tes_commiti_b33542_idx",
             ),
         ),
-        migrations.AddIndex(
+        RiskyAddIndex(
             model_name="testinstance",
             index=models.Index(
                 fields=["repoid", "created_at", "outcome"],
