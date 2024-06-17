@@ -144,9 +144,10 @@ class TorngitBaseAdapter(object):
                 )
 
     def build_tree_from_commits(self, start, commit_mapping):
-        parents = []
-        for p in commit_mapping.get(start, []):
-            parents.append(self.build_tree_from_commits(p, commit_mapping))
+        parents = [
+            self.build_tree_from_commits(p, commit_mapping)
+            for p in commit_mapping.get(start, [])
+        ]
         return {"commitid": start, "parents": parents}
 
     def diff_to_json(self, diff):
@@ -243,7 +244,7 @@ class TorngitBaseAdapter(object):
             return dict(files=self._add_diff_totals(results))
 
     def _add_diff_totals(self, diff):
-        for fname, data in diff.items():
+        for data in diff.values():
             rm = 0
             add = 0
             if "segments" in data:

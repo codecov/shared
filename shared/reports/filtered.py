@@ -213,7 +213,7 @@ class FilteredReport(object):
 
     @property
     def network(self):
-        for fname, data in self.report._files.items():
+        for fname in self.report._files.keys():
             file = self.get(fname)
             if file:
                 yield fname, make_network_file(file.totals)
@@ -257,7 +257,7 @@ class FilteredReport(object):
         return not any(self.should_include(x) for x in self.report._files.keys())
 
     def _iter_totals(self):
-        for filename, data in self.report._files.items():
+        for filename in self.report._files.keys():
             if self.should_include(filename):
                 res = self.get(filename).totals
                 if res and res.lines > 0:
