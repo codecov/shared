@@ -1405,10 +1405,8 @@ class Gitlab(TorngitBaseAdapter):
             token=token,
             counter_name="get_best_effort_branches",
         )
-        all_results = []
-        async for page in async_generator:
-            for res in page:
-                all_results.append(res["name"])
+
+        all_results = [res["name"] async for page in async_generator for res in page]
         return all_results
 
     async def is_student(self):

@@ -444,15 +444,13 @@ class Bitbucket(TorngitBaseAdapter):
                     page=page,
                     token=token,
                 )
-                if len(res["values"]) == 0:
+                if not res["values"]:
                     page = 0
-                    break
-                for permission in res["values"]:
-                    data.append(permission)
-
-                if not res.get("next"):
-                    page = 0
-                    break
+                else:
+                    data.extend(res["values"])
+                    if not res.get("next"):
+                        page = 0
+                        break
         return data
 
     async def get_pull_request(self, pullid, token=None):

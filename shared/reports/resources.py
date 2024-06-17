@@ -760,7 +760,7 @@ class Report(object):
     def flags(self):
         """returns dict(:name=<Flag>)"""
         flags_dict = {}
-        for sid, session in self.sessions.items():
+        for session in self.sessions.values():
             if session.flags:
                 # If the session was carriedforward, mark its flags as carriedforward
                 session_carriedforward = (
@@ -781,7 +781,7 @@ class Report(object):
 
     def get_flag_names(self):
         all_flags = set()
-        for _, session in self.sessions.items():
+        for session in self.sessions.values():
             if session and session.flags:
                 all_flags.update(session.flags)
         return sorted(all_flags)
@@ -1399,7 +1399,7 @@ class Report(object):
         """
         Returns boolean: if the flag is found
         """
-        for sid, data in self.sessions.items():
+        for data in self.sessions.values():
             if flag_name in (data.flags or []):
                 return True
         return False
@@ -1434,7 +1434,7 @@ class Report(object):
             )
         )
         chunks_mapping = {b: a for (a, b) in notnull_chunks_new_location}
-        for filename, summary in self._files.items():
+        for summary in self._files.values():
             summary.file_index = chunks_mapping.get(summary.file_index)
         self._chunks = new_chunks
         log.info("Repacked files in report")

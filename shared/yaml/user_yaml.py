@@ -62,7 +62,7 @@ class UserYaml(object):
     def has_any_carryforward(self):
         all_flags = self.inner_dict.get("flags")
         if all_flags:
-            for flag_name, flag_info in all_flags.items():
+            for flag_info in all_flags.values():
                 if flag_info.get("carryforward"):
                     return True
         flag_management = self.inner_dict.get("flag_management", {})

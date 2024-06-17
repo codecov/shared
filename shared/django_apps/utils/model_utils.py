@@ -149,11 +149,8 @@ class ArchiveField:
 
 
 def default_random_salt():
-    chars = []
     ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    for _ in range(16):
-        chars.append(choice(ALPHABET))
-    return "".join(chars)
+    return "".join([choice(ALPHABET) for _ in range(16)])
 
 
 def rollout_universe_to_override_string(rollout_universe: RolloutUniverse):

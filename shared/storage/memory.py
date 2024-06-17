@@ -178,10 +178,10 @@ class MemoryStorageService(BaseStorageService):
         Raises:
             NotImplementedError: If the current instance did not implement this method
         """
-        res = []
-        for key in self.storage[bucket_name]:
-            if prefix is None or key.startswith(prefix):
-                res.append(
-                    {"name": key, "size": len(self.storage[bucket_name][key].decode())}
-                )
+        res = [
+            {"name": key, "size": len(self.storage[bucket_name][key].decode())}
+            for key in self.storage[bucket_name]
+            if prefix is None or key.startswith(prefix)
+        ]
+
         return res
