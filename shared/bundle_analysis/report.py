@@ -162,7 +162,7 @@ class BundleAnalysisReport:
             log.info(
                 f"Migrating Bundle Analysis DB schema from {from_version} to {to_version}"
             )
-            BundleAnalysisMigration(self.db_session, from_version, to_version)
+            BundleAnalysisMigration(self.db_session, from_version, to_version).migrate()
 
     def cleanup(self):
         self.db_session.close()
