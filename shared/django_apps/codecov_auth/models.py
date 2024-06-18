@@ -15,7 +15,7 @@ from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
 from shared.config import get_config
-from shared.django_apps.codecov.models import BaseCodecovModel
+from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
 from shared.django_apps.codecov_auth.constants import (
     AVATAR_GITHUB_BASE_URL,
     AVATARIO_BASE_URL,
@@ -216,6 +216,11 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         blank=True,
         related_name="owners",
     )
+
+    # TODO: connect OwnerOrgs to Account
+    # account = models.ForeignKey(
+    #     Account, null=True, blank=True, on_delete=models.SET_NULL, related_name="organizations"
+    # )
 
     objects = OwnerManager()
 
@@ -744,3 +749,87 @@ class UserToken(
     token_type = models.CharField(
         max_length=50, choices=TokenType.choices, default=TokenType.API
     )
+
+
+class Account(BaseModel):
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+    plan = models.CharField(
+        max_length=50,
+        choices=PlanName.choices(),
+        null=False,
+        default=PlanName.BASIC_PLAN_NAME.value,
+    )
+    plan_seat_count = models.SmallIntegerField(default=1, null=False, blank=True)
+    free_seat_count = models.SmallIntegerField(default=0, null=False, blank=True)
+    plan_auto_activate = models.BooleanField(default=True, null=False, blank=True)
+    is_delinquent = models.BooleanField(default=False, null=False, blank=True)
+    users = models.ManyToManyField(
+        User, through="AccountsUsers", related_name="accounts"
+    )
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        str_representation_of_is_active = "Active" if self.is_active else "Inactive"
+        return f"{str_representation_of_is_active} Account: {self.name}"
+
+
+class AccountsUsers(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("user", "account")
+
+
+class OktaSettings(BaseModel):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="okta_settings"
+    )
+    client_id = models.CharField(max_length=255)
+    client_secret = models.CharField(max_length=255)
+    url = models.CharField(max_length=255)
+    enabled = models.BooleanField(default=True, blank=True)
+    enforced = models.BooleanField(default=True, blank=True)
+
+
+class StripeBilling(BaseModel):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="stripe_billing", unique=True
+    )
+    customer_id = models.CharField(max_length=255, unique=True)
+    subscription_id = models.CharField(max_length=255, null=True, blank=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # inactivate all other billing methods
+            StripeBilling.objects.filter(account=self.account, is_active=True).exclude(
+                id=self.id
+            ).update(is_active=False)
+            InvoiceBilling.objects.filter(account=self.account, is_active=True).update(
+                is_active=False
+            )
+        return super().save(*args, **kwargs)
+
+
+class InvoiceBilling(BaseModel):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="invoice_billing", unique=True
+    )
+    account_manager = models.CharField(max_length=255, null=True, blank=True)
+    invoice_notes = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # inactivate all other billing methods
+            StripeBilling.objects.filter(account=self.account, is_active=True).update(
+                is_active=False
+            )
+            InvoiceBilling.objects.filter(account=self.account, is_active=True).exclude(
+                id=self.id
+            ).update(is_active=False)
+        return super().save(*args, **kwargs)
