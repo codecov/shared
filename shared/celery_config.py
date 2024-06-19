@@ -39,6 +39,10 @@ test_results_finisher_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.TestResultsFinisherTask"
 )
 
+sync_test_results_task_name = (
+    f"app.tasks.{TaskConfigGroup.test_results.value}.SyncTestResultsTask"
+)
+
 manual_upload_completion_trigger_task_name = (
     f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
 )

@@ -257,6 +257,9 @@ class Test(models.Model):
     # for example: the same test being run on windows vs. mac
     flags_hash = models.TextField()
 
+    failure_rate = models.FloatField(null=True)
+    commits_where_fail = ArrayField(models.TextField(), null=True)
+
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test"
@@ -282,14 +285,6 @@ class TestInstance(BaseCodecovModel):
         ERROR = "error"
         PASS = "pass"
 
-    class FlakeSymptomType(models.TextChoices):
-        FAILED_IN_DEFAULT_BRANCH = "failed_in_default_branch"
-        CONSECUTIVE_DIFF_OUTCOMES = "consecutive_diff_outcomes"
-        UNRELATED_MATCHING_FAILURES = "unrelated_matching_failures"
-
-    flaky_status = models.CharField(
-        null=True, max_length=100, choices=FlakeSymptomType.choices
-    )
     duration_seconds = models.FloatField()
     outcome = models.CharField(max_length=100, choices=Outcome.choices)
     upload = models.ForeignKey(
@@ -302,10 +297,15 @@ class TestInstance(BaseCodecovModel):
 
     branch = models.TextField(null=True)
     commitid = models.TextField(null=True)
+    repoid = models.IntegerField(null=True)
 
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_testinstance"
+        indexes = [
+            models.Index(fields=["commitid", "repoid", "branch"]),
+            models.Index(fields=["repoid", "created_at", "outcome"]),
+        ]
 
 
 class TestResultReportTotals(BaseCodecovModel):
