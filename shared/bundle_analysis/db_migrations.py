@@ -1,6 +1,7 @@
-from bundle_analysis.migrations.v001_add_gzip_size import add_gzip_size
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+
+from shared.bundle_analysis.migrations.v001_add_gzip_size import add_gzip_size
 
 
 class BundleAnalysisMigration:
