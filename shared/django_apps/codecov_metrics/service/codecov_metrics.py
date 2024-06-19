@@ -23,15 +23,11 @@ class UserOnboardingMetricsService:
             log.warning("Incompatible event type", extra=dict(event_name=event))
             return
 
-        if not UserOnboardingLifeCycleMetrics.objects.filter(
-            org_id=org_id, event=event
-        ).exists():
-            metric = UserOnboardingLifeCycleMetrics(
-                org_id=org_id,
-                event=event,
-                timestamp=timezone.now(),
-                additional_data=payload,
-            )
-            metric.save()
+        metric, created = UserOnboardingLifeCycleMetrics.objects.get_or_create(
+            org_id=org_id,
+            event=event,
+            additional_data=payload,
+        )
+        if created:
             return metric
         return None
