@@ -56,7 +56,7 @@
       "id": "index",
       "uniqueId": "2-index",
       "entry": true,
-      "initial": false,
+      "initial": true,
       "files": ["assets/index-666d2e09.js"],
       "names": ["index"]
     }
