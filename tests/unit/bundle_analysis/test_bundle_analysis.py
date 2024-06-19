@@ -103,7 +103,7 @@ def test_bundle_report_asset_filtering():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 1,
+            MetadataKey.SCHEMA_VERSION: 2,
         }
 
         bundle_reports = list(report.bundle_reports())
