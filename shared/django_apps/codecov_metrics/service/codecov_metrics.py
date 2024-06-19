@@ -24,7 +24,7 @@ class UserOnboardingMetricsService:
             return
 
         if not UserOnboardingLifeCycleMetrics.objects.filter(
-            org_id=org_id, event=event
+            org_id=org_id, event=event, additional_data=payload
         ).exists():
             metric = UserOnboardingLifeCycleMetrics(
                 org_id=org_id,
