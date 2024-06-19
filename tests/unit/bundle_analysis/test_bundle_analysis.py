@@ -113,18 +113,21 @@ def test_bundle_report_asset_filtering():
         assert bundle_report is None
         bundle_report = report.bundle_report("sample")
 
-        asset_reports = list(bundle_report.asset_reports(
+        all_asset_reports = list(bundle_report.asset_reports())
+        assert len(all_asset_reports) == 5
+
+        filtered_asset_reports = list(bundle_report.asset_reports(
             asset_types=[AssetType.JAVASCRIPT],
             chunk_entry=True,
             chunk_initial=True,
         ))
 
-        for ar in asset_reports:
+        for ar in filtered_asset_reports:
             for module in ar.modules():
                 assert isinstance(module.name, str)
                 assert isinstance(module.size, int)
 
-        assert len(asset_reports) == 1
+        assert len(filtered_asset_reports) == 1
         assert bundle_report.total_size(
             asset_types=[AssetType.JAVASCRIPT],
             chunk_entry=True,
