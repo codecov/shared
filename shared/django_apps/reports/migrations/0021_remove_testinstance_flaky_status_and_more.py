@@ -2,7 +2,7 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
-from shared.django_apps.migration_utils import RiskyAddIndex
+from shared.django_apps.migration_utils import RiskyAddIndex, RiskyRemoveField, RiskyAddField
 """
 BEGIN;
 --
@@ -39,23 +39,23 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        RiskyRemoveField(
             model_name="testinstance",
             name="flaky_status",
         ),
-        migrations.AddField(
+        RiskyAddField(
             model_name="test",
             name="commits_where_fail",
             field=django.contrib.postgres.fields.ArrayField(
                 base_field=models.TextField(), null=True, size=None
             ),
         ),
-        migrations.AddField(
+        RiskyAddField(
             model_name="test",
             name="failure_rate",
             field=models.FloatField(null=True),
         ),
-        migrations.AddField(
+        RiskyAddField(
             model_name="testinstance",
             name="repoid",
             field=models.IntegerField(null=True),
