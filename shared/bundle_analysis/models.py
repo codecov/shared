@@ -41,6 +41,7 @@ create table assets (
     name text not null,
     normalized_name text not null,
     size integer not null,
+    gzip_size integer not null default 0,
     uuid text not null,
     asset_type text not null,
     foreign key (session_id) references sessions (id)
@@ -84,7 +85,7 @@ create table chunks_modules (
 );
 """
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 Base = declarative_base()
 

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sqlite3
 import tempfile
@@ -9,6 +10,7 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
 
+from shared.bundle_analysis.db_migrations import BundleAnalysisMigration
 from shared.bundle_analysis.models import (
     SCHEMA,
     SCHEMA_VERSION,
@@ -23,6 +25,8 @@ from shared.bundle_analysis.models import (
     get_db_session,
 )
 from shared.bundle_analysis.parser import Parser
+
+log = logging.getLogger(__name__)
 
 
 class ModuleReport:
@@ -201,13 +205,16 @@ class BundleAnalysisReport:
             self.db_session.add(schema_version)
             self.db_session.commit()
 
-    def _migrate(self, schema_version: int):
+    def _migrate(self, from_version: int, to_version: int = SCHEMA_VERSION):
         """
         Migrate the database from `schema_version` to `models.SCHEMA_VERSION`
         such that the resulting schema is identical to `models.SCHEMA`
         """
-        # we don't have any migrations yet
-        assert schema_version == SCHEMA_VERSION
+        if from_version < to_version:
+            log.info(
+                f"Migrating Bundle Analysis DB schema from {from_version} to {to_version}"
+            )
+            BundleAnalysisMigration(self.db_session, from_version, to_version).migrate()
 
     def cleanup(self):
         self.db_session.close()

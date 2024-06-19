@@ -30,7 +30,7 @@ def test_create_bundle_report():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 1,
+            MetadataKey.SCHEMA_VERSION: 2,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -103,7 +103,7 @@ def test_bundle_report_asset_filtering():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 1,
+            MetadataKey.SCHEMA_VERSION: 2,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -171,7 +171,7 @@ def test_reupload_bundle_report():
         report.ingest(sample_bundle_stats_path)
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 1,
+            MetadataKey.SCHEMA_VERSION: 2,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -186,7 +186,7 @@ def test_reupload_bundle_report():
         report.ingest(sample_bundle_stats_path_2)
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 1,
+            MetadataKey.SCHEMA_VERSION: 2,
         }
 
         bundle_reports = list(report.bundle_reports())
