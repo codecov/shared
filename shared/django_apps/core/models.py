@@ -243,6 +243,9 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
         null=True, choices=CommitStates.choices
     )  # Really an ENUM in db
 
+    # tracks field changes being saved for signals
+    tracker = FieldTracker()
+
     def save(self, *args, **kwargs):
         self.updatestamp = timezone.now()
         super().save(*args, **kwargs)
