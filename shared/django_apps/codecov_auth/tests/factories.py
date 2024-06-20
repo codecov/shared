@@ -13,7 +13,12 @@ from shared.django_apps.codecov_auth.models import (
     Session,
     TokenTypeChoices,
     User,
-    UserToken, Account, AccountsUsers, OktaSettings, StripeBilling, InvoiceBilling,
+    UserToken,
+    Account,
+    AccountsUsers,
+    OktaSettings,
+    StripeBilling,
+    InvoiceBilling,
 )
 from shared.encryption.oauth import get_encryptor_from_configuration
 from shared.plan.constants import TrialStatus
@@ -130,6 +135,7 @@ class AccountFactory(DjangoModelFactory):
         model = Account
 
     name = factory.Faker("name")
+
 
 class AccountsUsersFactory(DjangoModelFactory):
     class Meta:

@@ -16,7 +16,10 @@ from shared.django_apps.codecov_auth.models import (
     SERVICE_GITHUB_ENTERPRISE,
     GithubAppInstallation,
     OrganizationLevelToken,
-    Service, User, AccountsUsers, Owner,
+    Service,
+    User,
+    AccountsUsers,
+    Owner,
 )
 from shared.django_apps.codecov_auth.tests.factories import (
     OrganizationLevelTokenFactory,
@@ -622,18 +625,12 @@ class TestGitHubAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
 class TestAccountModel(TransactionTestCase):
     def test_account_with_billing_details(self):
         account = AccountFactory()
-        OktaSettingsFactory(
-            account=account
-        )
+        OktaSettingsFactory(account=account)
         # set up stripe
-        stripe = StripeBillingFactory(
-            account=account
-        )
+        stripe = StripeBillingFactory(account=account)
         self.assertTrue(stripe.is_active)
         # switch to invoice
-        invoice = InvoiceBillingFactory(
-            account=account
-        )
+        invoice = InvoiceBillingFactory(account=account)
         stripe.refresh_from_db()
         invoice.refresh_from_db()
         self.assertTrue(invoice.is_active)
@@ -680,30 +677,26 @@ class TestAccountModel(TransactionTestCase):
 
     def test_create_account_for_enterprise_experience(self):
         # 2 separate OwnerOrgs that wish to Enterprise
-        stripe_customer_id = 'abc123'
-        stripe_subscription_id = 'defg456'
+        stripe_customer_id = "abc123"
+        stripe_subscription_id = "defg456"
 
-        user_for_owner_1 = UserFactory(
-            email='hello@email.com',
-            name='Luigi'
-        )
+        user_for_owner_1 = UserFactory(email="hello@email.com", name="Luigi")
         owner_1 = OwnerFactory(
-            username='codecov-1',
+            username="codecov-1",
             plan=PlanName.BASIC_PLAN_NAME.value,
             plan_user_count=1,
             organizations=[],
-            user_id=user_for_owner_1.id, # has user
-
+            user_id=user_for_owner_1.id,  # has user
         )
         owner_2 = OwnerFactory(
-            username='codecov-sentry',
+            username="codecov-sentry",
             plan=PlanName.BASIC_PLAN_NAME.value,
             plan_user_count=1,
             organizations=[],
             user_id=None,  # no user
         )
         owner_3 = OwnerFactory(
-            username='sentry-1',
+            username="sentry-1",
             plan=PlanName.BASIC_PLAN_NAME.value,
             plan_user_count=1,
             organizations=[],
@@ -725,22 +718,22 @@ class TestAccountModel(TransactionTestCase):
         unrelated_owner.save()
 
         org_1 = OwnerFactory(
-            username='codecov-org',
+            username="codecov-org",
             stripe_customer_id=stripe_customer_id,
             stripe_subscription_id=stripe_subscription_id,
             plan=PlanName.CODECOV_PRO_YEARLY.value,
             plan_user_count=50,
             plan_activated_users=[owner_1.ownerid, owner_2.ownerid],
-            free=10
+            free=10,
         )
         org_2 = OwnerFactory(
-            username='sentry-org',
+            username="sentry-org",
             stripe_customer_id=stripe_customer_id,
             stripe_subscription_id=stripe_subscription_id,
             plan=PlanName.CODECOV_PRO_YEARLY.value,
             plan_user_count=50,
             plan_activated_users=[owner_2.ownerid, owner_3.ownerid],
-            free=10
+            free=10,
         )
         owner_1.organizations.append(org_1.ownerid)
         owner_1.save()
@@ -751,7 +744,7 @@ class TestAccountModel(TransactionTestCase):
 
         # How to Enterprise
         enterprise_account = AccountFactory(
-            name='getsentry',
+            name="getsentry",
             plan=org_1.plan,
             plan_seat_count=org_1.plan_user_count,
             free_seat_count=org_1.free,
@@ -761,12 +754,12 @@ class TestAccountModel(TransactionTestCase):
             account=enterprise_account,
             customer_id=stripe_customer_id,
             subscription_id=None,
-            is_active=False
+            is_active=False,
         )
         # create active Invoice billing
         InvoiceBillingFactory(
             account=enterprise_account,
-            account_manager='Mario',
+            account_manager="Mario",
         )
 
         # TODO: connect OwnerOrgs to Account
@@ -804,13 +797,20 @@ class TestAccountModel(TransactionTestCase):
             user = User.objects.get(id=owner.user_id)
             self.assertEqual(user.accounts.count(), 1)
             self.assertEqual(user.accounts.first(), enterprise_account)
-            self.assertEqual(AccountsUsers.objects.get(user=user).account, enterprise_account)
+            self.assertEqual(
+                AccountsUsers.objects.get(user=user).account, enterprise_account
+            )
 
         # for orgs
         # TODO: connect OwnerOrgs to Account
 
         # for the enterprise account
-        self.assertEqual(set(enterprise_account.users.all().values_list('id', flat=True)), {owner_1.user_id, owner_2.user_id, owner_3.user_id})
-        self.assertTrue(AccountsUsers.objects.filter(account=enterprise_account).count(), 3)
+        self.assertEqual(
+            set(enterprise_account.users.all().values_list("id", flat=True)),
+            {owner_1.user_id, owner_2.user_id, owner_3.user_id},
+        )
+        self.assertTrue(
+            AccountsUsers.objects.filter(account=enterprise_account).count(), 3
+        )
         self.assertFalse(enterprise_account.stripe_billing.first().is_active)
         self.assertTrue(enterprise_account.invoice_billing.first().is_active)
