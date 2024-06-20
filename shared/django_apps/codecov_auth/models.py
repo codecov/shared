@@ -142,6 +142,7 @@ class Account(BaseModel):
     )
 
     class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
         ordering = ["-updated_at"]
 
     def __str__(self):
@@ -784,6 +785,7 @@ class AccountsUsers(BaseModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
         unique_together = ("user", "account")
 
 
@@ -797,6 +799,9 @@ class OktaSettings(BaseModel):
     enabled = models.BooleanField(default=True, blank=True)
     enforced = models.BooleanField(default=True, blank=True)
 
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
 
 class StripeBilling(BaseModel):
     account = models.ForeignKey(
@@ -805,6 +810,9 @@ class StripeBilling(BaseModel):
     customer_id = models.CharField(max_length=255, unique=True)
     subscription_id = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=True, null=False, blank=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
 
     def save(self, *args, **kwargs):
         if self.is_active:
@@ -825,6 +833,9 @@ class InvoiceBilling(BaseModel):
     account_manager = models.CharField(max_length=255, null=True, blank=True)
     invoice_notes = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True, null=False, blank=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
 
     def save(self, *args, **kwargs):
         if self.is_active:
