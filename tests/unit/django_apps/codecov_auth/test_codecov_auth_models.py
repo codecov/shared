@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+from django.db import IntegrityError
 from django.forms import ValidationError
 from django.test import TransactionTestCase
 
@@ -16,12 +17,21 @@ from shared.django_apps.codecov_auth.models import (
     GithubAppInstallation,
     OrganizationLevelToken,
     Service,
+    User,
+    AccountsUsers,
+    Owner,
 )
 from shared.django_apps.codecov_auth.tests.factories import (
     OrganizationLevelTokenFactory,
     OwnerFactory,
+    AccountFactory,
+    UserFactory,
+    StripeBillingFactory,
+    InvoiceBillingFactory,
+    OktaSettingsFactory,
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
+from shared.plan.constants import PlanName
 from shared.utils.test_utils import mock_config_helper
 
 
@@ -610,3 +620,197 @@ class TestGitHubAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
         )
         installation_default.save()
         assert installation_default.is_configured() == True
+
+
+class TestAccountModel(TransactionTestCase):
+    def test_account_with_billing_details(self):
+        account = AccountFactory()
+        OktaSettingsFactory(account=account)
+        # set up stripe
+        stripe = StripeBillingFactory(account=account)
+        self.assertTrue(stripe.is_active)
+        # switch to invoice
+        invoice = InvoiceBillingFactory(account=account)
+        stripe.refresh_from_db()
+        invoice.refresh_from_db()
+        self.assertTrue(invoice.is_active)
+        self.assertFalse(stripe.is_active)
+        # back to stripe
+        stripe.is_active = True
+        stripe.save()
+        stripe.refresh_from_db()
+        invoice.refresh_from_db()
+        self.assertFalse(invoice.is_active)
+        self.assertTrue(stripe.is_active)
+
+    def test_account_with_users(self):
+        user_1 = UserFactory()
+        user_2 = UserFactory()
+        account = AccountFactory()
+
+        account.users.add(user_1)
+        account.save()
+
+        user_2.accounts.add(account)
+        user_2.save()
+
+        self.assertEqual(account.users.count(), 2)
+        self.assertEqual(user_1.accounts.count(), 1)
+        self.assertEqual(user_2.accounts.count(), 1)
+        self.assertEqual(AccountsUsers.objects.all().count(), 2)
+
+        # handles duplicates gracefully
+        account.users.add(user_2)
+        account.save()
+        self.assertEqual(account.users.count(), 2)
+        user_2.accounts.add(account)
+        user_2.save()
+        self.assertEqual(user_2.accounts.count(), 1)
+        self.assertEqual(AccountsUsers.objects.all().count(), 2)
+
+        # does not handle duplicates gracefully
+        with self.assertRaises(IntegrityError):
+            AccountsUsers.objects.create(user=user_1, account=account)
+        self.assertEqual(account.users.count(), 2)
+        self.assertEqual(user_1.accounts.count(), 1)
+        self.assertEqual(AccountsUsers.objects.all().count(), 2)
+
+    def test_create_account_for_enterprise_experience(self):
+        # 2 separate OwnerOrgs that wish to Enterprise
+        stripe_customer_id = "abc123"
+        stripe_subscription_id = "defg456"
+
+        user_for_owner_1 = UserFactory(email="hello@email.com", name="Luigi")
+        owner_1 = OwnerFactory(
+            username="codecov-1",
+            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan_user_count=1,
+            organizations=[],
+            user_id=user_for_owner_1.id,  # has user
+        )
+        owner_2 = OwnerFactory(
+            username="codecov-sentry",
+            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan_user_count=1,
+            organizations=[],
+            user_id=None,  # no user
+        )
+        owner_3 = OwnerFactory(
+            username="sentry-1",
+            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan_user_count=1,
+            organizations=[],
+            user_id=None,  # no user
+        )
+
+        unrelated_owner = OwnerFactory(
+            user_id=UserFactory().id,
+            organizations=[],
+        )
+        unrelated_org = OwnerFactory(
+            stripe_customer_id=stripe_customer_id,
+            stripe_subscription_id=stripe_subscription_id,
+            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan_user_count=50,
+            plan_activated_users=[unrelated_owner.ownerid],
+        )
+        unrelated_owner.organizations.append(unrelated_org.ownerid)
+        unrelated_owner.save()
+
+        org_1 = OwnerFactory(
+            username="codecov-org",
+            stripe_customer_id=stripe_customer_id,
+            stripe_subscription_id=stripe_subscription_id,
+            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan_user_count=50,
+            plan_activated_users=[owner_1.ownerid, owner_2.ownerid],
+            free=10,
+        )
+        org_2 = OwnerFactory(
+            username="sentry-org",
+            stripe_customer_id=stripe_customer_id,
+            stripe_subscription_id=stripe_subscription_id,
+            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan_user_count=50,
+            plan_activated_users=[owner_2.ownerid, owner_3.ownerid],
+            free=10,
+        )
+        owner_1.organizations.append(org_1.ownerid)
+        owner_1.save()
+        owner_2.organizations.extend([org_2.ownerid, org_1.ownerid])
+        owner_2.save()
+        owner_3.organizations.append(org_2.ownerid)
+        owner_3.save()
+
+        # How to Enterprise
+        enterprise_account = AccountFactory(
+            name="getsentry",
+            plan=org_1.plan,
+            plan_seat_count=org_1.plan_user_count,
+            free_seat_count=org_1.free,
+        )
+        # create inactive Stripe billing
+        StripeBillingFactory(
+            account=enterprise_account,
+            customer_id=stripe_customer_id,
+            subscription_id=None,
+            is_active=False,
+        )
+        # create active Invoice billing
+        InvoiceBillingFactory(
+            account=enterprise_account,
+            account_manager="Mario",
+        )
+
+        # TODO: connect OwnerOrgs to Account
+        # org_1.account = enterprise_account
+        # org_1.save()
+        # org_2.account = enterprise_account
+        # org_2.save()
+
+        # connect Users to Account
+        for org in [org_1, org_2]:
+            for owner_user_id in org.plan_activated_users:
+                owner_user = Owner.objects.get(ownerid=owner_user_id)
+                if not owner_user.user_id:
+                    # if the OwnerUser doesn't have a User obj, make one for them and attach to Owner object
+                    user = UserFactory(
+                        email=owner_user.email,
+                        name=owner_user.name,
+                    )
+                    owner_user.user_id = user.id
+                    owner_user.save()
+                    enterprise_account.users.add(user)
+                    enterprise_account.save()
+                else:
+                    enterprise_account.users.add(owner_user.user_id)
+
+        enterprise_account.refresh_from_db()
+        org_1.refresh_from_db()
+        org_2.refresh_from_db()
+        owner_1.refresh_from_db()
+        owner_2.refresh_from_db()
+        owner_3.refresh_from_db()
+
+        # for users
+        for owner in [owner_1, owner_2, owner_3]:
+            user = User.objects.get(id=owner.user_id)
+            self.assertEqual(user.accounts.count(), 1)
+            self.assertEqual(user.accounts.first(), enterprise_account)
+            self.assertEqual(
+                AccountsUsers.objects.get(user=user).account, enterprise_account
+            )
+
+        # for orgs
+        # TODO: connect OwnerOrgs to Account
+
+        # for the enterprise account
+        self.assertEqual(
+            set(enterprise_account.users.all().values_list("id", flat=True)),
+            {owner_1.user_id, owner_2.user_id, owner_3.user_id},
+        )
+        self.assertTrue(
+            AccountsUsers.objects.filter(account=enterprise_account).count(), 3
+        )
+        self.assertFalse(enterprise_account.stripe_billing.first().is_active)
+        self.assertTrue(enterprise_account.invoice_billing.first().is_active)

@@ -14,6 +14,11 @@ from shared.django_apps.codecov_auth.models import (
     TokenTypeChoices,
     User,
     UserToken,
+    Account,
+    AccountsUsers,
+    OktaSettings,
+    StripeBilling,
+    InvoiceBilling,
 )
 from shared.encryption.oauth import get_encryptor_from_configuration
 from shared.plan.constants import TrialStatus
@@ -123,3 +128,43 @@ class UserTokenFactory(DjangoModelFactory):
 
     owner = factory.SubFactory(OwnerFactory)
     token = factory.LazyAttribute(lambda _: uuid4())
+
+
+class AccountFactory(DjangoModelFactory):
+    class Meta:
+        model = Account
+
+    name = factory.Faker("name")
+
+
+class AccountsUsersFactory(DjangoModelFactory):
+    class Meta:
+        model = AccountsUsers
+
+    user = factory.SubFactory(UserFactory)
+    account = factory.SubFactory(Account)
+
+
+class OktaSettingsFactory(DjangoModelFactory):
+    class Meta:
+        model = OktaSettings
+
+    account = factory.SubFactory(Account)
+    client_id = factory.Faker("pyint")
+    client_secret = factory.Faker("pyint")
+    url = factory.Faker("pystr")
+
+
+class StripeBillingFactory(DjangoModelFactory):
+    class Meta:
+        model = StripeBilling
+
+    account = factory.SubFactory(Account)
+    customer_id = factory.Faker("pyint")
+
+
+class InvoiceBillingFactory(DjangoModelFactory):
+    class Meta:
+        model = InvoiceBilling
+
+    account = factory.SubFactory(Account)
