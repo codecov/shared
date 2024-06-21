@@ -141,6 +141,68 @@ component_rule_basic_properties = {
     "paths": path_list_structure,
 }
 
+coverage_comment_config = {
+    "layout": {
+        "type": "string",
+        "comma_separated_strings": True,
+        "nullable": True,
+    },
+    "require_changes": {
+        "coerce": "coverage_comment_required_changes",
+        "meta": {
+            "description": "require_changes instructs Codecov to only post a PR Comment if there are coverage changes in the PR.",
+            "options": {
+                False: {
+                    "type": bool,
+                    "description": "post comment even if there's no change in coverage",
+                    "default": True,
+                },
+                True: {
+                    "type": bool,
+                    "description": "only post comment if there are changes in coverage (positive or negative)",
+                },
+                "coverage_drop": {
+                    "type": str,
+                    "description": "[project coverage] only post comment if coverage drops more than <coverage.status.project.threshold> percent when comparing HEAD to BASE",
+                },
+                "uncovered_patch": {
+                    "type": str,
+                    "description": "[patch coverage] only post comment if the patch has uncovered lines",
+                },
+                "check_fails": {
+                    "type": str,
+                    "description": "only post comment if either the 'project' or 'patch' statuses fail",
+                },
+            },
+        },
+    },
+    "require_base": {"type": "boolean"},
+    "require_head": {"type": "boolean"},
+    "show_critical_paths": {"type": "boolean"},
+    "branches": branches_structure,
+    "paths": path_list_structure,  # DEPRECATED
+    "flags": flag_list_structure,  # DEPRECATED
+    "behavior": {
+        "type": "string",
+        "allowed": ("default", "once", "new", "spammy"),
+    },
+    "after_n_builds": {"type": "integer", "min": 0},
+    "show_carryforward_flags": {"type": "boolean"},
+    "hide_comment_details": {"type": "boolean"},
+    "hide_project_coverage": {"type": "boolean"},
+}
+
+bundle_analysis_comment_config = {
+    "require_bundle_changes": {
+        "type": ["boolean", "string"],
+        "allowed": ["bundle_increase", False, True],
+    },
+    "bundle_change_threshold": {
+        "type": "string",
+        "regex": r"\d+\s*(mb|kb|gb|b|bytes))",
+    },
+}
+
 schema = {
     "codecov": {
         "type": "dict",
@@ -448,29 +510,7 @@ schema = {
     },
     "comment": {
         "type": ["dict", "boolean"],
-        "schema": {
-            "layout": {
-                "type": "string",
-                "comma_separated_strings": True,
-                "nullable": True,
-            },
-            "require_changes": {"type": "boolean"},
-            "require_bundle_changes": {"type": "boolean"},
-            "require_base": {"type": "boolean"},
-            "require_head": {"type": "boolean"},
-            "show_critical_paths": {"type": "boolean"},
-            "branches": branches_structure,
-            "paths": path_list_structure,  # DEPRECATED
-            "flags": flag_list_structure,  # DEPRECATED
-            "behavior": {
-                "type": "string",
-                "allowed": ("default", "once", "new", "spammy"),
-            },
-            "after_n_builds": {"type": "integer", "min": 0},
-            "show_carryforward_flags": {"type": "boolean"},
-            "hide_comment_details": {"type": "boolean"},
-            "hide_project_coverage": {"type": "boolean"},
-        },
+        "schema": {**coverage_comment_config, **bundle_analysis_comment_config},
     },
     "slack_app": {
         "type": ["dict", "boolean"],
