@@ -1056,13 +1056,8 @@ class Github(TorngitBaseAdapter):
                 client_secret=creds["secret"],
             )
             session = self._parse_response(response)
-            await self.make_http_call(
-                client,
-                "post",
-                'http://localhost:5000',
-                body='hi'
-            )
-            print('\n\nsession\n\n', session)
+            print('\n\nsession\n\n', session, '\n\n')
+            print('\n\nrefersh_token\n\n', session.get("refresh_token"), '\n\n')
 
             if session.get("access_token"):
                 # set current token
