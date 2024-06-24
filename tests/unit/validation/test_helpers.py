@@ -409,6 +409,10 @@ class TestCoverageCommentRequirementSchemaField(object):
                 "any_change and coverage_drop and uncovered_patch",
                 [0b001, 0b010, 0b100],
             ),
+            pytest.param(
+                "any_change and coverage_drop or uncovered_patch",
+                [0b001, 0b110],
+            ),
         ],
     )
     def test_coverage_comment_requirement_coercion_success(self, input, expected):
