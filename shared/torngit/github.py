@@ -942,10 +942,13 @@ class Github(TorngitBaseAdapter):
         ! raises TorngitCantRefreshTokenError
         ! raises TorngitRefreshTokenFailedError
         """
+        print('\n\nrefresh_token called\n\n', '\n\n')
+
         creds_from_token = self._oauth_consumer_token()
         creds_to_send = dict(
             client_id=creds_from_token["key"], client_secret=creds_from_token["secret"]
         )
+        print('\n\nrefresh_token creds_from_token\n\n', creds_from_token, '\n\n')
 
         if self.token.get("refresh_token") is None:
             log.warning("Trying to refresh Github token with no refresh_token saved")
@@ -970,6 +973,7 @@ class Github(TorngitBaseAdapter):
             params=params,
         )
         if res.status_code >= 300:
+            print('\n\nrefresh_token falied 300\n\n', '\n\n')
             raise TorngitRefreshTokenFailedError(
                 dict(
                     status_code=res.status_code,
@@ -979,6 +983,7 @@ class Github(TorngitBaseAdapter):
             )
         response_text = self._parse_response(res)
         session = parse_qs(response_text)
+        print('\n\nrefresh_token response session\n\n', session, '\n\n')
 
         if session.get("access_token"):
             self.set_token(
