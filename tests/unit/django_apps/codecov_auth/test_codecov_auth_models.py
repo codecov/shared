@@ -762,11 +762,11 @@ class TestAccountModel(TransactionTestCase):
             account_manager="Mario",
         )
 
-        # TODO: connect OwnerOrgs to Account
-        # org_1.account = enterprise_account
-        # org_1.save()
-        # org_2.account = enterprise_account
-        # org_2.save()
+        org_1.account = enterprise_account
+        org_1.save()
+        org_2.account = enterprise_account
+        org_2.save()
+        enterprise_account.refresh_from_db()
 
         # connect Users to Account
         for org in [org_1, org_2]:
@@ -788,9 +788,11 @@ class TestAccountModel(TransactionTestCase):
         enterprise_account.refresh_from_db()
         org_1.refresh_from_db()
         org_2.refresh_from_db()
+        unrelated_org.refresh_from_db()
         owner_1.refresh_from_db()
         owner_2.refresh_from_db()
         owner_3.refresh_from_db()
+        unrelated_owner.refresh_from_db()
 
         # for users
         for owner in [owner_1, owner_2, owner_3]:
@@ -800,14 +802,34 @@ class TestAccountModel(TransactionTestCase):
             self.assertEqual(
                 AccountsUsers.objects.get(user=user).account, enterprise_account
             )
+        unrelated_user = User.objects.get(id=unrelated_owner.user_id)
+        self.assertEqual(unrelated_user.accounts.count(), 0)
+        self.assertIsNone(unrelated_user.accounts.first())
+        self.assertFalse(AccountsUsers.objects.filter(user=unrelated_user).exists())
 
         # for orgs
-        # TODO: connect OwnerOrgs to Account
+        self.assertTrue(org_1.account)
+        self.assertTrue(org_2.account)
+        self.assertFalse(unrelated_org.account)
+        self.assertEqual(org_1.account, enterprise_account)
+        self.assertEqual(org_2.account, enterprise_account)
+        self.assertEqual(
+            set(
+                enterprise_account.organizations.all().values_list("ownerid", flat=True)
+            ),
+            {org_1.ownerid, org_2.ownerid},
+        )
 
         # for the enterprise account
         self.assertEqual(
             set(enterprise_account.users.all().values_list("id", flat=True)),
             {owner_1.user_id, owner_2.user_id, owner_3.user_id},
+        )
+        self.assertEqual(
+            set(
+                enterprise_account.organizations.all().values_list("ownerid", flat=True)
+            ),
+            {org_1.ownerid, org_2.ownerid},
         )
         self.assertTrue(
             AccountsUsers.objects.filter(account=enterprise_account).count(), 3
