@@ -13,6 +13,9 @@ class CoverageCommentRequiredChanges(Enum):
     uncovered_patch = 0b100
 
 
+ValidRawRequiredChange = (
+    Literal["any_change"] | Literal["coverage_drop"] | Literal["uncovered_patch"]
+)
 CoverageCommentRequiredChangesORGroup = (
     # This represents a grouping of CoverageCommentRequiredChanges through OR operations (bitwise).
     # For the group to be satisfied ANY of the conditions should be satisfied

@@ -435,29 +435,49 @@ class TestCoverageCommentRequirementSchemaField(object):
             ),
             pytest.param(
                 "coverage_drop+any_change",
-                "Unknown operand for required_changes: coverage_drop+any_change",
+                "Failed to parse required_changes",
                 id="invalid_string_no_spaces",
             ),
             pytest.param(
                 "coverage_drop + any_change",
-                "Unknown operand for required_changes: +",
+                "Failed to parse required_changes",
                 id="invalid_operation",
             ),
             pytest.param("", "required_changes is empty", id="empty_string"),
             pytest.param(
                 "coverage_drop any_change",
-                "Failed to process required_changes",
+                "Failed to parse required_changes",
                 id="no_operation",
             ),
             pytest.param(
                 "coverage_drop AND AND any_change",
-                "Failed to process required_changes",
+                "Failed to parse required_changes",
                 id="too_many_operations",
             ),
             pytest.param(
                 "coverage_drop AND any_change AND",
-                "Failed to process required_changes",
+                "Failed to parse required_changes",
                 id="incomplete_operation",
+            ),
+            pytest.param(
+                "coverage_dropANDany_change",
+                "Failed to parse required_changes",
+                id="no_spaces",
+            ),
+            pytest.param(
+                "coverage_drop AND OR any_change",
+                "Failed to parse required_changes",
+                id="missing_middle_operand",
+            ),
+            pytest.param(
+                "AND",
+                "Failed to parse required_changes",
+                id="single_operation_no_operands",
+            ),
+            pytest.param(
+                "AND OR AND",
+                "Failed to parse required_changes",
+                id="only_operations_no_operands",
             ),
         ],
     )

@@ -1,12 +1,16 @@
+import functools
 import logging
 import numbers
 import re
 from typing import Any, List
 
+import pyparsing as pp
+
 from shared.validation.types import (
     CoverageCommentRequiredChanges,
     CoverageCommentRequiredChangesANDGroup,
     CoverageCommentRequiredChangesORGroup,
+    ValidRawRequiredChange,
 )
 
 log = logging.getLogger(__name__)
@@ -97,63 +101,50 @@ class CoverageCommentRequirementSchemaField(object):
             return [CoverageCommentRequiredChanges.any_change.value]
         return [CoverageCommentRequiredChanges.no_requirements.value]
 
+    def _convert_to_binary_value(
+        self, valid_requirement: ValidRawRequiredChange
+    ) -> int:
+        """Gets the binary value of `valid_requirement` as defined in CoverageCommentRequiredChanges"""
+        return CoverageCommentRequiredChanges[valid_requirement].value
+
+    def _parse_or_group(
+        self, acc: int, value: ValidRawRequiredChange
+    ) -> CoverageCommentRequiredChangesORGroup:
+        """Combines the individual `valid_requirement` into a single value"""
+        return acc | self._convert_to_binary_value(value)
+
     def validate_str(self, data: str) -> CoverageCommentRequiredChangesANDGroup:
+        """Validates required_changes from a string that represents operations on valid_requirements
+        and returns the result.
+
+        Result is CoverageCommentRequiredChangesANDGroup, a list of ORGroups.
+        An ORGroup is 1 or more valid_requirements that are grouped together (using OR operations)
+        For the overall ANDGroup to be satisfied, ALL the ORGroups that are port of it need to also be satisfied.
+        """
         if data == "":
             raise Invalid("required_changes is empty")
-        pieces = list(map(str.lower, data.split(" ")))
-        and_groups: CoverageCommentRequiredChangesANDGroup = []
-        operands_stack: List[CoverageCommentRequiredChangesORGroup] = []
-        operations_stack: List[str] = []
-        is_higher_precedence_op = lambda me, other: (me == "and" and other == "or")  # noqa: E731
-        is_same_op = lambda me, other: me == other  # noqa: E731
-        for piece in pieces:
-            match piece:
-                case "coverage_drop":
-                    operands_stack.append(
-                        CoverageCommentRequiredChanges.coverage_drop.value
-                    )
-                case "uncovered_patch":
-                    operands_stack.append(
-                        CoverageCommentRequiredChanges.uncovered_patch.value
-                    )
-                case "any_change":
-                    operands_stack.append(
-                        CoverageCommentRequiredChanges.any_change.value
-                    )
-                case "and" | "or":
-                    while len(operations_stack) > 0 and (
-                        is_higher_precedence_op(piece, operations_stack[0])
-                        or is_same_op(piece, operations_stack[0])
-                    ):
-                        operation = operations_stack.pop()
-                        self._process_operation(and_groups, operands_stack, operation)
-                    operations_stack.append(piece)
-                case _:
-                    raise Invalid(f"Unknown operand for required_changes: {piece}")
-        while len(operations_stack) > 0:
-            operation = operations_stack.pop()
-            self._process_operation(and_groups, operands_stack, operation)
-        if len(operands_stack) > 1:
-            raise Invalid("Failed to process required_changes")
-        elif len(operands_stack) == 1:
-            and_groups.append(operands_stack[0])
-        return and_groups
+        data = data.lower()
 
-    def _process_operation(
-        self,
-        and_groups: CoverageCommentRequiredChangesANDGroup,
-        operands_stack: List[CoverageCommentRequiredChanges],
-        operation: str,
-    ):
-        if len(operands_stack) < 2:
-            raise Invalid("Failed to process required_changes")
-        rhs = operands_stack.pop()
-        lhs = operands_stack.pop()
-        if operation == "and":
-            and_groups.append(lhs)
-            operands_stack.append(rhs)
-        else:
-            operands_stack.append(lhs | rhs)
+        valid_requirements = pp.oneOf(
+            "coverage_drop uncovered_patch any_change", asKeyword=True
+        )
+        or_groups_parser = pp.delimitedList(valid_requirements, "or").setResultsName(
+            "or_groups", listAllMatches=True
+        )
+        and_groups_parser = pp.delimitedList(or_groups_parser, "and")
+
+        try:
+            raw_or_groups: List[pp.ParseResults] = and_groups_parser.parseString(
+                data, parseAll=True
+            )["or_groups"]
+            parsed_or_groups = [
+                functools.reduce(self._parse_or_group, raw_group, 0)
+                for raw_group in raw_or_groups
+            ]
+            return parsed_or_groups
+
+        except pp.ParseException:
+            raise Invalid("Failed to parse required_changes")
 
 
 class PercentSchemaField(object):

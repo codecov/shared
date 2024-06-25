@@ -52,6 +52,7 @@ setup(
         "cachetools",
         "django-better-admin-arrayfield",
         "django-postgres-extra>=2.0.8",
+        "pyparsing",
         # API Deps
         "django-prometheus",
         "python-redis-lock",
