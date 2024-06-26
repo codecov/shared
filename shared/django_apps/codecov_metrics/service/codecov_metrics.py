@@ -1,8 +1,6 @@
 import logging
 from typing import Any, Dict
 
-from django.utils import timezone
-
 from ..models import UserOnboardingLifeCycleMetrics
 
 log = logging.getLogger(__name__)
