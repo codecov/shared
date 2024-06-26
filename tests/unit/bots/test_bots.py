@@ -129,7 +129,6 @@ class TestGettingAdapterAuthInformation(object):
         def test_select_owner_single_installation_ignoring_installations(
             self, mock_get_github_integration_token
         ):
-            print("here!")
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,
@@ -343,8 +342,6 @@ class TestGettingAdapterAuthInformation(object):
                 fallback_installations=None,
                 token_type_mapping=None,
             )
-            print("repo!", repo.__dict__)
-            print("repo!", repo.author.__dict__)
             assert get_adapter_auth_information(repo.author, repo) == expected
 
         @pytest.mark.django_db(databases={"default"})
