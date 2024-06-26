@@ -509,6 +509,7 @@ schema = {
             "shorten_paths": {
                 "type": "boolean",
             },
+            "flake_detection": {"type": "boolean"},
         },
     },
 }
