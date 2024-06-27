@@ -1,5 +1,6 @@
 from shared.validation.install import log as install_log
 from shared.validation.install import validate_install_configuration
+from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import UserGivenSecret
 
 
@@ -259,7 +260,7 @@ def test_validate_sample_production_config(mocker):
                 "behavior": "default",
                 "show_carryforward_flags": False,
                 "require_base": False,
-                "require_changes": False,
+                "require_changes": [0b000],
                 "require_head": True,
             },
             "github_checks": {"annotations": True},
