@@ -83,7 +83,6 @@ default_config = {
     },
     "site": LEGACY_DEFAULT_SITE_CONFIG,
     "setup": {
-        "segment": {"enabled": False, "key": "JustARandomTestValueMeaningless"},
         "timeseries": {"enabled": False},
     },
 }

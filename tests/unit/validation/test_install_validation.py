@@ -146,7 +146,6 @@ def test_validate_sample_production_config(mocker):
             },
         },
         "setup": {
-            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key"},
             "cache": {"uploads": 86400},
             "codecov_url": "https://codecov.io",
             "debug": False,
@@ -277,7 +276,6 @@ def test_validate_sample_production_config(mocker):
             },
         },
         "setup": {
-            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key"},
             "cache": {"uploads": 86400},
             "codecov_url": "https://codecov.io",
             "debug": False,
