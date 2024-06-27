@@ -26,7 +26,10 @@ def get_adapter_auth_information(
     ignore_installations: bool = False,
     installation_name_to_use: str | None = GITHUB_APP_INSTALLATION_DEFAULT_NAME,
 ) -> AdapterAuthInformation:
-    """Gets all the auth information needed to send requests to the provider"""
+    """
+    Gets all the auth information needed to send requests to the provider.
+    This is mostly used by worker and api should use the token provided by the person making the request
+    """
     installation_info: GithubInstallationInfo | None = None
     token_type_mapping = None
     fallback_installations: List[GithubInstallationInfo] | None = None
