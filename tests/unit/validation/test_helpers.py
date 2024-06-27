@@ -3,6 +3,7 @@ import re
 import pytest
 
 from shared.validation.helpers import (
+    CoverageCommentRequirementSchemaField,
     CoverageRangeSchemaField,
     CustomFixPathSchemaField,
     Invalid,
@@ -13,6 +14,7 @@ from shared.validation.helpers import (
     determine_path_pattern_type,
     translate_glob_to_regex,
 )
+from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import pre_process_yaml
 from tests.base import BaseTestCase
 
@@ -343,3 +345,144 @@ class TestCustomFixPathSchemaField(BaseTestCase):
         # No "::" separator
         with pytest.raises(Invalid):
             cfpsf.validate("beforeafter")
+
+
+class TestCoverageCommentRequirementSchemaField(object):
+
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            # Old values
+            pytest.param(True, [0b001]),
+            pytest.param(False, [0b000]),
+            # Individual values
+            pytest.param("any_change", [0b001]),
+            pytest.param("coverage_drop", [0b010]),
+            pytest.param("uncovered_patch", [0b100]),
+            # Operators
+            pytest.param(
+                "uncovered_patch AND uncovered_patch",
+                [0b100, 0b100],
+            ),
+            pytest.param(
+                "uncovered_patch and uncovered_patch",
+                [0b100, 0b100],
+            ),
+            pytest.param(
+                "uncovered_patch OR uncovered_patch",
+                [0b100],
+            ),
+            pytest.param(
+                "uncovered_patch or uncovered_patch",
+                [0b100],
+            ),
+            # Combinations
+            pytest.param(
+                "coverage_drop or any_change",
+                [0b011],
+            ),
+            pytest.param(
+                "coverage_drop and any_change",
+                [0b010, 0b001],
+            ),
+            pytest.param(
+                "coverage_drop or uncovered_patch",
+                [0b110],
+            ),
+            pytest.param(
+                "any_change and uncovered_patch",
+                [0b001, 0b100],
+            ),
+            pytest.param(
+                "any_change and coverage_drop",
+                [0b001, 0b010],
+            ),
+            pytest.param(
+                "any_change or coverage_drop or uncovered_patch",
+                [0b111],
+            ),
+            pytest.param(
+                "any_change or coverage_drop and uncovered_patch",
+                [0b011, 0b100],
+            ),
+            pytest.param(
+                "any_change and coverage_drop and uncovered_patch",
+                [0b001, 0b010, 0b100],
+            ),
+            pytest.param(
+                "any_change and coverage_drop or uncovered_patch",
+                [0b001, 0b110],
+            ),
+        ],
+    )
+    def test_coverage_comment_requirement_coercion_success(self, input, expected):
+        validator = CoverageCommentRequirementSchemaField()
+        assert validator.validate(input) == expected
+
+    @pytest.mark.parametrize(
+        "input, exception_message",
+        [
+            pytest.param(
+                None, "Only bool and str are accepted values", id="invalid_input_None"
+            ),
+            pytest.param(
+                42, "Only bool and str are accepted values", id="invalid_input_int"
+            ),
+            pytest.param(
+                ["coverage_drop"],
+                "Only bool and str are accepted values",
+                id="invalid_input_list",
+            ),
+            pytest.param(
+                "coverage_drop+any_change",
+                "Failed to parse required_changes",
+                id="invalid_string_no_spaces",
+            ),
+            pytest.param(
+                "coverage_drop + any_change",
+                "Failed to parse required_changes",
+                id="invalid_operation",
+            ),
+            pytest.param("", "required_changes is empty", id="empty_string"),
+            pytest.param(
+                "coverage_drop any_change",
+                "Failed to parse required_changes",
+                id="no_operation",
+            ),
+            pytest.param(
+                "coverage_drop AND AND any_change",
+                "Failed to parse required_changes",
+                id="too_many_operations",
+            ),
+            pytest.param(
+                "coverage_drop AND any_change AND",
+                "Failed to parse required_changes",
+                id="incomplete_operation",
+            ),
+            pytest.param(
+                "coverage_dropANDany_change",
+                "Failed to parse required_changes",
+                id="no_spaces",
+            ),
+            pytest.param(
+                "coverage_drop AND OR any_change",
+                "Failed to parse required_changes",
+                id="missing_middle_operand",
+            ),
+            pytest.param(
+                "AND",
+                "Failed to parse required_changes",
+                id="single_operation_no_operands",
+            ),
+            pytest.param(
+                "AND OR AND",
+                "Failed to parse required_changes",
+                id="only_operations_no_operands",
+            ),
+        ],
+    )
+    def test_coverage_comment_requirement_coercion_fail(self, input, exception_message):
+        validator = CoverageCommentRequirementSchemaField()
+        with pytest.raises(Invalid) as exp:
+            validator.validate(input)
+        assert exp.value.error_message == exception_message

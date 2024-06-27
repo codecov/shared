@@ -1,6 +1,17 @@
+import functools
 import logging
 import numbers
 import re
+from typing import Any, List
+
+import pyparsing as pp
+
+from shared.validation.types import (
+    CoverageCommentRequiredChanges,
+    CoverageCommentRequiredChangesANDGroup,
+    CoverageCommentRequiredChangesORGroup,
+    ValidRawRequiredChange,
+)
 
 log = logging.getLogger(__name__)
 
@@ -59,6 +70,81 @@ class CoverageRangeSchemaField(object):
             return self.validate_bounds(lower_bound, upper_bound)
         except ValueError:
             raise Invalid(f"{data} should have numbers as the range limits")
+
+
+class CoverageCommentRequirementSchemaField(object):
+    """Converts `comment.require_changes` into CoverageCommentRequiredChanges
+
+    Conversion table:
+        False -> CoverageCommentRequiredChanges.no_requirements
+        True -> CoverageCommentRequiredChanges.any_change
+        "any_change" -> CoverageCommentRequiredChanges.any_change
+        "coverage_drop" -> CoverageCommentRequiredChanges.coverage_drop
+        "uncovered_patch" -> CoverageCommentRequiredChanges.uncovered_patch
+
+    We also accept AND and OR operators
+    """
+
+    def validate(self, data: Any) -> CoverageCommentRequiredChangesANDGroup:
+        """Validates and coerces values into CoverageCommentRequiredChanges
+
+        raises: Invalid
+        """
+        if isinstance(data, bool):
+            return self.validate_bool(data)
+        elif isinstance(data, str):
+            return self.validate_str(data)
+        raise Invalid("Only bool and str are accepted values")
+
+    def validate_bool(self, data: bool) -> CoverageCommentRequiredChangesANDGroup:
+        if data:
+            return [CoverageCommentRequiredChanges.any_change.value]
+        return [CoverageCommentRequiredChanges.no_requirements.value]
+
+    def _convert_to_binary_value(
+        self, valid_requirement: ValidRawRequiredChange
+    ) -> int:
+        """Gets the binary value of `valid_requirement` as defined in CoverageCommentRequiredChanges"""
+        return CoverageCommentRequiredChanges[valid_requirement].value
+
+    def _parse_or_group(
+        self, acc: int, value: ValidRawRequiredChange
+    ) -> CoverageCommentRequiredChangesORGroup:
+        """Combines the individual `valid_requirement` into a single value"""
+        return acc | self._convert_to_binary_value(value)
+
+    def validate_str(self, data: str) -> CoverageCommentRequiredChangesANDGroup:
+        """Validates required_changes from a string that represents operations on valid_requirements
+        and returns the result.
+
+        Result is CoverageCommentRequiredChangesANDGroup, a list of ORGroups.
+        An ORGroup is 1 or more valid_requirements that are grouped together (using OR operations)
+        For the overall ANDGroup to be satisfied, ALL the ORGroups that are port of it need to also be satisfied.
+        """
+        if data == "":
+            raise Invalid("required_changes is empty")
+        data = data.lower()
+
+        valid_requirements = pp.oneOf(
+            "coverage_drop uncovered_patch any_change", asKeyword=True
+        )
+        or_groups_parser = pp.delimitedList(valid_requirements, "or").setResultsName(
+            "or_groups", listAllMatches=True
+        )
+        and_groups_parser = pp.delimitedList(or_groups_parser, "and")
+
+        try:
+            raw_or_groups: List[pp.ParseResults] = and_groups_parser.parseString(
+                data, parseAll=True
+            )["or_groups"]
+            parsed_or_groups = [
+                functools.reduce(self._parse_or_group, raw_group, 0)
+                for raw_group in raw_or_groups
+            ]
+            return parsed_or_groups
+
+        except pp.ParseException:
+            raise Invalid("Failed to parse required_changes")
 
 
 class PercentSchemaField(object):

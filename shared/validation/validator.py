@@ -2,6 +2,7 @@ from cerberus import Validator
 
 from shared.validation.helpers import (
     BranchSchemaField,
+    CoverageCommentRequirementSchemaField,
     CoverageRangeSchemaField,
     CustomFixPathSchemaField,
     Invalid,
@@ -36,6 +37,9 @@ class CodecovYamlValidator(Validator):
 
     def _normalize_coerce_branch_normalize(self, value):
         return BranchSchemaField().validate(value)
+
+    def _normalize_coerce_coverage_comment_required_changes(self, value):
+        return CoverageCommentRequirementSchemaField().validate(value)
 
     def _validate_comma_separated_strings(self, constraint, field, value):
         """Test the oddity of a value.

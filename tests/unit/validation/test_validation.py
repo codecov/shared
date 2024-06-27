@@ -4,6 +4,7 @@ import pytest
 
 from shared.config import ConfigHelper, get_config
 from shared.validation.exceptions import InvalidYamlException
+from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import (
     _calculate_error_location_and_message_from_error_dict,
     do_actual_validation,
@@ -135,7 +136,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "require_head": True,
                         "require_base": True,
                         "layout": "diff",
-                        "require_changes": True,
+                        "require_changes": [0b001],
                         "branches": ["^master$"],
                         "behavior": "once",
                         "after_n_builds": 6,
@@ -551,7 +552,7 @@ class TestUserYamlValidation(BaseTestCase):
             "comment": {
                 "behavior": "default",
                 "layout": "header, diff",
-                "require_changes": False,
+                "require_changes": [0b000],
                 "show_carryforward_flags": False,
             },
             "parsers": {
@@ -672,7 +673,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "branches": None,
                 "layout": "reach, diff, flags, files",
                 "require_base": False,
-                "require_changes": False,
+                "require_changes": [0b000],
                 "require_head": False,
             },
             "coverage": {
@@ -858,6 +859,13 @@ class TestValidationConfig(object):
         assert res == expected_result
 
 
+@pytest.mark.parametrize(
+    "input,expected", [pytest.param("10bytes", True, id="bytes_valid")]
+)
+def test_bundle_change_threshold_regex(input, expected):
+    pass
+
+
 def test_validation_with_branches():
     user_input = {
         "comment": {
@@ -885,7 +893,7 @@ def test_validation_with_branches():
             "require_head": True,
             "require_base": True,
             "layout": "diff",
-            "require_changes": True,
+            "require_changes": [0b001],
             "branches": ["^master$"],
             "behavior": "once",
             "after_n_builds": 6,
