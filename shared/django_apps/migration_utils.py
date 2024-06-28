@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import migrations
 
 """
-These classes can be used to skip altering DB state while maintaing the state of migrations.
+These classes can be used to skip altering DB state while maintaining the state of migrations.
 To use them you should manually replace the migration step in the migration file with its
 corresponding "Risky" migration step.
 Not all migration steps (such as AddField) are represented here because they cannot safely
@@ -11,6 +11,11 @@ exist in code while not being applied in the DB.
 
 
 class RiskyAddField(migrations.AddField):
+    """
+    Consult https://www.notion.so/sentry/Database-Tips-and-Tricks-76df725ded264b2a8154c960d7ef3869?pvs=4
+    for how to risky add field.
+    """
+
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         if settings.SKIP_RISKY_MIGRATION_STEPS:
             return
