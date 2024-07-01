@@ -196,10 +196,30 @@ bundle_analysis_comment_config = {
     "require_bundle_changes": {
         "type": ["boolean", "string"],
         "allowed": ["bundle_increase", False, True],
+        "meta": {
+            "description": "require_bundle_changes instructs Codecov to only post a PR Comment if the requirements are met",
+            "options": {
+                False: {
+                    "type": bool,
+                    "description": "post comment even if there's no change in the bundle size",
+                    "default": True,
+                },
+                True: {
+                    "type": bool,
+                    "description": "only post comment if there are changes in bundle size (positive or negative)",
+                },
+                "bundle_increase": {
+                    "type": str,
+                    "description": "only post comment if the bundle size increases",
+                },
+            },
+        },
     },
     "bundle_change_threshold": {
-        "type": "string",
-        "regex": r"\d+\s*(mb|kb|gb|b|bytes))",
+        "coerce": "byte_size",
+        "meta": {
+            "description": "Threshold for 'require_bundle_changes'. Notifications will only be triggered if the change is larger than the threshold."
+        },
     },
 }
 
