@@ -649,7 +649,7 @@ class Report(object):
                 chunks = chunks.split(END_OF_CHUNK)
             self._chunks = chunks or []
 
-        with sentry_sdk.start_span(description="Builde ReportTotals"):
+        with sentry_sdk.start_span(description="Build ReportTotals"):
             # <ReportTotals>
             if isinstance(totals, ReportTotals):
                 self._totals = totals
