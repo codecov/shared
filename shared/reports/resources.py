@@ -585,6 +585,7 @@ class ReportFile(object):
         )
 
 
+@sentry.trace
 def chunks_from_storage_contains_header(chunks: str) -> bool:
     try:
         first_line_end = chunks.index("\n")
@@ -660,6 +661,7 @@ class Report(object):
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
 
+    @sentry.trace
     def _parse_header(self, header: str) -> ReportHeader:
         if header == "":
             return ReportHeader()
@@ -704,6 +706,7 @@ class Report(object):
             size += len(chunk)
         return size
 
+    @sentry.trace
     def get_session_from_session(self, sess):
         if isinstance(sess, Session):
             return copy(sess)
