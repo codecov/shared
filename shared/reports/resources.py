@@ -6,6 +6,8 @@ from itertools import filterfalse, zip_longest
 from json import JSONEncoder, dumps, loads
 from typing import Dict, List, Optional
 
+import sentry_sdk
+
 from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
 from shared.helpers.yaml import walk
@@ -613,46 +615,50 @@ class Report(object):
         flags=None,
         **kwargs,
     ):
-        # {"filename": [<line index in chunks :int>, <ReportTotals>]}
-        self._files = files or {}
-        for filename, file_summary in self._files.items():
-            if not isinstance(file_summary, ReportFileSummary):
-                self._files[filename] = ReportFileSummary(*file_summary)
+        with sentry_sdk.start_span(description="Build ReportFileSummary"):
+            # {"filename": [<line index in chunks :int>, <ReportTotals>]}
+            self._files = files or {}
+            for filename, file_summary in self._files.items():
+                if not isinstance(file_summary, ReportFileSummary):
+                    self._files[filename] = ReportFileSummary(*file_summary)
 
-        # {1: {...}}
-        self.sessions = (
-            dict(
-                (int(sid), self.get_session_from_session(session))
-                for sid, session in sessions.items()
+        with sentry_sdk.start_span(description="Get session from session"):
+            # {1: {...}}
+            self.sessions = (
+                dict(
+                    (int(sid), self.get_session_from_session(session))
+                    for sid, session in sessions.items()
+                )
+                if sessions
+                else {}
             )
-            if sessions
-            else {}
-        )
-        # Default header
-        # Is overriden if building from archive
-        self._header = {}
+            # Default header
+            # Is overriden if building from archive
+            self._header = {}
 
-        # ["<json>", ...]
-        if isinstance(chunks, str):
-            # came from archive
-            # split the details header, which is JSON
-            if chunks_from_storage_contains_header(chunks):
-                header, chunks = chunks.split(END_OF_HEADER, 1)
-                self._header = self._parse_header(header)
+        with sentry_sdk.start_span(description="Build Chunks"):
+            # ["<json>", ...]
+            if isinstance(chunks, str):
+                # came from archive
+                # split the details header, which is JSON
+                if chunks_from_storage_contains_header(chunks):
+                    header, chunks = chunks.split(END_OF_HEADER, 1)
+                    self._header = self._parse_header(header)
+                else:
+                    self._header = self._parse_header("")
+                chunks = chunks.split(END_OF_CHUNK)
+            self._chunks = chunks or []
+
+        with sentry_sdk.start_span(description="Build ReportTotals"):
+            # <ReportTotals>
+            if isinstance(totals, ReportTotals):
+                self._totals = totals
+
+            elif totals:
+                self._totals = ReportTotals(*migrate_totals(totals))
+
             else:
-                self._header = self._parse_header("")
-            chunks = chunks.split(END_OF_CHUNK)
-        self._chunks = chunks or []
-
-        # <ReportTotals>
-        if isinstance(totals, ReportTotals):
-            self._totals = totals
-
-        elif totals:
-            self._totals = ReportTotals(*migrate_totals(totals))
-
-        else:
-            self._totals = None
+                self._totals = None
 
         self._path_filter = None
         self._line_modifier = None
