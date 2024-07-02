@@ -147,6 +147,38 @@ class CoverageCommentRequirementSchemaField(object):
             raise Invalid("Failed to parse required_changes")
 
 
+class ByteSizeSchemaField(object):
+    """Converts a possible string with byte extension size into integer with number of bytes.
+    Acceptable extensions are 'mb', 'kb', 'gb', 'b' and 'bytes' (case insensitive).
+    Also accepts integers, returning the value itself as the number of bytes.
+
+    Example:
+        100 -> 100
+        "100b" -> 100
+        "100 mb" -> 100000000
+        "12KB" -> 12000
+    """
+
+    def _validate_str(self, data: str) -> int:
+        data = data.lower()
+        regex = re.compile(r"^(\d+)\s*(mb|kb|gb|b|bytes)$")
+        match = regex.match(data)
+        if match is None:
+            raise Invalid(
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes"
+            )
+        size, extension = match.groups()
+        extension_multiplier = {"b": 1, "bytes": 1, "kb": 1e3, "mb": 1e6, "gb": 1e9}
+        return int(size) * extension_multiplier[extension]
+
+    def validate(self, data: Any) -> int:
+        if isinstance(data, int):
+            return data
+        if isinstance(data, str):
+            return self._validate_str(data)
+        raise Invalid(f"Value should be int or str. Received {type(data).__name__}")
+
+
 class PercentSchemaField(object):
     """
     A field for percentages. Accepts both with and without % symbol.

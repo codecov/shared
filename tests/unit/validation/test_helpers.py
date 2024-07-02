@@ -3,6 +3,7 @@ import re
 import pytest
 
 from shared.validation.helpers import (
+    ByteSizeSchemaField,
     CoverageCommentRequirementSchemaField,
     CoverageRangeSchemaField,
     CustomFixPathSchemaField,
@@ -486,3 +487,67 @@ class TestCoverageCommentRequirementSchemaField(object):
         with pytest.raises(Invalid) as exp:
             validator.validate(input)
         assert exp.value.error_message == exception_message
+
+
+class TestByteSizeSchemaField(object):
+
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            (100, 100),
+            ("100b", 100),
+            ("100 mb", 100000000),
+            ("12KB", 12000),
+            ("1    GB", 1000000000),
+            ("12bytes", 12),
+            ("24b", 24),
+        ],
+    )
+    def test_byte_size_coercion_success(self, input, expected):
+        validator = ByteSizeSchemaField()
+        assert validator.validate(input) == expected
+
+    @pytest.mark.parametrize(
+        "input, error_message",
+        [
+            pytest.param(
+                None, "Value should be int or str. Received NoneType", id="None_input"
+            ),
+            pytest.param(
+                [], "Value should be int or str. Received list", id="list_input"
+            ),
+            pytest.param(
+                12.34, "Value should be int or str. Received float", id="float_input"
+            ),
+            pytest.param(
+                "200",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="no_extension",
+            ),
+            pytest.param(
+                "kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="no_number",
+            ),
+            pytest.param(
+                "100kb 100mb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="multiple_values",
+            ),
+            pytest.param(
+                "200.45mb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="float_value_in_str",
+            ),
+            pytest.param(
+                "200tb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="invalid_extension",
+            ),
+        ],
+    )
+    def test_byte_size_coercion_fail(self, input, error_message):
+        validator = ByteSizeSchemaField()
+        with pytest.raises(Invalid) as exp:
+            validator.validate(input)
+        assert exp.value.error_message == error_message
