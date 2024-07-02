@@ -4,7 +4,6 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
 from shared.config import get_config
-from shared.metrics import sentry
 
 log = logging.getLogger(__name__)
 
@@ -347,7 +346,6 @@ class ReportFileSummary(object):
     session_totals: SessionTotalsArray = None
     diff_totals: Any = None
 
-    @sentry.trace
     def __init__(
         self,
         file_index,

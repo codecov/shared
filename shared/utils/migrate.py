@@ -2,7 +2,6 @@ from itertools import zip_longest
 from json import loads
 
 from shared.helpers.numeric import ratio
-from shared.metrics import sentry
 
 TOTALS_MAP = ("f", "n", "h", "m", "p", "c", "b", "d", "M", "s", "C", "N", "diff")
 TOTALS_MAP_NAMES = (
@@ -35,7 +34,6 @@ TOTALS_MAP_v1 = (
 )
 
 
-@sentry.trace
 def migrate_totals(totals):
     if totals:
         if isinstance(totals, list):
