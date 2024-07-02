@@ -221,6 +221,7 @@ class Asset(Base):
     name = Column(types.Text, nullable=False)
     normalized_name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
+    gzip_size = Column(types.Integer, nullable=False)
     uuid = Column(types.Text, nullable=False)
     asset_type = Column(SQLAlchemyEnum(AssetType))
     session = relationship("Session", backref=backref("assets"))

@@ -1,5 +1,5 @@
 {
-  "version": "1",
+  "version": "2",
   "plugin": {
     "name": "codecov-vite-bundle-analysis-plugin",
     "version": "1.0.0"
@@ -12,26 +12,31 @@
     {
       "name": "assets/other-35ef61ed.svg",
       "size": 5126,
+      "gzipSize": 5125,
       "normalized": "assets/other-*.svg"
     },
     {
       "name": "assets/index-d526a0c5.css",
       "size": 1421,
+      "gzipSize": 1420,
       "normalized": "assets/index-*.css"
     },
     {
       "name": "assets/LazyComponent-fcbb0922.js",
       "size": 294,
+      "gzipSize": 293,
       "normalized": "assets/LazyComponent-*.js"
     },
     {
       "name": "assets/index-c8676264.js",
       "size": 254,
+      "gzipSize": 253,
       "normalized": "assets/index-*.js"
     },
     {
       "name": "assets/index-666d2e09.js",
       "size": 144577,
+      "gzipSize": 144576,
       "normalized": "assets/index-*.js"
     }
   ],
