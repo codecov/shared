@@ -98,7 +98,7 @@ sniffio==1.2.0
     #   httpx
 soupsieve==2.3.1
     # via beautifulsoup4
-urllib3==2.2.2
+urllib3==1.26.19
     # via
     #   -r requirements.in
     #   requests
