@@ -124,6 +124,32 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
         return self.external_id
 
 
+class Account(BaseModel):
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+    plan = models.CharField(
+        max_length=50,
+        choices=PlanName.choices(),
+        null=False,
+        default=PlanName.BASIC_PLAN_NAME.value,
+    )
+    plan_seat_count = models.SmallIntegerField(default=1, null=False, blank=True)
+    free_seat_count = models.SmallIntegerField(default=0, null=False, blank=True)
+    plan_auto_activate = models.BooleanField(default=True, null=False, blank=True)
+    is_delinquent = models.BooleanField(default=False, null=False, blank=True)
+    users = models.ManyToManyField(
+        User, through="AccountsUsers", related_name="accounts"
+    )
+
+    class Meta:
+        ordering = ["-updated_at"]
+        app_label = CODECOV_AUTH_APP_LABEL
+
+    def __str__(self):
+        str_representation_of_is_active = "Active" if self.is_active else "Inactive"
+        return f"{str_representation_of_is_active} Account: {self.name}"
+
+
 class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     class Meta:
         db_table = "owners"
@@ -217,10 +243,13 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         related_name="owners",
     )
 
-    # TODO: connect OwnerOrgs to Account
-    # account = models.ForeignKey(
-    #     Account, null=True, blank=True, on_delete=models.SET_NULL, related_name="organizations"
-    # )
+    account = models.ForeignKey(
+        Account,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="organizations",
+    )
 
     objects = OwnerManager()
 
@@ -749,32 +778,6 @@ class UserToken(
     token_type = models.CharField(
         max_length=50, choices=TokenType.choices, default=TokenType.API
     )
-
-
-class Account(BaseModel):
-    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
-    is_active = models.BooleanField(default=True, null=False, blank=True)
-    plan = models.CharField(
-        max_length=50,
-        choices=PlanName.choices(),
-        null=False,
-        default=PlanName.BASIC_PLAN_NAME.value,
-    )
-    plan_seat_count = models.SmallIntegerField(default=1, null=False, blank=True)
-    free_seat_count = models.SmallIntegerField(default=0, null=False, blank=True)
-    plan_auto_activate = models.BooleanField(default=True, null=False, blank=True)
-    is_delinquent = models.BooleanField(default=False, null=False, blank=True)
-    users = models.ManyToManyField(
-        User, through="AccountsUsers", related_name="accounts"
-    )
-
-    class Meta:
-        ordering = ["-updated_at"]
-        app_label = CODECOV_AUTH_APP_LABEL
-
-    def __str__(self):
-        str_representation_of_is_active = "Active" if self.is_active else "Inactive"
-        return f"{str_representation_of_is_active} Account: {self.name}"
 
 
 class AccountsUsers(BaseModel):

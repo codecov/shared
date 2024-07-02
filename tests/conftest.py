@@ -34,7 +34,6 @@ def mock_configuration(mocker):
         "setup": {
             "codecov_url": "https://codecov.io",
             "encryption_secret": "zp^P9*i8aR3",
-            "segment": {"enabled": False, "key": "JustARandomTestValueMeaningless"},
         },
     }
     mock_config.set_params(our_config)

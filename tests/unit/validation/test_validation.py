@@ -832,7 +832,7 @@ class TestValidationConfig(object):
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
         expected_result = {
-            "codecov": {"require_ci_to_pass": True},
+            "codecov": {"require_ci_to_pass": True, "notify": {"wait_for_ci": True}},
             "coverage": {
                 "precision": 2,
                 "round": "down",

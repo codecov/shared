@@ -381,7 +381,7 @@ class TestUserYaml(object):
             ),
         )
         assert legacy_default.to_dict() == {
-            "codecov": {"require_ci_to_pass": True},
+            "codecov": {"require_ci_to_pass": True, "notify": {"wait_for_ci": True}},
             "coverage": {
                 "precision": 2,
                 "round": "down",
@@ -410,7 +410,7 @@ class TestUserYaml(object):
             ),
         )
         assert patch_centric_default.to_dict() == {
-            "codecov": {"require_ci_to_pass": True},
+            "codecov": {"require_ci_to_pass": True, "notify": {"wait_for_ci": True}},
             "coverage": {
                 "precision": 2,
                 "round": "down",

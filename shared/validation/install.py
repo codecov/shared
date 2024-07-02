@@ -142,10 +142,6 @@ config_schema = {
             },
             "api_allowed_hosts": {"type": "list", "schema": {"type": "string"}},
             "secure_cookie": {"type": "boolean"},
-            "segment": {
-                "type": "dict",
-                "schema": {"key": {"type": "string"}, "enabled": {"type": "boolean"}},
-            },
             "pubsub": {
                 "type": "dict",
                 "schema": {
