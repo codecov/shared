@@ -620,7 +620,7 @@ class Report(object):
         with sentry_sdk.start_span(
             description=f"Build ReportFileSummary {len(self._files)} files"
         ):
-            log.info(f"Building report summary - {len(files)} files - Begin")
+            log.info(f"Building report summary - {len(self._files)} files - Begin")
             for filename, file_summary in self._files.items():
                 if not isinstance(file_summary, ReportFileSummary):
                     self._files[filename] = ReportFileSummary(*file_summary)
