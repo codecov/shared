@@ -822,6 +822,50 @@ class TestUserYamlValidation(BaseTestCase):
         result = validate_yaml(user_input)
         assert result == expected_result
 
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            pytest.param(
+                {"comment": {"require_bundle_changes": False}},
+                {"comment": {"require_bundle_changes": False}},
+                id="no_bundle_changes_required",
+            ),
+            pytest.param(
+                {
+                    "comment": {
+                        "require_bundle_changes": True,
+                        "bundle_change_threshold": 1200,
+                    }
+                },
+                {
+                    "comment": {
+                        "require_bundle_changes": True,
+                        "bundle_change_threshold": 1200,
+                    }
+                },
+                id="bundle_changes_with_threshold",
+            ),
+            pytest.param(
+                {
+                    "comment": {
+                        "require_bundle_changes": "bundle_increase",
+                        "bundle_change_threshold": "1mb",
+                    }
+                },
+                {
+                    "comment": {
+                        "require_bundle_changes": "bundle_increase",
+                        "bundle_change_threshold": 1000000,
+                    }
+                },
+                id="bundle_increase_required_with_threshold",
+            ),
+        ],
+    )
+    def test_bundle_analysis_comment_config(self, input, expected):
+        result = validate_yaml(input)
+        assert result == expected
+
 
 class TestValidationConfig(object):
     def test_validate_default_config_yaml(self, mocker):
@@ -857,13 +901,6 @@ class TestValidationConfig(object):
             show_secrets_for=("github", "11934774", "154468867"),
         )
         assert res == expected_result
-
-
-@pytest.mark.parametrize(
-    "input,expected", [pytest.param("10bytes", True, id="bytes_valid")]
-)
-def test_bundle_change_threshold_regex(input, expected):
-    pass
 
 
 def test_validation_with_branches():

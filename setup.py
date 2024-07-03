@@ -42,7 +42,7 @@ setup(
         "typing_extensions",
         "google-auth>=2.21.0",
         "google-cloud-pubsub>=2.13.6",
-        "urllib3>=1.25.4,<1.27",
+        "urllib3==1.26.19",
         "pyjwt",
         "pytz",
         "django>=4.2.10,<5.0",  # api uses python 3.9, non-compatible with >5.0
