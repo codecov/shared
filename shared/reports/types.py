@@ -261,9 +261,7 @@ class SessionTotalsArray(object):
                         non_null_items[idx] = session_totals
                 return cls(session_count=session_count, non_null_items=non_null_items)
         elif isinstance(sessions_array, cls):
-            with sentry_sdk.start_span(
-                description=f"Build from encoded data (cls) {len(sessions_array)}"
-            ):
+            with sentry_sdk.start_span(description="Build from encoded data (cls)"):
                 return sessions_array
         elif sessions_array is None:
             return SessionTotalsArray()
