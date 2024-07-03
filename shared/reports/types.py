@@ -3,6 +3,8 @@ from dataclasses import asdict, dataclass
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
+import sentry_sdk
+
 from shared.config import get_config
 
 log = logging.getLogger(__name__)
@@ -224,43 +226,46 @@ class SessionTotalsArray(object):
 
     @classmethod
     def build_from_encoded_data(cls, sessions_array: Union[dict, list]):
-        if isinstance(sessions_array, dict):
-            # The session_totals array is already encoded in the new format
-            if "meta" not in sessions_array:
-                # This shouldn't happen, but it would be a good indication that processing is not as we expect
-                log.warning(
-                    "meta info not found in encoded SessionArray",
-                    extra=dict(sessions_array=sessions_array),
-                )
-                sessions_array["meta"] = {
-                    "session_count": int(max(sessions_array.keys())) + 1
+        with sentry_sdk.start_span(
+            description=f"Build from encoded data {len(sessions_array)}"
+        ):
+            if isinstance(sessions_array, dict):
+                # The session_totals array is already encoded in the new format
+                if "meta" not in sessions_array:
+                    # This shouldn't happen, but it would be a good indication that processing is not as we expect
+                    log.warning(
+                        "meta info not found in encoded SessionArray",
+                        extra=dict(sessions_array=sessions_array),
+                    )
+                    sessions_array["meta"] = {
+                        "session_count": int(max(sessions_array.keys())) + 1
+                    }
+                meta_info = sessions_array.get("meta")
+                session_count = meta_info["session_count"]
+                # Force keys to be integers for standarization.
+                # It probably becomes a strong when going to the database
+                non_null_items = {
+                    int(key): value
+                    for key, value in sessions_array.items()
+                    if key != "meta"
                 }
-            meta_info = sessions_array.get("meta")
-            session_count = meta_info["session_count"]
-            # Force keys to be integers for standarization.
-            # It probably becomes a strong when going to the database
-            non_null_items = {
-                int(key): value
-                for key, value in sessions_array.items()
-                if key != "meta"
-            }
-            return cls(session_count=session_count, non_null_items=non_null_items)
-        elif isinstance(sessions_array, list):
-            session_count = len(sessions_array)
-            non_null_items = {}
-            for idx, session_totals in enumerate(sessions_array):
-                if session_totals is not None:
-                    non_null_items[idx] = session_totals
-            return cls(session_count=session_count, non_null_items=non_null_items)
-        elif isinstance(sessions_array, cls):
-            return sessions_array
-        elif sessions_array is None:
-            return SessionTotalsArray()
-        log.warning(
-            "Tried to build SessionArray from unknown encoded data.",
-            extra=dict(data=sessions_array, data_type=type(sessions_array)),
-        )
-        return None
+                return cls(session_count=session_count, non_null_items=non_null_items)
+            elif isinstance(sessions_array, list):
+                session_count = len(sessions_array)
+                non_null_items = {}
+                for idx, session_totals in enumerate(sessions_array):
+                    if session_totals is not None:
+                        non_null_items[idx] = session_totals
+                return cls(session_count=session_count, non_null_items=non_null_items)
+            elif isinstance(sessions_array, cls):
+                return sessions_array
+            elif sessions_array is None:
+                return SessionTotalsArray()
+            log.warning(
+                "Tried to build SessionArray from unknown encoded data.",
+                extra=dict(data=sessions_array, data_type=type(sessions_array)),
+            )
+            return None
 
     def to_database(self):
         if get_config("setup", "legacy_report_style", default=False):
