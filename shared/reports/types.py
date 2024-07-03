@@ -226,10 +226,10 @@ class SessionTotalsArray(object):
 
     @classmethod
     def build_from_encoded_data(cls, sessions_array: Union[dict, list]):
-        with sentry_sdk.start_span(
-            description=f"Build from encoded data {len(sessions_array)}"
-        ):
-            if isinstance(sessions_array, dict):
+        if isinstance(sessions_array, dict):
+            with sentry_sdk.start_span(
+                description=f"Build from encoded data (dict) {len(sessions_array)}"
+            ):
                 # The session_totals array is already encoded in the new format
                 if "meta" not in sessions_array:
                     # This shouldn't happen, but it would be a good indication that processing is not as we expect
@@ -250,22 +250,28 @@ class SessionTotalsArray(object):
                     if key != "meta"
                 }
                 return cls(session_count=session_count, non_null_items=non_null_items)
-            elif isinstance(sessions_array, list):
+        elif isinstance(sessions_array, list):
+            with sentry_sdk.start_span(
+                description=f"Build from encoded data (list) {len(sessions_array)}"
+            ):
                 session_count = len(sessions_array)
                 non_null_items = {}
                 for idx, session_totals in enumerate(sessions_array):
                     if session_totals is not None:
                         non_null_items[idx] = session_totals
                 return cls(session_count=session_count, non_null_items=non_null_items)
-            elif isinstance(sessions_array, cls):
+        elif isinstance(sessions_array, cls):
+            with sentry_sdk.start_span(
+                description=f"Build from encoded data (cls) {len(sessions_array)}"
+            ):
                 return sessions_array
-            elif sessions_array is None:
-                return SessionTotalsArray()
-            log.warning(
-                "Tried to build SessionArray from unknown encoded data.",
-                extra=dict(data=sessions_array, data_type=type(sessions_array)),
-            )
-            return None
+        elif sessions_array is None:
+            return SessionTotalsArray()
+        log.warning(
+            "Tried to build SessionArray from unknown encoded data.",
+            extra=dict(data=sessions_array, data_type=type(sessions_array)),
+        )
+        return None
 
     def to_database(self):
         if get_config("setup", "legacy_report_style", default=False):
