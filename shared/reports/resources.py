@@ -615,12 +615,12 @@ class Report(object):
         flags=None,
         **kwargs,
     ):
+        # {"filename": [<line index in chunks :int>, <ReportTotals>]}
+        self._files = files or {}
         with sentry_sdk.start_span(
             description=f"Build ReportFileSummary {len(files)} files"
         ):
-            # {"filename": [<line index in chunks :int>, <ReportTotals>]}
             log.info(f"Building report summary - {len(files)} files - Begin")
-            self._files = files or {}
             for filename, file_summary in self._files.items():
                 if not isinstance(file_summary, ReportFileSummary):
                     self._files[filename] = ReportFileSummary(*file_summary)
