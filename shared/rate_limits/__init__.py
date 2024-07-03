@@ -39,11 +39,11 @@ def determine_entity_redis_key(
     else:
         auth_info: AdapterAuthInformation = get_adapter_auth_information(owner=owner)
 
-    if auth_info.selected_installation_info:
-        return f"{auth_info.selected_installation_info.app_id}_{auth_info.selected_installation_info.installation_id}"
+    if auth_info.get("selected_installation_info"):
+        return f"{auth_info.get("selected_installation_info").get("app_id")}_{auth_info.get("selected_installation_info").get("installation_id")}"
     # How to treat gh app fallbacks?
     else:
-        return str(auth_info.owner_token.ownerid)
+        return str(auth_info.get("token_owner").ownerid)
 
 
 # Ensure service = "gh" before using
@@ -67,13 +67,17 @@ def set_entity_to_rate_limited(redis_connection, key_name: str, ttl_seconds: int
     GITHUB_BOT_KEY for Anonymous users
     """
     try:
+        # redis_connection.set(
+        #     name=f"rate_limited_entity_{key_name}",
+        #     value=1,
+        #     ex=ttl_seconds,
+        # )
         redis_connection.set(
-            name=f"rate_limited_entity_{key_name}",
-            value=1,
-            ex=ttl_seconds,
+            f"rate_limited_entity_{key_name}",
+            2,
         )
     except RedisError:
         log.exception(
-            "Failed to mark installation ID as rate_limited due to RedisError",
-            extra=dict(installation_id=key_name),
+            "Failed to mark entity as rate_limited due to RedisError",
+            extra=dict(entity_id=key_name),
         )
