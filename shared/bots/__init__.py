@@ -20,7 +20,9 @@ log = logging.getLogger(__name__)
 
 
 def get_adapter_auth_information(
+    # This could be a Django/Sqlalchemy Owner
     owner: Owner,
+    # This could be a Django/Sqlalchemy Repository
     repository: Optional[Repository] = None,
     *,
     ignore_installations: bool = False,
@@ -31,6 +33,16 @@ def get_adapter_auth_information(
     This logic is used by the worker to get the data needed to create a torngit.BaseAdapter.
     :warning: Api should use the `owner.oauth_token` of the user making the request.
     """
+
+    if owner:
+        # We can make this call as Django and Sqlalchemy models both have
+        # the "ownerid" field, so it does not matter which one calls this fn
+        owner = Owner.objects.get(ownerid=owner.ownerid)
+    if repository:
+        # We can make this call as Django and Sqlalchemy models both have
+        # the "repoid" field, so it does not matter which one calls this fn
+        repository = Repository.objects.get(repoid=repository.repoid)
+
     installation_info: GithubInstallationInfo | None = None
     token_type_mapping = None
     fallback_installations: List[GithubInstallationInfo] | None = None

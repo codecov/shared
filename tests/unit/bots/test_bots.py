@@ -286,6 +286,7 @@ class TestGettingAdapterAuthInformation(object):
             with_bot: bool,
             with_owner_bot: bool,
             integration_id: int | None = None,
+            private: bool = True,
             ghapp_installations: List[GithubAppInstallation] = None,
         ):
             if ghapp_installations is None:
@@ -309,7 +310,7 @@ class TestGettingAdapterAuthInformation(object):
                     app.save()
 
             repo = RepositoryFactory(
-                author=owner, using_integration=(integration_id is not None)
+                author=owner, using_integration=(integration_id is not None), private=private
             )
             if with_bot:
                 repo.bot = OwnerFactory(
@@ -385,7 +386,7 @@ class TestGettingAdapterAuthInformation(object):
         @pytest.mark.django_db(databases={"default"})
         def test_select_repo_bot_info_public_repo(self, mock_configuration):
             repo = self._generate_test_repo(
-                with_owner_bot=True, with_bot=True
+                with_owner_bot=True, with_bot=True, private=False
             )
             mock_configuration.set_params(
                 {
@@ -399,7 +400,6 @@ class TestGettingAdapterAuthInformation(object):
                     }
                 }
             )
-            repo.private = False
 
             repo_bot_token = Token(
                 key="repo_bot_token",
@@ -595,8 +595,7 @@ class TestGettingAdapterAuthInformation(object):
     def test_select_repo_public_with_no_token_no_admin_token_configured(
         self, service, mocker
     ):
-        repo = RepositoryFactory(author__service=service, private=False)
-        repo.author.oauth_token = None
+        repo = RepositoryFactory(author__service=service, private=False, bot=None, author__oauth_token=None)
         repo.save()
         mock_config_helper(
             mocker,
