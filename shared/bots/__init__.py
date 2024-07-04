@@ -28,7 +28,8 @@ def get_adapter_auth_information(
 ) -> AdapterAuthInformation:
     """
     Gets all the auth information needed to send requests to the provider.
-    This is mostly used by worker and api should use the token provided by the person making the request
+    This logic is used by the worker to get the data needed to create a torngit.BaseAdapter.
+    :warning: Api should use the `owner.oauth_token` of the user making the request.
     """
     installation_info: GithubInstallationInfo | None = None
     token_type_mapping = None
