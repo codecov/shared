@@ -67,14 +67,10 @@ def set_entity_to_rate_limited(redis_connection, key_name: str, ttl_seconds: int
     GITHUB_BOT_KEY for Anonymous users
     """
     try:
-        # redis_connection.set(
-        #     name=f"rate_limited_entity_{key_name}",
-        #     value=1,
-        #     ex=ttl_seconds,
-        # )
         redis_connection.set(
-            f"rate_limited_entity_{key_name}",
-            2,
+            name=f"rate_limited_entity_{key_name}",
+            value=1,
+            ex=ttl_seconds,
         )
     except RedisError:
         log.exception(
