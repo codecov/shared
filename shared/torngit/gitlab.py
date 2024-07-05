@@ -899,6 +899,9 @@ class Gitlab(TorngitBaseAdapter):
                 title=pull["title"],
                 id=str(pull["iid"]),
                 number=str(pull["iid"]),
+                merge_commit_sha=pull["merge_commit_sha"]
+                if pull["state"] == "merged"
+                else None,
             )
 
     async def get_pull_request_files(self, pullid, token=None):
