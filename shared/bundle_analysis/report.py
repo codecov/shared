@@ -230,11 +230,6 @@ class BundleAnalysisReport:
         Returns session ID of ingested data.
         """
         parser = Parser(path, self.db_session).get_proper_parser()
-        if parser is None:
-            e = Exception("Bundle stats file version does not exist")
-            e.bundle_analysis_plugin_name = "invalid_version_provided"
-            raise e
-
         session_id = parser.parse(path)
         self.db_session.commit()
         return session_id

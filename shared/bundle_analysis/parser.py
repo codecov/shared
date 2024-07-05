@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import ijson
 from sqlalchemy.orm import Session as DbSession
@@ -24,14 +23,16 @@ class Parser:
         self.path = path
         self.db_session = db_session
 
-    def get_proper_parser(self) -> Optional[object]:
+    def get_proper_parser(self) -> object:
         error = None
         try:
             with open(self.path, "rb") as f:
                 for event in ijson.parse(f):
                     prefix, _, value = event
                     if prefix == "version":
-                        selected_parser = PARSER_VERSION_MAPPING[value]
+                        selected_parser = PARSER_VERSION_MAPPING.get(value)
+                        if selected_parser is None:
+                            error = f"parser not implemented for version {value}"
                         if not issubclass(selected_parser, ParserInterface):
                             error = "invalid parser implementation"
                         return selected_parser(self.db_session)
