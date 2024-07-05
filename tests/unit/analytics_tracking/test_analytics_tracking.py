@@ -13,12 +13,6 @@ from shared.config import ConfigHelper
 
 
 @pytest.fixture
-def mock_segment():
-    with patch("shared.analytics_tracking.Segment.is_enabled", return_value=True):
-        yield
-
-
-@pytest.fixture
 def mock_pubsub():
     with patch("shared.analytics_tracking.PubSub.is_enabled", return_value=True):
         yield
@@ -45,17 +39,16 @@ def test_get_list_of_analytic_tools():
     assert isinstance(tools, list)
 
 
-def test_get_tools_manager(mock_segment):
+def test_get_tools_manager(mock_pubsub):
     tool = get_tools_manager()
     assert tool is not None
     assert isinstance(tool, AnalyticsToolManager)
 
 
 def test_track_event(
-    mock_segment, mock_pubsub, mock_marketo, mock_pubsub_publisher, mocker
+    mock_pubsub, mock_marketo, mock_pubsub_publisher, mocker
 ):
     analytics_tool = get_tools_manager()
-    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
     mock_marketo_request = mocker.patch(
         "shared.analytics_tracking.Marketo.make_rest_request"
     )
@@ -71,7 +64,7 @@ def test_track_event(
         is_enterprise=False,
         event_data={"test": True},
     )
-    mock_track.assert_called_with(-1, Events.USER_SIGNED_IN.value, {"test": True}, None)
+
     mock_pubsub_publisher.publish.assert_called_with(
         "projects/1234/topics/codecov",
         data=json.dumps(event.serialize()).encode("utf-8"),
@@ -87,7 +80,6 @@ def test_track_event(
 
 def test_track_event_tool_not_enabled(mocker, mock_pubsub_publisher):
     analytics_tool = get_tools_manager()
-    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
 
     analytics_tool.track_event(
         Events.USER_SIGNED_UP.value,
@@ -95,29 +87,26 @@ def test_track_event_tool_not_enabled(mocker, mock_pubsub_publisher):
         event_data={"test": True},
     )
 
-    mock_track.assert_not_called()
     mock_pubsub_publisher.publish.assert_not_called()
 
 
-def test_track_event_invalid_name(mock_segment, mocker):
-    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+def test_track_event_invalid_name(mocker, mock_pubsub_publisher):
     analytics_tool = get_tools_manager()
     with pytest.raises(ValueError):
         analytics_tool.track_event(
             "Invalid Name", is_enterprise=False, event_data={"test": True}
         )
-    mock_track.assert_not_called()
+    mock_pubsub_publisher.publish.assert_not_called()
 
 
-def test_track_event_is_enterprise(mock_segment, mocker):
-    mock_track = mocker.patch("shared.analytics_tracking.segment.analytics.track")
+def test_track_event_is_enterprise(mock_pubsub_publisher, mocker):
     analytics_tool = get_tools_manager()
     analytics_tool.track_event(
         "codecov.account.uploaded_coverage_report",
         is_enterprise=True,
         event_data={"test": True},
     )
-    mock_track.assert_not_called()
+    mock_pubsub_publisher.publish.assert_not_called()
 
 
 class TestPubSub(object):

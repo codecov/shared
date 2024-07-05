@@ -16,3 +16,6 @@ flag_management:
     - name: "smart-labels"
       carryforward: true
       carryforward_mode: "labels"
+
+test_analytics:
+  flake_detection: true

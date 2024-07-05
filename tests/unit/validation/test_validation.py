@@ -4,6 +4,7 @@ import pytest
 
 from shared.config import ConfigHelper, get_config
 from shared.validation.exceptions import InvalidYamlException
+from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import (
     _calculate_error_location_and_message_from_error_dict,
     do_actual_validation,
@@ -135,7 +136,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "require_head": True,
                         "require_base": True,
                         "layout": "diff",
-                        "require_changes": True,
+                        "require_changes": [0b001],
                         "branches": ["^master$"],
                         "behavior": "once",
                         "after_n_builds": 6,
@@ -551,7 +552,7 @@ class TestUserYamlValidation(BaseTestCase):
             "comment": {
                 "behavior": "default",
                 "layout": "header, diff",
-                "require_changes": False,
+                "require_changes": [0b000],
                 "show_carryforward_flags": False,
             },
             "parsers": {
@@ -672,7 +673,7 @@ class TestUserYamlValidation(BaseTestCase):
                 "branches": None,
                 "layout": "reach, diff, flags, files",
                 "require_base": False,
-                "require_changes": False,
+                "require_changes": [0b000],
                 "require_head": False,
             },
             "coverage": {
@@ -821,6 +822,50 @@ class TestUserYamlValidation(BaseTestCase):
         result = validate_yaml(user_input)
         assert result == expected_result
 
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            pytest.param(
+                {"comment": {"require_bundle_changes": False}},
+                {"comment": {"require_bundle_changes": False}},
+                id="no_bundle_changes_required",
+            ),
+            pytest.param(
+                {
+                    "comment": {
+                        "require_bundle_changes": True,
+                        "bundle_change_threshold": 1200,
+                    }
+                },
+                {
+                    "comment": {
+                        "require_bundle_changes": True,
+                        "bundle_change_threshold": 1200,
+                    }
+                },
+                id="bundle_changes_with_threshold",
+            ),
+            pytest.param(
+                {
+                    "comment": {
+                        "require_bundle_changes": "bundle_increase",
+                        "bundle_change_threshold": "1mb",
+                    }
+                },
+                {
+                    "comment": {
+                        "require_bundle_changes": "bundle_increase",
+                        "bundle_change_threshold": 1000000,
+                    }
+                },
+                id="bundle_increase_required_with_threshold",
+            ),
+        ],
+    )
+    def test_bundle_analysis_comment_config(self, input, expected):
+        result = validate_yaml(input)
+        assert result == expected
+
 
 class TestValidationConfig(object):
     def test_validate_default_config_yaml(self, mocker):
@@ -831,7 +876,7 @@ class TestValidationConfig(object):
         this_config = ConfigHelper()
         mocker.patch("shared.config._get_config_instance", return_value=this_config)
         expected_result = {
-            "codecov": {"require_ci_to_pass": True},
+            "codecov": {"require_ci_to_pass": True, "notify": {"wait_for_ci": True}},
             "coverage": {
                 "precision": 2,
                 "round": "down",
@@ -885,7 +930,7 @@ def test_validation_with_branches():
             "require_head": True,
             "require_base": True,
             "layout": "diff",
-            "require_changes": True,
+            "require_changes": [0b001],
             "branches": ["^master$"],
             "behavior": "once",
             "after_n_builds": 6,

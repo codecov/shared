@@ -20,7 +20,7 @@ class MissingConfigException(Exception):
 log = logging.getLogger(__name__)
 
 LEGACY_DEFAULT_SITE_CONFIG = {
-    "codecov": {"require_ci_to_pass": True},
+    "codecov": {"require_ci_to_pass": True, "notify": {"wait_for_ci": True}},
     "coverage": {
         "precision": 2,
         "round": "down",
@@ -83,7 +83,6 @@ default_config = {
     },
     "site": LEGACY_DEFAULT_SITE_CONFIG,
     "setup": {
-        "segment": {"enabled": False, "key": "JustARandomTestValueMeaningless"},
         "timeseries": {"enabled": False},
     },
 }
