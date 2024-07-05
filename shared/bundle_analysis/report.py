@@ -229,7 +229,7 @@ class BundleAnalysisReport:
         Ingest the bundle stats JSON at the given file path.
         Returns session ID of ingested data.
         """
-        parser = Parser(path, self.db_session)
+        parser = Parser(path, self.db_session).get_proper_parser()
         if parser is None:
             e = Exception("Bundle stats file version does not exist")
             e.bundle_analysis_plugin_name = "invalid_version_provided"

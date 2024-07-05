@@ -4,7 +4,7 @@ from typing import Optional
 import ijson
 from sqlalchemy.orm import Session as DbSession
 
-from shared.bundle_analysis.parsers import ParserV1, ParserV2
+from shared.bundle_analysis.parsers import ParserInterface, ParserV1, ParserV2
 
 log = logging.getLogger(__name__)
 
@@ -20,9 +20,23 @@ class Parser:
     # Retrieve bundle stats file version and return an associated instance of its parser
     """
 
-    def __new__(cls, path: str, db_session: DbSession) -> Optional[object]:
-        with open(path, "rb") as f:
-            for event in ijson.parse(f):
-                prefix, _, value = event
-                if prefix == "version":
-                    return PARSER_VERSION_MAPPING[value](db_session)
+    def __init__(self, path: str, db_session: DbSession):
+        self.path = path
+        self.db_session = db_session
+
+    def get_proper_parser(self) -> Optional[object]:
+        error = None
+        try:
+            with open(self.path, "rb") as f:
+                for event in ijson.parse(f):
+                    prefix, _, value = event
+                    if prefix == "version":
+                        selected_parser = PARSER_VERSION_MAPPING[value]
+                        if not issubclass(selected_parser, ParserInterface):
+                            error = "invalid parser implementation"
+                        return selected_parser(self.db_session)
+            error = "version does not exist in bundle file"
+        except IOError:
+            error = "unable to open file"
+        if error:
+            raise Exception(f"Couldn't parse bundle: {error}")
