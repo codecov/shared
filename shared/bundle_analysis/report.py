@@ -69,6 +69,10 @@ class AssetReport:
         return self.asset.size
 
     @property
+    def gzip_size(self):
+        return self.asset.gzip_size
+
+    @property
     def uuid(self):
         return self.asset.uuid
 
@@ -225,7 +229,7 @@ class BundleAnalysisReport:
         Ingest the bundle stats JSON at the given file path.
         Returns session ID of ingested data.
         """
-        parser = Parser(self.db_session)
+        parser = Parser(path, self.db_session).get_proper_parser()
         session_id = parser.parse(path)
         self.db_session.commit()
         return session_id
