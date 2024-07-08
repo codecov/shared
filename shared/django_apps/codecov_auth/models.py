@@ -5,10 +5,12 @@ import uuid
 from dataclasses import asdict
 from datetime import datetime
 from hashlib import md5
+from typing import Self
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
+from django.db.models.fields import AutoField
 from django.db.models.manager import BaseManager
 from django.forms import ValidationError
 from django.utils import timezone
@@ -148,6 +150,37 @@ class Account(BaseModel):
     def __str__(self):
         str_representation_of_is_active = "Active" if self.is_active else "Inactive"
         return f"{str_representation_of_is_active} Account: {self.name}"
+
+    def activate_user_onto_account(self, user: User) -> None:
+        self.users.add(user)
+        self.save()
+
+    def activate_owner_user_onto_account(self, owner_user: "Owner") -> None:
+        user: User = owner_user.user
+        if not user:
+            user = User(name=user.name, email=user.email)
+        self.activate_user_onto_account(user)
+
+    def deactivate_owner_user_from_account(self, owner_user: "Owner") -> None:
+        if owner_user.user is None:
+            return
+
+        organizations_in_account: list[Owner] = self.organizations.all()
+        all_users_for_account: set[AutoField] = set(
+            user_id
+            for org in organizations_in_account
+            for user_id in org.plan_activated_users
+        )
+        if owner_user.ownerid not in all_users_for_account:
+            self.users.remove(owner_user.user)
+            self.save()
+        else:
+            log.info(
+                "User was not removed from account because they currently are "
+                "activated on another organization.",
+                extra=dict(owner_id=owner_user.ownerid, account_id=self.id),
+            )
+        return
 
 
 class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
@@ -470,12 +503,12 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             plan_details.update({"quantity": self.plan_user_count})
             return plan_details
 
-    def can_activate_user(self, user):
+    def can_activate_user(self, user: Self) -> bool:
         return (
             user.student or self.activated_user_count < self.plan_user_count + self.free
         )
 
-    def activate_user(self, user):
+    def activate_user(self, user: Self) -> None:
         log.info(f"Activating user {user.ownerid} in ownerid {self.ownerid}")
         if isinstance(self.plan_activated_users, list):
             if user.ownerid not in self.plan_activated_users:
@@ -484,7 +517,11 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             self.plan_activated_users = [user.ownerid]
         self.save()
 
-    def deactivate_user(self, user):
+        # Note: we're currently ignoring orgs with no account information attached.
+        if self.account:
+            self.account.activate_owner_user_onto_account(user)
+
+    def deactivate_user(self, user: Self) -> None:
         log.info(f"Deactivating user {user.ownerid} in ownerid {self.ownerid}")
         if isinstance(self.plan_activated_users, list):
             try:
@@ -492,6 +529,9 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             except ValueError:
                 pass
         self.save()
+
+        if self.account and user.user:
+            self.account.deactivate_owner_user_from_account(self)
 
     def add_admin(self, user):
         log.info(

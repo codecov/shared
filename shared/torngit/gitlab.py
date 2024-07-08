@@ -370,6 +370,10 @@ GITLAB_API_ENDPOINTS = {
 external_endpoint_template = Template("${username}/${name}/commit/${commitid}")
 
 
+class OwnerNotFoundError:
+    pass
+
+
 class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
@@ -701,7 +705,7 @@ class Gitlab(TorngitBaseAdapter):
                 "/", ":"
             )  # full path required for subgroup support
         else:
-            raise
+            raise OwnerNotFoundError()
 
         return (service_id, username)
 
