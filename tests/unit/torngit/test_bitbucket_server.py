@@ -62,10 +62,10 @@ class TestBitbucketServer(object):
     async def test_api_client_not_found(self, valid_handler, mocker):
         response_dict = {"status": 404, "content-type": "application/json"}
         content = json.dumps({})
-        mocked_fetch = mocker.patch.object(
+        mocker.patch.object(
             oauth.Client, "request", return_value=(response_dict, content)
         )
-        client = mocker.MagicMock(
+        mocker.MagicMock(
             request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=404))
         )
         method = "GET"
@@ -95,10 +95,10 @@ class TestBitbucketServer(object):
     async def test_get_source_object_not_found(self, valid_handler, mocker):
         response_dict = {"status": 404, "content-type": "application/json"}
         content = json.dumps({})
-        mocked_fetch = mocker.patch.object(
+        mocker.patch.object(
             oauth.Client, "request", return_value=(response_dict, content)
         )
-        client = mocker.MagicMock(
+        mocker.MagicMock(
             request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=404))
         )
         path = "some/path/"

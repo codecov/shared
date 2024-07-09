@@ -348,9 +348,7 @@ def test_iter():
     r = Report(
         files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
     )
-    files = []
-    for _file in r:
-        files.append(_file)
+    files = [_file for _file in r]
     assert (
         repr(files)
         == "[<ReportFile name=file1.py lines=0>, <ReportFile name=file2.py lines=0>]"

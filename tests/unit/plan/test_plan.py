@@ -69,7 +69,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org_with_ongoing_trial)
         plan_service.expire_trial_when_upgrading()
         assert current_org_with_ongoing_trial.trial_status == TrialStatus.EXPIRED.value
-        assert current_org_with_ongoing_trial.plan_activated_users == None
+        assert current_org_with_ongoing_trial.plan_activated_users is None
         assert current_org_with_ongoing_trial.plan_user_count == 1
         assert current_org_with_ongoing_trial.trial_end_date == datetime.utcnow()
 
@@ -87,7 +87,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org_with_ongoing_trial)
         plan_service.expire_trial_when_upgrading()
         assert current_org_with_ongoing_trial.trial_status == TrialStatus.EXPIRED.value
-        assert current_org_with_ongoing_trial.plan_activated_users == None
+        assert current_org_with_ongoing_trial.plan_activated_users is None
         assert current_org_with_ongoing_trial.plan_user_count == 1
         assert current_org_with_ongoing_trial.trial_end_date == datetime.utcnow()
 
@@ -107,7 +107,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org_with_ongoing_trial)
         plan_service.expire_trial_when_upgrading()
         assert current_org_with_ongoing_trial.trial_status == TrialStatus.EXPIRED.value
-        assert current_org_with_ongoing_trial.plan_activated_users == None
+        assert current_org_with_ongoing_trial.plan_activated_users is None
         assert current_org_with_ongoing_trial.plan_user_count == pretrial_users_count
         assert current_org_with_ongoing_trial.trial_end_date == datetime.utcnow()
 
@@ -125,7 +125,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
         current_owner = OwnerFactory()
 
-        with self.assertRaises(ValidationError) as e:
+        with self.assertRaises(ValidationError):
             plan_service.start_trial(current_owner=current_owner)
 
     def test_plan_service_start_trial_errors_if_status_is_expired(self):
@@ -140,7 +140,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
         current_owner = OwnerFactory()
 
-        with self.assertRaises(ValidationError) as e:
+        with self.assertRaises(ValidationError):
             plan_service.start_trial(current_owner=current_owner)
 
     def test_plan_service_start_trial_errors_if_status_is_cannot_trial(self):
@@ -153,7 +153,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
         current_owner = OwnerFactory()
 
-        with self.assertRaises(ValidationError) as e:
+        with self.assertRaises(ValidationError):
             plan_service.start_trial(current_owner=current_owner)
 
     def test_plan_service_start_trial_errors_owners_plan_is_not_a_free_plan(self):
@@ -166,7 +166,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
         current_owner = OwnerFactory()
 
-        with self.assertRaises(ValidationError) as e:
+        with self.assertRaises(ValidationError):
             plan_service.start_trial(current_owner=current_owner)
 
     def test_plan_service_start_trial_succeeds_if_trial_has_not_started(self):
@@ -231,7 +231,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
         current_owner = OwnerFactory()
 
-        with self.assertRaises(ValidationError) as e:
+        with self.assertRaises(ValidationError):
             plan_service.start_trial_manually(
                 current_owner=current_owner, end_date="2024-01-01 00:00:00"
             )
@@ -284,7 +284,7 @@ class PlanServiceTests(TestCase):
         assert plan_service.billing_rate == trial_plan.billing_rate
         assert plan_service.base_unit_price == trial_plan.base_unit_price
         assert plan_service.benefits == trial_plan.benefits
-        assert plan_service.monthly_uploads_limit == None  # Not 250 since it's trialing
+        assert plan_service.monthly_uploads_limit is None  # Not 250 since it's trialing
         assert plan_service.trial_total_days == trial_plan.trial_days
 
     def test_plan_service_sets_default_plan_data_values_correctly(self):
@@ -302,8 +302,8 @@ class PlanServiceTests(TestCase):
 
         assert current_org.plan == PlanName.BASIC_PLAN_NAME.value
         assert current_org.plan_user_count == 1
-        assert current_org.plan_activated_users == None
-        assert current_org.stripe_subscription_id == None
+        assert current_org.plan_activated_users is None
+        assert current_org.stripe_subscription_id is None
 
     def test_plan_service_returns_if_owner_has_trial_dates(self):
         current_org = OwnerFactory(

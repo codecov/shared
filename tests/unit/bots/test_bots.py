@@ -3,16 +3,19 @@ from typing import List, Optional
 from unittest.mock import patch
 
 import pytest
+
+from shared.bots import get_adapter_auth_information
+from shared.bots.types import AdapterAuthInformation
+from shared.django_apps.codecov_auth.models import (
+    GITHUB_APP_INSTALLATION_DEFAULT_NAME,
+    GithubAppInstallation,
+)
+from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
+from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.torngit.base import TokenType
 from shared.typings.oauth_token_types import Token
 from shared.typings.torngit import GithubInstallationInfo
 from shared.utils.test_utils import mock_config_helper
-
-from shared.django_apps.codecov_auth.models import GITHUB_APP_INSTALLATION_DEFAULT_NAME, GithubAppInstallation
-from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
-from shared.django_apps.core.tests.factories import RepositoryFactory
-from shared.bots import get_adapter_auth_information
-from shared.bots.types import AdapterAuthInformation
 
 
 def get_github_integration_token_side_effect(
@@ -91,7 +94,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_owner_single_installation(self, mock_get_github_integration_token):
+        def test_select_owner_single_installation(
+            self, mock_get_github_integration_token
+        ):
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,
@@ -161,10 +166,10 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_owner_deprecated_using_integration(self, mock_get_github_integration_token):
-            owner = self._generate_test_owner(
-                with_bot=False, integration_id=1500
-            )
+        def test_select_owner_deprecated_using_integration(
+            self, mock_get_github_integration_token
+        ):
+            owner = self._generate_test_owner(with_bot=False, integration_id=1500)
             owner.oauth_token = None
             # Owner has no GithubApp, no token, and no bot configured
             # The integration_id is selected
@@ -184,7 +189,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_owner_multiple_installations_default_name(self, mock_get_github_integration_token):
+        def test_select_owner_multiple_installations_default_name(
+            self, mock_get_github_integration_token
+        ):
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,
@@ -228,7 +235,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_owner_multiple_installations_custom_name(self, mock_get_github_integration_token):
+        def test_select_owner_multiple_installations_custom_name(
+            self, mock_get_github_integration_token
+        ):
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,
@@ -327,9 +336,7 @@ class TestGettingAdapterAuthInformation(object):
 
         @pytest.mark.django_db(databases={"default"})
         def test_select_repo_info_fallback_to_owner(self):
-            repo = self._generate_test_repo(
-                with_bot=False, with_owner_bot=False
-            )
+            repo = self._generate_test_repo(with_bot=False, with_owner_bot=False)
             expected = AdapterAuthInformation(
                 token=Token(
                     key="owner_token",
@@ -346,9 +353,7 @@ class TestGettingAdapterAuthInformation(object):
 
         @pytest.mark.django_db(databases={"default"})
         def test_select_owner_bot_info(self):
-            repo = self._generate_test_repo(
-        with_owner_bot=True, with_bot=False
-            )
+            repo = self._generate_test_repo(with_owner_bot=True, with_bot=False)
             expected = AdapterAuthInformation(
                 token=Token(
                     key="bot_token",
@@ -365,9 +370,7 @@ class TestGettingAdapterAuthInformation(object):
 
         @pytest.mark.django_db(databases={"default"})
         def test_select_repo_bot_info(self):
-            repo = self._generate_test_repo(
-                with_owner_bot=True, with_bot=True
-            )
+            repo = self._generate_test_repo(with_owner_bot=True, with_bot=True)
             expected = AdapterAuthInformation(
                 token=Token(
                     key="repo_bot_token",
@@ -384,9 +387,7 @@ class TestGettingAdapterAuthInformation(object):
 
         @pytest.mark.django_db(databases={"default"})
         def test_select_repo_bot_info_public_repo(self, mock_configuration):
-            repo = self._generate_test_repo(
-                with_owner_bot=True, with_bot=True
-            )
+            repo = self._generate_test_repo(with_owner_bot=True, with_bot=True)
             mock_configuration.set_params(
                 {
                     "github": {
@@ -429,7 +430,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_repo_single_installation(self, mock_get_github_integration_token):
+        def test_select_repo_single_installation(
+            self, mock_get_github_integration_token
+        ):
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,
@@ -466,7 +469,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_repo_deprecated_using_integration(self, mock_get_github_integration_token):
+        def test_select_repo_deprecated_using_integration(
+            self, mock_get_github_integration_token
+        ):
             repo = self._generate_test_repo(
                 with_bot=False, integration_id=1500, with_owner_bot=False
             )
@@ -491,7 +496,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_repo_multiple_installations_default_name(self, mock_get_github_integration_token):
+        def test_select_repo_multiple_installations_default_name(
+            self, mock_get_github_integration_token
+        ):
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,
@@ -537,7 +544,9 @@ class TestGettingAdapterAuthInformation(object):
             side_effect=get_github_integration_token_side_effect,
         )
         @pytest.mark.django_db(databases={"default"})
-        def test_select_repo_multiple_installations_custom_name(self, mock_get_github_integration_token):
+        def test_select_repo_multiple_installations_custom_name(
+            self, mock_get_github_integration_token
+        ):
             installations = [
                 GithubAppInstallation(
                     repository_service_ids=None,

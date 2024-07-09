@@ -45,9 +45,7 @@ def test_get_tools_manager(mock_pubsub):
     assert isinstance(tool, AnalyticsToolManager)
 
 
-def test_track_event(
-    mock_pubsub, mock_marketo, mock_pubsub_publisher, mocker
-):
+def test_track_event(mock_pubsub, mock_marketo, mock_pubsub_publisher, mocker):
     analytics_tool = get_tools_manager()
     mock_marketo_request = mocker.patch(
         "shared.analytics_tracking.Marketo.make_rest_request"
@@ -56,9 +54,7 @@ def test_track_event(
         Events.USER_SIGNED_IN.value,
         test=True,
     )
-    mocked_event = mocker.patch(
-        "shared.analytics_tracking.manager.Event", return_value=event
-    )
+    mocker.patch("shared.analytics_tracking.manager.Event", return_value=event)
     analytics_tool.track_event(
         Events.USER_SIGNED_IN.value,
         is_enterprise=False,
@@ -209,7 +205,7 @@ class TestEvent(object):
 
     def test_invalid_event(self, mocker):
         with pytest.raises(ValueError, match="Invalid event name: Invalid name"):
-            event = Event(
+            Event(
                 "Invalid name",
                 dt=datetime(2023, 9, 12, tzinfo=timezone.utc),
                 user_id="1234",

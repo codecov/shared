@@ -47,9 +47,7 @@ def test_iter():
     r = ReportFile("filename")
     r._lines = [ReportLine.create(1), ReportLine.create(2), None]
     r._line_modifier = lambda line: line if line.coverage == 1 else None
-    lines = []
-    for ln in r:
-        lines.append(ln)
+    lines = [ln for ln in r]
     assert lines == [ReportLine.create(1), None, None, None]
 
 

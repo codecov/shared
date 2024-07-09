@@ -576,7 +576,6 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"codecov": {"notify": {"after_n_builds": -1}}}
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        exception = exc.value
         assert exc.value.error_location == ["codecov", "notify", "after_n_builds"]
         assert exc.value.error_message == "min value is 0"
 
@@ -589,7 +588,6 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"comment": {"after_n_builds": -1}}
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        exception = exc.value
         assert exc.value.error_location == ["comment", "after_n_builds"]
         assert exc.value.error_message == "min value is 0"
 

@@ -14,21 +14,21 @@ from shared.django_apps.codecov_auth.models import (
     SERVICE_CODECOV_ENTERPRISE,
     SERVICE_GITHUB,
     SERVICE_GITHUB_ENTERPRISE,
+    AccountsUsers,
     GithubAppInstallation,
     OrganizationLevelToken,
+    Owner,
     Service,
     User,
-    AccountsUsers,
-    Owner,
 )
 from shared.django_apps.codecov_auth.tests.factories import (
-    OrganizationLevelTokenFactory,
-    OwnerFactory,
     AccountFactory,
-    UserFactory,
-    StripeBillingFactory,
     InvoiceBillingFactory,
     OktaSettingsFactory,
+    OrganizationLevelTokenFactory,
+    OwnerFactory,
+    StripeBillingFactory,
+    UserFactory,
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.plan.constants import PlanName
@@ -92,9 +92,9 @@ class TestOwnerModel(TransactionTestCase):
         owner.stripe_customer_id = ""
         owner.stripe_subscription_id = ""
         owner.clean()
-        assert owner.plan == None
-        assert owner.stripe_customer_id == None
-        assert owner.stripe_subscription_id == None
+        assert owner.plan is None
+        assert owner.stripe_customer_id is None
+        assert owner.stripe_subscription_id is None
 
     def test_setting_staff_on_for_not_a_codecov_member(self):
         user_not_part_of_codecov = OwnerFactory(email="user@notcodecov.io", staff=True)
@@ -269,7 +269,7 @@ class TestOwnerModel(TransactionTestCase):
 
     def test_activated_user_count_returns_0_if_plan_activated_users_is_null(self):
         owner = OwnerFactory(plan_activated_users=None)
-        assert owner.plan_activated_users == None
+        assert owner.plan_activated_users is None
         assert owner.activated_user_count == 0
 
     def test_activated_user_count_ignores_students(self):
@@ -329,8 +329,12 @@ class TestOwnerModel(TransactionTestCase):
         self.owner.deactivate_user(to_deactivate)
         self.owner.refresh_from_db()
 
-        assert AccountsUsers.objects.filter(user=self.owner.user, account=self.owner.account).first() is None
-
+        assert (
+            AccountsUsers.objects.filter(
+                user=self.owner.user, account=self.owner.account
+            ).first()
+            is None
+        )
 
     def test_can_activate_user_returns_true_if_user_is_student(self):
         student = OwnerFactory(student=True)
@@ -402,7 +406,7 @@ class TestOwnerModel(TransactionTestCase):
         assert self.owner.admins == [admin1.ownerid]
 
     def test_access_no_root_organization(self):
-        assert self.owner.root_organization == None
+        assert self.owner.root_organization is None
 
     def test_access_root_organization(self):
         root = OwnerFactory(service="gitlab")
@@ -432,10 +436,8 @@ class TestOwnerModel(TransactionTestCase):
             organizations=[org.ownerid], student=True
         )
 
-        inactive_student_in_org = OwnerFactory(
-            organizations=[org.ownerid], student=True
-        )
-        inactive_user_in_org = OwnerFactory(organizations=[org.ownerid])
+        OwnerFactory(organizations=[org.ownerid], student=True)
+        OwnerFactory(organizations=[org.ownerid])
 
         org.plan_activated_users = [
             activated_user.ownerid,
@@ -457,10 +459,8 @@ class TestOwnerModel(TransactionTestCase):
             organizations=[org.ownerid], student=True
         )
 
-        inactive_student_in_org = OwnerFactory(
-            organizations=[org.ownerid], student=True
-        )
-        inactive_user_in_org = OwnerFactory(organizations=[org.ownerid])
+        OwnerFactory(organizations=[org.ownerid], student=True)
+        OwnerFactory(organizations=[org.ownerid])
 
         org.plan_activated_users = [
             activated_user.ownerid,

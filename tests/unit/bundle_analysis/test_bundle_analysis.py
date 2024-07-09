@@ -47,7 +47,14 @@ def test_create_bundle_report():
         asset_reports = list(bundle_report.asset_reports())
 
         assert [
-            (ar.name, ar.hashed_name, ar.size, ar.gzip_size, len(ar.modules()), ar.asset_type)
+            (
+                ar.name,
+                ar.hashed_name,
+                ar.size,
+                ar.gzip_size,
+                len(ar.modules()),
+                ar.asset_type,
+            )
             for ar in asset_reports
         ] == [
             (
@@ -125,11 +132,13 @@ def test_bundle_report_asset_filtering():
         all_asset_reports = list(bundle_report.asset_reports())
         assert len(all_asset_reports) == 5
 
-        filtered_asset_reports = list(bundle_report.asset_reports(
-            asset_types=[AssetType.JAVASCRIPT],
-            chunk_entry=True,
-            chunk_initial=True,
-        ))
+        filtered_asset_reports = list(
+            bundle_report.asset_reports(
+                asset_types=[AssetType.JAVASCRIPT],
+                chunk_entry=True,
+                chunk_initial=True,
+            )
+        )
 
         for ar in filtered_asset_reports:
             for module in ar.modules():
@@ -137,11 +146,14 @@ def test_bundle_report_asset_filtering():
                 assert isinstance(module.size, int)
 
         assert len(filtered_asset_reports) == 1
-        assert bundle_report.total_size(
-            asset_types=[AssetType.JAVASCRIPT],
-            chunk_entry=True,
-            chunk_initial=True,
-        ) == 144577
+        assert (
+            bundle_report.total_size(
+                asset_types=[AssetType.JAVASCRIPT],
+                chunk_entry=True,
+                chunk_initial=True,
+            )
+            == 144577
+        )
 
     finally:
         report.cleanup()
@@ -342,7 +354,7 @@ def test_bundle_file_save_unknown_error():
             loader.save(report, test_key)
 
             assert str(excinfo) == "UnknownError"
-            assert type(excinfo) == Exception
+            assert type(excinfo) is Exception
 
 
 def test_create_bundle_report_v1():
@@ -368,7 +380,14 @@ def test_create_bundle_report_v1():
         asset_reports = list(bundle_report.asset_reports())
 
         assert [
-            (ar.name, ar.hashed_name, ar.size, ar.gzip_size, len(ar.modules()), ar.asset_type)
+            (
+                ar.name,
+                ar.hashed_name,
+                ar.size,
+                ar.gzip_size,
+                len(ar.modules()),
+                ar.asset_type,
+            )
             for ar in asset_reports
         ] == [
             (

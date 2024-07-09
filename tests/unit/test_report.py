@@ -419,7 +419,7 @@ class TestReportHeader(object):
     def test_default(self):
         r = Report()
         assert r.header == ReportHeader()
-        assert r.labels_index == None
+        assert r.labels_index is None
 
     def test_get(self):
         r = Report()
@@ -446,7 +446,7 @@ class TestReportHeader(object):
 
     def test_set_labels_index(self):
         r = Report()
-        assert r.labels_index == None
+        assert r.labels_index is None
         r.labels_index = {0: "special_label"}
         assert r.labels_index == {0: "special_label"}
         assert r.header == ReportHeader(labels_index={0: "special_label"})
@@ -531,9 +531,7 @@ def test_iter(mocker):
     r._chunks = None
     r._path_filter = None
     r._line_modifier = None
-    files = []
-    for _file in r:
-        files.append(_file)
+    files = [_file for _file in r]
     assert (
         repr(files)
         == "[<ReportFile name=file1.py lines=0>, <ReportFile name=file2.py lines=0>]"
@@ -1161,32 +1159,6 @@ def test_delete_session():
         ]
     )
     report_file = ReportFile(name="file.py", lines=chunks)
-    original_lines = [
-        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]),
-        "",
-        "",
-        ReportLine.create(coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]),
-        ReportLine.create(coverage=1, sessions=[LineSession(0, 1), LineSession(1, 1)]),
-        ReportLine.create(coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]),
-        "",
-        "",
-        ReportLine.create(
-            coverage=1, sessions=[LineSession(0, 1), LineSession(1, "1/2")]
-        ),
-        ReportLine.create(
-            coverage=1, sessions=[LineSession(0, "1/2"), LineSession(1, 1)]
-        ),
-        "",
-        "",
-        ReportLine.create(coverage=1, sessions=[LineSession(0, 1)]),
-        ReportLine.create(coverage=1, sessions=[LineSession(1, 1)]),
-        ReportLine.create(
-            coverage="1/2", sessions=[LineSession(0, "1/2"), LineSession(1, 0)]
-        ),
-        ReportLine.create(
-            coverage="1/2", sessions=[LineSession(0, 0), LineSession(1, "1/2")]
-        ),
-    ]
     assert report_file._lines == chunks.split("\n")[1:]
     assert report_file.totals == ReportTotals(
         files=0,
