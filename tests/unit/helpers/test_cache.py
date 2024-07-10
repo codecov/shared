@@ -1,5 +1,3 @@
-import pickle
-
 import pytest
 from redis.exceptions import TimeoutError
 

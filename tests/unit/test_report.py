@@ -5,7 +5,6 @@ from shared.reports.editable import EditableReport, EditableReportFile
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.resources import (
     END_OF_CHUNK,
-    END_OF_HEADER,
     Report,
     ReportFile,
     _encode_chunk,

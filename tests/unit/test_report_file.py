@@ -1,5 +1,4 @@
 import pytest
-from mock import PropertyMock
 
 from shared.reports.resources import ReportFile, _ignore_to_func
 from shared.reports.types import ReportLine, ReportTotals

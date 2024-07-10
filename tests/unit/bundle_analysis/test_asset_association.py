@@ -1,13 +1,8 @@
 from pathlib import Path
 from typing import Dict
-from unittest.mock import patch
 
-import pytest
-
-from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
-from shared.bundle_analysis.models import Asset, AssetType, MetadataKey
-from shared.storage.exceptions import PutRequestRateLimitError
-from shared.storage.memory import MemoryStorageService
+from shared.bundle_analysis import BundleAnalysisReport
+from shared.bundle_analysis.models import Asset, AssetType
 
 bundle_stats_prev_a_path = (
     Path(__file__).parent.parent.parent / "samples" / "asset_link_prev_a.json"

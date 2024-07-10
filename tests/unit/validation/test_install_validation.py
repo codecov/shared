@@ -1,6 +1,5 @@
 from shared.validation.install import log as install_log
 from shared.validation.install import validate_install_configuration
-from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import UserGivenSecret
 
 

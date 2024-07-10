@@ -15,7 +15,6 @@ from shared.validation.helpers import (
     determine_path_pattern_type,
     translate_glob_to_regex,
 )
-from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import pre_process_yaml
 from tests.base import BaseTestCase
 
