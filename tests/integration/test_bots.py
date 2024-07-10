@@ -1,14 +1,14 @@
 import pytest
 import requests
 
+from shared.bots.exceptions import RepositoryWithoutValidBotError
+from shared.bots.github_apps import get_github_app_info_for_owner
+from shared.bots.repo_bots import get_repo_appropriate_bot_token
 from shared.django_apps.codecov_auth.models import (
     GITHUB_APP_INSTALLATION_DEFAULT_NAME,
     GithubAppInstallation,
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
-from shared.bots.exceptions import RepositoryWithoutValidBotError
-from shared.bots.github_apps import get_github_app_info_for_owner
-from shared.bots.repo_bots import get_repo_appropriate_bot_token
 
 fake_private_key = """-----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQDCFqq2ygFh9UQU/6PoDJ6L9e4ovLPCHtlBt7vzDwyfwr3XGxln
@@ -42,7 +42,7 @@ class TestRepositoryServiceIntegration(object):
             name="example-python",
             using_integration=True,
             private=True,
-            author__oauth_token = None
+            author__oauth_token=None,
         )
         repo.save()
         with pytest.raises(RepositoryWithoutValidBotError):

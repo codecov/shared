@@ -319,7 +319,9 @@ class TestGettingAdapterAuthInformation(object):
                     app.save()
 
             repo = RepositoryFactory(
-                author=owner, using_integration=(integration_id is not None), private=private
+                author=owner,
+                using_integration=(integration_id is not None),
+                private=private,
             )
             if with_bot:
                 repo.bot = OwnerFactory(
@@ -606,7 +608,9 @@ class TestGettingAdapterAuthInformation(object):
     def test_select_repo_public_with_no_token_no_admin_token_configured(
         self, service, mocker
     ):
-        repo = RepositoryFactory(author__service=service, private=False, bot=None, author__oauth_token=None)
+        repo = RepositoryFactory(
+            author__service=service, private=False, bot=None, author__oauth_token=None
+        )
         repo.save()
         mock_config_helper(
             mocker,
