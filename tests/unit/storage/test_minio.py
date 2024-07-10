@@ -164,10 +164,10 @@ class TestMinioStorageService(BaseTestCase):
         )
 
     """
-    Since we cannot rely on `Chain` in the underlying implementation 
+    Since we cannot rely on `Chain` in the underlying implementation
     we cannot ''trick'' minio into using the IAM auth flow while testing,
-    and therefore have to actually be running on an AWS instance. 
-    We can unskip this test after minio fixes their credential 
+    and therefore have to actually be running on an AWS instance.
+    We can unskip this test after minio fixes their credential
     chain problem
     """
 

@@ -2,7 +2,13 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
-from shared.django_apps.migration_utils import RiskyAddIndex, RiskyRemoveField, RiskyAddField
+
+from shared.django_apps.migration_utils import (
+    RiskyAddField,
+    RiskyAddIndex,
+    RiskyRemoveField,
+)
+
 """
 BEGIN;
 --
@@ -32,8 +38,8 @@ CREATE INDEX "reports_tes_repoid_9e7bb3_idx" ON "reports_testinstance" ("repoid"
 COMMIT;
 """
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ("reports", "0020_alter_reportleveltotals_coverage_and_more"),
     ]

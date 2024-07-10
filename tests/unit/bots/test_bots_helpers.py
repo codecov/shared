@@ -1,13 +1,13 @@
 from unittest.mock import patch
 
 import pytest
-from shared.torngit.base import TokenType
-from shared.typings.oauth_token_types import Token
 
 from shared.bots.helpers import (
     get_dedicated_app_token_from_config,
     get_token_type_from_config,
 )
+from shared.torngit.base import TokenType
+from shared.typings.oauth_token_types import Token
 
 
 @pytest.fixture

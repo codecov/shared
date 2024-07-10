@@ -26,7 +26,6 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
-    "**test**"
 ]
 
 # Same as Black.
@@ -37,10 +36,10 @@ indent-width = 4
 target-version = "py312"
 
 [lint]
-# Currently only enabled for F (Pyflakes), I (isort), E,W, (pycodestyle:Error/Warning),
-# and PLC/E/W (Pylint:Convention/Error/Warning) rules: https://docs.astral.sh/ruff/rules/
+# Currently only enabled for F (Pyflakes), I (isort), E,W (pycodestyle:Error/Warning), PLC/PLE/PLW (Pylint:Convention/Error/Warning) 
+# and PERF (Perflint) rules: https://docs.astral.sh/ruff/rules/
 select = ["F", "I", "E", "W", "PLC", "PLE", "PLW", "PERF"]
-ignore = ["E501"]
+ignore = ["F401", "F403", "F405", "E501", "E712"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 # The preferred method (for now) w.r.t. fixable rules is to manually update the makefile
