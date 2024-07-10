@@ -20,7 +20,7 @@ class RepoTests(TestCase):
 class CommitTests(TestCase):
     def test_commitreport_no_code(self):
         commit = CommitFactory()
-        report1 = CommitReportFactory(
+        CommitReportFactory(
             commit=commit, code="testing"
         )  # this is a report for a "local upload"
         report2 = CommitReportFactory(commit=commit, code=None)

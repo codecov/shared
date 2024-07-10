@@ -55,4 +55,4 @@ def test_report_encoder(obj, res):
 def test_exception_report_encoder():
     with pytest.raises(Exception) as e_info:
         ReportEncoder().default([1, 2])
-    assert e_info.type == TypeError
+    assert e_info.type is TypeError

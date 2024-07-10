@@ -688,7 +688,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_branch_not_existent(self, valid_handler, codecov_vcr):
         with pytest.raises(TorngitClientGeneralError) as e:
-            branch = await valid_handler.get_branch("none")
+            await valid_handler.get_branch("none")
             assert e[0] == 404
             assert e[1]["message"] == "Branch not found"
 
@@ -1109,7 +1109,7 @@ class TestGithubTestCase(object):
         ret = {"content": "", "download_url": "url", "encoding": "none", "sha": "sha"}
         mock_api = mocker.patch.object(Github, "api", return_value=ret)
         path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
-        res = await valid_handler.get_source(path, ref)
+        await valid_handler.get_source(path, ref)
         assert mock_api.call_count == 2
 
     @pytest.mark.asyncio
@@ -1936,9 +1936,10 @@ class TestGithubTestCase(object):
                 },
             },
         ]
-        received = []
-        async for repo in valid_handler.get_repos_from_nodeids_generator(
-            repo_node_ids, "codecove2e"
-        ):
-            received.append(repo)
+        received = [
+            repo
+            async for repo in valid_handler.get_repos_from_nodeids_generator(
+                repo_node_ids, "codecove2e"
+            )
+        ]
         assert received == expected

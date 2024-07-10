@@ -1,12 +1,18 @@
 import datetime
 
 import pytest
-from shared.typings.torngit import GithubInstallationInfo
 
-from shared.django_apps.codecov_auth.models import GithubAppInstallation, GITHUB_APP_INSTALLATION_DEFAULT_NAME
+from shared.bots.exceptions import NoConfiguredAppsAvailable, RequestedGithubAppNotFound
+from shared.bots.github_apps import (
+    get_github_app_info_for_owner,
+    get_specific_github_app_details,
+)
+from shared.django_apps.codecov_auth.models import (
+    GITHUB_APP_INSTALLATION_DEFAULT_NAME,
+    GithubAppInstallation,
+)
 from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
-from shared.bots.exceptions import RequestedGithubAppNotFound, NoConfiguredAppsAvailable
-from shared.bots.github_apps import get_specific_github_app_details, get_github_app_info_for_owner
+from shared.typings.torngit import GithubInstallationInfo
 
 
 class TestGetSpecificGithubAppDetails(object):

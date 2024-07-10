@@ -5,7 +5,6 @@ import pytest
 from freezegun import freeze_time
 
 # This import here avoids a circular import issue
-import shared.torngit
 from shared.github import get_github_jwt_token, get_pem
 from shared.utils.test_utils import mock_config_helper
 

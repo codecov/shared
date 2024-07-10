@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
+
 from shared.django_apps.codecov_metrics.models import UserOnboardingLifeCycleMetrics
 from shared.django_apps.codecov_metrics.service.codecov_metrics import (
     UserOnboardingMetricsService,

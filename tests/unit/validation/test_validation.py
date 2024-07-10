@@ -4,7 +4,6 @@ import pytest
 
 from shared.config import ConfigHelper, get_config
 from shared.validation.exceptions import InvalidYamlException
-from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import (
     _calculate_error_location_and_message_from_error_dict,
     do_actual_validation,
@@ -576,7 +575,6 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"codecov": {"notify": {"after_n_builds": -1}}}
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        exception = exc.value
         assert exc.value.error_location == ["codecov", "notify", "after_n_builds"]
         assert exc.value.error_message == "min value is 0"
 
@@ -589,7 +587,6 @@ class TestUserYamlValidation(BaseTestCase):
         user_input = {"comment": {"after_n_builds": -1}}
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-        exception = exc.value
         assert exc.value.error_location == ["comment", "after_n_builds"]
         assert exc.value.error_message == "min value is 0"
 
