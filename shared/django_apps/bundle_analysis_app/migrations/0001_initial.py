@@ -28,23 +28,24 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='CacheConfig',
+            name="CacheConfig",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('repo_id', models.IntegerField()),
-                ('bundle_name', models.CharField()),
-                ('is_caching', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("repo_id", models.IntegerField()),
+                ("bundle_name", models.CharField()),
+                ("is_caching", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.AddConstraint(
-            model_name='cacheconfig',
-            constraint=models.UniqueConstraint(fields=('repo_id', 'bundle_name'), name='unique_repo_bundle_pair'),
+            model_name="cacheconfig",
+            constraint=models.UniqueConstraint(
+                fields=("repo_id", "bundle_name"), name="unique_repo_bundle_pair"
+            ),
         ),
     ]
