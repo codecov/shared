@@ -4,10 +4,9 @@ from unittest.mock import patch
 import pytest
 
 from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
-from shared.bundle_analysis.models import AssetType, MetadataKey
+from shared.bundle_analysis.models import SCHEMA_VERSION, AssetType, MetadataKey
 from shared.storage.exceptions import PutRequestRateLimitError
 from shared.storage.memory import MemoryStorageService
-from shared.bundle_analysis.models import SCHEMA_VERSION, Bundle
 
 sample_bundle_stats_path = (
     Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats.json"
@@ -28,7 +27,9 @@ sample_bundle_stats_path_4 = (
 )
 
 sample_bundle_stats_path_5 = (
-    Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats_another_bundle.json"
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_another_bundle.json"
 )
 
 
@@ -471,17 +472,13 @@ def test_bundle_is_cached():
         assert bundle_analysis_report.is_cached() == False
 
         # Test setting 'sample' bundle to True
-        bundle_analysis_report.update_is_cached(
-            data={"sample": True}
-        )
+        bundle_analysis_report.update_is_cached(data={"sample": True})
         assert bundle_analysis_report.bundle_report("sample").is_cached() == True
         assert bundle_analysis_report.bundle_report("sample2").is_cached() == False
         assert bundle_analysis_report.is_cached() == True
 
         # Test setting 'sample2' bundle to True and 'sample' back to False
-        bundle_analysis_report.update_is_cached(
-            data={"sample2": True, "sample": False}
-        )
+        bundle_analysis_report.update_is_cached(data={"sample2": True, "sample": False})
         assert bundle_analysis_report.bundle_report("sample").is_cached() == False
         assert bundle_analysis_report.bundle_report("sample2").is_cached() == True
         assert bundle_analysis_report.is_cached() == True
