@@ -174,6 +174,11 @@ class BundleReport:
             )
             return json.loads(result.info)
 
+    def is_cached(self) -> bool:
+        with get_db_session(self.db_path) as session:
+            result = session.query(Bundle).filter(Bundle.id == self.bundle.id).first()
+            return result.is_cached
+
 
 class BundleAnalysisReport:
     """
@@ -352,3 +357,14 @@ class BundleAnalysisReport:
     def session_count(self) -> int:
         with get_db_session(self.db_path) as session:
             return session.query(Session).count()
+
+    def update_is_cached(self, data: Dict[str, bool]) -> None:
+        with get_db_session(self.db_path) as session:
+            for bundle_name, value in data.items():
+                # TODO: Use SQLalchemy ORM to update instead of raw SQL
+                # https://github.com/codecov/engineering-team/issues/1846
+                stmt = (
+                    f"UPDATE bundles SET is_cached={value} WHERE name='{bundle_name}'"
+                )
+                session.execute(text(stmt))
+            session.commit()
