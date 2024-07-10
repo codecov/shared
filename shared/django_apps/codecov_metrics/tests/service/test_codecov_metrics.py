@@ -5,6 +5,8 @@ from shared.django_apps.codecov_metrics.service.codecov_metrics import (
     UserOnboardingMetricsService,
 )
 
+from shared.django_apps.bundle_analysis_app.service.bundle_analysis import BundleAnalysisCacheConfigService
+from shared.django_apps.bundle_analysis_app.models import CacheConfig
 
 class UserOnboardingMetricsServiceTest(TestCase):
     def setUp(self):
@@ -45,3 +47,42 @@ class UserOnboardingMetricsServiceTest(TestCase):
             self.org_id, invalid_event, self.payload
         )
         self.assertIsNone(metric)
+
+    def test_bundle_config_create_then_update(self):
+        # Create
+        BundleAnalysisCacheConfigService.update_cache_option(
+            repo_id=1,
+            name="bundle1",
+            is_caching=True
+        )
+
+        query_results = CacheConfig.objects.all()
+        assert len(query_results) == 1
+
+        data = query_results[0]
+        create_stamp, update_stamp = data.created_at, data.updated_at
+
+        assert data.repo_id==1
+        assert data.bundle_name=="bundle1"
+        assert data.is_caching==True
+        assert create_stamp is not None
+        assert update_stamp is not None
+
+        # Update
+        BundleAnalysisCacheConfigService.update_cache_option(
+            repo_id=1,
+            name="bundle1",
+            is_caching=False
+        )
+
+        query_results = CacheConfig.objects.all()
+        assert len(query_results) == 1
+
+        data = query_results[0]
+        create_stamp_updated, update_stamp_updated = data.created_at, data.updated_at
+
+        assert data.repo_id==1
+        assert data.bundle_name=="bundle1"
+        assert data.is_caching==False
+        assert create_stamp_updated == create_stamp
+        assert update_stamp_updated != update_stamp
