@@ -1,11 +1,11 @@
 import pytest
+
 from shared.django_apps.core.tests.factories import (
-    CommitFactory,
-    PullFactory,
     RepositoryFactory,
 )
 from shared.django_apps.reports.models import Test, TestInstance
 from shared.django_apps.reports.tests.factories import UploadFactory
+
 
 @pytest.fixture
 def repo_fixture():
@@ -50,7 +50,14 @@ def create_test_func(repo_fixture):
 @pytest.fixture
 def create_test_instance_func(repo_fixture, upload_fixture):
     def create_test_instance(
-        test, outcome, commitid=None, branch=None, repoid=None, upload=upload_fixture, duration=0, created_at=None
+        test,
+        outcome,
+        commitid=None,
+        branch=None,
+        repoid=None,
+        upload=upload_fixture,
+        duration=0,
+        created_at=None,
     ):
         ti = TestInstance(
             test=test,
