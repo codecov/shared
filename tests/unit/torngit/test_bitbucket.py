@@ -446,7 +446,7 @@ class TestUnitBitbucket(object):
             ),
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://bitbucket.org/api/2.0/repositories/e2e-org/test-repo/pullrequests/1/diffstat"
             ).mock(
                 return_value=httpx.Response(
@@ -503,7 +503,7 @@ class TestUnitBitbucket(object):
             ),
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://bitbucket.org/api/2.0/repositories/e2e-org/test-repo/pullrequests/4/diffstat"
             ).mock(
                 return_value=httpx.Response(
@@ -515,7 +515,7 @@ class TestUnitBitbucket(object):
                 )
             )
             with pytest.raises(TorngitObjectNotFoundError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
 
@@ -531,7 +531,7 @@ class TestUnitBitbucket(object):
             ),
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://bitbucket.org/api/2.0/repositories/e2e-org/test-repo/pullrequests/4/diffstat"
             ).mock(
                 return_value=httpx.Response(
@@ -543,6 +543,6 @@ class TestUnitBitbucket(object):
                 )
             )
             with pytest.raises(TorngitClientError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Bitbucket API: Forbidden"

@@ -179,7 +179,7 @@ class TestYamlSavingService(object):
         res = await fetch_current_yaml_from_provider_via_reference(
             commitid, valid_handler
         )
-        assert res == None
+        assert res is None
         valid_handler.list_top_level_files.assert_called_with(commitid)
 
     @pytest.mark.asyncio
@@ -194,8 +194,6 @@ class TestYamlSavingService(object):
             {"name": "tests", "path": "tests", "type": "folder"},
         ]
         list_files_future = mocked_list_files_result
-        contents_result = {"content": sample_yaml}
-        contents_result_future = contents_result
         exception_get_source = TorngitObjectNotFoundError("not found", ":(")
         valid_handler = mocker.MagicMock(
             list_top_level_files=mock.AsyncMock(return_value=list_files_future),
@@ -204,6 +202,6 @@ class TestYamlSavingService(object):
         res = await fetch_current_yaml_from_provider_via_reference(
             commitid, valid_handler
         )
-        assert res == None
+        assert res is None
         valid_handler.list_top_level_files.assert_called_with(commitid)
         valid_handler.get_source.assert_called_with("codecov.yaml", commitid)

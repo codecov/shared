@@ -1,12 +1,18 @@
+import datetime
 import enum
 
 import factory
 from factory.django import DjangoModelFactory
-import datetime
 
 from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
 from shared.django_apps.reports import models
-from shared.django_apps.reports.models import ReportResults, Flake, Test, TestInstance, ReducedError
+from shared.django_apps.reports.models import (
+    Flake,
+    ReducedError,
+    ReportResults,
+    Test,
+    TestInstance,
+)
 
 
 # TODO: deduplicate this from graphql_api.types.enums
@@ -105,11 +111,13 @@ class ReportResultsFactory(DjangoModelFactory):
         ]
     )
 
+
 class ReducedErrorFactory(DjangoModelFactory):
     class Meta:
         model = ReducedError
 
     message = factory.Sequence(lambda n: f"message_{n}")
+
 
 class TestFactory(DjangoModelFactory):
     class Meta:

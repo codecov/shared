@@ -169,10 +169,6 @@ coverage_comment_config = {
                     "type": str,
                     "description": "[patch coverage] only post comment if the patch has uncovered lines",
                 },
-                "check_fails": {
-                    "type": str,
-                    "description": "only post comment if either the 'project' or 'patch' statuses fail",
-                },
             },
         },
     },

@@ -106,7 +106,7 @@ class TestAWSStorageService(BaseTestCase):
         delete_result = storage.delete_file(bucket_name=bucket_name, path=path)
         assert delete_result
         with pytest.raises(FileNotInStorageError):
-            reading_result = storage.read_file(bucket_name=bucket_name, path=path)
+            storage.read_file(bucket_name=bucket_name, path=path)
 
     def test_batch_delete_files(self, codecov_vcr):
         storage = AWSStorageService(aws_config)

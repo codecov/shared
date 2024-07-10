@@ -202,7 +202,7 @@ def test_report_file_get_filter():
     r = ReportFile(
         name="folder/file.py",
         lines=[ReportLine.create(), ReportLine.create()],
-        line_modifier=lambda l: l,
+        line_modifier=lambda ln: ln,
     )
     assert r.get(1) == ReportLine.create()
 
@@ -212,7 +212,7 @@ def test_report_file_get_filter_none():
     r = ReportFile(
         name="folder/file.py",
         lines=[ReportLine.create(), ReportLine.create()],
-        line_modifier=lambda l: None,
+        line_modifier=lambda ln: None,
     )
     assert r.get(1) is None
 
@@ -308,7 +308,7 @@ def test_merge_exception():
     [
         (ReportFile(name="file.py", totals=[0]), ReportTotals(0)),
         (
-            ReportFile(name="file.py", totals=[0], line_modifier=lambda l: l),
+            ReportFile(name="file.py", totals=[0], line_modifier=lambda ln: ln),
             ReportTotals(0, coverage=None),
         ),
     ],
@@ -326,7 +326,7 @@ def test_totals(r, totals):
             None,
             [(1, ReportLine.create(1)), (2, ReportLine.create(2))],
         ),
-        ([(1, ReportLine.create(1)), (2, ReportLine.create(2))], lambda l: None, []),
+        ([(1, ReportLine.create(1)), (2, ReportLine.create(2))], lambda ln: None, []),
     ],
 )
 def test_apply_line_modifier(lines_before, line_modifier, lines_after):
@@ -344,7 +344,7 @@ def test_apply_line_modifier(lines_before, line_modifier, lines_after):
             ReportFile(
                 name="folder/file.py",
                 lines=[ReportLine.create(1), ReportLine.create(0)],
-                line_modifier=lambda l: None,
+                line_modifier=lambda ln: None,
             ),
             [],
         ),
@@ -367,9 +367,7 @@ def test_report_iter():
         lines=[ReportLine.create(coverage=1), ReportLine.create(coverage=0)],
         line_modifier=filter_lines,
     )
-    lines = []
-    for ln in r:
-        lines.append(ln)
+    lines = [ln for ln in r]
     assert lines == [ReportLine.create(coverage=1), None, None]
 
 

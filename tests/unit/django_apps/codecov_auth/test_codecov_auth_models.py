@@ -14,21 +14,21 @@ from shared.django_apps.codecov_auth.models import (
     SERVICE_CODECOV_ENTERPRISE,
     SERVICE_GITHUB,
     SERVICE_GITHUB_ENTERPRISE,
+    AccountsUsers,
     GithubAppInstallation,
     OrganizationLevelToken,
+    Owner,
     Service,
     User,
-    AccountsUsers,
-    Owner,
 )
 from shared.django_apps.codecov_auth.tests.factories import (
-    OrganizationLevelTokenFactory,
-    OwnerFactory,
     AccountFactory,
-    UserFactory,
-    StripeBillingFactory,
     InvoiceBillingFactory,
     OktaSettingsFactory,
+    OrganizationLevelTokenFactory,
+    OwnerFactory,
+    StripeBillingFactory,
+    UserFactory,
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.plan.constants import PlanName
@@ -92,9 +92,9 @@ class TestOwnerModel(TransactionTestCase):
         owner.stripe_customer_id = ""
         owner.stripe_subscription_id = ""
         owner.clean()
-        assert owner.plan == None
-        assert owner.stripe_customer_id == None
-        assert owner.stripe_subscription_id == None
+        assert owner.plan is None
+        assert owner.stripe_customer_id is None
+        assert owner.stripe_subscription_id is None
 
     def test_setting_staff_on_for_not_a_codecov_member(self):
         user_not_part_of_codecov = OwnerFactory(email="user@notcodecov.io", staff=True)
@@ -269,7 +269,7 @@ class TestOwnerModel(TransactionTestCase):
 
     def test_activated_user_count_returns_0_if_plan_activated_users_is_null(self):
         owner = OwnerFactory(plan_activated_users=None)
-        assert owner.plan_activated_users == None
+        assert owner.plan_activated_users is None
         assert owner.activated_user_count == 0
 
     def test_activated_user_count_ignores_students(self):
@@ -292,6 +292,19 @@ class TestOwnerModel(TransactionTestCase):
         self.owner.refresh_from_db()
         assert self.owner.plan_activated_users == [to_activate.ownerid]
 
+    def test_activate_user_updates_account_user(self):
+        to_activate = OwnerFactory()
+        account = AccountFactory()
+        self.owner.account = account
+        self.owner.save()
+
+        self.owner.activate_user(to_activate)
+        self.owner.refresh_from_db()
+
+        assert to_activate.ownerid in self.owner.plan_activated_users
+        user = to_activate.user
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
     def test_deactivate_removes_ownerid_from_plan_activated_users(self):
         to_deactivate = OwnerFactory()
         self.owner.plan_activated_users = [3, 4, to_deactivate.ownerid]
@@ -305,6 +318,23 @@ class TestOwnerModel(TransactionTestCase):
         self.owner.plan_activated_users = []
         self.owner.save()
         self.owner.deactivate_user(to_deactivate)
+
+    def test_deactivate_user_updates_account_user(self):
+        to_deactivate = OwnerFactory()
+        self.owner.account = AccountFactory()
+        self.owner.user = UserFactory()
+        self.owner.save()
+        AccountsUsers(user=self.owner.user, account=self.owner.account).save()
+
+        self.owner.deactivate_user(to_deactivate)
+        self.owner.refresh_from_db()
+
+        assert (
+            AccountsUsers.objects.filter(
+                user=self.owner.user, account=self.owner.account
+            ).first()
+            is None
+        )
 
     def test_can_activate_user_returns_true_if_user_is_student(self):
         student = OwnerFactory(student=True)
@@ -376,7 +406,7 @@ class TestOwnerModel(TransactionTestCase):
         assert self.owner.admins == [admin1.ownerid]
 
     def test_access_no_root_organization(self):
-        assert self.owner.root_organization == None
+        assert self.owner.root_organization is None
 
     def test_access_root_organization(self):
         root = OwnerFactory(service="gitlab")
@@ -406,10 +436,8 @@ class TestOwnerModel(TransactionTestCase):
             organizations=[org.ownerid], student=True
         )
 
-        inactive_student_in_org = OwnerFactory(
-            organizations=[org.ownerid], student=True
-        )
-        inactive_user_in_org = OwnerFactory(organizations=[org.ownerid])
+        OwnerFactory(organizations=[org.ownerid], student=True)
+        OwnerFactory(organizations=[org.ownerid])
 
         org.plan_activated_users = [
             activated_user.ownerid,
@@ -431,10 +459,8 @@ class TestOwnerModel(TransactionTestCase):
             organizations=[org.ownerid], student=True
         )
 
-        inactive_student_in_org = OwnerFactory(
-            organizations=[org.ownerid], student=True
-        )
-        inactive_user_in_org = OwnerFactory(organizations=[org.ownerid])
+        OwnerFactory(organizations=[org.ownerid], student=True)
+        OwnerFactory(organizations=[org.ownerid])
 
         org.plan_activated_users = [
             activated_user.ownerid,
@@ -836,3 +862,116 @@ class TestAccountModel(TransactionTestCase):
         )
         self.assertFalse(enterprise_account.stripe_billing.first().is_active)
         self.assertTrue(enterprise_account.invoice_billing.first().is_active)
+
+    def test_activate_user_onto_account(self):
+        user = UserFactory()
+        user.save()
+        account = AccountFactory()
+        account.save()
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first() is None
+        account.activate_user_onto_account(user)
+        account.refresh_from_db()
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+    def test_activate_owner_user_onto_account_create_user(self):
+        owner = OwnerFactory()
+        account = AccountFactory()
+        account.save()
+
+        account.activate_owner_user_onto_account(owner)
+        account.refresh_from_db()
+
+        new_user = User.objects.get(id=owner.user_id)
+        assert AccountsUsers.objects.filter(user=new_user, account=account).first()
+
+    def test_activate_owner_user_onto_account_with_user(self):
+        owner = OwnerFactory()
+        user = UserFactory()
+        owner.user = user
+        account = AccountFactory()
+        account.save()
+
+        account.activate_owner_user_onto_account(owner)
+        account.refresh_from_db()
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+    def test_activate_owner_user_onto_account_existing_account_user(self):
+        owner = OwnerFactory()
+        user = UserFactory()
+        owner.user = user
+        account = AccountFactory()
+        account.save()
+
+        account.activate_owner_user_onto_account(owner)
+        account.refresh_from_db()
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+        account.activate_owner_user_onto_account(owner)
+        account.refresh_from_db()
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+    def test_deactivate_owner_user_from_account_remove_user(self):
+        # Set up User to be associated with an Org under an account
+        owner = OwnerFactory()
+        user = UserFactory()
+        owner.user = user
+        org = OwnerFactory(
+            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan_activated_users=[owner.ownerid],
+        )
+        account = AccountFactory()
+        org.account = account
+        org.save()
+        account.users.add(user)
+        account.save()
+
+        # ensure that there exists an account user relationship before deactivating
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+        org.plan_activated_users = []
+        org.save()
+        account.deactivate_owner_user_from_account(owner)
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first() is None
+
+    def test_deactivate_owner_user_from_account_do_not_remove_user(self):
+        # Set up User to be associated with an Org under an account
+        owner = OwnerFactory()
+        user = UserFactory()
+        owner.user = user
+        org1 = OwnerFactory(
+            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan_activated_users=[owner.ownerid],
+        )
+        org2 = OwnerFactory(
+            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan_activated_users=[owner.ownerid],
+        )
+        account = AccountFactory()
+        org1.account = account
+        org1.save()
+        org2.account = account
+        org2.save()
+        account.users.add(user)
+        account.save()
+
+        # ensure that there exists an account user relationship before deactivating
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+        # Only deactivate user for org1, org2 still has a reference to the user
+        org1.plan_activated_users = []
+        org1.save()
+        account.deactivate_owner_user_from_account(owner)
+
+        assert AccountsUsers.objects.filter(user=user, account=account).first()
+
+    def test_deactivate_owner_user_no_user_do_nothing(self):
+        owner_user = OwnerFactory()
+        account = AccountFactory()
+        account.save()
+        assert account.deactivate_owner_user_from_account(owner_user) is None

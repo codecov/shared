@@ -71,4 +71,4 @@ class TestUrlsUtil(BaseTestCase):
             Exception, match="'args' parameter should be dict, list or tuple"
         ):
             url = "http://example.com"
-            res = url_concat(url, "abc")
+            url_concat(url, "abc")

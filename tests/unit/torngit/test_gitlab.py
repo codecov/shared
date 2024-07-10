@@ -56,7 +56,7 @@ class TestUnitGitlab(object):
             "git_provider_api_calls_gitlab_total",
             labels={"endpoint": "get_commit_statuses"},
         )
-        mocked_fetch = mocker.patch.object(
+        mocker.patch.object(
             Gitlab,
             "api",
             return_value=[
@@ -93,7 +93,7 @@ class TestUnitGitlab(object):
             "git_provider_api_calls_gitlab_total",
             labels={"endpoint": "get_commit_statuses"},
         )
-        mocked_fetch = mocker.patch.object(
+        mocker.patch.object(
             Gitlab,
             "api",
             return_value=[
@@ -136,7 +136,7 @@ class TestUnitGitlab(object):
             "git_provider_api_calls_gitlab_total",
             labels={"endpoint": "get_commit_statuses"},
         )
-        mocked_fetch = mocker.patch.object(
+        mocker.patch.object(
             Gitlab,
             "api",
             return_value=[
@@ -460,7 +460,7 @@ class TestUnitGitlab(object):
             labels={"endpoint": "get_pull_request_files"},
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://gitlab.com/api/v4/projects/187725/merge_requests/4/diffs"
             ).mock(
                 return_value=httpx.Response(
@@ -478,7 +478,7 @@ class TestUnitGitlab(object):
                 token=dict(key=10 * "a280"),
             )
             with pytest.raises(TorngitObjectNotFoundError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
         after = REGISTRY.get_sample_value(
@@ -494,7 +494,7 @@ class TestUnitGitlab(object):
             labels={"endpoint": "get_pull_request_files"},
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://gitlab.com/api/v4/projects/187725/merge_requests/4/diffs"
             ).mock(
                 return_value=httpx.Response(
@@ -512,7 +512,7 @@ class TestUnitGitlab(object):
                 token=dict(key=10 * "a280"),
             )
             with pytest.raises(TorngitClientError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Gitlab API: 403"
         after = REGISTRY.get_sample_value(
