@@ -4,7 +4,6 @@ import pytest
 
 from shared.config import ConfigHelper, get_config
 from shared.validation.exceptions import InvalidYamlException
-from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import (
     _calculate_error_location_and_message_from_error_dict,
     do_actual_validation,

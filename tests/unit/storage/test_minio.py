@@ -4,7 +4,7 @@ import tempfile
 import pytest
 
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
-from shared.storage.minio import Minio, MinioStorageService
+from shared.storage.minio import MinioStorageService
 from tests.base import BaseTestCase
 
 minio_config = {
