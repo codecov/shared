@@ -14,6 +14,7 @@ from shared.django_apps.codecov_auth.models import (
     SERVICE_CODECOV_ENTERPRISE,
     SERVICE_GITHUB,
     SERVICE_GITHUB_ENTERPRISE,
+    Account,
     AccountsUsers,
     GithubAppInstallation,
     OrganizationLevelToken,
@@ -354,6 +355,18 @@ class TestOwnerModel(TransactionTestCase):
         self.owner.plan_user_count = 0
         self.owner.save()
         assert self.owner.can_activate_user(to_activate) is True
+
+    def test_can_activate_user_can_activate_account(self):
+        self.owner.account = AccountFactory(plan_seat_count=1)
+        self.owner.plan_user_count = 1
+        self.owner.save()
+        assert self.owner.can_activate_user(self.owner)
+
+    def test_can_activate_user_cannot_activate_account(self):
+        self.owner.account = AccountFactory(plan_seat_count=0)
+        self.owner.plan_user_count = 1
+        self.owner.save()
+        assert not self.owner.can_activate_user(self.owner)
 
     def test_add_admin_adds_ownerid_to_admin_array(self):
         self.owner.admins = []
@@ -975,3 +988,123 @@ class TestAccountModel(TransactionTestCase):
         account = AccountFactory()
         account.save()
         assert account.deactivate_owner_user_from_account(owner_user) is None
+
+    def test_activated_user_count(self):
+        # This shouldn't show up on the account
+        unrelated_owner: Owner = OwnerFactory(service="github")
+        unrelated_user: User = UserFactory()
+        unrelated_owner.user = unrelated_user
+        unrelated_user.save()
+
+        # This shouldn't show up because it's a student, and students don't
+        # count towards activated users.
+        student_owner: Owner = OwnerFactory(service="github", student=True)
+        student_user: User = UserFactory()
+        student_owner.user = student_user
+        student_user.save()
+
+        owner1: Owner = OwnerFactory(service="github", student=False)
+        user1: User = UserFactory()
+        owner1.user = user1
+        owner1.save()
+
+        owner2: Owner = OwnerFactory(service="bitbucket", student=False)
+        user2: User = UserFactory()
+        owner2.user = user2
+        owner2.save()
+
+        org: Owner = OwnerFactory()
+        account: Account = AccountFactory()
+        org.account = account
+        org.save()
+
+        account.users.add(student_user)
+        account.users.add(user1)
+        account.users.add(user2)
+
+        assert 2 == account.activated_user_count
+
+    def test_can_activate_user_already_exist(self):
+        owner: Owner = OwnerFactory(service="github", student=False)
+        user: User = UserFactory()
+        owner.user = user
+        owner.save()
+        user.save()
+
+        org: Owner = OwnerFactory()
+        account: Account = AccountFactory()
+        org.account = account
+        org.save()
+
+        account.users.add(user)
+        assert not account.can_activate_user(user)
+
+    def test_can_activate_user_student(self):
+        owner: Owner = OwnerFactory(service="github", student=True)
+        user: User = UserFactory()
+        owner.user = user
+        owner.save()
+
+        org: Owner = OwnerFactory()
+        account: Account = AccountFactory(free_seat_count=0, plan_seat_count=0)
+        org.account = account
+        org.save()
+
+        assert account.can_activate_user(user)
+
+    def test_can_activate_user_not_enough_seats_left(self):
+        owner: Owner = OwnerFactory(service="github", student=False)
+        user: User = UserFactory()
+        owner.user = user
+        owner.save()
+
+        org: Owner = OwnerFactory()
+        account: Account = AccountFactory(free_seat_count=0, plan_seat_count=0)
+        org.account = account
+        org.save()
+
+        assert not account.can_activate_user(user)
+
+    def test_can_activate_user_enough_seats_left(self):
+        owner: Owner = OwnerFactory(service="github", student=False)
+        user: User = UserFactory()
+        owner.user = user
+        owner.save()
+
+        org: Owner = OwnerFactory()
+        account: Account = AccountFactory(free_seat_count=0, plan_seat_count=1)
+        org.account = account
+        org.save()
+
+        assert account.can_activate_user(user)
+
+    def test_can_activate_user_no_user(self):
+        org: Owner = OwnerFactory()
+        account: Account = AccountFactory(free_seat_count=0, plan_seat_count=1)
+        org.account = account
+        org.save()
+
+        assert account.can_activate_user()
+
+
+class TestUserModels(TransactionTestCase):
+    def test_is_github_student(self):
+        github_user: Owner = OwnerFactory(service="github", student=True)
+        user = UserFactory()
+        github_user.user = user
+        github_user.save()
+
+        assert user.is_github_student is True
+
+    def test_is_not_github_student(self):
+        github_user: Owner = OwnerFactory(service="github", student=False)
+        user = UserFactory()
+        github_user.user = user
+        github_user.save()
+
+        assert user.is_github_student is False
+
+    def test_is_not_github_student_no_owners(self):
+        user = UserFactory()
+
+        assert user.is_github_student is False
