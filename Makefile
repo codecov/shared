@@ -17,7 +17,7 @@ lint.install:
 	pip install -Iv ruff
 
 lint.run:
-	ruff check --fix
+	ruff check
 	ruff format
 
 lint.check:
