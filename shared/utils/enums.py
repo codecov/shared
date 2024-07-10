@@ -38,6 +38,7 @@ class TaskConfigGroup(Enum):
     send_email = "send_email"
     static_analysis = "static_analysis"
     status = "status"
+    sync_account = "sync_account"
     sync_plans = "sync_plans"
     sync_repos = "sync_repos"
     sync_teams = "sync_teams"
