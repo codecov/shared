@@ -449,6 +449,7 @@ def test_bundle_is_cached():
         assert len(bundle_reports) == 2
         for bundle in bundle_reports:
             assert bundle.is_cached() == False
+        assert bundle_analysis_report.is_cached() == False
 
         # Test setting 'sample' bundle to True
         bundle_analysis_report.update_is_cached(
@@ -456,6 +457,7 @@ def test_bundle_is_cached():
         )
         assert bundle_analysis_report.bundle_report("sample").is_cached() == True
         assert bundle_analysis_report.bundle_report("sample2").is_cached() == False
+        assert bundle_analysis_report.is_cached() == True
 
         # Test setting 'sample2' bundle to True and 'sample' back to False
         bundle_analysis_report.update_is_cached(
@@ -463,6 +465,7 @@ def test_bundle_is_cached():
         )
         assert bundle_analysis_report.bundle_report("sample").is_cached() == False
         assert bundle_analysis_report.bundle_report("sample2").is_cached() == True
+        assert bundle_analysis_report.is_cached() == True
 
     finally:
         bundle_analysis_report.cleanup()

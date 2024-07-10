@@ -368,3 +368,8 @@ class BundleAnalysisReport:
                 )
                 session.execute(text(stmt))
             session.commit()
+
+    def is_cached(self) -> bool:
+        with get_db_session(self.db_path) as session:
+            cached_bundles = session.query(Bundle).filter_by(is_cached=True)
+            return cached_bundles.count() > 0
