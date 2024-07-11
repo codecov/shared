@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from shared.bots.github_apps import get_github_app_info_for_owner
 from shared.bots.owner_bots import get_owner_appropriate_bot_token
@@ -20,8 +20,10 @@ log = logging.getLogger(__name__)
 
 
 def get_adapter_auth_information(
-    owner: Owner,
-    repository: Optional[Repository] = None,
+    # Owner type can be a Django Owner | SQLAlchemy Owner - added Any to help with IDE typing
+    owner: Owner | Any,
+    # Owner type can be a Django Repository | SQLAlchemy Repository - added Any to help with IDE typing
+    repository: Optional[Repository] | Any = None,
     *,
     ignore_installations: bool = False,
     installation_name_to_use: str | None = GITHUB_APP_INSTALLATION_DEFAULT_NAME,

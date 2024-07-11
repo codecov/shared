@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple, TypedDict
+from typing import Any, Dict, List, Optional, Tuple, TypedDict
 
 from shared.django_apps.codecov_auth.models import Owner
 from shared.torngit.base import TokenType
@@ -20,8 +20,8 @@ class AdapterAuthInformation(TypedDict):
 
     # This is the Authentication used with the git provider
     token: Token
-    # token_owner is used to decide on token_refresh functions
-    token_owner: Owner | None
+    # token_owner is used to decide on token_refresh functions. Could be SQLAlchemy | Django Owner - leaving Any here
+    token_owner: Owner | Any | None
     # GitHub app info - exclusive for GitHub (duh)
     # Preferred method of authentication (if available)
     # selected_installation_info is the installation being used to communicate with github. We save this info in the TorngitAdapter.
