@@ -37,7 +37,7 @@ def get_repo_appropriate_bot(repo: Repository) -> Owner:
         return repo.bot
     try:
         return get_owner_or_appropriate_bot(
-            DjangoSQLAlchemyRepositoryWrapper().get_repo_owner(repo)
+            DjangoSQLAlchemyRepositoryWrapper.get_repo_owner(repo)
         )
     except OwnerWithoutValidBotError:
         raise RepositoryWithoutValidBotError()

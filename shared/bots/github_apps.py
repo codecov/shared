@@ -70,7 +70,7 @@ def _get_apps_from_weighted_selection(
         obj.id: obj
         for obj in filter(
             lambda obj: _can_use_this_app(obj, installation_name, repository),
-            DjangoSQLAlchemyOwnerWrapper().get_github_app_installations(owner) or [],
+            DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner) or [],
         )
     }
     # We assign weights to the apps based on how long ago they were created.
@@ -105,7 +105,7 @@ def _get_apps_from_weighted_selection(
             lambda obj: _can_use_this_app(
                 obj, GITHUB_APP_INSTALLATION_DEFAULT_NAME, repository
             ),
-            DjangoSQLAlchemyOwnerWrapper().get_github_app_installations(owner),
+            DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner),
         )
         if default_apps:
             apps_to_consider.extend(default_apps)
@@ -147,9 +147,7 @@ def get_specific_github_app_details(
     app: GithubAppInstallation = next(
         (
             obj
-            for obj in DjangoSQLAlchemyOwnerWrapper().get_github_app_installations(
-                owner
-            )
+            for obj in DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner)
             if obj.id == github_app_id
         ),
         None,

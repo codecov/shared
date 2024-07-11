@@ -1,13 +1,14 @@
 from typing import Any
 
 from shared.django_apps.codecov_auth.models import Owner
-from shared.orms import ORMModelsMixins
+from shared.orms import _is_django_model
 
 
-class DjangoSQLAlchemyOwnerWrapper(ORMModelsMixins):
+class DjangoSQLAlchemyOwnerWrapper:
     # Owner type can be a Django Owner | SQLAlchemy Owner - added Any to help with IDE typing
-    def get_github_app_installations(self, owner: Owner | Any):
-        if self._is_django_model(owner):
+    @staticmethod
+    def get_github_app_installations(owner: Owner | Any):
+        if _is_django_model(owner):
             return owner.github_app_installations.all()
         else:
             return owner.github_app_installations
