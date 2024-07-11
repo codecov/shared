@@ -42,6 +42,7 @@ def test_celery_config():
         "app.tasks.remove_webhook.RemoveOldHook",
         "app.tasks.static_analysis.*",
         "app.tasks.status.*",
+        "app.tasks.sync_account.ActivateAccountUser",
         "app.tasks.sync_plans.SyncPlans",
         "app.tasks.sync_repo_languages.SyncLanguages",
         "app.tasks.sync_repo_languages_gql.SyncLanguagesGQL",

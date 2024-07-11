@@ -90,6 +90,8 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "external_id"
 
+    _okta_loggedin_accounts: list["Account"] = []
+
     class Meta:
         db_table = "users"
         app_label = CODECOV_AUTH_APP_LABEL
@@ -108,6 +110,14 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     def is_authenticated(self):
         # Required to implement django's user-model interface
         return True
+
+    @property
+    def is_github_student(self) -> bool:
+        try:
+            github_owner: Owner = self.owners.get(service=Service.GITHUB)
+        except Owner.DoesNotExist:
+            return False
+        return github_owner.student
 
     def has_perm(self, perm, obj=None):
         # Required to implement django's user-model interface
@@ -150,6 +160,29 @@ class Account(BaseModel):
     def __str__(self):
         str_representation_of_is_active = "Active" if self.is_active else "Inactive"
         return f"{str_representation_of_is_active} Account: {self.name}"
+
+    @property
+    def activated_user_count(self) -> int:
+        # Activated users include all _non_ students. So we'll need to get all the
+        # students and filter them out.
+        return self.users.filter(owners__student=False).count()
+
+    def can_activate_user(self, user: User | None = None) -> bool:
+        """
+        Check if account can activate a user. If no user is passed,
+        then only check for available seats. Otherwise, we can activate
+        a user if they're a student and if they haven't already been added.
+        """
+        # User is already activated, return False.
+        if user and user in self.users.all():
+            return False
+
+        # User is a student, return True
+        if user and user.is_github_student:
+            return True
+
+        total_seats_for_account = self.plan_seat_count + self.free_seat_count
+        return self.activated_user_count < total_seats_for_account
 
     def activate_user_onto_account(self, user: User) -> None:
         self.users.add(user)
@@ -504,9 +537,13 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             return plan_details
 
     def can_activate_user(self, user: Self) -> bool:
+        account: Account | None = self.account
+        can_activate_account = True
+        if account is not None:
+            can_activate_account = account.can_activate_user(user.user)
         return (
             user.student or self.activated_user_count < self.plan_user_count + self.free
-        )
+        ) and can_activate_account
 
     def activate_user(self, user: Self) -> None:
         log.info(f"Activating user {user.ownerid} in ownerid {self.ownerid}")

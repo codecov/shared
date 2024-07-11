@@ -58,6 +58,7 @@ class OwnerFactory(DjangoModelFactory):
     oauth_token = factory.LazyAttribute(
         lambda o: encryptor.encode(o.unencrypted_oauth_token).decode()
     )
+    student = False
     user = factory.SubFactory(UserFactory)
     trial_status = TrialStatus.NOT_STARTED.value
 
