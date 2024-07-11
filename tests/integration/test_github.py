@@ -170,6 +170,19 @@ class TestGithubTestCase(object):
         }
 
     @pytest.mark.asyncio
+    async def test_get_authenticated_user_with_public_emails(self, codecov_vcr):
+        code = "625a10a4fb775fe37d65"
+
+        handler = Github(
+            oauth_consumer_token=dict(
+                key="Iv23liSqj8DAO20A3KLA",
+                secret="a6a6397fffea369e54495c88ca469d988ea4ccd2",
+            )
+        )
+        res = await handler.get_authenticated_user(code)
+        assert res["email"] == "rola.abuhasna@sentry.io"
+
+    @pytest.mark.asyncio
     async def test_get_authenticated_user_no_refresh_token(self, codecov_vcr):
         # To regenerate this test, go to
         # https://github.com/login/oauth/authorize?response_type=code&scope=user%3Aemail%2Cread%3Aorg%2Crepo%3Astatus%2Cwrite%3Arepo_hook&client_id=999247146557c3ba045c
