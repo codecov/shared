@@ -1,7 +1,5 @@
 from django.db import models
 
-# Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error
-# Needs to be called the same as the API app
 BUNDLE_ANALYSIS_APP_LABEL = "bundle_analysis_app"
 
 
