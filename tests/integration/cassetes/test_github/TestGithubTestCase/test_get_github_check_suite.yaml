@@ -24,7 +24,7 @@ interactions:
       ,\"id\":383348775,\"number\":18,\"head\":{\"ref\":\"thiago/base-no-base\",\"\
       sha\":\"75f355d8d14ba3d7761c728b4d2607cde0eef065\",\"repo\":{\"id\":156617777,\"\
       url\":\"https://api.github.com/repos/ThiagoCodecov/example-python\",\"name\"\
-      :\"example-python\"}},\"base\":{\"ref\":\"master\",\"sha\":\"f0895290dc26668faeeb20ee5ccd4cc995925775\"\
+      :\"example-python\"}},\"base\":{\"ref\":\"main\",\"sha\":\"f0895290dc26668faeeb20ee5ccd4cc995925775\"\
       ,\"repo\":{\"id\":156617777,\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python\"\
       ,\"name\":\"example-python\"}}}],\"app\":{\"id\":254,\"slug\":\"codecov\",\"\
       node_id\":\"MDM6QXBwMjU0\",\"owner\":{\"login\":\"codecov\",\"id\":8226205,\"\
