@@ -212,9 +212,9 @@ bundle_analysis_comment_config = {
         },
     },
     "bundle_change_threshold": {
-        "coerce": "byte_size",
+        "coerce": "bundle_analysis_threshold",
         "meta": {
-            "description": "Threshold for 'require_bundle_changes'. Notifications will only be triggered if the change is larger than the threshold."
+            "description": "Threshold for 'require_bundle_changes'. Notifications will only be triggered if the change is larger than the threshold. Can also be configured using bundle_analysis.bundle_change_threshold"
         },
     },
 }
@@ -416,6 +416,35 @@ schema = {
                     "no_upload_behavior": {
                         "type": "string",
                         "allowed": ("pass", "fail"),
+                    },
+                },
+            },
+        },
+    },
+    "bundle_analysis": {
+        "type": "dict",
+        "schema": {
+            "bundle_change_threshold": {
+                "coerce": "bundle_analysis_threshold",
+                "meta": {
+                    "description": "Notifications will only be triggered if the change is larger than the threshold."
+                },
+            },
+            "status": {
+                "allowed": (True, False, "informational"),
+                "meta": {
+                    "description": "Configure commit checks for bundle analysis",
+                    "options": {
+                        True: {
+                            "type": bool,
+                            "description": "Enable status. Status can fail.",
+                        },
+                        False: {"type": bool, "description": "Disable status."},
+                        "informational": {
+                            "type": str,
+                            "description": "Enable status. Status will always be success.",
+                            "default": True,
+                        },
                     },
                 },
             },
