@@ -345,6 +345,11 @@ GITLAB_API_ENDPOINTS = {
         "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="post_webhook"),
         "url_template": Template("/projects/${service_id}/hooks"),
     },
+    "test_webhook": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="test_webhook"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(endpoint="test_webhook"),
+        "url_template": Template("/projects/${service_id}/hooks/${hookid}/test/push_events"),
+    },
     "get_authenticated_user": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_authenticated_user"),
         "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
@@ -629,6 +634,27 @@ class Gitlab(TorngitBaseAdapter):
             token=token,
         )
         return res
+
+    async def test_webhook(self, hookid, url, secret, token=None):
+        """
+        new! https://docs.gitlab.com/ee/api/projects.html#trigger-a-test-project-hook
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.admin)
+        api_path = self.count_and_get_url_template("test_webhook").substitute(
+            service_id=self.data["repo"]["service_id"], hookid=hookid
+        )
+        return await self.api(
+            "post",
+            api_path,
+            body=dict(
+                url=url,
+                enable_ssl_verification=self.verify_ssl
+                if isinstance(self.verify_ssl, bool)
+                else True,
+                token=secret,  # test whether its actually gating on secret
+            ),
+            token=token,
+        )
 
     async def edit_webhook(self, hookid, name, url, events, secret, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.admin)
