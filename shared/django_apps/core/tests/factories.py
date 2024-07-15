@@ -23,7 +23,7 @@ class RepositoryFactory(DjangoModelFactory):
     )
     languages = []
     fork = None
-    branch = "master"
+    branch = "main"
     upload_token = factory.Faker("uuid4")
     image_token = factory.Faker("pystr", min_chars=10, max_chars=10)
     using_integration = False
@@ -41,7 +41,7 @@ class CommitFactory(DjangoModelFactory):
     pullid = 1
     author = factory.SubFactory(OwnerFactory)
     repository = factory.SubFactory(RepositoryFactory)
-    branch = "master"
+    branch = "main"
     totals = {
         "C": 0,
         "M": 0,
