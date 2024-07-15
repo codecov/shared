@@ -340,7 +340,7 @@ class TestUnitBitbucket(object):
                     "name": "aaaa",
                     "language": "python",
                     "private": True,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
             {
@@ -350,7 +350,7 @@ class TestUnitBitbucket(object):
                     "name": "qwerty",
                     "language": "python",
                     "private": True,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
         ]

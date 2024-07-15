@@ -134,7 +134,7 @@ interactions:
       ,\"commit\":{\"author\":{\"name\":\"Steve Peak\",\"email\":\"steve@codecov.io\"\
       ,\"date\":\"2018-01-30T11:57:49Z\"},\"committer\":{\"name\":\"GitHub\",\"email\"\
       :\"noreply@github.com\",\"date\":\"2018-01-30T11:57:49Z\"},\"message\":\"Merge\
-      \ pull request #30 from Jay54520/master\\n\\n#29/Pytest doc error\",\"tree\"\
+      \ pull request #30 from Jay54520/main\\n\\n#29/Pytest doc error\",\"tree\"\
       :{\"sha\":\"3cdd37198ec70196f94aaae638599c10b95be8a0\",\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/3cdd37198ec70196f94aaae638599c10b95be8a0\"\
       },\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"\
       ,\"comment_count\":0,\"verification\":{\"verified\":true,\"reason\":\"valid\"\
@@ -145,7 +145,7 @@ interactions:
       n-----END PGP SIGNATURE-----\\n\",\"payload\":\"tree 3cdd37198ec70196f94aaae638599c10b95be8a0\\\
       nparent 76003ff147414ce80d2a14ab5f1b78d165e9a468\\nparent d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\\\
       nauthor Steve Peak <steve@codecov.io> 1517313469 +0100\\ncommitter GitHub <noreply@github.com>\
-      \ 1517313469 +0100\\n\\nMerge pull request #30 from Jay54520/master\\n\\n#29/Pytest\
+      \ 1517313469 +0100\\n\\nMerge pull request #30 from Jay54520/main\\n\\n#29/Pytest\
       \ doc error\"}},\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"\
       ,\"html_url\":\"https://github.com/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"\
       ,\"comments_url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb/comments\"\
@@ -494,7 +494,7 @@ interactions:
       ,\"commit\":{\"author\":{\"name\":\"Steve Peak\",\"email\":\"steve@codecov.io\"\
       ,\"date\":\"2017-02-02T19:09:38Z\"},\"committer\":{\"name\":\"GitHub\",\"email\"\
       :\"noreply@github.com\",\"date\":\"2017-02-02T19:09:38Z\"},\"message\":\"Merge\
-      \ pull request #20 from briandant/master\\n\\nAdd further instructions for using\
+      \ pull request #20 from briandant/main\\n\\nAdd further instructions for using\
       \ env vars\",\"tree\":{\"sha\":\"be98fa09eb1a8343b44071cdae6aac15e61d0cc9\"\
       ,\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/be98fa09eb1a8343b44071cdae6aac15e61d0cc9\"\
       },\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/feb5100831541db79eb83a263986df129573f3de\"\
@@ -559,7 +559,7 @@ interactions:
       ,\"date\":\"2016-09-29T10:37:07Z\"},\"committer\":{\"name\":\"Codecov Test Bot\"\
       ,\"email\":\"hello@codecov.io\",\"date\":\"2016-09-29T10:37:07Z\"},\"message\"\
       :\"Circle build #355\\nhttps://circleci.com/gh/codecov/testsuite/355\\nbash\
-      \ <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)\
+      \ <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov)\
       \ -v -u https://codecov.io\",\"tree\":{\"sha\":\"80c741dbd6916ef10fadd2357efdcac15402af49\"\
       ,\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/git/trees/80c741dbd6916ef10fadd2357efdcac15402af49\"\
       },\"url\":\"https://api.github.com/repos/ThiagoCodecov/example-python/git/commits/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"\

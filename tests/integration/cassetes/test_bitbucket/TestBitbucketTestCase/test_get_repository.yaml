@@ -26,7 +26,7 @@ interactions:
       "pullrequests": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/pullrequests"}},
       "fork_policy": "no_public_forks", "uuid": "{a8c50527-2c3a-480e-afe1-7700e2b00074}",
       "language": "", "created_on": "2018-11-06T12:53:06.587605+00:00", "mainbranch":
-      {"type": "branch", "name": "master"}, "full_name": "ThiagoCodecov/example-python",
+      {"type": "branch", "name": "main"}, "full_name": "ThiagoCodecov/example-python",
       "has_issues": false, "owner": {"username": "ThiagoCodecov", "display_name":
       "Thiago Ramos", "account_id": "5bce04c759d0e84f8c7555e9", "links": {"self":
       {"href": "https://bitbucket.org/!api/2.0/users/ThiagoCodecov"}, "html": {"href":

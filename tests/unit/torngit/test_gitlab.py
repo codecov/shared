@@ -248,14 +248,14 @@ class TestUnitGitlab(object):
         )
         with respx.mock:
             mocked_route = respx.get(
-                "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=master"
+                "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=main"
             ).mock(
                 return_value=httpx.Response(
                     status_code=200,
                     content='{"commitid": null, "content": "code goes here"}',
                 )
             )
-            await valid_handler.get_source("tests with space.py", "master")
+            await valid_handler.get_source("tests with space.py", "main")
         assert mocked_route.call_count == 1
         after = REGISTRY.get_sample_value(
             "git_provider_api_calls_gitlab_total",
@@ -413,7 +413,7 @@ class TestUnitGitlab(object):
         )
         with respx.mock:
             mocked_route = respx.get(
-                "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=master"
+                "https://gitlab.com/api/v4/projects/187725/repository/files/tests%20with%20space.py?ref=main"
             ).mock(side_effect=side_effect)
             mocked_refresh = respx.post("https://gitlab.com/oauth/token").mock(
                 return_value=httpx.Response(
@@ -421,7 +421,7 @@ class TestUnitGitlab(object):
                     content='{"access_token": "new_access_token","token_type": "bearer","refresh_token": "new_refresh_token"}',
                 )
             )
-            await valid_handler.get_source("tests with space.py", "master")
+            await valid_handler.get_source("tests with space.py", "main")
         assert mocked_route.call_count == 2
         assert mocked_refresh.call_count == 1
         assert valid_handler._token["key"] == "new_access_token"
