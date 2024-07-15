@@ -1,6 +1,6 @@
 from django.db import models
 
-BUNDLE_ANALYSIS_APP_LABEL = "bundle_analysis_app"
+BUNDLE_ANALYSIS_LABEL = "bundle_analysis"
 
 
 class CacheConfig(models.Model):
@@ -12,6 +12,7 @@ class CacheConfig(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = BUNDLE_ANALYSIS_LABEL
         constraints = [
             models.UniqueConstraint(
                 name="unique_repo_bundle_pair",

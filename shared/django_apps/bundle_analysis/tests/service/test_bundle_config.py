@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from shared.django_apps.bundle_analysis_app.models import CacheConfig
-from shared.django_apps.bundle_analysis_app.service.bundle_analysis import (
+from shared.django_apps.bundle_analysis.models import CacheConfig
+from shared.django_apps.bundle_analysis.service.bundle_analysis import (
     BundleAnalysisCacheConfigService,
 )
 

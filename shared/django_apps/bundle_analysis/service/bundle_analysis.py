@@ -1,4 +1,4 @@
-from shared.django_apps.bundle_analysis_app.models import CacheConfig
+from shared.django_apps.bundle_analysis.models import CacheConfig
 
 
 class BundleAnalysisCacheConfigService:
