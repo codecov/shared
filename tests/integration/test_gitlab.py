@@ -566,12 +566,12 @@ class TestGitlabTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_source_main(self, valid_handler, codecov_vcr):
+    async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
             "commitid": None,
-            "content": b"import unittest\nimport my_package\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(my_package.add(10), 20)\n\nif __name__ == '__main__':\n    unittest.main()\n",
+            "content": b"import unittest\nimport my_package\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(my_package.add(10), 20)\n\nif __name__ == '__master__':\n    unittest.main()\n",
         }
-        path, ref = "tests.py", "main"
+        path, ref = "tests.py", "master"
         res = await valid_handler.get_source(path, ref)
         assert res == expected_result
 

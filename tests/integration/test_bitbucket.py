@@ -562,12 +562,12 @@ class TestBitbucketTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_source_main(self, valid_handler, codecov_vcr):
+    async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
             "commitid": None,
             "content": b"from kaploft import smile, fib\n\n\ndef test_something():\n    assert smile() == ':)'\n\n\ndef test_fib():\n    assert fib(1) == 1\n\n\ndef test_fib_second():\n    assert fib(3) == 3\n",
         }
-        path, ref = "tests/test_k.py", "main"
+        path, ref = "tests/test_k.py", "master"
         res = await valid_handler.get_source(path, ref)
         assert res == expected_result
 

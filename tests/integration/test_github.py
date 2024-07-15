@@ -1055,7 +1055,7 @@ class TestGithubTestCase(object):
             assert e[1]["message"] == "Cannot find gh app with installation_id 12345678"
 
     @pytest.mark.asyncio
-    async def test_get_source_main(self, valid_handler, codecov_vcr):
+    async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
             "content": b"\n".join(
                 [
@@ -1075,7 +1075,7 @@ class TestGithubTestCase(object):
             "commitid": "7fb3c3fbd71a6d3f4b98964c0130f7e083505fcd",
         }
 
-        path, ref = "awesome/code_fib.py", "main"
+        path, ref = "awesome/code_fib.py", "master"
         res = await valid_handler.get_source(path, ref)
         assert res["content"].split(b"\n") == expected_result["content"].split(b"\n")
         assert res == expected_result
