@@ -1,10 +1,21 @@
 from pathlib import Path
+from typing import Tuple
 from unittest.mock import patch
 
 import pytest
+from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
-from shared.bundle_analysis.models import AssetType, MetadataKey
+from shared.bundle_analysis.models import (
+    SCHEMA_VERSION,
+    Asset,
+    AssetType,
+    Bundle,
+    Chunk,
+    MetadataKey,
+    Module,
+    Session,
+)
 from shared.storage.exceptions import PutRequestRateLimitError
 from shared.storage.memory import MemoryStorageService
 
@@ -26,6 +37,22 @@ sample_bundle_stats_path_4 = (
     Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats_v1.json"
 )
 
+sample_bundle_stats_path_5 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_another_bundle.json"
+)
+
+
+def _table_rows_count(db_session: DbSession) -> Tuple[int]:
+    return (
+        db_session.query(Bundle).count(),
+        db_session.query(Session).count(),
+        db_session.query(Asset).count(),
+        db_session.query(Chunk).count(),
+        db_session.query(Module).count(),
+    )
+
 
 def test_create_bundle_report():
     try:
@@ -34,7 +61,7 @@ def test_create_bundle_report():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -119,7 +146,7 @@ def test_bundle_report_asset_filtering():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -192,7 +219,7 @@ def test_reupload_bundle_report():
         report.ingest(sample_bundle_stats_path)
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -207,7 +234,7 @@ def test_reupload_bundle_report():
         report.ingest(sample_bundle_stats_path_2)
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -364,7 +391,7 @@ def test_create_bundle_report_v1():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -443,3 +470,80 @@ def test_create_bundle_report_v1():
         assert report.session_count() == 1
     finally:
         report.cleanup()
+
+
+def test_bundle_is_cached():
+    try:
+        bundle_analysis_report = BundleAnalysisReport()
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+        assert session_id == 2
+
+        assert bundle_analysis_report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
+        }
+
+        # When doing ingest (ie when handling a upload), its never cached
+        bundle_reports = list(bundle_analysis_report.bundle_reports())
+        assert len(bundle_reports) == 2
+        for bundle in bundle_reports:
+            assert bundle.is_cached() == False
+        assert bundle_analysis_report.is_cached() == False
+
+        # Test setting 'sample' bundle to True
+        bundle_analysis_report.update_is_cached(data={"sample": True})
+        assert bundle_analysis_report.bundle_report("sample").is_cached() == True
+        assert bundle_analysis_report.bundle_report("sample2").is_cached() == False
+        assert bundle_analysis_report.is_cached() == True
+
+        # Test setting 'sample2' bundle to True and 'sample' back to False
+        bundle_analysis_report.update_is_cached(data={"sample2": True, "sample": False})
+        assert bundle_analysis_report.bundle_report("sample").is_cached() == False
+        assert bundle_analysis_report.bundle_report("sample2").is_cached() == True
+        assert bundle_analysis_report.is_cached() == True
+
+    finally:
+        bundle_analysis_report.cleanup()
+
+
+def test_bundle_deletion():
+    try:
+        bundle_analysis_report = BundleAnalysisReport()
+        db_session = bundle_analysis_report.db_session
+
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+        assert session_id == 2
+
+        assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
+
+        # Delete non-existent bundle
+        bundle_analysis_report.delete_bundle_by_name("fake")
+        assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
+
+        # Delete bundle 'sample'
+        bundle_analysis_report.delete_bundle_by_name("sample")
+        assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
+        res = list(db_session.query(Bundle).all())
+        assert len(res) == 1
+        assert res[0].name == "sample2"
+
+        # Delete bundle 'sample' again
+        bundle_analysis_report.delete_bundle_by_name("sample")
+        assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
+        res = list(db_session.query(Bundle).all())
+        assert len(res) == 1
+        assert res[0].name == "sample2"
+
+        # Delete bundle 'sample2'
+        bundle_analysis_report.delete_bundle_by_name("sample2")
+        assert _table_rows_count(db_session) == (0, 0, 0, 0, 0)
+        res = list(db_session.query(Bundle).all())
+        assert len(res) == 0
+
+    finally:
+        bundle_analysis_report.cleanup()

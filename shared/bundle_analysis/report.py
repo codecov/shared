@@ -174,6 +174,11 @@ class BundleReport:
             )
             return json.loads(result.info)
 
+    def is_cached(self) -> bool:
+        with get_db_session(self.db_path) as session:
+            result = session.query(Bundle).filter(Bundle.id == self.bundle.id).first()
+            return result.is_cached
+
 
 class BundleAnalysisReport:
     """
@@ -352,3 +357,49 @@ class BundleAnalysisReport:
     def session_count(self) -> int:
         with get_db_session(self.db_path) as session:
             return session.query(Session).count()
+
+    def update_is_cached(self, data: Dict[str, bool]) -> None:
+        with get_db_session(self.db_path) as session:
+            for bundle_name, value in data.items():
+                # TODO: Use SQLalchemy ORM to update instead of raw SQL
+                # https://github.com/codecov/engineering-team/issues/1846
+                stmt = (
+                    f"UPDATE bundles SET is_cached={value} WHERE name='{bundle_name}'"
+                )
+                session.execute(text(stmt))
+            session.commit()
+
+    def is_cached(self) -> bool:
+        with get_db_session(self.db_path) as session:
+            cached_bundles = session.query(Bundle).filter_by(is_cached=True)
+            return cached_bundles.count() > 0
+
+    def delete_bundle_by_name(self, bundle_name: str) -> None:
+        with get_db_session(self.db_path) as session:
+            bundle_to_be_deleted = (
+                session.query(Bundle).filter_by(name=bundle_name).one_or_none()
+            )
+            if bundle_to_be_deleted is None:
+                return
+
+            # Deletes Asset, Chunk, Module
+            session_to_be_deleted = (
+                session.query(Session)
+                .filter(Session.bundle == bundle_to_be_deleted)
+                .one_or_none()
+            )
+            if session_to_be_deleted is None:
+                raise Exception(
+                    "Data integrity error - cannot have Bundles without Sessions"
+                )
+            for model in [Asset, Chunk, Module]:
+                stmt = model.__table__.delete().where(
+                    model.session == session_to_be_deleted
+                )
+                session.execute(stmt)
+
+            # Deletes Session and Bundle
+            session.delete(session_to_be_deleted)
+            session.delete(bundle_to_be_deleted)
+
+            session.commit()

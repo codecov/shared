@@ -2,6 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from shared.bundle_analysis.migrations.v001_add_gzip_size import add_gzip_size
+from shared.bundle_analysis.migrations.v002_bundle_is_cached import add_is_cached
 
 
 class BundleAnalysisMigration:
@@ -22,7 +23,10 @@ class BundleAnalysisMigration:
 
         # Mapping of the schema_version number to the migration function that needs to run
         # {x: fcn} means to bring version x-1 to x, fcn must be ran
-        self.migrations = {2: add_gzip_size}
+        self.migrations = {
+            2: add_gzip_size,
+            3: add_is_cached,
+        }
 
     def update_schema_version(self, version):
         stmt = f"""
