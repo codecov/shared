@@ -272,7 +272,7 @@ class BitbucketServer(TorngitBaseAdapter):
                     service_id=res["origin"]["id"],
                     language=None,
                     private=(not res["origin"]["public"]),
-                    branch="master",
+                    branch="main",
                     fork=fork,
                     name=res["origin"]["slug"],
                 ),
@@ -284,7 +284,7 @@ class BitbucketServer(TorngitBaseAdapter):
                 service_id=res["id"],
                 language=None,
                 private=(not res.get("public", res.get("origin", {}).get("public"))),
-                branch="master",
+                branch="main",
                 name=res["slug"],
             ),
         )
@@ -565,7 +565,7 @@ class BitbucketServer(TorngitBaseAdapter):
                         private=(
                             not repo.get("public", repo.get("origin", {}).get("public"))
                         ),
-                        branch="master",
+                        branch="main",
                     ),
                 )
             )

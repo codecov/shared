@@ -335,7 +335,7 @@ class Bitbucket(TorngitBaseAdapter):
                         name=repo_name_arr[1],
                         language=self._validate_language(repo["language"]),
                         private=repo["is_private"],
-                        branch="master",
+                        branch="main",
                     ),
                 )
             )
@@ -879,7 +879,7 @@ class Bitbucket(TorngitBaseAdapter):
                 repo=dict(
                     service_id=res["uuid"][1:-1],
                     private=res["is_private"],
-                    branch="master",
+                    branch="main",
                     language=self._validate_language(res["language"]),
                     name=repo,
                 ),

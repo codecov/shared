@@ -1159,7 +1159,7 @@ class Github(TorngitBaseAdapter):
                 language=self._validate_language(res["language"]),
                 private=res["private"],
                 fork=fork,
-                branch=res["default_branch"] or "master",
+                branch=res["default_branch"] or "main",
             ),
         )
 
@@ -1175,7 +1175,7 @@ class Github(TorngitBaseAdapter):
                     name=repo["name"],
                     language=self._validate_language(repo["language"]),
                     private=repo["private"],
-                    branch=repo["default_branch"] or "master",
+                    branch=repo["default_branch"] or "main",
                 ),
             )
 
@@ -1290,7 +1290,7 @@ class Github(TorngitBaseAdapter):
                         ),
                         "private": raw_repo_data["isPrivate"],
                         "branch": (
-                            default_branch.get("name") if default_branch else "master"
+                            default_branch.get("name") if default_branch else "main"
                         ),
                         "owner": {
                             "node_id": raw_repo_data["owner"]["id"],
