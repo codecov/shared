@@ -151,7 +151,7 @@ class CoverageCommentRequirementSchemaField(object):
 class ByteSizeSchemaField(object):
     """Converts a possible string with byte extension size into integer with number of bytes.
     Acceptable extensions are 'mb', 'kb', 'gb', 'b' and 'bytes' (case insensitive).
-    Also accepts integers, returning the value itself as the number of bytes.
+    Also accepts positive integers, returning the value itself as the number of bytes.
 
     Example:
         100 -> 100
@@ -174,6 +174,8 @@ class ByteSizeSchemaField(object):
 
     def validate(self, data: Any) -> int:
         if isinstance(data, int):
+            if data < 0:
+                raise Invalid("Only positive values accepted")
             return data
         if isinstance(data, str):
             return self._validate_str(data)

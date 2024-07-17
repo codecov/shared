@@ -542,6 +542,16 @@ class TestByteSizeSchemaField(object):
                 "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
                 id="invalid_extension",
             ),
+            pytest.param(
+                -200,
+                "Only positive values accepted",
+                id="negative_number",
+            ),
+            pytest.param(
+                "-200kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="negative_number_with_extension",
+            ),
         ],
     )
     def test_byte_size_coercion_fail(self, input, error_message):
@@ -562,6 +572,7 @@ class TestBundleSizeThresholdSchemaField(object):
             ("12%", ("percentage", 12.0)),
             ("65%", ("percentage", 65.0)),
             ("100%", ("percentage", 100.0)),
+            ("200%", ("percentage", 200.0)),
             (5.5, ("percentage", 5.5)),
             (60, ("absolute", 60)),
             (60.0, ("percentage", 60.0)),
@@ -584,6 +595,11 @@ class TestBundleSizeThresholdSchemaField(object):
                 "200",
                 "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
                 id="no_extension",
+            ),
+            pytest.param(
+                "-200%",
+                "-200% should be a number",
+                id="negative_percentage",
             ),
             pytest.param(
                 "kb",
