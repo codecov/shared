@@ -301,7 +301,7 @@ class BundleAnalysisReport:
 
     def associate_previous_assets(
         self, prev_bundle_analysis_report: Any
-    ) -> "BundleAnalysisReport":
+    ) -> None:
         """
         Only associate past asset if it is Javascript or Typescript types
         and belonging to the same bundle name
