@@ -33,16 +33,9 @@ def get_dedicated_app_token_from_config(
     service: str, token_type: TokenType
 ) -> Token | None:
     # GitHub can have 'dedicated_apps', and those are preferred
-    # github_dedicated_apps_read
-    # github_dedicated_apps_pull
     dedicated_app: Dict[str, Any] = get_config(
         service, "dedicated_apps", token_type.value, default={}
     )
-    {
-        "id",
-        "installation_id",
-        "pem"
-    }
     app_id = dedicated_app.get("id")
     installation_id = dedicated_app.get("installation_id")
     pem_exists = "pem" in dedicated_app
