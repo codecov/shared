@@ -12,6 +12,7 @@ from shared.typings.oauth_token_types import Token
 cache = OurOwnCache()
 log = logging.getLogger(__name__)
 
+
 @cache.cache_function(ttl=480)
 def get_github_integration_token(
     service: str,
@@ -26,7 +27,6 @@ def get_github_integration_token(
     except InvalidInstallationError:
         log.warning("Failed to get installation token")
         raise RepositoryWithoutValidBotError()
-
 
 
 def get_dedicated_app_token_from_config(
