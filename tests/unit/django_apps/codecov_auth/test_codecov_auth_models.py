@@ -714,6 +714,9 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(user_1.accounts.count(), 1)
         self.assertEqual(AccountsUsers.objects.all().count(), 2)
 
+        self.assertEqual(account.all_user_count, 2)
+        self.assertEqual(account.organizations_count, 0)
+
     def test_create_account_for_enterprise_experience(self):
         # 2 separate OwnerOrgs that wish to Enterprise
         stripe_customer_id = "abc123"
@@ -875,6 +878,8 @@ class TestAccountModel(TransactionTestCase):
         )
         self.assertFalse(enterprise_account.stripe_billing.first().is_active)
         self.assertTrue(enterprise_account.invoice_billing.first().is_active)
+        self.assertEqual(enterprise_account.all_user_count, 3)
+        self.assertEqual(enterprise_account.organizations_count, 2)
 
     def test_activate_user_onto_account(self):
         user = UserFactory()
