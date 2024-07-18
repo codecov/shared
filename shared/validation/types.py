@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import List, Literal, NamedTuple
+from typing import List, Literal
 
 
-class BundleThreshold(NamedTuple):
-    type: Literal["absolute"] | Literal["percentage"]
-    threshold: int | float
+# class BundleThreshold(NamedTuple):
+#     type: Literal["absolute"] | Literal["percentage"]
+#     threshold: int | float
 
 
 class CoverageCommentRequiredChanges(Enum):
