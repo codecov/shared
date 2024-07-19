@@ -212,7 +212,7 @@ class Bitbucket(TorngitBaseAdapter):
 
     async def get_is_admin(self, user, token=None):
         user_uuid = "{" + user["service_id"] + "}"
-        workspace_uuid = f'{{{self.data["owner"]["service_id"]}}}'
+        workspace_uuid = "{" + self.data["owner"]["service_id"] + "}"
         async with self.get_client() as client:
             groups = await self.api(
                 client, "2", "get", "/user/permissions/workspaces", token=token
