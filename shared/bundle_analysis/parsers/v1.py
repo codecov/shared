@@ -213,6 +213,7 @@ class ParserV1:
             if bundle is None:
                 bundle = Bundle(name=value)
                 self.db_session.add(bundle)
+            bundle.is_cached = False
             self.session.bundle = bundle
 
     def _parse_assets_event(self, prefix: str, event: str, value: str):
