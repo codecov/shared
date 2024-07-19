@@ -217,8 +217,6 @@ class Bitbucket(TorngitBaseAdapter):
             groups = await self.api(
                 client, "2", "get", "/user/permissions/workspaces", token=token
             )
-        print("ASJJJAS")
-        print(groups)
         if groups["values"]:
             for group in groups["values"]:
                 if (
