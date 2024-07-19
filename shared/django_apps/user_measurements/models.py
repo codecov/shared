@@ -13,7 +13,7 @@ class UserMeasurement(PostgresPartitionedModel):
     id = models.BigAutoField(primary_key=True)
     repo_id = models.IntegerField(null=True)
     commit_id = models.IntegerField(null=True)
-    upload_id = models.IntegerField(null=True)
+    upload_id = models.BigIntegerField(null=True)
     owner_id = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     uploader_used = models.CharField()
