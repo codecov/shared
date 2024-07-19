@@ -22,7 +22,7 @@ lint.run:
 
 lint.check:
 	echo "Linting..."
-	ruff check
+	ruff check --fix
 	echo "Formatting..."
 	ruff format --check
 

@@ -361,7 +361,7 @@ def test_bundle_file_save_rate_limit_error():
             loader.save(report, test_key)
 
             assert str(excinfo) == "TooManyRequests"
-            assert type(excinfo) == PutRequestRateLimitError
+            assert isinstance(excinfo, PutRequestRateLimitError)
 
 
 def test_bundle_file_save_unknown_error():
