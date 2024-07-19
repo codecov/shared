@@ -167,6 +167,14 @@ class Account(BaseModel):
         # students and filter them out.
         return self.users.filter(owners__student=False).count()
 
+    @property
+    def all_user_count(self) -> int:
+        return self.users.count()
+
+    @property
+    def organizations_count(self) -> int:
+        return self.organizations.all().count()
+
     def can_activate_user(self, user: User | None = None) -> bool:
         """
         Check if account can activate a user. If no user is passed,
