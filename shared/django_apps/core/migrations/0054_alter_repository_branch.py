@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0053_increment_version'),
+        ("core", "0053_increment_version"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='repository',
-            name='branch',
-            field=models.TextField(default='main'),
+            model_name="repository",
+            name="branch",
+            field=models.TextField(default="main"),
         ),
     ]
