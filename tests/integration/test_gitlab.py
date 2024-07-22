@@ -568,7 +568,7 @@ class TestGitlabTestCase(object):
     async def test_get_source_master(self, valid_handler, codecov_vcr):
         expected_result = {
             "commitid": None,
-            "content": b"import unittest\nimport my_package\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(my_package.add(10), 20)\n\nif __name__ == '__master__':\n    unittest.main()\n",
+            "content": b"import unittest\nimport my_package\n\n\nclass TestMethods(unittest.TestCase):\n    def test_add(self):\n        self.assertEqual(my_package.add(10), 20)\n\nif __name__ == '__main__':\n    unittest.main()\n",
         }
         path, ref = "tests.py", "master"
         res = await valid_handler.get_source(path, ref)
