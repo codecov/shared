@@ -12,7 +12,7 @@ from shared.bundle_analysis import (
     MissingBundleError,
     MissingHeadReportError,
 )
-from shared.bundle_analysis.models import Bundle, Session
+from shared.bundle_analysis.models import Bundle
 from shared.storage.memory import MemoryStorageService
 
 here = Path(__file__)

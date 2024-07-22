@@ -5,20 +5,20 @@ from django.utils import timezone
 from factory.django import DjangoModelFactory
 
 from shared.django_apps.codecov_auth.models import (
+    Account,
+    AccountsUsers,
+    InvoiceBilling,
+    OktaSettings,
     OktaUser,
     OrganizationLevelToken,
     Owner,
     OwnerProfile,
     SentryUser,
     Session,
+    StripeBilling,
     TokenTypeChoices,
     User,
     UserToken,
-    Account,
-    AccountsUsers,
-    OktaSettings,
-    StripeBilling,
-    InvoiceBilling,
 )
 from shared.encryption.oauth import get_encryptor_from_configuration
 from shared.plan.constants import TrialStatus
@@ -58,6 +58,7 @@ class OwnerFactory(DjangoModelFactory):
     oauth_token = factory.LazyAttribute(
         lambda o: encryptor.encode(o.unencrypted_oauth_token).decode()
     )
+    student = False
     user = factory.SubFactory(UserFactory)
     trial_status = TrialStatus.NOT_STARTED.value
 

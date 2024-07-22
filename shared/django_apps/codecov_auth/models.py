@@ -5,10 +5,12 @@ import uuid
 from dataclasses import asdict
 from datetime import datetime
 from hashlib import md5
+from typing import Self
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
+from django.db.models.fields import AutoField
 from django.db.models.manager import BaseManager
 from django.forms import ValidationError
 from django.utils import timezone
@@ -88,6 +90,8 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "external_id"
 
+    _okta_loggedin_accounts: list["Account"] = []
+
     class Meta:
         db_table = "users"
         app_label = CODECOV_AUTH_APP_LABEL
@@ -106,6 +110,14 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     def is_authenticated(self):
         # Required to implement django's user-model interface
         return True
+
+    @property
+    def is_github_student(self) -> bool:
+        try:
+            github_owner: Owner = self.owners.get(service=Service.GITHUB)
+        except Owner.DoesNotExist:
+            return False
+        return github_owner.student
 
     def has_perm(self, perm, obj=None):
         # Required to implement django's user-model interface
@@ -148,6 +160,68 @@ class Account(BaseModel):
     def __str__(self):
         str_representation_of_is_active = "Active" if self.is_active else "Inactive"
         return f"{str_representation_of_is_active} Account: {self.name}"
+
+    @property
+    def activated_user_count(self) -> int:
+        # Activated users include all _non_ students. So we'll need to get all the
+        # students and filter them out.
+        return self.users.filter(owners__student=False).count()
+
+    @property
+    def all_user_count(self) -> int:
+        return self.users.count()
+
+    @property
+    def organizations_count(self) -> int:
+        return self.organizations.all().count()
+
+    def can_activate_user(self, user: User | None = None) -> bool:
+        """
+        Check if account can activate a user. If no user is passed,
+        then only check for available seats. Otherwise, we can activate
+        a user if they're a student and if they haven't already been added.
+        """
+        # User is already activated, return False.
+        if user and user in self.users.all():
+            return False
+
+        # User is a student, return True
+        if user and user.is_github_student:
+            return True
+
+        total_seats_for_account = self.plan_seat_count + self.free_seat_count
+        return self.activated_user_count < total_seats_for_account
+
+    def activate_user_onto_account(self, user: User) -> None:
+        self.users.add(user)
+        self.save()
+
+    def activate_owner_user_onto_account(self, owner_user: "Owner") -> None:
+        user: User = owner_user.user
+        if not user:
+            user = User(name=user.name, email=user.email)
+        self.activate_user_onto_account(user)
+
+    def deactivate_owner_user_from_account(self, owner_user: "Owner") -> None:
+        if owner_user.user is None:
+            return
+
+        organizations_in_account: list[Owner] = self.organizations.all()
+        all_users_for_account: set[AutoField] = set(
+            user_id
+            for org in organizations_in_account
+            for user_id in org.plan_activated_users
+        )
+        if owner_user.ownerid not in all_users_for_account:
+            self.users.remove(owner_user.user)
+            self.save()
+        else:
+            log.info(
+                "User was not removed from account because they currently are "
+                "activated on another organization.",
+                extra=dict(owner_id=owner_user.ownerid, account_id=self.id),
+            )
+        return
 
 
 class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
@@ -470,12 +544,16 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             plan_details.update({"quantity": self.plan_user_count})
             return plan_details
 
-    def can_activate_user(self, user):
+    def can_activate_user(self, user: Self) -> bool:
+        account: Account | None = self.account
+        can_activate_account = True
+        if account is not None:
+            can_activate_account = account.can_activate_user(user.user)
         return (
             user.student or self.activated_user_count < self.plan_user_count + self.free
-        )
+        ) and can_activate_account
 
-    def activate_user(self, user):
+    def activate_user(self, user: Self) -> None:
         log.info(f"Activating user {user.ownerid} in ownerid {self.ownerid}")
         if isinstance(self.plan_activated_users, list):
             if user.ownerid not in self.plan_activated_users:
@@ -484,7 +562,11 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             self.plan_activated_users = [user.ownerid]
         self.save()
 
-    def deactivate_user(self, user):
+        # Note: we're currently ignoring orgs with no account information attached.
+        if self.account:
+            self.account.activate_owner_user_onto_account(user)
+
+    def deactivate_user(self, user: Self) -> None:
         log.info(f"Deactivating user {user.ownerid} in ownerid {self.ownerid}")
         if isinstance(self.plan_activated_users, list):
             try:
@@ -492,6 +574,9 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             except ValueError:
                 pass
         self.save()
+
+        if self.account and user.user:
+            self.account.deactivate_owner_user_from_account(self)
 
     def add_admin(self, user):
         log.info(

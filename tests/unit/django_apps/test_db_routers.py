@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.test import override_settings
 
 from shared.django_apps.codecov_auth.models import Owner

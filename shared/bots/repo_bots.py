@@ -13,6 +13,7 @@ from shared.django_apps.codecov_auth.models import Owner, Service
 from shared.django_apps.core.models import Repository
 from shared.encryption.oauth import get_encryptor_from_configuration
 from shared.environment.environment import is_enterprise
+from shared.orms.repository_helper import DjangoSQLAlchemyRepositoryWrapper
 from shared.typings.torngit import GithubInstallationInfo
 
 encryptor = get_encryptor_from_configuration()
@@ -35,7 +36,9 @@ def get_repo_appropriate_bot(repo: Repository) -> Owner:
         )
         return repo.bot
     try:
-        return get_owner_or_appropriate_bot(repo.author)
+        return get_owner_or_appropriate_bot(
+            DjangoSQLAlchemyRepositoryWrapper.get_repo_owner(repo)
+        )
     except OwnerWithoutValidBotError:
         raise RepositoryWithoutValidBotError()
 

@@ -15,7 +15,8 @@ log = logging.getLogger(__name__)
 SCHEMA = """
 create table bundles (
     id integer primary key,
-    name text
+    name text,
+    is_cached boolean not null default 0
 );
 
 --- only allow 1 null name (the default bundle)
@@ -85,7 +86,7 @@ create table chunks_modules (
 );
 """
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 Base = declarative_base()
 
@@ -172,6 +173,7 @@ class Bundle(Base):
 
     id = Column(types.Integer, primary_key=True)
     name = Column(types.Text, nullable=False)
+    is_cached = Column(types.Boolean, nullable=False, default=False)
 
 
 class Session(Base):
@@ -221,6 +223,7 @@ class Asset(Base):
     name = Column(types.Text, nullable=False)
     normalized_name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
+    gzip_size = Column(types.Integer, nullable=False)
     uuid = Column(types.Text, nullable=False)
     asset_type = Column(SQLAlchemyEnum(AssetType))
     session = relationship("Session", backref=backref("assets"))

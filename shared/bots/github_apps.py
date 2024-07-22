@@ -13,6 +13,7 @@ from shared.django_apps.codecov_auth.models import (
 )
 from shared.django_apps.core.models import Repository
 from shared.github import get_github_integration_token, is_installation_rate_limited
+from shared.orms.owner_helper import DjangoSQLAlchemyOwnerWrapper
 from shared.torngit.cache import get_redis_connection
 from shared.typings.oauth_token_types import Token
 from shared.typings.torngit import GithubInstallationInfo
@@ -69,7 +70,7 @@ def _get_apps_from_weighted_selection(
         obj.id: obj
         for obj in filter(
             lambda obj: _can_use_this_app(obj, installation_name, repository),
-            owner.github_app_installations.all() or [],
+            DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner) or [],
         )
     }
     # We assign weights to the apps based on how long ago they were created.
@@ -104,7 +105,7 @@ def _get_apps_from_weighted_selection(
             lambda obj: _can_use_this_app(
                 obj, GITHUB_APP_INSTALLATION_DEFAULT_NAME, repository
             ),
-            owner.github_app_installations.all(),
+            DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner),
         )
         if default_apps:
             apps_to_consider.extend(default_apps)
@@ -146,7 +147,7 @@ def get_specific_github_app_details(
     app: GithubAppInstallation = next(
         (
             obj
-            for obj in owner.github_app_installations.all()
+            for obj in DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner)
             if obj.id == github_app_id
         ),
         None,

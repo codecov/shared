@@ -366,7 +366,7 @@ class TestFeature(TestCase):
 
         feature = Feature("null_feature")
         with patch.object(feature, "_fetch_and_set_from_db") as fetch_fn:
-            assert feature.check_value(identifier=1, default=100) == None
+            assert feature.check_value(identifier=1, default=100) is None
             fetch_fn.assert_not_called()
             assert not hasattr(feature.__dict__, "_buckets")
 
@@ -453,7 +453,7 @@ class TestFeatureExposures(TestCase):
 
             exposure = FeatureExposure.objects.all().first()
 
-            assert exposure == None
+            assert exposure is None
             create_exposure.assert_not_called()
 
     def test_backend_flag_does_log_exposures(self):

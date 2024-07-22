@@ -212,20 +212,19 @@ class Bitbucket(TorngitBaseAdapter):
 
     async def get_is_admin(self, user, token=None):
         user_uuid = "{" + user["service_id"] + "}"
-        query = f'workspace.uuid="{{{self.data["owner"]["service_id"]}}}" AND permission="owner" AND user.uuid="{user_uuid}"'
+        workspace_uuid = "{" + self.data["owner"]["service_id"] + "}"
         async with self.get_client() as client:
             groups = await self.api(
-                client, "2", "get", "/user/permissions/workspaces", token=token, q=query
+                client, "2", "get", "/user/permissions/workspaces", token=token
             )
         if groups["values"]:
             for group in groups["values"]:
-                assert group["permission"] == "owner"
-                assert (
-                    group["workspace"]["uuid"]
-                    == f'{{{self.data["owner"]["service_id"]}}}'
-                )
-                assert group["user"]["uuid"] == user_uuid
-                return True
+                if (
+                    group["permission"] == "owner"
+                    and group["workspace"]["uuid"] == workspace_uuid
+                    and group["user"]["uuid"] == user_uuid
+                ):
+                    return True
         return False
 
     async def list_teams(self, token=None):

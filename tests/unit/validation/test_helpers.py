@@ -3,6 +3,7 @@ import re
 import pytest
 
 from shared.validation.helpers import (
+    BundleSizeThresholdSchemaField,
     ByteSizeSchemaField,
     CoverageCommentRequirementSchemaField,
     CoverageRangeSchemaField,
@@ -15,7 +16,6 @@ from shared.validation.helpers import (
     determine_path_pattern_type,
     translate_glob_to_regex,
 )
-from shared.validation.types import CoverageCommentRequiredChanges
 from shared.yaml.validation import pre_process_yaml
 from tests.base import BaseTestCase
 
@@ -256,7 +256,7 @@ class TestGlobToRegexTranslation(BaseTestCase):
         assert re.compile(translate_glob_to_regex("[abc]*")).match("ab") is not None
         assert re.compile(translate_glob_to_regex("[abc]")).match("d") is None
         assert re.compile(translate_glob_to_regex("[a-c]")).match("b") is not None
-        assert translate_glob_to_regex("**/test*.ts") == "(?s:.*/test[^\/]*\.ts)\Z"
+        assert translate_glob_to_regex("**/test*.ts") == r"(?s:.*/test[^\/]*\.ts)\Z"
         assert (
             re.compile(translate_glob_to_regex("**/test*.ts")).match("src/src2/test.ts")
             is not None
@@ -349,7 +349,6 @@ class TestCustomFixPathSchemaField(BaseTestCase):
 
 
 class TestCoverageCommentRequirementSchemaField(object):
-
     @pytest.mark.parametrize(
         "input, expected",
         [
@@ -490,7 +489,6 @@ class TestCoverageCommentRequirementSchemaField(object):
 
 
 class TestByteSizeSchemaField(object):
-
     @pytest.mark.parametrize(
         "input, expected",
         [
@@ -544,10 +542,84 @@ class TestByteSizeSchemaField(object):
                 "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
                 id="invalid_extension",
             ),
+            pytest.param(
+                -200,
+                "Only positive values accepted",
+                id="negative_number",
+            ),
+            pytest.param(
+                "-200kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="negative_number_with_extension",
+            ),
         ],
     )
     def test_byte_size_coercion_fail(self, input, error_message):
         validator = ByteSizeSchemaField()
+        with pytest.raises(Invalid) as exp:
+            validator.validate(input)
+        assert exp.value.error_message == error_message
+
+
+class TestBundleSizeThresholdSchemaField(object):
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            (100, ("absolute", 100)),
+            ("100b", ("absolute", 100)),
+            ("100 mb", ("absolute", 100000000)),
+            ("12KB", ("absolute", 12000)),
+            ("12%", ("percentage", 12.0)),
+            ("65%", ("percentage", 65.0)),
+            ("100%", ("percentage", 100.0)),
+            ("200%", ("percentage", 200.0)),
+            (5.5, ("percentage", 5.5)),
+            (60, ("absolute", 60)),
+            (60.0, ("percentage", 60.0)),
+        ],
+    )
+    def test_byte_size_coercion_success(self, input, expected):
+        validator = BundleSizeThresholdSchemaField()
+        assert validator.validate(input) == expected
+
+    @pytest.mark.parametrize(
+        "input, error_message",
+        [
+            pytest.param(
+                None, "Value should be int or str. Received NoneType", id="None_input"
+            ),
+            pytest.param(
+                [], "Value should be int or str. Received list", id="list_input"
+            ),
+            pytest.param(
+                "200",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="no_extension",
+            ),
+            pytest.param(
+                "-200%",
+                "-200% should be a number",
+                id="negative_percentage",
+            ),
+            pytest.param(
+                "kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="absolute_no_number",
+            ),
+            pytest.param(
+                "%",
+                "% should be a number",
+                id="percentage_no_number",
+            ),
+            pytest.param(
+                "100mb%",
+                "100mb should be a number",
+                id="percentage_and_absolute",
+            ),
+        ],
+    )
+    def test_byte_size_coercion_fail(self, input, error_message):
+        validator = BundleSizeThresholdSchemaField()
         with pytest.raises(Invalid) as exp:
             validator.validate(input)
         assert exp.value.error_message == error_message

@@ -1,10 +1,21 @@
 from pathlib import Path
+from typing import Tuple
 from unittest.mock import patch
 
 import pytest
+from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
-from shared.bundle_analysis.models import AssetType, MetadataKey
+from shared.bundle_analysis.models import (
+    SCHEMA_VERSION,
+    Asset,
+    AssetType,
+    Bundle,
+    Chunk,
+    MetadataKey,
+    Module,
+    Session,
+)
 from shared.storage.exceptions import PutRequestRateLimitError
 from shared.storage.memory import MemoryStorageService
 
@@ -22,6 +33,26 @@ sample_bundle_stats_path_3 = (
     / "sample_bundle_stats_invalid_name.json"
 )
 
+sample_bundle_stats_path_4 = (
+    Path(__file__).parent.parent.parent / "samples" / "sample_bundle_stats_v1.json"
+)
+
+sample_bundle_stats_path_5 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_another_bundle.json"
+)
+
+
+def _table_rows_count(db_session: DbSession) -> Tuple[int]:
+    return (
+        db_session.query(Bundle).count(),
+        db_session.query(Session).count(),
+        db_session.query(Asset).count(),
+        db_session.query(Chunk).count(),
+        db_session.query(Module).count(),
+    )
+
 
 def test_create_bundle_report():
     try:
@@ -30,7 +61,7 @@ def test_create_bundle_report():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -43,13 +74,21 @@ def test_create_bundle_report():
         asset_reports = list(bundle_report.asset_reports())
 
         assert [
-            (ar.name, ar.hashed_name, ar.size, len(ar.modules()), ar.asset_type)
+            (
+                ar.name,
+                ar.hashed_name,
+                ar.size,
+                ar.gzip_size,
+                len(ar.modules()),
+                ar.asset_type,
+            )
             for ar in asset_reports
         ] == [
             (
                 "assets/react-*.svg",
                 "assets/react-35ef61ed.svg",
                 4126,
+                4125,
                 0,
                 AssetType.IMAGE,
             ),
@@ -57,6 +96,7 @@ def test_create_bundle_report():
                 "assets/index-*.css",
                 "assets/index-d526a0c5.css",
                 1421,
+                1420,
                 0,
                 AssetType.STYLESHEET,
             ),
@@ -64,6 +104,7 @@ def test_create_bundle_report():
                 "assets/LazyComponent-*.js",
                 "assets/LazyComponent-fcbb0922.js",
                 294,
+                293,
                 1,
                 AssetType.JAVASCRIPT,
             ),
@@ -71,6 +112,7 @@ def test_create_bundle_report():
                 "assets/index-*.js",
                 "assets/index-c8676264.js",
                 154,
+                153,
                 2,
                 AssetType.JAVASCRIPT,
             ),
@@ -80,6 +122,7 @@ def test_create_bundle_report():
                 "assets/index-*.js",
                 "assets/index-666d2e09.js",
                 144577,
+                144576,
                 28,
                 AssetType.JAVASCRIPT,
             ),
@@ -103,7 +146,7 @@ def test_bundle_report_asset_filtering():
         assert session_id == 1
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -116,11 +159,13 @@ def test_bundle_report_asset_filtering():
         all_asset_reports = list(bundle_report.asset_reports())
         assert len(all_asset_reports) == 5
 
-        filtered_asset_reports = list(bundle_report.asset_reports(
-            asset_types=[AssetType.JAVASCRIPT],
-            chunk_entry=True,
-            chunk_initial=True,
-        ))
+        filtered_asset_reports = list(
+            bundle_report.asset_reports(
+                asset_types=[AssetType.JAVASCRIPT],
+                chunk_entry=True,
+                chunk_initial=True,
+            )
+        )
 
         for ar in filtered_asset_reports:
             for module in ar.modules():
@@ -128,11 +173,14 @@ def test_bundle_report_asset_filtering():
                 assert isinstance(module.size, int)
 
         assert len(filtered_asset_reports) == 1
-        assert bundle_report.total_size(
-            asset_types=[AssetType.JAVASCRIPT],
-            chunk_entry=True,
-            chunk_initial=True,
-        ) == 144577
+        assert (
+            bundle_report.total_size(
+                asset_types=[AssetType.JAVASCRIPT],
+                chunk_entry=True,
+                chunk_initial=True,
+            )
+            == 144577
+        )
 
     finally:
         report.cleanup()
@@ -171,7 +219,7 @@ def test_reupload_bundle_report():
         report.ingest(sample_bundle_stats_path)
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -186,7 +234,7 @@ def test_reupload_bundle_report():
         report.ingest(sample_bundle_stats_path_2)
 
         assert report.metadata() == {
-            MetadataKey.SCHEMA_VERSION: 2,
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
         }
 
         bundle_reports = list(report.bundle_reports())
@@ -251,7 +299,7 @@ def test_bundle_report_info():
     bundle_report = report.bundle_report("sample")
     bundle_report_info = bundle_report.info()
 
-    assert bundle_report_info["version"] == "1"
+    assert bundle_report_info["version"] == "2"
     assert bundle_report_info["bundler_name"] == "rollup"
     assert bundle_report_info["bundler_version"] == "3.29.4"
     assert bundle_report_info["built_at"] == 1701451048604
@@ -275,7 +323,7 @@ def test_bundle_report_size_integer():
 
 def test_bundle_parser_error():
     with patch(
-        "shared.bundle_analysis.parser.Parser._parse_assets_event",
+        "shared.bundle_analysis.parsers.ParserV1._parse_assets_event",
         side_effect=Exception("MockError"),
     ):
         report = BundleAnalysisReport()
@@ -313,7 +361,7 @@ def test_bundle_file_save_rate_limit_error():
             loader.save(report, test_key)
 
             assert str(excinfo) == "TooManyRequests"
-            assert type(excinfo) == PutRequestRateLimitError
+            assert isinstance(excinfo, PutRequestRateLimitError)
 
 
 def test_bundle_file_save_unknown_error():
@@ -333,4 +381,169 @@ def test_bundle_file_save_unknown_error():
             loader.save(report, test_key)
 
             assert str(excinfo) == "UnknownError"
-            assert type(excinfo) == Exception
+            assert type(excinfo) is Exception
+
+
+def test_create_bundle_report_v1():
+    try:
+        report = BundleAnalysisReport()
+        session_id = report.ingest(sample_bundle_stats_path_4)
+        assert session_id == 1
+
+        assert report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
+        }
+
+        bundle_reports = list(report.bundle_reports())
+        assert len(bundle_reports) == 1
+
+        bundle_report = report.bundle_report("invalid")
+        assert bundle_report is None
+        bundle_report = report.bundle_report("sample")
+
+        bundle_report_info = bundle_report.info()
+        assert bundle_report_info["version"] == "1"
+
+        asset_reports = list(bundle_report.asset_reports())
+
+        assert [
+            (
+                ar.name,
+                ar.hashed_name,
+                ar.size,
+                ar.gzip_size,
+                len(ar.modules()),
+                ar.asset_type,
+            )
+            for ar in asset_reports
+        ] == [
+            (
+                "assets/react-*.svg",
+                "assets/react-35ef61ed.svg",
+                4126,
+                4,
+                0,
+                AssetType.IMAGE,
+            ),
+            (
+                "assets/index-*.css",
+                "assets/index-d526a0c5.css",
+                1421,
+                1,
+                0,
+                AssetType.STYLESHEET,
+            ),
+            (
+                "assets/LazyComponent-*.js",
+                "assets/LazyComponent-fcbb0922.js",
+                294,
+                0,
+                1,
+                AssetType.JAVASCRIPT,
+            ),
+            (
+                "assets/index-*.js",
+                "assets/index-c8676264.js",
+                154,
+                0,
+                2,
+                AssetType.JAVASCRIPT,
+            ),
+            # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
+            # Made a similar note in the parser code where the associations are made
+            (
+                "assets/index-*.js",
+                "assets/index-666d2e09.js",
+                144577,
+                144,
+                28,
+                AssetType.JAVASCRIPT,
+            ),
+        ]
+
+        for ar in asset_reports:
+            for module in ar.modules():
+                assert isinstance(module.name, str)
+                assert isinstance(module.size, int)
+
+        assert bundle_report.total_size() == 150572
+        assert report.session_count() == 1
+    finally:
+        report.cleanup()
+
+
+def test_bundle_is_cached():
+    try:
+        bundle_analysis_report = BundleAnalysisReport()
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+        assert session_id == 2
+
+        assert bundle_analysis_report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
+        }
+
+        # When doing ingest (ie when handling a upload), its never cached
+        bundle_reports = list(bundle_analysis_report.bundle_reports())
+        assert len(bundle_reports) == 2
+        for bundle in bundle_reports:
+            assert bundle.is_cached() == False
+        assert bundle_analysis_report.is_cached() == False
+
+        # Test setting 'sample' bundle to True
+        bundle_analysis_report.update_is_cached(data={"sample": True})
+        assert bundle_analysis_report.bundle_report("sample").is_cached() == True
+        assert bundle_analysis_report.bundle_report("sample2").is_cached() == False
+        assert bundle_analysis_report.is_cached() == True
+
+        # Test setting 'sample2' bundle to True and 'sample' back to False
+        bundle_analysis_report.update_is_cached(data={"sample2": True, "sample": False})
+        assert bundle_analysis_report.bundle_report("sample").is_cached() == False
+        assert bundle_analysis_report.bundle_report("sample2").is_cached() == True
+        assert bundle_analysis_report.is_cached() == True
+
+    finally:
+        bundle_analysis_report.cleanup()
+
+
+def test_bundle_deletion():
+    try:
+        bundle_analysis_report = BundleAnalysisReport()
+        db_session = bundle_analysis_report.db_session
+
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+
+        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+        assert session_id == 2
+
+        assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
+
+        # Delete non-existent bundle
+        bundle_analysis_report.delete_bundle_by_name("fake")
+        assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
+
+        # Delete bundle 'sample'
+        bundle_analysis_report.delete_bundle_by_name("sample")
+        assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
+        res = list(db_session.query(Bundle).all())
+        assert len(res) == 1
+        assert res[0].name == "sample2"
+
+        # Delete bundle 'sample' again
+        bundle_analysis_report.delete_bundle_by_name("sample")
+        assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
+        res = list(db_session.query(Bundle).all())
+        assert len(res) == 1
+        assert res[0].name == "sample2"
+
+        # Delete bundle 'sample2'
+        bundle_analysis_report.delete_bundle_by_name("sample2")
+        assert _table_rows_count(db_session) == (0, 0, 0, 0, 0)
+        res = list(db_session.query(Bundle).all())
+        assert len(res) == 0
+
+    finally:
+        bundle_analysis_report.cleanup()

@@ -7,6 +7,7 @@ from typing import Any, List
 import pyparsing as pp
 
 from shared.validation.types import (
+    BundleThreshold,
     CoverageCommentRequiredChanges,
     CoverageCommentRequiredChangesANDGroup,
     CoverageCommentRequiredChangesORGroup,
@@ -150,7 +151,7 @@ class CoverageCommentRequirementSchemaField(object):
 class ByteSizeSchemaField(object):
     """Converts a possible string with byte extension size into integer with number of bytes.
     Acceptable extensions are 'mb', 'kb', 'gb', 'b' and 'bytes' (case insensitive).
-    Also accepts integers, returning the value itself as the number of bytes.
+    Also accepts positive integers, returning the value itself as the number of bytes.
 
     Example:
         100 -> 100
@@ -173,6 +174,8 @@ class ByteSizeSchemaField(object):
 
     def validate(self, data: Any) -> int:
         if isinstance(data, int):
+            if data < 0:
+                raise Invalid("Only positive values accepted")
             return data
         if isinstance(data, str):
             return self._validate_str(data)
@@ -204,6 +207,33 @@ class PercentSchemaField(object):
             return float(value)
         except ValueError:
             raise Invalid(f"{value} should be a number")
+
+
+class BundleSizeThresholdSchemaField(object):
+    """
+    A field for bundle analysis threshold.
+    It can be either a ByteSizeSchemaField or PercentSchemaField.
+    ⚠️ integers are considered ByteSize ⚠️
+    ⚠️ floats are considered Percent ⚠️
+
+    Examples:
+      "10 mb" -> ("absolute", 1000000)
+      "100%" -> ("percentage", 100.0)
+      100 -> ("absolute", 100)
+      0.5 -> ("percentage", 50.0)
+    """
+
+    def validate(self, value: Any) -> BundleThreshold:
+        byte_size_schema = ByteSizeSchemaField()
+        percentage_schema = PercentSchemaField()
+        if isinstance(value, numbers.Integral):
+            value: int = byte_size_schema.validate(value)
+            return BundleThreshold("absolute", value)
+        if isinstance(value, numbers.Real) or isinstance(value, str) and "%" in value:
+            value: float = percentage_schema.validate(value, allow_auto=False)
+            return BundleThreshold("percentage", value)
+        value: int = byte_size_schema.validate(value)
+        return BundleThreshold("absolute", value)
 
 
 def determine_path_pattern_type(filepath_pattern):

@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "shared.django_apps.codecov_auth",
     "shared.django_apps.core",
     "shared.django_apps.reports",
+    "shared.django_apps.bundle_analysis",
 ]
 
 # Needed for makemigrations to work

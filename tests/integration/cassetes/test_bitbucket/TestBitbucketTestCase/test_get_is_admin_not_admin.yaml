@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?q=workspace.uuid%3D%22%7Bd7c73e87-90ab-450f-bb5f-39e6a5870456%7D%22+AND+permission%3D%22owner%22+AND+user.uuid%3D%22%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D%22&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617375478&oauth_nonce=8b0fd629f5e64e5b8f766823188eef76&oauth_version=1.0&oauth_signature=8Glsiw6nKT4h3FPXQeSDj8hQU%2Bo%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=arubajamaicaohiwan&oauth_signature_method=HMAC-SHA1&oauth_token=testss3hxhcfqf1h6g&oauth_version=1.0
   response:
     content: '{"pagelen": 50, "values": [], "page": 1, "size": 0}'
     headers:

@@ -1,5 +1,4 @@
 from copy import deepcopy
-from dataclasses import astuple
 from decimal import Decimal
 
 from shared.reports.types import (

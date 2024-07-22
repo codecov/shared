@@ -27,7 +27,7 @@ class TestMarketo(object):
     @pytest.mark.asyncio
     def test_make_rest_request(self, mocker, mock_setup):
         with respx.mock:
-            token_request = respx.get(
+            respx.get(
                 "https://marketo/test/identity/oauth/token?grant_type=client_credentials&client_id=1234&client_secret=secret"
             ).mock(
                 return_value=httpx.Response(
@@ -40,7 +40,7 @@ class TestMarketo(object):
                     },
                 )
             )
-            marketo_request = respx.get("https://marketo/test/path/url").mock(
+            respx.get("https://marketo/test/path/url").mock(
                 return_value=httpx.Response(
                     status_code=200,
                     headers={
@@ -87,7 +87,7 @@ class TestMarketo(object):
             bytes = b"\x00\x01\x02"
 
         with respx.mock:
-            token_request = respx.get(
+            respx.get(
                 "https://marketo/test/identity/oauth/token?grant_type=client_credentials&client_id=1234&client_secret=secret"
             ).mock(
                 return_value=httpx.Response(
@@ -100,9 +100,7 @@ class TestMarketo(object):
                     },
                 )
             )
-            marketo_request = respx.post(
-                "https://marketo/test/rest/v1/leads.json"
-            ).mock(
+            respx.post("https://marketo/test/rest/v1/leads.json").mock(
                 return_value=httpx.Response(
                     status_code=200,
                     headers={
@@ -152,7 +150,7 @@ class TestMarketo(object):
     @pytest.mark.asyncio
     def test_make_failed_rest_request(self, mocker, mock_setup):
         with respx.mock:
-            token_request = respx.get(
+            respx.get(
                 "https://marketo/test/identity/oauth/token?grant_type=client_credentials&client_id=1234&client_secret=secret"
             ).mock(
                 return_value=httpx.Response(
@@ -165,7 +163,7 @@ class TestMarketo(object):
                     },
                 )
             )
-            marketo_request = respx.get("https://marketo/test/path/url").mock(
+            respx.get("https://marketo/test/path/url").mock(
                 return_value=httpx.Response(
                     status_code=200,
                     headers={
@@ -182,14 +180,14 @@ class TestMarketo(object):
             marketo = Marketo()
             url = "/path/url"
             with pytest.raises(MarketoError) as exc:
-                response = marketo.make_rest_request(url)
+                marketo.make_rest_request(url)
             assert exc.value.code == "601"
             assert exc.value.message == "Unauthorized"
 
     @pytest.mark.asyncio
     def test_make_rest_request_failed_record_level(self, mocker, mock_setup):
         with respx.mock:
-            token_request = respx.get(
+            respx.get(
                 "https://marketo/test/identity/oauth/token?grant_type=client_credentials&client_id=1234&client_secret=secret"
             ).mock(
                 return_value=httpx.Response(
@@ -202,7 +200,7 @@ class TestMarketo(object):
                     },
                 )
             )
-            marketo_request = respx.get("https://marketo/test/path/url").mock(
+            respx.get("https://marketo/test/path/url").mock(
                 return_value=httpx.Response(
                     status_code=200,
                     headers={
@@ -228,6 +226,6 @@ class TestMarketo(object):
             marketo = Marketo()
             url = "/path/url"
             with pytest.raises(MarketoError) as exc:
-                response = marketo.make_rest_request(url)
+                marketo.make_rest_request(url)
             assert exc.value.code == "1005"
             assert exc.value.message == "Lead already exists"
