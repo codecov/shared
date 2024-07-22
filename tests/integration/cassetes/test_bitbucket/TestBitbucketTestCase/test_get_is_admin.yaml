@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?q=workspace.uuid%3D%22%7B727d78e8-7431-4532-9519-1e5fe2b61d4b%7D%22+AND+permission%3D%22owner%22+AND+user.uuid%3D%22%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D%22&oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378487&oauth_nonce=fe94e338b0294054a6973e26fba8b158&oauth_version=1.0&oauth_signature=fuzvRwiZHcRKdYQdU2yvGg9jhnw%3D
+    uri: https://bitbucket.org/api/2.0/user/permissions/workspaces?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1617378487&oauth_nonce=fe94e338b0294054a6973e26fba8b158&oauth_version=1.0&oauth_signature=fuzvRwiZHcRKdYQdU2yvGg9jhnw%3D
   response:
     content: '{"pagelen": 50, "values": [{"links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/thiagorramosworkspace/members/%7B9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645%7D"}},
       "permission": "owner", "last_accessed": null, "user": {"display_name": "Thiago
