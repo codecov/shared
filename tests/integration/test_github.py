@@ -283,7 +283,7 @@ class TestGithubTestCase(object):
             "1",
             {
                 "base": {
-                    "branch": "master",
+                    "branch": "main",
                     "commitid": "68946ef98daec68c7798459150982fc799c87d85",
                     "slug": "ThiagoCodecov/example-python",
                 },
@@ -309,7 +309,7 @@ class TestGithubTestCase(object):
         pull_id = "16"
         expected_result = {
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "335ec9958daf0242bc8945659bb120c05800eacf",
                 "slug": "ThiagoCodecov/example-python",
             },
@@ -666,7 +666,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_branches(self, valid_handler, codecov_vcr):
         expected_result = [
-            "master",
+            "main",
             "random-branch",
             "thiago/base-no-base",
             "thiago/f/big-pt",
@@ -899,7 +899,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_distance_in_commits(self, generic_valid_handler, codecov_vcr):
-        base_branch, head = "master", "0206296b1424912cc05069a9bf4025cbb95f5ecc"
+        base_branch, head = "main", "0206296b1424912cc05069a9bf4025cbb95f5ecc"
         expected_result = {
             "behind_by": 0,
             "behind_by_commit": "93189ce50f224296d6412e2884b93dcc3c7c8654",
@@ -951,10 +951,10 @@ class TestGithubTestCase(object):
                         "name": "example-python",
                         "language": "python",
                         "private": False,
-                        "branch": "master",
+                        "branch": "main",
                     },
                 },
-                "branch": "master",
+                "branch": "main",
             },
         }
         res = await valid_handler.get_repository()
@@ -1125,7 +1125,7 @@ class TestGithubTestCase(object):
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
-                "branch": "master",
+                "branch": "main",
             },
         }
 
@@ -1158,7 +1158,7 @@ class TestGithubTestCase(object):
                     "name": "rust",
                     "language": None,
                     "private": False,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
             {
@@ -1196,7 +1196,7 @@ class TestGithubTestCase(object):
                     "name": "codecov-test",
                     "language": "python",
                     "private": True,
-                    "branch": "master",
+                    "branch": "main",
                 },
             }
         ]
@@ -1254,7 +1254,7 @@ class TestGithubTestCase(object):
             {"name": "tests", "path": "tests", "type": "folder"},
             {"name": "unit.coverage.xml", "path": "unit.coverage.xml", "type": "file"},
         ]
-        res = await valid_handler.list_top_level_files("master")
+        res = await valid_handler.list_top_level_files("main")
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -1265,7 +1265,7 @@ class TestGithubTestCase(object):
             {"name": "__init__.py", "path": "awesome/__init__.py", "type": "file"},
             {"name": "code_fib.py", "path": "awesome/code_fib.py", "type": "file"},
         ]
-        res = await valid_handler.list_files("master", "awesome")
+        res = await valid_handler.list_files("main", "awesome")
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -1291,7 +1291,7 @@ class TestGithubTestCase(object):
         pull_id = "15"
         expected_result = {
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "30cc1ed751a59fa9e7ad8e79fff41a6fe11ef5dd",
                 "slug": "ThiagoCodecov/example-python",
             },
@@ -1351,7 +1351,7 @@ class TestGithubTestCase(object):
         pull_id = "110"
         expected_result = {
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "77141afbd13a1273f87cf02f7f32265ea19a3b77",
                 "slug": "codecov/codecov-api-archive",
             },
@@ -1501,7 +1501,7 @@ class TestGithubTestCase(object):
                         },
                     },
                     "base": {
-                        "ref": "master",
+                        "ref": "main",
                         "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                         "repo": {
                             "id": 156617777,
@@ -1626,7 +1626,7 @@ class TestGithubTestCase(object):
                                 },
                             },
                             "base": {
-                                "ref": "master",
+                                "ref": "main",
                                 "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                                 "repo": {
                                     "id": 156617777,
@@ -1710,7 +1710,7 @@ class TestGithubTestCase(object):
                                 },
                             },
                             "base": {
-                                "ref": "master",
+                                "ref": "main",
                                 "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                                 "repo": {
                                     "id": 156617777,
@@ -1916,7 +1916,7 @@ class TestGithubTestCase(object):
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
-                "branch": "master",
+                "branch": "main",
                 "owner": {
                     "node_id": "U_kgDOBZOfKw",
                     "username": "codecove2e",
@@ -1928,7 +1928,7 @@ class TestGithubTestCase(object):
                 "name": "test-no-languages",
                 "language": None,
                 "private": False,
-                "branch": "master",
+                "branch": "main",
                 "owner": {
                     "node_id": "U_kgDOBZOfKw",
                     "username": "codecove2e",

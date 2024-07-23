@@ -88,9 +88,9 @@ interactions:
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/48f47f9d1b58ba418fdcd50117fc9781c10a27fb\"\
       }}}], \"date\": \"2018-02-13T01:06:57+00:00\", \"message\": \"fixing a typo\
       \ in the README\\n\\n\", \"type\": \"commit\"}, {\"rendered\": {\"message\"\
-      : {\"raw\": \"Merge pull request #30 from Jay54520/master\\n\\n#29/Pytest doc\
+      : {\"raw\": \"Merge pull request #30 from Jay54520/main\\n\\n#29/Pytest doc\
       \ error\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #30 from\
-      \ Jay54520/master</p>\\n<p>#29/Pytest doc error</p>\", \"type\": \"rendered\"\
+      \ Jay54520/main</p>\\n<p>#29/Pytest doc error</p>\", \"type\": \"rendered\"\
       }}, \"hash\": \"48f47f9d1b58ba418fdcd50117fc9781c10a27fb\", \"repository\":\
       \ {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"\
@@ -104,9 +104,9 @@ interactions:
       }, \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb/approve\"\
       }, \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/48f47f9d1b58ba418fdcd50117fc9781c10a27fb/statuses\"\
       }}, \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"\
-      }, \"summary\": {\"raw\": \"Merge pull request #30 from Jay54520/master\\n\\\
+      }, \"summary\": {\"raw\": \"Merge pull request #30 from Jay54520/main\\n\\\
       n#29/Pytest doc error\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull\
-      \ request #30 from Jay54520/master</p>\\n<p>#29/Pytest doc error</p>\", \"type\"\
+      \ request #30 from Jay54520/main</p>\\n<p>#29/Pytest doc error</p>\", \"type\"\
       : \"rendered\"}, \"parents\": [{\"hash\": \"76003ff147414ce80d2a14ab5f1b78d165e9a468\"\
       , \"type\": \"commit\", \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/76003ff147414ce80d2a14ab5f1b78d165e9a468\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/76003ff147414ce80d2a14ab5f1b78d165e9a468\"\
@@ -114,7 +114,7 @@ interactions:
       , \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\"\
       }}}], \"date\": \"2018-01-30T11:57:49+00:00\", \"message\": \"Merge pull request\
-      \ #30 from Jay54520/master\\n\\n#29/Pytest doc error\", \"type\": \"commit\"\
+      \ #30 from Jay54520/main\\n\\n#29/Pytest doc error\", \"type\": \"commit\"\
       }, {\"rendered\": {\"message\": {\"raw\": \"#29/Pytest doc error\\n\", \"markup\"\
       : \"markdown\", \"html\": \"<p>#29/Pytest doc error</p>\", \"type\": \"rendered\"\
       }}, \"hash\": \"d2cd28d53b72d999e9a18d66319dfe4d9b7155c7\", \"repository\":\
@@ -374,9 +374,9 @@ interactions:
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/feb5100831541db79eb83a263986df129573f3de\"\
       }}}], \"date\": \"2017-02-02T19:10:16+00:00\", \"message\": \"Update README.md\"\
       , \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Merge pull\
-      \ request #20 from briandant/master\\n\\nAdd further instructions for using\
+      \ request #20 from briandant/main\\n\\nAdd further instructions for using\
       \ env vars\", \"markup\": \"markdown\", \"html\": \"<p>Merge pull request #20\
-      \ from briandant/master</p>\\n<p>Add further instructions for using env vars</p>\"\
+      \ from briandant/main</p>\\n<p>Add further instructions for using env vars</p>\"\
       , \"type\": \"rendered\"}}, \"hash\": \"feb5100831541db79eb83a263986df129573f3de\"\
       , \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python\"\
@@ -390,9 +390,9 @@ interactions:
       }, \"approve\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de/approve\"\
       }, \"statuses\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/feb5100831541db79eb83a263986df129573f3de/statuses\"\
       }}, \"author\": {\"raw\": \"Steve Peak <steve@codecov.io>\", \"type\": \"author\"\
-      }, \"summary\": {\"raw\": \"Merge pull request #20 from briandant/master\\n\\\
+      }, \"summary\": {\"raw\": \"Merge pull request #20 from briandant/main\\n\\\
       nAdd further instructions for using env vars\", \"markup\": \"markdown\", \"\
-      html\": \"<p>Merge pull request #20 from briandant/master</p>\\n<p>Add further\
+      html\": \"<p>Merge pull request #20 from briandant/main</p>\\n<p>Add further\
       \ instructions for using env vars</p>\", \"type\": \"rendered\"}, \"parents\"\
       : [{\"hash\": \"3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\", \"type\": \"commit\"\
       , \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"\
@@ -401,7 +401,7 @@ interactions:
       , \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/6802411a35f438bf62ee8a1c1928cd36ca50d534\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/6802411a35f438bf62ee8a1c1928cd36ca50d534\"\
       }}}], \"date\": \"2017-02-02T19:09:38+00:00\", \"message\": \"Merge pull request\
-      \ #20 from briandant/master\\n\\nAdd further instructions for using env vars\"\
+      \ #20 from briandant/main\\n\\nAdd further instructions for using env vars\"\
       , \"type\": \"commit\"}, {\"rendered\": {\"message\": {\"raw\": \"Add further\
       \ instructions for using env vars\", \"markup\": \"markdown\", \"html\": \"\
       <p>Add further instructions for using env vars</p>\", \"type\": \"rendered\"\
@@ -428,12 +428,12 @@ interactions:
       }}}], \"date\": \"2017-02-02T18:37:42+00:00\", \"message\": \"Add further instructions\
       \ for using env vars\", \"type\": \"commit\"}, {\"rendered\": {\"message\":\
       \ {\"raw\": \"Circle build #355\\nhttps://circleci.com/gh/codecov/testsuite/355\\\
-      nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)\
+      nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov)\
       \ -v -u https://codecov.io\", \"markup\": \"markdown\", \"html\": \"<p>Circle\
       \ build #355<br />\\n<a href=\\\"https://circleci.com/gh/codecov/testsuite/355\\\
       \" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://circleci.com/gh/codecov/testsuite/355</a><br\
-      \ />\\nbash &lt;(curl -s <a href=\\\"https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov\\\
-      \" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov</a>)\
+      \ />\\nbash &lt;(curl -s <a href=\\\"https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov\\\
+      \" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov</a>)\
       \ -v -u <a href=\\\"https://codecov.io\\\" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\
       \">https://codecov.io</a></p>\", \"type\": \"rendered\"}}, \"hash\": \"3f28e93cbc1d266c30a5bdf43126ed44fbeb009d\"\
       , \"repository\": {\"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python\"\
@@ -455,19 +455,19 @@ interactions:
       }, \"avatar\": {\"href\": \"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FCT-1.png\"\
       }}, \"nickname\": \"Codecov Test\", \"type\": \"user\", \"account_id\": \"557058:e83c38f0-a908-4e6e-aeb1-e5cf9aef75a3\"\
       }}, \"summary\": {\"raw\": \"Circle build #355\\nhttps://circleci.com/gh/codecov/testsuite/355\\\
-      nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)\
+      nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov)\
       \ -v -u https://codecov.io\", \"markup\": \"markdown\", \"html\": \"<p>Circle\
       \ build #355<br />\\n<a href=\\\"https://circleci.com/gh/codecov/testsuite/355\\\
       \" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://circleci.com/gh/codecov/testsuite/355</a><br\
-      \ />\\nbash &lt;(curl -s <a href=\\\"https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov\\\
-      \" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov</a>)\
+      \ />\\nbash &lt;(curl -s <a href=\\\"https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov\\\
+      \" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\">https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov</a>)\
       \ -v -u <a href=\\\"https://codecov.io\\\" rel=\\\"nofollow\\\" class=\\\"ap-connect-link\\\
       \">https://codecov.io</a></p>\", \"type\": \"rendered\"}, \"parents\": [{\"\
       hash\": \"63f5740c33f2aac68fd0757f471ab741f9e20a05\", \"type\": \"commit\",\
       \ \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/63f5740c33f2aac68fd0757f471ab741f9e20a05\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/example-python/commits/63f5740c33f2aac68fd0757f471ab741f9e20a05\"\
       }}}], \"date\": \"2016-09-29T10:37:07+00:00\", \"message\": \"Circle build #355\\\
-      nhttps://circleci.com/gh/codecov/testsuite/355\\nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)\
+      nhttps://circleci.com/gh/codecov/testsuite/355\\nbash <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov)\
       \ -v -u https://codecov.io\", \"type\": \"commit\"}, {\"rendered\": {\"message\"\
       : {\"raw\": \"Update README.md\", \"markup\": \"markdown\", \"html\": \"<p>Update\
       \ README.md</p>\", \"type\": \"rendered\"}}, \"hash\": \"63f5740c33f2aac68fd0757f471ab741f9e20a05\"\

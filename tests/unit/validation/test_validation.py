@@ -112,7 +112,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "require_base": True,
                         "layout": "diff",
                         "require_changes": True,
-                        "branches": ["master"],
+                        "branches": ["main"],
                         "behavior": "once",
                         "after_n_builds": 6,
                         "hide_project_coverage": True,
@@ -137,7 +137,7 @@ class TestUserYamlValidation(BaseTestCase):
                         "require_base": True,
                         "layout": "diff",
                         "require_changes": [0b001],
-                        "branches": ["^master$"],
+                        "branches": ["^main$"],
                         "behavior": "once",
                         "after_n_builds": 6,
                         "hide_project_coverage": True,
@@ -166,7 +166,7 @@ class TestUserYamlValidation(BaseTestCase):
                                 "default": {
                                     "url": "https://hooks.slack.com/services/testdazzd/testrf4k6py/test72nq0j0ke3prs2fdvfuj",
                                     "only_pulls": False,
-                                    "branches": ["master", "qa", "dev"],
+                                    "branches": ["main", "qa", "dev"],
                                 }
                             }
                         }
@@ -180,7 +180,7 @@ class TestUserYamlValidation(BaseTestCase):
                                 "default": {
                                     "url": "https://hooks.slack.com/services/testdazzd/testrf4k6py/test72nq0j0ke3prs2fdvfuj",
                                     "only_pulls": False,
-                                    "branches": ["^master$", "^qa$", "^dev$"],
+                                    "branches": ["^main$", "^qa$", "^dev$"],
                                 }
                             }
                         }
@@ -977,7 +977,7 @@ def test_validation_with_branches():
             "require_base": True,
             "layout": "diff",
             "require_changes": True,
-            "branches": ["master"],
+            "branches": ["main"],
             "behavior": "once",
             "after_n_builds": 6,
         },
@@ -998,7 +998,7 @@ def test_validation_with_branches():
             "require_base": True,
             "layout": "diff",
             "require_changes": [0b001],
-            "branches": ["^master$"],
+            "branches": ["^main$"],
             "behavior": "once",
             "after_n_builds": 6,
         },
@@ -1206,10 +1206,10 @@ def test_email_field_with_and_without_secret():
 
 def test_assume_flags():
     # It's deprecated, but still
-    user_input = {"flags": {"some_flag": {"assume": {"branches": ["master"]}}}}
+    user_input = {"flags": {"some_flag": {"assume": {"branches": ["main"]}}}}
     assert do_actual_validation(
         user_input, show_secrets_for=("github", "11934774", "154468867")
-    ) == {"flags": {"some_flag": {"assume": {"branches": ["^master$"]}}}}
+    ) == {"flags": {"some_flag": {"assume": {"branches": ["^main$"]}}}}
 
 
 def test_after_n_builds_flags():

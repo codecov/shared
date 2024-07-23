@@ -48,7 +48,7 @@ class TestGitlabTestCase(object):
         branches = await valid_handler.get_best_effort_branches(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
-        assert branches == ["master", "other-branch"]
+        assert branches == ["main", "other-branch"]
 
     @pytest.mark.asyncio
     async def test_post_comment(self, valid_handler, codecov_vcr):
@@ -142,7 +142,7 @@ class TestGitlabTestCase(object):
             "1",
             {
                 "base": {
-                    "branch": "master",
+                    "branch": "main",
                     "commitid": "5716de23b27020419d1a40dd93b469c041a1eeef",
                 },
                 "head": {
@@ -175,7 +175,7 @@ class TestGitlabTestCase(object):
         assert res == {
             "author": {"id": "3124507", "username": "ThiagoCodecov"},
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "081d91921f05a8a39d39aef667eddb88e96300c7",
             },
             "head": {
@@ -332,7 +332,7 @@ class TestGitlabTestCase(object):
             "finished_at": "2018-11-05T20:11:18.137Z",
             "id": 116703167,
             "name": "context",
-            "ref": "master",
+            "ref": "main",
             "sha": "c739768fcac68144a3a6d82305b9c4106934d31a",
             "started_at": None,
             "status": "success",
@@ -353,7 +353,7 @@ class TestGitlabTestCase(object):
     async def test_get_branches(self, valid_handler, codecov_vcr):
         branches = sorted(await valid_handler.get_branches())
         print(branches)
-        assert list(map(lambda a: a[0], branches)) == ["master", "other-branch"]
+        assert list(map(lambda a: a[0], branches)) == ["main", "other-branch"]
 
     @pytest.mark.asyncio
     async def test_get_branch(self, valid_handler, codecov_vcr):
@@ -506,7 +506,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             "owner": {"service_id": "109640", "username": "codecov"},
             "repo": {
-                "branch": "master",
+                "branch": "main",
                 "language": None,
                 "name": "ci-repo",
                 "private": False,
@@ -529,7 +529,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             "owner": {"service_id": "4165905", "username": "l00p_group_1:subgroup1"},
             "repo": {
-                "branch": "master",
+                "branch": "main",
                 "language": None,
                 "name": "proj-a",
                 "private": True,
@@ -550,7 +550,7 @@ class TestGitlabTestCase(object):
         expected_result = {
             "owner": {"service_id": "4165905", "username": "l00p_group_1:subgroup1"},
             "repo": {
-                "branch": "master",
+                "branch": "main",
                 "language": None,
                 "name": "proj-a",
                 "private": True,
@@ -593,7 +593,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "189208", "username": "morerunes"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "delectamentum-mud-server",
                     "private": False,
@@ -603,7 +603,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "example-python",
                     "private": False,
@@ -613,7 +613,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "ci-private",
                     "private": True,
@@ -623,7 +623,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "ci-repo",
                     "private": False,
@@ -647,7 +647,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "189208", "username": "morerunes"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "delectamentum-mud-server",
                     "private": False,
@@ -657,7 +657,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "example-python",
                     "private": False,
@@ -667,7 +667,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "ci-private",
                     "private": True,
@@ -677,7 +677,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "109640", "username": "codecov"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "ci-repo",
                     "private": False,
@@ -706,7 +706,7 @@ class TestGitlabTestCase(object):
                     "name": "flake8",
                     "private": True,
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
             {
@@ -716,7 +716,7 @@ class TestGitlabTestCase(object):
                     "name": "inf-proj",
                     "private": True,
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
             {
@@ -726,7 +726,7 @@ class TestGitlabTestCase(object):
                     "name": "loop-proj",
                     "private": True,
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
             {
@@ -739,7 +739,7 @@ class TestGitlabTestCase(object):
                     "name": "proj-a",
                     "private": True,
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
         ]
@@ -758,7 +758,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "4037482", "username": "codecov-organization"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "demo-gitlab",
                     "private": True,
@@ -768,7 +768,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "4037482", "username": "codecov-organization"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "codecov-assume-flag-test",
                     "private": True,
@@ -778,7 +778,7 @@ class TestGitlabTestCase(object):
             {
                 "owner": {"service_id": "4037482", "username": "codecov-organization"},
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "migration-tests",
                     "private": True,
@@ -791,7 +791,7 @@ class TestGitlabTestCase(object):
                     "username": "thiagocodecovtestgroup:test-subgroup",
                 },
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "tasks",
                     "private": True,
@@ -804,7 +804,7 @@ class TestGitlabTestCase(object):
                     "username": "thiagocodecovtestgroup:test-subgroup",
                 },
                 "repo": {
-                    "branch": "master",
+                    "branch": "main",
                     "language": None,
                     "name": "grouptestprojecttrr",
                     "private": True,
@@ -919,7 +919,7 @@ class TestGitlabTestCase(object):
             },
         ]
 
-        res = await valid_handler.list_top_level_files("master")
+        res = await valid_handler.list_top_level_files("main")
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -936,7 +936,7 @@ class TestGitlabTestCase(object):
             }
         ]
 
-        res = await valid_handler.list_files("master", "folder")
+        res = await valid_handler.list_files("main", "folder")
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )

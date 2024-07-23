@@ -762,12 +762,12 @@ class Gitlab(TorngitBaseAdapter):
                     ) = await self.get_owner_info_from_repo(repo, token)
 
                     # Gitlab API will return a repo with one of: no default branch key, default_branch: None, or default_branch: 'some_branch'
-                    branch = "master"
+                    branch = "main"
                     if "default_branch" in repo and repo["default_branch"] is not None:
                         branch = repo.get("default_branch")
                     else:
                         log.warning(
-                            "Repo doesn't have default_branch, using master instead",
+                            "Repo doesn't have default_branch, using main instead",
                             extra=dict(repo=repo),
                         )
 
@@ -1271,7 +1271,7 @@ class Gitlab(TorngitBaseAdapter):
                 service_id=str(res["id"]),
                 private=res["visibility"] != "public",
                 language=None,
-                branch=(res["default_branch"] or "master"),
+                branch=(res["default_branch"] or "main"),
                 name=repo_name,
             ),
         )

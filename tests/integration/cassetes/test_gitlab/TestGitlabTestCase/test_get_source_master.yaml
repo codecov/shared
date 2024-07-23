@@ -10,7 +10,7 @@ interactions:
       uri: https://gitlab.com/api/v4/projects/187725/repository/files/tests.py?ref=master
     response:
       url: https://gitlab.com/api/v4/projects/187725/repository/files/tests.py?ref=master
-      content: '{"file_name":"tests.py","file_path":"tests.py","size":195,"encoding":"base64","content_sha256":"311b6ae18bee76f263ddbaa75daf776a3d16a40e613e3476170b98e24f5ae46e","ref":"master","blob_id":"20642e5c79ebd16b1c87ca300ff8b1afd478be5e","commit_id":"0028015f7fa260f5fd68f78c0deffc15183d955e","last_commit_id":"b33e12816cc3f386dae8add4968cedeff5155021","content":"aW1wb3J0IHVuaXR0ZXN0CmltcG9ydCBteV9wYWNrYWdlCgoKY2xhc3MgVGVzdE1ldGhvZHModW5pdHRlc3QuVGVzdENhc2UpOgogICAgZGVmIHRlc3RfYWRkKHNlbGYpOgogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwobXlfcGFja2FnZS5hZGQoMTApLCAyMCkKCmlmIF9fbmFtZV9fID09ICdfX21haW5fXyc6CiAgICB1bml0dGVzdC5tYWluKCkK"}'
+      content: '{"file_name":"tests.py","file_path":"tests.py","size":195,"encoding":"base64","content_sha256":"311b6ae18bee76f263ddbaa75daf776a3d16a40e613e3476170b98e24f5ae46e","ref":"main","blob_id":"20642e5c79ebd16b1c87ca300ff8b1afd478be5e","commit_id":"0028015f7fa260f5fd68f78c0deffc15183d955e","last_commit_id":"b33e12816cc3f386dae8add4968cedeff5155021","content":"aW1wb3J0IHVuaXR0ZXN0CmltcG9ydCBteV9wYWNrYWdlCgoKY2xhc3MgVGVzdE1ldGhvZHModW5pdHRlc3QuVGVzdENhc2UpOgogICAgZGVmIHRlc3RfYWRkKHNlbGYpOgogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwobXlfcGFja2FnZS5hZGQoMTApLCAyMCkKCmlmIF9fbmFtZV9fID09ICdfX21haW5fXyc6CiAgICB1bml0dGVzdC5tYWluKCkK"}'
       headers:
         Server: nginx
         Date: Tue, 06 Nov 2018 05:33:12 GMT
@@ -29,7 +29,7 @@ interactions:
         X-Gitlab-File-Name: tests.py
         X-Gitlab-File-Path: tests.py
         X-Gitlab-Last-Commit-Id: b33e12816cc3f386dae8add4968cedeff5155021
-        X-Gitlab-Ref: master
+        X-Gitlab-Ref: main
         X-Gitlab-Size: '195'
         X-Request-Id: d5392c7f-1396-4fef-94ec-8f2d0dd36070
         X-Runtime: '0.056949'

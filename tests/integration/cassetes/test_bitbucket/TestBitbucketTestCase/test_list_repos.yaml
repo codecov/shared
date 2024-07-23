@@ -32,7 +32,7 @@ interactions:
       "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
       "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
       "name": "Untitled project"}, "language": "", "created_on": "2014-09-22T00:31:02.553308+00:00",
-      "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/ci-repo",
+      "mainbranch": {"type": "branch", "name": "main"}, "full_name": "codecov/ci-repo",
       "has_issues": true, "owner": {"username": "codecov", "display_name": "Codecov",
       "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
       {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
@@ -61,7 +61,7 @@ interactions:
       "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
       "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
       "name": "Untitled project"}, "language": "python", "created_on": "2015-02-27T03:35:28.555210+00:00",
-      "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/private",
+      "mainbranch": {"type": "branch", "name": "main"}, "full_name": "codecov/private",
       "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
       "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
       {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
@@ -125,7 +125,7 @@ interactions:
       "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
       "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
       "name": "Untitled project"}, "language": "python", "created_on": "2019-10-02T02:24:47.121351+00:00",
-      "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/integration-test-repo",
+      "mainbranch": {"type": "branch", "name": "main"}, "full_name": "codecov/integration-test-repo",
       "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
       "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
       {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},
@@ -155,7 +155,7 @@ interactions:
       "html": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ"},
       "avatar": {"href": "https://bitbucket.org/account/user/codecov/projects/PROJ/avatar/32"}},
       "name": "Untitled project"}, "language": "markdown", "created_on": "2019-10-04T14:47:42.067409+00:00",
-      "mainbranch": {"type": "branch", "name": "master"}, "full_name": "codecov/test-bb-integration-public",
+      "mainbranch": {"type": "branch", "name": "main"}, "full_name": "codecov/test-bb-integration-public",
       "has_issues": false, "owner": {"username": "codecov", "display_name": "Codecov",
       "type": "team", "uuid": "{6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49}", "links": {"self":
       {"href": "https://bitbucket.org/!api/2.0/teams/%7B6ef29b63-aaaa-aaaa-aaaa-aaaa03f5cd49%7D"},

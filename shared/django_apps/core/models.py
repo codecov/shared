@@ -117,7 +117,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
         null=True,
         blank=True,
     )
-    branch = models.TextField(default="master")
+    branch = models.TextField(default="main")
     upload_token = models.UUIDField(unique=True, default=uuid.uuid4)
     yaml = models.JSONField(null=True)
     image_token = models.TextField(null=True, default=_gen_image_token)

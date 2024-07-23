@@ -215,8 +215,8 @@ class TestBitbucketTestCase(object):
                         },
                     },
                     "toRef": {
-                        "id": "refs/heads/master",
-                        "displayId": "master",
+                        "id": "refs/heads/main",
+                        "displayId": "main",
                         "latestCommit": "f3d4a16b651356d9599bd634f6be868508f81f99",
                         "repository": {
                             "slug": "python-standard",

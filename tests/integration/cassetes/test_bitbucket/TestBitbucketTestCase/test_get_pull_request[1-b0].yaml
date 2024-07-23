@@ -35,7 +35,7 @@ interactions:
       }, \"avatar\": {\"href\": \"https://bytebucket.org/ravatar/%7Ba8c50527-2c3a-480e-afe1-7700e2b00074%7D?ts=default\"\
       }}, \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"\
       ThiagoCodecov/example-python\", \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"\
-      }, \"branch\": {\"name\": \"master\"}}, \"created_on\": \"2018-11-06T15:43:55.296636+00:00\"\
+      }, \"branch\": {\"name\": \"main\"}}, \"created_on\": \"2018-11-06T15:43:55.296636+00:00\"\
       , \"summary\": {\"raw\": \"Maybeeeeee\\r\\n\\r\\nYou\u2019re gonna be the one\
       \ that saves meeee\", \"markup\": \"markdown\", \"html\": \"<p>Maybeeeeee</p>\\\
       n<p>You\u2019re gonna be the one that saves meeee</p>\", \"type\": \"rendered\"\

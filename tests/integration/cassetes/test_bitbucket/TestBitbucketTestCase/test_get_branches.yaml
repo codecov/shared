@@ -37,9 +37,9 @@ interactions:
       "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/44542c3afa4c75963f60e9424e87fc40ee503864"},
       "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/44542c3afa4c75963f60e9424e87fc40ee503864"}}}],
       "date": "2019-03-13T14:09:07+00:00", "message": "New branch\n", "type": "commit"}},
-      {"name": "master", "links": {"commits": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commits/master"},
-      "self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/refs/branches/master"},
-      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/branch/master"}},
+      {"name": "main", "links": {"commits": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commits/main"},
+      "self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/refs/branches/main"},
+      "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/branch/main"}},
       "default_merge_strategy": "merge_commit", "merge_strategies": ["merge_commit",
       "squash", "fast_forward"], "type": "branch", "target": {"hash": "44542c3afa4c75963f60e9424e87fc40ee503864",
       "repository": {"links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python"},
@@ -140,7 +140,7 @@ interactions:
       "links": {"self": {"href": "https://bitbucket.org/!api/2.0/repositories/ThiagoCodecov/example-python/commit/3adc4957bc501aa3aa31ff4e18fa64c4d51197b7"},
       "html": {"href": "https://bitbucket.org/ThiagoCodecov/example-python/commits/3adc4957bc501aa3aa31ff4e18fa64c4d51197b7"}}}],
       "date": "2017-04-07T18:39:44+00:00", "message": "Circle build #437\nhttps://circleci.com/gh/codecov/testsuite/437\nbash
-      <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/master/codecov)
+      <(curl -s https://raw.githubusercontent.com/codecov/codecov-bash/main/codecov)
       -v -u https://codecov.io -Z", "type": "commit"}}], "page": 1, "size": 5}'
     headers:
       Accept-Ranges:

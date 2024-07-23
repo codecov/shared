@@ -133,9 +133,9 @@ class UserYaml(object):
         Why does repo_yaml gets overriden by commit_yaml, but owner_yaml doesn't?
             The idea is that the commit yaml is something at the repo level, which
                 at sometime will be used to replace the current repo yaml.
-            In fact, if that commit gets merged on master, then the old repo_yaml won't have any effect
+            In fact, if that commit gets merged on main, then the old repo_yaml won't have any effect
                 anymore. So this guarantees that if you set  yaml at a certain branch, when you merge
-                that branch into master the yaml will continue to have the same effect.
+                that branch into main the yaml will continue to have the same effect.
             It would be a sucky behavior if your commit changes were you trying to get rid of a
                 repo level yaml config and we were still merging them.
 

@@ -13,7 +13,7 @@ interactions:
       uri: https://gitlab.com/api/v4/projects/187725/statuses/c739768fcac68144a3a6d82305b9c4106934d31a
     response:
       url: https://gitlab.com/api/v4/projects/187725/statuses/c739768fcac68144a3a6d82305b9c4106934d31a
-      content: '{"id":116703167,"sha":"c739768fcac68144a3a6d82305b9c4106934d31a","ref":"master","status":"success","name":"context","target_url":"https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67","description":"aaaaaaaaaa","created_at":"2018-11-05T20:11:18.104Z","started_at":null,"finished_at":"2018-11-05T20:11:18.137Z","allow_failure":false,"coverage":null,"author":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80\u0026d=identicon","web_url":"https://gitlab.com/codecov"}}'
+      content: '{"id":116703167,"sha":"c739768fcac68144a3a6d82305b9c4106934d31a","ref":"main","status":"success","name":"context","target_url":"https://localhost:50036/gitlab/codecov/ci-repo?ref=ad798926730aad14aadf72281204bdb85734fe67","description":"aaaaaaaaaa","created_at":"2018-11-05T20:11:18.104Z","started_at":null,"finished_at":"2018-11-05T20:11:18.137Z","allow_failure":false,"coverage":null,"author":{"id":109640,"name":"Codecov","username":"codecov","state":"active","avatar_url":"https://secure.gravatar.com/avatar/dcdb35375db567705dd7e74226fae67b?s=80\u0026d=identicon","web_url":"https://gitlab.com/codecov"}}'
       headers:
         Server: nginx
         Date: Mon, 05 Nov 2018 20:11:18 GMT

@@ -157,7 +157,7 @@ if TIMESERIES_ENABLED:
             "CONN_MAX_AGE": CONN_MAX_AGE,
         }
 
-# See https://django-postgres-extra.readthedocs.io/en/master/settings.html
+# See https://django-postgres-extra.readthedocs.io/en/main/settings.html
 POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"  # type: ignore
 
 # Allows to use the pgpartition command

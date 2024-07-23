@@ -130,7 +130,7 @@ class TestBitbucketTestCase(object):
             "1",
             {
                 "base": {
-                    "branch": "master",
+                    "branch": "main",
                     "commitid": "b92edba44fdd29fcc506317cc3ddeae1a723dd08",
                 },
                 "head": {
@@ -344,7 +344,7 @@ class TestBitbucketTestCase(object):
             "example",
             "f/new-branch",
             "future",
-            "master",
+            "main",
             "second-branch",
         ]
 
@@ -547,7 +547,7 @@ class TestBitbucketTestCase(object):
                 "username": "ThiagoCodecov",
             },
             "repo": {
-                "branch": "master",
+                "branch": "main",
                 "language": None,
                 "name": "example-python",
                 "private": True,
@@ -594,7 +594,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "ci-repo",
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "a980e378-088f-48a8-9850-98923f497546",
                     "private": False,
                 },
@@ -607,7 +607,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "private",
                     "language": "python",
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
                     "private": True,
                 },
@@ -620,7 +620,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "coverage.py",
                     "language": "python",
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
                     "private": False,
                 },
@@ -633,7 +633,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "integration-test-repo",
                     "language": "python",
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
                     "private": True,
                 },
@@ -646,7 +646,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "test-bb-integration-public",
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
                     "private": False,
                 },
@@ -676,7 +676,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "ci-repo",
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "a980e378-088f-48a8-9850-98923f497546",
                     "private": False,
                 },
@@ -689,7 +689,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "private",
                     "language": "python",
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "3edf54ab-cfe4-4049-aa70-5eb9f69f60d4",
                     "private": True,
                 },
@@ -702,7 +702,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "coverage.py",
                     "language": "python",
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "d08f4587-489f-4b55-abad-3d4f396d9862",
                     "private": False,
                 },
@@ -715,7 +715,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "integration-test-repo",
                     "language": "python",
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "4fab7a33-92dd-450b-8d12-ea1ab7816300",
                     "private": True,
                 },
@@ -728,7 +728,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "test-bb-integration-public",
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "2e219352-777c-4e2b-9a16-71211fbd4d93",
                     "private": False,
                 },
@@ -1031,7 +1031,7 @@ class TestBitbucketTestCase(object):
                 "repo": {
                     "name": "example-python",
                     "language": None,
-                    "branch": "master",
+                    "branch": "main",
                     "service_id": "a8c50527-2c3a-480e-afe1-7700e2b00074",
                     "private": True,
                 },
