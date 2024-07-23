@@ -3,6 +3,7 @@ import os
 import pytest
 
 from shared.config import ConfigHelper, get_config
+from shared.rollouts.features import BUNDLE_THRESHOLD_FLAG
 from shared.validation.exceptions import InvalidYamlException
 from shared.yaml.validation import (
     _calculate_error_location_and_message_from_error_dict,
@@ -837,7 +838,7 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": True,
-                        "bundle_change_threshold": 1200,
+                        "bundle_change_threshold": ("absolute", 1200),
                     }
                 },
                 id="bundle_changes_with_threshold",
@@ -852,14 +853,83 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": "bundle_increase",
-                        "bundle_change_threshold": 1000000,
+                        "bundle_change_threshold": ("absolute", 1000000),
                     }
                 },
                 id="bundle_increase_required_with_threshold",
             ),
+            pytest.param(
+                {
+                    "comment": {
+                        "require_bundle_changes": "bundle_increase",
+                        "bundle_change_threshold": "10%",
+                    }
+                },
+                {
+                    "comment": {
+                        "require_bundle_changes": "bundle_increase",
+                        "bundle_change_threshold": ("percentage", 10.0),
+                    }
+                },
+                id="bundle_increase_required_with_percentage_threshold",
+            ),
         ],
     )
-    def test_bundle_analysis_comment_config(self, input, expected):
+    def test_bundle_analysis_comment_config(self, input, expected, mocker):
+        mocker.patch.object(BUNDLE_THRESHOLD_FLAG, "check_value", return_value=True)
+        result = validate_yaml(input)
+        assert result == expected
+
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            pytest.param(
+                {
+                    "bundle_analysis": {
+                        "status": False,
+                        "bundle_change_threshold": "10%",
+                    }
+                },
+                {
+                    "bundle_analysis": {
+                        "status": False,
+                        "bundle_change_threshold": ("percentage", 10.0),
+                    }
+                },
+                id="status_off_percentage_threshold",
+            ),
+            pytest.param(
+                {
+                    "bundle_analysis": {
+                        "status": True,
+                        "bundle_change_threshold": "10kb",
+                    }
+                },
+                {
+                    "bundle_analysis": {
+                        "status": True,
+                        "bundle_change_threshold": ("absolute", 10000),
+                    }
+                },
+                id="status_on_absolute_threshold",
+            ),
+            pytest.param(
+                {
+                    "bundle_analysis": {
+                        "status": "informational",
+                    }
+                },
+                {
+                    "bundle_analysis": {
+                        "status": "informational",
+                    }
+                },
+                id="status_informational_no_threshold",
+            ),
+        ],
+    )
+    def test_bundle_analysis_config(self, input, expected, mocker):
+        mocker.patch.object(BUNDLE_THRESHOLD_FLAG, "check_value", return_value=True)
         result = validate_yaml(input)
         assert result == expected
 

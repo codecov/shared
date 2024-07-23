@@ -2,6 +2,7 @@ from cerberus import Validator
 
 from shared.validation.helpers import (
     BranchSchemaField,
+    BundleSizeThresholdSchemaField,
     ByteSizeSchemaField,
     CoverageCommentRequirementSchemaField,
     CoverageRangeSchemaField,
@@ -12,6 +13,7 @@ from shared.validation.helpers import (
     PercentSchemaField,
     UserGivenBranchRegex,
 )
+from shared.validation.types import BundleThreshold
 
 
 class CodecovYamlValidator(Validator):
@@ -44,6 +46,17 @@ class CodecovYamlValidator(Validator):
 
     def _normalize_coerce_byte_size(self, value):
         return ByteSizeSchemaField().validate(value)
+
+    def _normalize_coerce_bundle_analysis_threshold(self, value):
+        coerced_value: BundleThreshold = BundleSizeThresholdSchemaField().validate(
+            value
+        )
+        # This change is not forwards compatible, so we need this step in the rollout
+        from shared.rollouts.features import BUNDLE_THRESHOLD_FLAG
+
+        if BUNDLE_THRESHOLD_FLAG.check_value(identifier=1, default=False):
+            return coerced_value
+        return coerced_value.threshold
 
     def _validate_comma_separated_strings(self, constraint, field, value):
         """Test the oddity of a value.
