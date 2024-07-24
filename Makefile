@@ -32,10 +32,10 @@ requirements.install:
 	pip install -r tests/requirements.txt
 	pip install -r requirements.txt
 	python setup.py develop
-	pip install codecov-cli
+	pip install codecov-cli==0.7.2
 
 test_env.install_cli:
-	pip install codecov-cli
+	pip install codecov-cli==0.7.2
 
 test_env.build:
 	docker-compose build
