@@ -34,7 +34,7 @@ setup(
         "prometheus-client",
         "analytics-python==1.3.0b1",
         "httpx>=0.23.0",
-        "certifi>=2023.07.22",
+        "certifi>=2024.07.04",
         "oauthlib",
         "redis",
         "typing",
