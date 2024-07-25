@@ -168,12 +168,36 @@ class Account(BaseModel):
         return self.users.filter(owners__student=False).count()
 
     @property
+    def activated_student_count(self) -> int:
+        return self.users.filter(owners__student=True).count()
+
+    @property
     def all_user_count(self) -> int:
         return self.users.count()
 
     @property
     def organizations_count(self) -> int:
         return self.organizations.all().count()
+
+    @property
+    def total_seat_count(self) -> int:
+        return self.plan_seat_count + self.free_seat_count
+
+    @property
+    def available_seat_count(self) -> int:
+        count = self.total_seat_count - self.activated_user_count
+        return count if count > 0 else 0
+
+    @property
+    def pretty_plan(self) -> dict | None:
+        """
+        This is how we represent the details of a plan to a user, see plan.constants.py
+        We inject quantity to make plan management easier on api, see PlanSerializer
+        """
+        if self.plan in USER_PLAN_REPRESENTATIONS:
+            plan_details = asdict(USER_PLAN_REPRESENTATIONS[self.plan])
+            plan_details.update({"quantity": self.plan_seat_count})
+            return plan_details
 
     def can_activate_user(self, user: User | None = None) -> bool:
         """
