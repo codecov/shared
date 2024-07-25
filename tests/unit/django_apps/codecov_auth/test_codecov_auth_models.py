@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest
@@ -32,7 +33,7 @@ from shared.django_apps.codecov_auth.tests.factories import (
     UserFactory,
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
-from shared.plan.constants import PlanName
+from shared.plan.constants import BASIC_PLAN, PlanName
 from shared.utils.test_utils import mock_config_helper
 
 
@@ -684,7 +685,9 @@ class TestAccountModel(TransactionTestCase):
 
     def test_account_with_users(self):
         user_1 = UserFactory()
+        OwnerFactory(user=user_1)
         user_2 = UserFactory()
+        OwnerFactory(user=user_2)
         account = AccountFactory()
 
         account.users.add(user_1)
@@ -716,6 +719,13 @@ class TestAccountModel(TransactionTestCase):
 
         self.assertEqual(account.all_user_count, 2)
         self.assertEqual(account.organizations_count, 0)
+
+        self.assertEqual(account.activated_student_count, 0)
+        self.assertEqual(account.total_seat_count, 1)
+        self.assertEqual(account.available_seat_count, 0)
+        pretty_plan = asdict(BASIC_PLAN)
+        pretty_plan.update({"quantity": 1})
+        self.assertEqual(account.pretty_plan, pretty_plan)
 
     def test_create_account_for_enterprise_experience(self):
         # 2 separate OwnerOrgs that wish to Enterprise
@@ -763,7 +773,7 @@ class TestAccountModel(TransactionTestCase):
             username="codecov-org",
             stripe_customer_id=stripe_customer_id,
             stripe_subscription_id=stripe_subscription_id,
-            plan=PlanName.CODECOV_PRO_YEARLY.value,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             plan_user_count=50,
             plan_activated_users=[owner_1.ownerid, owner_2.ownerid],
             free=10,
@@ -880,6 +890,12 @@ class TestAccountModel(TransactionTestCase):
         self.assertTrue(enterprise_account.invoice_billing.first().is_active)
         self.assertEqual(enterprise_account.all_user_count, 3)
         self.assertEqual(enterprise_account.organizations_count, 2)
+        self.assertEqual(enterprise_account.activated_student_count, 0)
+        self.assertEqual(enterprise_account.total_seat_count, 60)
+        self.assertEqual(enterprise_account.available_seat_count, 57)
+        pretty_plan = asdict(BASIC_PLAN)
+        pretty_plan.update({"quantity": 50})
+        self.assertEqual(enterprise_account.pretty_plan, pretty_plan)
 
     def test_activate_user_onto_account(self):
         user = UserFactory()
