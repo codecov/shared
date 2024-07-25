@@ -37,6 +37,20 @@ class RepositoryQuerySet(QuerySet):
 
         return self.filter(filters).exclude(name=None)
 
+    def exclude_accounts_enforced_okta(
+        self,
+        authenticated_okta_account_ids: list[int],
+    ) -> QuerySet:
+        """Excludes any private repos for an organization that have a configured okta_setting and enforced=True.
+        We only show these private repos for users who have authenticated with Okta."""
+        return self.exclude(
+            Q(private=True)
+            & Q(author__account_id__isnull=False)
+            & Q(author__account__okta_settings__isnull=False)
+            & Q(author__account__okta_settings__enforced=True)
+            & ~Q(author__account_id__in=authenticated_okta_account_ids),
+        )
+
     def exclude_uncovered(self):
         """
         Excludes repositories with no latest-commit val. Requires calling
