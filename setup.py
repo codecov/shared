@@ -56,7 +56,7 @@ setup(
         # API Deps
         "django-prometheus",
         "python-redis-lock",
-        "django-model-utils==4.3.1",
+        "django-model-utils>=4.3.1",
         "requests>=2.32.3",
         "sentry-sdk>=1.40.0",
     ],
