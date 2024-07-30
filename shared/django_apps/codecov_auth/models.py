@@ -230,9 +230,10 @@ class Account(BaseModel):
         then only check for available seats. Otherwise, we can activate
         a user if they're a student and if they haven't already been added.
         """
-        # User is already activated, return False.
+        # User is already activated, meaning their occupancy is already counted in the plan seat count.
+        # Return True since activating them again costs 0 seats, so they will always fit.
         if user and user in self.users.all():
-            return False
+            return True
 
         # User is a student, return True
         if user and user.is_github_student:
@@ -243,12 +244,13 @@ class Account(BaseModel):
 
     def activate_user_onto_account(self, user: User) -> None:
         self.users.add(user)
-        self.save()
 
     def activate_owner_user_onto_account(self, owner_user: "Owner") -> None:
         user: User = owner_user.user
         if not user:
-            user = User(name=user.name, email=user.email)
+            user = User.objects.create(name=owner_user.name, email=owner_user.email)
+            owner_user.user = user
+            owner_user.save()
         self.activate_user_onto_account(user)
 
     def deactivate_owner_user_from_account(self, owner_user: "Owner") -> None:
@@ -259,14 +261,13 @@ class Account(BaseModel):
             return
 
         organizations_in_account: list[Owner] = self.organizations.all()
-        all_users_for_account: set[AutoField] = set(
-            user_id
+        all_owner_users_for_account: set[AutoField] = set(
+            ownerid
             for org in organizations_in_account
-            for user_id in org.plan_activated_users
+            for ownerid in org.plan_activated_users
         )
-        if owner_user.ownerid not in all_users_for_account:
+        if owner_user.ownerid not in all_owner_users_for_account:
             self.users.remove(owner_user.user)
-            self.save()
         else:
             log.info(
                 "User was not removed from account because they currently are "
@@ -596,39 +597,43 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             plan_details.update({"quantity": self.plan_user_count})
             return plan_details
 
-    def can_activate_user(self, user: Self) -> bool:
-        account: Account | None = self.account
-        can_activate_account = True
-        if account is not None:
-            can_activate_account = account.can_activate_user(user.user)
+    def can_activate_user(self, owner_user: Self) -> bool:
+        owner_org = self
+        if owner_user.student:
+            return True
+        if owner_org.account:
+            return owner_org.account.can_activate_user(owner_user.user)
         return (
-            user.student or self.activated_user_count < self.plan_user_count + self.free
-        ) and can_activate_account
+            owner_org.activated_user_count < owner_org.plan_user_count + owner_org.free
+        )
 
-    def activate_user(self, user: Self) -> None:
-        log.info(f"Activating user {user.ownerid} in ownerid {self.ownerid}")
-        if isinstance(self.plan_activated_users, list):
-            if user.ownerid not in self.plan_activated_users:
-                self.plan_activated_users.append(user.ownerid)
+    def activate_user(self, owner_user: Self) -> None:
+        owner_org = self
+        log.info(f"Activating user {owner_user.ownerid} in ownerid {owner_org.ownerid}")
+        if isinstance(owner_org.plan_activated_users, list):
+            if owner_user.ownerid not in owner_org.plan_activated_users:
+                owner_org.plan_activated_users.append(owner_user.ownerid)
         else:
-            self.plan_activated_users = [user.ownerid]
-        self.save()
+            owner_org.plan_activated_users = [owner_user.ownerid]
+        owner_org.save()
 
-        # Note: we're currently ignoring orgs with no account information attached.
-        if self.account:
-            self.account.activate_owner_user_onto_account(user)
+        if owner_org.account:
+            owner_org.account.activate_owner_user_onto_account(owner_user)
 
-    def deactivate_user(self, user: Self) -> None:
-        log.info(f"Deactivating user {user.ownerid} in ownerid {self.ownerid}")
-        if isinstance(self.plan_activated_users, list):
+    def deactivate_user(self, owner_user: Self) -> None:
+        owner_org = self
+        log.info(
+            f"Deactivating user {owner_user.ownerid} in ownerid {owner_org.ownerid}"
+        )
+        if isinstance(owner_org.plan_activated_users, list):
             try:
-                self.plan_activated_users.remove(user.ownerid)
+                owner_org.plan_activated_users.remove(owner_user.ownerid)
             except ValueError:
                 pass
-        self.save()
+        owner_org.save()
 
-        if self.account and user.user:
-            self.account.deactivate_owner_user_from_account(user)
+        if owner_org.account and owner_user.user:
+            owner_org.account.deactivate_owner_user_from_account(owner_user)
 
     def add_admin(self, user):
         log.info(
@@ -924,6 +929,7 @@ class AccountsUsers(BaseModel):
     class Meta:
         unique_together = ("user", "account")
         app_label = CODECOV_AUTH_APP_LABEL
+        verbose_name_plural = "Accounts Users"
 
 
 class OktaSettings(BaseModel):
