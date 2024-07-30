@@ -1,3 +1,4 @@
+import logging
 from dataclasses import asdict
 from unittest.mock import patch
 
@@ -5,6 +6,7 @@ import pytest
 from django.db import IntegrityError
 from django.forms import ValidationError
 from django.test import TransactionTestCase
+from pytest import LogCaptureFixture
 
 from shared.django_apps.codecov_auth.models import (
     DEFAULT_AVATAR_SIZE,
@@ -322,18 +324,19 @@ class TestOwnerModel(TransactionTestCase):
         self.owner.deactivate_user(to_deactivate)
 
     def test_deactivate_user_updates_account_user(self):
+        owner_org = self.owner
         to_deactivate = OwnerFactory()
-        self.owner.account = AccountFactory()
-        self.owner.user = UserFactory()
-        self.owner.save()
-        AccountsUsers(user=self.owner.user, account=self.owner.account).save()
+        owner_org.account = AccountFactory()
+        to_deactivate.user = UserFactory()
+        owner_org.save()
+        AccountsUsers(user=to_deactivate.user, account=self.owner.account).save()
 
-        self.owner.deactivate_user(to_deactivate)
-        self.owner.refresh_from_db()
+        owner_org.deactivate_user(to_deactivate)
+        owner_org.refresh_from_db()
 
         assert (
             AccountsUsers.objects.filter(
-                user=self.owner.user, account=self.owner.account
+                user=to_deactivate.user, account=self.owner.account
             ).first()
             is None
         )
@@ -663,6 +666,10 @@ class TestGitHubAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
 
 
 class TestAccountModel(TransactionTestCase):
+    @pytest.fixture(autouse=True)
+    def inject_fixtures(self, caplog: LogCaptureFixture):
+        self.caplog = caplog
+
     def test_account_with_billing_details(self):
         account = AccountFactory()
         OktaSettingsFactory(account=account)
@@ -1005,10 +1012,15 @@ class TestAccountModel(TransactionTestCase):
         assert AccountsUsers.objects.filter(user=user, account=account).first()
 
     def test_deactivate_owner_user_no_user_do_nothing(self):
-        owner_user = OwnerFactory()
+        owner_user = OwnerFactory(user=None)
         account = AccountFactory()
         account.save()
-        assert account.deactivate_owner_user_from_account(owner_user) is None
+        with self.caplog.at_level(logging.WARNING):
+            assert account.deactivate_owner_user_from_account(owner_user) is None
+            assert (
+                self.caplog.records[0].message
+                == "Attempting to deactivate an owner without associated user. Skipping deactivation."
+            )
 
     def test_activated_user_count(self):
         # This shouldn't show up on the account
