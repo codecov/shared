@@ -10,7 +10,8 @@ from typing import Self
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
-from django.db.models.fields import AutoField
+from django.db.models import Case, QuerySet, Sum, When
+from django.db.models.fields import AutoField, BooleanField, IntegerField
 from django.db.models.manager import BaseManager
 from django.forms import ValidationError
 from django.utils import timezone
@@ -161,15 +162,39 @@ class Account(BaseModel):
         str_representation_of_is_active = "Active" if self.is_active else "Inactive"
         return f"{str_representation_of_is_active} Account: {self.name}"
 
+    def _student_count_helper(self) -> QuerySet:
+        # This method creates the query to annotate a user as a student.
+        # To be used in conjunction with filter or exclude to count students and non-students
+        return (
+            self.users.values("id")
+            .annotate(  # count the number of student owners aggregated on users.id
+                owner_student_count=Sum(
+                    Case(
+                        When(owners__student=True, then=1),
+                        default=0,
+                        output_field=IntegerField(),
+                    )
+                )
+            )
+            .annotate(  # if there are any associated student owner to this user, then it is marked as a student
+                is_student=Case(
+                    When(owner_student_count__gt=0, then=True),
+                    default=False,
+                    output_field=BooleanField(),
+                )
+            )
+        )
+
     @property
     def activated_user_count(self) -> int:
-        # Activated users include all _non_ students. So we'll need to get all the
-        # students and filter them out.
-        return self.users.filter(owners__student=False).count()
+        """
+        Return the number of activated users. An activated user is one that does not have any student associations.
+        """
+        return self._student_count_helper().filter(is_student=False).count()
 
     @property
     def activated_student_count(self) -> int:
-        return self.users.filter(owners__student=True).count()
+        return self._student_count_helper().filter(is_student=True).count()
 
     @property
     def all_user_count(self) -> int:
