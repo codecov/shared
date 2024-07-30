@@ -228,6 +228,9 @@ class Account(BaseModel):
 
     def deactivate_owner_user_from_account(self, owner_user: "Owner") -> None:
         if owner_user.user is None:
+            log.warning(
+                "Attempting to deactivate an owner without associated user. Skipping deactivation."
+            )
             return
 
         organizations_in_account: list[Owner] = self.organizations.all()
@@ -600,7 +603,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         self.save()
 
         if self.account and user.user:
-            self.account.deactivate_owner_user_from_account(self)
+            self.account.deactivate_owner_user_from_account(user)
 
     def add_admin(self, user):
         log.info(
