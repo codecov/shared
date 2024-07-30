@@ -1035,11 +1035,19 @@ class TestAccountModel(TransactionTestCase):
         student_user: User = UserFactory()
         student_owner.user = student_user
         student_user.save()
+        student_owner.save()
 
+        # User1 also has multiple owners. Should be counted as 1 user
         owner1: Owner = OwnerFactory(service="github", student=False)
+        owner1_gitlab: Owner = OwnerFactory(service="gitlab", student=False)
+        owner1_bitbucket: Owner = OwnerFactory(service="bitbucket", student=False)
         user1: User = UserFactory()
         owner1.user = user1
+        owner1_gitlab.user = user1
+        owner1_bitbucket.user = user1
         owner1.save()
+        owner1_gitlab.save()
+        owner1_bitbucket.save()
 
         owner2: Owner = OwnerFactory(service="bitbucket", student=False)
         user2: User = UserFactory()
