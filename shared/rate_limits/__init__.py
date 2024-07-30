@@ -1,14 +1,18 @@
 import logging
+from typing import Optional
 
 from redis import Redis, RedisError
 
-from shared.bots import get_adapter_auth_information
-from shared.bots.types import AdapterAuthInformation
 from shared.config import get_config
 from shared.django_apps.codecov_auth.models import Owner
 from shared.django_apps.core.models import Repository
 
 log = logging.getLogger(__name__)
+
+
+def gh_app_key_name(installation_id: int, app_id: Optional[int] = None):
+    app_id = app_id or "default_app"
+    return f"{app_id}_{installation_id}"
 
 
 # Ensure service = "gh" before using
@@ -29,6 +33,9 @@ def determine_entity_redis_key(
     <owner_id> for Owners
     GITHUB_BOT_KEY for Anonymous users
     """
+    from shared.bots import get_adapter_auth_information
+    from shared.bots.types import AdapterAuthInformation
+
     if not owner:
         return str(get_config("github", "bot", "key"))
 
@@ -39,11 +46,15 @@ def determine_entity_redis_key(
     else:
         auth_info: AdapterAuthInformation = get_adapter_auth_information(owner=owner)
 
+    print("I'm here!!!")
     if auth_info.get("selected_installation_info"):
-        return f"{auth_info.get("selected_installation_info").get("app_id")}_{auth_info.get("selected_installation_info").get("installation_id")}"
-    # How to treat gh app fallbacks?
-    else:
-        return str(auth_info.get("token_owner").ownerid)
+        return gh_app_key_name(
+            app_id=auth_info.get("selected_installation_info").get("app_id"),
+            installation_id=auth_info.get("selected_installation_info").get(
+                "installation_id"
+            ),
+        )
+    return str(auth_info.get("token_owner").ownerid)
 
 
 # Ensure service = "gh" before using
@@ -53,10 +64,19 @@ def determine_if_entity_is_rate_limited(redis_connection: Redis, key_name: str) 
     return true if the record exists, false otherwise.
     This will be used by API and Worker
     """
-    return True if redis_connection.get(f"rate_limited_entity_{key_name}") else False
+    try:
+        return redis_connection.exists(f"rate_limited_entity_{key_name}")
+    except RedisError:
+        log.exception(
+            "Failed to check if the key name is rate_limited due to RedisError",
+            extra=dict(key_name=key_name),
+        )
+        return False
 
 
-def set_entity_to_rate_limited(redis_connection, key_name: str, ttl_seconds: int):
+def set_entity_to_rate_limited(
+    redis_connection: Redis, key_name: str, ttl_seconds: int
+):
     """
     This function will set a key to be rate limited. This will be mainly used
     in worker during communication with Github 3rd party services

@@ -12,8 +12,9 @@ from shared.django_apps.codecov_auth.models import (
     Service,
 )
 from shared.django_apps.core.models import Repository
-from shared.github import get_github_integration_token, is_installation_rate_limited
+from shared.github import get_github_integration_token
 from shared.orms.owner_helper import DjangoSQLAlchemyOwnerWrapper
+from shared.rate_limits import determine_if_entity_is_rate_limited, gh_app_key_name
 from shared.torngit.cache import get_redis_connection
 from shared.typings.oauth_token_types import Token
 from shared.typings.torngit import GithubInstallationInfo
@@ -177,8 +178,9 @@ def _filter_rate_limited_apps(
     redis_connection = get_redis_connection()
     return list(
         filter(
-            lambda obj: not is_installation_rate_limited(
-                redis_connection, obj.installation_id, app_id=obj.app_id
+            lambda obj: not determine_if_entity_is_rate_limited(
+                redis_connection,
+                gh_app_key_name(app_id=obj.app_id, installation_id=obj.installation_id),
             ),
             apps_to_consider,
         )

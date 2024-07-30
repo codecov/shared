@@ -105,7 +105,7 @@ class TestGetSpecificGithubAppDetails(object):
         app.save()
 
         mock_is_rate_limited = mocker.patch(
-            "shared.bots.github_apps.is_installation_rate_limited",
+            "shared.bots.github_apps.determine_if_entity_is_rate_limited",
             return_value=is_rate_limited,
         )
         with pytest.raises(NoConfiguredAppsAvailable):
