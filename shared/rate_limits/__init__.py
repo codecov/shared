@@ -46,7 +46,6 @@ def determine_entity_redis_key(
     else:
         auth_info: AdapterAuthInformation = get_adapter_auth_information(owner=owner)
 
-    print("I'm here!!!")
     if auth_info.get("selected_installation_info"):
         return gh_app_key_name(
             app_id=auth_info.get("selected_installation_info").get("app_id"),

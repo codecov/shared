@@ -6,7 +6,6 @@ from redis import RedisError
 from shared.github import (
     InvalidInstallationError,
     get_github_integration_token,
-    is_installation_rate_limited,
     mark_installation_as_rate_limited,
 )
 
@@ -305,27 +304,3 @@ class TestGithubSpecificLogic(object):
         # Despite the call failing
         mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 0, app_id=APP_ID)
         mock_redis.set.assert_not_called()
-
-    def test_is_installation_rate_limited(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        keys_in_redis = {
-            "rate_limited_installations_250_999": 1,
-            "rate_limited_installations_default_app_999": 1,
-        }
-
-        def exists(key):
-            return key in keys_in_redis
-
-        mock_redis.exists.side_effect = exists
-        assert is_installation_rate_limited(mock_redis, 1000, 250) == False
-        assert is_installation_rate_limited(mock_redis, 999, 250) == True
-        assert is_installation_rate_limited(mock_redis, 999) == True
-        assert is_installation_rate_limited(mock_redis, 999, app_id=None) == True
-        assert is_installation_rate_limited(mock_redis, 999, 200) == False
-
-    def test_is_installation_rate_limited_error(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        mock_redis.exists.side_effect = RedisError
-        assert is_installation_rate_limited(mock_redis, 1000, 250) == False
-        assert is_installation_rate_limited(mock_redis, 999, 250) == False
-        assert is_installation_rate_limited(mock_redis, 999, 200) == False

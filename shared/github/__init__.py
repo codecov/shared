@@ -143,7 +143,7 @@ def mark_installation_as_rate_limited(
     app_id: Optional[int],
 ) -> None:
     """Marks a installation as being rate-limited in Redis.
-    Use is_installation_rate_limited to check if it is rate-limited or not.
+    Use determine_if_entity_is_rate_limited to check if it is rate-limited or not.
 
     @param `installation_id` - GithubAppInstallation.installation_id OR owner.integration_id
     @param `app_id` - GithubAppInstallation.app_id OR 'default_app'
@@ -168,19 +168,3 @@ def mark_installation_as_rate_limited(
             "Failed to mark installation ID as rate_limited due to RedisError",
             extra=dict(installation_id=installation_id),
         )
-
-
-def is_installation_rate_limited(
-    redis_connection: Redis, installation_id: int, app_id: Optional[int] = None
-) -> bool:
-    app_id = app_id or "default_app"
-    try:
-        return redis_connection.exists(
-            f"rate_limited_installations_{app_id}_{installation_id}"
-        )
-    except RedisError:
-        log.exception(
-            "Failed to check if installation ID is rate_limited due to RedisError",
-            extra=dict(installation_id=installation_id),
-        )
-        return False

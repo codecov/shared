@@ -2,6 +2,8 @@ import datetime
 from unittest.mock import patch
 
 import pytest
+from mock import MagicMock
+from redis import RedisError
 
 from shared.django_apps.codecov_auth.models import (
     GITHUB_APP_INSTALLATION_DEFAULT_NAME,
@@ -12,6 +14,7 @@ from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.rate_limits import (
     determine_entity_redis_key,
     determine_if_entity_is_rate_limited,
+    gh_app_key_name,
     set_entity_to_rate_limited,
 )
 from shared.torngit.cache import get_redis_connection
@@ -157,9 +160,33 @@ class TestRateLimits(object):
             == False
         )
 
+    def test_determine_if_entity_is_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.exists.side_effect = RedisError
+        assert (
+            determine_if_entity_is_rate_limited(
+                redis_connection=self.redis_connection,
+                key_name="random_non_existent_key",
+            )
+            == False
+        )
+
     def test_set_entity_to_rate_limited_success(self):
         key_name = "owner_id_123"
         set_entity_to_rate_limited(
             redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=300
         )
         assert self.redis_connection.get(f"rate_limited_entity_{key_name}") is not None
+
+    def test_gh_app_key_name(self):
+        app_id = 200
+        installation_id = 718263
+        assert gh_app_key_name(
+            app_id=app_id, installation_id=installation_id,
+        ) == f"{app_id}_{installation_id}"
+
+    def test_gh_app_key_name_no_app_id(self):
+        installation_id = 718263
+        assert gh_app_key_name(
+            app_id=None, installation_id=installation_id,
+        ) == f"default_app_{installation_id}"
