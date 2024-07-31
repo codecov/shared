@@ -1156,7 +1156,7 @@ class TestUnitGithub(object):
         assert mocked_response_fallback.call_count == 1
         # The installation from the original token (rate limited) is marked so
         mock_redis_conn.set.assert_called_with(
-            name="rate_limited_installations_default_app_1500", value=True, ex=300
+            name="rate_limited_entity_default_app_1500", value=True, ex=300
         )
         mock_get_token.assert_called_with(
             "github", 12342, app_id=1200, pem_path="some_path"

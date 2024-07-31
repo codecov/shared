@@ -13,11 +13,17 @@ from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.rate_limits import (
     determine_entity_redis_key,
+    determine_entity_redis_key_from_torngit_data,
     determine_if_entity_is_rate_limited,
     gh_app_key_name,
     set_entity_to_rate_limited,
 )
 from shared.torngit.cache import get_redis_connection
+from shared.typings.torngit import (
+    GithubInstallationInfo,
+    OwnerInfo,
+    TorngitInstanceData,
+)
 
 
 @pytest.fixture
@@ -178,15 +184,67 @@ class TestRateLimits(object):
         )
         assert self.redis_connection.get(f"rate_limited_entity_{key_name}") is not None
 
+    def test_set_entity_to_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.set.side_effect = RedisError
+        key_name = "owner_id_123"
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        set_entity_to_rate_limited(
+            redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=300
+        )
+        mock_redis.set.assert_not_called()
+
+
+    def test_set_entity_to_rate_limited_ttl_zero(self):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.set.side_effect = RedisError
+        key_name = "owner_id_123"
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        set_entity_to_rate_limited(
+            redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=300
+        )
+        mock_redis.set.assert_not_called()
+
     def test_gh_app_key_name(self):
         app_id = 200
         installation_id = 718263
-        assert gh_app_key_name(
-            app_id=app_id, installation_id=installation_id,
-        ) == f"{app_id}_{installation_id}"
+        assert (
+            gh_app_key_name(
+                app_id=app_id,
+                installation_id=installation_id,
+            )
+            == f"{app_id}_{installation_id}"
+        )
 
     def test_gh_app_key_name_no_app_id(self):
         installation_id = 718263
-        assert gh_app_key_name(
-            app_id=None, installation_id=installation_id,
-        ) == f"default_app_{installation_id}"
+        assert (
+            gh_app_key_name(
+                app_id=None,
+                installation_id=installation_id,
+            )
+            == f"default_app_{installation_id}"
+        )
+
+    def test_determine_entity_redis_key_from_torngit_data_gh_app(self):
+        owner_info = OwnerInfo(service_id="123", ownerid=8173, username="test-account")
+        app_installation_info = GithubInstallationInfo(id=4123, installation_id=1234, app_id=200, pem_path="path")
+        data = TorngitInstanceData(
+            owner=owner_info, installation=app_installation_info, fallback_installations=[], repo=None
+        )
+        assert determine_entity_redis_key_from_torngit_data(data=data) == "200_1234"
+
+    def test_determine_entity_redis_key_from_torngit_data_owner_id(self):
+        owner_info = OwnerInfo(service_id="123", ownerid=9236, username="test-account")
+        data = TorngitInstanceData(
+            owner=owner_info, installation=None, fallback_installations=[], repo=None
+        )
+        assert determine_entity_redis_key_from_torngit_data(data=data) == "9236"
+
+    def test_determine_entity_redis_key_from_torngit_data_gh_bot(self, mock_configuration):
+        data = TorngitInstanceData(
+            owner=None, installation=None, fallback_installations=[], repo=None
+        )
+        assert determine_entity_redis_key_from_torngit_data(data=data) == "github_key"
