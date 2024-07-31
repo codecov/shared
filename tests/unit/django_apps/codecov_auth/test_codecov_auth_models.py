@@ -917,12 +917,19 @@ class TestAccountModel(TransactionTestCase):
         assert AccountsUsers.objects.filter(user=user, account=account).first()
 
     def test_activate_owner_user_onto_account_create_user(self):
-        owner = OwnerFactory()
+        owner = OwnerFactory(user=None)
         account = AccountFactory()
-        account.save()
+        self.assertEqual(User.objects.all().count(), 0)
+        self.assertEqual(AccountsUsers.objects.all().count(), 0)
+        self.assertIsNone(owner.user)
 
         account.activate_owner_user_onto_account(owner)
         account.refresh_from_db()
+        owner.refresh_from_db()
+
+        self.assertEqual(User.objects.all().count(), 1)
+        self.assertEqual(AccountsUsers.objects.all().count(), 1)
+        self.assertIsNotNone(owner.user)
 
         new_user = User.objects.get(id=owner.user_id)
         assert AccountsUsers.objects.filter(user=new_user, account=account).first()
@@ -1078,7 +1085,7 @@ class TestAccountModel(TransactionTestCase):
         org.save()
 
         account.users.add(user)
-        assert not account.can_activate_user(user)
+        assert account.can_activate_user(user)
 
     def test_can_activate_user_student(self):
         owner: Owner = OwnerFactory(service="github", student=True)
