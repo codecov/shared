@@ -258,4 +258,3 @@ class TestGithubSpecificLogic(object):
         )
         assert after - before == 1
         assert e_after - e_before == 0
-

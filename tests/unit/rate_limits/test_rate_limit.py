@@ -195,7 +195,6 @@ class TestRateLimits(object):
         )
         mock_redis.set.assert_not_called()
 
-
     def test_set_entity_to_rate_limited_ttl_zero(self):
         mock_redis = MagicMock(name="fake_redis")
         mock_redis.set.side_effect = RedisError
@@ -230,9 +229,14 @@ class TestRateLimits(object):
 
     def test_determine_entity_redis_key_from_torngit_data_gh_app(self):
         owner_info = OwnerInfo(service_id="123", ownerid=8173, username="test-account")
-        app_installation_info = GithubInstallationInfo(id=4123, installation_id=1234, app_id=200, pem_path="path")
+        app_installation_info = GithubInstallationInfo(
+            id=4123, installation_id=1234, app_id=200, pem_path="path"
+        )
         data = TorngitInstanceData(
-            owner=owner_info, installation=app_installation_info, fallback_installations=[], repo=None
+            owner=owner_info,
+            installation=app_installation_info,
+            fallback_installations=[],
+            repo=None,
         )
         assert determine_entity_redis_key_from_torngit_data(data=data) == "200_1234"
 
@@ -243,7 +247,9 @@ class TestRateLimits(object):
         )
         assert determine_entity_redis_key_from_torngit_data(data=data) == "9236"
 
-    def test_determine_entity_redis_key_from_torngit_data_gh_bot(self, mock_configuration):
+    def test_determine_entity_redis_key_from_torngit_data_gh_bot(
+        self, mock_configuration
+    ):
         data = TorngitInstanceData(
             owner=None, installation=None, fallback_installations=[], repo=None
         )
