@@ -249,6 +249,7 @@ schema = {
                     "wait_for_ci": {"type": "boolean"},
                     "require_ci_to_pass": {"type": "boolean"},  # [DEPRECATED]
                     "manual_trigger": {"type": "boolean"},
+                    "notify_error": {"type": "boolean"},
                 },
             },
             "ui": {
