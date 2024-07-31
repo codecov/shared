@@ -108,6 +108,9 @@ class TestGetSpecificGithubAppDetails(object):
             "shared.bots.github_apps.is_installation_rate_limited",
             return_value=is_rate_limited,
         )
-        with pytest.raises(NoConfiguredAppsAvailable):
+        with pytest.raises(NoConfiguredAppsAvailable) as exp:
             get_github_app_info_for_owner(owner)
         mock_is_rate_limited.assert_called()
+        assert exp.value.apps_count == 1
+        assert exp.value.suspended_count == int(app.is_suspended)
+        assert exp.value.rate_limited_count == int(is_rate_limited)

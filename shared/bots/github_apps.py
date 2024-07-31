@@ -252,7 +252,9 @@ def get_github_app_info_for_owner(
     rate_limited_apps_count = apps_matching_criteria_count - len(apps_to_consider)
     # We can't use apps that are suspended (by the user)
     apps_to_consider = _filter_suspended_apps(apps_to_consider)
-    suspended_apps_count = rate_limited_apps_count - len(apps_to_consider)
+    suspended_apps_count = (
+        apps_matching_criteria_count - rate_limited_apps_count - len(apps_to_consider)
+    )
 
     if apps_to_consider:
         # There's at least 1 app that matches all the criteria and can be used to communicate with GitHub
