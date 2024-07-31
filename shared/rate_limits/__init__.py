@@ -24,7 +24,6 @@ def bot_key_name() -> str:
     return str(get_config("github", "bot", "key"))
 
 
-# TODO: Test this
 def determine_entity_redis_key_from_torngit_data(data: TorngitInstanceData) -> str:
     """
     Determines entity redis key from torngit data. This is an alternative
