@@ -145,7 +145,7 @@ class TestBitbucketTestCase(object):
                     "id": "9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645",
                     "username": "ThiagoCodecov",
                 },
-                "merge_commit_sha": "b92edba44fdd29fcc506317cc3ddeae1a723dd08",
+                "merge_commit_sha": "b92edba44fdd",
             },
         )
     ]

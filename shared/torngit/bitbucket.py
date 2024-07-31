@@ -489,20 +489,6 @@ class Bitbucket(TorngitBaseAdapter):
                 ),
                 token=token,
             )
-            merge_commit = None
-            if (
-                res["state"] == "MERGED"
-                and res.get("merge_commit", dict()).get("hash") is not None
-            ):
-                merge_commit = await self.api(
-                    client,
-                    "2",
-                    "get",
-                    "/repositories/{}/commit/{}".format(
-                        self.slug, res["merge_commit"]["hash"]
-                    ),
-                    token=token,
-                )
         return dict(
             author=dict(
                 id=str(res["author"]["uuid"][1:-1]) if res["author"] else None,
@@ -522,7 +508,9 @@ class Bitbucket(TorngitBaseAdapter):
             title=res["title"],
             id=str(pullid),
             number=str(pullid),
-            merge_commit_sha=merge_commit["hash"] if merge_commit else None,
+            merge_commit_sha=res.get("merge_commit", dict()).get("hash")
+            if res["state"] == "MERGED"
+            else None,
         )
 
     async def post_comment(self, issueid, body, token=None):
