@@ -586,6 +586,8 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
 
     @property
     def pretty_plan(self):
+        if self.account:
+            return self.account.pretty_plan
         if self.plan in USER_PLAN_REPRESENTATIONS:
             plan_details = asdict(USER_PLAN_REPRESENTATIONS[self.plan])
 
