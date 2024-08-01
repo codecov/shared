@@ -35,7 +35,11 @@ from shared.django_apps.codecov_auth.tests.factories import (
     UserFactory,
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
-from shared.plan.constants import BASIC_PLAN, PlanName
+from shared.plan.constants import (
+    BASIC_PLAN,
+    ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
+    PlanName,
+)
 from shared.utils.test_utils import mock_config_helper
 
 
@@ -371,6 +375,28 @@ class TestOwnerModel(TransactionTestCase):
         self.owner.plan_user_count = 1
         self.owner.save()
         assert not self.owner.can_activate_user(self.owner)
+
+    def test_fields_that_account_overrides(self):
+        to_activate = OwnerFactory()
+        self.owner.plan = PlanName.BASIC_PLAN_NAME.value
+        self.owner.plan_user_count = 1
+        self.owner.save()
+        self.assertTrue(self.owner.can_activate_user(to_activate))
+        org_pretty_plan = asdict(BASIC_PLAN)
+        org_pretty_plan.update({"quantity": 1})
+        self.assertEqual(self.owner.pretty_plan, org_pretty_plan)
+
+        self.owner.account = AccountFactory(
+            plan_seat_count=0, plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value
+        )
+        self.owner.save()
+        self.owner.refresh_from_db()
+        self.assertFalse(self.owner.can_activate_user(to_activate))
+        account_pretty_plan = asdict(
+            ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS[self.owner.account.plan]
+        )
+        account_pretty_plan.update({"quantity": 0})
+        self.assertEqual(self.owner.pretty_plan, account_pretty_plan)
 
     def test_add_admin_adds_ownerid_to_admin_array(self):
         self.owner.admins = []
