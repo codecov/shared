@@ -48,14 +48,14 @@ interactions:
       }}, \"type\": \"repository\", \"name\": \"example-python\", \"full_name\": \"\
       ThiagoCodecov/example-python\", \"uuid\": \"{a8c50527-2c3a-480e-afe1-7700e2b00074}\"\
       }, \"branch\": {\"name\": \"second-branch\"}}, \"comment_count\": 0, \"state\"\
-      : \"OPEN\", \"task_count\": 0, \"participants\": [], \"reason\": \"\", \"updated_on\"\
+      : \"MERGED\", \"task_count\": 0, \"participants\": [], \"reason\": \"\", \"updated_on\"\
       : \"2018-11-06T15:43:55.494768+00:00\", \"author\": {\"username\": \"ThiagoCodecov\"\
       , \"display_name\": \"Thiago Ramos\", \"account_id\": \"5bce04c759d0e84f8c7555e9\"\
       , \"links\": {\"self\": {\"href\": \"https://bitbucket.org/!api/2.0/users/ThiagoCodecov\"\
       }, \"html\": {\"href\": \"https://bitbucket.org/ThiagoCodecov/\"}, \"avatar\"\
       : {\"href\": \"https://bitbucket.org/account/ThiagoCodecov/avatar/\"}}, \"nickname\"\
       : \"ThiagoCodecov\", \"type\": \"user\", \"uuid\": \"{9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645}\"\
-      }, \"merge_commit\": null, \"closed_by\": null}"
+      }, \"merge_commit\": {\"hash\": \"b92edba44fdd\"}, \"closed_by\": null}"
     headers:
       Accept-Ranges:
       - bytes
@@ -268,4 +268,3 @@ interactions:
       message: OK
     status_code: 200
     url: https://bitbucket.org/api/2.0/repositories/ThiagoCodecov/example-python/commit/3017d534ab41?oauth_consumer_key=arubajamaicaohiwan&oauth_token=testss3hxhcfqf1h6g&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1541519088&oauth_nonce=b3f1a11c3244492d961496da1249b514&oauth_version=1.0&oauth_signature=1b7GWr37zHQx6V0moLV0%2BWiXX6Y%3D
-version: 1
