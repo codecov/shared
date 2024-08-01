@@ -139,12 +139,13 @@ class TestBitbucketTestCase(object):
                 },
                 "number": "1",
                 "id": "1",
-                "state": "open",
+                "state": "merged",
                 "title": "Hahaa That is a PR",
                 "author": {
                     "id": "9a01f37b-b1b2-40c5-8c5e-1a39f4b5e645",
                     "username": "ThiagoCodecov",
                 },
+                "merge_commit_sha": "b92edba44fdd",
             },
         )
     ]

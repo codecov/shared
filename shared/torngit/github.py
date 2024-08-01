@@ -1936,6 +1936,7 @@ class Github(TorngitBaseAdapter):
             id=str(pull["number"]),
             number=str(pull["number"]),
             labels=[label["name"] for label in pull.get("labels", [])],
+            merge_commit_sha=pull["merge_commit_sha"] if pull["merged"] else None,
         )
 
     async def get_pull_request(self, pullid, token=None):

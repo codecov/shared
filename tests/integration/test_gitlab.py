@@ -151,9 +151,10 @@ class TestGitlabTestCase(object):
                 },
                 "number": "1",
                 "id": "1",
-                "state": "open",
+                "state": "merged",
                 "title": "Other branch",
                 "author": {"id": "109640", "username": "codecov"},
+                "merge_commit_sha": "dd798926730aad14aadf72281204bdb85734fe67",
             },
         )
     ]
@@ -182,10 +183,11 @@ class TestGitlabTestCase(object):
                 "branch": "thiago/base-no-base",
                 "commitid": "b34b00d0872d129943b634693fd8f19f5f37acf9",
             },
-            "state": "open",
+            "state": "merged",
             "title": "Thiago/base no base",
             "id": "1",
             "number": "1",
+            "merge_commit_sha": "b34b00d0872d129943b634693fd8f19f5f37acf9",
         }
 
     @pytest.mark.asyncio

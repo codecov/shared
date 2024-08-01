@@ -298,6 +298,7 @@ class TestGithubTestCase(object):
                 "title": "Creating new code for reasons no one knows",
                 "author": {"id": "44376991", "username": "ThiagoCodecov"},
                 "labels": [],
+                "merge_commit_sha": "038ac8ac2127baa19a927c67f0d5168d9928abf3",
             },
         )
     ]
@@ -324,6 +325,7 @@ class TestGithubTestCase(object):
             "title": "PR with more than 250 results",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
             "labels": [],
+            "merge_commit_sha": None,
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1306,6 +1308,7 @@ class TestGithubTestCase(object):
             "title": "Thiago/test 1",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
             "labels": [],
+            "merge_commit_sha": None,
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1335,6 +1338,7 @@ class TestGithubTestCase(object):
             "title": "chore: Switch to Python 3.12",
             "author": {"id": "1584268", "username": "FraBle"},
             "labels": [],
+            "merge_commit_sha": None,
         }
         res = await handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1366,6 +1370,7 @@ class TestGithubTestCase(object):
             "title": "CE-1314 GitHub Status Event Handler",
             "author": {"id": "5767537", "username": "pierce-m"},
             "labels": [],
+            "merge_commit_sha": "e1d42c058e7169cc430f387591c1fc7cac35d2ae",
         }
         res = await handler.get_pull_request(pull_id)
         assert res == expected_result

@@ -508,6 +508,9 @@ class Bitbucket(TorngitBaseAdapter):
             title=res["title"],
             id=str(pullid),
             number=str(pullid),
+            merge_commit_sha=res.get("merge_commit", dict()).get("hash")
+            if res["state"] == "MERGED"
+            else None,
         )
 
     async def post_comment(self, issueid, body, token=None):
