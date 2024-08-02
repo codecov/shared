@@ -12,7 +12,10 @@ from shared.django_apps.codecov_auth.models import (
 )
 from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
 from shared.django_apps.core.tests.factories import RepositoryFactory
+from shared.rate_limits import set_entity_to_rate_limited
+from shared.rate_limits.exceptions import EntityRateLimitedException
 from shared.torngit.base import TokenType
+from shared.torngit.cache import get_redis_connection
 from shared.typings.oauth_token_types import Token
 from shared.typings.torngit import GithubInstallationInfo
 from shared.utils.test_utils import mock_config_helper
@@ -79,6 +82,19 @@ class TestGettingAdapterAuthInformation(object):
             assert get_adapter_auth_information(owner) == expected
 
         @pytest.mark.django_db(databases={"default"})
+        def test_select_owner_rate_limited(self):
+            redis_connection = get_redis_connection()
+            owner = self._generate_test_owner(with_bot=False)
+            entity_name = str(owner.ownerid)
+            # Mock entity being rate limited
+            set_entity_to_rate_limited(
+                redis_connection=redis_connection, key_name=entity_name, ttl_seconds=300
+            )
+            with pytest.raises(EntityRateLimitedException):
+                get_adapter_auth_information(owner)
+            redis_connection.flushdb()
+
+        @pytest.mark.django_db(databases={"default"})
         def test_select_owner_bot_info(self):
             owner = self._generate_test_owner(with_bot=True)
             expected = AdapterAuthInformation(
@@ -129,6 +145,37 @@ class TestGettingAdapterAuthInformation(object):
                 token_type_mapping=None,
             )
             assert get_adapter_auth_information(owner) == expected
+
+        @patch(
+            "shared.bots.github_apps.get_github_integration_token",
+            side_effect=get_github_integration_token_side_effect,
+        )
+        @pytest.mark.django_db(databases={"default"})
+        def test_select_owner_single_installation_rate_limited(
+            self, mock_get_github_integration_token
+        ):
+            redis_connection = get_redis_connection()
+            installations = [
+                GithubAppInstallation(
+                    repository_service_ids=None,
+                    installation_id=1200,
+                    name=GITHUB_APP_INSTALLATION_DEFAULT_NAME,
+                    app_id=200,
+                    pem_path="pem_path",
+                    created_at=datetime.datetime.now(datetime.UTC),
+                )
+            ]
+            owner = self._generate_test_owner(
+                with_bot=False, ghapp_installations=installations
+            )
+            entity_name = "200_1200"
+            # Mock entity being rate limited
+            set_entity_to_rate_limited(
+                redis_connection=redis_connection, key_name=entity_name, ttl_seconds=300
+            )
+            with pytest.raises(EntityRateLimitedException):
+                get_adapter_auth_information(owner)
+            redis_connection.flushdb()
 
         @patch(
             "shared.bots.github_apps.get_github_integration_token",

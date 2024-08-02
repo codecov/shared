@@ -1,3 +1,6 @@
+from shared.rate_limits.exceptions import EntityRateLimitedException
+
+
 class RequestedGithubAppNotFound(Exception):
     pass
 
@@ -6,7 +9,7 @@ class OwnerWithoutValidBotError(Exception):
     pass
 
 
-class NoConfiguredAppsAvailable(Exception):
+class NoConfiguredAppsAvailable(EntityRateLimitedException):
     def __init__(
         self, apps_count: int, rate_limited_count: int, suspended_count: int
     ) -> None:

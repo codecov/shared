@@ -14,6 +14,9 @@ from shared.django_apps.codecov_auth.models import (
     Service,
 )
 from shared.django_apps.core.models import Repository
+from shared.rate_limits import determine_if_entity_is_rate_limited
+from shared.rate_limits.exceptions import EntityRateLimitedException
+from shared.torngit.cache import get_redis_connection
 from shared.typings.torngit import GithubInstallationInfo
 
 log = logging.getLogger(__name__)
@@ -62,6 +65,19 @@ def get_adapter_auth_information(
             )
     else:
         token, token_owner = get_owner_appropriate_bot_token(owner, installation_info)
+
+    entity_name = token.get("entity_name")
+    if entity_name:
+        redis = get_redis_connection()
+        if determine_if_entity_is_rate_limited(
+            redis_connection=redis, key_name=entity_name
+        ):
+            log.warning(
+                f"Entity {entity_name} is rate limited",
+                extra=dict(entity_name=entity_name),
+            )
+            raise EntityRateLimitedException()
+
     return AdapterAuthInformation(
         token=token,
         token_owner=token_owner,
