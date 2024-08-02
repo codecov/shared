@@ -46,8 +46,8 @@ class TestRateLimits(object):
     def setup(self):
         self.redis_connection = get_redis_connection()
 
-    def test_determine_entity_redis_key_github_bot(self, mock_configuration):
-        assert determine_entity_redis_key(owner=None, repository=None) == "github_key"
+    def test_determine_entity_redis_key_github_bot(self):
+        assert determine_entity_redis_key(owner=None, repository=None) == "github_bot"
 
     @patch(
         "shared.bots.github_apps.get_github_integration_token",

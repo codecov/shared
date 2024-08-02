@@ -11,7 +11,6 @@ from urllib.parse import parse_qs, urlencode
 import httpx
 from httpx import Response
 
-from shared.bots.types import Token
 from shared.config import get_config
 from shared.github import (
     get_github_integration_token,
@@ -684,7 +683,8 @@ class Github(TorngitBaseAdapter):
         *,
         reset_timestamp: Optional[str] = None,
         retry_in_seconds: Optional[int] = None,
-        token: Token,
+        # Couldn't type this to Token cause there's a circular import. Suggestions are welcome
+        token,
     ) -> None:
         entity_key_name = token.get("entity_name")
         if retry_in_seconds is None and reset_timestamp is None:

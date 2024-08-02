@@ -3,7 +3,6 @@ from typing import Optional
 
 from redis import Redis, RedisError
 
-from shared.bots.types import AdapterAuthInformation
 from shared.django_apps.codecov_auth.models import Owner
 from shared.django_apps.core.models import Repository
 
@@ -44,6 +43,10 @@ def determine_entity_redis_key(
     It should only be used for github git instances
     """
     from shared.bots import get_adapter_auth_information
+    from shared.bots.types import AdapterAuthInformation
+
+    if not owner:
+        return default_bot_key_name()
 
     if repository:
         auth_info: AdapterAuthInformation = get_adapter_auth_information(
@@ -52,10 +55,12 @@ def determine_entity_redis_key(
     else:
         auth_info: AdapterAuthInformation = get_adapter_auth_information(owner=owner)
 
-    if auth_info and auth_info.token and auth_info.token.entity_name:
-        return auth_info.token.entity_name
-
-    return default_bot_key_name()
+    if (
+        auth_info
+        and auth_info.get("token")
+        and auth_info.get("token").get("entity_name")
+    ):
+        return auth_info.get("token").get("entity_name")
 
 
 def determine_if_entity_is_rate_limited(redis_connection: Redis, key_name: str) -> bool:

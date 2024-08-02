@@ -1088,7 +1088,11 @@ class TestUnitGithub(object):
         handler = Github(
             repo=dict(name="example-python"),
             owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key", refresh_token="refresh_token"),
+            token=dict(
+                key="some_key",
+                refresh_token="refresh_token",
+                entity_name="default_app_1500",
+            ),
             oauth_consumer_token=dict(
                 key="client_id",
                 secret="client_secret",

@@ -38,5 +38,5 @@ def get_owner_appropriate_bot_token(
 
     token_owner = get_owner_or_appropriate_bot(owner)
     token: Token = encryptor.decrypt_token(token_owner.oauth_token)
-    token.entity_name = owner_key_name(owner_id=token_owner.ownerid)
+    token["entity_name"] = owner_key_name(owner_id=token_owner.ownerid)
     return token, token_owner
