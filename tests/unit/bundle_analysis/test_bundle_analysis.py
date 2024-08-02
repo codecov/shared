@@ -15,6 +15,7 @@ from shared.bundle_analysis.models import (
     MetadataKey,
     Module,
     Session,
+    get_db_session,
 )
 from shared.storage.exceptions import PutRequestRateLimitError
 from shared.storage.memory import MemoryStorageService
@@ -188,26 +189,26 @@ def test_bundle_report_asset_filtering():
 
 def test_save_load_bundle_report():
     try:
-        report = BundleAnalysisReport()
-        report.ingest(sample_bundle_stats_path)
+        created_report = BundleAnalysisReport()
+        created_report.ingest(sample_bundle_stats_path)
 
         loader = BundleAnalysisReportLoader(
             storage_service=MemoryStorageService({}),
             repo_key="testing",
         )
         test_key = "8d1099f1-ba73-472f-957f-6908eced3f42"
-        loader.save(report, test_key)
+        loader.save(created_report, test_key)
 
-        db_path = report.db_path
         report = loader.load(test_key)
 
-        initial_data = open(db_path, "rb").read()
+        initial_data = open(created_report.db_path, "rb").read()
         loaded_data = open(report.db_path, "rb").read()
 
-        assert db_path != report.db_path
+        assert created_report.db_path != report.db_path
         assert len(initial_data) > 0
         assert initial_data == loaded_data
     finally:
+        created_report.cleanup()
         report.cleanup()
 
 
@@ -249,76 +250,93 @@ def test_reupload_bundle_report():
 
 
 def test_bundle_report_no_assets():
-    report_path = (
-        Path(__file__).parent.parent.parent
-        / "samples"
-        / "sample_bundle_stats_no_assets.json"
-    )
-    report = BundleAnalysisReport()
-    report.ingest(report_path)
-    bundle_report = report.bundle_report("b5")
-    asset_reports = list(bundle_report.asset_reports())
+    try:
+        report_path = (
+            Path(__file__).parent.parent.parent
+            / "samples"
+            / "sample_bundle_stats_no_assets.json"
+        )
+        report = BundleAnalysisReport()
+        report.ingest(report_path)
+        bundle_report = report.bundle_report("b5")
+        asset_reports = list(bundle_report.asset_reports())
 
-    assert asset_reports == []
-    assert bundle_report.total_size() == 0
+        assert asset_reports == []
+        assert bundle_report.total_size() == 0
+    finally:
+        report.cleanup()
 
 
 def test_bundle_report_no_chunks():
-    report_path = (
-        Path(__file__).parent.parent.parent
-        / "samples"
-        / "sample_bundle_stats_no_chunks.json"
-    )
-    report = BundleAnalysisReport()
-    report.ingest(report_path)
-    bundle_report = report.bundle_report("sample")
-    asset_reports = list(bundle_report.asset_reports())
+    try:
+        report_path = (
+            Path(__file__).parent.parent.parent
+            / "samples"
+            / "sample_bundle_stats_no_chunks.json"
+        )
+        report = BundleAnalysisReport()
+        report.ingest(report_path)
+        bundle_report = report.bundle_report("sample")
+        asset_reports = list(bundle_report.asset_reports())
 
-    assert len(asset_reports) == 2
-    assert bundle_report.total_size() == 144731
+        assert len(asset_reports) == 2
+        assert bundle_report.total_size() == 144731
+    finally:
+        report.cleanup()
 
 
 def test_bundle_report_no_modules():
-    report_path = (
-        Path(__file__).parent.parent.parent
-        / "samples"
-        / "sample_bundle_stats_no_modules.json"
-    )
-    report = BundleAnalysisReport()
-    report.ingest(report_path)
-    bundle_report = report.bundle_report("sample")
-    asset_reports = list(bundle_report.asset_reports())
+    try:
+        report_path = (
+            Path(__file__).parent.parent.parent
+            / "samples"
+            / "sample_bundle_stats_no_modules.json"
+        )
+        report = BundleAnalysisReport()
+        report.ingest(report_path)
+        bundle_report = report.bundle_report("sample")
+        asset_reports = list(bundle_report.asset_reports())
 
-    assert len(asset_reports) == 2
-    assert bundle_report.total_size() == 144731
+        assert len(asset_reports) == 2
+        assert bundle_report.total_size() == 144731
+    finally:
+        report.cleanup()
 
 
 def test_bundle_report_info():
-    report = BundleAnalysisReport()
-    report.ingest(sample_bundle_stats_path)
-    bundle_report = report.bundle_report("sample")
-    bundle_report_info = bundle_report.info()
+    try:
+        report = BundleAnalysisReport()
+        report.ingest(sample_bundle_stats_path)
+        bundle_report = report.bundle_report("sample")
+        bundle_report_info = bundle_report.info()
 
-    assert bundle_report_info["version"] == "2"
-    assert bundle_report_info["bundler_name"] == "rollup"
-    assert bundle_report_info["bundler_version"] == "3.29.4"
-    assert bundle_report_info["built_at"] == 1701451048604
-    assert bundle_report_info["plugin_name"] == "codecov-vite-bundle-analysis-plugin"
-    assert bundle_report_info["plugin_version"] == "1.0.0"
-    assert bundle_report_info["duration"] == 331
+        assert bundle_report_info["version"] == "2"
+        assert bundle_report_info["bundler_name"] == "rollup"
+        assert bundle_report_info["bundler_version"] == "3.29.4"
+        assert bundle_report_info["built_at"] == 1701451048604
+        assert (
+            bundle_report_info["plugin_name"] == "codecov-vite-bundle-analysis-plugin"
+        )
+        assert bundle_report_info["plugin_version"] == "1.0.0"
+        assert bundle_report_info["duration"] == 331
+    finally:
+        report.cleanup()
 
 
 def test_bundle_report_size_integer():
-    report_path = (
-        Path(__file__).parent.parent.parent
-        / "samples"
-        / "sample_bundle_stats_decimal_size.json"
-    )
-    report = BundleAnalysisReport()
-    report.ingest(report_path)
-    bundle_report = report.bundle_report("sample")
+    try:
+        report_path = (
+            Path(__file__).parent.parent.parent
+            / "samples"
+            / "sample_bundle_stats_decimal_size.json"
+        )
+        report = BundleAnalysisReport()
+        report.ingest(report_path)
+        bundle_report = report.bundle_report("sample")
 
-    assert bundle_report.total_size() == 150572
+        assert bundle_report.total_size() == 150572
+    finally:
+        report.cleanup()
 
 
 def test_bundle_parser_error():
@@ -326,22 +344,29 @@ def test_bundle_parser_error():
         "shared.bundle_analysis.parsers.ParserV1._parse_assets_event",
         side_effect=Exception("MockError"),
     ):
+        try:
+            report = BundleAnalysisReport()
+            with pytest.raises(Exception) as excinfo:
+                report.ingest(sample_bundle_stats_path)
+                assert (
+                    excinfo.bundle_analysis_plugin_name
+                    == "codecov-vite-bundle-analysis-plugin"
+                )
+        finally:
+            report.cleanup()
+
+
+def test_bundle_name_not_valid():
+    try:
         report = BundleAnalysisReport()
         with pytest.raises(Exception) as excinfo:
-            report.ingest(sample_bundle_stats_path)
+            report.ingest(sample_bundle_stats_path_3)
             assert (
                 excinfo.bundle_analysis_plugin_name
                 == "codecov-vite-bundle-analysis-plugin"
             )
-
-
-def test_bundle_name_not_valid():
-    report = BundleAnalysisReport()
-    with pytest.raises(Exception) as excinfo:
-        report.ingest(sample_bundle_stats_path_3)
-        assert (
-            excinfo.bundle_analysis_plugin_name == "codecov-vite-bundle-analysis-plugin"
-        )
+    finally:
+        report.cleanup()
 
 
 def test_bundle_file_save_rate_limit_error():
@@ -350,18 +375,21 @@ def test_bundle_file_save_rate_limit_error():
         side_effect=Exception("TooManyRequests"),
     ):
         with pytest.raises(Exception) as excinfo:
-            report = BundleAnalysisReport()
-            report.ingest(sample_bundle_stats_path)
+            try:
+                report = BundleAnalysisReport()
+                report.ingest(sample_bundle_stats_path)
 
-            loader = BundleAnalysisReportLoader(
-                storage_service=MemoryStorageService({}),
-                repo_key="testing",
-            )
-            test_key = "8d1099f1-ba73-472f-957f-6908eced3f42"
-            loader.save(report, test_key)
+                loader = BundleAnalysisReportLoader(
+                    storage_service=MemoryStorageService({}),
+                    repo_key="testing",
+                )
+                test_key = "8d1099f1-ba73-472f-957f-6908eced3f42"
+                loader.save(report, test_key)
 
-            assert str(excinfo) == "TooManyRequests"
-            assert isinstance(excinfo, PutRequestRateLimitError)
+                assert str(excinfo) == "TooManyRequests"
+                assert isinstance(excinfo, PutRequestRateLimitError)
+            finally:
+                report.cleanup()
 
 
 def test_bundle_file_save_unknown_error():
@@ -370,18 +398,21 @@ def test_bundle_file_save_unknown_error():
         side_effect=Exception("UnknownError"),
     ):
         with pytest.raises(Exception) as excinfo:
-            report = BundleAnalysisReport()
-            report.ingest(sample_bundle_stats_path)
+            try:
+                report = BundleAnalysisReport()
+                report.ingest(sample_bundle_stats_path)
 
-            loader = BundleAnalysisReportLoader(
-                storage_service=MemoryStorageService({}),
-                repo_key="testing",
-            )
-            test_key = "8d1099f1-ba73-472f-957f-6908eced3f42"
-            loader.save(report, test_key)
+                loader = BundleAnalysisReportLoader(
+                    storage_service=MemoryStorageService({}),
+                    repo_key="testing",
+                )
+                test_key = "8d1099f1-ba73-472f-957f-6908eced3f42"
+                loader.save(report, test_key)
 
-            assert str(excinfo) == "UnknownError"
-            assert type(excinfo) is Exception
+                assert str(excinfo) == "UnknownError"
+                assert type(excinfo) is Exception
+            finally:
+                report.cleanup()
 
 
 def test_create_bundle_report_v1():
@@ -511,39 +542,37 @@ def test_bundle_is_cached():
 def test_bundle_deletion():
     try:
         bundle_analysis_report = BundleAnalysisReport()
-        db_session = bundle_analysis_report.db_session
+        with get_db_session(bundle_analysis_report.db_path) as db_session:
+            session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+            assert session_id == 1
 
-        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
-        assert session_id == 1
+            session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+            assert session_id == 2
 
-        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
-        assert session_id == 2
+            assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
 
-        assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
+            # Delete non-existent bundle
+            bundle_analysis_report.delete_bundle_by_name("fake")
+            assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
 
-        # Delete non-existent bundle
-        bundle_analysis_report.delete_bundle_by_name("fake")
-        assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
+            # Delete bundle 'sample'
+            bundle_analysis_report.delete_bundle_by_name("sample")
+            assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
+            res = list(db_session.query(Bundle).all())
+            assert len(res) == 1
+            assert res[0].name == "sample2"
 
-        # Delete bundle 'sample'
-        bundle_analysis_report.delete_bundle_by_name("sample")
-        assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
-        res = list(db_session.query(Bundle).all())
-        assert len(res) == 1
-        assert res[0].name == "sample2"
+            # Delete bundle 'sample' again
+            bundle_analysis_report.delete_bundle_by_name("sample")
+            assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
+            res = list(db_session.query(Bundle).all())
+            assert len(res) == 1
+            assert res[0].name == "sample2"
 
-        # Delete bundle 'sample' again
-        bundle_analysis_report.delete_bundle_by_name("sample")
-        assert _table_rows_count(db_session) == (1, 1, 5, 3, 31)
-        res = list(db_session.query(Bundle).all())
-        assert len(res) == 1
-        assert res[0].name == "sample2"
-
-        # Delete bundle 'sample2'
-        bundle_analysis_report.delete_bundle_by_name("sample2")
-        assert _table_rows_count(db_session) == (0, 0, 0, 0, 0)
-        res = list(db_session.query(Bundle).all())
-        assert len(res) == 0
-
+            # Delete bundle 'sample2'
+            bundle_analysis_report.delete_bundle_by_name("sample2")
+            assert _table_rows_count(db_session) == (0, 0, 0, 0, 0)
+            res = list(db_session.query(Bundle).all())
+            assert len(res) == 0
     finally:
         bundle_analysis_report.cleanup()
