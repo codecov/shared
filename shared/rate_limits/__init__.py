@@ -5,6 +5,7 @@ from redis import Redis, RedisError
 
 from shared.django_apps.codecov_auth.models import Owner
 from shared.django_apps.core.models import Repository
+from shared.rate_limits.exceptions import EntityRateLimitedException
 
 log = logging.getLogger(__name__)
 
@@ -48,12 +49,17 @@ def determine_entity_redis_key(
     if not owner:
         return default_bot_key_name()
 
-    if repository:
-        auth_info: AdapterAuthInformation = get_adapter_auth_information(
-            owner=owner, repository=repository
-        )
-    else:
-        auth_info: AdapterAuthInformation = get_adapter_auth_information(owner=owner)
+    try:
+        if repository:
+            auth_info: AdapterAuthInformation = get_adapter_auth_information(
+                owner=owner, repository=repository
+            )
+        else:
+            auth_info: AdapterAuthInformation = get_adapter_auth_information(
+                owner=owner
+            )
+    except EntityRateLimitedException:
+        pass
 
     if (
         auth_info

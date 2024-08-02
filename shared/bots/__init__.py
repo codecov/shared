@@ -76,7 +76,7 @@ def get_adapter_auth_information(
                 f"Entity {entity_name} is rate limited",
                 extra=dict(entity_name=entity_name),
             )
-            raise EntityRateLimitedException()
+            raise EntityRateLimitedException(entity_name=entity_name)
 
     return AdapterAuthInformation(
         token=token,
