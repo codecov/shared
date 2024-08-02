@@ -313,7 +313,9 @@ def test_bundle_report_info():
         assert bundle_report_info["bundler_name"] == "rollup"
         assert bundle_report_info["bundler_version"] == "3.29.4"
         assert bundle_report_info["built_at"] == 1701451048604
-        assert bundle_report_info["plugin_name"] == "codecov-vite-bundle-analysis-plugin"
+        assert (
+            bundle_report_info["plugin_name"] == "codecov-vite-bundle-analysis-plugin"
+        )
         assert bundle_report_info["plugin_version"] == "1.0.0"
         assert bundle_report_info["duration"] == 331
     finally:
@@ -359,7 +361,8 @@ def test_bundle_name_not_valid():
         with pytest.raises(Exception) as excinfo:
             report.ingest(sample_bundle_stats_path_3)
             assert (
-                excinfo.bundle_analysis_plugin_name == "codecov-vite-bundle-analysis-plugin"
+                excinfo.bundle_analysis_plugin_name
+                == "codecov-vite-bundle-analysis-plugin"
             )
     finally:
         report.cleanup()

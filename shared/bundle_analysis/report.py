@@ -299,7 +299,9 @@ class BundleAnalysisReport:
                     )
         return ret
 
-    def associate_previous_assets(self, prev_bundle_analysis_report: Any) -> None:
+    def associate_previous_assets(
+        self, prev_bundle_analysis_report: "BundleAnalysisReport"
+    ) -> None:
         """
         Only associate past asset if it is Javascript or Typescript types
         and belonging to the same bundle name
@@ -307,8 +309,9 @@ class BundleAnalysisReport:
         Rule 1. Previous and current asset have the same hashed name
         Rule 2. Previous and current asset shared the same set of module names
         """
+        prev_bundle_reports = list(prev_bundle_analysis_report.bundle_reports())
         for curr_bundle_report in self.bundle_reports():
-            for prev_bundle_report in prev_bundle_analysis_report.bundle_reports():
+            for prev_bundle_report in prev_bundle_reports:
                 if curr_bundle_report.name == prev_bundle_report.name:
                     associated_assets_found = set()
 
