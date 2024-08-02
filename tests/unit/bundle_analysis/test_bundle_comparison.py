@@ -12,7 +12,7 @@ from shared.bundle_analysis import (
     MissingBundleError,
     MissingHeadReportError,
 )
-from shared.bundle_analysis.models import Bundle
+from shared.bundle_analysis.models import Bundle, get_db_session
 from shared.storage.memory import MemoryStorageService
 
 here = Path(__file__)
@@ -47,15 +47,17 @@ def test_bundle_analysis_comparison():
         base_report.ingest(base_report_bundle_stats_path)
 
         old_bundle = Bundle(name="old")
-        base_report.db_session.add(old_bundle)
-        base_report.db_session.commit()
+        with get_db_session(base_report.db_path) as db_session:
+            db_session.add(old_bundle)
+            db_session.commit()
 
         head_report = BundleAnalysisReport()
         head_report.ingest(head_report_bundle_stats_path)
 
         new_bundle = Bundle(name="new")
-        head_report.db_session.add(new_bundle)
-        head_report.db_session.commit()
+        with get_db_session(head_report.db_path) as db_session:
+            db_session.add(new_bundle)
+            db_session.commit()
 
         loader.save(base_report, "base-report")
         loader.save(head_report, "head-report")
@@ -146,15 +148,17 @@ def test_bundle_analysis_total_size_delta():
         base_report.ingest(base_report_bundle_stats_path)
 
         old_bundle = Bundle(name="old")
-        base_report.db_session.add(old_bundle)
-        base_report.db_session.commit()
+        with get_db_session(base_report.db_path) as db_session:
+            db_session.add(old_bundle)
+            db_session.commit()
 
         head_report = BundleAnalysisReport()
         head_report.ingest(head_report_bundle_stats_path)
 
         new_bundle = Bundle(name="new")
-        head_report.db_session.add(new_bundle)
-        head_report.db_session.commit()
+        with get_db_session(head_report.db_path) as db_session:
+            db_session.add(new_bundle)
+            db_session.commit()
 
         loader.save(base_report, "base-report")
         loader.save(head_report, "head-report")
