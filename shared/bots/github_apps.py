@@ -119,13 +119,18 @@ def get_github_app_token(
     """Get an access_token from GitHub that we can use to authenticate as the installation
     See https://docs.github.com/en/enterprise-server@3.9/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation#generating-an-installation-access-token
     """
+    app_id = installation_info.get("app_id", None)
+    installation_id = installation_info["installation_id"]
     github_token = get_github_integration_token(
         service.value,
-        installation_info["installation_id"],
-        app_id=installation_info.get("app_id", None),
+        installation_id,
+        app_id=app_id,
         pem_path=installation_info.get("pem_path", None),
     )
-    installation_token = Token(key=github_token)
+    installation_token = Token(
+        key=github_token,
+        entity_name=gh_app_key_name(installation_id=installation_id, app_id=app_id),
+    )
     # The token is not owned by an Owner object, so 2nd arg is None
     return installation_token, None
 

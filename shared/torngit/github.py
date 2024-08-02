@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urlencode
 import httpx
 from httpx import Response
 
+from shared.bots.types import Token
 from shared.config import get_config
 from shared.github import (
     get_github_integration_token,
@@ -18,7 +19,6 @@ from shared.github import (
 )
 from shared.metrics import Counter, metrics
 from shared.rate_limits import (
-    determine_entity_redis_key_from_torngit_data,
     set_entity_to_rate_limited,
 )
 from shared.rollouts.features import LIST_REPOS_PAGE_SIZE
@@ -684,8 +684,9 @@ class Github(TorngitBaseAdapter):
         *,
         reset_timestamp: Optional[str] = None,
         retry_in_seconds: Optional[int] = None,
+        token: Token,
     ) -> None:
-        entity_key_name = determine_entity_redis_key_from_torngit_data(data=self.data)
+        entity_key_name = token.get("entity_name")
         if retry_in_seconds is None and reset_timestamp is None:
             log.warning(
                 "Can't mark entity as rate limited because TTL is missing",
@@ -872,7 +873,9 @@ class Github(TorngitBaseAdapter):
                 retry_in_seconds = int(retry_after) if retry_after is not None else None
                 reset_timestamp = res.headers.get("X-RateLimit-Reset")
                 self._possibly_mark_current_entity_as_rate_limited(
-                    reset_timestamp=reset_timestamp, retry_in_seconds=retry_in_seconds
+                    reset_timestamp=reset_timestamp,
+                    retry_in_seconds=retry_in_seconds,
+                    token=token_to_use,
                 )
 
                 fallback_token_key = self._get_next_fallback_token()

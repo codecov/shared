@@ -13,17 +13,11 @@ from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.rate_limits import (
     determine_entity_redis_key,
-    determine_entity_redis_key_from_torngit_data,
     determine_if_entity_is_rate_limited,
     gh_app_key_name,
     set_entity_to_rate_limited,
 )
 from shared.torngit.cache import get_redis_connection
-from shared.typings.torngit import (
-    GithubInstallationInfo,
-    OwnerInfo,
-    TorngitInstanceData,
-)
 
 
 @pytest.fixture
@@ -226,31 +220,3 @@ class TestRateLimits(object):
             )
             == f"default_app_{installation_id}"
         )
-
-    def test_determine_entity_redis_key_from_torngit_data_gh_app(self):
-        owner_info = OwnerInfo(service_id="123", ownerid=8173, username="test-account")
-        app_installation_info = GithubInstallationInfo(
-            id=4123, installation_id=1234, app_id=200, pem_path="path"
-        )
-        data = TorngitInstanceData(
-            owner=owner_info,
-            installation=app_installation_info,
-            fallback_installations=[],
-            repo=None,
-        )
-        assert determine_entity_redis_key_from_torngit_data(data=data) == "200_1234"
-
-    def test_determine_entity_redis_key_from_torngit_data_owner_id(self):
-        owner_info = OwnerInfo(service_id="123", ownerid=9236, username="test-account")
-        data = TorngitInstanceData(
-            owner=owner_info, installation=None, fallback_installations=[], repo=None
-        )
-        assert determine_entity_redis_key_from_torngit_data(data=data) == "9236"
-
-    def test_determine_entity_redis_key_from_torngit_data_gh_bot(
-        self, mock_configuration
-    ):
-        data = TorngitInstanceData(
-            owner=None, installation=None, fallback_installations=[], repo=None
-        )
-        assert determine_entity_redis_key_from_torngit_data(data=data) == "github_key"
