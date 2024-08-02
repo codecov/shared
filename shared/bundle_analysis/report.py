@@ -9,6 +9,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
+from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis.db_migrations import BundleAnalysisMigration
 from shared.bundle_analysis.models import (
@@ -189,44 +190,42 @@ class BundleAnalysisReport:
         self.db_path = db_path
         if self.db_path is None:
             _, self.db_path = tempfile.mkstemp(prefix="bundle_analysis_")
-        self.db_session = get_db_session(self.db_path, auto_close=False)
-        self._setup()
+        with get_db_session(self.db_path) as db_session:
+            self._setup(db_session)
 
-    def _setup(self):
+    def _setup(self, db_session: DbSession):
         """
         Creates the schema for a new bundle report database.
         """
         try:
             schema_version = (
-                self.db_session.query(Metadata)
+                db_session.query(Metadata)
                 .filter_by(key=MetadataKey.SCHEMA_VERSION.value)
                 .first()
-            )
-            self._migrate(schema_version.value)
+            ).value
+            if schema_version < SCHEMA_VERSION:
+                log.info(
+                    f"Migrating Bundle Analysis DB schema from {schema_version} to {SCHEMA_VERSION}"
+                )
+                BundleAnalysisMigration(
+                    db_session, schema_version, SCHEMA_VERSION
+                ).migrate()
         except OperationalError:
             # schema does not exist
-            con = sqlite3.connect(self.db_path)
-            con.executescript(SCHEMA)
+            try:
+                con = sqlite3.connect(self.db_path)
+                con.executescript(SCHEMA)
+                con.commit()
+            finally:
+                con.close()
             schema_version = Metadata(
                 key=MetadataKey.SCHEMA_VERSION.value,
                 value=SCHEMA_VERSION,
             )
-            self.db_session.add(schema_version)
-            self.db_session.commit()
-
-    def _migrate(self, from_version: int, to_version: int = SCHEMA_VERSION):
-        """
-        Migrate the database from `schema_version` to `models.SCHEMA_VERSION`
-        such that the resulting schema is identical to `models.SCHEMA`
-        """
-        if from_version < to_version:
-            log.info(
-                f"Migrating Bundle Analysis DB schema from {from_version} to {to_version}"
-            )
-            BundleAnalysisMigration(self.db_session, from_version, to_version).migrate()
+            db_session.add(schema_version)
+            db_session.commit()
 
     def cleanup(self):
-        self.db_session.close()
         os.unlink(self.db_path)
 
     def ingest(self, path: str) -> int:
@@ -234,10 +233,11 @@ class BundleAnalysisReport:
         Ingest the bundle stats JSON at the given file path.
         Returns session ID of ingested data.
         """
-        parser = Parser(path, self.db_session).get_proper_parser()
-        session_id = parser.parse(path)
-        self.db_session.commit()
-        return session_id
+        with get_db_session(self.db_path) as session:
+            parser = Parser(path, session).get_proper_parser()
+            session_id = parser.parse(path)
+            session.commit()
+            return session_id
 
     def _associate_bundle_report_assets_by_name(
         self, curr_bundle_report: BundleReport, prev_bundle_report: BundleReport
@@ -299,7 +299,9 @@ class BundleAnalysisReport:
                     )
         return ret
 
-    def associate_previous_assets(self, prev_bundle_analysis_report: Any) -> None:
+    def associate_previous_assets(
+        self, prev_bundle_analysis_report: "BundleAnalysisReport"
+    ) -> None:
         """
         Only associate past asset if it is Javascript or Typescript types
         and belonging to the same bundle name
@@ -307,11 +309,12 @@ class BundleAnalysisReport:
         Rule 1. Previous and current asset have the same hashed name
         Rule 2. Previous and current asset shared the same set of module names
         """
-        for curr_bundle_report in self.bundle_reports():
-            for prev_bundle_report in prev_bundle_analysis_report.bundle_reports():
-                if curr_bundle_report.name == prev_bundle_report.name:
-                    associated_assets_found = set()
+        associated_assets_found = set()
 
+        prev_bundle_reports = list(prev_bundle_analysis_report.bundle_reports())
+        for curr_bundle_report in self.bundle_reports():
+            for prev_bundle_report in prev_bundle_reports:
+                if curr_bundle_report.name == prev_bundle_report.name:
                     # Rule 1 check
                     associated_assets_found |= (
                         self._associate_bundle_report_assets_by_name(
@@ -326,14 +329,15 @@ class BundleAnalysisReport:
                         )
                     )
 
-                    # Update the Assets table for the bundle
-                    # TODO: Use SQLalchemy ORM to update instead of raw SQL
-                    # https://github.com/codecov/engineering-team/issues/1846
-                    for pair in associated_assets_found:
-                        prev_uuid, curr_uuid = pair
-                        stmt = f"UPDATE assets SET uuid='{prev_uuid}' WHERE uuid='{curr_uuid}'"
-                        self.db_session.execute(text(stmt))
-                    self.db_session.commit()
+        with get_db_session(self.db_path) as session:
+            # Update the Assets table for the bundle
+            # TODO: Use SQLalchemy ORM to update instead of raw SQL
+            # https://github.com/codecov/engineering-team/issues/1846
+            for pair in associated_assets_found:
+                prev_uuid, curr_uuid = pair
+                stmt = f"UPDATE assets SET uuid='{prev_uuid}' WHERE uuid='{curr_uuid}'"
+                session.execute(text(stmt))
+            session.commit()
 
     def metadata(self) -> Dict[MetadataKey, Any]:
         with get_db_session(self.db_path) as session:
