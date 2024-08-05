@@ -2325,6 +2325,11 @@ class Github(TorngitBaseAdapter):
             return f"{username}'s token"
         if token is None or token.get("key") is None:
             return "notoken"
+        app_installation = self.data.get("installation", {}).get(
+            "installation_id", None
+        )
+        if app_installation:
+            return f"GitHub_installation_{app_installation}"
         some_secret = "v1CAF4bFYi2+7sN7hgS/flGtooomdTZF0+uGiigV3AY8f4HHNg".encode()
         hasher = hashlib.sha256()
         hasher.update(some_secret)
