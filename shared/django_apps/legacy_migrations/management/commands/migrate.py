@@ -7,6 +7,7 @@ from django.db import transaction as django_transaction
 from django.db.utils import ProgrammingError
 
 from shared.django_apps.utils.config import RUN_ENV
+from shared.timeseries.helpers import is_timeseries_enabled
 from shared.torngit.cache import get_redis_connection
 
 log = logging.getLogger(__name__)
@@ -115,7 +116,11 @@ class Command(MigrateCommand):
     def handle(self, *args, **options):
         log.info("Codecov is starting migrations...")
         database = options["database"]
-        db_connection = connections[database]
+        try:
+            db_connection = connections[database]
+        except:
+            log.info(f"Failed to establish connection with {database}. No migrations to be done")
+            return None
         options["run_syncdb"] = False
 
         lock = self._obtain_lock()
@@ -129,7 +134,7 @@ class Command(MigrateCommand):
             with db_connection.cursor() as cursor:
                 self._fake_initial_migrations(cursor, args, options)
 
-                if database == "timeseries":
+                if database == "timeseries" and is_timeseries_enabled():
                     self._fake_initial_timeseries_migrations(cursor, args, options)
 
             super().handle(*args, **options)
