@@ -118,8 +118,10 @@ class Command(MigrateCommand):
         database = options["database"]
         try:
             db_connection = connections[database]
-        except:
-            log.info(f"Failed to establish connection with {database}. No migrations to be done")
+        except Exception:
+            log.info(
+                f"Failed to establish connection with {database}. Cannot do migrations"
+            )
             return None
         options["run_syncdb"] = False
 
