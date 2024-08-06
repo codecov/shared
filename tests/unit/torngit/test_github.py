@@ -270,34 +270,59 @@ class TestUnitGithub(object):
         assert parsed_url.params == ""
         assert parsed_url.fragment == ""
 
-    def test_loggable_token(self, mocker, valid_handler):
-        no_username_handler = Github(
-            repo=dict(name="example-python"),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key"),
-        )
-        assert no_username_handler.loggable_token(no_username_handler.token) == "f7CMr"
-        with_username_handler = Github(
-            repo=dict(name="example-python"),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key", username="Thiago"),
-        )
-        assert (
-            with_username_handler.loggable_token(with_username_handler.token)
-            == "Thiago's token"
-        )
-        no_token_handler = Github(
-            repo=dict(name="example-python"),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key=None),
-        )
-        assert no_token_handler.loggable_token(no_token_handler.token) == "notoken"
-        no_repo_handler = Github(
-            repo=dict(),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key"),
-        )
-        assert no_repo_handler.loggable_token(no_repo_handler.token) == "2vwGK"
+    @pytest.mark.parametrize(
+        "handler, expected",
+        [
+            pytest.param(
+                Github(
+                    repo=dict(name="example-python"),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                ),
+                "f7CMr",
+                id="no_username_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(name="example-python"),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key", username="Thiago"),
+                ),
+                "Thiago's token",
+                id="with_username_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(name="example-python"),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key=None),
+                ),
+                "notoken",
+                id="no_token_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                ),
+                "2vwGK",
+                id="no_repo_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                    installation={"installation_id": 1234},
+                ),
+                "GitHub_installation_1234",
+                id="installation_handler",
+            ),
+        ],
+    )
+    def test_loggable_token(self, handler, expected):
+        assert handler.loggable_token(handler.token) == expected
 
     @pytest.mark.asyncio
     async def test_api_retries(self, valid_handler, mocker):
