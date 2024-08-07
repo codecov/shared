@@ -8,6 +8,8 @@ from shared.django_apps.core.models import Repository
 
 log = logging.getLogger(__name__)
 
+RATE_LIMIT_REDIS_KEY_PREFIX = "rate_limited_entity_"
+
 
 def gh_app_key_name(installation_id: int, app_id: Optional[int] = None) -> str:
     app_id = app_id or "default_app"
@@ -24,7 +26,7 @@ def default_bot_key_name() -> str:
 
 def determine_entity_redis_key(
     owner: Owner | None, repository: Repository | None
-) -> str:
+) -> Optional[str]:
     """
     This function will determine the entity that uses a token to
     communicate with third party services, currently Github.
@@ -70,7 +72,7 @@ def determine_if_entity_is_rate_limited(redis_connection: Redis, key_name: str) 
     This will be used by API and Worker and should only be used for github git instances.
     """
     try:
-        return redis_connection.exists(f"rate_limited_entity_{key_name}")
+        return redis_connection.exists(f"{RATE_LIMIT_REDIS_KEY_PREFIX}{key_name}")
     except RedisError:
         log.exception(
             "Failed to check if the key name is rate_limited due to RedisError",
@@ -87,6 +89,7 @@ def set_entity_to_rate_limited(
     in worker during communication with Github 3rd party services
 
     @param `key_name` - name of the entity being rate limited. This is found in determine_entity_redis_key
+    and in the Token object definition
     key_name can take the shapes of:
     <app_id>_<installation_id> for Github Apps
     <owner_id> for Owners

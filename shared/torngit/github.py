@@ -687,6 +687,11 @@ class Github(TorngitBaseAdapter):
         token,
     ) -> None:
         entity_key_name = token.get("entity_name")
+        if entity_key_name is None:
+            log.warning(
+                "Can't mark entity as rate limited because TTL is missing",
+            )
+            return None
         if retry_in_seconds is None and reset_timestamp is None:
             log.warning(
                 "Can't mark entity as rate limited because TTL is missing",

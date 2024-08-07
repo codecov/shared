@@ -190,33 +190,28 @@ class TestRateLimits(object):
         mock_redis.set.assert_not_called()
 
     def test_set_entity_to_rate_limited_ttl_zero(self):
-        mock_redis = MagicMock(name="fake_redis")
-        mock_redis.set.side_effect = RedisError
         key_name = "owner_id_123"
         # This actually asserts that the error is not raised
         # Despite the call failing
         set_entity_to_rate_limited(
-            redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=300
+            redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=0
         )
-        mock_redis.set.assert_not_called()
+        assert self.redis_connection.get(f"rate_limited_entity_{key_name}") is not None
 
-    def test_gh_app_key_name(self):
-        app_id = 200
-        installation_id = 718263
+    @pytest.mark.parametrize(
+        "app_id, installation_id",
+        [
+            (200, 718263),
+            (None, 718263),
+        ],
+    )
+    def test_gh_app_key_name_with_or_without_id(self, app_id, installation_id):
         assert (
             gh_app_key_name(
                 app_id=app_id,
                 installation_id=installation_id,
             )
             == f"{app_id}_{installation_id}"
-        )
-
-    def test_gh_app_key_name_no_app_id(self):
-        installation_id = 718263
-        assert (
-            gh_app_key_name(
-                app_id=None,
-                installation_id=installation_id,
-            )
-            == f"default_app_{installation_id}"
+            if app_id
+            else f"default_app_{installation_id}"
         )
