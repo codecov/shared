@@ -207,6 +207,7 @@ class Branch(ExportModelOperationsMixin("core.branch"), models.Model):
                 fields=["repository", "-updatestamp"],
                 name="branches_repoid_updatestamp",
             ),
+            GinIndex(OpClass(Upper("name"), name="gin_trgm_ops"), name="name_trgm_idx"),
         ]
 
 
