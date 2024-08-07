@@ -228,7 +228,7 @@ class ParserV2:
             self.asset.normalized_name = value
         elif prefix == "assets.item.size":
             self.asset.size = int(value)
-        elif prefix == "assets.item.gzipSize":
+        elif prefix == "assets.item.gzipSize" and value is not None:
             self.asset.gzip_size = int(value)
         elif (prefix, event) == ("assets.item", "end_map"):
             self.asset_list.append(
