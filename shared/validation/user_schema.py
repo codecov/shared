@@ -249,6 +249,12 @@ schema = {
                     "wait_for_ci": {"type": "boolean"},
                     "require_ci_to_pass": {"type": "boolean"},  # [DEPRECATED]
                     "manual_trigger": {"type": "boolean"},
+                    "notify_error": {
+                        "meta": {
+                            "description": "This option lets the user toggle whether they want to block the regular comment message and replace it with an error message in the comment if any of the upload processing tasks fail."
+                        },
+                        "type": "boolean",
+                    },
                 },
             },
             "ui": {
