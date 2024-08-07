@@ -7,9 +7,9 @@ from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
 from sqlalchemy import text
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
-from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis.db_migrations import BundleAnalysisMigration
 from shared.bundle_analysis.models import (
