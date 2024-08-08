@@ -68,6 +68,15 @@ PATCH_CENTRIC_DEFAULT_CONFIG = {
     },
 }
 
+NOTIFY_ERROR_TIME_START = datetime.fromisoformat("2024-08-09 00:00:00.000+00:00")
+
+
+def add_notify_error_to_config(config: dict[str, Any]):
+    codecov: dict[str, Any] = config.setdefault("codecov", {})
+    notify: dict[str, Any] = codecov.setdefault("notify", {})
+    notify.setdefault("notify_error", True)
+
+
 default_config = {
     "services": {
         "minio": {

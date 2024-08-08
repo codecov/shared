@@ -1,4 +1,5 @@
 import datetime
+from copy import deepcopy
 
 from freezegun import freeze_time
 
@@ -11,7 +12,7 @@ from shared.config import (
 from shared.yaml import UserYaml, merge_yamls
 from shared.yaml.user_yaml import (
     OwnerContext,
-    _fix_yaml_defaults_based_on_owner_onboarding_date,
+    _fix_yaml_defaults_based_on_time,
     _get_possible_additional_user_yaml,
 )
 
@@ -348,21 +349,38 @@ class TestUserYaml(object):
     def test_default_yaml_behavior_change(self):
         current_yaml = LEGACY_DEFAULT_SITE_CONFIG
         day_timedelta = datetime.timedelta(days=1)
+        year_timedelta = datetime.timedelta(days=365)
         patch_centric_expected_onboarding_date = (
             datetime.datetime.now(datetime.timezone.utc) + day_timedelta
         )
         no_change_expected_onboarding_date = (
             datetime.datetime.now(datetime.timezone.utc) - day_timedelta
         )
-        no_change = _fix_yaml_defaults_based_on_owner_onboarding_date(
-            current_yaml, no_change_expected_onboarding_date
+        notify_error_expected_onboarding_date = (
+            datetime.datetime.now(datetime.timezone.utc) + year_timedelta
+        )
+        no_change = _fix_yaml_defaults_based_on_time(
+            current_yaml,
+            no_change_expected_onboarding_date,
+            no_change_expected_onboarding_date,
         )
         assert no_change == current_yaml
-        patch_centric = _fix_yaml_defaults_based_on_owner_onboarding_date(
-            current_yaml, patch_centric_expected_onboarding_date
+        patch_centric = _fix_yaml_defaults_based_on_time(
+            current_yaml,
+            patch_centric_expected_onboarding_date,
+            no_change_expected_onboarding_date,
         )
         assert patch_centric != current_yaml
         assert patch_centric == PATCH_CENTRIC_DEFAULT_CONFIG
+        patch_centric = _fix_yaml_defaults_based_on_time(
+            current_yaml,
+            patch_centric_expected_onboarding_date,
+            notify_error_expected_onboarding_date,
+        )
+        assert patch_centric != current_yaml
+        notify_error_config = deepcopy(PATCH_CENTRIC_DEFAULT_CONFIG)
+        notify_error_config["codecov"]["notify"]["notify_error"] = True
+        assert patch_centric == notify_error_config
 
     def test_get_final_yaml_default_based_on_owner_context(self):
         day_timedelta = datetime.timedelta(days=1)

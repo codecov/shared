@@ -140,6 +140,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
     bundle_analysis_enabled = models.BooleanField(default=False, null=True)
     coverage_enabled = models.BooleanField(default=False, null=True)
     test_analytics_enabled = models.BooleanField(default=False, null=True)
+    created_at = models.DateTimeField(null=True, auto_now_add=True)
 
     # tracks field changes being saved
     tracker = FieldTracker()
