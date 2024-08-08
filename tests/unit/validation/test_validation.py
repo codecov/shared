@@ -838,6 +838,7 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": True,
+                        # https://github.com/codecov/engineering-team/issues/2087
                         # "bundle_change_threshold": ("absolute", 1200),
                         "bundle_change_threshold": 1200,
                     }
@@ -854,6 +855,7 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": "bundle_increase",
+                        # https://github.com/codecov/engineering-team/issues/2087
                         # "bundle_change_threshold": ("absolute", 1000000),
                         "bundle_change_threshold": 1000000,
                     }
@@ -870,6 +872,7 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": "bundle_increase",
+                        # https://github.com/codecov/engineering-team/issues/2087
                         # "bundle_change_threshold": ("percentage", 10.0),
                         "bundle_change_threshold": 10.0,
                     }
@@ -896,6 +899,7 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "bundle_analysis": {
                         "status": False,
+                        # https://github.com/codecov/engineering-team/issues/2087
                         # "bundle_change_threshold": ("percentage", 10.0),
                         "bundle_change_threshold": 10.0,
                     }
@@ -912,6 +916,7 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "bundle_analysis": {
                         "status": True,
+                        # https://github.com/codecov/engineering-team/issues/2087
                         # "bundle_change_threshold": ("absolute", 10000),
                         "bundle_change_threshold": 10000,
                     }
