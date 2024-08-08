@@ -68,7 +68,7 @@ PATCH_CENTRIC_DEFAULT_CONFIG = {
     },
 }
 
-NOTIFY_ERROR_TIME_START = datetime.fromisoformat("2024-08-09 00:00:00.000+00:00")
+NOTIFY_ERROR_TIME_START = datetime.fromisoformat("2024-09-02 00:00:00.000+00:00")
 
 
 def add_notify_error_to_config(config: dict[str, Any]):

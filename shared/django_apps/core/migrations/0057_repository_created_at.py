@@ -2,9 +2,18 @@
 
 from django.db import migrations, models
 
+"""
+BEGIN;
+--
+-- Add field created_at to repository
+--
+ALTER TABLE "repos" ADD COLUMN "created_at" timestamp with time zone DEFAULT '2024-08-08T21:17:39.913910+00:00'::timestamptz NULL;
+ALTER TABLE "repos" ALTER COLUMN "created_at" DROP DEFAULT;
+COMMIT;
+"""
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0056_branch_name_trgm_idx"),
     ]
