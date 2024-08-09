@@ -893,15 +893,15 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "bundle_analysis": {
                         "status": False,
-                        "bundle_change_threshold": "10%",
+                        "warning_threshold": "10%",
                     }
                 },
                 {
                     "bundle_analysis": {
                         "status": False,
                         # https://github.com/codecov/engineering-team/issues/2087
-                        # "bundle_change_threshold": ("percentage", 10.0),
-                        "bundle_change_threshold": 10.0,
+                        # "warning_threshold": ("percentage", 10.0),
+                        "warning_threshold": 10.0,
                     }
                 },
                 id="status_off_percentage_threshold",
@@ -910,15 +910,15 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "bundle_analysis": {
                         "status": True,
-                        "bundle_change_threshold": "10kb",
+                        "warning_threshold": "10kb",
                     }
                 },
                 {
                     "bundle_analysis": {
                         "status": True,
                         # https://github.com/codecov/engineering-team/issues/2087
-                        # "bundle_change_threshold": ("absolute", 10000),
-                        "bundle_change_threshold": 10000,
+                        # "warning_threshold": ("absolute", 10000),
+                        "warning_threshold": 10000,
                     }
                 },
                 id="status_on_absolute_threshold",
