@@ -14,6 +14,7 @@ from shared.django_apps.core.models import Repository
 from shared.encryption.oauth import get_encryptor_from_configuration
 from shared.environment.environment import is_enterprise
 from shared.orms.repository_helper import DjangoSQLAlchemyRepositoryWrapper
+from shared.rate_limits import owner_key_name
 from shared.typings.torngit import GithubInstallationInfo
 
 encryptor = get_encryptor_from_configuration()
@@ -25,6 +26,7 @@ def get_repo_particular_bot_token(repo) -> TokenWithOwner:
     appropriate_bot = get_repo_appropriate_bot(repo)
     token_dict = encryptor.decrypt_token(appropriate_bot.oauth_token)
     token_dict["username"] = appropriate_bot.username
+    token_dict["entity_name"] = owner_key_name(appropriate_bot.ownerid)
     return token_dict, appropriate_bot
 
 

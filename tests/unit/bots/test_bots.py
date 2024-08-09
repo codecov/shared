@@ -66,7 +66,10 @@ class TestGettingAdapterAuthInformation(object):
             owner = self._generate_test_owner(with_bot=False)
             expected = AdapterAuthInformation(
                 token=Token(
-                    key="owner_token", refresh_token="refresh_token", secret=None
+                    key="owner_token",
+                    refresh_token="refresh_token",
+                    secret=None,
+                    entity_name=str(owner.ownerid),
                 ),
                 token_owner=owner,
                 selected_installation_info=None,
@@ -80,7 +83,10 @@ class TestGettingAdapterAuthInformation(object):
             owner = self._generate_test_owner(with_bot=True)
             expected = AdapterAuthInformation(
                 token=Token(
-                    key="bot_token", refresh_token="bot_refresh_token", secret=None
+                    key="bot_token",
+                    refresh_token="bot_refresh_token",
+                    secret=None,
+                    entity_name=str(owner.bot.ownerid),
                 ),
                 token_owner=owner.bot,
                 selected_installation_info=None,
@@ -111,9 +117,7 @@ class TestGettingAdapterAuthInformation(object):
                 with_bot=False, ghapp_installations=installations
             )
             expected = AdapterAuthInformation(
-                token=Token(
-                    key="installation_token_1200_200",
-                ),
+                token=Token(key="installation_token_1200_200", entity_name="200_1200"),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(
                     id=installations[0].id,
@@ -149,7 +153,10 @@ class TestGettingAdapterAuthInformation(object):
             )
             expected = AdapterAuthInformation(
                 token=Token(
-                    key="owner_token", refresh_token="refresh_token", secret=None
+                    key="owner_token",
+                    refresh_token="refresh_token",
+                    secret=None,
+                    entity_name=str(owner.ownerid),
                 ),
                 token_owner=owner,
                 selected_installation_info=None,
@@ -175,7 +182,7 @@ class TestGettingAdapterAuthInformation(object):
             # The integration_id is selected
             expected = AdapterAuthInformation(
                 token=Token(
-                    key="installation_token_1500_None",
+                    key="installation_token_1500_None", entity_name="default_app_1500"
                 ),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(installation_id=1500),
@@ -215,9 +222,7 @@ class TestGettingAdapterAuthInformation(object):
                 with_bot=False, ghapp_installations=installations
             )
             expected = AdapterAuthInformation(
-                token=Token(
-                    key="installation_token_1200_200",
-                ),
+                token=Token(key="installation_token_1200_200", entity_name="200_1200"),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(
                     id=installations[0].id,
@@ -261,9 +266,7 @@ class TestGettingAdapterAuthInformation(object):
                 with_bot=False, ghapp_installations=installations
             )
             expected = AdapterAuthInformation(
-                token=Token(
-                    key="installation_token_1300_300",
-                ),
+                token=Token(key="installation_token_1300_300", entity_name="300_1300"),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(
                     id=installations[1].id,
@@ -346,6 +349,7 @@ class TestGettingAdapterAuthInformation(object):
                     refresh_token="refresh_token",
                     secret=None,
                     username=repo.author.username,
+                    entity_name=str(repo.author.ownerid),
                 ),
                 token_owner=repo.author,
                 selected_installation_info=None,
@@ -363,6 +367,7 @@ class TestGettingAdapterAuthInformation(object):
                     refresh_token="bot_refresh_token",
                     secret=None,
                     username=repo.author.bot.username,
+                    entity_name=str(repo.author.bot.ownerid),
                 ),
                 token_owner=repo.author.bot,
                 selected_installation_info=None,
@@ -380,6 +385,7 @@ class TestGettingAdapterAuthInformation(object):
                     refresh_token="repo_bot_refresh_token",
                     secret=None,
                     username=repo.bot.username,
+                    entity_name=str(repo.bot.ownerid),
                 ),
                 token_owner=repo.bot,
                 selected_installation_info=None,
@@ -411,6 +417,7 @@ class TestGettingAdapterAuthInformation(object):
                 refresh_token="repo_bot_refresh_token",
                 secret=None,
                 username=repo.bot.username,
+                entity_name=str(repo.bot.ownerid),
             )
             expected = AdapterAuthInformation(
                 token=repo_bot_token,
@@ -453,9 +460,7 @@ class TestGettingAdapterAuthInformation(object):
                 ghapp_installations=installations,
             )
             expected = AdapterAuthInformation(
-                token=Token(
-                    key="installation_token_1200_200",
-                ),
+                token=Token(key="installation_token_1200_200", entity_name="200_1200"),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(
                     id=installations[0].id,
@@ -486,7 +491,7 @@ class TestGettingAdapterAuthInformation(object):
             # So we fail with exception
             expected = AdapterAuthInformation(
                 token=Token(
-                    key="installation_token_1500_None",
+                    key="installation_token_1500_None", entity_name="default_app_1500"
                 ),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(installation_id=1500),
@@ -528,9 +533,7 @@ class TestGettingAdapterAuthInformation(object):
                 ghapp_installations=installations,
             )
             expected = AdapterAuthInformation(
-                token=Token(
-                    key="installation_token_1200_200",
-                ),
+                token=Token(key="installation_token_1200_200", entity_name="200_1200"),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(
                     id=installations[0].id,
@@ -576,9 +579,7 @@ class TestGettingAdapterAuthInformation(object):
                 ghapp_installations=installations,
             )
             expected = AdapterAuthInformation(
-                token=Token(
-                    key="installation_token_1300_300",
-                ),
+                token=Token(key="installation_token_1300_300", entity_name="300_1300"),
                 token_owner=None,
                 selected_installation_info=GithubInstallationInfo(
                     id=installations[1].id,
@@ -622,7 +623,7 @@ class TestGettingAdapterAuthInformation(object):
             },
         )
         expected = AdapterAuthInformation(
-            token=Token(key="tokenless_bot_token"),
+            token=Token(key="tokenless_bot_token", entity_name="tokenless_bot"),
             token_owner=None,
             selected_installation_info=None,
             fallback_installations=None,
@@ -631,7 +632,9 @@ class TestGettingAdapterAuthInformation(object):
                 TokenType.read: Token(key="reader_bot_token"),
                 TokenType.admin: None,
                 TokenType.status: Token(key="status_bot_token"),
-                TokenType.tokenless: Token(key="tokenless_bot_token"),
+                TokenType.tokenless: Token(
+                    key="tokenless_bot_token", entity_name="tokenless_bot"
+                ),
                 TokenType.pull: None,
                 TokenType.commit: None,
             },

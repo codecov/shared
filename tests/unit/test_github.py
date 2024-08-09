@@ -1,13 +1,9 @@
 import pytest
-from mock import MagicMock
 from prometheus_client import REGISTRY
-from redis import RedisError
 
 from shared.github import (
     InvalidInstallationError,
     get_github_integration_token,
-    is_installation_rate_limited,
-    mark_installation_as_rate_limited,
 )
 
 # DONT WORRY, this is generated for the purposes of validation, and is not the real
@@ -262,70 +258,3 @@ class TestGithubSpecificLogic(object):
         )
         assert after - before == 1
         assert e_after - e_before == 0
-
-    def test_mark_installation_as_rate_limited(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        INSTALLATION_ID = 1000
-        APP_ID = 250
-        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 10, app_id=250)
-        mock_redis.set.assert_called_with(
-            name=f"rate_limited_installations_{APP_ID}_{INSTALLATION_ID}",
-            value=1,
-            ex=10,
-        )
-        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 10, app_id=None)
-        mock_redis.set.assert_called_with(
-            name=f"rate_limited_installations_default_app_{INSTALLATION_ID}",
-            value=1,
-            ex=10,
-        )
-
-    def test_mark_installation_as_rate_limited_error(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        mock_redis.set.side_effect = RedisError
-        INSTALLATION_ID = 1000
-        APP_ID = 250
-        # This actually asserts that the error is not raised
-        # Despite the call failing
-        mark_installation_as_rate_limited(
-            mock_redis, INSTALLATION_ID, 10, app_id=APP_ID
-        )
-        mock_redis.set.assert_called_with(
-            name=f"rate_limited_installations_{APP_ID}_{INSTALLATION_ID}",
-            value=1,
-            ex=10,
-        )
-
-    def test_mark_installation_as_rate_limited_ttl_zero(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        mock_redis.set.side_effect = RedisError
-        INSTALLATION_ID = 1000
-        APP_ID = 250
-        # This actually asserts that the error is not raised
-        # Despite the call failing
-        mark_installation_as_rate_limited(mock_redis, INSTALLATION_ID, 0, app_id=APP_ID)
-        mock_redis.set.assert_not_called()
-
-    def test_is_installation_rate_limited(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        keys_in_redis = {
-            "rate_limited_installations_250_999": 1,
-            "rate_limited_installations_default_app_999": 1,
-        }
-
-        def exists(key):
-            return key in keys_in_redis
-
-        mock_redis.exists.side_effect = exists
-        assert is_installation_rate_limited(mock_redis, 1000, 250) == False
-        assert is_installation_rate_limited(mock_redis, 999, 250) == True
-        assert is_installation_rate_limited(mock_redis, 999) == True
-        assert is_installation_rate_limited(mock_redis, 999, app_id=None) == True
-        assert is_installation_rate_limited(mock_redis, 999, 200) == False
-
-    def test_is_installation_rate_limited_error(self, mocker):
-        mock_redis = MagicMock(name="fake_redis")
-        mock_redis.exists.side_effect = RedisError
-        assert is_installation_rate_limited(mock_redis, 1000, 250) == False
-        assert is_installation_rate_limited(mock_redis, 999, 250) == False
-        assert is_installation_rate_limited(mock_redis, 999, 200) == False
