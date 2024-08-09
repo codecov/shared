@@ -1098,11 +1098,12 @@ class Report(object):
     def __bool__(self):
         return self.is_empty() is False
 
+    @sentry_sdk.trace
     def to_archive(self, with_header=True):
         # TODO: confirm removing encoding here is fine
         chunks = END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
         if with_header:
-            # When saving to satabase we want this
+            # When saving to database we want this
             return END_OF_HEADER.join(
                 [json.dumps(self._header, separators=(",", ":")), chunks]
             )
@@ -1111,6 +1112,7 @@ class Report(object):
         # So it's simpler to just never sent it.
         return chunks
 
+    @sentry_sdk.trace
     def to_database(self):
         """returns (totals, report) to be stored in database"""
         totals = dict(zip(TOTALS_MAP, self.totals))
