@@ -1073,12 +1073,12 @@ class Github(TorngitBaseAdapter):
                 user = await self.api(client, "get", url)
                 user.update(session or {})
                 email = user.get("email")
-                url = self.count_and_get_url_template(
-                    url_name="get_authenticated_user_email"
-                ).substitute()
                 if not email:
+                    url = self.count_and_get_url_template(
+                        url_name="get_authenticated_user_email"
+                    ).substitute()
                     emails = await self.api(client, "get", url)
-                    emails = [e["email"] for e in emails if e["primary"]]
+                    emails = [e["email"] for e in emails if e["visibility"] == "public"]
                     user["email"] = emails[0] if emails else None
                 return user
 
