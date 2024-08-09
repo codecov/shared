@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 import django_prometheus
 
 from shared.config import get_config
+from shared.timeseries.helpers import is_timeseries_enabled
 
 db_url = get_config("services", "database_url")
 if db_url:
@@ -48,7 +49,7 @@ else:
     )
     DATABASE_READ_PORT = get_config("services", "database_read", "port", default=5432)
 
-TIMESERIES_ENABLED = get_config("setup", "timeseries", "enabled", default=False)
+TIMESERIES_ENABLED = is_timeseries_enabled()
 TIMESERIES_REAL_TIME_AGGREGATES = get_config(
     "setup", "timeseries", "real_time_aggregates", default=False
 )
