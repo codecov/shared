@@ -199,19 +199,19 @@ class TestRateLimits(object):
         assert self.redis_connection.get(f"rate_limited_entity_{key_name}") is not None
 
     @pytest.mark.parametrize(
-        "app_id, installation_id",
+        "app_id, installation_id, expected",
         [
-            (200, 718263),
-            (None, 718263),
+            (200, 718263, "200_718263"),
+            (None, 718263, "default_app_718263"),
         ],
     )
-    def test_gh_app_key_name_with_or_without_id(self, app_id, installation_id):
+    def test_gh_app_key_name_with_or_without_id(
+        self, app_id, installation_id, expected
+    ):
         assert (
             gh_app_key_name(
                 app_id=app_id,
                 installation_id=installation_id,
             )
-            == f"{app_id}_{installation_id}"
-            if app_id
-            else f"default_app_{installation_id}"
+            == expected
         )
