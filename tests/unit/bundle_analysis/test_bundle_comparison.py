@@ -126,6 +126,7 @@ def test_bundle_analysis_comparison():
     total_size_delta = bundle_comparison.total_size_delta()
     assert total_size_delta == 1100
     assert total_size_delta == sum([change.size_delta for change in asset_changes])
+    assert comparison.percentage_delta == 0.73
 
     with pytest.raises(MissingBundleError):
         comparison.bundle_comparison("new")
@@ -164,6 +165,7 @@ def test_bundle_analysis_total_size_delta():
         loader.save(head_report, "head-report")
 
         assert comparison.total_size_delta == 1100
+        assert comparison.percentage_delta == 0.73
 
     finally:
         base_report.cleanup()

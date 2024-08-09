@@ -838,7 +838,9 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": True,
-                        "bundle_change_threshold": ("absolute", 1200),
+                        # https://github.com/codecov/engineering-team/issues/2087
+                        # "bundle_change_threshold": ("absolute", 1200),
+                        "bundle_change_threshold": 1200,
                     }
                 },
                 id="bundle_changes_with_threshold",
@@ -853,7 +855,9 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": "bundle_increase",
-                        "bundle_change_threshold": ("absolute", 1000000),
+                        # https://github.com/codecov/engineering-team/issues/2087
+                        # "bundle_change_threshold": ("absolute", 1000000),
+                        "bundle_change_threshold": 1000000,
                     }
                 },
                 id="bundle_increase_required_with_threshold",
@@ -868,7 +872,9 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "comment": {
                         "require_bundle_changes": "bundle_increase",
-                        "bundle_change_threshold": ("percentage", 10.0),
+                        # https://github.com/codecov/engineering-team/issues/2087
+                        # "bundle_change_threshold": ("percentage", 10.0),
+                        "bundle_change_threshold": 10.0,
                     }
                 },
                 id="bundle_increase_required_with_percentage_threshold",
@@ -893,7 +899,9 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "bundle_analysis": {
                         "status": False,
-                        "bundle_change_threshold": ("percentage", 10.0),
+                        # https://github.com/codecov/engineering-team/issues/2087
+                        # "bundle_change_threshold": ("percentage", 10.0),
+                        "bundle_change_threshold": 10.0,
                     }
                 },
                 id="status_off_percentage_threshold",
@@ -908,7 +916,9 @@ class TestUserYamlValidation(BaseTestCase):
                 {
                     "bundle_analysis": {
                         "status": True,
-                        "bundle_change_threshold": ("absolute", 10000),
+                        # https://github.com/codecov/engineering-team/issues/2087
+                        # "bundle_change_threshold": ("absolute", 10000),
+                        "bundle_change_threshold": 10000,
                     }
                 },
                 id="status_on_absolute_threshold",
