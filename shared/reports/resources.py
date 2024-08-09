@@ -640,7 +640,7 @@ def parse_chunks(chunks: str) -> tuple[list[str], ReportHeader]:
 
 class Report(object):
     file_class = ReportFile
-    _files: Dict[str, ReportFileSummary]
+    _files: dict[str, ReportFileSummary]
     _header: ReportHeader
 
     def __init__(
@@ -661,7 +661,9 @@ class Report(object):
 
         # ["<json>", ...]
         self._chunks, self._header = (
-            parse_chunks(chunks) if chunks and isinstance(chunks, str) else ([], {})
+            parse_chunks(chunks)
+            if chunks and isinstance(chunks, str)
+            else (chunks or [], ReportHeader())
         )
 
         # <ReportTotals>
