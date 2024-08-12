@@ -153,7 +153,6 @@ class ReportFile(object):
                         continue
                 yield ln, line
 
-    @sentry_sdk.trace
     def calculate_diff(self, all_file_segments):
         fg = self.get
         lines = []
@@ -603,7 +602,6 @@ def build_files(files: dict[str, Any]) -> dict[str, ReportFileSummary]:
     return files
 
 
-@sentry_sdk.trace
 def get_sessions(sessions: dict) -> dict[int, Session]:
     return {
         int(sid): copy(session)
@@ -1298,7 +1296,6 @@ class Report(object):
                         diff_totals=None,
                     )
 
-    @sentry_sdk.trace
     def calculate_diff(self, diff: Dict) -> Dict:
         """
             Calculates the per-file totals (and total) of the parts
