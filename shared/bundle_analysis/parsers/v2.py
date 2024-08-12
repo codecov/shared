@@ -92,7 +92,7 @@ class ParserV2:
         self.chunk_list = []
         self.module_list = []
 
-    def parse(self, path: str) -> int:
+    def parse(self, path: str) -> Tuple[int, str]:
         try:
             self.reset()
 
@@ -153,7 +153,7 @@ class ParserV2:
                 self._create_associations()
 
                 assert self.session.bundle is not None
-                return self.session.id
+                return self.session.id, self.session.bundle.name
         except Exception as e:
             # Inject the plugin name to the Exception object so we have visibilitity on which plugin
             # is causing the trouble.
