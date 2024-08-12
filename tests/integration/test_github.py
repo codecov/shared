@@ -171,7 +171,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_authenticated_user_with_public_emails(self, codecov_vcr):
-        code = "625a10a4fb775fe37d65"
+        code = "71367b9f258ca9a60c44"
 
         handler = Github(
             oauth_consumer_token=dict(
