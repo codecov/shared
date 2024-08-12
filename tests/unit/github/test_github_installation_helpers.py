@@ -1,3 +1,4 @@
+import pickle
 from time import time
 from unittest.mock import patch
 
@@ -5,8 +6,15 @@ import pytest
 from freezegun import freeze_time
 
 # This import here avoids a circular import issue
-from shared.github import get_github_jwt_token, get_pem
+from shared.github import InvalidInstallationError, get_github_jwt_token, get_pem
 from shared.utils.test_utils import mock_config_helper
+
+
+def test_can_unpickle_invalid_installation_error():
+    exception = InvalidInstallationError("permission_error")
+    pickled = pickle.dumps(exception)
+    unpickled = pickle.loads(pickled)
+    assert str(unpickled) == str(exception)
 
 
 @patch("shared.github.load_pem_from_path")
