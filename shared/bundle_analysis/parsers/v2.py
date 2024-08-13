@@ -110,20 +110,6 @@ class ParserV2:
                 for event in ijson.parse(f):
                     self._parse_event(event)
 
-                if self.asset_list:
-                    insert_asset = Asset.__table__.insert().values(self.asset_list)
-                    self.db_session.execute(insert_asset)
-
-                if self.chunk_list:
-                    insert_chunks = Chunk.__table__.insert().values(self.chunk_list)
-                    self.db_session.execute(insert_chunks)
-
-                if self.module_list:
-                    insert_modules = Module.__table__.insert().values(self.module_list)
-                    self.db_session.execute(insert_modules)
-
-                self.db_session.flush()
-
                 # Delete old session/asset/chunk/module with the same bundle name if applicable
                 old_session = (
                     self.db_session.query(Session)
@@ -143,6 +129,20 @@ class ParserV2:
                             self.db_session.flush()
                     self.db_session.delete(old_session)
                     self.db_session.flush()
+
+                if self.asset_list:
+                    insert_asset = Asset.__table__.insert().values(self.asset_list)
+                    self.db_session.execute(insert_asset)
+
+                if self.chunk_list:
+                    insert_chunks = Chunk.__table__.insert().values(self.chunk_list)
+                    self.db_session.execute(insert_chunks)
+
+                if self.module_list:
+                    insert_modules = Module.__table__.insert().values(self.module_list)
+                    self.db_session.execute(insert_modules)
+
+                self.db_session.flush()
 
                 # save top level bundle stats info
                 self.session.info = json.dumps(self.info)
