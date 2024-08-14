@@ -12,6 +12,7 @@ from shared.bundle_analysis.models import (
     AssetType,
     Bundle,
     Chunk,
+    Metadata,
     MetadataKey,
     Module,
     Session,
@@ -58,8 +59,9 @@ def _table_rows_count(db_session: DbSession) -> Tuple[int]:
 def test_create_bundle_report():
     try:
         report = BundleAnalysisReport()
-        session_id = report.ingest(sample_bundle_stats_path)
+        session_id, bundle_name = report.ingest(sample_bundle_stats_path)
         assert session_id == 1
+        assert bundle_name == "sample"
 
         assert report.metadata() == {
             MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
@@ -143,8 +145,9 @@ def test_create_bundle_report():
 def test_bundle_report_asset_filtering():
     try:
         report = BundleAnalysisReport()
-        session_id = report.ingest(sample_bundle_stats_path)
+        session_id, bundle_name = report.ingest(sample_bundle_stats_path)
         assert session_id == 1
+        assert bundle_name == "sample"
 
         assert report.metadata() == {
             MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
@@ -418,8 +421,9 @@ def test_bundle_file_save_unknown_error():
 def test_create_bundle_report_v1():
     try:
         report = BundleAnalysisReport()
-        session_id = report.ingest(sample_bundle_stats_path_4)
+        session_id, bundle_name = report.ingest(sample_bundle_stats_path_4)
         assert session_id == 1
+        assert bundle_name == "sample"
 
         assert report.metadata() == {
             MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
@@ -506,11 +510,17 @@ def test_create_bundle_report_v1():
 def test_bundle_is_cached():
     try:
         bundle_analysis_report = BundleAnalysisReport()
-        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+        session_id, bundle_name = bundle_analysis_report.ingest(
+            sample_bundle_stats_path
+        )
         assert session_id == 1
+        assert bundle_name == "sample"
 
-        session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+        session_id, bundle_name = bundle_analysis_report.ingest(
+            sample_bundle_stats_path_5
+        )
         assert session_id == 2
+        assert bundle_name == "sample2"
 
         assert bundle_analysis_report.metadata() == {
             MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
@@ -543,11 +553,17 @@ def test_bundle_deletion():
     try:
         bundle_analysis_report = BundleAnalysisReport()
         with get_db_session(bundle_analysis_report.db_path) as db_session:
-            session_id = bundle_analysis_report.ingest(sample_bundle_stats_path)
+            session_id, bundle_name = bundle_analysis_report.ingest(
+                sample_bundle_stats_path
+            )
             assert session_id == 1
+            assert bundle_name == "sample"
 
-            session_id = bundle_analysis_report.ingest(sample_bundle_stats_path_5)
+            session_id, bundle_name = bundle_analysis_report.ingest(
+                sample_bundle_stats_path_5
+            )
             assert session_id == 2
+            assert bundle_name == "sample2"
 
             assert _table_rows_count(db_session) == (2, 2, 10, 6, 62)
 
@@ -576,3 +592,27 @@ def test_bundle_deletion():
             assert len(res) == 0
     finally:
         bundle_analysis_report.cleanup()
+
+
+def test_create_bundle_report_without_and_with_compare_sha():
+    try:
+        report = BundleAnalysisReport()
+        with get_db_session(report.db_path) as db_session:
+            session_id, bundle_name = report.ingest(sample_bundle_stats_path)
+            assert session_id == 1
+            assert bundle_name == "sample"
+
+            res = db_session.query(Metadata).filter_by(key="compare_sha").all()
+            assert len(res) == 0
+
+            session_id, bundle_name = report.ingest(
+                sample_bundle_stats_path, "compare_sha_123"
+            )
+            assert session_id == 2
+            assert bundle_name == "sample"
+
+            res = db_session.query(Metadata).filter_by(key="compare_sha").all()
+            assert len(res) == 1
+            assert res[0].value == "compare_sha_123"
+    finally:
+        report.cleanup()
