@@ -1,16 +1,5 @@
 from shared.helpers.cache import NullBackend, RedisBackend
-from shared.torngit.cache import get_redis_url, torngit_cache
-
-
-def test_get_redis_default():
-    assert get_redis_url() == "redis://redis:6379"
-
-
-def test_get_redis_from_url(mock_configuration):
-    mock_configuration.set_params(
-        {"services": {"redis_url": "https://my-redis-instance:6378"}}
-    )
-    assert get_redis_url() == "https://my-redis-instance:6378"
+from shared.torngit.cache import torngit_cache
 
 
 class TestTorngitCacheConfig(object):

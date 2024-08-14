@@ -17,10 +17,11 @@ from shared.github import (
     get_github_jwt_token,
     mark_installation_as_rate_limited,
 )
+from shared.helpers.redis import get_redis_connection
 from shared.metrics import Counter, metrics
 from shared.rollouts.features import LIST_REPOS_PAGE_SIZE
 from shared.torngit.base import TokenType, TorngitBaseAdapter
-from shared.torngit.cache import get_redis_connection, torngit_cache
+from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
