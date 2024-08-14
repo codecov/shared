@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 
 from shared.reports.filtered import FilteredReport, FilteredReportFile
@@ -370,9 +369,6 @@ class TestFilteredReport(object):
         )
 
     def test_flag_filtered_totals_flag_single_session(self, mocker):
-        mocker.patch.object(
-            FilteredReport, "_can_use_session_totals", return_value=True
-        )
         report = Report()
         first_file = ReportFile("file_1.go")
         first_file.append(
@@ -562,130 +558,6 @@ class TestFilteredReport(object):
         # Python file exists in the raw report and is included in the filters
         py_file_totals = sample_report.get_file_totals("location/file_1.py")
         assert filtered_report.get_file_totals("location/file_1.py") == py_file_totals
-
-    def test_can_use_session_totals(self, mocker):
-        report = Report()
-        report.add_session(
-            Session(
-                time=20000,
-                id=3,
-                totals=ReportTotals(
-                    files=1,
-                    lines=5,
-                    hits=2,
-                    misses=3,
-                    partials=0,
-                    coverage="80.00000",
-                    branches=0,
-                    methods=0,
-                    messages=0,
-                    sessions=1,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                flags=["super"],
-            )
-        )
-        report.add_session(
-            Session(
-                time=1,
-                id=3,
-                totals=ReportTotals(
-                    files=1,
-                    lines=5,
-                    hits=2,
-                    misses=3,
-                    partials=0,
-                    coverage="80.00000",
-                    branches=0,
-                    methods=0,
-                    messages=0,
-                    sessions=1,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                flags=["oldie"],
-            )
-        )
-        report.add_session(
-            Session(
-                time=2,
-                id=3,
-                totals=ReportTotals(
-                    files=1,
-                    lines=5,
-                    hits=2,
-                    misses=3,
-                    partials=0,
-                    coverage="80.00000",
-                    branches=0,
-                    methods=0,
-                    messages=0,
-                    sessions=1,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                flags=["double"],
-            )
-        )
-        report.add_session(
-            Session(
-                time=1,
-                id=3,
-                totals=ReportTotals(
-                    files=1,
-                    lines=5,
-                    hits=2,
-                    misses=3,
-                    partials=0,
-                    coverage="80.00000",
-                    branches=0,
-                    methods=0,
-                    messages=0,
-                    sessions=1,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                flags=["double"],
-            )
-        )
-        report.add_session(
-            Session(
-                time=None,
-                id=3,
-                totals=ReportTotals(
-                    files=1,
-                    lines=5,
-                    hits=2,
-                    misses=3,
-                    partials=0,
-                    coverage="80.00000",
-                    branches=0,
-                    methods=0,
-                    messages=0,
-                    sessions=1,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-                flags=["notime"],
-            )
-        )
-        print(sorted(report.flags.keys()))
-        mocker.patch.dict(os.environ, {"CORRECT_SESSION_TOTALS_SINCE": "12345"})
-        assert report.filter(flags=["super"])._can_use_session_totals() is True
-        assert (
-            report.filter(flags=["super"], paths=["banana"])._can_use_session_totals()
-            is False
-        )
-        assert report.filter(flags=["oldie"])._can_use_session_totals() is False
-        assert report.filter(flags=["double"])._can_use_session_totals() is False
-        assert report.filter(flags=["unit"])._can_use_session_totals() is False
-        assert report.filter(flags=["notime"])._can_use_session_totals() is False
 
     def test_calculate_diff(self, sample_report):
         diff = {
@@ -1014,7 +886,6 @@ class TestFilteredReport(object):
                         complexity_total=0,
                         diff=0,
                     ),
-                    session_totals=None,
                     diff_totals=None,
                 ),
             ),
@@ -1036,7 +907,6 @@ class TestFilteredReport(object):
                         complexity_total=0,
                         diff=0,
                     ),
-                    session_totals=None,
                     diff_totals=None,
                 ),
             ),

@@ -18,7 +18,6 @@ class EditableReportFile(ReportFile):
         name = report_file.name
         editable_file = cls(name)
         editable_file._totals = report_file._totals
-        editable_file._session_totals = report_file._session_totals
         editable_file._lines = report_file._lines
         editable_file._line_modifier = report_file._line_modifier
         editable_file._ignore = report_file._ignore
@@ -184,12 +183,9 @@ class EditableReport(Report):
             if file is not None:
                 file.delete_multiple_sessions(session_ids_to_delete)
                 if file:
-                    session_totals = self._files[file.name].session_totals
-                    session_totals.delete_many(session_ids_to_delete)
                     self._files[file.name] = dataclasses.replace(
                         self._files.get(file.name),
                         file_totals=file.totals,
-                        session_totals=session_totals,
                     )
                 else:
                     del self[file.name]

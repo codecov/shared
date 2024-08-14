@@ -13,10 +13,8 @@ from shared.reports.resources import (
     Report,
     ReportFile,
     ReportLine,
-    ReportTotals,
     Session,
 )
-from shared.reports.types import SessionTotalsArray
 
 
 @pytest.fixture
@@ -55,64 +53,8 @@ def sample_report():
     report.add_session(Session(id=0, flags=["simple"]))
     report.add_session(Session(id=1, flags=["complex"]))
     # manually fixing this because the defautl logic doesn't
-    report._files[
-        "file_1.go"
-    ].session_totals = SessionTotalsArray.build_from_encoded_data(
-        [
-            ReportTotals(
-                files=0,
-                lines=5,
-                hits=2,
-                misses=2,
-                partials=1,
-                coverage="40.00000",
-                branches=0,
-                methods=0,
-                messages=0,
-                sessions=0,
-                complexity=0,
-                complexity_total=0,
-                diff=0,
-            ),
-            ReportTotals(
-                files=0,
-                lines=5,
-                hits=2,
-                misses=3,
-                partials=0,
-                coverage="40.00000",
-                branches=0,
-                methods=0,
-                messages=0,
-                sessions=0,
-                complexity=0,
-                complexity_total=0,
-                diff=0,
-            ),
-        ]
-    )
-    report._files[
-        "file_2.py"
-    ].session_totals = SessionTotalsArray.build_from_encoded_data(
-        [
-            ReportTotals(
-                files=0,
-                lines=2,
-                hits=1,
-                misses=0,
-                partials=1,
-                coverage="50.00000",
-                branches=1,
-                methods=0,
-                messages=0,
-                sessions=0,
-                complexity=0,
-                complexity_total=0,
-                diff=0,
-            ),
-            None,
-        ]
-    )
+    report._files["file_1.go"]
+    report._files["file_2.py"]
     return report
 
 
@@ -195,19 +137,11 @@ class TestCarryfowardFlag(object):
                     "file_1.go": [
                         0,
                         [0, 5, 2, 2, 1, "40.00000", 0, 0, 0, 0, 0, 0, 0],
-                        {
-                            "meta": {"session_count": 2},  # check sample_report
-                            "0": [0, 5, 2, 2, 1, "40.00000"],
-                        },
                         None,
                     ],
                     "file_2.py": [
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
-                        {
-                            "meta": {"session_count": 2},  # check sample_report
-                            "0": [0, 2, 1, 0, 1, "50.00000", 1],
-                        },
                         None,
                     ],
                 },
@@ -288,10 +222,6 @@ class TestCarryfowardFlag(object):
                     "file_1.go": [
                         0,
                         [0, 5, 2, 2, 1, "40.00000", 0, 0, 0, 0, 0, 0, 0],
-                        {
-                            "meta": {"session_count": 2},
-                            "0": [0, 5, 2, 2, 1, "40.00000"],
-                        },
                         None,
                     ]
                 },
@@ -409,10 +339,6 @@ class TestCarryfowardFlag(object):
                     "file_2.py": [
                         1,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
-                        {
-                            "meta": {"session_count": 2},
-                            "0": [0, 2, 1, 0, 1, "50.00000", 1],
-                        },
                         None,
                     ]
                 },
@@ -489,10 +415,6 @@ class TestCarryfowardFlag(object):
                     "file_1.go": [
                         0,
                         [0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0],
-                        {
-                            "meta": {"session_count": 2},
-                            "1": [0, 5, 2, 3, 0, "40.00000"],
-                        },
                         None,
                     ]
                 },
@@ -565,10 +487,6 @@ class TestCarryfowardFlag(object):
                     "file_1.go": [
                         0,
                         [0, 5, 2, 3, 0, "40.00000", 0, 0, 0, 0, 0, 0, 0],
-                        {
-                            "meta": {"session_count": 2},
-                            "1": [0, 5, 2, 3, 0, "40.00000"],
-                        },
                         None,
                     ]
                 },
