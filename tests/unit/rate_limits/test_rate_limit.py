@@ -9,12 +9,12 @@ from shared.django_apps.codecov_auth.models import (
 )
 from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
 from shared.django_apps.core.tests.factories import RepositoryFactory
+from shared.helpers.redis import get_redis_connection
 from shared.rate_limits import (
     determine_entity_redis_key,
     determine_if_entity_is_rate_limited,
     set_entity_to_rate_limited,
 )
-from shared.torngit.cache import get_redis_connection
 
 
 @pytest.fixture
