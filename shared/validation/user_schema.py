@@ -214,7 +214,7 @@ bundle_analysis_comment_config = {
     "bundle_change_threshold": {
         "coerce": "bundle_analysis_threshold",
         "meta": {
-            "description": "Threshold for 'require_bundle_changes'. Notifications will only be triggered if the change is larger than the threshold. Can also be configured using bundle_analysis.bundle_change_threshold"
+            "description": "Threshold for 'require_bundle_changes'. Notifications will only be triggered if the change is larger than the threshold."
         },
     },
 }
@@ -430,10 +430,10 @@ schema = {
     "bundle_analysis": {
         "type": "dict",
         "schema": {
-            "bundle_change_threshold": {
+            "warning_threshold": {
                 "coerce": "bundle_analysis_threshold",
                 "meta": {
-                    "description": "Notifications will only be triggered if the change is larger than the threshold."
+                    "description": "If the change is bigger then the threshold notification includes a warning or fails. See `bundle_analysis.status` for details."
                 },
             },
             "status": {
@@ -443,12 +443,15 @@ schema = {
                     "options": {
                         True: {
                             "type": bool,
-                            "description": "Enable status. Status can fail.",
+                            "description": "Enable status. Status will fail if changes exceed `bundle_analysis.warning_threshold`",
                         },
-                        False: {"type": bool, "description": "Disable status."},
+                        False: {
+                            "type": bool,
+                            "description": "Disable status. No status will be sent.",
+                        },
                         "informational": {
                             "type": str,
-                            "description": "Enable status. Status will always be success.",
+                            "description": "Enable status. Status will always pass, but include a warning if changes exceed `bundle_analysis.warning_threshold`",
                             "default": True,
                         },
                     },
