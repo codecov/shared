@@ -5,6 +5,7 @@ from enum import Enum
 from functools import cached_property
 from typing import Iterator, List, MutableSet, Optional, Tuple
 
+from shared.bundle_analysis.models import MetadataKey
 from shared.bundle_analysis.report import (
     AssetReport,
     BundleAnalysisReport,
@@ -188,29 +189,27 @@ class BundleAnalysisComparison:
         self.head_report_key = head_report_key
 
         # Doing custom base compare SHA comparisons
-        print("doing custom comp?")
-        self.head_report_compare_sha = self.head_report.metadata().get("compare_sha")
-        if self.head_report_compare_sha and repository:
-            print("found a compare sha to use", self.head_report_compare_sha)
-
-            base_report = CommitReport.objects.filter(
-                commit__commitid=self.head_report_compare_sha,
-                commit__repository=repository,
-                report_type=CommitReport.ReportType.BUNDLE_ANALYSIS,
-            ).first()
-
-            if base_report:
-                print(
-                    "found a base report for the custom SHA. Old",
-                    self.base_report_key,
-                    "New",
-                    base_report.external_id,
-                )
-                self.base_report_key = base_report.external_id
-            else:
-                log.warning(
-                    f"Bundle Analysis compare SHA not found in reports for {self.head_report_compare_sha}"
-                )
+        try:
+            head_report_compare_sha = self.head_report.metadata().get(
+                MetadataKey.COMPARE_SHA
+            )
+            print(
+                "[SHARED] doing custom comp? SHA:", head_report_compare_sha, repository
+            )
+            if head_report_compare_sha and repository:
+                base_report = CommitReport.objects.filter(
+                    commit__commitid=head_report_compare_sha,
+                    commit__repository=repository,
+                    report_type=CommitReport.ReportType.BUNDLE_ANALYSIS,
+                ).first()
+                if base_report:
+                    self.base_report_key = base_report.external_id
+                else:
+                    log.warning(
+                        f"Bundle Analysis compare SHA not found in reports for {head_report_compare_sha}"
+                    )
+        except MissingHeadReportError:
+            pass
 
     @cached_property
     def base_report(self) -> BundleAnalysisReport:

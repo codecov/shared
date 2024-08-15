@@ -277,3 +277,4 @@ class Module(Base):
 
 class MetadataKey(Enum):
     SCHEMA_VERSION = "schema_version"
+    COMPARE_SHA = "compare_sha"
