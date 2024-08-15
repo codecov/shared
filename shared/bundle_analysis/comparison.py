@@ -188,6 +188,11 @@ class BundleAnalysisComparison:
         self.base_report_key = base_report_key
         self.head_report_key = head_report_key
 
+        compare_sha_external_id = self._check_compare_sha(repository)
+        if compare_sha_external_id:
+            self.base_report_key = compare_sha_external_id
+
+    def _check_compare_sha(self, repository: Repository) -> Optional[str]:
         # Doing custom base compare SHA comparisons
         try:
             head_report_compare_sha = self.head_report.metadata().get(
@@ -200,7 +205,7 @@ class BundleAnalysisComparison:
                     report_type=CommitReport.ReportType.BUNDLE_ANALYSIS,
                 ).first()
                 if base_report:
-                    self.base_report_key = base_report.external_id
+                    return base_report.external_id
                 else:
                     log.warning(
                         f"Bundle Analysis compare SHA not found in reports for {head_report_compare_sha}"
