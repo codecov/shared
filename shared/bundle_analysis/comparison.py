@@ -193,9 +193,6 @@ class BundleAnalysisComparison:
             head_report_compare_sha = self.head_report.metadata().get(
                 MetadataKey.COMPARE_SHA
             )
-            print(
-                "[SHARED] doing custom comp? SHA:", head_report_compare_sha, repository
-            )
             if head_report_compare_sha and repository:
                 base_report = CommitReport.objects.filter(
                     commit__commitid=head_report_compare_sha,
