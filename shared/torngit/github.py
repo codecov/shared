@@ -690,7 +690,7 @@ class Github(TorngitBaseAdapter):
         entity_key_name = token.get("entity_name")
         if entity_key_name is None:
             log.warning(
-                "Can't mark entity as rate limited entity name is missing",
+                "Can't mark entity as rate limited because entity name is missing",
             )
             return None
         if retry_in_seconds is None and reset_timestamp is None:
