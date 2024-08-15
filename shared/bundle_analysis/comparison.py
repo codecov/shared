@@ -193,7 +193,10 @@ class BundleAnalysisComparison:
             self.base_report_key = compare_sha_external_id
 
     def _check_compare_sha(self, repository: Repository) -> Optional[str]:
-        # Doing custom base compare SHA comparisons
+        """
+        When doing comparisons first check if there is a compare_sha set in the head report,
+        if there is use that commitid to load the base commit report to compare the head to.
+        """
         try:
             head_report_compare_sha = self.head_report.metadata().get(
                 MetadataKey.COMPARE_SHA
