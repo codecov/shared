@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
@@ -10,6 +11,10 @@ from shared.bundle_analysis.report import (
     BundleReport,
 )
 from shared.bundle_analysis.storage import BundleAnalysisReportLoader
+from shared.django_apps.core.models import Repository
+from shared.django_apps.reports.models import CommitReport
+
+log = logging.getLogger("__name__")
 
 
 class MissingBaseReportError(Exception):
@@ -176,10 +181,36 @@ class BundleAnalysisComparison:
         loader: BundleAnalysisReportLoader,
         base_report_key: str,
         head_report_key: str,
+        repository: Optional[Repository] = None,
     ):
         self.loader = loader
         self.base_report_key = base_report_key
         self.head_report_key = head_report_key
+
+        # Doing custom base compare SHA comparisons
+        print("doing custom comp?")
+        self.head_report_compare_sha = self.head_report.metadata().get("compare_sha")
+        if self.head_report_compare_sha and repository:
+            print("found a compare sha to use", self.head_report_compare_sha)
+
+            base_report = CommitReport.objects.filter(
+                commit__commitid=self.head_report_compare_sha,
+                commit__repository=repository,
+                report_type=CommitReport.ReportType.BUNDLE_ANALYSIS,
+            ).first()
+
+            if base_report:
+                print(
+                    "found a base report for the custom SHA. Old",
+                    self.base_report_key,
+                    "New",
+                    base_report.external_id,
+                )
+                self.base_report_key = base_report.external_id
+            else:
+                log.warning(
+                    f"Bundle Analysis compare SHA not found in reports for {self.head_report_compare_sha}"
+                )
 
     @cached_property
     def base_report(self) -> BundleAnalysisReport:
