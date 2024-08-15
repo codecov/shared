@@ -1,13 +1,26 @@
 import json
 from base64 import b64encode
 from datetime import datetime
+from unittest.mock import patch
 
 from shared.encryption.standard import EncryptorWithAlreadyGeneratedKey
-from shared.license import LicenseInformation, get_current_license, parse_license
+from shared.license import (
+    LICENSE_ERRORS_MESSAGES,
+    LicenseInformation,
+    get_current_license,
+    parse_license,
+    startup_license_logging,
+)
+from tests.base import BaseTestCase
+
+valid_trial_license_encrypted = "8rz8TfoZ1HDR5P2kpXSOaSvihqbHnJ4DANvDTB/J94tMjovTUUmuIX07W9FwB0UiiAp4j9McdH4JH5cloihjKqwluwC03t22/UA+4SHwxHbi6IhBbYXCEggYcrwtyjcdA4y3yARixGEsNEwDqAzxXLOe95nMetpb1u1Jr8E6CWp/2QSqvIUww8qTkegESk+3CiH3bPrA71pW8w9KYDX65g=="
+invalid_license_encrypted = (
+    "8rz8TfodsdsSOaSvih09nvnasu4DANvdsdsauIX07W9FwB0UiiAp4j9McdH4JH5cloihjKqadsada"
+)
 
 
 def test_sample_license_checking():
-    encrypted_license = "8rz8TfoZ1HDR5P2kpXSOaSvihqbHnJ4DANvDTB/J94tMjovTUUmuIX07W9FwB0UiiAp4j9McdH4JH5cloihjKqwluwC03t22/UA+4SHwxHbi6IhBbYXCEggYcrwtyjcdA4y3yARixGEsNEwDqAzxXLOe95nMetpb1u1Jr8E6CWp/2QSqvIUww8qTkegESk+3CiH3bPrA71pW8w9KYDX65g=="
+    encrypted_license = valid_trial_license_encrypted
     expected_result = LicenseInformation(
         is_valid=True,
         is_trial=True,
@@ -56,9 +69,7 @@ def test_sample_license_checking_with_users_and_repos():
 
 
 def test_invalid_license_checking_nonvalid_64encoded():
-    encrypted_license = (
-        "8rz8TfodsdsSOaSvih09nvnasu4DANvdsdsauIX07W9FwB0UiiAp4j9McdH4JH5cloihjKqadsada"
-    )
+    encrypted_license = invalid_license_encrypted
     expected_result = LicenseInformation(
         is_valid=False,
         is_trial=False,
@@ -111,7 +122,7 @@ def test_invalid_license_checking_wrong_key():
 
 
 def test_get_current_license(mock_configuration):
-    encrypted_license = "8rz8TfoZ1HDR5P2kpXSOaSvihqbHnJ4DANvDTB/J94tMjovTUUmuIX07W9FwB0UiiAp4j9McdH4JH5cloihjKqwluwC03t22/UA+4SHwxHbi6IhBbYXCEggYcrwtyjcdA4y3yARixGEsNEwDqAzxXLOe95nMetpb1u1Jr8E6CWp/2QSqvIUww8qTkegESk+3CiH3bPrA71pW8w9KYDX65g=="
+    encrypted_license = valid_trial_license_encrypted
     mock_configuration.set_params({"setup": {"enterprise_license": encrypted_license}})
     expected_result = LicenseInformation(
         is_valid=True,
@@ -137,3 +148,48 @@ def test_get_current_license_no_license(mock_configuration):
         expires=None,
     )
     assert get_current_license() == expected_result
+
+
+@patch("builtins.print")
+class TestUserGivenSecret(BaseTestCase):
+    def test_startup_license_logging_valid(self, mock_print, mock_configuration):
+        encrypted_license = valid_trial_license_encrypted
+        mock_configuration.set_params(
+            {"setup": {"enterprise_license": encrypted_license}}
+        )
+
+        expected_log = [
+            "",
+            "==> Checking License",
+            "    License is valid",
+            "    License expires 2020-05-09 00:00:00 <==",
+            "",
+        ]
+
+        startup_license_logging()
+        mock_print.assert_called_once_with(*expected_log, sep="\n")
+
+    @patch("shared.license.parse_license")
+    def test_startup_license_logging_invalid(
+        self, mock_license_parsing, mock_print, mock_configuration
+    ):
+        mock_license_parsing.return_value = LicenseInformation(
+            is_valid=False,
+            message=LICENSE_ERRORS_MESSAGES["no-license"],
+        )
+
+        mock_configuration.set_params(
+            {"setup": {"enterprise_license": True}}
+        )  # value doesn't matter since parse_license is mocked
+
+        expected_log = [
+            "",
+            "==> Checking License",
+            "    License is INVALID",
+            f"    Warning: {LICENSE_ERRORS_MESSAGES["no-license"]}",
+            "    License expires NOT FOUND <==",
+            "",
+        ]
+
+        startup_license_logging()
+        mock_print.assert_called_once_with(*expected_log, sep="\n")
