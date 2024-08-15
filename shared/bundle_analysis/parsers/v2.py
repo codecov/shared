@@ -92,7 +92,7 @@ class ParserV2:
         self.chunk_list = []
         self.module_list = []
 
-    def parse(self, path: str) -> int:
+    def parse(self, path: str) -> Tuple[int, str]:
         try:
             self.reset()
 
@@ -109,20 +109,6 @@ class ParserV2:
             with open(path, "rb") as f:
                 for event in ijson.parse(f):
                     self._parse_event(event)
-
-                if self.asset_list:
-                    insert_asset = Asset.__table__.insert().values(self.asset_list)
-                    self.db_session.execute(insert_asset)
-
-                if self.chunk_list:
-                    insert_chunks = Chunk.__table__.insert().values(self.chunk_list)
-                    self.db_session.execute(insert_chunks)
-
-                if self.module_list:
-                    insert_modules = Module.__table__.insert().values(self.module_list)
-                    self.db_session.execute(insert_modules)
-
-                self.db_session.flush()
 
                 # Delete old session/asset/chunk/module with the same bundle name if applicable
                 old_session = (
@@ -144,6 +130,20 @@ class ParserV2:
                     self.db_session.delete(old_session)
                     self.db_session.flush()
 
+                if self.asset_list:
+                    insert_asset = Asset.__table__.insert().values(self.asset_list)
+                    self.db_session.execute(insert_asset)
+
+                if self.chunk_list:
+                    insert_chunks = Chunk.__table__.insert().values(self.chunk_list)
+                    self.db_session.execute(insert_chunks)
+
+                if self.module_list:
+                    insert_modules = Module.__table__.insert().values(self.module_list)
+                    self.db_session.execute(insert_modules)
+
+                self.db_session.flush()
+
                 # save top level bundle stats info
                 self.session.info = json.dumps(self.info)
 
@@ -153,7 +153,7 @@ class ParserV2:
                 self._create_associations()
 
                 assert self.session.bundle is not None
-                return self.session.id
+                return self.session.id, self.session.bundle.name
         except Exception as e:
             # Inject the plugin name to the Exception object so we have visibilitity on which plugin
             # is causing the trouble.

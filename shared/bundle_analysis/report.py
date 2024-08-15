@@ -228,16 +228,26 @@ class BundleAnalysisReport:
     def cleanup(self):
         os.unlink(self.db_path)
 
-    def ingest(self, path: str) -> int:
+    def ingest(self, path: str, compare_sha: Optional[str] = None) -> Tuple[int, str]:
         """
         Ingest the bundle stats JSON at the given file path.
         Returns session ID of ingested data.
         """
         with get_db_session(self.db_path) as session:
             parser = Parser(path, session).get_proper_parser()
-            session_id = parser.parse(path)
+            session_id, bundle_name = parser.parse(path)
+
+            # Save custom base commit SHA for doing comparisons if available
+            if compare_sha:
+                session.add(
+                    Metadata(
+                        key="compare_sha",
+                        value=compare_sha,
+                    )
+                )
+
             session.commit()
-            return session_id
+            return session_id, bundle_name
 
     def _associate_bundle_report_assets_by_name(
         self, curr_bundle_report: BundleReport, prev_bundle_report: BundleReport

@@ -112,7 +112,6 @@ class LegacySessionManager:
 
     def __exit__(self, type, value, traceback):
         self.session.close()
-        return True
 
 
 def _use_modern_sqlalchemy_session_manager():

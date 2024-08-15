@@ -3,8 +3,6 @@ from dataclasses import asdict, dataclass
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
-import sentry_sdk
-
 from shared.config import get_config
 
 log = logging.getLogger(__name__)
@@ -225,44 +223,37 @@ class SessionTotalsArray(object):
         self.non_null_items: Dict[int, SessionTotals] = parsed_non_null_items
 
     @classmethod
-    def build_from_encoded_data(cls, sessions_array: Union[dict, list]):
+    def build_from_encoded_data(cls, sessions_array: Any):
         if isinstance(sessions_array, dict):
-            with sentry_sdk.start_span(
-                description=f"Build from encoded data (dict) {len(sessions_array)}"
-            ):
-                # The session_totals array is already encoded in the new format
-                if "meta" not in sessions_array:
-                    # This shouldn't happen, but it would be a good indication that processing is not as we expect
-                    log.warning(
-                        "meta info not found in encoded SessionArray",
-                        extra=dict(sessions_array=sessions_array),
-                    )
-                    sessions_array["meta"] = {
-                        "session_count": int(max(sessions_array.keys())) + 1
-                    }
-                meta_info = sessions_array.get("meta")
-                session_count = meta_info["session_count"]
-                # Force keys to be integers for standarization.
-                # It probably becomes a strong when going to the database
-                non_null_items = {
-                    int(key): value
-                    for key, value in sessions_array.items()
-                    if key != "meta"
+            # The session_totals array is already encoded in the new format
+            if "meta" not in sessions_array:
+                # This shouldn't happen, but it would be a good indication that processing is not as we expect
+                log.warning(
+                    "meta info not found in encoded SessionArray",
+                    extra=dict(sessions_array=sessions_array),
+                )
+                sessions_array["meta"] = {
+                    "session_count": int(max(sessions_array.keys())) + 1
                 }
-                return cls(session_count=session_count, non_null_items=non_null_items)
+            meta_info = sessions_array.get("meta")
+            session_count = meta_info["session_count"]
+            # Force keys to be integers for standarization.
+            # It probably becomes a strong when going to the database
+            non_null_items = {
+                int(key): value
+                for key, value in sessions_array.items()
+                if key != "meta"
+            }
+            return cls(session_count=session_count, non_null_items=non_null_items)
         elif isinstance(sessions_array, list):
-            with sentry_sdk.start_span(
-                description=f"Build from encoded data (list) {len(sessions_array)}"
-            ):
-                session_count = len(sessions_array)
-                non_null_items = {}
-                for idx, session_totals in enumerate(sessions_array):
-                    if session_totals is not None:
-                        non_null_items[idx] = session_totals
-                return cls(session_count=session_count, non_null_items=non_null_items)
+            session_count = len(sessions_array)
+            non_null_items = {}
+            for idx, session_totals in enumerate(sessions_array):
+                if session_totals is not None:
+                    non_null_items[idx] = session_totals
+            return cls(session_count=session_count, non_null_items=non_null_items)
         elif isinstance(sessions_array, cls):
-            with sentry_sdk.start_span(description="Build from encoded data (cls)"):
-                return sessions_array
+            return sessions_array
         elif sessions_array is None:
             return SessionTotalsArray()
         log.warning(
@@ -307,7 +298,7 @@ class SessionTotalsArray(object):
     def __bool__(self):
         return self.session_count > 0
 
-    def append(self, totals: SessionTotals):
+    def append(self, totals: SessionTotals | None):
         if totals is None:
             log.warning("Trying to append None session total to SessionTotalsArray")
             return

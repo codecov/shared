@@ -314,6 +314,16 @@ class TestUnitGithub(object):
                     repo=dict(),
                     owner=dict(username="ThiagoCodecov"),
                     token=dict(key="some_key"),
+                    installation=None,
+                ),
+                "2vwGK",
+                id="installation_None",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
                     installation={"installation_id": 1234},
                 ),
                 "GitHub_installation_1234",
