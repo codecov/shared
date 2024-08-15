@@ -23,7 +23,7 @@ class RepositoryFactory(DjangoModelFactory):
     )
     languages = []
     fork = None
-    branch = "master"
+    branch = "main"
     upload_token = factory.Faker("uuid4")
     image_token = factory.Faker("pystr", min_chars=10, max_chars=10)
     using_integration = False
@@ -41,7 +41,7 @@ class CommitFactory(DjangoModelFactory):
     pullid = 1
     author = factory.SubFactory(OwnerFactory)
     repository = factory.SubFactory(RepositoryFactory)
-    branch = "master"
+    branch = "main"
     totals = {
         "C": 0,
         "M": 0,
@@ -89,25 +89,18 @@ class CommitWithReportFactory(CommitFactory):
                     "filename": "tests/__init__.py",
                     "file_index": 0,
                     "file_totals": [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
-                    "session_totals": [
-                        [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0]
-                    ],
                     "diff_totals": None,
                 },
                 {
                     "filename": "tests/test_sample.py",
                     "file_index": 1,
                     "file_totals": [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
-                    "session_totals": [[0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0]],
                     "diff_totals": None,
                 },
                 {
                     "filename": "awesome/__init__.py",
                     "file_index": 2,
                     "file_totals": [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
-                    "session_totals": [
-                        [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0]
-                    ],
                     "diff_totals": [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
                 },
             ],

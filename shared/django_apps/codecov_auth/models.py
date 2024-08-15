@@ -5,17 +5,20 @@ import uuid
 from dataclasses import asdict
 from datetime import datetime
 from hashlib import md5
+from typing import Self
 
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
+from django.db.models import Case, QuerySet, Sum, When
+from django.db.models.fields import AutoField, BooleanField, IntegerField
 from django.db.models.manager import BaseManager
 from django.forms import ValidationError
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
 from shared.config import get_config
-from shared.django_apps.codecov.models import BaseCodecovModel
+from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
 from shared.django_apps.codecov_auth.constants import (
     AVATAR_GITHUB_BASE_URL,
     AVATARIO_BASE_URL,
@@ -88,6 +91,8 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "external_id"
 
+    _okta_loggedin_accounts: list["Account"] = []
+
     class Meta:
         db_table = "users"
         app_label = CODECOV_AUTH_APP_LABEL
@@ -107,6 +112,14 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
         # Required to implement django's user-model interface
         return True
 
+    @property
+    def is_github_student(self) -> bool:
+        try:
+            github_owner: Owner = self.owners.get(service=Service.GITHUB)
+        except Owner.DoesNotExist:
+            return False
+        return github_owner.student
+
     def has_perm(self, perm, obj=None):
         # Required to implement django's user-model interface
         return self.is_staff
@@ -122,6 +135,146 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     def get_username(self):
         # Required to implement django's user-model interface
         return self.external_id
+
+
+class Account(BaseModel):
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+    plan = models.CharField(
+        max_length=50,
+        choices=PlanName.choices(),
+        null=False,
+        default=PlanName.BASIC_PLAN_NAME.value,
+    )
+    plan_seat_count = models.SmallIntegerField(default=1, null=False, blank=True)
+    free_seat_count = models.SmallIntegerField(default=0, null=False, blank=True)
+    plan_auto_activate = models.BooleanField(default=True, null=False, blank=True)
+    is_delinquent = models.BooleanField(default=False, null=False, blank=True)
+    users = models.ManyToManyField(
+        User, through="AccountsUsers", related_name="accounts"
+    )
+
+    class Meta:
+        ordering = ["-updated_at"]
+        app_label = CODECOV_AUTH_APP_LABEL
+
+    def __str__(self):
+        str_representation_of_is_active = "Active" if self.is_active else "Inactive"
+        return f"{str_representation_of_is_active} Account: {self.name}"
+
+    def _student_count_helper(self) -> QuerySet:
+        # This method creates the query to annotate a user as a student.
+        # To be used in conjunction with filter or exclude to count students and non-students
+        return (
+            self.users.values("id")
+            .annotate(  # count the number of student owners aggregated on users.id
+                owner_student_count=Sum(
+                    Case(
+                        When(owners__student=True, then=1),
+                        default=0,
+                        output_field=IntegerField(),
+                    )
+                )
+            )
+            .annotate(  # if there are any associated student owner to this user, then it is marked as a student
+                is_student=Case(
+                    When(owner_student_count__gt=0, then=True),
+                    default=False,
+                    output_field=BooleanField(),
+                )
+            )
+        )
+
+    @property
+    def activated_user_count(self) -> int:
+        """
+        Return the number of activated users. An activated user is one that does not have any student associations.
+        """
+        return self._student_count_helper().filter(is_student=False).count()
+
+    @property
+    def activated_student_count(self) -> int:
+        return self._student_count_helper().filter(is_student=True).count()
+
+    @property
+    def all_user_count(self) -> int:
+        return self.users.count()
+
+    @property
+    def organizations_count(self) -> int:
+        return self.organizations.all().count()
+
+    @property
+    def total_seat_count(self) -> int:
+        return self.plan_seat_count + self.free_seat_count
+
+    @property
+    def available_seat_count(self) -> int:
+        count = self.total_seat_count - self.activated_user_count
+        return count if count > 0 else 0
+
+    @property
+    def pretty_plan(self) -> dict | None:
+        """
+        This is how we represent the details of a plan to a user, see plan.constants.py
+        We inject quantity to make plan management easier on api, see PlanSerializer
+        """
+        if self.plan in USER_PLAN_REPRESENTATIONS:
+            plan_details = asdict(USER_PLAN_REPRESENTATIONS[self.plan])
+            plan_details.update({"quantity": self.plan_seat_count})
+            return plan_details
+
+    def can_activate_user(self, user: User | None = None) -> bool:
+        """
+        Check if account can activate a user. If no user is passed,
+        then only check for available seats. Otherwise, we can activate
+        a user if they're a student and if they haven't already been added.
+        """
+        # User is already activated, meaning their occupancy is already counted in the plan seat count.
+        # Return True since activating them again costs 0 seats, so they will always fit.
+        if user and user in self.users.all():
+            return True
+
+        # User is a student, return True
+        if user and user.is_github_student:
+            return True
+
+        total_seats_for_account = self.plan_seat_count + self.free_seat_count
+        return self.activated_user_count < total_seats_for_account
+
+    def activate_user_onto_account(self, user: User) -> None:
+        self.users.add(user)
+
+    def activate_owner_user_onto_account(self, owner_user: "Owner") -> None:
+        user: User = owner_user.user
+        if not user:
+            user = User.objects.create(name=owner_user.name, email=owner_user.email)
+            owner_user.user = user
+            owner_user.save()
+        self.activate_user_onto_account(user)
+
+    def deactivate_owner_user_from_account(self, owner_user: "Owner") -> None:
+        if owner_user.user is None:
+            log.warning(
+                "Attempting to deactivate an owner without associated user. Skipping deactivation."
+            )
+            return
+
+        organizations_in_account: list[Owner] = self.organizations.all()
+        all_owner_users_for_account: set[AutoField] = set(
+            ownerid
+            for org in organizations_in_account
+            for ownerid in org.plan_activated_users
+        )
+        if owner_user.ownerid not in all_owner_users_for_account:
+            self.users.remove(owner_user.user)
+        else:
+            log.info(
+                "User was not removed from account because they currently are "
+                "activated on another organization.",
+                extra=dict(owner_id=owner_user.ownerid, account_id=self.id),
+            )
+        return
 
 
 class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
@@ -215,6 +368,14 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         related_name="owners",
+    )
+
+    account = models.ForeignKey(
+        Account,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="organizations",
     )
 
     objects = OwnerManager()
@@ -425,6 +586,8 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
 
     @property
     def pretty_plan(self):
+        if self.account:
+            return self.account.pretty_plan
         if self.plan in USER_PLAN_REPRESENTATIONS:
             plan_details = asdict(USER_PLAN_REPRESENTATIONS[self.plan])
 
@@ -436,28 +599,43 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             plan_details.update({"quantity": self.plan_user_count})
             return plan_details
 
-    def can_activate_user(self, user):
+    def can_activate_user(self, owner_user: Self) -> bool:
+        owner_org = self
+        if owner_user.student:
+            return True
+        if owner_org.account:
+            return owner_org.account.can_activate_user(owner_user.user)
         return (
-            user.student or self.activated_user_count < self.plan_user_count + self.free
+            owner_org.activated_user_count < owner_org.plan_user_count + owner_org.free
         )
 
-    def activate_user(self, user):
-        log.info(f"Activating user {user.ownerid} in ownerid {self.ownerid}")
-        if isinstance(self.plan_activated_users, list):
-            if user.ownerid not in self.plan_activated_users:
-                self.plan_activated_users.append(user.ownerid)
+    def activate_user(self, owner_user: Self) -> None:
+        owner_org = self
+        log.info(f"Activating user {owner_user.ownerid} in ownerid {owner_org.ownerid}")
+        if isinstance(owner_org.plan_activated_users, list):
+            if owner_user.ownerid not in owner_org.plan_activated_users:
+                owner_org.plan_activated_users.append(owner_user.ownerid)
         else:
-            self.plan_activated_users = [user.ownerid]
-        self.save()
+            owner_org.plan_activated_users = [owner_user.ownerid]
+        owner_org.save()
 
-    def deactivate_user(self, user):
-        log.info(f"Deactivating user {user.ownerid} in ownerid {self.ownerid}")
-        if isinstance(self.plan_activated_users, list):
+        if owner_org.account:
+            owner_org.account.activate_owner_user_onto_account(owner_user)
+
+    def deactivate_user(self, owner_user: Self) -> None:
+        owner_org = self
+        log.info(
+            f"Deactivating user {owner_user.ownerid} in ownerid {owner_org.ownerid}"
+        )
+        if isinstance(owner_org.plan_activated_users, list):
             try:
-                self.plan_activated_users.remove(user.ownerid)
+                owner_org.plan_activated_users.remove(owner_user.ownerid)
             except ValueError:
                 pass
-        self.save()
+        owner_org.save()
+
+        if owner_org.account and owner_user.user:
+            owner_org.account.deactivate_owner_user_from_account(owner_user)
 
     def add_admin(self, user):
         log.info(
@@ -744,3 +922,73 @@ class UserToken(
     token_type = models.CharField(
         max_length=50, choices=TokenType.choices, default=TokenType.API
     )
+
+
+class AccountsUsers(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("user", "account")
+        app_label = CODECOV_AUTH_APP_LABEL
+        verbose_name_plural = "Accounts Users"
+
+
+class OktaSettings(BaseModel):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="okta_settings"
+    )
+    client_id = models.CharField(max_length=255)
+    client_secret = models.CharField(max_length=255)
+    url = models.CharField(max_length=255)
+    enabled = models.BooleanField(default=True, blank=True)
+    enforced = models.BooleanField(default=True, blank=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
+
+class StripeBilling(BaseModel):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="stripe_billing", unique=True
+    )
+    customer_id = models.CharField(max_length=255, unique=True)
+    subscription_id = models.CharField(max_length=255, null=True, blank=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # inactivate all other billing methods
+            StripeBilling.objects.filter(account=self.account, is_active=True).exclude(
+                id=self.id
+            ).update(is_active=False)
+            InvoiceBilling.objects.filter(account=self.account, is_active=True).update(
+                is_active=False
+            )
+        return super().save(*args, **kwargs)
+
+
+class InvoiceBilling(BaseModel):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="invoice_billing", unique=True
+    )
+    account_manager = models.CharField(max_length=255, null=True, blank=True)
+    invoice_notes = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True, null=False, blank=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # inactivate all other billing methods
+            StripeBilling.objects.filter(account=self.account, is_active=True).update(
+                is_active=False
+            )
+            InvoiceBilling.objects.filter(account=self.account, is_active=True).exclude(
+                id=self.id
+            ).update(is_active=False)
+        return super().save(*args, **kwargs)

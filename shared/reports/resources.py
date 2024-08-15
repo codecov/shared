@@ -4,12 +4,13 @@ import logging
 from copy import copy
 from itertools import filterfalse, zip_longest
 from json import JSONEncoder, dumps, loads
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
+
+import sentry_sdk
 
 from shared.helpers.flag import Flag
 from shared.helpers.numeric import ratio
 from shared.helpers.yaml import walk
-from shared.metrics import sentry
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.filtered import FilteredReport
 from shared.reports.types import (
@@ -55,14 +56,12 @@ class ReportFile(object):
         "_line_modifier",
         "_ignore",
         "_totals",
-        "_session_totals",
     ]
 
     def __init__(
         self,
         name,
         totals=None,
-        session_totals=None,
         lines=None,
         line_modifier=None,
         ignore=None,
@@ -70,7 +69,6 @@ class ReportFile(object):
         """
         name = string, filename. "folder/name.py"
         totals = [0,1,0,...] (map out to one ReportTotals)
-        session_totals = [[],[]] (map to list of Session())
         lines = [] or string
            if [] then [null, line@1, null, line@3, line@4]
            if str then "\nline@1\n\nline@3"
@@ -106,8 +104,6 @@ class ReportFile(object):
                 self._totals = totals
             else:
                 self._totals = ReportTotals(*totals) if totals else None
-
-        self._session_totals = session_totals
 
     def __repr__(self):
         try:
@@ -145,14 +141,13 @@ class ReportFile(object):
         func = self._line_modifier
         for ln, line in enumerate(self._lines, start=1):
             if line:
-                line = self._line(line)
+                line = self._line(line)  # noqa: PLW2901
                 if func:
-                    line = func(line)
+                    line = func(line)  # noqa: PLW2901
                     if not line:
                         continue
                 yield ln, line
 
-    @sentry.trace
     def calculate_diff(self, all_file_segments):
         fg = self.get
         lines = []
@@ -196,9 +191,9 @@ class ReportFile(object):
         func = self._line_modifier
         for line in self._lines:
             if line:
-                line = self._line(line)
+                line = self._line(line)  # noqa: PLW2901
                 if func:
-                    line = func(line)
+                    line = func(line)  # noqa: PLW2901
                     if not line:
                         yield None
                 yield line
@@ -294,9 +289,9 @@ class ReportFile(object):
         func = self._line_modifier
         for ln, line in enumerate(self._lines[start - 1 : stop - 1], start=start):
             if line:
-                line = self._line(line)
+                line = self._line(line)  # noqa: PLW2901
                 if func:
-                    line = func(line)
+                    line = func(line)  # noqa: PLW2901
                     if not line:
                         continue
                 yield ln, line
@@ -335,7 +330,6 @@ class ReportFile(object):
                         return None
                 return line
 
-    @sentry.trace
     def append(self, ln, line):
         """Append a line to the report
         if the line exists it will merge it
@@ -359,7 +353,6 @@ class ReportFile(object):
             self._lines[ln - 1] = line
         return True
 
-    @sentry.trace
     def merge(self, other_file, joined=True):
         """merges another report chunk
         returning the <dict totals>
@@ -491,7 +484,6 @@ class ReportFile(object):
                     pos += 1
         return False
 
-    @sentry.trace
     def shift_lines_by_diff(self, diff, forward=True) -> None:
         """
         Adjusts report _lines IN PLACE to account for the diff given.
@@ -596,12 +588,64 @@ def chunks_from_storage_contains_header(chunks: str) -> bool:
     return chunks[first_line_end : second_line_end + 1] == END_OF_HEADER
 
 
+@sentry_sdk.trace
+def build_files(files: dict[str, Any]) -> dict[str, ReportFileSummary]:
+    # NOTE: this mutates `files` in-place
+    for filename, file_summary in files.items():
+        if not isinstance(file_summary, ReportFileSummary):
+            chunks_index = file_summary[0]
+            file_totals = file_summary[1]
+
+            if len(file_summary) > 2:
+                # Old reports have `session_totals` but new reports omit it
+                # Graph `diff_totals` from the back of the list either way
+                diff_totals = file_summary[-1]
+            else:
+                diff_totals = None
+
+            files[filename] = ReportFileSummary(chunks_index, file_totals, diff_totals)
+    return files
+
+
+def get_sessions(sessions: dict) -> dict[int, Session]:
+    return {
+        int(sid): copy(session)
+        if isinstance(session, Session)
+        else Session.parse_session(**session)
+        for sid, session in sessions.items()
+    }
+
+
+def parse_header(header: str) -> ReportHeader:
+    if header == "":
+        return ReportHeader()
+    header = json.loads(header)
+    return ReportHeader(
+        # JSON can only have str as keys. We cast to int.
+        # Because encoded labels in the CoverageDatapoint level are ints.
+        labels_index={int(k): v for k, v in header.get("labels_index", {}).items()}
+    )
+
+
+@sentry_sdk.trace
+def parse_chunks(chunks: str) -> tuple[list[str], ReportHeader]:
+    # came from archive
+    # split the details header, which is JSON
+    if chunks_from_storage_contains_header(chunks):
+        header_str, chunks = chunks.split(END_OF_HEADER, 1)
+        header = parse_header(header_str)
+    else:
+        header = ReportHeader()
+    split_chunks = chunks.split(END_OF_CHUNK)
+
+    return (split_chunks, header)
+
+
 class Report(object):
     file_class = ReportFile
-    _files: Dict[str, ReportFileSummary]
+    _files: dict[str, ReportFileSummary]
     _header: ReportHeader
 
-    @sentry.trace
     def __init__(
         self,
         files=None,
@@ -614,43 +658,22 @@ class Report(object):
         **kwargs,
     ):
         # {"filename": [<line index in chunks :int>, <ReportTotals>]}
-        self._files = files or {}
-        for filename, file_summary in self._files.items():
-            if not isinstance(file_summary, ReportFileSummary):
-                self._files[filename] = ReportFileSummary(*file_summary)
-
+        self._files = build_files(files) if files else {}
         # {1: {...}}
-        self.sessions = (
-            dict(
-                (int(sid), self.get_session_from_session(session))
-                for sid, session in sessions.items()
-            )
-            if sessions
-            else {}
-        )
-        # Default header
-        # Is overriden if building from archive
-        self._header = {}
+        self.sessions = get_sessions(sessions) if sessions else {}
 
         # ["<json>", ...]
-        if isinstance(chunks, str):
-            # came from archive
-            # split the details header, which is JSON
-            if chunks_from_storage_contains_header(chunks):
-                header, chunks = chunks.split(END_OF_HEADER, 1)
-                self._header = self._parse_header(header)
-            else:
-                self._header = self._parse_header("")
-            chunks = chunks.split(END_OF_CHUNK)
-        self._chunks = chunks or []
+        self._chunks, self._header = (
+            parse_chunks(chunks)
+            if chunks and isinstance(chunks, str)
+            else (chunks or [], ReportHeader())
+        )
 
         # <ReportTotals>
         if isinstance(totals, ReportTotals):
             self._totals = totals
-
         elif totals:
             self._totals = ReportTotals(*migrate_totals(totals))
-
         else:
             self._totals = None
 
@@ -659,16 +682,6 @@ class Report(object):
         self._filter_cache = (None, None)
         self.diff_totals = diff_totals
         self.yaml = yaml  # ignored
-
-    def _parse_header(self, header: str) -> ReportHeader:
-        if header == "":
-            return ReportHeader()
-        header = json.loads(header)
-        return ReportHeader(
-            # JSON can only have str as keys. We cast to int.
-            # Because encoded labels in the CoverageDatapoint level are ints.
-            labels_index={int(k): v for k, v in header.get("labels_index", {}).items()}
-        )
 
     @property
     def header(self) -> ReportHeader:
@@ -704,11 +717,6 @@ class Report(object):
             size += len(chunk)
         return size
 
-    def get_session_from_session(self, sess):
-        if isinstance(sess, Session):
-            return copy(sess)
-        return Session.parse_session(**sess)
-
     def file_reports(self):
         for f in self.files:
             yield self.get(f)
@@ -727,9 +735,7 @@ class Report(object):
             for fname, data in self._files.items():
                 yield (
                     fname,
-                    make_network_file(
-                        data.file_totals, data.session_totals, data.diff_totals
-                    ),
+                    make_network_file(data.file_totals, data.diff_totals),
                 )
 
     def __repr__(self):
@@ -760,7 +766,7 @@ class Report(object):
     def flags(self):
         """returns dict(:name=<Flag>)"""
         flags_dict = {}
-        for sid, session in self.sessions.items():
+        for session in self.sessions.values():
             if session.flags:
                 # If the session was carriedforward, mark its flags as carriedforward
                 session_carriedforward = (
@@ -781,12 +787,11 @@ class Report(object):
 
     def get_flag_names(self):
         all_flags = set()
-        for _, session in self.sessions.items():
+        for session in self.sessions.values():
             if session and session.flags:
                 all_flags.update(session.flags)
         return sorted(all_flags)
 
-    @sentry.trace
     def append(self, _file, joined=True):
         """adds or merged a file into the report"""
         if _file is None:
@@ -801,14 +806,12 @@ class Report(object):
             return False
 
         assert _file.name, "file must have a name"
-        session_n = len(self.sessions) - 1
 
         # check if file already exists
         index = self._files.get(_file.name)
         if index:
             # existing file
             # =============
-            index.session_totals.append(copy(_file.totals))
             #  merge old report chunk
             cur_file = self[_file.name]
             # merge it
@@ -820,8 +823,6 @@ class Report(object):
         else:
             # new file
             # ========
-            session_totals = ([None] * session_n) + [_file.totals]
-
             # override totals
             if not joined:
                 _file._totals = ReportTotals(0, _file.totals.lines)
@@ -830,7 +831,6 @@ class Report(object):
             self._files[_file.name] = ReportFileSummary(
                 len(self._chunks),  # chunk location
                 _file.totals,  # Totals
-                session_totals,  # Session Totals
                 None,  # Diff Totals
             )
 
@@ -1059,9 +1059,6 @@ class Report(object):
                 yield self.file_class(
                     name=filename,
                     totals=_file.file_totals,
-                    session_totals=_file.session_totals
-                    if _file.session_totals
-                    else None,
                     lines=report,
                     line_modifier=self._line_modifier,
                 )
@@ -1069,7 +1066,6 @@ class Report(object):
     def __contains__(self, filename):
         return filename in self._files
 
-    @sentry.trace
     def merge(self, new_report, joined=True):
         """combine report data from another"""
         if new_report is None:
@@ -1095,11 +1091,12 @@ class Report(object):
     def __bool__(self):
         return self.is_empty() is False
 
+    @sentry_sdk.trace
     def to_archive(self, with_header=True):
         # TODO: confirm removing encoding here is fine
         chunks = END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
         if with_header:
-            # When saving to satabase we want this
+            # When saving to database we want this
             return END_OF_HEADER.join(
                 [json.dumps(self._header, separators=(",", ":")), chunks]
             )
@@ -1108,6 +1105,7 @@ class Report(object):
         # So it's simpler to just never sent it.
         return chunks
 
+    @sentry_sdk.trace
     def to_database(self):
         """returns (totals, report) to be stored in database"""
         totals = dict(zip(TOTALS_MAP, self.totals))
@@ -1120,7 +1118,7 @@ class Report(object):
     def update_sessions(self, **data):
         pass
 
-    @sentry.trace
+    @sentry_sdk.trace
     def flare(self, changes=None, color=None):
         if changes is not None:
             """
@@ -1198,7 +1196,7 @@ class Report(object):
 
         return report_to_flare(network, color, classes)
 
-    @sentry.trace
+    @sentry_sdk.trace
     def filter(self, paths=None, flags=None):
         if paths:
             if not isinstance(paths, (list, set, tuple)):
@@ -1209,7 +1207,7 @@ class Report(object):
             return self
         return FilteredReport(self, path_patterns=paths, flags=flags)
 
-    @sentry.trace
+    @sentry_sdk.trace
     def does_diff_adjust_tracked_lines(self, diff, future_report, future_diff):
         """
         Returns <boolean> if the diff touches tracked lines
@@ -1269,7 +1267,7 @@ class Report(object):
 
         return False
 
-    @sentry.trace
+    @sentry_sdk.trace
     def shift_lines_by_diff(self, diff, forward=True):
         """
         [volitile] will permanently adjust repot report
@@ -1289,11 +1287,9 @@ class Report(object):
                     self._files[path] = ReportFileSummary(
                         file_index=chunk_loc,
                         file_totals=_file.totals,
-                        session_totals=[None] * len(self.sessions),
                         diff_totals=None,
                     )
 
-    @sentry.trace
     def calculate_diff(self, diff: Dict) -> Dict:
         """
             Calculates the per-file totals (and total) of the parts
@@ -1377,12 +1373,12 @@ class Report(object):
             data["totals"] = file_totals
             network_file = self._files[filename]
             if file_totals.lines == 0:
-                file_totals = dataclasses.replace(
+                file_totals = dataclasses.replace(  # noqa: PLW2901
                     file_totals, coverage=None, complexity=None, complexity_total=None
                 )
             network_file.diff_totals = file_totals
 
-    @sentry.trace
+    @sentry_sdk.trace
     def apply_diff(self, diff, _save=True):
         """
         Add coverage details to the diff at ['coverage'] = <ReportTotals>
@@ -1399,7 +1395,7 @@ class Report(object):
         """
         Returns boolean: if the flag is found
         """
-        for sid, data in self.sessions.items():
+        for data in self.sessions.values():
             if flag_name in (data.flags or []):
                 return True
         return False
@@ -1415,7 +1411,7 @@ class Report(object):
             flags.update(k)
         return flags
 
-    @sentry.trace
+    @sentry_sdk.trace
     def repack(self):
         """Repacks in a more compact format to avoid deleted files and such"""
         if not self._passes_integrity_analysis():
@@ -1434,7 +1430,7 @@ class Report(object):
             )
         )
         chunks_mapping = {b: a for (a, b) in notnull_chunks_new_location}
-        for filename, summary in self._files.items():
+        for summary in self._files.values():
             summary.file_index = chunks_mapping.get(summary.file_index)
         self._chunks = new_chunks
         log.info("Repacked files in report")

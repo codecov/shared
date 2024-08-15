@@ -3,6 +3,9 @@ import re
 import pytest
 
 from shared.validation.helpers import (
+    BundleSizeThresholdSchemaField,
+    ByteSizeSchemaField,
+    CoverageCommentRequirementSchemaField,
     CoverageRangeSchemaField,
     CustomFixPathSchemaField,
     Invalid,
@@ -253,7 +256,7 @@ class TestGlobToRegexTranslation(BaseTestCase):
         assert re.compile(translate_glob_to_regex("[abc]*")).match("ab") is not None
         assert re.compile(translate_glob_to_regex("[abc]")).match("d") is None
         assert re.compile(translate_glob_to_regex("[a-c]")).match("b") is not None
-        assert translate_glob_to_regex("**/test*.ts") == "(?s:.*/test[^\/]*\.ts)\Z"
+        assert translate_glob_to_regex("**/test*.ts") == r"(?s:.*/test[^\/]*\.ts)\Z"
         assert (
             re.compile(translate_glob_to_regex("**/test*.ts")).match("src/src2/test.ts")
             is not None
@@ -343,3 +346,280 @@ class TestCustomFixPathSchemaField(BaseTestCase):
         # No "::" separator
         with pytest.raises(Invalid):
             cfpsf.validate("beforeafter")
+
+
+class TestCoverageCommentRequirementSchemaField(object):
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            # Old values
+            pytest.param(True, [0b001]),
+            pytest.param(False, [0b000]),
+            # Individual values
+            pytest.param("any_change", [0b001]),
+            pytest.param("coverage_drop", [0b010]),
+            pytest.param("uncovered_patch", [0b100]),
+            # Operators
+            pytest.param(
+                "uncovered_patch AND uncovered_patch",
+                [0b100, 0b100],
+            ),
+            pytest.param(
+                "uncovered_patch and uncovered_patch",
+                [0b100, 0b100],
+            ),
+            pytest.param(
+                "uncovered_patch OR uncovered_patch",
+                [0b100],
+            ),
+            pytest.param(
+                "uncovered_patch or uncovered_patch",
+                [0b100],
+            ),
+            # Combinations
+            pytest.param(
+                "coverage_drop or any_change",
+                [0b011],
+            ),
+            pytest.param(
+                "coverage_drop and any_change",
+                [0b010, 0b001],
+            ),
+            pytest.param(
+                "coverage_drop or uncovered_patch",
+                [0b110],
+            ),
+            pytest.param(
+                "any_change and uncovered_patch",
+                [0b001, 0b100],
+            ),
+            pytest.param(
+                "any_change and coverage_drop",
+                [0b001, 0b010],
+            ),
+            pytest.param(
+                "any_change or coverage_drop or uncovered_patch",
+                [0b111],
+            ),
+            pytest.param(
+                "any_change or coverage_drop and uncovered_patch",
+                [0b011, 0b100],
+            ),
+            pytest.param(
+                "any_change and coverage_drop and uncovered_patch",
+                [0b001, 0b010, 0b100],
+            ),
+            pytest.param(
+                "any_change and coverage_drop or uncovered_patch",
+                [0b001, 0b110],
+            ),
+        ],
+    )
+    def test_coverage_comment_requirement_coercion_success(self, input, expected):
+        validator = CoverageCommentRequirementSchemaField()
+        assert validator.validate(input) == expected
+
+    @pytest.mark.parametrize(
+        "input, exception_message",
+        [
+            pytest.param(
+                None, "Only bool and str are accepted values", id="invalid_input_None"
+            ),
+            pytest.param(
+                42, "Only bool and str are accepted values", id="invalid_input_int"
+            ),
+            pytest.param(
+                ["coverage_drop"],
+                "Only bool and str are accepted values",
+                id="invalid_input_list",
+            ),
+            pytest.param(
+                "coverage_drop+any_change",
+                "Failed to parse required_changes",
+                id="invalid_string_no_spaces",
+            ),
+            pytest.param(
+                "coverage_drop + any_change",
+                "Failed to parse required_changes",
+                id="invalid_operation",
+            ),
+            pytest.param("", "required_changes is empty", id="empty_string"),
+            pytest.param(
+                "coverage_drop any_change",
+                "Failed to parse required_changes",
+                id="no_operation",
+            ),
+            pytest.param(
+                "coverage_drop AND AND any_change",
+                "Failed to parse required_changes",
+                id="too_many_operations",
+            ),
+            pytest.param(
+                "coverage_drop AND any_change AND",
+                "Failed to parse required_changes",
+                id="incomplete_operation",
+            ),
+            pytest.param(
+                "coverage_dropANDany_change",
+                "Failed to parse required_changes",
+                id="no_spaces",
+            ),
+            pytest.param(
+                "coverage_drop AND OR any_change",
+                "Failed to parse required_changes",
+                id="missing_middle_operand",
+            ),
+            pytest.param(
+                "AND",
+                "Failed to parse required_changes",
+                id="single_operation_no_operands",
+            ),
+            pytest.param(
+                "AND OR AND",
+                "Failed to parse required_changes",
+                id="only_operations_no_operands",
+            ),
+        ],
+    )
+    def test_coverage_comment_requirement_coercion_fail(self, input, exception_message):
+        validator = CoverageCommentRequirementSchemaField()
+        with pytest.raises(Invalid) as exp:
+            validator.validate(input)
+        assert exp.value.error_message == exception_message
+
+
+class TestByteSizeSchemaField(object):
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            (100, 100),
+            ("100b", 100),
+            ("100 mb", 100000000),
+            ("12KB", 12000),
+            ("1    GB", 1000000000),
+            ("12bytes", 12),
+            ("24b", 24),
+        ],
+    )
+    def test_byte_size_coercion_success(self, input, expected):
+        validator = ByteSizeSchemaField()
+        assert validator.validate(input) == expected
+
+    @pytest.mark.parametrize(
+        "input, error_message",
+        [
+            pytest.param(
+                None, "Value should be int or str. Received NoneType", id="None_input"
+            ),
+            pytest.param(
+                [], "Value should be int or str. Received list", id="list_input"
+            ),
+            pytest.param(
+                12.34, "Value should be int or str. Received float", id="float_input"
+            ),
+            pytest.param(
+                "200",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="no_extension",
+            ),
+            pytest.param(
+                "kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="no_number",
+            ),
+            pytest.param(
+                "100kb 100mb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="multiple_values",
+            ),
+            pytest.param(
+                "200.45mb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="float_value_in_str",
+            ),
+            pytest.param(
+                "200tb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="invalid_extension",
+            ),
+            pytest.param(
+                -200,
+                "Only positive values accepted",
+                id="negative_number",
+            ),
+            pytest.param(
+                "-200kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="negative_number_with_extension",
+            ),
+        ],
+    )
+    def test_byte_size_coercion_fail(self, input, error_message):
+        validator = ByteSizeSchemaField()
+        with pytest.raises(Invalid) as exp:
+            validator.validate(input)
+        assert exp.value.error_message == error_message
+
+
+class TestBundleSizeThresholdSchemaField(object):
+    @pytest.mark.parametrize(
+        "input, expected",
+        [
+            (100, ("absolute", 100)),
+            ("100b", ("absolute", 100)),
+            ("100 mb", ("absolute", 100000000)),
+            ("12KB", ("absolute", 12000)),
+            ("12%", ("percentage", 12.0)),
+            ("65%", ("percentage", 65.0)),
+            ("100%", ("percentage", 100.0)),
+            ("200%", ("percentage", 200.0)),
+            (5.5, ("percentage", 5.5)),
+            (60, ("absolute", 60)),
+            (60.0, ("percentage", 60.0)),
+        ],
+    )
+    def test_byte_size_coercion_success(self, input, expected):
+        validator = BundleSizeThresholdSchemaField()
+        assert validator.validate(input) == expected
+
+    @pytest.mark.parametrize(
+        "input, error_message",
+        [
+            pytest.param(
+                None, "Value should be int or str. Received NoneType", id="None_input"
+            ),
+            pytest.param(
+                [], "Value should be int or str. Received list", id="list_input"
+            ),
+            pytest.param(
+                "200",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="no_extension",
+            ),
+            pytest.param(
+                "-200%",
+                "-200% should be a number",
+                id="negative_percentage",
+            ),
+            pytest.param(
+                "kb",
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes",
+                id="absolute_no_number",
+            ),
+            pytest.param(
+                "%",
+                "% should be a number",
+                id="percentage_no_number",
+            ),
+            pytest.param(
+                "100mb%",
+                "100mb should be a number",
+                id="percentage_and_absolute",
+            ),
+        ],
+    )
+    def test_byte_size_coercion_fail(self, input, error_message):
+        validator = BundleSizeThresholdSchemaField()
+        with pytest.raises(Invalid) as exp:
+            validator.validate(input)
+        assert exp.value.error_message == error_message

@@ -25,7 +25,7 @@ interactions:
     method: POST
     uri: https://api.github.com/graphql
   response:
-    content: '{"data":{"nodes":[{"__typename":"Repository","databaseId":515295858,"name":"example-python","primaryLanguage":{"name":"Shell"},"isPrivate":false,"defaultBranchRef":{"name":"master"},"owner":{"id":"U_kgDOBZOfKw","login":"codecove2e"}},{"__typename":"Repository","databaseId":742552026,"name":"test-no-languages","primaryLanguage":null,"isPrivate":false,"defaultBranchRef":null,"owner":{"id":"U_kgDOBZOfKw","login":"codecove2e"}}]}}'
+    content: '{"data":{"nodes":[{"__typename":"Repository","databaseId":515295858,"name":"example-python","primaryLanguage":{"name":"Shell"},"isPrivate":false,"defaultBranchRef":{"name":"main"},"owner":{"id":"U_kgDOBZOfKw","login":"codecove2e"}},{"__typename":"Repository","databaseId":742552026,"name":"test-no-languages","primaryLanguage":null,"isPrivate":false,"defaultBranchRef":null,"owner":{"id":"U_kgDOBZOfKw","login":"codecove2e"}}]}}'
     headers:
       Access-Control-Allow-Origin:
       - '*'

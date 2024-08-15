@@ -209,10 +209,9 @@ class FunctionCacher(object):
         return self.cache_synchronous_function(func)
 
     def _log_hits(self, func, args, kwargs, key) -> None:
-        args_to_log = []
-        for idx in self.log_map.args_indexes_to_log:
-            if idx < len(args):
-                args_to_log.append(args[idx])
+        args_to_log = [
+            args[idx] for idx in self.log_map.args_indexes_to_log if idx < len(args)
+        ]
         kwargs_to_log = {}
         for lkey in self.log_map.kwargs_keys_to_log:
             if lkey in kwargs:

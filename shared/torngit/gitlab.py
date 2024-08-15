@@ -370,6 +370,10 @@ GITLAB_API_ENDPOINTS = {
 external_endpoint_template = Template("${username}/${name}/commit/${commitid}")
 
 
+class OwnerNotFoundError:
+    pass
+
+
 class Gitlab(TorngitBaseAdapter):
     service = "gitlab"
     service_url = "https://gitlab.com"
@@ -701,7 +705,7 @@ class Gitlab(TorngitBaseAdapter):
                 "/", ":"
             )  # full path required for subgroup support
         else:
-            raise
+            raise OwnerNotFoundError()
 
         return (service_id, username)
 
@@ -758,12 +762,12 @@ class Gitlab(TorngitBaseAdapter):
                     ) = await self.get_owner_info_from_repo(repo, token)
 
                     # Gitlab API will return a repo with one of: no default branch key, default_branch: None, or default_branch: 'some_branch'
-                    branch = "master"
+                    branch = "main"
                     if "default_branch" in repo and repo["default_branch"] is not None:
                         branch = repo.get("default_branch")
                     else:
                         log.warning(
-                            "Repo doesn't have default_branch, using master instead",
+                            "Repo doesn't have default_branch, using main instead",
                             extra=dict(repo=repo),
                         )
 
@@ -895,6 +899,9 @@ class Gitlab(TorngitBaseAdapter):
                 title=pull["title"],
                 id=str(pull["iid"]),
                 number=str(pull["iid"]),
+                merge_commit_sha=pull["merge_commit_sha"]
+                if pull["state"] == "merged"
+                else None,
             )
 
     async def get_pull_request_files(self, pullid, token=None):
@@ -1267,7 +1274,7 @@ class Gitlab(TorngitBaseAdapter):
                 service_id=str(res["id"]),
                 private=res["visibility"] != "public",
                 language=None,
-                branch=(res["default_branch"] or "master"),
+                branch=(res["default_branch"] or "main"),
                 name=repo_name,
             ),
         )
@@ -1405,10 +1412,8 @@ class Gitlab(TorngitBaseAdapter):
             token=token,
             counter_name="get_best_effort_branches",
         )
-        all_results = []
-        async for page in async_generator:
-            for res in page:
-                all_results.append(res["name"])
+
+        all_results = [res["name"] async for page in async_generator for res in page]
         return all_results
 
     async def is_student(self):

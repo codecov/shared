@@ -10,7 +10,7 @@ interactions:
       uri: https://gitlab.com/api/v4/projects/187725/repository/branches
     response:
       url: https://gitlab.com/api/v4/projects/187725/repository/branches
-      content: '[{"name":"master","commit":{"id":"0028015f7fa260f5fd68f78c0deffc15183d955e","short_id":"0028015f","title":"added
+      content: '[{"name":"main","commit":{"id":"0028015f7fa260f5fd68f78c0deffc15183d955e","short_id":"0028015f","title":"added
         large file","created_at":"2014-10-19T14:32:33.000+00:00","parent_ids":null,"message":"added
         large file","author_name":"stevepeak","author_email":"steve@stevepeak.net","authored_date":"2014-10-19T14:32:33.000+00:00","committer_name":"stevepeak","committer_email":"steve@stevepeak.net","committed_date":"2014-10-19T14:32:33.000+00:00"},"merged":false,"protected":false,"developers_can_push":false,"developers_can_merge":false,"can_push":true,"default":true},{"name":"other-branch","commit":{"id":"dd798926730aad14aadf72281204bdb85734fe67","short_id":"dd798926","title":"left
         blank","created_at":"2014-09-04T16:13:44.000+00:00","parent_ids":null,"message":"left

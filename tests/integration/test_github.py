@@ -153,7 +153,7 @@ class TestGithubTestCase(object):
             "company": "@codecov ",
             "blog": "",
             "location": None,
-            "email": "thiago@codecov.io",
+            "email": None,
             "hireable": None,
             "bio": None,
             "twitter_username": None,
@@ -168,6 +168,19 @@ class TestGithubTestCase(object):
             "token_type": "bearer",
             "scope": "read:org,repo:status,user:email,write:repo_hook",
         }
+
+    @pytest.mark.asyncio
+    async def test_get_authenticated_user_with_public_emails(self, codecov_vcr):
+        code = "71367b9f258ca9a60c44"
+
+        handler = Github(
+            oauth_consumer_token=dict(
+                key="Iv23liSqj8DAO20A3KLA",
+                secret="a6a6397fffea369e54495c88ca469d988ea4ccd2",
+            )
+        )
+        res = await handler.get_authenticated_user(code)
+        assert res["email"] == "rola.abuhasna@sentry.io"
 
     @pytest.mark.asyncio
     async def test_get_authenticated_user_no_refresh_token(self, codecov_vcr):
@@ -205,7 +218,7 @@ class TestGithubTestCase(object):
             "company": "@codecov ",
             "blog": "",
             "location": None,
-            "email": "thiago@codecov.io",
+            "email": None,
             "hireable": None,
             "bio": None,
             "twitter_username": None,
@@ -283,7 +296,7 @@ class TestGithubTestCase(object):
             "1",
             {
                 "base": {
-                    "branch": "master",
+                    "branch": "main",
                     "commitid": "68946ef98daec68c7798459150982fc799c87d85",
                     "slug": "ThiagoCodecov/example-python",
                 },
@@ -298,6 +311,7 @@ class TestGithubTestCase(object):
                 "title": "Creating new code for reasons no one knows",
                 "author": {"id": "44376991", "username": "ThiagoCodecov"},
                 "labels": [],
+                "merge_commit_sha": "038ac8ac2127baa19a927c67f0d5168d9928abf3",
             },
         )
     ]
@@ -309,7 +323,7 @@ class TestGithubTestCase(object):
         pull_id = "16"
         expected_result = {
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "335ec9958daf0242bc8945659bb120c05800eacf",
                 "slug": "ThiagoCodecov/example-python",
             },
@@ -324,6 +338,7 @@ class TestGithubTestCase(object):
             "title": "PR with more than 250 results",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
             "labels": [],
+            "merge_commit_sha": None,
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -666,7 +681,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_branches(self, valid_handler, codecov_vcr):
         expected_result = [
-            "master",
+            "main",
             "random-branch",
             "thiago/base-no-base",
             "thiago/f/big-pt",
@@ -688,7 +703,7 @@ class TestGithubTestCase(object):
     @pytest.mark.asyncio
     async def test_get_branch_not_existent(self, valid_handler, codecov_vcr):
         with pytest.raises(TorngitClientGeneralError) as e:
-            branch = await valid_handler.get_branch("none")
+            await valid_handler.get_branch("none")
             assert e[0] == 404
             assert e[1]["message"] == "Branch not found"
 
@@ -899,7 +914,7 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_distance_in_commits(self, generic_valid_handler, codecov_vcr):
-        base_branch, head = "master", "0206296b1424912cc05069a9bf4025cbb95f5ecc"
+        base_branch, head = "main", "0206296b1424912cc05069a9bf4025cbb95f5ecc"
         expected_result = {
             "behind_by": 0,
             "behind_by_commit": "93189ce50f224296d6412e2884b93dcc3c7c8654",
@@ -951,10 +966,10 @@ class TestGithubTestCase(object):
                         "name": "example-python",
                         "language": "python",
                         "private": False,
-                        "branch": "master",
+                        "branch": "main",
                     },
                 },
-                "branch": "master",
+                "branch": "main",
             },
         }
         res = await valid_handler.get_repository()
@@ -1109,7 +1124,7 @@ class TestGithubTestCase(object):
         ret = {"content": "", "download_url": "url", "encoding": "none", "sha": "sha"}
         mock_api = mocker.patch.object(Github, "api", return_value=ret)
         path, ref = "awesome/__init__.py", "96492d409fc86aa7ae31b214dfe6b08ae860458a"
-        res = await valid_handler.get_source(path, ref)
+        await valid_handler.get_source(path, ref)
         assert mock_api.call_count == 2
 
     @pytest.mark.asyncio
@@ -1125,7 +1140,7 @@ class TestGithubTestCase(object):
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
-                "branch": "master",
+                "branch": "main",
             },
         }
 
@@ -1158,7 +1173,7 @@ class TestGithubTestCase(object):
                     "name": "rust",
                     "language": None,
                     "private": False,
-                    "branch": "master",
+                    "branch": "main",
                 },
             },
             {
@@ -1196,7 +1211,7 @@ class TestGithubTestCase(object):
                     "name": "codecov-test",
                     "language": "python",
                     "private": True,
-                    "branch": "master",
+                    "branch": "main",
                 },
             }
         ]
@@ -1254,7 +1269,7 @@ class TestGithubTestCase(object):
             {"name": "tests", "path": "tests", "type": "folder"},
             {"name": "unit.coverage.xml", "path": "unit.coverage.xml", "type": "file"},
         ]
-        res = await valid_handler.list_top_level_files("master")
+        res = await valid_handler.list_top_level_files("main")
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -1265,7 +1280,7 @@ class TestGithubTestCase(object):
             {"name": "__init__.py", "path": "awesome/__init__.py", "type": "file"},
             {"name": "code_fib.py", "path": "awesome/code_fib.py", "type": "file"},
         ]
-        res = await valid_handler.list_files("master", "awesome")
+        res = await valid_handler.list_files("main", "awesome")
         assert sorted(res, key=lambda x: x["path"]) == sorted(
             expected_result, key=lambda x: x["path"]
         )
@@ -1291,7 +1306,7 @@ class TestGithubTestCase(object):
         pull_id = "15"
         expected_result = {
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "30cc1ed751a59fa9e7ad8e79fff41a6fe11ef5dd",
                 "slug": "ThiagoCodecov/example-python",
             },
@@ -1306,6 +1321,7 @@ class TestGithubTestCase(object):
             "title": "Thiago/test 1",
             "author": {"id": "44376991", "username": "ThiagoCodecov"},
             "labels": [],
+            "merge_commit_sha": None,
         }
         res = await valid_handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1335,6 +1351,7 @@ class TestGithubTestCase(object):
             "title": "chore: Switch to Python 3.12",
             "author": {"id": "1584268", "username": "FraBle"},
             "labels": [],
+            "merge_commit_sha": None,
         }
         res = await handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1351,7 +1368,7 @@ class TestGithubTestCase(object):
         pull_id = "110"
         expected_result = {
             "base": {
-                "branch": "master",
+                "branch": "main",
                 "commitid": "77141afbd13a1273f87cf02f7f32265ea19a3b77",
                 "slug": "codecov/codecov-api-archive",
             },
@@ -1366,6 +1383,7 @@ class TestGithubTestCase(object):
             "title": "CE-1314 GitHub Status Event Handler",
             "author": {"id": "5767537", "username": "pierce-m"},
             "labels": [],
+            "merge_commit_sha": "e1d42c058e7169cc430f387591c1fc7cac35d2ae",
         }
         res = await handler.get_pull_request(pull_id)
         assert res == expected_result
@@ -1501,7 +1519,7 @@ class TestGithubTestCase(object):
                         },
                     },
                     "base": {
-                        "ref": "master",
+                        "ref": "main",
                         "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                         "repo": {
                             "id": 156617777,
@@ -1626,7 +1644,7 @@ class TestGithubTestCase(object):
                                 },
                             },
                             "base": {
-                                "ref": "master",
+                                "ref": "main",
                                 "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                                 "repo": {
                                     "id": 156617777,
@@ -1710,7 +1728,7 @@ class TestGithubTestCase(object):
                                 },
                             },
                             "base": {
-                                "ref": "master",
+                                "ref": "main",
                                 "sha": "f0895290dc26668faeeb20ee5ccd4cc995925775",
                                 "repo": {
                                     "id": 156617777,
@@ -1916,7 +1934,7 @@ class TestGithubTestCase(object):
                 "name": "example-python",
                 "language": "shell",
                 "private": False,
-                "branch": "master",
+                "branch": "main",
                 "owner": {
                     "node_id": "U_kgDOBZOfKw",
                     "username": "codecove2e",
@@ -1928,7 +1946,7 @@ class TestGithubTestCase(object):
                 "name": "test-no-languages",
                 "language": None,
                 "private": False,
-                "branch": "master",
+                "branch": "main",
                 "owner": {
                     "node_id": "U_kgDOBZOfKw",
                     "username": "codecove2e",
@@ -1936,9 +1954,10 @@ class TestGithubTestCase(object):
                 },
             },
         ]
-        received = []
-        async for repo in valid_handler.get_repos_from_nodeids_generator(
-            repo_node_ids, "codecove2e"
-        ):
-            received.append(repo)
+        received = [
+            repo
+            async for repo in valid_handler.get_repos_from_nodeids_generator(
+                repo_node_ids, "codecove2e"
+            )
+        ]
         assert received == expected

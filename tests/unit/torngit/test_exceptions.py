@@ -1,7 +1,6 @@
 import pickle
 
 from shared.torngit.exceptions import (
-    TorngitClientError,
     TorngitClientGeneralError,
     TorngitObjectNotFoundError,
     TorngitRateLimitError,

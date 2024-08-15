@@ -103,7 +103,7 @@ class TestUnitGithub(object):
         self, status_code, error_message
     ):
         with respx.mock:
-            my_route = respx.get("https://api.github.com/endpoint").mock(
+            respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
                     status_code=status_code,
                     headers={
@@ -119,7 +119,7 @@ class TestUnitGithub(object):
             )
             with pytest.raises(TorngitRateLimitError) as excinfo:
                 async with handler.get_client() as client:
-                    res = await handler.api(client, "get", "/endpoint")
+                    await handler.api(client, "get", "/endpoint")
             assert excinfo.value.code == 403
             assert (
                 excinfo.value.message == f"Github API rate limit error: {error_message}"
@@ -130,7 +130,7 @@ class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_api_client_error_ratelimit_missing_header(self, status_code):
         with respx.mock:
-            my_route = respx.get("https://api.github.com/endpoint").mock(
+            respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
                     status_code=status_code,
                     headers={
@@ -146,7 +146,7 @@ class TestUnitGithub(object):
             )
             with pytest.raises(TorngitClientError) as excinfo:
                 async with handler.get_client() as client:
-                    res = await handler.api(client, "get", "/endpoint")
+                    await handler.api(client, "get", "/endpoint")
             assert excinfo.value.code == 403
 
     @pytest.mark.asyncio
@@ -270,34 +270,69 @@ class TestUnitGithub(object):
         assert parsed_url.params == ""
         assert parsed_url.fragment == ""
 
-    def test_loggable_token(self, mocker, valid_handler):
-        no_username_handler = Github(
-            repo=dict(name="example-python"),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key"),
-        )
-        assert no_username_handler.loggable_token(no_username_handler.token) == "f7CMr"
-        with_username_handler = Github(
-            repo=dict(name="example-python"),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key", username="Thiago"),
-        )
-        assert (
-            with_username_handler.loggable_token(with_username_handler.token)
-            == "Thiago's token"
-        )
-        no_token_handler = Github(
-            repo=dict(name="example-python"),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key=None),
-        )
-        assert no_token_handler.loggable_token(no_token_handler.token) == "notoken"
-        no_repo_handler = Github(
-            repo=dict(),
-            owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key"),
-        )
-        assert no_repo_handler.loggable_token(no_repo_handler.token) == "2vwGK"
+    @pytest.mark.parametrize(
+        "handler, expected",
+        [
+            pytest.param(
+                Github(
+                    repo=dict(name="example-python"),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                ),
+                "f7CMr",
+                id="no_username_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(name="example-python"),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key", username="Thiago"),
+                ),
+                "Thiago's token",
+                id="with_username_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(name="example-python"),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key=None),
+                ),
+                "notoken",
+                id="no_token_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                ),
+                "2vwGK",
+                id="no_repo_handler",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                    installation=None,
+                ),
+                "2vwGK",
+                id="installation_None",
+            ),
+            pytest.param(
+                Github(
+                    repo=dict(),
+                    owner=dict(username="ThiagoCodecov"),
+                    token=dict(key="some_key"),
+                    installation={"installation_id": 1234},
+                ),
+                "GitHub_installation_1234",
+                id="installation_handler",
+            ),
+        ],
+    )
+    def test_loggable_token(self, handler, expected):
+        assert handler.loggable_token(handler.token) == expected
 
     @pytest.mark.asyncio
     async def test_api_retries(self, valid_handler, mocker):
@@ -386,7 +421,7 @@ class TestUnitGithub(object):
     @pytest.mark.asyncio
     async def test_get_commit_diff_bad_encoding(self):
         with respx.mock:
-            my_route = respx.get("https://api.github.com/endpoint").mock(
+            respx.get("https://api.github.com/endpoint").mock(
                 return_value=httpx.Response(
                     status_code=200,
                     content="\xc4pple".encode("latin-1"),
@@ -1033,7 +1068,7 @@ class TestUnitGithub(object):
                 )
             )
 
-            res = await valid_handler.update_check_run(1256232357, "success")
+            await valid_handler.update_check_run(1256232357, "success")
 
         assert mocked_response.call_count == 1
         after = REGISTRY.get_sample_value(
@@ -1066,7 +1101,7 @@ class TestUnitGithub(object):
                     headers={"Content-Type": "application/json; charset=utf-8"},
                 )
             )
-            res = await valid_handler.update_check_run(1256232357, "success", url=url)
+            await valid_handler.update_check_run(1256232357, "success", url=url)
         assert mocked_response.call_count == 1
         after = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total",
@@ -1097,7 +1132,12 @@ class TestUnitGithub(object):
                 installation_id=1500,
             ),
             fallback_installations=[
-                {"installation_id": 12342, "app_id": 1200, "pem_path": "some_path"}
+                {
+                    "installation_id": 12342,
+                    "app_id": 1200,
+                    "pem_path": "some_path",
+                    "id": 20,
+                }
             ],
         )
 
@@ -1146,7 +1186,7 @@ class TestUnitGithub(object):
                     headers={"Content-Type": "application/json; charset=utf-8"},
                 )
             )
-            res = await handler.update_check_run(1256232357, "success", url=url)
+            await handler.update_check_run(1256232357, "success", url=url)
         assert mocked_response.call_count == 1
         assert mocked_response_fallback.call_count == 1
         # The installation from the original token (rate limited) is marked so
@@ -1463,7 +1503,7 @@ class TestUnitGithub(object):
         )
         mock_refresh = mocker.patch.object(Github, "refresh_token")
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
             ).mock(
                 return_value=httpx.Response(
@@ -1481,7 +1521,7 @@ class TestUnitGithub(object):
             )
             handler._on_token_refresh = token_refresh_fake_callback
             with pytest.raises(TorngitObjectNotFoundError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 404
             assert excinfo.value.message == "PR with id 4 does not exist"
         assert mock_refresh.call_count == 1
@@ -1498,7 +1538,7 @@ class TestUnitGithub(object):
             labels={"endpoint": "get_pull_request_files"},
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
             ).mock(
                 return_value=httpx.Response(
@@ -1515,7 +1555,7 @@ class TestUnitGithub(object):
                 token=dict(key=10 * "a280"),
             )
             with pytest.raises(TorngitClientError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert excinfo.value.message == "Github API rate limit error: Forbidden"
             after = REGISTRY.get_sample_value(
@@ -1531,7 +1571,7 @@ class TestUnitGithub(object):
             labels={"endpoint": "get_pull_request_files"},
         )
         with respx.mock:
-            my_route = respx.get(
+            respx.get(
                 "https://api.github.com/repos/codecove2e/example-python/pulls/4/files"
             ).mock(
                 return_value=httpx.Response(
@@ -1547,7 +1587,7 @@ class TestUnitGithub(object):
                 token=dict(key=10 * "a280"),
             )
             with pytest.raises(TorngitRateLimitError) as excinfo:
-                res = await handler.get_pull_request_files(4)
+                await handler.get_pull_request_files(4)
             assert excinfo.value.code == 403
             assert (
                 excinfo.value.message
@@ -1945,9 +1985,7 @@ class TestUnitGithub(object):
             request = ghapp_handler.get_repos_from_nodeids_generator(
                 repo_node_ids=node_ids, expected_owner_username="giovanni-guidini"
             )
-            repos = []
-            async for repo in request:
-                repos.append(repo)
+            repos = [repo async for repo in request]
             assert repos == [
                 {
                     "branch": "main",

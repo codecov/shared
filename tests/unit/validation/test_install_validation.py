@@ -145,7 +145,6 @@ def test_validate_sample_production_config(mocker):
             },
         },
         "setup": {
-            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key"},
             "cache": {"uploads": 86400},
             "codecov_url": "https://codecov.io",
             "debug": False,
@@ -259,7 +258,7 @@ def test_validate_sample_production_config(mocker):
                 "behavior": "default",
                 "show_carryforward_flags": False,
                 "require_base": False,
-                "require_changes": False,
+                "require_changes": [0b000],
                 "require_head": True,
             },
             "github_checks": {"annotations": True},
@@ -276,7 +275,6 @@ def test_validate_sample_production_config(mocker):
             },
         },
         "setup": {
-            "segment": {"enabled": True, "key": "pokemonuction_setup_segment_key"},
             "cache": {"uploads": 86400},
             "codecov_url": "https://codecov.io",
             "debug": False,

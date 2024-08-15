@@ -44,7 +44,7 @@ InstallationErrorCause = Literal["installation_not_found"] | Literal["permission
 
 class InvalidInstallationError(Exception):
     def __init__(self, error_cause: InstallationErrorCause, *args: object) -> None:
-        super().__init__(*args)
+        super().__init__(error_cause, *args)
         self.error_cause = error_cause
 
 

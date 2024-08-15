@@ -5,12 +5,17 @@ from django.utils import timezone
 from factory.django import DjangoModelFactory
 
 from shared.django_apps.codecov_auth.models import (
+    Account,
+    AccountsUsers,
+    InvoiceBilling,
+    OktaSettings,
     OktaUser,
     OrganizationLevelToken,
     Owner,
     OwnerProfile,
     SentryUser,
     Session,
+    StripeBilling,
     TokenTypeChoices,
     User,
     UserToken,
@@ -53,6 +58,7 @@ class OwnerFactory(DjangoModelFactory):
     oauth_token = factory.LazyAttribute(
         lambda o: encryptor.encode(o.unencrypted_oauth_token).decode()
     )
+    student = False
     user = factory.SubFactory(UserFactory)
     trial_status = TrialStatus.NOT_STARTED.value
 
@@ -123,3 +129,43 @@ class UserTokenFactory(DjangoModelFactory):
 
     owner = factory.SubFactory(OwnerFactory)
     token = factory.LazyAttribute(lambda _: uuid4())
+
+
+class AccountFactory(DjangoModelFactory):
+    class Meta:
+        model = Account
+
+    name = factory.Faker("name")
+
+
+class AccountsUsersFactory(DjangoModelFactory):
+    class Meta:
+        model = AccountsUsers
+
+    user = factory.SubFactory(UserFactory)
+    account = factory.SubFactory(Account)
+
+
+class OktaSettingsFactory(DjangoModelFactory):
+    class Meta:
+        model = OktaSettings
+
+    account = factory.SubFactory(Account)
+    client_id = factory.Faker("pyint")
+    client_secret = factory.Faker("pyint")
+    url = factory.Faker("pystr")
+
+
+class StripeBillingFactory(DjangoModelFactory):
+    class Meta:
+        model = StripeBilling
+
+    account = factory.SubFactory(Account)
+    customer_id = factory.Faker("pyint")
+
+
+class InvoiceBillingFactory(DjangoModelFactory):
+    class Meta:
+        model = InvoiceBilling
+
+    account = factory.SubFactory(Account)

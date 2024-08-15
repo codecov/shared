@@ -1,5 +1,4 @@
-from asyncio import Future
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -80,7 +79,7 @@ class TestBitbucketTestCase(object):
 
         try:
             signature.sign(mock_req, mock_consumer, mock_token)
-        except MissingConfigException as e:
+        except MissingConfigException:
             assert True
         else:
             assert False, "MissingConfigException should have been thrown"
@@ -216,8 +215,8 @@ class TestBitbucketTestCase(object):
                         },
                     },
                     "toRef": {
-                        "id": "refs/heads/master",
-                        "displayId": "master",
+                        "id": "refs/heads/main",
+                        "displayId": "main",
                         "latestCommit": "f3d4a16b651356d9599bd634f6be868508f81f99",
                         "repository": {
                             "slug": "python-standard",
@@ -297,9 +296,7 @@ class TestBitbucketTestCase(object):
             ],
             "start": 0,
         }
-        mocked_fetch = mocker.patch.object(
-            BitbucketServer, "api", return_value=api_result
-        )
+        mocker.patch.object(BitbucketServer, "api", return_value=api_result)
         res = await valid_handler().find_pull_request(
             "86be80adfc64355e523c38ef9b9bab7408c173e3", "brand-new-branch"
         )
@@ -314,9 +311,7 @@ class TestBitbucketTestCase(object):
             "values": [],
             "start": 0,
         }
-        mocked_fetch = mocker.patch.object(
-            BitbucketServer, "api", return_value=api_result
-        )
+        mocker.patch.object(BitbucketServer, "api", return_value=api_result)
         assert await valid_handler().find_pull_request("a" * 40, "no-branch") is None
 
     @pytest.mark.asyncio
@@ -341,9 +336,7 @@ class TestBitbucketTestCase(object):
             "limit": 25,
             "nextPageStart": None,
         }
-        mocked_fetch = mocker.patch.object(
-            BitbucketServer, "api", return_value=api_result
-        )
+        mocker.patch.object(BitbucketServer, "api", return_value=api_result)
         files = await valid_handler().list_top_level_files("ref", "")
         assert len(files) == 11
 

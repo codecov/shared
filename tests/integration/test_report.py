@@ -26,9 +26,7 @@ def test_report_repr():
             [
                 (
                     "py.py",
-                    NetworkFile(
-                        totals=ReportTotals(1), session_totals=None, diff_totals=None
-                    ),
+                    NetworkFile(totals=ReportTotals(1), diff_totals=None),
                 )
             ],
         ),
@@ -42,7 +40,6 @@ def test_report_repr():
                     "py.py",
                     NetworkFile(
                         totals=ReportTotals(1, 1, 1, 1, 1, 1),
-                        session_totals=None,
                         diff_totals=None,
                     ),
                 )
@@ -348,9 +345,7 @@ def test_iter():
     r = Report(
         files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
     )
-    files = []
-    for _file in r:
-        files.append(_file)
+    files = [_file for _file in r]
     assert (
         repr(files)
         == "[<ReportFile name=file1.py lines=0>, <ReportFile name=file2.py lines=0>]"
@@ -445,7 +440,7 @@ def test_to_database():
             "diff": None,
             "N": 0,
         },
-        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {"meta": {"session_count": 0}}, null]}, "sessions": {}}',
+        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], null]}, "sessions": {}}',
     )
     res = Report(
         files={"file.py": [0, ReportTotals()]},

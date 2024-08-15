@@ -1,3 +1,4 @@
+import datetime
 import enum
 
 import factory
@@ -5,7 +6,13 @@ from factory.django import DjangoModelFactory
 
 from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
 from shared.django_apps.reports import models
-from shared.django_apps.reports.models import ReportResults
+from shared.django_apps.reports.models import (
+    Flake,
+    ReducedError,
+    ReportResults,
+    Test,
+    TestInstance,
+)
 
 
 # TODO: deduplicate this from graphql_api.types.enums
@@ -103,3 +110,41 @@ class ReportResultsFactory(DjangoModelFactory):
             ReportResults.ReportResultsStates.COMPLETED,
         ]
     )
+
+
+class ReducedErrorFactory(DjangoModelFactory):
+    class Meta:
+        model = ReducedError
+
+    message = factory.Sequence(lambda n: f"message_{n}")
+
+
+class TestFactory(DjangoModelFactory):
+    class Meta:
+        model = Test
+
+    repository = factory.SubFactory(RepositoryFactory)
+    id = factory.Sequence(lambda n: f"test_{n}")
+
+
+class TestInstanceFactory(DjangoModelFactory):
+    class Meta:
+        model = TestInstance
+
+    test = factory.SubFactory(TestFactory)
+    upload = factory.SubFactory(UploadFactory)
+    duration_seconds = factory.Faker("pyint", min_value=0, max_value=1000)
+
+
+class FlakeFactory(DjangoModelFactory):
+    class Meta:
+        model = Flake
+
+    repository = factory.SubFactory(RepositoryFactory)
+    test = factory.SubFactory(TestFactory)
+    reduced_error = factory.SubFactory(ReducedErrorFactory)
+
+    recent_passes_count = 0
+    count = 0
+    fail_count = 0
+    start_date = datetime.datetime.now()

@@ -1,5 +1,3 @@
-import pickle
-
 import pytest
 from redis.exceptions import TimeoutError
 
@@ -40,7 +38,7 @@ class FakeBackend(BaseBackend):
 
     def get(self, key):
         possible_values = self.all_keys.get(key, {})
-        for ttl, val in possible_values.items():
+        for val in possible_values.values():
             return val
         return NO_VALUE
 

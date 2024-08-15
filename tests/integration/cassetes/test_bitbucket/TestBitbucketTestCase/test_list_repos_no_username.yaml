@@ -325,7 +325,7 @@ interactions:
       "avatar": {"href": "https://bitbucket.org/account/user/ThiagoCodecov/projects/PROJ/avatar/32?ts=1543758107"}},
       "type": "project", "name": "Untitled project", "key": "PROJ", "uuid": "{ceb7caa9-0c9c-4391-8423-ed9dc36a2575}"},
       "language": "", "created_on": "2018-11-06T12:53:06.587605+00:00", "mainbranch":
-      {"type": "branch", "name": "master"}, "workspace": {"slug": "ThiagoCodecov",
+      {"type": "branch", "name": "main"}, "workspace": {"slug": "ThiagoCodecov",
       "type": "workspace", "name": "Thiago Ramos", "links": {"self": {"href": "https://bitbucket.org/!api/2.0/workspaces/ThiagoCodecov"},
       "html": {"href": "https://bitbucket.org/ThiagoCodecov/"}, "avatar": {"href":
       "https://bitbucket.org/workspaces/ThiagoCodecov/avatar/?ts=1543758107"}}, "uuid":

@@ -1,6 +1,18 @@
+import functools
 import logging
 import numbers
 import re
+from typing import Any, List
+
+import pyparsing as pp
+
+from shared.validation.types import (
+    BundleThreshold,
+    CoverageCommentRequiredChanges,
+    CoverageCommentRequiredChangesANDGroup,
+    CoverageCommentRequiredChangesORGroup,
+    ValidRawRequiredChange,
+)
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +73,115 @@ class CoverageRangeSchemaField(object):
             raise Invalid(f"{data} should have numbers as the range limits")
 
 
+class CoverageCommentRequirementSchemaField(object):
+    """Converts `comment.require_changes` into CoverageCommentRequiredChanges
+
+    Conversion table:
+        False -> CoverageCommentRequiredChanges.no_requirements
+        True -> CoverageCommentRequiredChanges.any_change
+        "any_change" -> CoverageCommentRequiredChanges.any_change
+        "coverage_drop" -> CoverageCommentRequiredChanges.coverage_drop
+        "uncovered_patch" -> CoverageCommentRequiredChanges.uncovered_patch
+
+    We also accept AND and OR operators
+    """
+
+    def validate(self, data: Any) -> CoverageCommentRequiredChangesANDGroup:
+        """Validates and coerces values into CoverageCommentRequiredChanges
+
+        raises: Invalid
+        """
+        if isinstance(data, bool):
+            return self.validate_bool(data)
+        elif isinstance(data, str):
+            return self.validate_str(data)
+        raise Invalid("Only bool and str are accepted values")
+
+    def validate_bool(self, data: bool) -> CoverageCommentRequiredChangesANDGroup:
+        if data:
+            return [CoverageCommentRequiredChanges.any_change.value]
+        return [CoverageCommentRequiredChanges.no_requirements.value]
+
+    def _convert_to_binary_value(
+        self, valid_requirement: ValidRawRequiredChange
+    ) -> int:
+        """Gets the binary value of `valid_requirement` as defined in CoverageCommentRequiredChanges"""
+        return CoverageCommentRequiredChanges[valid_requirement].value
+
+    def _parse_or_group(
+        self, acc: int, value: ValidRawRequiredChange
+    ) -> CoverageCommentRequiredChangesORGroup:
+        """Combines the individual `valid_requirement` into a single value"""
+        return acc | self._convert_to_binary_value(value)
+
+    def validate_str(self, data: str) -> CoverageCommentRequiredChangesANDGroup:
+        """Validates required_changes from a string that represents operations on valid_requirements
+        and returns the result.
+
+        Result is CoverageCommentRequiredChangesANDGroup, a list of ORGroups.
+        An ORGroup is 1 or more valid_requirements that are grouped together (using OR operations)
+        For the overall ANDGroup to be satisfied, ALL the ORGroups that are port of it need to also be satisfied.
+        """
+        if data == "":
+            raise Invalid("required_changes is empty")
+        data = data.lower()
+
+        valid_requirements = pp.oneOf(
+            "coverage_drop uncovered_patch any_change", asKeyword=True
+        )
+        or_groups_parser = pp.delimitedList(valid_requirements, "or").setResultsName(
+            "or_groups", listAllMatches=True
+        )
+        and_groups_parser = pp.delimitedList(or_groups_parser, "and")
+
+        try:
+            raw_or_groups: List[pp.ParseResults] = and_groups_parser.parseString(
+                data, parseAll=True
+            )["or_groups"]
+            parsed_or_groups = [
+                functools.reduce(self._parse_or_group, raw_group, 0)
+                for raw_group in raw_or_groups
+            ]
+            return parsed_or_groups
+
+        except pp.ParseException:
+            raise Invalid("Failed to parse required_changes")
+
+
+class ByteSizeSchemaField(object):
+    """Converts a possible string with byte extension size into integer with number of bytes.
+    Acceptable extensions are 'mb', 'kb', 'gb', 'b' and 'bytes' (case insensitive).
+    Also accepts positive integers, returning the value itself as the number of bytes.
+
+    Example:
+        100 -> 100
+        "100b" -> 100
+        "100 mb" -> 100000000
+        "12KB" -> 12000
+    """
+
+    def _validate_str(self, data: str) -> int:
+        data = data.lower()
+        regex = re.compile(r"^(\d+)\s*(mb|kb|gb|b|bytes)$")
+        match = regex.match(data)
+        if match is None:
+            raise Invalid(
+                "Value doesn't match expected regex. Acceptable extensions are mb, kb, gb, b or bytes"
+            )
+        size, extension = match.groups()
+        extension_multiplier = {"b": 1, "bytes": 1, "kb": 1e3, "mb": 1e6, "gb": 1e9}
+        return int(size) * extension_multiplier[extension]
+
+    def validate(self, data: Any) -> int:
+        if isinstance(data, int):
+            if data < 0:
+                raise Invalid("Only positive values accepted")
+            return data
+        if isinstance(data, str):
+            return self._validate_str(data)
+        raise Invalid(f"Value should be int or str. Received {type(data).__name__}")
+
+
 class PercentSchemaField(object):
     """
     A field for percentages. Accepts both with and without % symbol.
@@ -86,6 +207,33 @@ class PercentSchemaField(object):
             return float(value)
         except ValueError:
             raise Invalid(f"{value} should be a number")
+
+
+class BundleSizeThresholdSchemaField(object):
+    """
+    A field for bundle analysis threshold.
+    It can be either a ByteSizeSchemaField or PercentSchemaField.
+    ⚠️ integers are considered ByteSize ⚠️
+    ⚠️ floats are considered Percent ⚠️
+
+    Examples:
+      "10 mb" -> ("absolute", 1000000)
+      "100%" -> ("percentage", 100.0)
+      100 -> ("absolute", 100)
+      0.5 -> ("percentage", 50.0)
+    """
+
+    def validate(self, value: Any) -> BundleThreshold:
+        byte_size_schema = ByteSizeSchemaField()
+        percentage_schema = PercentSchemaField()
+        if isinstance(value, numbers.Integral):
+            value: int = byte_size_schema.validate(value)
+            return BundleThreshold("absolute", value)
+        if isinstance(value, numbers.Real) or isinstance(value, str) and "%" in value:
+            value: float = percentage_schema.validate(value, allow_auto=False)
+            return BundleThreshold("percentage", value)
+        value: int = byte_size_schema.validate(value)
+        return BundleThreshold("absolute", value)
 
 
 def determine_path_pattern_type(filepath_pattern):

@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
 
-from shared.django_apps.codecov.models import BaseCodecovModel
+from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
 from shared.django_apps.reports.managers import CommitReportManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
 from shared.django_apps.utils.model_utils import ArchiveField
@@ -257,6 +257,9 @@ class Test(models.Model):
     # for example: the same test being run on windows vs. mac
     flags_hash = models.TextField()
 
+    failure_rate = models.FloatField(null=True)
+    commits_where_fail = ArrayField(models.TextField(), null=True)
+
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test"
@@ -282,14 +285,6 @@ class TestInstance(BaseCodecovModel):
         ERROR = "error"
         PASS = "pass"
 
-    class FlakeSymptomType(models.TextChoices):
-        FAILED_IN_DEFAULT_BRANCH = "failed_in_default_branch"
-        CONSECUTIVE_DIFF_OUTCOMES = "consecutive_diff_outcomes"
-        UNRELATED_MATCHING_FAILURES = "unrelated_matching_failures"
-
-    flaky_status = models.CharField(
-        null=True, max_length=100, choices=FlakeSymptomType.choices
-    )
     duration_seconds = models.FloatField()
     outcome = models.CharField(max_length=100, choices=Outcome.choices)
     upload = models.ForeignKey(
@@ -302,10 +297,23 @@ class TestInstance(BaseCodecovModel):
 
     branch = models.TextField(null=True)
     commitid = models.TextField(null=True)
+    repoid = models.IntegerField(null=True)
+
+    reduced_error = models.ForeignKey(
+        "ReducedError",
+        db_column="reduced_error_id",
+        related_name="testinstances",
+        on_delete=models.CASCADE,
+        null=True,
+    )
 
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_testinstance"
+        indexes = [
+            models.Index(fields=["commitid", "repoid", "branch"]),
+            models.Index(fields=["repoid", "created_at", "outcome"]),
+        ]
 
 
 class TestResultReportTotals(BaseCodecovModel):
@@ -325,3 +333,57 @@ class TestResultReportTotals(BaseCodecovModel):
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_testresultreporttotals"
+
+
+class ReducedError(BaseModel):
+    message = models.TextField()
+    repository = models.ForeignKey(
+        "core.Repository",
+        db_column="repoid",
+        related_name="reduced_errors",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+        db_table = "reports_reducederror"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["message", "repository"],
+                name="reports_reducederror_message_constraint",
+            ),
+        ]
+
+
+class Flake(BaseModel):
+    repository = models.ForeignKey(
+        "core.Repository",
+        db_column="repoid",
+        related_name="flakes",
+        on_delete=models.CASCADE,
+    )
+    test = models.ForeignKey(
+        "Test", db_column="testid", related_name="flakes", on_delete=models.CASCADE
+    )
+    reduced_error = models.ForeignKey(
+        "ReducedError",
+        db_column="reduced_error_id",
+        related_name="flakes",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+
+    recent_passes_count = models.IntegerField()
+    count = models.IntegerField()
+    fail_count = models.IntegerField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True)
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+        db_table = "reports_flake"
+        indexes = [
+            models.Index(fields=["repository", "test", "reduced_error", "end_date"])
+        ]

@@ -270,4 +270,4 @@ class TestGCPStorateService(BaseTestCase):
         )
         mock_storage.Blob.return_value = mock_blob
         with pytest.raises(DataCorruption):
-            response = storage.read_file("root_bucket", "path/to/blob", None)
+            storage.read_file("root_bucket", "path/to/blob", None)

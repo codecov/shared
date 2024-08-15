@@ -478,7 +478,7 @@ class GitHubGraphQLQueries(object):
         REPOS_FROM_NODEIDS="""
 query GetReposFromNodeIds($node_ids: [ID!]!) {
     nodes(ids: $node_ids) {
-        __typename 
+        __typename
         ... on Repository {
             # databaseId == service_id
             databaseId
@@ -739,6 +739,7 @@ class Github(TorngitBaseAdapter):
         installation_info = fallback_installations.pop(0)
         # The function arg is 'integration_id'
         installation_id = installation_info.pop("installation_id")
+        obj_id = installation_info.pop("id", None)
         token_to_use = get_github_integration_token(
             self.service, installation_id, **installation_info
         )
@@ -747,6 +748,7 @@ class Github(TorngitBaseAdapter):
         self.data["installation"] = {
             # Put the installation_id back into the info
             "installation_id": installation_id,
+            "id": obj_id,
             **installation_info,
         }
         return token_to_use
@@ -1071,12 +1073,12 @@ class Github(TorngitBaseAdapter):
                 user = await self.api(client, "get", url)
                 user.update(session or {})
                 email = user.get("email")
-                url = self.count_and_get_url_template(
-                    url_name="get_authenticated_user_email"
-                ).substitute()
                 if not email:
+                    url = self.count_and_get_url_template(
+                        url_name="get_authenticated_user_email"
+                    ).substitute()
                     emails = await self.api(client, "get", url)
-                    emails = [e["email"] for e in emails if e["primary"]]
+                    emails = [e["email"] for e in emails if e["visibility"] == "public"]
                     user["email"] = emails[0] if emails else None
                 return user
 
@@ -1157,7 +1159,7 @@ class Github(TorngitBaseAdapter):
                 language=self._validate_language(res["language"]),
                 private=res["private"],
                 fork=fork,
-                branch=res["default_branch"] or "master",
+                branch=res["default_branch"] or "main",
             ),
         )
 
@@ -1173,7 +1175,7 @@ class Github(TorngitBaseAdapter):
                     name=repo["name"],
                     language=self._validate_language(repo["language"]),
                     private=repo["private"],
-                    branch=repo["default_branch"] or "master",
+                    branch=repo["default_branch"] or "main",
                 ),
             )
 
@@ -1288,7 +1290,7 @@ class Github(TorngitBaseAdapter):
                         ),
                         "private": raw_repo_data["isPrivate"],
                         "branch": (
-                            default_branch.get("name") if default_branch else "master"
+                            default_branch.get("name") if default_branch else "main"
                         ),
                         "owner": {
                             "node_id": raw_repo_data["owner"]["id"],
@@ -1457,7 +1459,7 @@ class Github(TorngitBaseAdapter):
                         url = self.count_and_get_url_template(
                             url_name="list_teams_org_name"
                         ).substitute(login=organization["login"])
-                        org = await self.api(client, "get", url, token=token)
+                        org = await self.api(client, "get", url, token=token)  # noqa: PLW2901
                         data.append(
                             dict(
                                 name=organization.get("name", org["login"]),
@@ -1479,7 +1481,7 @@ class Github(TorngitBaseAdapter):
     # Commits
     # -------
     async def get_pull_request_commits(self, pullid, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         commits = await self._get_raw_pull_request_commits(pullid, token)
         return [commit_info["sha"] for commit_info in commits]
 
@@ -1758,7 +1760,7 @@ class Github(TorngitBaseAdapter):
         return dict(content=content["content"], commitid=content["sha"])
 
     async def get_commit_diff(self, commit, context=None, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             async with self.get_client() as client:
@@ -1789,7 +1791,7 @@ class Github(TorngitBaseAdapter):
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
             url = self.count_and_get_url_template(url_name="get_compare").substitute(
@@ -1849,7 +1851,7 @@ class Github(TorngitBaseAdapter):
     async def get_distance_in_commits(
         self, base_branch, base, context=None, with_commits=True, token=None
     ):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#compare-two-commits
         async with self.get_client() as client:
             url = self.count_and_get_url_template(
@@ -1869,7 +1871,7 @@ class Github(TorngitBaseAdapter):
         )
 
     async def get_commit(self, commit, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
         try:
             async with self.get_client() as client:
@@ -1934,10 +1936,11 @@ class Github(TorngitBaseAdapter):
             id=str(pull["number"]),
             number=str(pull["number"]),
             labels=[label["name"] for label in pull.get("labels", [])],
+            merge_commit_sha=pull["merge_commit_sha"] if pull["merged"] else None,
         )
 
     async def get_pull_request(self, pullid, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         async with self.get_client() as client:
             try:
@@ -1987,7 +1990,7 @@ class Github(TorngitBaseAdapter):
             return result
 
     async def get_pull_requests(self, state="open", token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         # https://developer.github.com/v3/pulls/#list-pull-requests
         page, pulls = 0, []
         async with self.get_client() as client:
@@ -2020,7 +2023,7 @@ class Github(TorngitBaseAdapter):
     ):
         if not self.slug or not commit:
             return None
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/commits/commits#list-pull-requests-associated-with-a-commit
             try:
@@ -2051,7 +2054,7 @@ class Github(TorngitBaseAdapter):
     async def get_pull_request_files(self, pullid, token=None):
         if not self.slug:
             return None
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.pull)
         async with self.get_client() as client:
             # https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests-files
             try:
@@ -2102,7 +2105,7 @@ class Github(TorngitBaseAdapter):
         return "other"
 
     async def get_ancestors_tree(self, commitid, token=None):
-        token = self.get_token_by_type_if_none(token, TokenType.read)
+        token = self.get_token_by_type_if_none(token, TokenType.commit)
         async with self.get_client() as client:
             url = self.count_and_get_url_template(
                 url_name="get_ancestors_tree"
@@ -2236,9 +2239,9 @@ class Github(TorngitBaseAdapter):
 
                     for repo in repositories["nodes"]:
                         languages = repo["languages"]["edges"]
-                        res_languages = []
-                        for language in languages:
-                            res_languages.append(language["node"]["name"].lower())
+                        res_languages = [
+                            language["node"]["name"].lower() for language in languages
+                        ]
 
                         all_repositories[repo["name"]] = res_languages
 
@@ -2322,6 +2325,9 @@ class Github(TorngitBaseAdapter):
             return f"{username}'s token"
         if token is None or token.get("key") is None:
             return "notoken"
+        installation_info = self.data.get("installation", {})
+        if installation_info and "installation_id" in installation_info:
+            return f"GitHub_installation_{installation_info['installation_id']}"
         some_secret = "v1CAF4bFYi2+7sN7hgS/flGtooomdTZF0+uGiigV3AY8f4HHNg".encode()
         hasher = hashlib.sha256()
         hasher.update(some_secret)

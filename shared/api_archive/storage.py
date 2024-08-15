@@ -13,7 +13,7 @@ MINIO_CLIENT = None
 # Service class for interfacing with codecov's underlying storage layer, minio
 class StorageService(MinioStorageService):
     def __init__(self, in_config=None):
-        global MINIO_CLIENT
+        global MINIO_CLIENT  # noqa: PLW0603
 
         # init minio
         if in_config is None:

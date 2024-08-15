@@ -212,20 +212,19 @@ class Bitbucket(TorngitBaseAdapter):
 
     async def get_is_admin(self, user, token=None):
         user_uuid = "{" + user["service_id"] + "}"
-        query = f'workspace.uuid="{{{self.data["owner"]["service_id"]}}}" AND permission="owner" AND user.uuid="{user_uuid}"'
+        workspace_uuid = "{" + self.data["owner"]["service_id"] + "}"
         async with self.get_client() as client:
             groups = await self.api(
-                client, "2", "get", "/user/permissions/workspaces", token=token, q=query
+                client, "2", "get", "/user/permissions/workspaces", token=token
             )
         if groups["values"]:
             for group in groups["values"]:
-                assert group["permission"] == "owner"
-                assert (
-                    group["workspace"]["uuid"]
-                    == f'{{{self.data["owner"]["service_id"]}}}'
-                )
-                assert group["user"]["uuid"] == user_uuid
-                return True
+                if (
+                    group["permission"] == "owner"
+                    and group["workspace"]["uuid"] == workspace_uuid
+                    and group["user"]["uuid"] == user_uuid
+                ):
+                    return True
         return False
 
     async def list_teams(self, token=None):
@@ -335,7 +334,7 @@ class Bitbucket(TorngitBaseAdapter):
                         name=repo_name_arr[1],
                         language=self._validate_language(repo["language"]),
                         private=repo["is_private"],
-                        branch="master",
+                        branch="main",
                     ),
                 )
             )
@@ -444,15 +443,13 @@ class Bitbucket(TorngitBaseAdapter):
                     page=page,
                     token=token,
                 )
-                if len(res["values"]) == 0:
+                if not res["values"]:
                     page = 0
-                    break
-                for permission in res["values"]:
-                    data.append(permission)
-
-                if not res.get("next"):
-                    page = 0
-                    break
+                else:
+                    data.extend(res["values"])
+                    if not res.get("next"):
+                        page = 0
+                        break
         return data
 
     async def get_pull_request(self, pullid, token=None):
@@ -511,6 +508,9 @@ class Bitbucket(TorngitBaseAdapter):
             title=res["title"],
             id=str(pullid),
             number=str(pullid),
+            merge_commit_sha=res.get("merge_commit", dict()).get("hash")
+            if res["state"] == "MERGED"
+            else None,
         )
 
     async def post_comment(self, issueid, body, token=None):
@@ -881,7 +881,7 @@ class Bitbucket(TorngitBaseAdapter):
                 repo=dict(
                     service_id=res["uuid"][1:-1],
                     private=res["is_private"],
-                    branch="master",
+                    branch="main",
                     language=self._validate_language(res["language"]),
                     name=repo,
                 ),

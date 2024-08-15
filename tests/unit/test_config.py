@@ -39,10 +39,6 @@ class TestConfig(object):
             },
             "database_url": "postgresql://postgres:@postgres:5432/postgres",
         }
-        assert get_config("setup", "segment", "enabled") is False
-        assert (
-            get_config("setup", "segment", "key") == "JustARandomTestValueMeaningless"
-        )
         assert get_config("setup", "timeseries", "enabled") is False
 
     def test_get_config_production_use_case(self, mocker):
@@ -51,9 +47,6 @@ class TestConfig(object):
                 "setup:",
                 "  codecov_url: https://codecov.io",
                 "",
-                "  segment:",
-                "    enabled: True",
-                "    key: '123'",
                 "  debug: no",
                 "  loglvl: INFO",
                 "  media:",
@@ -158,8 +151,6 @@ class TestConfig(object):
         ] == ["reach", "diff", "flags", "files", "footer"]
         assert get_config("site", "comment", "behavior") == "default"
         assert get_config("site", "comment", "show_carryforward_flags") is False
-        assert get_config("setup", "segment", "enabled") is True
-        assert get_config("setup", "segment", "key") == "123"
 
     def test_get_config_case_with_more_nested_types(self, mocker):
         yaml_content = "\n".join(
@@ -406,8 +397,6 @@ class TestConfig(object):
                 "SERVICES__AWS__REGION_NAME": "us-east-1",
                 "SENTRY_PERCENTAGE": "0.9",
                 "__BAD__KEY": "GITLAB__BOT__KEY",
-                "SETUP__SEGMENT__ENABLED": "True",
-                "SETUP__SEGMENT__KEY": "abc",
                 "SETUP__TIMESERIES__ENABLED": "True",
                 "JSONCONFIG___SETUP__MEDIA": json.dumps(
                     {"assets": "aaa", "dependancies": "bbb"}
@@ -444,7 +433,6 @@ class TestConfig(object):
                 "media": {"assets": "aaa", "dependancies": "bbb"},
                 "encryption_secret": "secret",
                 "tasks": {"status": {"queue": "new_tasks"}},
-                "segment": {"enabled": True, "key": "abc"},
                 "timeseries": {"enabled": True},
             },
             "github": {

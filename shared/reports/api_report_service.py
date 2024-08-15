@@ -33,7 +33,7 @@ class ReportMixin:
     def flags(self):
         """returns dict(:name=<Flag>)"""
         flags_dict = {}
-        for sid, session in self.sessions.items():
+        for session in self.sessions.values():
             if session.flags is not None:
                 carriedforward = session.session_type.value == "carriedforward"
                 carriedforward_from = session.session_extras.get("carriedforward_from")
@@ -230,7 +230,6 @@ def build_files(commit_report: CommitReport) -> dict[str, ReportFileSummary]:
         file["filename"]: ReportFileSummary(
             file_index=file["file_index"],
             file_totals=ReportTotals(*file["file_totals"]),
-            session_totals=file["session_totals"],
             diff_totals=file["diff_totals"],
         )
         for file in report_details.files_array

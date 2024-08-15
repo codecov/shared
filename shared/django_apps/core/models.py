@@ -117,7 +117,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
         null=True,
         blank=True,
     )
-    branch = models.TextField(default="master")
+    branch = models.TextField(default="main")
     upload_token = models.UUIDField(unique=True, default=uuid.uuid4)
     yaml = models.JSONField(null=True)
     image_token = models.TextField(null=True, default=_gen_image_token)
@@ -207,6 +207,7 @@ class Branch(ExportModelOperationsMixin("core.branch"), models.Model):
                 fields=["repository", "-updatestamp"],
                 name="branches_repoid_updatestamp",
             ),
+            GinIndex(OpClass(Upper("name"), name="gin_trgm_ops"), name="name_trgm_idx"),
         ]
 
 

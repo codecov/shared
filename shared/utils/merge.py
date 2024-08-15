@@ -73,7 +73,7 @@ def merge_partial_line(p1, p2):
     for cov, group in groupby(
         sorted([(cl, max(cv)) for cl, cv in list(fl.items())]), lambda c: c[1]
     ):
-        group = list(group)
+        group = list(group)  # noqa: PLW2901
         append(_ifg(group[0][0], group[-1][0], cov))
 
     # never ends

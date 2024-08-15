@@ -141,6 +141,84 @@ component_rule_basic_properties = {
     "paths": path_list_structure,
 }
 
+coverage_comment_config = {
+    "layout": {
+        "type": "string",
+        "comma_separated_strings": True,
+        "nullable": True,
+    },
+    "require_changes": {
+        "coerce": "coverage_comment_required_changes",
+        "meta": {
+            "description": "require_changes instructs Codecov to only post a PR Comment if there are coverage changes in the PR.",
+            "options": {
+                False: {
+                    "type": bool,
+                    "description": "post comment even if there's no change in coverage",
+                    "default": True,
+                },
+                True: {
+                    "type": bool,
+                    "description": "only post comment if there are changes in coverage (positive or negative)",
+                },
+                "coverage_drop": {
+                    "type": str,
+                    "description": "[project coverage] only post comment if coverage drops more than <coverage.status.project.threshold> percent when comparing HEAD to BASE",
+                },
+                "uncovered_patch": {
+                    "type": str,
+                    "description": "[patch coverage] only post comment if the patch has uncovered lines",
+                },
+            },
+        },
+    },
+    "require_base": {"type": "boolean"},
+    "require_head": {"type": "boolean"},
+    "show_critical_paths": {"type": "boolean"},
+    "branches": branches_structure,
+    "paths": path_list_structure,  # DEPRECATED
+    "flags": flag_list_structure,  # DEPRECATED
+    "behavior": {
+        "type": "string",
+        "allowed": ("default", "once", "new", "spammy"),
+    },
+    "after_n_builds": {"type": "integer", "min": 0},
+    "show_carryforward_flags": {"type": "boolean"},
+    "hide_comment_details": {"type": "boolean"},
+    "hide_project_coverage": {"type": "boolean"},
+}
+
+bundle_analysis_comment_config = {
+    "require_bundle_changes": {
+        "type": ["boolean", "string"],
+        "allowed": ["bundle_increase", False, True],
+        "meta": {
+            "description": "require_bundle_changes instructs Codecov to only post a PR Comment if the requirements are met",
+            "options": {
+                False: {
+                    "type": bool,
+                    "description": "post comment even if there's no change in the bundle size",
+                    "default": True,
+                },
+                True: {
+                    "type": bool,
+                    "description": "only post comment if there are changes in bundle size (positive or negative)",
+                },
+                "bundle_increase": {
+                    "type": str,
+                    "description": "only post comment if the bundle size increases",
+                },
+            },
+        },
+    },
+    "bundle_change_threshold": {
+        "coerce": "bundle_analysis_threshold",
+        "meta": {
+            "description": "Threshold for 'require_bundle_changes'. Notifications will only be triggered if the change is larger than the threshold."
+        },
+    },
+}
+
 schema = {
     "codecov": {
         "type": "dict",
@@ -171,6 +249,12 @@ schema = {
                     "wait_for_ci": {"type": "boolean"},
                     "require_ci_to_pass": {"type": "boolean"},  # [DEPRECATED]
                     "manual_trigger": {"type": "boolean"},
+                    "notify_error": {
+                        "meta": {
+                            "description": "This option lets the user toggle whether they want to block the regular comment message and replace it with an error message in the comment if any of the upload processing tasks fail."
+                        },
+                        "type": "boolean",
+                    },
                 },
             },
             "ui": {
@@ -343,6 +427,38 @@ schema = {
             },
         },
     },
+    "bundle_analysis": {
+        "type": "dict",
+        "schema": {
+            "warning_threshold": {
+                "coerce": "bundle_analysis_threshold",
+                "meta": {
+                    "description": "If the change is bigger then the threshold notification includes a warning or fails. See `bundle_analysis.status` for details."
+                },
+            },
+            "status": {
+                "allowed": (True, False, "informational"),
+                "meta": {
+                    "description": "Configure commit checks for bundle analysis",
+                    "options": {
+                        True: {
+                            "type": bool,
+                            "description": "Enable status. Status will fail if changes exceed `bundle_analysis.warning_threshold`",
+                        },
+                        False: {
+                            "type": bool,
+                            "description": "Disable status. No status will be sent.",
+                        },
+                        "informational": {
+                            "type": str,
+                            "description": "Enable status. Status will always pass, but include a warning if changes exceed `bundle_analysis.warning_threshold`",
+                            "default": True,
+                        },
+                    },
+                },
+            },
+        },
+    },
     "parsers": {
         "type": "dict",
         "schema": {
@@ -448,29 +564,7 @@ schema = {
     },
     "comment": {
         "type": ["dict", "boolean"],
-        "schema": {
-            "layout": {
-                "type": "string",
-                "comma_separated_strings": True,
-                "nullable": True,
-            },
-            "require_changes": {"type": "boolean"},
-            "require_bundle_changes": {"type": "boolean"},
-            "require_base": {"type": "boolean"},
-            "require_head": {"type": "boolean"},
-            "show_critical_paths": {"type": "boolean"},
-            "branches": branches_structure,
-            "paths": path_list_structure,  # DEPRECATED
-            "flags": flag_list_structure,  # DEPRECATED
-            "behavior": {
-                "type": "string",
-                "allowed": ("default", "once", "new", "spammy"),
-            },
-            "after_n_builds": {"type": "integer", "min": 0},
-            "show_carryforward_flags": {"type": "boolean"},
-            "hide_comment_details": {"type": "boolean"},
-            "hide_project_coverage": {"type": "boolean"},
-        },
+        "schema": {**coverage_comment_config, **bundle_analysis_comment_config},
     },
     "slack_app": {
         "type": ["dict", "boolean"],
@@ -509,6 +603,7 @@ schema = {
             "shorten_paths": {
                 "type": "boolean",
             },
+            "flake_detection": {"type": "boolean"},
         },
     },
 }

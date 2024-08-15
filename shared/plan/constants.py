@@ -24,6 +24,7 @@ class PlanMarketingName(enum.Enum):
 
 
 class PlanName(enum.Enum):
+    # If you add or remove, make a migration for Account table
     BASIC_PLAN_NAME = "users-basic"
     TRIAL_PLAN_NAME = "users-trial"
     CODECOV_PRO_MONTHLY = "users-pr-inappm"
@@ -38,6 +39,10 @@ class PlanName(enum.Enum):
     CODECOV_PRO_YEARLY_LEGACY = "users-inappy"
     ENTERPRISE_CLOUD_MONTHLY = "users-enterprisem"
     ENTERPRISE_CLOUD_YEARLY = "users-enterprisey"
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
 
 
 class PlanBillingRate(enum.Enum):
