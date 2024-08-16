@@ -71,3 +71,33 @@ def parse_license(raw_license):
         is_trial=license_dict.get("trial"),
         is_pr_billing=is_pr_billing,
     )
+
+
+def startup_license_logging():
+    """
+    Makes troubleshooting license issues easier - called by startup process in worker and api
+    """
+    if get_config("setup", "enterprise_license"):
+        statements_to_print = [
+            "",  # padding
+            "==> Checking License",
+        ]
+
+        current_license = get_current_license()
+        is_valid = current_license.is_valid
+        statements_to_print.append(
+            f"    License is {"valid" if is_valid else "INVALID"}"
+        )
+
+        if current_license.message:
+            statements_to_print.append(f"    Warning: {current_license.message}")
+
+        exp_date = current_license.expires
+        statements_to_print.append(
+            f"    License expires {datetime.strftime(exp_date, "%Y-%m-%d %H:%M:%S") if exp_date else "NOT FOUND"} <=="
+        )
+        statements_to_print.append("")  # padding
+
+        # printing the message in a single statement so the lines won't get split up
+        # among all the other messages during startup
+        print(*statements_to_print, sep="\n")
