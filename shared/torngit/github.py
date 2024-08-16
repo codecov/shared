@@ -17,10 +17,11 @@ from shared.github import (
     get_github_jwt_token,
     mark_installation_as_rate_limited,
 )
+from shared.helpers.redis import get_redis_connection
 from shared.metrics import Counter, metrics
 from shared.rollouts.features import LIST_REPOS_PAGE_SIZE
 from shared.torngit.base import TokenType, TorngitBaseAdapter
-from shared.torngit.cache import get_redis_connection, torngit_cache
+from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -1073,12 +1074,12 @@ class Github(TorngitBaseAdapter):
                 user = await self.api(client, "get", url)
                 user.update(session or {})
                 email = user.get("email")
-                url = self.count_and_get_url_template(
-                    url_name="get_authenticated_user_email"
-                ).substitute()
                 if not email:
+                    url = self.count_and_get_url_template(
+                        url_name="get_authenticated_user_email"
+                    ).substitute()
                     emails = await self.api(client, "get", url)
-                    emails = [e["email"] for e in emails if e["primary"]]
+                    emails = [e["email"] for e in emails if e["visibility"] == "public"]
                     user["email"] = emails[0] if emails else None
                 return user
 
@@ -2325,11 +2326,9 @@ class Github(TorngitBaseAdapter):
             return f"{username}'s token"
         if token is None or token.get("key") is None:
             return "notoken"
-        app_installation = self.data.get("installation", {}).get(
-            "installation_id", None
-        )
-        if app_installation:
-            return f"GitHub_installation_{app_installation}"
+        installation_info = self.data.get("installation", {})
+        if installation_info and "installation_id" in installation_info:
+            return f"GitHub_installation_{installation_info['installation_id']}"
         some_secret = "v1CAF4bFYi2+7sN7hgS/flGtooomdTZF0+uGiigV3AY8f4HHNg".encode()
         hasher = hashlib.sha256()
         hasher.update(some_secret)

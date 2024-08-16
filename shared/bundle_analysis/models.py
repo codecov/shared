@@ -42,7 +42,7 @@ create table assets (
     name text not null,
     normalized_name text not null,
     size integer not null,
-    gzip_size integer not null default 0,
+    gzip_size integer,
     uuid text not null,
     asset_type text not null,
     foreign key (session_id) references sessions (id)
@@ -86,7 +86,7 @@ create table chunks_modules (
 );
 """
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 Base = declarative_base()
 
@@ -112,7 +112,6 @@ class LegacySessionManager:
 
     def __exit__(self, type, value, traceback):
         self.session.close()
-        return True
 
 
 def _use_modern_sqlalchemy_session_manager():
@@ -223,7 +222,7 @@ class Asset(Base):
     name = Column(types.Text, nullable=False)
     normalized_name = Column(types.Text, nullable=False)
     size = Column(types.Integer, nullable=False)
-    gzip_size = Column(types.Integer, nullable=False)
+    gzip_size = Column(types.Integer)
     uuid = Column(types.Text, nullable=False)
     asset_type = Column(SQLAlchemyEnum(AssetType))
     session = relationship("Session", backref=backref("assets"))

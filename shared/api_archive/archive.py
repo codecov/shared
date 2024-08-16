@@ -5,6 +5,7 @@ from enum import Enum
 from hashlib import md5
 from uuid import uuid4
 
+import sentry_sdk
 from django.conf import settings
 from django.utils import timezone
 
@@ -72,28 +73,25 @@ class ArchiveService(object):
         self.storage = StorageService()
         self.storage_hash = self.get_archive_hash(repository)
 
-    """
-    Accessor for underlying StorageService. You typically shouldn't need
-    this for anything.
-    """
-
     def storage_client(self):
+        """
+        Accessor for underlying StorageService. You typically shouldn't need
+        this for anything.
+        """
         return self.storage
 
-    """
-    Getter. Returns true if the current configuration is enterprise.
-    """
-
     def is_enterprise(self):
+        """
+        Getter. Returns true if the current configuration is enterprise.
+        """
         return settings.IS_ENTERPRISE
-
-    """
-    Generates a hash key from repo specific information.
-    Provides slight obfuscation of data in minio storage
-    """
 
     @classmethod
     def get_archive_hash(cls, repository):
+        """
+        Generates a hash key from repo specific information.
+        Provides slight obfuscation of data in minio storage
+        """
         _hash = md5()
         hash_key = get_config("services", "minio", "hash_key", default="")
         val = "".join(
@@ -143,21 +141,20 @@ class ArchiveService(object):
         self.write_file(path, stringified_data)
         return path
 
-    """
-    Grabs path from storage, adds data to path object
-    writes back to path, overwriting the original contents
-    """
-
     def update_archive(self, path, data):
+        """
+        Grabs path from storage, adds data to path object
+        writes back to path, overwriting the original contents
+        """
         self.storage.append_to_file(self.root, path, data)
 
-    """
-    Writes a generic file to the archive -- it's typically recommended to
-    not use this in lieu of the convenience methods write_raw_upload and
-    write_chunks
-    """
-
+    @sentry_sdk.trace
     def write_file(self, path, data, reduced_redundancy=False, gzipped=False):
+        """
+        Writes a generic file to the archive -- it's typically recommended to
+        not use this in lieu of the convenience methods write_raw_upload and
+        write_chunks
+        """
         self.storage.write_file(
             self.root,
             path,
@@ -166,12 +163,11 @@ class ArchiveService(object):
             gzipped=gzipped,
         )
 
-    """
-    Convenience write method, writes a raw upload to a destination.
-    Returns the path it writes.
-    """
-
     def write_raw_upload(self, commit_sha, report_id, data, gzipped=False):
+        """
+        Convenience write method, writes a raw upload to a destination.
+        Returns the path it writes.
+        """
         # create a custom report path for a raw upload.
         # write the file.
         path = "/".join(
@@ -188,11 +184,10 @@ class ArchiveService(object):
 
         return path
 
-    """
-    Convenience method to write a chunks.txt file to storage.
-    """
-
     def write_chunks(self, commit_sha, data):
+        """
+        Convenience method to write a chunks.txt file to storage.
+        """
         path = MinioEndpoints.chunks.get_path(
             version="v4", repo_hash=self.storage_hash, commitid=commit_sha
         )
@@ -200,47 +195,44 @@ class ArchiveService(object):
         self.write_file(path, data)
         return path
 
-    """
-    Generic method to read a file from the archive
-    """
-
-    def read_file(self, path):
+    @sentry_sdk.trace
+    def read_file(self, path: str) -> str:
+        """
+        Generic method to read a file from the archive
+        """
         contents = self.storage.read_file(self.root, path)
         return contents.decode()
 
-    """
-    Generic method to delete a file from the archive.
-    """
-
+    @sentry_sdk.trace
     def delete_file(self, path):
+        """
+        Generic method to delete a file from the archive.
+        """
         self.storage.delete_file(self.root, path)
 
-    """
-    Deletes an entire repository's contents
-    """
-
     def delete_repo_files(self):
+        """
+        Deletes an entire repository's contents
+        """
         path = "v4/repos/{}".format(self.storage_hash)
         objects = self.storage.list_folder_contents(self.root, path)
         for obj in objects:
             self.storage.delete_file(self.root, obj.object_name)
 
-    """
-    Convenience method to read a chunks file from the archive.
-    """
-
-    def read_chunks(self, commit_sha):
+    def read_chunks(self, commit_sha: str) -> str:
+        """
+        Convenience method to read a chunks file from the archive.
+        """
         path = MinioEndpoints.chunks.get_path(
             version="v4", repo_hash=self.storage_hash, commitid=commit_sha
         )
         log.info("Downloading chunks from path %s for commit %s", path, commit_sha)
         return self.read_file(path)
 
-    """
-    Delete a chunk file from the archive
-    """
-
-    def delete_chunk_from_archive(self, commit_sha):
+    def delete_chunk_from_archive(self, commit_sha: str):
+        """
+        Delete a chunk file from the archive
+        """
         path = "v4/repos/{}/commits/{}/chunks.txt".format(self.storage_hash, commit_sha)
 
         self.delete_file(path)

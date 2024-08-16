@@ -238,6 +238,19 @@ class BundleAnalysisComparison:
     def total_size_delta(self) -> int:
         return sum(bundle_change.size_delta for bundle_change in self.bundle_changes())
 
+    @property
+    def percentage_delta(self) -> float:
+        """Returns the size delta as a percentage of BASE report total size.
+        For example, base_bundle_reports have a total size of 1MB
+        and the total_size_delta is 100kB then percentage_delta is 10.0%
+
+        Percentage is returned as a float 0-100, rounded to 2 decimal places
+        """
+        base_size = sum(
+            report.total_size() for report in self.base_report.bundle_reports()
+        )
+        return round((self.total_size_delta / base_size) * 100, 2)
+
     def bundle_comparison(self, bundle_name: str) -> BundleComparison:
         """
         More detailed comparison (about asset changes) for a particular bundle that

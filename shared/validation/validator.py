@@ -51,11 +51,8 @@ class CodecovYamlValidator(Validator):
         coerced_value: BundleThreshold = BundleSizeThresholdSchemaField().validate(
             value
         )
-        # This change is not forwards compatible, so we need this step in the rollout
-        from shared.rollouts.features import BUNDLE_THRESHOLD_FLAG
-
-        if BUNDLE_THRESHOLD_FLAG.check_value(identifier=1, default=False):
-            return coerced_value
+        # This change is not forwards compatible, so we need to return a number for now
+        # https://github.com/codecov/engineering-team/issues/2087 to clean up later
         return coerced_value.threshold
 
     def _validate_comma_separated_strings(self, constraint, field, value):
