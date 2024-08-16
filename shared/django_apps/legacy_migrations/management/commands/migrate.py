@@ -7,8 +7,8 @@ from django.db import transaction as django_transaction
 from django.db.utils import ProgrammingError
 
 from shared.django_apps.utils.config import RUN_ENV
+from shared.helpers.redis import get_redis_connection
 from shared.timeseries.helpers import is_timeseries_enabled
-from shared.torngit.cache import get_redis_connection
 
 log = logging.getLogger(__name__)
 
