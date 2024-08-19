@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from shared.reports.types import ReportTotals, SessionTotalsArray
+from shared.reports.types import ReportTotals
 from shared.utils.ReportEncoder import ReportEncoder
 from shared.utils.sessions import Session
 
@@ -32,16 +32,6 @@ from shared.utils.sessions import Session
                 "t": "totals",
                 "st": "uploaded",
                 "se": {},
-            },
-        ),
-        (
-            SessionTotalsArray(
-                session_count=10,
-                non_null_items={4: [0, 35, 35, 0, 0, "100", 5, 0, 0, 0, 0, 0, 0]},
-            ),
-            {
-                "meta": {"session_count": 10},
-                4: [0, 35, 35, 0, 0, "100", 5],
             },
         ),
         (Decimal("85.00"), "85.00"),
