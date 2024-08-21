@@ -56,14 +56,12 @@ class ReportFile(object):
         "_line_modifier",
         "_ignore",
         "_totals",
-        "_session_totals",
     ]
 
     def __init__(
         self,
         name,
         totals=None,
-        session_totals=None,
         lines=None,
         line_modifier=None,
         ignore=None,
@@ -71,7 +69,6 @@ class ReportFile(object):
         """
         name = string, filename. "folder/name.py"
         totals = [0,1,0,...] (map out to one ReportTotals)
-        session_totals = [[],[]] (map to list of Session())
         lines = [] or string
            if [] then [null, line@1, null, line@3, line@4]
            if str then "\nline@1\n\nline@3"
@@ -107,8 +104,6 @@ class ReportFile(object):
                 self._totals = totals
             else:
                 self._totals = ReportTotals(*totals) if totals else None
-
-        self._session_totals = session_totals
 
     def __repr__(self):
         try:
@@ -598,7 +593,18 @@ def build_files(files: dict[str, Any]) -> dict[str, ReportFileSummary]:
     # NOTE: this mutates `files` in-place
     for filename, file_summary in files.items():
         if not isinstance(file_summary, ReportFileSummary):
-            files[filename] = ReportFileSummary(*file_summary)
+            # We have a minimum of two pieces of data
+            chunks_index = file_summary[0]
+            file_totals = file_summary[1]
+
+            try:
+                # Indices 2 and 3 may not exist. Index 2 used to be `session_totals`
+                # but is ignored now due to a bug.
+                diff_totals = file_summary[3]
+            except IndexError:
+                diff_totals = None
+
+            files[filename] = ReportFileSummary(chunks_index, file_totals, diff_totals)
     return files
 
 
@@ -730,9 +736,7 @@ class Report(object):
             for fname, data in self._files.items():
                 yield (
                     fname,
-                    make_network_file(
-                        data.file_totals, data.session_totals, data.diff_totals
-                    ),
+                    make_network_file(data.file_totals, data.diff_totals),
                 )
 
     def __repr__(self):
@@ -803,14 +807,12 @@ class Report(object):
             return False
 
         assert _file.name, "file must have a name"
-        session_n = len(self.sessions) - 1
 
         # check if file already exists
         index = self._files.get(_file.name)
         if index:
             # existing file
             # =============
-            index.session_totals.append(copy(_file.totals))
             #  merge old report chunk
             cur_file = self[_file.name]
             # merge it
@@ -822,8 +824,6 @@ class Report(object):
         else:
             # new file
             # ========
-            session_totals = ([None] * session_n) + [_file.totals]
-
             # override totals
             if not joined:
                 _file._totals = ReportTotals(0, _file.totals.lines)
@@ -832,7 +832,6 @@ class Report(object):
             self._files[_file.name] = ReportFileSummary(
                 len(self._chunks),  # chunk location
                 _file.totals,  # Totals
-                session_totals,  # Session Totals
                 None,  # Diff Totals
             )
 
@@ -1061,9 +1060,6 @@ class Report(object):
                 yield self.file_class(
                     name=filename,
                     totals=_file.file_totals,
-                    session_totals=_file.session_totals
-                    if _file.session_totals
-                    else None,
                     lines=report,
                     line_modifier=self._line_modifier,
                 )
@@ -1292,7 +1288,6 @@ class Report(object):
                     self._files[path] = ReportFileSummary(
                         file_index=chunk_loc,
                         file_totals=_file.totals,
-                        session_totals=[None] * len(self.sessions),
                         diff_totals=None,
                     )
 

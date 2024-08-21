@@ -6,7 +6,7 @@ from shared.reports.types import ReportLine, ReportTotals
 
 @pytest.mark.integration
 def test_report_file_constructor():
-    r1 = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None, None)
+    r1 = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None)
     assert r1.name == "folder/file.py"
     r2 = ReportFile(name="file.py", lines="\n[1,2]\n[1,1]")
     assert list(r2.lines) == [
@@ -18,7 +18,7 @@ def test_report_file_constructor():
 
 @pytest.mark.integration
 def test_repr():
-    r = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None, None)
+    r = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None)
     assert repr(r) == "<ReportFile name=folder/file.py lines=0>"
 
 
@@ -27,7 +27,7 @@ def test_repr():
     "r, get_val, res",
     [
         (
-            ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None, None),
+            ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None),
             "totals",
             ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         ),
@@ -52,7 +52,7 @@ def test_get_item(r, get_val, res):
     ],
 )
 def test_get_item_exception(get_val, error_message):
-    r = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None, None)
+    r = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None)
     with pytest.raises(Exception) as e_info:
         r[get_val]
     assert str(e_info.value) == error_message
