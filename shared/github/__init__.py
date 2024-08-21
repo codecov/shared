@@ -39,13 +39,46 @@ def get_pem(*, pem_name: Optional[str] = None, pem_path: Optional[str] = None) -
     raise Exception("No PEM provided to get installation token")
 
 
-InstallationErrorCause = Literal["installation_not_found"] | Literal["permission_error"]
+InstallationErrorCause = (
+    Literal["installation_not_found"]
+    | Literal["permission_error"]
+    | Literal["requires_authentication"]
+    | Literal["installation_suspended"]
+    | Literal["validation_failed_or_spammed"]
+    | Literal["rate_limit"]
+)
 
 
 class InvalidInstallationError(Exception):
     def __init__(self, error_cause: InstallationErrorCause, *args: object) -> None:
         super().__init__(error_cause, *args)
         self.error_cause = error_cause
+
+
+def decide_installation_error_cause(
+    response: requests.Response,
+) -> InstallationErrorCause:
+    # https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#create-an-installation-access-token-for-an-app
+    is_suspended = (
+        response.json().get("message") == "This installation has been suspended"
+    )
+    is_rate_limit = (
+        "X-RateLimit-Remaining" in response.headers or "Retry-After" in response.headers
+    )
+    match response.status_code:
+        case 401:
+            return "requires_authentication"
+        case 404:
+            return "installation_not_found"
+        case 422:
+            return "validation_failed_or_spammed"
+        case 403:
+            if is_suspended:
+                return "installation_suspended"
+            elif is_rate_limit:
+                return "rate_limit"
+            else:
+                return "permission_error"
 
 
 def get_github_jwt_token(
@@ -96,12 +129,8 @@ def get_github_integration_token(
             headers["Host"] = host_override
 
         res = requests.post(url, headers=headers)
-        if res.status_code in (404, 403):
-            error_cause: InstallationErrorCause = (
-                "installation_not_found"
-                if res.status_code == 404
-                else "permission_error"
-            )
+        if res.status_code in [401, 403, 404, 422]:
+            error_cause = decide_installation_error_cause(res)
             log.warning(
                 "Integration could not be found to fetch token from or unauthorized",
                 extra=dict(

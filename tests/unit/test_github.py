@@ -243,7 +243,7 @@ class TestGithubSpecificLogic(object):
         mocker.patch("shared.github.get_pem", return_value=fake_private_key)
         with pytest.raises(InvalidInstallationError) as exp:
             get_github_integration_token(service, integration_id)
-        assert exp.value.error_cause == "permission_error"
+        assert exp.value.error_cause == "installation_suspended"
         mocked_post.assert_called_with(
             "https://api.github.com/app/installations/1/access_tokens",
             headers={
