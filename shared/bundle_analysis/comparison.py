@@ -15,7 +15,7 @@ from shared.bundle_analysis.storage import BundleAnalysisReportLoader
 from shared.django_apps.core.models import Repository
 from shared.django_apps.reports.models import CommitReport
 
-log = logging.getLogger("__name__")
+log = logging.getLogger(__name__)
 
 
 class MissingBaseReportError(Exception):
