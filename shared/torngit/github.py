@@ -15,10 +15,12 @@ from shared.config import get_config
 from shared.github import (
     get_github_integration_token,
     get_github_jwt_token,
-    mark_installation_as_rate_limited,
 )
 from shared.helpers.redis import get_redis_connection
 from shared.metrics import Counter, metrics
+from shared.rate_limits import (
+    set_entity_to_rate_limited,
+)
 from shared.rollouts.features import LIST_REPOS_PAGE_SIZE
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
@@ -677,47 +679,49 @@ class Github(TorngitBaseAdapter):
                 )
                 return res.text
 
-    def _possibly_mark_current_installation_as_rate_limited(
+    def _possibly_mark_current_entity_as_rate_limited(
         self,
         *,
         reset_timestamp: Optional[str] = None,
         retry_in_seconds: Optional[int] = None,
+        # Couldn't type this to Token cause there's a circular import. Suggestions are welcome
+        token,
     ) -> None:
-        current_installation = self.data.get("installation")
-        if current_installation and current_installation.get("installation_id"):
-            installation_id = current_installation["installation_id"]
-            app_id = current_installation.get("app_id")
-            if retry_in_seconds is None and reset_timestamp is None:
-                log.warning(
-                    "Can't mark installation as rate limited because TTL is missing",
-                    extra=dict(installation_id=installation_id),
-                )
-                return
-            ttl_seconds = retry_in_seconds
-            if ttl_seconds is None:
-                # https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?apiVersion=2022-11-28#handle-rate-limit-errors-appropriately
-                ttl_seconds = max(
-                    0,
-                    int(reset_timestamp) - int(datetime.now(timezone.utc).timestamp()),
-                )
-            if ttl_seconds > 0:
-                log.info(
-                    "Marking installation as rate limited",
-                    extra=dict(
-                        installation_id=installation_id,
-                        app_id=app_id,
-                        rate_limit_duration_seconds=ttl_seconds,
-                    ),
-                )
-                mark_installation_as_rate_limited(
-                    self._redis_connection, installation_id, ttl_seconds, app_id=app_id
-                )
+        entity_key_name = token.get("entity_name")
+        if entity_key_name is None:
+            log.warning(
+                "Can't mark entity as rate limited because entity name is missing",
+            )
+            return None
+        if retry_in_seconds is None and reset_timestamp is None:
+            log.warning(
+                "Can't mark entity as rate limited because TTL is missing",
+                extra=dict(entity_key_name=entity_key_name),
+            )
+            return
+        ttl_seconds = retry_in_seconds
+        if ttl_seconds is None:
+            # https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api?apiVersion=2022-11-28#handle-rate-limit-errors-appropriately
+            ttl_seconds = max(
+                0,
+                int(reset_timestamp) - int(datetime.now(timezone.utc).timestamp()),
+            )
+        if ttl_seconds > 0:
+            log.info(
+                "Marking entity as rate limited",
+                extra=dict(
+                    entity_key_name=entity_key_name,
+                    rate_limit_duration_seconds=ttl_seconds,
+                ),
+            )
+            set_entity_to_rate_limited(
+                redis_connection=self._redis_connection,
+                key_name=entity_key_name,
+                ttl_seconds=ttl_seconds,
+            )
 
     def _get_next_fallback_token(
         self,
-        *,
-        reset_timestamp: Optional[str] = None,
-        retry_in_seconds: Optional[int] = None,
     ) -> Optional[str]:
         """If additional fallback tokens were passed to this instance of GitHub
         select the next token in line to retry the previous request.
@@ -732,10 +736,6 @@ class Github(TorngitBaseAdapter):
         if fallback_installations is None or fallback_installations == []:
             # No tokens to fallback on
             return None
-        # ! side effect: mark current token as rate limited
-        self._possibly_mark_current_installation_as_rate_limited(
-            reset_timestamp=reset_timestamp, retry_in_seconds=retry_in_seconds
-        )
         # ! side effect: consume one of the fallback tokens (makes it the token of this instance)
         installation_info = fallback_installations.pop(0)
         # The function arg is 'integration_id'
@@ -873,14 +873,18 @@ class Github(TorngitBaseAdapter):
                     int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
                 )
                 metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
-                reset_timestamp = res.headers.get("X-RateLimit-Reset")
+
+                # ! side effect: mark current token as rate limited
                 retry_after = res.headers.get("Retry-After")
-                fallback_token_key = self._get_next_fallback_token(
+                retry_in_seconds = int(retry_after) if retry_after is not None else None
+                reset_timestamp = res.headers.get("X-RateLimit-Reset")
+                self._possibly_mark_current_entity_as_rate_limited(
                     reset_timestamp=reset_timestamp,
-                    retry_in_seconds=(
-                        int(retry_after) if retry_after is not None else None
-                    ),
+                    retry_in_seconds=retry_in_seconds,
+                    token=token_to_use,
                 )
+
+                fallback_token_key = self._get_next_fallback_token()
                 if fallback_token_key:
                     # Update header and try again
                     # Consumes one of the retries

@@ -1123,7 +1123,11 @@ class TestUnitGithub(object):
         handler = Github(
             repo=dict(name="example-python"),
             owner=dict(username="ThiagoCodecov"),
-            token=dict(key="some_key", refresh_token="refresh_token"),
+            token=dict(
+                key="some_key",
+                refresh_token="refresh_token",
+                entity_name="default_app_1500",
+            ),
             oauth_consumer_token=dict(
                 key="client_id",
                 secret="client_secret",
@@ -1191,7 +1195,7 @@ class TestUnitGithub(object):
         assert mocked_response_fallback.call_count == 1
         # The installation from the original token (rate limited) is marked so
         mock_redis_conn.set.assert_called_with(
-            name="rate_limited_installations_default_app_1500", value=True, ex=300
+            name="rate_limited_entity_default_app_1500", value=True, ex=300
         )
         mock_get_token.assert_called_with(
             "github", 12342, app_id=1200, pem_path="some_path"

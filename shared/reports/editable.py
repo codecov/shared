@@ -3,7 +3,6 @@ import logging
 from copy import copy
 from typing import List
 
-from shared.metrics import metrics
 from shared.reports.resources import Report, ReportFile
 from shared.reports.types import EMPTY
 
@@ -74,7 +73,6 @@ class EditableReportFile(ReportFile):
                         self[index] = new_line
         self._totals = None
 
-    @metrics.timer("services.report.EditableReportFile.calculate_present_sessions")
     def calculate_present_sessions(self):
         all_sessions = set()
         for _, line in self.lines:
@@ -86,11 +84,9 @@ class EditableReportFile(ReportFile):
         self.calculate_present_sessions()
         return res
 
-    @metrics.timer("services.report.EditableReportFile.delete_session")
     def delete_session(self, sessionid: int):
         self.delete_multiple_sessions([sessionid])
 
-    @metrics.timer("services.report.EditableReportFile.delete_multiple_sessions")
     def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
         if "present_sessions" not in self._details:
             self.calculate_present_sessions()
@@ -132,7 +128,6 @@ class EditableReport(Report):
                     EditableReportFile.from_ReportFile(file)
                 )
 
-    @metrics.timer("services.report.EditableReport.turn_chunks_into_reports")
     def turn_chunks_into_reports(self):
         filename_mapping = {
             file_summary.file_index: filename
@@ -155,7 +150,6 @@ class EditableReport(Report):
             else:
                 self._chunks[chunk_index] = None
 
-    @metrics.timer("services.report.EditableReport.delete_session")
     def delete_session(self, sessionid: int):
         return self.delete_multiple_sessions([sessionid])[0]
 
@@ -173,7 +167,6 @@ class EditableReport(Report):
                     del self[file.name]
         return sessionids
 
-    @metrics.timer("services.report.EditableReport.delete_multiple_sessions")
     def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
         self._totals = None
         deleted_sessions = [

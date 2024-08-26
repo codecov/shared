@@ -12,9 +12,13 @@ from shared.django_apps.codecov_auth.models import (
     Service,
 )
 from shared.django_apps.core.models import Repository
-from shared.github import get_github_integration_token, is_installation_rate_limited
+from shared.github import (
+    InvalidInstallationError,
+    get_github_integration_token,
+)
 from shared.helpers.redis import get_redis_connection
 from shared.orms.owner_helper import DjangoSQLAlchemyOwnerWrapper
+from shared.rate_limits import determine_if_entity_is_rate_limited, gh_app_key_name
 from shared.typings.oauth_token_types import Token
 from shared.typings.torngit import GithubInstallationInfo
 
@@ -117,16 +121,34 @@ def get_github_app_token(
 ) -> TokenWithOwner:
     """Get an access_token from GitHub that we can use to authenticate as the installation
     See https://docs.github.com/en/enterprise-server@3.9/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation#generating-an-installation-access-token
+
+    ⚠️ side effect: Marks installation as `suspended` if we fail to get the access_token due to "installation_suspended"
+
+    Raises:
+      InvalidInstallationError: if we can't get the installation's access_token
     """
-    github_token = get_github_integration_token(
-        service.value,
-        installation_info["installation_id"],
-        app_id=installation_info.get("app_id", None),
-        pem_path=installation_info.get("pem_path", None),
-    )
-    installation_token = Token(key=github_token)
-    # The token is not owned by an Owner object, so 2nd arg is None
-    return installation_token, None
+    try:
+        app_id = installation_info.get("app_id", None)
+        installation_id = installation_info["installation_id"]
+        github_token = get_github_integration_token(
+            service.value,
+            installation_id,
+            app_id=installation_info.get("app_id", None),
+            pem_path=installation_info.get("pem_path", None),
+        )
+        installation_token = Token(
+            key=github_token,
+            entity_name=gh_app_key_name(installation_id=installation_id, app_id=app_id),
+        )
+        # The token is not owned by an Owner object, so 2nd arg is None
+        return installation_token, None
+    except InvalidInstallationError as err:
+        if err.error_cause == "installation_suspended":
+            # Mark the installation as suspended so we don't keep trying to get the token for it
+            GithubAppInstallation.objects.filter(id=installation_info["id"]).update(
+                is_suspended=True
+            )
+        raise err
 
 
 def get_specific_github_app_details(
@@ -177,8 +199,9 @@ def _filter_rate_limited_apps(
     redis_connection = get_redis_connection()
     return list(
         filter(
-            lambda obj: not is_installation_rate_limited(
-                redis_connection, obj.installation_id, app_id=obj.app_id
+            lambda obj: not determine_if_entity_is_rate_limited(
+                redis_connection,
+                gh_app_key_name(app_id=obj.app_id, installation_id=obj.installation_id),
             ),
             apps_to_consider,
         )

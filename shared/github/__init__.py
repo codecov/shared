@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 
 import jwt
 import requests
-from redis import Redis, RedisError
 
 import shared.torngit as torngit
 from shared.config import get_config, load_file_from_path_at_config
@@ -163,53 +162,3 @@ def get_github_integration_token(
         return res_json["token"]
     else:
         return token
-
-
-def mark_installation_as_rate_limited(
-    redis_connection: Redis,
-    installation_id: int,
-    ttl_seconds: int,
-    app_id: Optional[int],
-) -> None:
-    """Marks a installation as being rate-limited in Redis.
-    Use is_installation_rate_limited to check if it is rate-limited or not.
-
-    @param `installation_id` - GithubAppInstallation.installation_id OR owner.integration_id
-    @param `app_id` - GithubAppInstallation.app_id OR 'default_app'
-    @param `ttl_seconds` - Should come from GitHub (in the request that was rate limited)
-
-    We require the `app_id` as well because it's possible (albeit unlikely) that 2 installation_id are
-    the same for different apps.
-    """
-    if ttl_seconds <= 0:
-        # ttl_seconds is the time until the RateLimit ends
-        # Makes no sense to mark an installation rate limited if it's not anymore
-        return
-    app_id = app_id or "default_app"
-    try:
-        redis_connection.set(
-            name=f"rate_limited_installations_{app_id}_{installation_id}",
-            value=1,
-            ex=ttl_seconds,
-        )
-    except RedisError:
-        log.exception(
-            "Failed to mark installation ID as rate_limited due to RedisError",
-            extra=dict(installation_id=installation_id),
-        )
-
-
-def is_installation_rate_limited(
-    redis_connection: Redis, installation_id: int, app_id: Optional[int] = None
-) -> bool:
-    app_id = app_id or "default_app"
-    try:
-        return redis_connection.exists(
-            f"rate_limited_installations_{app_id}_{installation_id}"
-        )
-    except RedisError:
-        log.exception(
-            "Failed to check if installation ID is rate_limited due to RedisError",
-            extra=dict(installation_id=installation_id),
-        )
-        return False
