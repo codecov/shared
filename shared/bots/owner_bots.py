@@ -5,6 +5,8 @@ from shared.bots.github_apps import get_github_app_token
 from shared.bots.types import TokenWithOwner
 from shared.django_apps.codecov_auth.models import Owner, Service
 from shared.encryption.oauth import get_encryptor_from_configuration
+from shared.rate_limits import owner_key_name
+from shared.typings.oauth_token_types import Token
 from shared.typings.torngit import GithubInstallationInfo
 
 encryptor = get_encryptor_from_configuration()
@@ -35,4 +37,6 @@ def get_owner_appropriate_bot_token(
         return result
 
     token_owner = get_owner_or_appropriate_bot(owner)
-    return encryptor.decrypt_token(token_owner.oauth_token), token_owner
+    token: Token = encryptor.decrypt_token(token_owner.oauth_token)
+    token["entity_name"] = owner_key_name(owner_id=token_owner.ownerid)
+    return token, token_owner

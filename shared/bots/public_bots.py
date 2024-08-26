@@ -31,6 +31,7 @@ def get_public_bot_token(service: Service, repoid: int) -> TokenWithOwner:
             "Using tokenless bot as bot fallback",
             extra=dict(repoid=repoid, botname=tokenless_bot_dict.get("username")),
         )
+        tokenless_bot_dict["entity_name"] = "tokenless_bot"
         # Once again token not owned by an Owner.
         return tokenless_bot_dict, None
 

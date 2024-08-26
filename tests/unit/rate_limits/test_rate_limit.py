@@ -2,6 +2,8 @@ import datetime
 from unittest.mock import patch
 
 import pytest
+from mock import MagicMock
+from redis import RedisError
 
 from shared.django_apps.codecov_auth.models import (
     GITHUB_APP_INSTALLATION_DEFAULT_NAME,
@@ -13,6 +15,7 @@ from shared.helpers.redis import get_redis_connection
 from shared.rate_limits import (
     determine_entity_redis_key,
     determine_if_entity_is_rate_limited,
+    gh_app_key_name,
     set_entity_to_rate_limited,
 )
 
@@ -43,8 +46,8 @@ class TestRateLimits(object):
     def setup(self):
         self.redis_connection = get_redis_connection()
 
-    def test_determine_entity_redis_key_github_bot(self, mock_configuration):
-        assert determine_entity_redis_key(owner=None, repository=None) == "github_key"
+    def test_determine_entity_redis_key_github_bot(self):
+        assert determine_entity_redis_key(owner=None, repository=None) == "github_bot"
 
     @patch(
         "shared.bots.github_apps.get_github_integration_token",
@@ -157,9 +160,58 @@ class TestRateLimits(object):
             == False
         )
 
+    def test_determine_if_entity_is_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.exists.side_effect = RedisError
+        assert (
+            determine_if_entity_is_rate_limited(
+                redis_connection=self.redis_connection,
+                key_name="random_non_existent_key",
+            )
+            == False
+        )
+
     def test_set_entity_to_rate_limited_success(self):
         key_name = "owner_id_123"
         set_entity_to_rate_limited(
             redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=300
         )
         assert self.redis_connection.get(f"rate_limited_entity_{key_name}") is not None
+
+    def test_set_entity_to_rate_limited_error(self, mocker):
+        mock_redis = MagicMock(name="fake_redis")
+        mock_redis.set.side_effect = RedisError
+        key_name = "owner_id_123"
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        set_entity_to_rate_limited(
+            redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=300
+        )
+        mock_redis.set.assert_not_called()
+
+    def test_set_entity_to_rate_limited_ttl_zero(self):
+        key_name = "owner_id_123"
+        # This actually asserts that the error is not raised
+        # Despite the call failing
+        set_entity_to_rate_limited(
+            redis_connection=self.redis_connection, key_name=key_name, ttl_seconds=0
+        )
+        assert self.redis_connection.get(f"rate_limited_entity_{key_name}") is not None
+
+    @pytest.mark.parametrize(
+        "app_id, installation_id, expected",
+        [
+            (200, 718263, "200_718263"),
+            (None, 718263, "default_app_718263"),
+        ],
+    )
+    def test_gh_app_key_name_with_or_without_id(
+        self, app_id, installation_id, expected
+    ):
+        assert (
+            gh_app_key_name(
+                app_id=app_id,
+                installation_id=installation_id,
+            )
+            == expected
+        )
