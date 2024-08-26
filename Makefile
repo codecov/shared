@@ -8,6 +8,9 @@ export CODECOV_TOKEN=${CODECOV_UPLOAD_TOKEN}
 test:
 	docker compose exec shared python -m pytest --cov=./ 
 
+test.path:
+	docker compose exec shared python -m pytest $(TEST_PATH)
+
 lint:
 	make lint.install
 	make lint.run
