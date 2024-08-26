@@ -239,12 +239,14 @@ class BundleAnalysisReport:
 
             # Save custom base commit SHA for doing comparisons if available
             if compare_sha:
-                session.add(
-                    Metadata(
-                        key="compare_sha",
-                        value=compare_sha,
-                    )
+                sql = text("""
+                    INSERT OR REPLACE INTO metadata (key, value)
+                    VALUES (:key, :value)
+                """)
+                session.execute(
+                    sql, {"key": "compare_sha", "value": json.dumps(compare_sha)}
                 )
+                session.commit()
 
             session.commit()
             return session_id, bundle_name

@@ -26,9 +26,7 @@ def test_report_repr():
             [
                 (
                     "py.py",
-                    NetworkFile(
-                        totals=ReportTotals(1), session_totals=None, diff_totals=None
-                    ),
+                    NetworkFile(totals=ReportTotals(1), diff_totals=None),
                 )
             ],
         ),
@@ -42,7 +40,6 @@ def test_report_repr():
                     "py.py",
                     NetworkFile(
                         totals=ReportTotals(1, 1, 1, 1, 1, 1),
-                        session_totals=None,
                         diff_totals=None,
                     ),
                 )
@@ -443,7 +440,7 @@ def test_to_database():
             "diff": None,
             "N": 0,
         },
-        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {"meta": {"session_count": 0}}, null]}, "sessions": {}}',
+        '{"files": {"file.py": [0, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], null, null]}, "sessions": {}}',
     )
     res = Report(
         files={"file.py": [0, ReportTotals()]},

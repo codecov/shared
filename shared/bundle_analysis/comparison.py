@@ -1,15 +1,21 @@
+import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property
 from typing import Iterator, List, MutableSet, Optional, Tuple
 
+from shared.bundle_analysis.models import MetadataKey
 from shared.bundle_analysis.report import (
     AssetReport,
     BundleAnalysisReport,
     BundleReport,
 )
 from shared.bundle_analysis.storage import BundleAnalysisReportLoader
+from shared.django_apps.core.models import Repository
+from shared.django_apps.reports.models import CommitReport
+
+log = logging.getLogger(__name__)
 
 
 class MissingBaseReportError(Exception):
@@ -176,10 +182,39 @@ class BundleAnalysisComparison:
         loader: BundleAnalysisReportLoader,
         base_report_key: str,
         head_report_key: str,
+        repository: Optional[Repository] = None,
     ):
         self.loader = loader
         self.base_report_key = base_report_key
         self.head_report_key = head_report_key
+
+        compare_sha_external_id = self._check_compare_sha(repository)
+        if compare_sha_external_id:
+            self.base_report_key = compare_sha_external_id
+
+    def _check_compare_sha(self, repository: Repository) -> Optional[str]:
+        """
+        When doing comparisons first check if there is a compare_sha set in the head report,
+        if there is use that commitid to load the base commit report to compare the head to.
+        """
+        try:
+            head_report_compare_sha = self.head_report.metadata().get(
+                MetadataKey.COMPARE_SHA
+            )
+            if head_report_compare_sha and repository:
+                base_report = CommitReport.objects.filter(
+                    commit__commitid=head_report_compare_sha,
+                    commit__repository=repository,
+                    report_type=CommitReport.ReportType.BUNDLE_ANALYSIS,
+                ).first()
+                if base_report:
+                    return base_report.external_id
+                else:
+                    log.warning(
+                        f"Bundle Analysis compare SHA not found in reports for {head_report_compare_sha}"
+                    )
+        except MissingHeadReportError:
+            pass
 
     @cached_property
     def base_report(self) -> BundleAnalysisReport:

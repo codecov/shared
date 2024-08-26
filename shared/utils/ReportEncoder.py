@@ -4,7 +4,7 @@ from fractions import Fraction
 from json import JSONEncoder
 from types import GeneratorType
 
-from shared.reports.types import ReportTotals, SessionTotalsArray
+from shared.reports.types import ReportTotals
 
 
 class ReportEncoder(JSONEncoder):
@@ -19,8 +19,6 @@ class ReportEncoder(JSONEncoder):
             return str(obj)
         elif isinstance(obj, ReportTotals):
             # reduce totals
-            return obj.to_database()
-        elif isinstance(obj, SessionTotalsArray):
             return obj.to_database()
         elif hasattr(obj, "_encode"):
             return obj._encode()
