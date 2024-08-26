@@ -1067,6 +1067,7 @@ class Report(object):
     def __contains__(self, filename):
         return filename in self._files
 
+    @sentry_sdk.trace
     def merge(self, new_report, joined=True):
         """combine report data from another"""
         if new_report is None:
