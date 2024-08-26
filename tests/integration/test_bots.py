@@ -1,5 +1,4 @@
 import pytest
-import requests
 
 from shared.bots.exceptions import RepositoryWithoutValidBotError
 from shared.bots.github_apps import get_github_app_info_for_owner
