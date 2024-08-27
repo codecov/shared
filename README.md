@@ -47,6 +47,11 @@ In order to run tests from within your docker container, run:
 make test
 ```
 
+To run a specific test file, run for example:
+```
+make test-path TEST_PATH=tests/unit/bundle_analysis/test_bundle_analysis.py
+```
+
 ## Running migrations
 
 If you make changes to the models in `shared/django_apps/` you will need to create migrations to reflect those changes in the database.

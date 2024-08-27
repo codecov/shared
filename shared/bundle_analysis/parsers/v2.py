@@ -163,7 +163,7 @@ class ParserV2:
     def _asset_type(self, name: str) -> AssetType:
         extension = get_extension(name)
 
-        if extension in ["js"]:
+        if extension in ["js", "mjs", "cjs"]:
             return AssetType.JAVASCRIPT
         if extension in ["css"]:
             return AssetType.STYLESHEET

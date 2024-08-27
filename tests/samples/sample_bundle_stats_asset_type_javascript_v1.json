@@ -1,0 +1,39 @@
+{
+  "version": "1",
+  "plugin": {
+    "name": "test_only",
+    "version": "test"
+  },
+  "builtAt": 1701451048604,
+  "duration": 331,
+  "bundler": { "name": "test_only", "version": "test" },
+  "bundleName": "sample",
+  "assets": [
+    {
+      "name": "assets/LazyComponent-123.js",
+      "size": 10,
+      "gzipSize": 5,
+      "normalized": "assets/LazyComponent-*.js"
+    },
+    {
+      "name": "assets/index-abc.mjs",
+      "size": 20,
+      "gzipSize": 10,
+      "normalized": "assets/index-*.mjs"
+    },
+    {
+      "name": "assets/index-xyz.cjs",
+      "size": 30,
+      "gzipSize": 15,
+      "normalized": "assets/index-*.cjs"
+    },
+    {
+      "name": "assets/test.notjs",
+      "size": 30,
+      "gzipSize": 15,
+      "normalized": "assets/test.notjs"
+    }
+  ],
+  "chunks": [],
+  "modules": []
+}
