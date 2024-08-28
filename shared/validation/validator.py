@@ -13,7 +13,6 @@ from shared.validation.helpers import (
     PercentSchemaField,
     UserGivenBranchRegex,
 )
-from shared.validation.types import BundleThreshold
 
 
 class CodecovYamlValidator(Validator):
@@ -48,12 +47,7 @@ class CodecovYamlValidator(Validator):
         return ByteSizeSchemaField().validate(value)
 
     def _normalize_coerce_bundle_analysis_threshold(self, value):
-        coerced_value: BundleThreshold = BundleSizeThresholdSchemaField().validate(
-            value
-        )
-        # This change is not forwards compatible, so we need to return a number for now
-        # https://github.com/codecov/engineering-team/issues/2087 to clean up later
-        return coerced_value.threshold
+        return BundleSizeThresholdSchemaField().validate(value)
 
     def _validate_comma_separated_strings(self, constraint, field, value):
         """Test the oddity of a value.
