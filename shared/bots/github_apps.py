@@ -145,9 +145,9 @@ def get_github_app_token(
     except InvalidInstallationError as err:
         if err.error_cause == "installation_suspended":
             # Mark the installation as suspended so we don't keep trying to get the token for it
-            GithubAppInstallation.objects.filter(
-                installation_id=installation_info["installation_id"]
-            ).update(is_suspended=True)
+            GithubAppInstallation.objects.filter(id=installation_info["id"]).update(
+                is_suspended=True
+            )
         raise err
 
 
