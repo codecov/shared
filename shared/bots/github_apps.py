@@ -143,7 +143,7 @@ def get_github_app_token(
         # The token is not owned by an Owner object, so 2nd arg is None
         return installation_token, None
     except InvalidInstallationError as err:
-        if err.error_cause == "installation_suspended":
+        if err.error_cause == "installation_suspended" and "id" in installation_info:
             # Mark the installation as suspended so we don't keep trying to get the token for it
             GithubAppInstallation.objects.filter(id=installation_info["id"]).update(
                 is_suspended=True
