@@ -164,7 +164,7 @@ class BaseCeleryConfig(object):
 
     # http://celery.readthedocs.org/en/latest/userguide/optimizing.html#prefetch-limits
     worker_prefetch_multiplier = int(
-        get_config("setup", "tasks", "celery", "prefetch", default=4)
+        get_config("setup", "tasks", "celery", "prefetch", default=1)
     )
     # !!! NEVER 0 !!! 0 == infinate
 
