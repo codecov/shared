@@ -7,7 +7,7 @@ BEGIN;
 --
 -- Raw SQL operation
 --
-ALTER TABLE "repos" ADD COLUMN "created_at" timestamp with time zone DEFAULT null NULL;
+ALTER TABLE "repos" ADD COLUMN "created_at" timestamp with time zone NULL;
 COMMIT;
 """
 
@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            'ALTER TABLE "repos" ADD COLUMN "created_at" timestamp with time zone DEFAULT null NULL;'
+            'ALTER TABLE "repos" ADD COLUMN "created_at" timestamp with time zone NULL;'
         ),
     ]
