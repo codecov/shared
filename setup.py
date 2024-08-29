@@ -58,6 +58,6 @@ setup(
         "django-prometheus",
         "python-redis-lock",
         "requests>=2.32.3",
-        "sentry-sdk>=1.40.0",
+        "sentry-sdk>=2.13.0",
     ],
 )
