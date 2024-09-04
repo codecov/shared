@@ -28,7 +28,7 @@ setup(
         "certifi>=2024.07.04",
         "codecov-ribs",
         "colour>=0.1.5",
-        "cryptography>=42.0.4",
+        "cryptography>=43.0.1",
         "django-better-admin-arrayfield",
         "django-postgres-extra>=2.0.8",
         "django>=4.2.10,<5.0",  # api uses python 3.9, non-compatible with >5.0

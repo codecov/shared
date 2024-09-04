@@ -148,3 +148,7 @@ cython_debug/
 .idea/
 
 /target
+
+# Make working with Sapling a little easier
+.git
+.sl
