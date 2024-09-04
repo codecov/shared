@@ -57,29 +57,6 @@ class TestMemoryStorageService(BaseTestCase):
         with open(local_path, "rb") as f:
             assert f.read().decode() == data
 
-    def test_write_then_append_then_read_file(self, codecov_vcr):
-        storage = MemoryStorageService(minio_config)
-        path = "test_write_then_append_then_read_file/result"
-        data = "lorem ipsum dolor test_write_then_read_file á"
-        second_data = "mom, look at me, appending data"
-        bucket_name = "thiagoarchivetest"
-        writing_result = storage.write_file(bucket_name, path, data)
-        second_writing_result = storage.append_to_file(bucket_name, path, second_data)
-        assert writing_result
-        assert second_writing_result
-        reading_result = storage.read_file(bucket_name, path)
-        assert reading_result.decode() == "\n".join([data, second_data])
-
-    def test_append_to_non_existing_file(self, request, codecov_vcr):
-        storage = MemoryStorageService(minio_config)
-        path = f"{request.node.name}/result.txt"
-        second_data = "mom, look at me, appending data"
-        bucket_name = "thiagoarchivetest"
-        second_writing_result = storage.append_to_file(bucket_name, path, second_data)
-        assert second_writing_result
-        reading_result = storage.read_file(bucket_name, path)
-        assert reading_result.decode() == second_data
-
     def test_read_file_does_not_exist(self, request, codecov_vcr):
         storage = MemoryStorageService(minio_config)
         path = f"{request.node.name}/does_not_exist.txt"

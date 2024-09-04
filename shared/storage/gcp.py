@@ -84,30 +84,6 @@ class GCPStorageService(BaseStorageService):
             blob.upload_from_file(data)
             return True
 
-    def append_to_file(self, bucket_name, path, data):
-        """
-            Appends more content to the file `path`
-            (What happens if the file doesn't exist?)
-
-            Note that this method assumes some non-bytes and instead decodable structure
-                at the file
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            path (str): The desired path of the file
-            data (str): The data to be appended to the file
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-        """
-        try:
-            file_contents = "\n".join(
-                (self.read_file(bucket_name, path).decode(), data)
-            )
-        except FileNotInStorageError:
-            file_contents = data
-        return self.write_file(bucket_name, path, file_contents)
-
     def read_file(self, bucket_name, path, file_obj=None, *, retry=0):
         """Reads the content of a file
 
