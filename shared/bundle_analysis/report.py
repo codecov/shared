@@ -3,7 +3,7 @@ import logging
 import os
 import sqlite3
 import tempfile
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Set, Tuple, Union
 
 from sqlalchemy import asc, desc, text
 from sqlalchemy.exc import OperationalError
@@ -128,6 +128,28 @@ class BundleReport:
             query = query.filter(Asset.asset_type.in_(asset_types))
         return query
 
+    def _get_size(
+        self,
+        size_column: Union[Asset.size, Asset.gzip_size],
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> int:
+        with get_db_session(self.db_path) as session:
+            assets = (
+                session.query(func.sum(size_column).label("size"))
+                .join(Asset.session)
+                .join(Session.bundle)
+                .filter(Bundle.id == self.bundle.id)
+            )
+            assets = self._asset_filter(
+                assets,
+                asset_types,
+                chunk_entry,
+                chunk_initial,
+            )
+            return assets.scalar() or 0
+
     def asset_reports(
         self,
         asset_types: Optional[List[AssetType]] = None,
@@ -158,20 +180,25 @@ class BundleReport:
         chunk_entry: Optional[bool] = None,
         chunk_initial: Optional[bool] = None,
     ) -> int:
-        with get_db_session(self.db_path) as session:
-            assets = (
-                session.query(func.sum(Asset.size).label("asset_size"))
-                .join(Asset.session)
-                .join(Session.bundle)
-                .filter(Bundle.id == self.bundle.id)
-            )
-            assets = self._asset_filter(
-                assets,
-                asset_types,
-                chunk_entry,
-                chunk_initial,
-            )
-            return assets.scalar() or 0
+        return self._get_size(
+            Asset.size,
+            asset_types,
+            chunk_entry,
+            chunk_initial,
+        )
+
+    def total_gzip_size(
+        self,
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> int:
+        return self._get_size(
+            Asset.gzip_size,
+            asset_types,
+            chunk_entry,
+            chunk_initial,
+        )
 
     def info(self) -> dict:
         with get_db_session(self.db_path) as session:
