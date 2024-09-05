@@ -87,6 +87,16 @@ def test_create_bundle_report():
             )
             for ar in asset_reports
         ] == [
+            # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
+            # Made a similar note in the parser code where the associations are made
+            (
+                "assets/index-*.js",
+                "assets/index-666d2e09.js",
+                144577,
+                144576,
+                28,
+                AssetType.JAVASCRIPT,
+            ),
             (
                 "assets/react-*.svg",
                 "assets/react-35ef61ed.svg",
@@ -117,16 +127,6 @@ def test_create_bundle_report():
                 154,
                 153,
                 2,
-                AssetType.JAVASCRIPT,
-            ),
-            # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
-            # Made a similar note in the parser code where the associations are made
-            (
-                "assets/index-*.js",
-                "assets/index-666d2e09.js",
-                144577,
-                144576,
-                28,
                 AssetType.JAVASCRIPT,
             ),
         ]
@@ -186,6 +186,91 @@ def test_bundle_report_asset_filtering():
             == 144577
         )
 
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_asset_ordering():
+    try:
+        report = BundleAnalysisReport()
+        session_id, bundle_name = report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+        assert bundle_name == "sample"
+
+        assert report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
+        }
+
+        bundle_reports = list(report.bundle_reports())
+        assert len(bundle_reports) == 1
+
+        bundle_report = report.bundle_report("invalid")
+        assert bundle_report is None
+        bundle_report = report.bundle_report("sample")
+
+        all_asset_reports = list(bundle_report.asset_reports())
+        assert len(all_asset_reports) == 5
+
+        # Sort by size in descending
+        ordered_asset_reports = list(
+            (ar.name, ar.size)
+            for ar in bundle_report.asset_reports(
+                ordering_column="size",
+                ordering_desc=True,
+            )
+        )
+        assert ordered_asset_reports == [
+            ("assets/index-*.js", 144577),
+            ("assets/react-*.svg", 4126),
+            ("assets/index-*.css", 1421),
+            ("assets/LazyComponent-*.js", 294),
+            ("assets/index-*.js", 154),
+        ]
+        # Sort by size in ascending
+        ordered_asset_reports = list(
+            (ar.name, ar.size)
+            for ar in bundle_report.asset_reports(
+                ordering_column="size",
+                ordering_desc=False,
+            )
+        )
+        assert ordered_asset_reports == [
+            ("assets/index-*.js", 154),
+            ("assets/LazyComponent-*.js", 294),
+            ("assets/index-*.css", 1421),
+            ("assets/react-*.svg", 4126),
+            ("assets/index-*.js", 144577),
+        ]
+        # Sort by name in descending
+        ordered_asset_reports = list(
+            (ar.name, ar.size)
+            for ar in bundle_report.asset_reports(
+                ordering_column="name",
+                ordering_desc=True,
+            )
+        )
+        assert ordered_asset_reports == [
+            ("assets/react-*.svg", 4126),
+            ("assets/index-*.css", 1421),
+            ("assets/index-*.js", 154),
+            ("assets/index-*.js", 144577),
+            ("assets/LazyComponent-*.js", 294),
+        ]
+        # Sort by name in ascending
+        ordered_asset_reports = list(
+            (ar.name, ar.size)
+            for ar in bundle_report.asset_reports(
+                ordering_column="name",
+                ordering_desc=False,
+            )
+        )
+        assert ordered_asset_reports == [
+            ("assets/LazyComponent-*.js", 294),
+            ("assets/index-*.js", 144577),
+            ("assets/index-*.js", 154),
+            ("assets/index-*.css", 1421),
+            ("assets/react-*.svg", 4126),
+        ]
     finally:
         report.cleanup()
 
@@ -452,6 +537,16 @@ def test_create_bundle_report_v1():
             )
             for ar in asset_reports
         ] == [
+            # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
+            # Made a similar note in the parser code where the associations are made
+            (
+                "assets/index-*.js",
+                "assets/index-666d2e09.js",
+                144577,
+                144,
+                28,
+                AssetType.JAVASCRIPT,
+            ),
             (
                 "assets/react-*.svg",
                 "assets/react-35ef61ed.svg",
@@ -482,16 +577,6 @@ def test_create_bundle_report_v1():
                 154,
                 0,
                 2,
-                AssetType.JAVASCRIPT,
-            ),
-            # FIXME: this is wrong since it's capturing the SVG and CSS modules as well.
-            # Made a similar note in the parser code where the associations are made
-            (
-                "assets/index-*.js",
-                "assets/index-666d2e09.js",
-                144577,
-                144,
-                28,
                 AssetType.JAVASCRIPT,
             ),
         ]
