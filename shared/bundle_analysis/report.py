@@ -173,6 +173,50 @@ class BundleReport:
             )
             return assets.scalar() or 0
 
+    def total_gzip_size(
+        self,
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> int:
+        """
+        Returns the sum of all assets' gzip_size if present plus
+        the sum of all assets' size if they do not have gzip_size value.
+        This simulates the amount of data transfer in a realisitic setting,
+        for those assets that are not compressible we will use its uncompressed size.
+        """
+        with get_db_session(self.db_path) as session:
+            # Total gzip size
+            assets = (
+                session.query(func.sum(Asset.gzip_size).label("size"))
+                .join(Asset.session)
+                .join(Session.bundle)
+                .filter(Bundle.id == self.bundle.id)
+            )
+            assets = self._asset_filter(
+                assets,
+                asset_types,
+                chunk_entry,
+                chunk_initial,
+            )
+            gzip_size = assets.scalar() or 0
+            # Total size for uncompressible assets
+            assets = (
+                session.query(func.sum(Asset.size).label("size"))
+                .join(Asset.session)
+                .join(Session.bundle)
+                .filter(Bundle.id == self.bundle.id)
+                .filter(Asset.gzip_size is None)
+            )
+            assets = self._asset_filter(
+                assets,
+                asset_types,
+                chunk_entry,
+                chunk_initial,
+            )
+            uncompressed_size = assets.scalar() or 0
+            return gzip_size + uncompressed_size
+
     def info(self) -> dict:
         with get_db_session(self.db_path) as session:
             result = (
