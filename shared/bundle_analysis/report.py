@@ -10,6 +10,7 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
+from sqlalchemy.sql.functions import coalesce
 
 from shared.bundle_analysis.db_migrations import BundleAnalysisMigration
 from shared.bundle_analysis.models import (
@@ -186,9 +187,10 @@ class BundleReport:
         for those assets that are not compressible we will use its uncompressed size.
         """
         with get_db_session(self.db_path) as session:
-            # Total gzip size
             assets = (
-                session.query(func.sum(Asset.gzip_size).label("size"))
+                session.query(
+                    func.sum(coalesce(Asset.gzip_size, Asset.size)).label("size")
+                )
                 .join(Asset.session)
                 .join(Session.bundle)
                 .filter(Bundle.id == self.bundle.id)
@@ -199,23 +201,7 @@ class BundleReport:
                 chunk_entry,
                 chunk_initial,
             )
-            gzip_size = assets.scalar() or 0
-            # Total size for uncompressible assets
-            assets = (
-                session.query(func.sum(Asset.size).label("size"))
-                .join(Asset.session)
-                .join(Session.bundle)
-                .filter(Bundle.id == self.bundle.id)
-                .filter(Asset.gzip_size is None)
-            )
-            assets = self._asset_filter(
-                assets,
-                asset_types,
-                chunk_entry,
-                chunk_initial,
-            )
-            uncompressed_size = assets.scalar() or 0
-            return gzip_size + uncompressed_size
+            return assets.scalar() or 0
 
     def info(self) -> dict:
         with get_db_session(self.db_path) as session:
