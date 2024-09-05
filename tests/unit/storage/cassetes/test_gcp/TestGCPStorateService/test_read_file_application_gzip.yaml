@@ -55,58 +55,6 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
-      X-Goog-API-Client:
-      - gl-python/3.7.6 gax/1.16.0 gapic/1.18.0 gccl/1.18.0
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive004?projection=noAcl&prettyPrint=false
-  response:
-    body:
-      string: "{\n  \"kind\": \"storage#bucket\",\n  \"selfLink\": \"https://storage.googleapis.com/storage/v1/b/testingarchive004\"\
-        ,\n  \"id\": \"testingarchive004\",\n  \"name\": \"testingarchive004\",\n\
-        \  \"projectNumber\": \"582817289294\",\n  \"metageneration\": \"1\",\n  \"\
-        location\": \"US\",\n  \"storageClass\": \"STANDARD\",\n  \"etag\": \"CAE=\"\
-        ,\n  \"timeCreated\": \"2020-02-10T12:12:27.090Z\",\n  \"updated\": \"2020-02-10T12:12:27.090Z\"\
-        ,\n  \"iamConfiguration\": {\n    \"bucketPolicyOnly\": {\n      \"enabled\"\
-        : false\n    },\n    \"uniformBucketLevelAccess\": {\n      \"enabled\": false\n\
-        \    }\n  },\n  \"locationType\": \"multi-region\"\n}\n"
-    headers:
-      Alt-Svc:
-      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
-        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
-        ma=2592000
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '562'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Mon, 10 Feb 2020 12:12:45 GMT
-      ETag:
-      - CAE=
-      Expires:
-      - Mon, 10 Feb 2020 12:12:45 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - AEnB2Uo7rJwQ0sri7d5N9n1nzkhSTEuojN80Hpf1_gWT0vt-VRC47Z7l_EzLousg3qFWug4JVhk8Yq7dSzMA_Ce5LKF0tsN-BQ
-    status:
-      code: 200
-      message: OK
-- request:
     body: !!binary |
       LS09PT09PT09PT09PT09PT0xNjQ3NjYxNTQ1NzQ4MTQ2NjQ2PT0NCmNvbnRlbnQtdHlwZTogYXBw
       bGljYXRpb24vanNvbjsgY2hhcnNldD1VVEYtOA0KDQp7Im5hbWUiOiAiZ3ppcHBlZF9maWxlL3Rl
