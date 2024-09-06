@@ -750,3 +750,27 @@ def test_bundle_report_asset_type_javascript():
             case["expected_total_size"],
             case["expected_js_size"],
         )
+
+
+def test_bundle_report_total_gzip_size():
+    try:
+        report = BundleAnalysisReport()
+        session_id, bundle_name = report.ingest(sample_bundle_stats_path)
+        assert session_id == 1
+        assert bundle_name == "sample"
+
+        assert report.metadata() == {
+            MetadataKey.SCHEMA_VERSION: SCHEMA_VERSION,
+        }
+
+        bundle_reports = list(report.bundle_reports())
+        assert len(bundle_reports) == 1
+
+        bundle_report = report.bundle_report("invalid")
+        assert bundle_report is None
+        bundle_report = report.bundle_report("sample")
+
+        assert bundle_report.total_size() == 150572
+        assert bundle_report.total_gzip_size() == 150567
+    finally:
+        report.cleanup()
