@@ -4,6 +4,8 @@ import uuid
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
+from psqlextra.models import PostgresPartitionedModel
+from psqlextra.types import PostgresPartitioningMethod
 
 from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
 from shared.django_apps.reports.managers import CommitReportManager
@@ -389,7 +391,11 @@ class Flake(BaseModel):
         ]
 
 
-class DailyTestRollup(BaseModel):
+class DailyTestRollup(PostgresPartitionedModel, BaseModel):
+    class PartitioningMeta:
+        method = PostgresPartitioningMethod.RANGE
+        key = ["date"]
+
     test = models.ForeignKey(
         "Test",
         db_column="test_id",
@@ -401,6 +407,7 @@ class DailyTestRollup(BaseModel):
     branch = models.TextField()
 
     fail_count = models.IntegerField()
+    skip_count = models.IntegerField()
     pass_count = models.IntegerField()
     last_duration_seconds = models.FloatField()
     avg_duration_seconds = models.FloatField()
