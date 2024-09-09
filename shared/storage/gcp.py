@@ -1,5 +1,6 @@
 import gzip
 import logging
+from typing import IO
 
 import google.cloud.exceptions
 from google.cloud import storage
@@ -26,8 +27,8 @@ class GCPStorageService(BaseStorageService):
         return Credentials.from_service_account_info(gcp_config)
 
     def get_blob(self, bucket_name, path):
-        bucket = self.storage_client.get_bucket(bucket_name)
-        return storage.Blob(path, bucket)
+        bucket = self.storage_client.bucket(bucket_name)
+        return bucket.blob(path)
 
     def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         """
@@ -48,29 +49,27 @@ class GCPStorageService(BaseStorageService):
 
     def write_file(
         self,
-        bucket_name,
-        path,
-        data,
+        bucket_name: str,
+        path: str,
+        data: str | bytes | IO,
         reduced_redundancy=False,
         *,
         is_already_gzipped: bool = False,
     ):
         """
-            Writes a new file with the contents of `data`
-            (What happens if the file already exists?)
+        Writes a new file with the contents of `data`
+        (What happens if the file already exists?)
 
 
         Args:
             bucket_name (str): The name of the bucket for the file to be created on
             path (str): The desired path of the file
-            data (str): The data to be written to the file
+            data: The data to be written to the file
             reduced_redundancy (bool): Whether a reduced redundancy mode should be used (default: {False})
             is_already_gzipped (bool): Whether the file is already gzipped (default: {False})
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
         """
         blob = self.get_blob(bucket_name, path)
+
         if isinstance(data, str):
             data = data.encode()
         if isinstance(data, bytes):
@@ -84,7 +83,9 @@ class GCPStorageService(BaseStorageService):
             blob.upload_from_file(data)
             return True
 
-    def read_file(self, bucket_name, path, file_obj=None, *, retry=0):
+    def read_file(
+        self, bucket_name: str, path: str, file_obj: IO | None = None
+    ) -> bytes:
         """Reads the content of a file
 
         Args:
@@ -92,14 +93,21 @@ class GCPStorageService(BaseStorageService):
             path (str): The path of the file
 
         Raises:
-            NotImplementedError: If the current instance did not implement this method
             FileNotInStorageError: If the file does not exist
 
         Returns:
-            bytes : The contents of that file, still encoded as bytes
+            bytes: The contents of that file, still encoded as bytes
         """
         blob = self.get_blob(bucket_name, path)
+
         try:
+            # The two `download_XYZ` below will transparently decompress gzip encoded files.
+            # However, that has a very weird interaction with a content-type of
+            # `application/x-gzip`, which can lead to bogus checksum mismatch errors.
+            # To avoid that for now without creating a wrapper that can
+            # decompress `gzip`, and potentially `zstd` compressed transparently,
+            # we will rewrite the metadata of the blob so that the `download_XYZ`
+            # will properly apply transparent decompression.
             blob.reload()
             if (
                 blob.content_type == "application/x-gzip"
@@ -108,19 +116,15 @@ class GCPStorageService(BaseStorageService):
                 blob.content_type = "text/plain"
                 blob.content_encoding = "gzip"
                 blob.patch()
+
             if file_obj is None:
-                return blob.download_as_bytes(checksum="crc32c")
+                return blob.download_as_bytes()
             else:
-                blob.download_to_file(file_obj, checksum="crc32c")
+                blob.download_to_file(file_obj)
         except google.cloud.exceptions.NotFound:
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
-        except google.resumable_media.common.DataCorruption:
-            if retry == 0:
-                log.info("Download checksum failed. Trying again")
-                return self.read_file(bucket_name, path, file_obj, retry=1)
-            raise
 
-    def delete_file(self, bucket_name, path):
+    def delete_file(self, bucket_name: str, path: str) -> bool:
         """Deletes a single file from the storage (what happens if the file doesnt exist?)
 
         Args:
@@ -128,11 +132,10 @@ class GCPStorageService(BaseStorageService):
             path (str): The path of the file to be deleted
 
         Raises:
-            NotImplementedError: If the current instance did not implement this method
             FileNotInStorageError: If the file does not exist
 
         Returns:
-            bool: True if the deletion was succesful
+            bool: True if the deletion was successful
         """
         blob = self.get_blob(bucket_name, path)
         try:
@@ -141,7 +144,7 @@ class GCPStorageService(BaseStorageService):
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
         return True
 
-    def delete_files(self, bucket_name, paths=[]):
+    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
         """Batch deletes a list of files from a given bucket
             (what happens to the files that don't exist?)
 
@@ -149,20 +152,17 @@ class GCPStorageService(BaseStorageService):
             bucket_name (str): The name of the bucket for the file lives
             paths (list): A list of the paths to be deletes (default: {[]})
 
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-
         Returns:
             list: A list of booleans, where each result indicates whether that file was deleted
                 successfully
         """
-        bucket = self.storage_client.get_bucket(bucket_name)
-        blobs = [self.get_blob(bucket_name, path) for path in paths]
+        bucket = self.storage_client.bucket(bucket_name)
+        blobs = [bucket.blob(path) for path in paths]
         blobs_errored = set()
         bucket.delete_blobs(blobs, on_error=blobs_errored.add)
         return [b not in blobs_errored for b in blobs]
 
-    def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
+    def list_folder_contents(self, bucket_name: str, prefix=None, recursive=True):
         """List the contents of a specific folder
 
         Attention: google ignores the `recursive` param
@@ -171,13 +171,9 @@ class GCPStorageService(BaseStorageService):
             bucket_name (str): The name of the bucket for the file lives
             prefix: The prefix of the files to be listed (default: {None})
             recursive: Whether the listing should be recursive (default: {True})
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
         """
         assert recursive
-        bucket = self.storage_client.get_bucket(bucket_name)
-        return (self._blob_to_dict(b) for b in bucket.list_blobs(prefix=prefix))
-
-    def _blob_to_dict(self, blob):
-        return {"name": blob.name, "size": blob.size}
+        bucket = self.storage_client.bucket(bucket_name)
+        return (
+            {"name": b.name, "size": b.size} for b in bucket.list_blobs(prefix=prefix)
+        )

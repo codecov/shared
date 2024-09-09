@@ -152,3 +152,5 @@ cython_debug/
 # Make working with Sapling a little easier
 .git
 .sl
+
+tests/gcs-service-account.json
