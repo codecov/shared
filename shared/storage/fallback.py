@@ -44,20 +44,6 @@ class StorageWithFallbackService(BaseStorageService):
             is_already_gzipped=is_already_gzipped,
         )
 
-    def append_to_file(self, bucket_name, path, data):
-        """
-            Appends more content to the file `path`
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            path (str): The desired path of the file
-            data (str): The data to be appended to the file
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-        """
-        return self.main_service.append_to_file(bucket_name, path, data)
-
     def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 

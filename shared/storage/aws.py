@@ -86,30 +86,6 @@ class AWSStorageService(BaseStorageService):
         )
         return True
 
-    def append_to_file(self, bucket_name, path, data):
-        """
-            Appends more content to the file `path`
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            path (str): The desired path of the file
-            data (str): The data to be appended to the file
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-        """
-        try:
-            file_contents = "\n".join(
-                (self.read_file(bucket_name, path).decode(), data)
-            )
-        except ClientError as e:
-            if e.response["Error"]["Code"] == "NoSuchKey":
-                file_contents = data
-            else:
-                raise
-
-        return self.write_file(bucket_name=bucket_name, path=path, data=file_contents)
-
     def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 

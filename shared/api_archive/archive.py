@@ -141,13 +141,6 @@ class ArchiveService(object):
         self.write_file(path, stringified_data)
         return path
 
-    def update_archive(self, path, data):
-        """
-        Grabs path from storage, adds data to path object
-        writes back to path, overwriting the original contents
-        """
-        self.storage.append_to_file(self.root, path, data)
-
     @sentry_sdk.trace
     def write_file(self, path, data, reduced_redundancy=False, gzipped=False):
         """

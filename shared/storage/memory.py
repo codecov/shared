@@ -69,27 +69,6 @@ class MemoryStorageService(BaseStorageService):
             self.storage[bucket_name][path] = data.read()
         return True
 
-    def append_to_file(self, bucket_name, path, data):
-        """
-            Appends more content to the file `path`
-            (What happens if the file doesn't exist?)
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            path (str): The desired path of the file
-            data (str): The data to be appended to the file
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-        """
-        if isinstance(data, str):
-            data = data.encode()
-        if path not in self.storage[bucket_name]:
-            return self.write_file(bucket_name, path, data)
-        else:
-            new_content = b"\n".join([self.storage[bucket_name].get(path, b""), data])
-            return self.write_file(bucket_name, path, new_content)
-
     def read_file(self, bucket_name, path, file_obj=None):
         """Reads the content of a file
 

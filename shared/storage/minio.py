@@ -195,21 +195,6 @@ class MinioStorageService(BaseStorageService):
         except MinioException:
             raise
 
-    """
-        Retrieves object from path, appends data, writes back to path.
-    """
-
-    def append_to_file(self, bucket_name, path, data):
-        try:
-            file_contents = "\n".join(
-                (self.read_file(bucket_name, path).decode(), data)
-            )
-        except FileNotInStorageError:
-            file_contents = data
-        except MinioException:
-            raise
-        return self.write_file(bucket_name, path, file_contents)
-
     def read_file(self, bucket_name, path, file_obj=None):
         try:
             res = self.minio_client.get_object(bucket_name, path)
