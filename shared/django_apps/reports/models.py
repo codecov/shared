@@ -387,3 +387,46 @@ class Flake(BaseModel):
         indexes = [
             models.Index(fields=["repository", "test", "reduced_error", "end_date"])
         ]
+
+
+class DailyTestTotals(BaseModel):
+    test = models.ForeignKey(
+        "Test",
+        db_column="test_id",
+        related_name="daily_test_totals",
+        on_delete=models.CASCADE,
+    )
+    date = models.DateField()
+    repoid = models.IntegerField()
+    branch = models.TextField()
+
+    fail_count = models.IntegerField()
+    pass_count = models.IntegerField()
+    last_duration_seconds = models.FloatField()
+    avg_duration_seconds = models.FloatField()
+    latest_run = models.DateTimeField()
+    commits_where_fail = ArrayField(models.TextField())
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+        db_table = "reports_dailytesttotals"
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "repoid",
+                    "date",
+                    "branch",
+                    "test",
+                ],
+                name="reports_dailytesttotals_repoid_date_branch_test",
+            )
+        ]
+        indexes = [
+            models.Index(
+                fields=[
+                    "repoid",
+                    "date",
+                ],
+                name="dailytesttotals_repoid_date",
+            )
+        ]
