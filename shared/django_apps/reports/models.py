@@ -389,11 +389,11 @@ class Flake(BaseModel):
         ]
 
 
-class DailyTestTotals(BaseModel):
+class DailyTestRollup(BaseModel):
     test = models.ForeignKey(
         "Test",
         db_column="test_id",
-        related_name="daily_test_totals",
+        related_name="daily_test_rollups",
         on_delete=models.CASCADE,
     )
     date = models.DateField()
@@ -409,7 +409,7 @@ class DailyTestTotals(BaseModel):
 
     class Meta:
         app_label = REPORTS_APP_LABEL
-        db_table = "reports_dailytesttotals"
+        db_table = "reports_dailytestrollups"
         constraints = [
             models.UniqueConstraint(
                 fields=[
@@ -418,7 +418,7 @@ class DailyTestTotals(BaseModel):
                     "branch",
                     "test",
                 ],
-                name="reports_dailytesttotals_repoid_date_branch_test",
+                name="reports_dailytestrollups_repoid_date_branch_test",
             )
         ]
         indexes = [
@@ -427,6 +427,6 @@ class DailyTestTotals(BaseModel):
                     "repoid",
                     "date",
                 ],
-                name="dailytesttotals_repoid_date",
+                name="dailytestrollups_repoid_date",
             )
         ]
