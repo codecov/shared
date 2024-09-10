@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - gitlab.com
+      user-agent:
+      - Default
+    method: GET
+    uri: https://gitlab.com/api/v4/projects/61173290/jobs/7676952799
+  response:
+    content: '{"id":7676952799,"status":"success","stage":"test","name":"tests","ref":"main","tag":false,"coverage":null,"allow_failure":false,"created_at":"2024-08-27T12:56:33.109Z","started_at":"2024-08-27T12:56:33.855Z","finished_at":"2024-08-27T12:57:21.007Z","erased_at":null,"duration":47.152076,"queued_duration":0.240875,"user":{"id":11111386,"username":"giovanni-guidini","name":"Giovanni
+      M Guidini","state":"active","locked":false,"avatar_url":"https://gitlab.com/uploads/-/system/user/avatar/11111386/avatar.png","web_url":"https://gitlab.com/giovanni-guidini","created_at":"2022-03-14T16:58:59.064Z","bio":"","location":"","public_email":"","skype":"","linkedin":"","twitter":"","discord":"","website_url":"","organization":"","job_title":"","pronouns":"","bot":false,"work_information":null,"followers":0,"following":0,"local_time":null},"commit":{"id":"508c25daba5bbc77d8e7cf3c1917d5859153cfd3","short_id":"508c25da","created_at":"2024-08-27T14:56:19.000+02:00","parent_ids":["5c6b671b6610a57342fcb8d821f2058c0089bd0b"],"title":"yaml
+      was not valid","message":"yaml was not valid\n","author_name":"Giovanni Guidini","author_email":"giovanni.guidini@sentry.io","authored_date":"2024-08-27T14:56:19.000+02:00","committer_name":"Giovanni
+      Guidini","committer_email":"giovanni.guidini@sentry.io","committed_date":"2024-08-27T14:56:19.000+02:00","trailers":{},"extended_trailers":{},"web_url":"https://gitlab.com/giovanni-guidini/unexpected-changes/-/commit/508c25daba5bbc77d8e7cf3c1917d5859153cfd3"},"pipeline":{"id":1428929768,"iid":8,"project_id":61173290,"sha":"508c25daba5bbc77d8e7cf3c1917d5859153cfd3","ref":"main","status":"success","source":"push","created_at":"2024-08-27T12:56:33.097Z","updated_at":"2024-08-27T12:57:54.393Z","web_url":"https://gitlab.com/giovanni-guidini/unexpected-changes/-/pipelines/1428929768"},"web_url":"https://gitlab.com/giovanni-guidini/unexpected-changes/-/jobs/7676952799","project":{"ci_job_token_scope_enabled":false},"artifacts":[{"file_type":"trace","size":15937,"filename":"job.log","file_format":null}],"runner":{"id":12270852,"description":"3-green.saas-linux-small-amd64.runners-manager.gitlab.com/default","ip_address":null,"active":true,"paused":false,"is_shared":true,"runner_type":"instance_type","name":"gitlab-runner","online":false,"status":"offline"},"runner_manager":{"id":24719420,"system_id":"s_0e6850b2bce1","version":"17.0.0~pre.88.g761ae5dd","revision":"761ae5dd","platform":"linux","architecture":"amd64","created_at":"2024-05-08T09:53:44.828Z","contacted_at":"2024-09-09T15:01:03.267Z","ip_address":"10.1.5.251","status":"offline"},"artifacts_expire_at":null,"archived":false,"tag_list":[]}'
+    headers:
+      CF-Cache-Status:
+      - MISS
+      CF-RAY:
+      - 8c0fcd713ccc6239-GRU
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 10 Sep 2024 13:35:40 GMT
+      NEL:
+      - '{"success_fraction":0.01,"report_to":"cf-nel","max_age":604800}'
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=wrjFWAI0f7IQ8bwVZ5ONkT6teyLwmH1YLOL9cF3LQG%2BPyNTrpqD%2BOfvANCjDKGSSntPN%2BDfrePSeTWNSHvbnfK81Ld7DW%2B0f0A8tJwHhaRg54rguPF1lacR4obP%2BDb0s5D7f8s%2FosDY%3D"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=RBtgo_2FCmHgtMP_.de3SVtJpfb5YmvExkxHey7anPw-1725975340037-0.0.1.1-604800000;
+        path=/; domain=.gitlab.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      cache-control:
+      - max-age=0, private, must-revalidate
+      content-security-policy:
+      - default-src 'none'
+      etag:
+      - W/"a75cec584a181c65d4477f97f57e7603"
+      gitlab-lb:
+      - haproxy-main-40-lb-gprd
+      gitlab-sv:
+      - gke-cny-api
+      referrer-policy:
+      - strict-origin-when-cross-origin
+      strict-transport-security:
+      - max-age=31536000
+      vary:
+      - Origin, Accept-Encoding
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-gitlab-meta:
+      - '{"correlation_id":"382fafa62d3f904ba4431f49d518a9ea","version":"1"}'
+      x-request-id:
+      - 382fafa62d3f904ba4431f49d518a9ea
+      x-runtime:
+      - '0.147015'
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
