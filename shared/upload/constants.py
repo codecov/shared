@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 ci = {
     "travis": {
         "title": "Travis-CI",
@@ -220,3 +222,13 @@ global_upload_token_providers = [
     "bitbucket",
     "bitbucket_server",
 ]
+
+
+class UploadErrorCode(StrEnum):
+    FILE_NOT_IN_STORAGE = "file_not_in_storage"
+    REPORT_EXPIRED = "report_expired"
+    REPORT_EMPTY = "report_empty"
+
+    # We don't want these - try to add error cases when they arise
+    UNKNOWN_PROCESSING = "unknown_processing"
+    UNKNOWN_STORAGE = "unknown_storage"

@@ -5,11 +5,12 @@ import sqlite3
 import tempfile
 from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
-from sqlalchemy import text
+from sqlalchemy import asc, desc, text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
+from sqlalchemy.sql.functions import coalesce
 
 from shared.bundle_analysis.db_migrations import BundleAnalysisMigration
 from shared.bundle_analysis.models import (
@@ -56,6 +57,10 @@ class AssetReport:
     def __init__(self, db_path: str, asset: Asset):
         self.db_path = db_path
         self.asset = asset
+
+    @property
+    def id(self):
+        return self.asset.id
 
     @property
     def name(self):
@@ -129,8 +134,11 @@ class BundleReport:
         asset_types: Optional[List[AssetType]] = None,
         chunk_entry: Optional[bool] = None,
         chunk_initial: Optional[bool] = None,
+        ordering_column: Optional[str] = "size",
+        ordering_desc: Optional[bool] = True,
     ) -> Iterator[AssetReport]:
         with get_db_session(self.db_path) as session:
+            ordering = desc if ordering_desc else asc
             assets = (
                 session.query(Asset)
                 .join(Asset.session)
@@ -142,7 +150,7 @@ class BundleReport:
                 asset_types,
                 chunk_entry,
                 chunk_initial,
-            )
+            ).order_by(ordering(getattr(Asset, ordering_column)))
             return (AssetReport(self.db_path, asset) for asset in assets.all())
 
     def total_size(
@@ -154,6 +162,35 @@ class BundleReport:
         with get_db_session(self.db_path) as session:
             assets = (
                 session.query(func.sum(Asset.size).label("asset_size"))
+                .join(Asset.session)
+                .join(Session.bundle)
+                .filter(Bundle.id == self.bundle.id)
+            )
+            assets = self._asset_filter(
+                assets,
+                asset_types,
+                chunk_entry,
+                chunk_initial,
+            )
+            return assets.scalar() or 0
+
+    def total_gzip_size(
+        self,
+        asset_types: Optional[List[AssetType]] = None,
+        chunk_entry: Optional[bool] = None,
+        chunk_initial: Optional[bool] = None,
+    ) -> int:
+        """
+        Returns the sum of all assets' gzip_size if present plus
+        the sum of all assets' size if they do not have gzip_size value.
+        This simulates the amount of data transfer in a realisitic setting,
+        for those assets that are not compressible we will use its uncompressed size.
+        """
+        with get_db_session(self.db_path) as session:
+            assets = (
+                session.query(
+                    func.sum(coalesce(Asset.gzip_size, Asset.size)).label("size")
+                )
                 .join(Asset.session)
                 .join(Session.bundle)
                 .filter(Bundle.id == self.bundle.id)
