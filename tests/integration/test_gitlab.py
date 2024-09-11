@@ -191,6 +191,16 @@ class TestGitlabTestCase(object):
         }
 
     @pytest.mark.asyncio
+    async def test_get_pipeline_details(self, valid_handler: Gitlab, codecov_vcr):
+        res = await valid_handler.get_pipeline_details(61173290, 7676952799)
+        assert res == "508c25daba5bbc77d8e7cf3c1917d5859153cfd3"
+
+    @pytest.mark.asyncio
+    async def test_get_pipeline_details_fail(self, valid_handler: Gitlab, codecov_vcr):
+        res = await valid_handler.get_pipeline_details(61173000, 7676952000)
+        assert res is None
+
+    @pytest.mark.asyncio
     async def test_get_pull_request_files(self, codecov_vcr):
         recent_handler = Gitlab(
             repo=dict(service_id="30951850", name="learn-gitlab"),

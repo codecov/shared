@@ -22,7 +22,7 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
 )
 from shared.torngit.status import Status
-from shared.typings.oauth_token_types import OauthConsumerToken
+from shared.typings.oauth_token_types import OauthConsumerToken, Token
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -279,6 +279,13 @@ GITLAB_API_ENDPOINTS = {
         "url_template": Template(
             "/projects/${service_id}/repository/commits/${first_commit}"
         ),
+    },
+    "get_pipeline_details": {
+        "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="get_pipeline_details"),
+        "enterprise_counter": GITLAB_E_API_CALL_COUNTER.labels(
+            endpoint="get_pipeline_details"
+        ),
+        "url_template": Template("/projects/${project_id}/jobs/${job_id}"),
     },
     "list_repos_get_user": {
         "counter": GITLAB_API_CALL_COUNTER.labels(endpoint="list_repos_get_user"),
@@ -620,9 +627,9 @@ class Gitlab(TorngitBaseAdapter):
             api_path,
             body=dict(
                 url=url,
-                enable_ssl_verification=self.verify_ssl
-                if isinstance(self.verify_ssl, bool)
-                else True,
+                enable_ssl_verification=(
+                    self.verify_ssl if isinstance(self.verify_ssl, bool) else True
+                ),
                 token=secret,
                 **events,
             ),
@@ -641,9 +648,9 @@ class Gitlab(TorngitBaseAdapter):
             api_path,
             body=dict(
                 url=url,
-                enable_ssl_verification=self.verify_ssl
-                if isinstance(self.verify_ssl, bool)
-                else True,
+                enable_ssl_verification=(
+                    self.verify_ssl if isinstance(self.verify_ssl, bool) else True
+                ),
                 token=secret,
                 **events,
             ),
@@ -806,6 +813,20 @@ class Gitlab(TorngitBaseAdapter):
         for i in range(0, len(repos), page_size):
             yield repos[i : i + page_size]
 
+    async def get_pipeline_details(
+        self, project_id: int, job_id: int, token: Token | None = None
+    ) -> str | None:
+        token_to_use = self.get_token_by_type_if_none(token, TokenType.read)
+        url = self.count_and_get_url_template("get_pipeline_details").substitute(
+            project_id=project_id, job_id=job_id
+        )
+        try:
+            result = await self.api("get", url, token=token_to_use)
+            return result.get("pipeline", {}).get("sha")
+        except TorngitClientError as err:
+            log.warning("Failed to get pipeline details", extra=dict(error=err))
+            return None
+
     async def list_teams(self, token=None):
         # https://docs.gitlab.com/ce/api/groups.html#list-groups
         all_groups = []
@@ -893,15 +914,15 @@ class Gitlab(TorngitBaseAdapter):
                 ),
                 base=dict(branch=pull["target_branch"] or "", commitid=parent),
                 head=dict(branch=pull["source_branch"] or "", commitid=pull["sha"]),
-                state="open"
-                if pull["state"] in ("opened", "reopened")
-                else pull["state"],
+                state=(
+                    "open" if pull["state"] in ("opened", "reopened") else pull["state"]
+                ),
                 title=pull["title"],
                 id=str(pull["iid"]),
                 number=str(pull["iid"]),
-                merge_commit_sha=pull["merge_commit_sha"]
-                if pull["state"] == "merged"
-                else None,
+                merge_commit_sha=(
+                    pull["merge_commit_sha"] if pull["state"] == "merged" else None
+                ),
             )
 
     async def get_pull_request_files(self, pullid, token=None):
