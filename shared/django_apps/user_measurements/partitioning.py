@@ -6,6 +6,7 @@ from psqlextra.partitioning import (
 )
 from psqlextra.partitioning.config import PostgresPartitioningConfig
 
+from shared.django_apps.reports.models import DailyTestRollup
 from shared.django_apps.user_measurements.models import UserMeasurement
 
 # Overlapping partitions will cause errors - https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE -> "create partitions"
@@ -21,6 +22,14 @@ manager = PostgresPartitioningManager(
                 size=PostgresTimePartitionSize(months=1),
                 count=12,
                 max_age=relativedelta(months=12),
+            ),
+        ),
+        PostgresPartitioningConfig(
+            model=DailyTestRollup,
+            strategy=PostgresCurrentTimePartitioningStrategy(
+                size=PostgresTimePartitionSize(months=1),
+                count=3,
+                max_age=relativedelta(months=3),
             ),
         ),
     ]
