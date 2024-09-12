@@ -56,17 +56,17 @@ class MinioStorageService(BaseStorageService):
         region: str = None,
     ):
         """
-            Initialize the minio client
+        Initialize the minio client
 
         `iam_auth` adds support for IAM base authentication in a fallback pattern.
-            The following will be checked in order:
+        The following will be checked in order:
 
         * EC2 metadata -- a custom endpoint can be provided, default is None.
-        * AWS env vars, specifically AWS_ACCESS_KEY and AWS_SECRECT_KEY
         * Minio env vars, specifically MINIO_ACCESS_KEY and MINIO_SECRET_KEY
+        * AWS env vars, specifically AWS_ACCESS_KEY and AWS_SECRECT_KEY
 
-        to support backward compatibility, the iam_auth setting should be used in the installation
-            configuration
+        to support backward compatibility, the iam_auth setting should be used
+        in the installation configuration
 
         Args:
             host (str): The address of the host where minio lives

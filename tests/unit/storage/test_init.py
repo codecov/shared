@@ -66,47 +66,49 @@ minio_config = {
 }
 
 
-class TestStorageInitialization(object):
-    def test_get_appropriate_storage_service_fallback(self, mock_configuration):
-        mock_configuration.params["services"] = {
-            "chosen_storage": "gcp_with_fallback",
-            "gcp": gcp_config,
-            "aws": aws_config,
-        }
-        res = get_appropriate_storage_service()
-        assert isinstance(res, StorageWithFallbackService)
-        assert isinstance(res.main_service, GCPStorageService)
-        assert res.main_service.config == gcp_config
-        assert isinstance(res.fallback_service, AWSStorageService)
-        assert res.fallback_service.config == aws_config
+def test_get_appropriate_storage_service_fallback(mock_configuration):
+    mock_configuration.params["services"] = {
+        "chosen_storage": "gcp_with_fallback",
+        "gcp": gcp_config,
+        "aws": aws_config,
+    }
+    res = get_appropriate_storage_service()
+    assert isinstance(res, StorageWithFallbackService)
+    assert isinstance(res.main_service, GCPStorageService)
+    assert res.main_service.config == gcp_config
+    assert isinstance(res.fallback_service, AWSStorageService)
+    assert res.fallback_service.config == aws_config
 
-    def test_get_appropriate_storage_service_aws(self, mock_configuration):
-        mock_configuration.params["services"] = {
-            "chosen_storage": "aws",
-            "gcp": gcp_config,
-            "aws": aws_config,
-        }
-        res = get_appropriate_storage_service()
-        assert isinstance(res, AWSStorageService)
-        assert res.config == aws_config
 
-    def test_get_appropriate_storage_service_gcp(self, mock_configuration):
-        mock_configuration.params["services"] = {
-            "chosen_storage": "gcp",
-            "gcp": gcp_config,
-            "aws": aws_config,
-        }
-        res = get_appropriate_storage_service()
-        assert isinstance(res, GCPStorageService)
-        assert res.config == gcp_config
+def test_get_appropriate_storage_service_aws(mock_configuration):
+    mock_configuration.params["services"] = {
+        "chosen_storage": "aws",
+        "gcp": gcp_config,
+        "aws": aws_config,
+    }
+    res = get_appropriate_storage_service()
+    assert isinstance(res, AWSStorageService)
+    assert res.config == aws_config
 
-    def test_get_appropriate_storage_service_minio(self, mock_configuration):
-        mock_configuration.params["services"] = {
-            "chosen_storage": "minio",
-            "gcp": gcp_config,
-            "aws": aws_config,
-            "minio": minio_config,
-        }
-        res = get_appropriate_storage_service()
-        assert isinstance(res, MinioStorageService)
-        assert res.minio_config == minio_config
+
+def test_get_appropriate_storage_service_gcp(mock_configuration):
+    mock_configuration.params["services"] = {
+        "chosen_storage": "gcp",
+        "gcp": gcp_config,
+        "aws": aws_config,
+    }
+    res = get_appropriate_storage_service()
+    assert isinstance(res, GCPStorageService)
+    assert res.config == gcp_config
+
+
+def test_get_appropriate_storage_service_minio(mock_configuration):
+    mock_configuration.params["services"] = {
+        "chosen_storage": "minio",
+        "gcp": gcp_config,
+        "aws": aws_config,
+        "minio": minio_config,
+    }
+    res = get_appropriate_storage_service()
+    assert isinstance(res, MinioStorageService)
+    assert res.minio_config == minio_config
