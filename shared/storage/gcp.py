@@ -84,7 +84,7 @@ class GCPStorageService(BaseStorageService):
             return True
 
     def read_file(
-        self, bucket_name: str, path: str, file_obj: IO | None = None
+        self, bucket_name: str, path: str, file_obj: IO | None = None, retry=0
     ) -> bytes:
         """Reads the content of a file
 
@@ -108,21 +108,28 @@ class GCPStorageService(BaseStorageService):
             # decompress `gzip`, and potentially `zstd` compressed transparently,
             # we will rewrite the metadata of the blob so that the `download_XYZ`
             # will properly apply transparent decompression.
-            blob.reload()
-            if (
-                blob.content_type == "application/x-gzip"
-                and blob.content_encoding == "gzip"
-            ):
-                blob.content_type = "text/plain"
-                blob.content_encoding = "gzip"
-                blob.patch()
+            if retry:
+                blob.reload()
+                if (
+                    blob.content_type == "application/x-gzip"
+                    and blob.content_encoding == "gzip"
+                ):
+                    blob.content_type = "text/plain"
+                    blob.content_encoding = "gzip"
+                    blob.patch()
 
             if file_obj is None:
-                return blob.download_as_bytes()
+                return blob.download_as_bytes(checksum="crc32c")
             else:
-                blob.download_to_file(file_obj)
+                blob.download_to_file(file_obj, checksum="crc32c")
+                return b""
         except google.cloud.exceptions.NotFound:
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
+        except google.resumable_media.common.DataCorruption:
+            if retry == 0:
+                log.info("Download checksum failed. Trying again")
+                return self.read_file(bucket_name, path, file_obj, retry=1)
+            raise
 
     def delete_file(self, bucket_name: str, path: str) -> bool:
         """Deletes a single file from the storage (what happens if the file doesnt exist?)
