@@ -2,17 +2,26 @@
 
 from django.db import migrations, models
 
+"""
+BEGIN;
+--
+-- Add field flaky_fail_count to dailytestrollup
+--
+ALTER TABLE "reports_dailytestrollups" ADD COLUMN "flaky_fail_count" integer DEFAULT 0 NOT NULL;
+ALTER TABLE "reports_dailytestrollups" ALTER COLUMN "flaky_fail_count" DROP DEFAULT;
+COMMIT;
+"""
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('reports', '0023_auto_20240909_2002'),
+        ("reports", "0023_auto_20240909_2002"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dailytestrollup',
-            name='flaky_fail_count',
+            model_name="dailytestrollup",
+            name="flaky_fail_count",
             field=models.IntegerField(default=0),
             preserve_default=False,
         ),
