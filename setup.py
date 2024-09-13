@@ -12,14 +12,13 @@ setup(
     name="shared",
     version="0.11.2",
     packages=find_packages(exclude=["contrib", "docs", "tests*"]),
-    # rust extensions are not zip safe, just like C-extensions.
-    zip_safe=False,
+    package_data={"shared": ["py.typed"]},
     description="Shared Codecov",
     long_description=long_description,
     url="https://github.com/codecov/shared",
     author="Codecov",
     author_email="support@codecov.io",
-    python_requires=">=3.11",
+    python_requires=">=3.12",
     install_requires=[
         "analytics-python==1.3.0b1",
         "boto3>=1.9.218",
