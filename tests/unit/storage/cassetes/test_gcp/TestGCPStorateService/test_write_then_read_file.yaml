@@ -55,50 +55,6 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/0671d16c-d136-4d82-8426-ffce98fa7b55
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:34:35 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:34:35 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdvvhkGdAozf2CoLv39CbqF8lwlilQnGP7a88dP3n6bRmW4vV_q5T_qWZRxXKSXIyccnIU2X6DtrnFIB98v5zbNljPeSChGB
-    status:
-      code: 200
-      message: OK
-- request:
     body: !!binary |
       LS09PT09PT09PT09PT09PT02OTMxNTg5NTA5NzU5NTc2OTM3PT0NCmNvbnRlbnQtdHlwZTogYXBw
       bGljYXRpb24vanNvbjsgY2hhcnNldD1VVEYtOA0KDQp7Im5hbWUiOiAidGVzdF93cml0ZV90aGVu
@@ -209,50 +165,6 @@ interactions:
       - X-Origin
       X-GUploader-UploadID:
       - ADPycdvs1c-gHUzMon4mNmgjrEralxvge81Now2Oc0ij0LipykyLEnl71XpkiogKojHSsnhfPTY74FciY6GHu3nbosOdUg
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/cfd54184-35bd-4f1e-a5b6-f4cbf1a246d2
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:34:35 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:34:35 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycduAALrR0Es5dMolGZx69HX96O8VJEpgwSDn-XPNKsWk854-FDb1jxP4aBLRfHIq7xxFYKc92TD7VaJRTMrqgzLhzviKMiYS
     status:
       code: 200
       message: OK
