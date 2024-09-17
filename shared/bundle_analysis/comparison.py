@@ -44,6 +44,7 @@ class BundleChange:
     bundle_name: str
     change_type: ChangeType
     size_delta: int
+    percentage_delta: float
 
 
 @dataclass(frozen=True)
@@ -249,6 +250,7 @@ class BundleAnalysisComparison:
                     bundle_name=bundle_name,
                     change_type=BundleChange.ChangeType.ADDED,
                     size_delta=head_bundle_report.total_size(),
+                    percentage_delta=100,
                 )
             else:
                 base_bundle_report = base_bundle_reports[bundle_name]
@@ -256,10 +258,14 @@ class BundleAnalysisComparison:
                 size_delta = (
                     head_bundle_report.total_size() - base_bundle_report.total_size()
                 )
+                percentage_delta = round(
+                    (size_delta / base_bundle_report.total_size()) * 100, 2
+                )
                 yield BundleChange(
                     bundle_name=bundle_name,
                     change_type=BundleChange.ChangeType.CHANGED,
                     size_delta=size_delta,
+                    percentage_delta=percentage_delta,
                 )
 
         for bundle_name, base_bundle_report in base_bundle_reports.items():
@@ -267,6 +273,7 @@ class BundleAnalysisComparison:
                 bundle_name=bundle_name,
                 change_type=BundleChange.ChangeType.REMOVED,
                 size_delta=-base_bundle_report.total_size(),
+                percentage_delta=-100.0,
             )
 
     @property
@@ -284,6 +291,8 @@ class BundleAnalysisComparison:
         base_size = sum(
             report.total_size() for report in self.base_report.bundle_reports()
         )
+        if base_size == 0:
+            return 100.0
         return round((self.total_size_delta / base_size) * 100, 2)
 
     def bundle_comparison(self, bundle_name: str) -> BundleComparison:
