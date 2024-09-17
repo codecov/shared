@@ -44,7 +44,7 @@ class BundleChange:
     bundle_name: str
     change_type: ChangeType
     size_delta: int
-    percentage_delta: float  # [-100, 100] range
+    percentage_delta: float
 
 
 @dataclass(frozen=True)
