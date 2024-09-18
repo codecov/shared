@@ -116,13 +116,42 @@ def _get_apps_from_weighted_selection(
     return apps_to_consider
 
 
+def handle_invalid_installation(
+    installation_info: GithubInstallationInfo, error: InvalidInstallationError
+) -> None:
+    """Handles the InvalidInstallationError, syncing our info with GitHub's , so that we don't have the same error again in the future.
+
+    possible side effects:
+        * marking GithubAppInstallation as suspended;
+        * deleting GithubAppInstallations;
+        * clearing out Owner.integration_id
+    """
+    if "id" in installation_info:
+        match error.error_cause:
+            case "installation_suspended":
+                # Mark the installation as suspended so we don't keep trying to get the token for it
+                GithubAppInstallation.objects.filter(id=installation_info["id"]).update(
+                    is_suspended=True
+                )
+            case "installation_not_found":
+                GithubAppInstallation.objects.filter(
+                    id=installation_info["id"]
+                ).delete()
+    else:
+        # This comes from the legacy Owner.integration_id. Clear it.
+        # installation_id should be unique among Owners
+        Owner.objects.filter(
+            integration_id=installation_info["installation_id"]
+        ).update(integration_id=None)
+
+
 def get_github_app_token(
     service: Service, installation_info: GithubInstallationInfo
 ) -> TokenWithOwner:
     """Get an access_token from GitHub that we can use to authenticate as the installation
     See https://docs.github.com/en/enterprise-server@3.9/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation#generating-an-installation-access-token
 
-    ⚠️ side effect: Marks installation as `suspended` if we fail to get the access_token due to "installation_suspended"
+    ⚠️ side effect: handle_invalid_installation has potential side effects to GithubAppInstallation and Owner models
 
     Raises:
       InvalidInstallationError: if we can't get the installation's access_token
@@ -143,11 +172,7 @@ def get_github_app_token(
         # The token is not owned by an Owner object, so 2nd arg is None
         return installation_token, None
     except InvalidInstallationError as err:
-        if err.error_cause == "installation_suspended" and "id" in installation_info:
-            # Mark the installation as suspended so we don't keep trying to get the token for it
-            GithubAppInstallation.objects.filter(id=installation_info["id"]).update(
-                is_suspended=True
-            )
+        handle_invalid_installation(installation_info, err)
         raise err
 
 
