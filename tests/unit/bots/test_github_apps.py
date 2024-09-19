@@ -20,7 +20,9 @@ from shared.typings.torngit import GithubInstallationInfo
 
 
 def _get_owner_with_apps() -> Owner:
-    owner = OwnerFactory(service="github")
+    owner = OwnerFactory(service="github", integration_id=1111)
+    # Just so there are other owners in the database
+    _ = OwnerFactory(service="github", integration_id=1234)
     app_1 = GithubAppInstallation(
         owner=owner,
         installation_id=1200,
@@ -156,6 +158,57 @@ class TestGettingGitHubAppTokenSideEffect(object):
         assert installations[0].is_suspended is True
         installations[1].refresh_from_db()
         assert installations[1].is_suspended is False
+        assert not Owner.objects.filter(integration_id=None).exists()
+
+    @pytest.mark.django_db(databases={"default"})
+    def test_mark_installation_not_found_side_effect(self, mocker):
+        owner = _get_owner_with_apps()
+        installations: list[GithubAppInstallation] = (
+            owner.github_app_installations.all()
+        )
+        installation_info = _to_installation_info(installations[0])
+        mocker.patch(
+            "shared.bots.github_apps.get_github_integration_token",
+            side_effect=InvalidInstallationError("installation_not_found"),
+        )
+
+        assert all(
+            [installation.is_suspended == False for installation in installations]
+        )
+
+        with pytest.raises(InvalidInstallationError):
+            get_github_app_token(Service(owner.service), installation_info)
+
+        installations[1].refresh_from_db()
+        assert installations[1].is_suspended is False
+        assert not Owner.objects.filter(integration_id=None).exists()
+        owner.refresh_from_db()
+        assert list(owner.github_app_installations.all()) == [installations[1]]
+
+    @pytest.mark.django_db(databases={"default"})
+    def test_mark_installation_suspended_legacy_path_side_effect(self, mocker):
+        owner = _get_owner_with_apps()
+        installations: list[GithubAppInstallation] = (
+            owner.github_app_installations.all()
+        )
+        installation_info = {"installation_id": 1111}
+        mocker.patch(
+            "shared.bots.github_apps.get_github_integration_token",
+            side_effect=InvalidInstallationError("installation_not_found"),
+        )
+
+        assert all(
+            [installation.is_suspended == False for installation in installations]
+        )
+
+        with pytest.raises(InvalidInstallationError):
+            get_github_app_token(Service(owner.service), installation_info)
+
+        for installation in installations:
+            installation.refresh_from_db()
+            assert installation.is_suspended == False
+        owner.refresh_from_db()
+        assert list(Owner.objects.filter(integration_id=None).all()) == [owner]
 
     @pytest.mark.django_db(databases={"default"})
     def test_mark_installation_suspended_side_effect_not_called(self, mocker):
