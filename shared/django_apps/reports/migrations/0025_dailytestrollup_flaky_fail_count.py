@@ -15,7 +15,7 @@ COMMIT;
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reports", "0023_auto_20240909_2002"),
+        ("reports", "0024_auto_20240917_2121"),
     ]
 
     operations = [
