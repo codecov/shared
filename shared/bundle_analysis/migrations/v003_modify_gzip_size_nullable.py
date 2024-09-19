@@ -1,4 +1,5 @@
 from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
 
@@ -8,6 +9,19 @@ def modify_gzip_size_nullable(db_session: Session):
     Because SQLite does not have a "alter column" command we need to
     rename the existing table, create the new table, and migrate all the data over
     """
+
+    # Fixes an issue where old bundle reports that were created before the inception of
+    # DB migrations would error because UUID column does not exist.
+    try:
+        db_session.execute(
+            text("""
+            ALTER TABLE "assets" ADD COLUMN "uuid" text DEFAULT ''
+        """)
+        )
+    except OperationalError:
+        # Ignore the case where uuid column already exists
+        pass
+
     stmts = [
         """
         PRAGMA foreign_keys=off;

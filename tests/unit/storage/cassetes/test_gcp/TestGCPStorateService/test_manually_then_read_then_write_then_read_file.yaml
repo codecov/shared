@@ -55,50 +55,6 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/f90fe120-0ab3-4bc1-87f6-68c3f7838ca2
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:39:41 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:39:41 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycduGfW4Sei2ceXaqOGDDYlQ_-08nwqodtE8LJK4diKV4N5VklCr--tY_0XGuU347jKpi4M1qbX3jvw_0AMJivhT2b6wQAeI_
-    status:
-      code: 200
-      message: OK
-- request:
     body: "--===============8884885407156052639==\r\ncontent-type: application/json;
       charset=UTF-8\r\n\r\n{\"name\": \"test_manually_then_read_then_write_then_read_file/result01\"}\r\n--===============8884885407156052639==\r\ncontent-type:
       text/plain\r\n\r\nsome data around\r\n--===============8884885407156052639==--"
@@ -160,50 +116,6 @@ interactions:
       - X-Origin
       X-GUploader-UploadID:
       - ADPycdshs1J1zq-bu4e_D1N7MsLTosLoOXYIG63rDzm4wrSHgbJIR9xh6FYGiUBIm4rIMOkZIg6xGZVS6jVeKa7jifnxOLT6AFTz
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/49c8e6fc-72d9-4357-af27-42f49b08a489
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:39:41 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:39:41 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdusFfNmf1xZjr_NMX2VCVnKxXApb3Mm_MCeBtSa4yFL95GgR4m0BereAa5KLSLJoP8u-on3scyMw0OJt3Iae6XPmQ
     status:
       code: 200
       message: OK
@@ -360,50 +272,6 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/094c260c-2aab-4651-8632-4c4b2fc891c4
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:39:42 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:39:42 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdsbzz2XhcJQyZmJwn3sJNzOWy2S_vA4z9LnZtVIKMXEVOsFPgUM6CGp_xvsJg3e-kkViJmXy-ie_lVjzbhneQgf_Q
-    status:
-      code: 200
-      message: OK
-- request:
     body: !!binary |
       LS09PT09PT09PT09PT09PT0yNjg3NDI3NTk2NjkxNDkxNDM3PT0NCmNvbnRlbnQtdHlwZTogYXBw
       bGljYXRpb24vanNvbjsgY2hhcnNldD1VVEYtOA0KDQp7Im5hbWUiOiAidGVzdF9tYW51YWxseV90
@@ -471,50 +339,6 @@ interactions:
       - X-Origin
       X-GUploader-UploadID:
       - ADPycdsUMkJzqbAsDZE5jHMKypGOASh4VNoAYlOofTgXEeLFWbsAFJ_bBl4O3kJ8wfYymAAM0UaBZMu7-xC-u7HygVqnRmS7hGY0
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/8b94802b-4405-41fc-9638-03535e1bd946
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:39:42 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:39:42 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdtOAxRrdaVwQvBjyJ0LzEUt0mMpa5KYMJI-lf_SODiW03czmKFLzdFfFM_pNWQVgt-WutRoVaNL18Xnxz3ZNiDSoA
     status:
       code: 200
       message: OK
@@ -628,50 +452,6 @@ interactions:
       - gzip
       X-Goog-Stored-Content-Length:
       - '66'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/871f41c9-2404-4ca4-abf3-a9b58d2bd80f
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:39:44 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:39:44 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdujr_5KiBJwfatjOMqQ5pIXE60M9Tqp5fxiUM-w0qRYhjG61TteS7d6aVYqdJhzlcOVy8Wnplug_6-JFq1VAMeLbQ
     status:
       code: 200
       message: OK

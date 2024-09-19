@@ -54,50 +54,6 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/69ade0e7-46b2-4bc9-aeab-c234670f0199
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:00:40 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:00:40 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdt04jsw1r4ZRwD2ZhB_TnWaA7BarLasOdtjGjrJyzaK_86f0G1fCzT2fXjXoIkmhGVMNR3wN5CjTJNz0ORHrhKKMpLY1giC
-    status:
-      code: 200
-      message: OK
-- request:
     body: !!binary |
       LS09PT09PT09PT09PT09PT04ODM1Mzk4NjI5MDAxMjk2NjgyPT0NCmNvbnRlbnQtdHlwZTogYXBw
       bGljYXRpb24vanNvbjsgY2hhcnNldD1VVEYtOA0KDQp7Im5hbWUiOiAidGVzdF93cml0ZV90aGVu
@@ -176,50 +132,6 @@ interactions:
       - gzip
       Connection:
       - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/f3c8bb6f-5230-4b93-94da-d05360834754
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:00:40 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:00:40 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycdvP0UDPg1-hSp3zqUL2V9bhDNVtkCYLUtIwMZR1PaER1dFXbyWB1yOGCaeOhRZl732u73skX73HAagFcgCCVB_oiKzae5Ct
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
       Content-Length:
       - '0'
       User-Agent:
@@ -257,50 +169,6 @@ interactions:
     status:
       code: 204
       message: No Content
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0
-      X-Goog-API-Client:
-      - gcloud-python/2.7.0  gl-python/3.10.5 gax/2.8.2 gccl/2.7.0 gccl-invocation-id/f5390356-7024-4610-8b40-87c921d0455e
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testingarchive02?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive02","id":"testingarchive02","name":"testingarchive02","projectNumber":"582817289294","metageneration":"4","location":"US","storageClass":"STANDARD","etag":"CAQ=","timeCreated":"2019-08-27T06:20:09.895Z","updated":"2023-01-03T19:39:25.849Z","iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '517'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 03 Jan 2023 20:00:41 GMT
-      ETag:
-      - CAQ=
-      Expires:
-      - Tue, 03 Jan 2023 20:00:41 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ADPycduevDKdPHwS1sqWsPmnWP9WM-B0ea-Py738fxQ42IjtvOMVBekiNXZ--XVRfB344k3mYMKTt4CQjOssTb7BoWbP_YvgvkaV
-    status:
-      code: 200
-      message: OK
 - request:
     body: null
     headers:

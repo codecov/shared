@@ -237,7 +237,7 @@ schema = {
             "max_report_age": {"type": ["string", "integer", "boolean"]},
             "disable_default_path_fixes": {"type": "boolean"},
             "require_ci_to_pass": {"type": "boolean"},
-            "allow_coverage_offsets": {"type": "boolean"},
+            "allow_coverage_offsets": {"type": "boolean"},  # [DEPRECATED]
             "allow_pseudo_compare": {"type": "boolean"},
             "archive": {"type": "dict", "schema": {"uploads": {"type": "boolean"}}},
             "notify": {
