@@ -138,7 +138,6 @@ class TestGCPStorateService(BaseTestCase):
                 f, size=f.tell(), rewind=True, content_type="application/x-gzip"
             )
         content = storage.read_file(bucket_name, path)
-        print(content)
         assert content.decode() == content_to_upload
 
     def test_write_then_delete_file(self, request, codecov_vcr):
@@ -216,9 +215,7 @@ class TestGCPStorateService(BaseTestCase):
         )
 
     @patch("shared.storage.gcp.storage")
-    def test_read_file_retry_success(self, mock_storage):
-        storage = GCPStorageService(gcp_config)
-        mock_storage.Client.assert_called()
+    def test_read_file_retry_success(self, mock_storage, mocker):
         mock_blob = MagicMock(
             name="fake_blob",
             download_as_bytes=MagicMock(
@@ -228,14 +225,17 @@ class TestGCPStorateService(BaseTestCase):
                 ]
             ),
         )
-        mock_storage.Blob.return_value = mock_blob
+        mocker.patch(
+            "shared.storage.gcp.GCPStorageService.get_blob", return_value=mock_blob
+        )
+
+        storage = GCPStorageService(gcp_config)
+        mock_storage.Client.assert_called()
         response = storage.read_file("root_bucket", "path/to/blob", None)
         assert response == b"contents"
 
     @patch("shared.storage.gcp.storage")
-    def test_read_file_retry_fail_twice(self, mock_storage):
-        storage = GCPStorageService(gcp_config)
-        mock_storage.Client.assert_called()
+    def test_read_file_retry_fail_twice(self, mock_storage, mocker):
         mock_blob = MagicMock(
             name="fake_blob",
             download_as_bytes=MagicMock(
@@ -245,6 +245,11 @@ class TestGCPStorateService(BaseTestCase):
                 ]
             ),
         )
-        mock_storage.Blob.return_value = mock_blob
+        mocker.patch(
+            "shared.storage.gcp.GCPStorageService.get_blob", return_value=mock_blob
+        )
+
+        storage = GCPStorageService(gcp_config)
+        mock_storage.Client.assert_called()
         with pytest.raises(DataCorruption):
             storage.read_file("root_bucket", "path/to/blob", None)

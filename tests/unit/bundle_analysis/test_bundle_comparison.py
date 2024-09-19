@@ -72,16 +72,19 @@ def test_bundle_analysis_comparison():
                 bundle_name="sample",
                 change_type=BundleChange.ChangeType.CHANGED,
                 size_delta=1100,
+                percentage_delta=0.73,
             ),
             BundleChange(
                 bundle_name="new",
                 change_type=BundleChange.ChangeType.ADDED,
                 size_delta=0,
+                percentage_delta=100,
             ),
             BundleChange(
                 bundle_name="old",
                 change_type=BundleChange.ChangeType.REMOVED,
                 size_delta=0,
+                percentage_delta=-100,
             ),
         ]
     )

@@ -66,51 +66,6 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.11.0  gl-python/3.9.16 grpc/1.59.0 gax/2.12.0 gccl/2.11.0
-      x-allowed-locations:
-      - '0x0'
-      x-goog-api-client:
-      - cred-type/sa
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testing?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testing","id":"testing","name":"testing","projectNumber":"600182812669","metageneration":"2","location":"US","storageClass":"STANDARD","etag":"CAI=","timeCreated":"2023-11-29T18:21:26.716Z","updated":"2023-11-29T18:28:58.136Z","retentionPolicy":{"retentionPeriod":"8035200","effectiveTime":"2023-11-29T18:21:26.716Z","isLocked":false},"iamConfiguration":{"bucketPolicyOnly":{"enabled":true,"lockedTime":"2024-02-27T18:21:26.716Z"},"uniformBucketLevelAccess":{"enabled":true,"lockedTime":"2024-02-27T18:21:26.716Z"},"publicAccessPrevention":"enforced"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '747'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Mon, 04 Dec 2023 21:05:10 GMT
-      ETag:
-      - CAI=
-      Expires:
-      - Mon, 04 Dec 2023 21:05:10 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ABPtcPpEAnmdbCyqk95y2rk-0Io0SxKLWeSikZHyhHG2Bq59j42Gvkf1f1cASM8lSQZ9gVITkOK4zoOV-g
-    status:
-      code: 200
-      message: OK
-- request:
     body: '{"name": "test_write_then_read_file_obj/result"}'
     headers:
       Accept:
@@ -224,51 +179,6 @@ interactions:
       - X-Origin
       X-GUploader-UploadID:
       - ABPtcPrSstlUpHWiVP3qsSmJCuvrzD6y-bXGIhYtSC3ZPIGF06Kvd8AY3get8RYlxVwKJxa4xj2lQfKDQTg6OqFX0O5mjGnpPTTV-fXd2mAJYds1dg
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip
-      Connection:
-      - keep-alive
-      User-Agent:
-      - gcloud-python/2.11.0  gl-python/3.9.16 grpc/1.59.0 gax/2.12.0 gccl/2.11.0
-      x-allowed-locations:
-      - '0x0'
-      x-goog-api-client:
-      - cred-type/sa
-    method: GET
-    uri: https://storage.googleapis.com/storage/v1/b/testing?prettyPrint=false&projection=noAcl
-  response:
-    body:
-      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testing","id":"testing","name":"testing","projectNumber":"600182812669","metageneration":"2","location":"US","storageClass":"STANDARD","etag":"CAI=","timeCreated":"2023-11-29T18:21:26.716Z","updated":"2023-11-29T18:28:58.136Z","retentionPolicy":{"retentionPeriod":"8035200","effectiveTime":"2023-11-29T18:21:26.716Z","isLocked":false},"iamConfiguration":{"bucketPolicyOnly":{"enabled":true,"lockedTime":"2024-02-27T18:21:26.716Z"},"uniformBucketLevelAccess":{"enabled":true,"lockedTime":"2024-02-27T18:21:26.716Z"},"publicAccessPrevention":"enforced"},"locationType":"multi-region","rpo":"DEFAULT"}'
-    headers:
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Cache-Control:
-      - private, max-age=0, must-revalidate, no-transform
-      Content-Length:
-      - '747'
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Mon, 04 Dec 2023 21:05:11 GMT
-      ETag:
-      - CAI=
-      Expires:
-      - Mon, 04 Dec 2023 21:05:11 GMT
-      Server:
-      - UploadServer
-      Vary:
-      - Origin
-      - X-Origin
-      X-GUploader-UploadID:
-      - ABPtcPosp4lhHF7SUDPvkO_mhPyrMie0d1rmH39mWjQtePaymKeNKEIXdb97J1WpheqKPn3fU-UFiUOOXQ
     status:
       code: 200
       message: OK
