@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil import parser
+from django.db import IntegrityError
 from django.db.models import (
     Avg,
     Count,
@@ -284,7 +285,7 @@ class RepositoryQuerySet(QuerySet):
     def get_or_create_from_git_repo(self, git_repo, owner):
         from shared.django_apps.codecov_auth.models import Owner
 
-        repo, created = self.get_or_create(
+        repo, created = self.update_or_create(
             author=owner,
             service_id=git_repo.get("service_id") or git_repo.get("id"),
             private=git_repo["private"],
