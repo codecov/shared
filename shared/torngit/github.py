@@ -366,6 +366,17 @@ GITHUB_API_ENDPOINTS = {
             "/installation/repositories?per_page=${page_size}&page=${page}"
         ),
     },
+    "calvin_fetch_page_of_repos_test": {
+        "counter": GITHUB_API_CALL_COUNTER.labels(
+            endpoint="calvin_fetch_page_of_repos_test"
+        ),
+        "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
+            endpoint="calvin_fetch_page_of_repos_test"
+        ),
+        "url_template": Template(
+            "/user/orgs"
+        ),
+    },
     "get_authenticated": {
         "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_authenticated"),
         "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
@@ -474,6 +485,8 @@ GITHUB_API_ENDPOINTS = {
 
 # uncounted urls
 external_endpoint_template = Template("${username}/${name}/commit/${commitid}")
+
+test_endpoint_for_orgs = Template("/user/orgs")
 
 
 class GitHubGraphQLQueries(object):
