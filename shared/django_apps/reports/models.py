@@ -407,6 +407,7 @@ class DailyTestRollup(PostgresPartitionedModel, BaseModel):
     branch = models.TextField()
 
     fail_count = models.IntegerField()
+    flaky_fail_count = models.IntegerField()
     skip_count = models.IntegerField()
     pass_count = models.IntegerField()
     last_duration_seconds = models.FloatField()
