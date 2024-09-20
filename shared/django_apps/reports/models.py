@@ -412,7 +412,7 @@ class DailyTestRollup(PostgresPartitionedModel, BaseModel):
     )
     date = models.DateField()
     repoid = models.IntegerField()
-    branch = models.TextField()
+    branch = models.TextField(null=True)
 
     fail_count = models.IntegerField()
     flaky_fail_count = models.IntegerField()
