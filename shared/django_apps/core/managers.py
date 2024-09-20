@@ -285,13 +285,26 @@ class RepositoryQuerySet(QuerySet):
     def get_or_create_from_git_repo(self, git_repo, owner):
         from shared.django_apps.codecov_auth.models import Owner
 
-        repo, created = self.update_or_create(
-            author=owner,
-            service_id=git_repo.get("service_id") or git_repo.get("id"),
-            private=git_repo["private"],
-            branch=git_repo.get("branch") or git_repo.get("default_branch") or "main",
-            name=git_repo["name"],
-        )
+        service_id = git_repo.get("service_id") or git_repo.get("id")
+        name = git_repo["name"]
+
+        defaults = {
+            "private": git_repo["private"],
+            "branch": git_repo.get("branch")
+            or git_repo.get("default_branch")
+            or "main",
+            "name": name,
+            "service_id": service_id,
+        }
+
+        try:
+            repo, created = self.update_or_create(
+                author=owner, service_id=service_id, defaults=defaults
+            )
+        except IntegrityError:
+            repo, created = self.update_or_create(
+                author=owner, name=name, defaults=defaults
+            )
 
         # If this is a fork, create the forked repo and save it to the new repo.
         # Depending on the source of this data, 'fork' may either be a boolean or a dict
