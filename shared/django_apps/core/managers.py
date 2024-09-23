@@ -306,7 +306,7 @@ class RepositoryQuerySet(QuerySet):
                 author=owner, service_id=service_id, defaults=defaults
             )
 
-            log.warning(
+            log.info(
                 "[GetOrCreateFromGitRepo] - Repo successfully updated or created",
                 extra=dict(
                     defaults=defaults,
