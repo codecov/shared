@@ -440,14 +440,20 @@ class DailyTestRollup(PostgresPartitionedModel, BaseModel):
         ]
 
 
-class TestFlagBridge(BaseModel):
+class TestFlagBridge(models.Model):
     repository = models.ForeignKey(
         "core.Repository",
         db_column="repoid",
         related_name="test_flag_bridges",
         on_delete=models.CASCADE,
     )
-    flag = models.TextField()
+
+    flag = models.ForeignKey(
+        "RepositoryFlag",
+        db_column="flag_id",
+        related_name="test_flag_bridges",
+        on_delete=models.CASCADE,
+    )
 
     test = models.ForeignKey(
         "Test",
