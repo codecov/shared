@@ -1426,6 +1426,7 @@ class Github(TorngitBaseAdapter):
         the same endpoint.
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        print('@@@@ list_repos token', token)
         page = 0
         page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
             identifier=self.data["owner"].get("ownerid"), default=100
@@ -1458,6 +1459,7 @@ class Github(TorngitBaseAdapter):
         rolling out in the worker.
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        print('@@@@@ list_repos_generator token', token)
         page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
             identifier=self.data["owner"].get("ownerid"), default=100
         )
