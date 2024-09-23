@@ -2,17 +2,34 @@
 
 from django.db import migrations, models
 
+"""
+BEGIN;
+--
+-- Add field framework to test
+--
+ALTER TABLE "reports_test" ADD COLUMN "framework" varchar(100) NULL;
+COMMIT;
+"""
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('reports', '0026_testflagbridge'),
+        ("reports", "0026_testflagbridge"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='test',
-            name='framework',
-            field=models.CharField(choices=[('pytest', 'Pytest'), ('jest', 'Jest'), ('vitest', 'Vitest'), ('phpunit', 'Phpunit')], max_length=100, null=True),
+            model_name="test",
+            name="framework",
+            field=models.CharField(
+                choices=[
+                    ("pytest", "Pytest"),
+                    ("jest", "Jest"),
+                    ("vitest", "Vitest"),
+                    ("phpunit", "Phpunit"),
+                ],
+                max_length=100,
+                null=True,
+            ),
         ),
     ]
