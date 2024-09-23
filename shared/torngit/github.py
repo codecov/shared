@@ -1225,6 +1225,37 @@ class Github(TorngitBaseAdapter):
         )
 
         return self._process_repository_page(repos)
+    
+    async def _calvin_fetch_page_of_repos_test(
+        self, client
+    ):
+        # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
+        url = self.count_and_get_url_template(
+            url_name="calvin_fetch_page_of_repos_test"
+        # ).substitute(page_size=page_size, page=page)
+        ).substitute(page_size=1, page=1)
+        res = await self.api(
+            client,
+            "get",
+            url,
+            headers={"Accept": "application/vnd.github.machine-man-preview+json"},
+        )
+
+        repos = res.get("repositories", [])
+        print('@@@@', repos)
+        log.info('@@@@@', repos)
+        log.info(
+            "Fetched page of repos using installation",
+            extra=dict(
+                # page_size=page_size,
+                page_size=1,
+                # page=page,
+                page=1,
+                repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
+            ),
+        )
+
+        return self._process_repository_page(repos)
 
     async def _fetch_page_of_repos(
         self, client, username, token, page_size=100, page=1
@@ -1353,6 +1384,32 @@ class Github(TorngitBaseAdapter):
 
             return data
 
+    async def calvin_test(self, username=None, token=None):
+        """
+        COPY OF LIST_REPOS
+        GitHub includes all visible repos through
+        the same endpoint.
+        """
+        token = self.get_token_by_type_if_none(token, TokenType.read)
+        page = 0
+        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
+            identifier=self.data["owner"].get("ownerid"), default=100
+        )
+        data = []
+        async with self.get_client() as client:
+            while True:
+                page += 1
+                repos = await self._calvin_fetch_page_of_repos_test(
+                    client, username, token, page=page, page_size=page_size
+                )
+
+                data.extend(repos)
+
+                if len(repos) < page_size:
+                    break
+
+            return data
+
     async def list_repos_using_installation_generator(self, username=None):
         """
         New version of list_repos_using_installation() that should replace the
@@ -1380,6 +1437,11 @@ class Github(TorngitBaseAdapter):
                 repos = await self._fetch_page_of_repos(
                     client, username, token, page=page, page_size=page_size
                 )
+                other_repos = await self._calvin_fetch_page_of_repos_test(
+                    client, username, token, page=page, page_size=page_size
+                )
+                print('@@@@@@', other_repos)
+                log.info('@@@@@@@@@', other_repos)
 
                 data.extend(repos)
 
@@ -2435,3 +2497,42 @@ class Github(TorngitBaseAdapter):
                 return True
             except (TorngitClientError, TorngitServer5xxCodeError):
                 return False
+
+    async def _fetch_page_of_repos_using_installation(
+        self, client, page_size=100, page=1
+    ):
+        async with self.get_client() as client:
+            url = self._calvin_fetch_page_of_repos_test(url_name="get_compare").substitute(
+                slug=self.slug, base=base, head=head
+            )
+            res = await self.api(client, "get", url, token=token)
+
+
+        # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
+        url = self.count_and_get_url_template(
+            url_name="fetch_page_of_repos_using_installation"
+        ).substitute(page_size=page_size, page=page)
+        res = await self.api(
+            client,
+            "get",
+            url,
+            headers={"Accept": "application/vnd.github.machine-man-preview+json"},
+        )
+
+        repos = res.get("repositories", [])
+
+        log.info(
+            "Fetched page of repos using installation",
+            extra=dict(
+                page_size=page_size,
+                page=page,
+                repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
+            ),
+        )
+
+        return self._process_repository_page(repos)
+        async with self.get_client() as client:
+            url = self.count_and_get_url_template(url_name="get_compare").substitute(
+                slug=self.slug, base=base, head=head
+            )
+            res = await self.api(client, "get", url, token=token)
