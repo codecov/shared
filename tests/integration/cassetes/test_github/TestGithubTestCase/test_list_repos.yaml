@@ -13,7 +13,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://api.github.com/user/repos?per_page=100&page=1
+    uri: https://api.github.com/user/repos?per_page=50&page=1
   response:
     content: "[{\"id\":24730274,\"node_id\":\"MDEwOlJlcG9zaXRvcnkyNDczMDI3NA==\",\"\
       name\":\"admin\",\"full_name\":\"codecov/admin\",\"private\":true,\"owner\"\
@@ -6157,7 +6157,7 @@ interactions:
       ETag:
       - W/"76104902f7fd570621facacfe5dcaa58cc7726dea3402cddab79f7a3fa254589"
       Link:
-      - <https://api.github.com/user/repos?per_page=100&page=2>; rel="next", <https://api.github.com/user/repos?per_page=100&page=2>;
+      - <https://api.github.com/user/repos?per_page=50&page=2>; rel="next", <https://api.github.com/user/repos?per_page=50&page=2>;
         rel="last"
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
@@ -6693,7 +6693,7 @@ interactions:
       user-agent:
       - Default
     method: GET
-    uri: https://api.github.com/user/repos?per_page=100&page=2
+    uri: https://api.github.com/user/repos?per_page=50&page=2
   response:
     content: '[{"id":7615485,"node_id":"MDEwOlJlcG9zaXRvcnk3NjE1NDg1","name":"timestring","full_name":"codecov/timestring","private":false,"owner":{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","avatar_url":"https://avatars3.githubusercontent.com/u/8226205?v=4","gravatar_id":"","url":"https://api.github.com/users/codecov","html_url":"https://github.com/codecov","followers_url":"https://api.github.com/users/codecov/followers","following_url":"https://api.github.com/users/codecov/following{/other_user}","gists_url":"https://api.github.com/users/codecov/gists{/gist_id}","starred_url":"https://api.github.com/users/codecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/codecov/subscriptions","organizations_url":"https://api.github.com/users/codecov/orgs","repos_url":"https://api.github.com/users/codecov/repos","events_url":"https://api.github.com/users/codecov/events{/privacy}","received_events_url":"https://api.github.com/users/codecov/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/codecov/timestring","description":"Making
       time easier since \"Jan 17th, 2013 at 3:59pm\"","fork":false,"url":"https://api.github.com/repos/codecov/timestring","forks_url":"https://api.github.com/repos/codecov/timestring/forks","keys_url":"https://api.github.com/repos/codecov/timestring/keys{/key_id}","collaborators_url":"https://api.github.com/repos/codecov/timestring/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/codecov/timestring/teams","hooks_url":"https://api.github.com/repos/codecov/timestring/hooks","issue_events_url":"https://api.github.com/repos/codecov/timestring/issues/events{/number}","events_url":"https://api.github.com/repos/codecov/timestring/events","assignees_url":"https://api.github.com/repos/codecov/timestring/assignees{/user}","branches_url":"https://api.github.com/repos/codecov/timestring/branches{/branch}","tags_url":"https://api.github.com/repos/codecov/timestring/tags","blobs_url":"https://api.github.com/repos/codecov/timestring/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/codecov/timestring/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/codecov/timestring/git/refs{/sha}","trees_url":"https://api.github.com/repos/codecov/timestring/git/trees{/sha}","statuses_url":"https://api.github.com/repos/codecov/timestring/statuses/{sha}","languages_url":"https://api.github.com/repos/codecov/timestring/languages","stargazers_url":"https://api.github.com/repos/codecov/timestring/stargazers","contributors_url":"https://api.github.com/repos/codecov/timestring/contributors","subscribers_url":"https://api.github.com/repos/codecov/timestring/subscribers","subscription_url":"https://api.github.com/repos/codecov/timestring/subscription","commits_url":"https://api.github.com/repos/codecov/timestring/commits{/sha}","git_commits_url":"https://api.github.com/repos/codecov/timestring/git/commits{/sha}","comments_url":"https://api.github.com/repos/codecov/timestring/comments{/number}","issue_comment_url":"https://api.github.com/repos/codecov/timestring/issues/comments{/number}","contents_url":"https://api.github.com/repos/codecov/timestring/contents/{+path}","compare_url":"https://api.github.com/repos/codecov/timestring/compare/{base}...{head}","merges_url":"https://api.github.com/repos/codecov/timestring/merges","archive_url":"https://api.github.com/repos/codecov/timestring/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/codecov/timestring/downloads","issues_url":"https://api.github.com/repos/codecov/timestring/issues{/number}","pulls_url":"https://api.github.com/repos/codecov/timestring/pulls{/number}","milestones_url":"https://api.github.com/repos/codecov/timestring/milestones{/number}","notifications_url":"https://api.github.com/repos/codecov/timestring/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/codecov/timestring/labels{/name}","releases_url":"https://api.github.com/repos/codecov/timestring/releases{/id}","deployments_url":"https://api.github.com/repos/codecov/timestring/deployments","created_at":"2013-01-15T00:13:44Z","updated_at":"2020-10-04T13:51:15Z","pushed_at":"2020-09-21T17:14:52Z","git_url":"git://github.com/codecov/timestring.git","ssh_url":"git@github.com:codecov/timestring.git","clone_url":"https://github.com/codecov/timestring.git","svn_url":"https://github.com/codecov/timestring","homepage":"","size":147,"stargazers_count":99,"watchers_count":99,"language":"Python","has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":false,"has_pages":false,"forks_count":25,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":27,"license":{"key":"apache-2.0","name":"Apache
@@ -6732,7 +6732,7 @@ interactions:
       ETag:
       - W/"bebab2b75c77d4e354b0ed17884754cc551b6fa2778b8c6308391d89acf36871"
       Link:
-      - <https://api.github.com/user/repos?per_page=100&page=1>; rel="prev", <https://api.github.com/user/repos?per_page=100&page=1>;
+      - <https://api.github.com/user/repos?per_page=50&page=1>; rel="prev", <https://api.github.com/user/repos?per_page=50&page=1>;
         rel="first"
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
