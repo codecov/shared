@@ -1227,31 +1227,28 @@ class Github(TorngitBaseAdapter):
         return self._process_repository_page(repos)
     
     async def _calvin_fetch_page_of_repos_test(
-        self, client
+        self, client, username, token, page_size=100, page=1
     ):
-        # https://docs.github.com/en/rest/apps/installations?apiVersion=2022-11-28
-        url = self.count_and_get_url_template(
-            url_name="calvin_fetch_page_of_repos_test"
-        # ).substitute(page_size=page_size, page=page)
-        ).substitute(page_size=1, page=1)
-        res = await self.api(
-            client,
-            "get",
-            url,
-            headers={"Accept": "application/vnd.github.machine-man-preview+json"},
-        )
+        # https://developer.github.com/v3/repos/#list-your-repositories
+        if username is None:
+            url = self.count_and_get_url_template(
+                url_name="calvin_fetch_page_of_repos_test"
+            ).substitute(page_size=page_size, page=page)
+            repos = await self.api(client, "get", url, token=token)
+        else:
+            url = self.count_and_get_url_template(
+                url_name="calvin_fetch_page_of_repos_test"
+            ).substitute(username=username, page_size=page_size, page=page)
+            repos = await self.api(client, "get", url, token=token)
+            print('@@@@ _calvin_fetch_page_of_repos_test repos', repos)
 
-        repos = res.get("repositories", [])
-        print('@@@@ _calvin_fetch_page_of_repos_test', repos)
-        log.info('@@@@@ _calvin_fetch_page_of_repos_test', repos)
         log.info(
-            "Fetched page of repos using installation",
+            "Fetched page of repos",
             extra=dict(
-                # page_size=page_size,
-                page_size=1,
-                # page=page,
-                page=1,
+                page_size=page_size,
+                page=page,
                 repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
+                username=username,
             ),
         )
 
@@ -1390,8 +1387,8 @@ class Github(TorngitBaseAdapter):
         GitHub includes all visible repos through
         the same endpoint.
         """
-        print('$$$ calvin test running')
         token = self.get_token_by_type_if_none(token, TokenType.read)
+        print('$$$ calvin test running with token: ', token)
         page = 0
         page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
             identifier=self.data["owner"].get("ownerid"), default=100
