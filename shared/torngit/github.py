@@ -1242,8 +1242,8 @@ class Github(TorngitBaseAdapter):
         )
 
         repos = res.get("repositories", [])
-        print('@@@@', repos)
-        log.info('@@@@@', repos)
+        print('@@@@ _calvin_fetch_page_of_repos_test', repos)
+        log.info('@@@@@ _calvin_fetch_page_of_repos_test', repos)
         log.info(
             "Fetched page of repos using installation",
             extra=dict(
@@ -1390,6 +1390,7 @@ class Github(TorngitBaseAdapter):
         GitHub includes all visible repos through
         the same endpoint.
         """
+        print('$$$ calvin test running')
         token = self.get_token_by_type_if_none(token, TokenType.read)
         page = 0
         page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
@@ -1477,6 +1478,11 @@ class Github(TorngitBaseAdapter):
                         client, username, token, page=page, page_size=page_size
                     )
                 )
+                other_repos = await self._calvin_fetch_page_of_repos_test(
+                    client, username, token, page=page, page_size=page_size
+                )
+                print('$$$$$', other_repos)
+                log.info('$$$$$', other_repos)
 
                 yield repos
 
