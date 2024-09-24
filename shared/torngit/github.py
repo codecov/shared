@@ -1242,15 +1242,16 @@ class Github(TorngitBaseAdapter):
             repos = await self.api(client, "get", url, token=token)
             print('@@@@ _calvin_fetch_page_of_repos_test repos', repos)
 
-        log.info(
-            "Fetched page of repos",
-            extra=dict(
-                page_size=page_size,
-                page=page,
-                repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
-                username=username,
-            ),
-        )
+        log.info("Fetched page of repos", repos)
+        # log.info(
+        #     "Fetched page of repos",
+        #     extra=dict(
+        #         page_size=page_size,
+        #         page=page,
+        #         repo_names=[repo["name"] for repo in repos] if len(repos) > 0 else [],
+        #         username=username,
+        #     ),
+        # )
 
         return self._process_repository_page(repos)
 
