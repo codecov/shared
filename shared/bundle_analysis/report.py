@@ -379,13 +379,12 @@ class BundleAnalysisReport:
                     )
 
         with get_db_session(self.db_path) as session:
-            # Update the Assets table for the bundle
-            # TODO: Use SQLalchemy ORM to update instead of raw SQL
-            # https://github.com/codecov/engineering-team/issues/1846
+            # Update the Assets table for the bundle correct uuid
             for pair in associated_assets_found:
                 prev_uuid, curr_uuid = pair
-                stmt = f"UPDATE assets SET uuid='{prev_uuid}' WHERE uuid='{curr_uuid}'"
-                session.execute(text(stmt))
+                session.query(Asset).filter(Asset.uuid == curr_uuid).update(
+                    {Asset.uuid: prev_uuid}
+                )
             session.commit()
 
     def metadata(self) -> Dict[MetadataKey, Any]:
@@ -412,12 +411,9 @@ class BundleAnalysisReport:
     def update_is_cached(self, data: Dict[str, bool]) -> None:
         with get_db_session(self.db_path) as session:
             for bundle_name, value in data.items():
-                # TODO: Use SQLalchemy ORM to update instead of raw SQL
-                # https://github.com/codecov/engineering-team/issues/1846
-                stmt = (
-                    f"UPDATE bundles SET is_cached={value} WHERE name='{bundle_name}'"
+                session.query(Bundle).filter(Bundle.name == bundle_name).update(
+                    {Bundle.is_cached: value}
                 )
-                session.execute(text(stmt))
             session.commit()
 
     def is_cached(self) -> bool:
