@@ -21,7 +21,7 @@ from shared.metrics import Counter, metrics
 from shared.rate_limits import (
     set_entity_to_rate_limited,
 )
-from shared.rollouts.features import LIST_REPOS_PAGE_SIZE
+from shared.rollouts.features import LIST_REPOS_PAGE_SIZE, INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
@@ -609,6 +609,26 @@ class Github(TorngitBaseAdapter):
     def count_and_get_url_template(cls, url_name):
         GITHUB_API_ENDPOINTS[url_name]["counter"].inc()
         return GITHUB_API_ENDPOINTS[url_name]["url_template"]
+
+    def build_comment_request_body(
+        self, body: dict, issueid: int | None = None
+    ) -> dict:
+        body = {"body": body}
+        ownerid = self.data["owner"].get("ownerid")
+        if (
+            issueid is not None
+            and INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value(
+                identifier=ownerid, default=False
+            )
+        ):
+            bot_name = get_config("github", "comment_action_bot_name", default="sentry-ai")
+            body["actions"] = [
+                {
+                    "name": "Open Sentry Agent",
+                    "type": "copilot-chat",
+                    "message": f"@{bot_name} generate tests for PR#{issueid}",
+                }
+            ]
 
     async def api(self, *args, token=None, **kwargs):
         """
@@ -1587,6 +1607,7 @@ class Github(TorngitBaseAdapter):
     # --------
     async def post_comment(self, issueid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
+        body = self.build_comment_request_body(body, issueid)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         async with self.get_client() as client:
             url = self.count_and_get_url_template(url_name="post_comment").substitute(
@@ -1597,6 +1618,7 @@ class Github(TorngitBaseAdapter):
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
+        body = self.build_comment_request_body(body, issueid)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
