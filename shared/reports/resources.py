@@ -1198,7 +1198,6 @@ class Report(object):
 
         return report_to_flare(network, color, classes)
 
-    @sentry_sdk.trace
     def filter(self, paths=None, flags=None):
         if paths:
             if not isinstance(paths, (list, set, tuple)):

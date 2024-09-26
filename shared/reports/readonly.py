@@ -30,12 +30,16 @@ class LazyRustReport(object):
         self._actual_report = None
 
     @sentry_sdk.trace
+    def _parse_report(self):
+        parsed = parse_report(
+            self._filename_mapping, self._chunks, self._session_mapping
+        )
+        self._chunks = None  # Free the memory
+        return parsed
+
     def get_report(self):
         if self._actual_report is None:
-            self._actual_report = parse_report(
-                self._filename_mapping, self._chunks, self._session_mapping
-            )
-            self._chunks = None  # Free the memory
+            self._actual_report = self._parse_report()
         return self._actual_report
 
 
@@ -53,8 +57,6 @@ class ReadOnlyReport(object):
         self._uploaded_flags = None
 
     @classmethod
-    @sentry_sdk.trace
-    @metrics.timer("shared.reports.readonly.from_chunks")
     def from_chunks(cls, files=None, sessions=None, totals=None, chunks=None):
         rust_analyzer = SimpleAnalyzer()
         inner_report = Report(
@@ -110,8 +112,6 @@ class ReadOnlyReport(object):
     def size(self):
         return self.inner_report.size
 
-    @sentry_sdk.trace
-    @metrics.timer("shared.reports.readonly.apply_diff")
     def apply_diff(self, *args, **kwargs):
         return self.inner_report.apply_diff(*args, **kwargs)
 
@@ -133,8 +133,6 @@ class ReadOnlyReport(object):
         self._totals = None
         return res
 
-    @sentry_sdk.trace
-    @metrics.timer("shared.reports.readonly.calculate_diff")
     def calculate_diff(self, *args, **kwargs):
         return self.inner_report.calculate_diff(*args, **kwargs)
 
@@ -174,7 +172,6 @@ class ReadOnlyReport(object):
     def get_file_totals(self, path):
         return self.inner_report.get_file_totals(path)
 
-    @sentry_sdk.trace
     def filter(self, paths=None, flags=None):
         if paths is None and flags is None:
             return self

@@ -21,7 +21,7 @@ from shared.metrics import Counter, metrics
 from shared.rate_limits import (
     set_entity_to_rate_limited,
 )
-from shared.rollouts.features import LIST_REPOS_PAGE_SIZE, INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER
+from shared.rollouts.features import INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
@@ -1286,9 +1286,7 @@ class Github(TorngitBaseAdapter):
         async with self.get_client() as client:
             max_index = len(repo_node_ids)
             curr_index = 0
-            page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
-                identifier=self.data["owner"].get("ownerid"), default=100
-            )
+            page_size = 50
             while curr_index < max_index:
                 chunk = repo_node_ids[curr_index : curr_index + page_size]
                 curr_index += page_size
@@ -1343,9 +1341,7 @@ class Github(TorngitBaseAdapter):
         """
         data = []
         page = 0
-        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
-            identifier=self.data["owner"].get("ownerid"), default=100
-        )
+        page_size = 50
         async with self.get_client() as client:
             while True:
                 page += 1
@@ -1377,9 +1373,7 @@ class Github(TorngitBaseAdapter):
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
         page = 0
-        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
-            identifier=self.data["owner"].get("ownerid"), default=100
-        )
+        page_size = 50
         data = []
         async with self.get_client() as client:
             while True:
@@ -1403,9 +1397,7 @@ class Github(TorngitBaseAdapter):
         rolling out in the worker.
         """
         token = self.get_token_by_type_if_none(token, TokenType.read)
-        page_size = await LIST_REPOS_PAGE_SIZE.check_value_async(
-            identifier=self.data["owner"].get("ownerid"), default=100
-        )
+        page_size = 50
         async with self.get_client() as client:
             page = 0
             while True:

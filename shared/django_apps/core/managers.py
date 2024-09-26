@@ -1,6 +1,8 @@
 import datetime
+import logging
 
 from dateutil import parser
+from django.db import IntegrityError
 from django.db.models import (
     Avg,
     Count,
@@ -18,6 +20,8 @@ from django.db.models import (
 from django.db.models.fields.json import KeyTextTransform
 from django.db.models.functions import Cast, Coalesce
 from django.utils import timezone
+
+log = logging.getLogger("__name__")
 
 
 class RepositoryQuerySet(QuerySet):
@@ -284,13 +288,51 @@ class RepositoryQuerySet(QuerySet):
     def get_or_create_from_git_repo(self, git_repo, owner):
         from shared.django_apps.codecov_auth.models import Owner
 
-        repo, created = self.get_or_create(
-            author=owner,
-            service_id=git_repo.get("service_id") or git_repo.get("id"),
-            private=git_repo["private"],
-            branch=git_repo.get("branch") or git_repo.get("default_branch") or "main",
-            name=git_repo["name"],
-        )
+        service_id = git_repo.get("service_id") or git_repo.get("id")
+        name = git_repo["name"]
+
+        defaults = {
+            "private": git_repo["private"],
+            "branch": git_repo.get("branch")
+            or git_repo.get("default_branch")
+            or "main",
+            "name": name,
+            "service_id": service_id,
+        }
+
+        try:
+            # covers renames, branch updates, public/private
+            repo, created = self.update_or_create(
+                author=owner, service_id=service_id, defaults=defaults
+            )
+
+            log.info(
+                "[GetOrCreateFromGitRepo] - Repo successfully updated or created",
+                extra=dict(
+                    defaults=defaults,
+                    author=owner.ownerid,
+                    name=name,
+                    service_id=service_id,
+                    created=created,
+                ),
+            )
+
+        except IntegrityError:
+            # if service_id changes / transfers(?)
+            repo, created = self.update_or_create(
+                author=owner, name=name, defaults=defaults
+            )
+
+            log.warning(
+                "[GetOrCreateFromGitRepo] - Integrity error, service id changed",
+                extra=dict(
+                    defaults=defaults,
+                    author=owner.ownerid,
+                    name=name,
+                    service_id=service_id,
+                    created=created,
+                ),
+            )
 
         # If this is a fork, create the forked repo and save it to the new repo.
         # Depending on the source of this data, 'fork' may either be a boolean or a dict
