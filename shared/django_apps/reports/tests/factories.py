@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import enum
 
 import factory
@@ -7,6 +7,7 @@ from factory.django import DjangoModelFactory
 from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
 from shared.django_apps.reports import models
 from shared.django_apps.reports.models import (
+    DailyTestRollup,
     Flake,
     ReducedError,
     ReportResults,
@@ -124,6 +125,7 @@ class TestFactory(DjangoModelFactory):
         model = Test
 
     repository = factory.SubFactory(RepositoryFactory)
+    name = factory.Sequence(lambda n: f"test_{n}")
     id = factory.Sequence(lambda n: f"test_{n}")
 
 
@@ -134,6 +136,11 @@ class TestInstanceFactory(DjangoModelFactory):
     test = factory.SubFactory(TestFactory)
     upload = factory.SubFactory(UploadFactory)
     duration_seconds = factory.Faker("pyint", min_value=0, max_value=1000)
+
+    repoid = factory.SelfAttribute("test.repository.repoid")
+    commitid = factory.SelfAttribute("upload.report.commit.commitid")
+
+    branch = "main"
 
 
 class FlakeFactory(DjangoModelFactory):
@@ -147,4 +154,24 @@ class FlakeFactory(DjangoModelFactory):
     recent_passes_count = 0
     count = 0
     fail_count = 0
-    start_date = datetime.datetime.now()
+    start_date = dt.datetime.now()
+
+
+class DailyTestRollupFactory(DjangoModelFactory):
+    class Meta:
+        model = DailyTestRollup
+
+    test = factory.SubFactory(TestFactory)
+    date = dt.date.today()
+    repoid = factory.SelfAttribute("test.repository.repoid")
+    branch = "main"
+
+    pass_count = 0
+    fail_count = 0
+    skip_count = 0
+    flaky_fail_count = 0
+
+    last_duration_seconds = 0.0
+    avg_duration_seconds = 0.0
+    latest_run = dt.datetime.now()
+    commits_where_fail: list[str] = []
