@@ -5,6 +5,7 @@ import uuid
 from typing import Tuple
 
 import ijson
+import sentry_sdk
 from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis.models import (
@@ -92,6 +93,7 @@ class ParserV2:
         self.chunk_list = []
         self.module_list = []
 
+    @sentry_sdk.trace
     def parse(self, path: str) -> Tuple[int, str]:
         try:
             self.reset()
