@@ -2,14 +2,26 @@
 
 from django.db import migrations, models
 
+from shared.django_apps.migration_utils import RiskyAddField
+
 
 class Migration(migrations.Migration):
+    """
+    BEGIN;
+    --
+    -- Add field upload_token_required_for_public_repos to owner
+    --
+    ALTER TABLE "owners" ADD COLUMN "upload_token_required_for_public_repos" boolean DEFAULT false NULL;
+    ALTER TABLE "owners" ALTER COLUMN "upload_token_required_for_public_repos" DROP DEFAULT;
+    COMMIT;
+    """
+
     dependencies = [
         ("codecov_auth", "0059_alter_accountsusers_options"),
     ]
 
     operations = [
-        migrations.AddField(
+        RiskyAddField(
             model_name="owner",
             name="upload_token_required_for_public_repos",
             field=models.BooleanField(default=False, null=True),
