@@ -311,7 +311,6 @@ class RepositoryQuerySet(QuerySet):
                 extra=dict(
                     defaults=defaults,
                     author=owner.ownerid,
-                    created=created,
                 ),
             )
 
@@ -326,7 +325,6 @@ class RepositoryQuerySet(QuerySet):
                 extra=dict(
                     defaults=defaults,
                     author=owner.ownerid,
-                    created=created,
                 ),
             )
 
