@@ -7,8 +7,8 @@ from shared.django_apps.migration_utils import RiskyRunPython, RiskyAlterField
 
 def backfill_upload_token_required_for_public_repos(apps, _):
     Owner = apps.get_model("codecov_auth", "Owner")
-    n_updated = Owner.objects.filter(
-        upload_token_required_for_public_repos__isnull=True
+    n_updated = Owner.objects.exclude(
+        upload_token_required_for_public_repos=True
     ).update(upload_token_required_for_public_repos=True)
     return n_updated
 
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
     --
     -- Alter field upload_token_required_for_public_repos on owner
     --
-    UPDATE "owners" SET "upload_token_required_for_public_repos" = true WHERE "upload_token_required_for_public_repos" IS NULL; SET CONSTRAINTS ALL IMMEDIATE;
+    UPDATE "owners" SET "upload_token_required_for_public_repos" = true WHERE "upload_token_required_for_public_repos" IS NOT true; SET CONSTRAINTS ALL IMMEDIATE;
     ALTER TABLE "owners" ALTER COLUMN "upload_token_required_for_public_repos" SET NOT NULL;
     COMMIT;
     """
