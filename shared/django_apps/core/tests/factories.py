@@ -66,7 +66,45 @@ class CommitFactory(DjangoModelFactory):
 class CommitWithReportFactory(CommitFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        commit = super()._create(model_class, *args, **kwargs)
+        commit = super()._create(
+            model_class,
+            _report={
+                "files": {
+                    "awesome/__init__.py": [
+                        2,
+                        [0, 10, 8, 2, 0, "80.00000", 0, 0, 0, 0, 0, 0, 0],
+                        None,
+                        None,
+                    ],
+                    "tests/__init__.py": [
+                        0,
+                        [0, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
+                        None,
+                        None,
+                    ],
+                    "tests/test_sample.py": [
+                        1,
+                        [0, 7, 7, 0, 0, "100", 0, 0, 0, 0, 0, 0, 0],
+                        None,
+                        None,
+                    ],
+                },
+                "sessions": {
+                    "0": {
+                        "f": ["unittests"],
+                        "st": "uploaded",
+                        "se": None,
+                    },
+                    "1": {
+                        "f": ["integrations"],
+                        "st": "uploaded",
+                        "se": None,
+                    },
+                },
+            },
+            *args,
+            **kwargs,
+        )
 
         # The following replaces the old `commits.report` JSON column
         # TODO: we may want to find another way to create this since the imports below

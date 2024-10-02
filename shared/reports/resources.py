@@ -718,10 +718,6 @@ class Report(object):
             size += len(chunk)
         return size
 
-    def file_reports(self):
-        for f in self.files:
-            yield self.get(f)
-
     def has_precalculated_totals(self):
         return self._totals is not None
 
