@@ -610,25 +610,30 @@ class Github(TorngitBaseAdapter):
         GITHUB_API_ENDPOINTS[url_name]["counter"].inc()
         return GITHUB_API_ENDPOINTS[url_name]["url_template"]
 
-    def build_comment_request_body(
+    async def build_comment_request_body(
         self, body: dict, issueid: int | None = None
     ) -> dict:
-        body = {"body": body}
-        ownerid = self.data["owner"].get("ownerid")
-        if (
-            issueid is not None
-            and INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value(
-                identifier=ownerid, default=False
-            )
-        ):
-            bot_name = get_config("github", "comment_action_bot_name", default="sentry-ai")
-            body["actions"] = [
-                {
-                    "name": "Open Sentry Agent",
-                    "type": "copilot-chat",
-                    "message": f"@{bot_name} generate tests for PR#{issueid}",
-                }
-            ]
+        body=dict(body=body)
+        try:
+            ownerid = self.data["owner"].get("ownerid")
+            if (
+                issueid is not None
+                and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
+                    identifier=ownerid, default=False
+                )
+            ):
+                bot_name = get_config("github", "comment_action_bot_name", default="sentry-ai")
+                body["actions"] = [
+                    {
+                        "name": "Open Sentry Agent",
+                        "type": "copilot-chat",
+                        "prompt": f"@{bot_name} generate tests for PR",
+                    }
+                ]
+        except Exception:
+            pass
+
+        return body
 
     async def api(self, *args, token=None, **kwargs):
         """
@@ -1599,18 +1604,18 @@ class Github(TorngitBaseAdapter):
     # --------
     async def post_comment(self, issueid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = self.build_comment_request_body(body, issueid)
+        body = await self.build_comment_request_body(body, issueid)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         async with self.get_client() as client:
             url = self.count_and_get_url_template(url_name="post_comment").substitute(
                 slug=self.slug, issueid=issueid
             )
-            res = await self.api(client, "post", url, body=dict(body=body), token=token)
+            res = await self.api(client, "post", url, body=body, token=token)
             return res
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = self.build_comment_request_body(body, issueid)
+        body = await self.build_comment_request_body(body, issueid)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
@@ -1618,7 +1623,7 @@ class Github(TorngitBaseAdapter):
                     url_name="edit_comment"
                 ).substitute(slug=self.slug, commentid=commentid)
                 res = await self.api(
-                    client, "patch", url, body=dict(body=body), token=token
+                    client, "patch", url, body=body, token=token
                 )
                 return res
         except TorngitClientError as ce:
