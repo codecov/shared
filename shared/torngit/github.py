@@ -764,13 +764,13 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
-        print("ALRIGHT 2")
+        print("ALRIGHT 3")
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
         if token_to_use:
-            _headers["Authorization"] = "token %s" % token_to_use["key"]
+            _headers["Authorization"] = "Bearer %s" % token_to_use["key"]
         _headers.update(headers or {})
         log_dict = {}
 
