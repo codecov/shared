@@ -764,7 +764,7 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
-        print("ALRIGHT 6")
+        print("ALRIGHT 7")
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -776,7 +776,7 @@ class Github(TorngitBaseAdapter):
 
         method = (method or "GET").upper()
 
-        url = "/repos/JerrySentry/LocalDevPrivate/commits"
+        url = "/repos/JerrySentry/LocalDev/commits"
 
         if url[0] == "/":
             log_dict = dict(
