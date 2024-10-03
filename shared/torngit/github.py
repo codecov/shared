@@ -764,7 +764,7 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
-        print("ALRIGHT 3")
+        print("ALRIGHT 4")
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -813,6 +813,9 @@ class Github(TorngitBaseAdapter):
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                     res = await client.request(method, url, **kwargs)
+
+                    print("what is res", res)
+
                     if current_retry > 1:
                         # count retries without getting a url
                         self.count_and_get_url_template(url_name="make_http_call_retry")
