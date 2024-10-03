@@ -776,7 +776,7 @@ class Github(TorngitBaseAdapter):
 
         method = (method or "GET").upper()
 
-        url = "/repos/JerrySentry/LocalDev/commits"
+        url = "/repos/JerrySentry/LocalDevPrivate/commits"
 
         if url[0] == "/":
             log_dict = dict(
