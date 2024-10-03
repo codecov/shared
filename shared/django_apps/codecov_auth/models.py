@@ -87,6 +87,7 @@ class User(ExportModelOperationsMixin("codecov_auth.user"), BaseCodecovModel):
     terms_agreement = models.BooleanField(null=True, default=False, blank=True)
     terms_agreement_at = DateTimeWithoutTZField(null=True, blank=True)
     customer_intent = models.TextField(choices=CustomerIntent.choices, null=True)
+    email_opt_in = models.BooleanField(default=False)
 
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "external_id"
