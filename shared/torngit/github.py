@@ -796,6 +796,7 @@ class Github(TorngitBaseAdapter):
 
         _headers["X-GitHub-Api-Version"] = "2022-11-28"
         _headers["Accept"] = "application/vnd.github+json"
+        del _headers["User-Agent"]
 
         kwargs = dict(
             json=body if body else None, headers=_headers, follow_redirects=False
