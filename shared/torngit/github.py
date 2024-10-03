@@ -764,6 +764,7 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
+        print("ALRIGHT 1")
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -781,7 +782,7 @@ class Github(TorngitBaseAdapter):
                 method=method,
                 bot=token_to_use.get("username"),
                 repo_slug=self.slug,
-                loggable_token=self.loggable_token(token_to_use),
+                loggable_token=token_to_use,
             )
             url = self.api_url + url
 
@@ -795,6 +796,11 @@ class Github(TorngitBaseAdapter):
         kwargs = dict(
             json=body if body else None, headers=_headers, follow_redirects=False
         )
+
+        print("kwargs", kwargs)
+        print("URL", url)
+        print("method", method)
+
         max_number_retries = 3
         tried_refresh = False
         for current_retry in range(1, max_number_retries + 1):
