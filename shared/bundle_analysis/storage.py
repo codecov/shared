@@ -3,6 +3,8 @@ import tempfile
 from enum import Enum
 from typing import Optional
 
+import sentry_sdk
+
 from shared.bundle_analysis.report import BundleAnalysisReport
 from shared.config import get_config
 from shared.storage.base import BaseStorageService
@@ -35,6 +37,7 @@ class BundleAnalysisReportLoader:
         self.repo_key = repo_key
         self.bucket_name = get_bucket_name()
 
+    @sentry_sdk.trace
     def load(self, report_key: str) -> Optional[BundleAnalysisReport]:
         """
         Loads the `BundleAnalysisReport` for the given report key from storage
@@ -52,6 +55,7 @@ class BundleAnalysisReportLoader:
                 return None
         return BundleAnalysisReport(db_path)
 
+    @sentry_sdk.trace
     def save(self, report: BundleAnalysisReport, report_key: str):
         """
         Saves a `BundleAnalysisReport` for the given report key into storage.

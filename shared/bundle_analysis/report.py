@@ -5,6 +5,7 @@ import sqlite3
 import tempfile
 from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
+import sentry_sdk
 from sqlalchemy import asc, desc, text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session as DbSession
@@ -129,6 +130,7 @@ class BundleReport:
             query = query.filter(Asset.asset_type.in_(asset_types))
         return query
 
+    @sentry_sdk.trace
     def asset_reports(
         self,
         asset_types: Optional[List[AssetType]] = None,
@@ -265,6 +267,7 @@ class BundleAnalysisReport:
     def cleanup(self):
         os.unlink(self.db_path)
 
+    @sentry_sdk.trace
     def ingest(self, path: str, compare_sha: Optional[str] = None) -> Tuple[int, str]:
         """
         Ingest the bundle stats JSON at the given file path.
@@ -276,10 +279,12 @@ class BundleAnalysisReport:
 
             # Save custom base commit SHA for doing comparisons if available
             if compare_sha:
-                sql = text("""
+                sql = text(
+                    """
                     INSERT OR REPLACE INTO metadata (key, value)
                     VALUES (:key, :value)
-                """)
+                """
+                )
                 session.execute(
                     sql, {"key": "compare_sha", "value": json.dumps(compare_sha)}
                 )
@@ -348,6 +353,7 @@ class BundleAnalysisReport:
                     )
         return ret
 
+    @sentry_sdk.trace
     def associate_previous_assets(
         self, prev_bundle_analysis_report: "BundleAnalysisReport"
     ) -> None:

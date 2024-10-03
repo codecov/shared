@@ -167,10 +167,6 @@ class FilteredReport(object):
         self._sessions_to_include = None
         self.report_file_cache = {}
 
-    def file_reports(self):
-        for f in self.files:
-            yield self.get(f)
-
     def has_precalculated_totals(self):
         return self._totals is not None
 

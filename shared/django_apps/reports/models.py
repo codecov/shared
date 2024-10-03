@@ -262,6 +262,17 @@ class Test(models.Model):
     failure_rate = models.FloatField(null=True)
     commits_where_fail = ArrayField(models.TextField(), null=True)
 
+    class Framework(models.TextChoices):
+        PYTEST = "pytest"
+        JEST = "jest"
+        VITEST = "vitest"
+        PHPUNIT = "phpunit"
+
+    framework = models.CharField(max_length=100, choices=Framework.choices, null=True)
+
+    computed_name = models.TextField(null=True)
+    filename = models.TextField(null=True)
+
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test"

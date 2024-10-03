@@ -1199,17 +1199,6 @@ def test_repack_no_change(sample_report):
 
 
 @pytest.mark.unit
-def test_file_reports(sample_report):
-    res = list(sample_report.file_reports())
-    assert len(res) == 3
-    assert sorted(x.name for x in res) == [
-        "file_1.go",
-        "file_2.go",
-        "location/file_1.py",
-    ]
-
-
-@pytest.mark.unit
 def test_ignore_lines():
     r = Report()
     r.append(

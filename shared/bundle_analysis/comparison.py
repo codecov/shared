@@ -5,6 +5,8 @@ from enum import Enum
 from functools import cached_property
 from typing import Iterator, List, MutableSet, Optional, Tuple
 
+import sentry_sdk
+
 from shared.bundle_analysis.models import MetadataKey
 from shared.bundle_analysis.report import (
     AssetReport,
@@ -78,6 +80,7 @@ class BundleComparison:
         head_size = self.head_bundle_report.total_size()
         return head_size - base_size
 
+    @sentry_sdk.trace
     def asset_changes(self) -> List[AssetChange]:
         # this groups assets by name
         # there can be multiple assets with the same name and we
@@ -231,6 +234,7 @@ class BundleAnalysisComparison:
             raise MissingHeadReportError()
         return head_report
 
+    @sentry_sdk.trace
     def bundle_changes(self) -> Iterator[BundleChange]:
         """
         Returns a list of changes across the bundles in the base and head reports.
@@ -295,6 +299,7 @@ class BundleAnalysisComparison:
             return 100.0
         return round((self.total_size_delta / base_size) * 100, 2)
 
+    @sentry_sdk.trace
     def bundle_comparison(self, bundle_name: str) -> BundleComparison:
         """
         More detailed comparison (about asset changes) for a particular bundle that
