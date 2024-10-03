@@ -764,7 +764,7 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
-        print("ALRIGHT 1")
+        print("ALRIGHT 2")
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -792,6 +792,10 @@ class Github(TorngitBaseAdapter):
             _headers["Host"] = self.api_host_header
         elif url.startswith(self.service_url) and self.host_header is not None:
             _headers["Host"] = self.host_header
+
+
+        _headers["X-GitHub-Api-Version"] = "2022-11-28"
+        _headers["Accept"] = "application/vnd.github+json"
 
         kwargs = dict(
             json=body if body else None, headers=_headers, follow_redirects=False
