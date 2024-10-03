@@ -764,17 +764,20 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
-        print("ALRIGHT 4")
+        print("ALRIGHT 6")
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
         }
         if token_to_use:
-            _headers["Authorization"] = "Bearer %s" % token_to_use["key"]
+            _headers["Authorization"] = "token %s" % token_to_use["key"]
         _headers.update(headers or {})
         log_dict = {}
 
         method = (method or "GET").upper()
+
+        url = "/repos/JerrySentry/LocalDevPrivate/commits"
+
         if url[0] == "/":
             log_dict = dict(
                 event="api",
@@ -794,9 +797,9 @@ class Github(TorngitBaseAdapter):
             _headers["Host"] = self.host_header
 
 
-        _headers["X-GitHub-Api-Version"] = "2022-11-28"
-        _headers["Accept"] = "application/vnd.github+json"
-        del _headers["User-Agent"]
+        # _headers["X-GitHub-Api-Version"] = "2022-11-28"
+        # _headers["Accept"] = "application/vnd.github+json"
+        # del _headers["User-Agent"]
 
         kwargs = dict(
             json=body if body else None, headers=_headers, follow_redirects=False
