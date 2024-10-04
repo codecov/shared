@@ -764,7 +764,8 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
-        print("ALRIGHT 9")
+        print("ALRIGHT 10")
+        print("token to use", token_to_use)
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
