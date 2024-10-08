@@ -764,6 +764,8 @@ class Github(TorngitBaseAdapter):
         statuses_to_retry=[502, 503, 504],
         **args,
     ) -> Response:
+        print("ALRIGHT 10")
+        print("token to use", token_to_use)
         _headers = {
             "Accept": "application/json",
             "User-Agent": os.getenv("USER_AGENT", "Default"),
@@ -774,6 +776,7 @@ class Github(TorngitBaseAdapter):
         log_dict = {}
 
         method = (method or "GET").upper()
+
         if url[0] == "/":
             log_dict = dict(
                 event="api",
@@ -781,6 +784,7 @@ class Github(TorngitBaseAdapter):
                 method=method,
                 bot=token_to_use.get("username"),
                 repo_slug=self.slug,
+                # loggable_token=token_to_use,
                 loggable_token=self.loggable_token(token_to_use),
             )
             url = self.api_url + url
@@ -792,9 +796,19 @@ class Github(TorngitBaseAdapter):
         elif url.startswith(self.service_url) and self.host_header is not None:
             _headers["Host"] = self.host_header
 
+
+        # _headers["X-GitHub-Api-Version"] = "2022-11-28"
+        # _headers["Accept"] = "application/vnd.github+json"
+        # del _headers["User-Agent"]
+
         kwargs = dict(
             json=body if body else None, headers=_headers, follow_redirects=False
         )
+
+        print("kwargs", kwargs)
+        print("URL", url)
+        print("method", method)
+
         max_number_retries = 3
         tried_refresh = False
         for current_retry in range(1, max_number_retries + 1):
@@ -802,6 +816,9 @@ class Github(TorngitBaseAdapter):
             try:
                 with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
                     res = await client.request(method, url, **kwargs)
+
+                    print("what is res", res)
+
                     if current_retry > 1:
                         # count retries without getting a url
                         self.count_and_get_url_template(url_name="make_http_call_retry")
