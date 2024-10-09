@@ -623,7 +623,7 @@ class Github(TorngitBaseAdapter):
                 )
             ):
                 bot_name = get_config(
-                    "github", "comment_action_bot_name", default="sentry-ai"
+                    "github", "comment_action_bot_name", default="sentry"
                 )
                 body["actions"] = [
                     {
