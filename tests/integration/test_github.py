@@ -39,7 +39,7 @@ def valid_handler():
 
 @pytest.fixture
 def generic_valid_handler():
-    # TODO replace all occurences of valid_handler (above) by this handler.
+    # TODO replace all occurrences of valid_handler (above) by this handler.
     return Github(
         repo=dict(name="example-python"),
         owner=dict(username="codecove2e"),
@@ -286,35 +286,8 @@ class TestGithubTestCase(object):
     async def test_get_pull_request_fail(
         self, generic_valid_handler, codecov_vcr, mocker
     ):
-        mock_refresh = mocker.patch.object(Github, "refresh_token", return_value=None)
         with pytest.raises(TorngitObjectNotFoundError):
             await generic_valid_handler.get_pull_request("100")
-        mock_refresh.assert_called_once()
-
-    get_pull_request_test_data = [
-        (
-            "1",
-            {
-                "base": {
-                    "branch": "main",
-                    "commitid": "68946ef98daec68c7798459150982fc799c87d85",
-                    "slug": "ThiagoCodecov/example-python",
-                },
-                "head": {
-                    "branch": "reason/some-testing",
-                    "commitid": "119c1907fb266f374b8440bbd70dccbea54daf8f",
-                    "slug": "ThiagoCodecov/example-python",
-                },
-                "number": "1",
-                "id": "1",
-                "state": "merged",
-                "title": "Creating new code for reasons no one knows",
-                "author": {"id": "44376991", "username": "ThiagoCodecov"},
-                "labels": [],
-                "merge_commit_sha": "038ac8ac2127baa19a927c67f0d5168d9928abf3",
-            },
-        )
-    ]
 
     @pytest.mark.asyncio
     async def test_get_pull_request_way_more_than_250_results(
@@ -323,7 +296,7 @@ class TestGithubTestCase(object):
         pull_id = "16"
         expected_result = {
             "base": {
-                "branch": "main",
+                "branch": "master",
                 "commitid": "335ec9958daf0242bc8945659bb120c05800eacf",
                 "slug": "ThiagoCodecov/example-python",
             },
@@ -344,10 +317,27 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("a,b", get_pull_request_test_data)
-    async def test_get_pull_request(self, valid_handler, a, b, codecov_vcr):
-        res = await valid_handler.get_pull_request(a)
-        assert res == b
+    async def test_get_pull_request(self, valid_handler, codecov_vcr):
+        res = await valid_handler.get_pull_request(1)
+        assert res == {
+            "base": {
+                "branch": "master",
+                "commitid": "68946ef98daec68c7798459150982fc799c87d85",
+                "slug": "ThiagoCodecov/example-python",
+            },
+            "head": {
+                "branch": "reason/some-testing",
+                "commitid": "119c1907fb266f374b8440bbd70dccbea54daf8f",
+                "slug": "ThiagoCodecov/example-python",
+            },
+            "number": "1",
+            "id": "1",
+            "state": "merged",
+            "title": "Creating new code for reasons no one knows",
+            "author": {"id": "44376991", "username": "ThiagoCodecov"},
+            "labels": [],
+            "merge_commit_sha": "038ac8ac2127baa19a927c67f0d5168d9928abf3",
+        }
 
     @pytest.mark.asyncio
     async def test_get_pull_request_commits(self, valid_handler, codecov_vcr):
@@ -1302,36 +1292,43 @@ class TestGithubTestCase(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_base_doesnt_match(self, valid_handler, codecov_vcr):
-        pull_id = "15"
+    async def test_get_pull_request_base_doesnt_match(
+        self, generic_valid_handler, codecov_vcr
+    ):
+        handler = Github(
+            repo=dict(name="gazebo"),
+            owner=dict(username="codecov"),
+            token=generic_valid_handler.token,
+        )
+        pull_id = 3363
         expected_result = {
+            "id": "3363",
+            "number": "3363",
+            "title": "feat: Update commit graphql queries to use new coverage and bundleAna\u2026",
+            "state": "open",
+            "author": {"id": "170470397", "username": "calvin-codecov"},
             "base": {
                 "branch": "main",
-                "commitid": "30cc1ed751a59fa9e7ad8e79fff41a6fe11ef5dd",
-                "slug": "ThiagoCodecov/example-python",
+                "commitid": "4455ce965e6849b14ef80c7ca3dc10e2170e235d",
+                "slug": "codecov/gazebo",
             },
             "head": {
-                "branch": "thiago/test-1",
-                "commitid": "2e2600aa09525e2e1e1d98b09de61454d29c94bb",
-                "slug": "ThiagoCodecov/example-python",
+                "branch": "cy/update_commit_graphql",
+                "commitid": "5aa73e58bb594faf9b2c63662873498ec1444de6",
+                "slug": "codecov/gazebo",
             },
-            "number": "15",
-            "id": "15",
-            "state": "closed",
-            "title": "Thiago/test 1",
-            "author": {"id": "44376991", "username": "ThiagoCodecov"},
             "labels": [],
             "merge_commit_sha": None,
         }
-        res = await valid_handler.get_pull_request(pull_id)
+        res = await handler.get_pull_request(pull_id)
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_pull_request_from_fork(self, valid_handler, codecov_vcr):
+    async def test_get_pull_request_from_fork(self, generic_valid_handler, codecov_vcr):
         handler = Github(
             repo=dict(name="codecov-api"),
             owner=dict(username="codecov"),
-            token=valid_handler.token,
+            token=generic_valid_handler.token,
         )
         pull_id = "285"
         expected_result = {
@@ -1347,7 +1344,7 @@ class TestGithubTestCase(object):
             },
             "number": "285",
             "id": "285",
-            "state": "open",
+            "state": "closed",
             "title": "chore: Switch to Python 3.12",
             "author": {"id": "1584268", "username": "FraBle"},
             "labels": [],
@@ -1358,17 +1355,17 @@ class TestGithubTestCase(object):
 
     @pytest.mark.asyncio
     async def test_get_pull_request_base_partially_differs(
-        self, valid_handler, codecov_vcr
+        self, generic_valid_handler, codecov_vcr
     ):
         handler = Github(
             repo=dict(name="codecov-api-archive"),
             owner=dict(username="codecov"),
-            token=valid_handler.token,
+            token=generic_valid_handler.token,
         )
         pull_id = "110"
         expected_result = {
             "base": {
-                "branch": "main",
+                "branch": "master",
                 "commitid": "77141afbd13a1273f87cf02f7f32265ea19a3b77",
                 "slug": "codecov/codecov-api-archive",
             },

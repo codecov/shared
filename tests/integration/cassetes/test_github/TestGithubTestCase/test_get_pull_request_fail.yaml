@@ -1,6 +1,16 @@
 interactions:
 - request:
-    body: ''
+    body: '{"query": "query GetPullRequest($owner: String!, $repo: String!, $pr_number:
+      Int!) {\n    repository(owner: $owner, name: $repo) {\n        pullRequest(number:
+      $pr_number) {\n            number\n            title\n            author {\n                login\n                ...
+      on User {\n                    databaseId\n                }\n                ...
+      on Bot {\n                    databaseId\n                }\n            }\n            labels(first:
+      100) {\n                nodes {\n                    name\n                }\n            }\n            state\n            mergeCommit
+      {\n                oid\n            }\n            baseRefOid\n            baseRefName\n            baseRepository
+      {\n                name\n                owner {\n                    login\n                }\n            }\n            headRefOid\n            headRefName\n            headRepository
+      {\n                name\n                owner {\n                    login\n                }\n            }\n        }\n    }\n}\n",
+      "variables": {"owner": "codecove2e", "repo": "example-python", "pr_number":
+      100}}'
     headers:
       accept:
       - application/json
@@ -8,14 +18,19 @@ interactions:
       - gzip, deflate
       connection:
       - keep-alive
+      content-length:
+      - '1117'
+      content-type:
+      - application/json
       host:
       - api.github.com
       user-agent:
       - Default
-    method: GET
-    uri: https://api.github.com/repos/codecove2e/example-python/pulls/100
+    method: POST
+    uri: https://api.github.com/graphql
   response:
-    content: '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/pulls/pulls#get-a-pull-request"}'
+    content: '{"data":{"repository":{"pullRequest":null}},"errors":[{"type":"NOT_FOUND","path":["repository","pullRequest"],"locations":[{"line":3,"column":9}],"message":"Could
+      not resolve to a PullRequest with the number of 100."}]}'
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -31,11 +46,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 18 Aug 2023 20:27:44 GMT
+      - Wed, 09 Oct 2024 08:47:52 GMT
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       Server:
-      - GitHub.com
+      - github.com
       Strict-Transport-Security:
       - max-age=31536000; includeSubdomains; preload
       Transfer-Encoding:
@@ -49,27 +64,23 @@ interactions:
       X-Frame-Options:
       - deny
       X-GitHub-Media-Type:
-      - github.v3
+      - github.v4
       X-GitHub-Request-Id:
-      - E3BB:25EE:12C1DB4:13EE268:64DFD440
+      - D9E0:15216C:416361:420E44:67064338
       X-OAuth-Scopes:
-      - repo, user
+      - repo
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
-      - '4995'
+      - '4999'
       X-RateLimit-Reset:
-      - '1692393273'
+      - '1728467272'
       X-RateLimit-Resource:
-      - core
+      - graphql
       X-RateLimit-Used:
-      - '5'
+      - '1'
       X-XSS-Protection:
       - '0'
-      github-authentication-token-expiration:
-      - 2023-08-25 20:13:04 UTC
-      x-github-api-version-selected:
-      - '2022-11-28'
     http_version: HTTP/1.1
-    status_code: 404
+    status_code: 200
 version: 1

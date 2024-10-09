@@ -6,6 +6,7 @@ import httpx
 
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
+from shared.torngit.response_types import ProviderPull
 from shared.typings.oauth_token_types import (
     OauthConsumerToken,
     OnRefreshCallback,
@@ -142,6 +143,7 @@ class TorngitBaseAdapter(object):
                     self.data["owner"]["username"],
                     self.data["repo"]["name"],
                 )
+        return None
 
     def build_tree_from_commits(self, start, commit_mapping):
         parents = [
@@ -289,7 +291,7 @@ class TorngitBaseAdapter(object):
     ):
         raise NotImplementedError()
 
-    async def get_pull_request(self, pullid: str, token=None):
+    async def get_pull_request(self, pullid: str, token=None) -> ProviderPull | None:
         raise NotImplementedError()
 
     async def get_pull_request_commits(self, pullid: str, token=None):
