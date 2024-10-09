@@ -613,7 +613,7 @@ class Github(TorngitBaseAdapter):
     async def build_comment_request_body(
         self, body: dict, issueid: int | None = None
     ) -> dict:
-        body=dict(body=body)
+        body = dict(body=body)
         try:
             ownerid = self.data["owner"].get("ownerid")
             if (
@@ -622,7 +622,9 @@ class Github(TorngitBaseAdapter):
                     identifier=ownerid, default=False
                 )
             ):
-                bot_name = get_config("github", "comment_action_bot_name", default="sentry-ai")
+                bot_name = get_config(
+                    "github", "comment_action_bot_name", default="sentry-ai"
+                )
                 body["actions"] = [
                     {
                         "name": "Open Sentry Agent",
@@ -1622,9 +1624,7 @@ class Github(TorngitBaseAdapter):
                 url = self.count_and_get_url_template(
                     url_name="edit_comment"
                 ).substitute(slug=self.slug, commentid=commentid)
-                res = await self.api(
-                    client, "patch", url, body=body, token=token
-                )
+                res = await self.api(client, "patch", url, body=body, token=token)
                 return res
         except TorngitClientError as ce:
             if ce.code == 404:
