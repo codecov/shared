@@ -137,6 +137,7 @@ def get_github_integration_token(
                     integration_id=integration_id,
                     api_endpoint=api_endpoint,
                     error_cause=error_cause,
+                    github_error=res.json().get("message"),
                 ),
             )
             raise InvalidInstallationError(error_cause)
