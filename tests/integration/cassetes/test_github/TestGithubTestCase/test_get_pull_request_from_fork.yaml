@@ -1,6 +1,15 @@
 interactions:
 - request:
-    body: ''
+    body: '{"query": "query GetPullRequest($owner: String!, $repo: String!, $pr_number:
+      Int!) {\n    repository(owner: $owner, name: $repo) {\n        pullRequest(number:
+      $pr_number) {\n            number\n            title\n            author {\n                login\n                ...
+      on User {\n                    databaseId\n                }\n                ...
+      on Bot {\n                    databaseId\n                }\n            }\n            labels(first:
+      100) {\n                nodes {\n                    name\n                }\n            }\n            state\n            mergeCommit
+      {\n                oid\n            }\n            baseRefOid\n            baseRefName\n            baseRepository
+      {\n                name\n                owner {\n                    login\n                }\n            }\n            headRefOid\n            headRefName\n            headRepository
+      {\n                name\n                owner {\n                    login\n                }\n            }\n        }\n    }\n}\n",
+      "variables": {"owner": "codecov", "repo": "codecov-api", "pr_number": 285}}'
     headers:
       accept:
       - application/json
@@ -8,26 +17,19 @@ interactions:
       - gzip, deflate
       connection:
       - keep-alive
+      content-length:
+      - '1111'
+      content-type:
+      - application/json
       host:
       - api.github.com
       user-agent:
       - Default
-    method: GET
-    uri: https://api.github.com/repos/codecov/codecov-api/pulls/285
+    method: POST
+    uri: https://api.github.com/graphql
   response:
-    content: '{"url":"https://api.github.com/repos/codecov/codecov-api/pulls/285","id":1626444498,"node_id":"PR_kwDOJ8oEEM5g8ZLS","html_url":"https://github.com/codecov/codecov-api/pull/285","diff_url":"https://github.com/codecov/codecov-api/pull/285.diff","patch_url":"https://github.com/codecov/codecov-api/pull/285.patch","issue_url":"https://api.github.com/repos/codecov/codecov-api/issues/285","number":285,"state":"open","locked":false,"title":"chore:
-      Switch to Python 3.12","user":{"login":"FraBle","id":1584268,"node_id":"MDQ6VXNlcjE1ODQyNjg=","avatar_url":"https://avatars.githubusercontent.com/u/1584268?v=4","gravatar_id":"","url":"https://api.github.com/users/FraBle","html_url":"https://github.com/FraBle","followers_url":"https://api.github.com/users/FraBle/followers","following_url":"https://api.github.com/users/FraBle/following{/other_user}","gists_url":"https://api.github.com/users/FraBle/gists{/gist_id}","starred_url":"https://api.github.com/users/FraBle/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/FraBle/subscriptions","organizations_url":"https://api.github.com/users/FraBle/orgs","repos_url":"https://api.github.com/users/FraBle/repos","events_url":"https://api.github.com/users/FraBle/events{/privacy}","received_events_url":"https://api.github.com/users/FraBle/received_events","type":"User","site_admin":false},"body":"###
-      Purpose/Motivation\r\nSwitches the API to Python 3.12.\r\n\r\n### Links to relevant
-      tickets\r\n\r\nhttps://github.com/codecov/engineering-team/issues/875\r\n\r\n###
-      Legal Boilerplate\r\n\r\nLook, I get it. The entity doing business as \"Sentry\"
-      was incorporated in the State of Delaware in 2015 as Functional Software, Inc.
-      In 2022 this entity acquired Codecov and as result Sentry is going to need some
-      rights from me in order to utilize my contributions in this PR. So here''s the
-      deal: I retain all rights, title and interest in and to my contributions, and
-      by keeping this boilerplate intact I confirm that Sentry can use, modify, copy,
-      and redistribute my contributions, under Sentry''s choice of terms.\r\n","created_at":"2023-12-01T23:20:48Z","updated_at":"2023-12-01T23:21:51Z","closed_at":null,"merged_at":null,"merge_commit_sha":"7458689acf385c2cbe5fe09bd73536a50ef545c6","assignee":null,"assignees":[],"requested_reviewers":[],"requested_teams":[],"labels":[],"milestone":null,"draft":false,"commits_url":"https://api.github.com/repos/codecov/codecov-api/pulls/285/commits","review_comments_url":"https://api.github.com/repos/codecov/codecov-api/pulls/285/comments","review_comment_url":"https://api.github.com/repos/codecov/codecov-api/pulls/comments{/number}","comments_url":"https://api.github.com/repos/codecov/codecov-api/issues/285/comments","statuses_url":"https://api.github.com/repos/codecov/codecov-api/statuses/67a44e176ffd419f066c1cc34cff391e2a1304e2","head":{"label":"FraBle:python-3-12","ref":"python-3-12","sha":"67a44e176ffd419f066c1cc34cff391e2a1304e2","user":{"login":"FraBle","id":1584268,"node_id":"MDQ6VXNlcjE1ODQyNjg=","avatar_url":"https://avatars.githubusercontent.com/u/1584268?v=4","gravatar_id":"","url":"https://api.github.com/users/FraBle","html_url":"https://github.com/FraBle","followers_url":"https://api.github.com/users/FraBle/followers","following_url":"https://api.github.com/users/FraBle/following{/other_user}","gists_url":"https://api.github.com/users/FraBle/gists{/gist_id}","starred_url":"https://api.github.com/users/FraBle/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/FraBle/subscriptions","organizations_url":"https://api.github.com/users/FraBle/orgs","repos_url":"https://api.github.com/users/FraBle/repos","events_url":"https://api.github.com/users/FraBle/events{/privacy}","received_events_url":"https://api.github.com/users/FraBle/received_events","type":"User","site_admin":false},"repo":{"id":724832882,"node_id":"R_kgDOKzQScg","name":"codecov-api","full_name":"FraBle/codecov-api","private":false,"owner":{"login":"FraBle","id":1584268,"node_id":"MDQ6VXNlcjE1ODQyNjg=","avatar_url":"https://avatars.githubusercontent.com/u/1584268?v=4","gravatar_id":"","url":"https://api.github.com/users/FraBle","html_url":"https://github.com/FraBle","followers_url":"https://api.github.com/users/FraBle/followers","following_url":"https://api.github.com/users/FraBle/following{/other_user}","gists_url":"https://api.github.com/users/FraBle/gists{/gist_id}","starred_url":"https://api.github.com/users/FraBle/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/FraBle/subscriptions","organizations_url":"https://api.github.com/users/FraBle/orgs","repos_url":"https://api.github.com/users/FraBle/repos","events_url":"https://api.github.com/users/FraBle/events{/privacy}","received_events_url":"https://api.github.com/users/FraBle/received_events","type":"User","site_admin":false},"html_url":"https://github.com/FraBle/codecov-api","description":"Code
-      for the API of Codecov","fork":true,"url":"https://api.github.com/repos/FraBle/codecov-api","forks_url":"https://api.github.com/repos/FraBle/codecov-api/forks","keys_url":"https://api.github.com/repos/FraBle/codecov-api/keys{/key_id}","collaborators_url":"https://api.github.com/repos/FraBle/codecov-api/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/FraBle/codecov-api/teams","hooks_url":"https://api.github.com/repos/FraBle/codecov-api/hooks","issue_events_url":"https://api.github.com/repos/FraBle/codecov-api/issues/events{/number}","events_url":"https://api.github.com/repos/FraBle/codecov-api/events","assignees_url":"https://api.github.com/repos/FraBle/codecov-api/assignees{/user}","branches_url":"https://api.github.com/repos/FraBle/codecov-api/branches{/branch}","tags_url":"https://api.github.com/repos/FraBle/codecov-api/tags","blobs_url":"https://api.github.com/repos/FraBle/codecov-api/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/FraBle/codecov-api/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/FraBle/codecov-api/git/refs{/sha}","trees_url":"https://api.github.com/repos/FraBle/codecov-api/git/trees{/sha}","statuses_url":"https://api.github.com/repos/FraBle/codecov-api/statuses/{sha}","languages_url":"https://api.github.com/repos/FraBle/codecov-api/languages","stargazers_url":"https://api.github.com/repos/FraBle/codecov-api/stargazers","contributors_url":"https://api.github.com/repos/FraBle/codecov-api/contributors","subscribers_url":"https://api.github.com/repos/FraBle/codecov-api/subscribers","subscription_url":"https://api.github.com/repos/FraBle/codecov-api/subscription","commits_url":"https://api.github.com/repos/FraBle/codecov-api/commits{/sha}","git_commits_url":"https://api.github.com/repos/FraBle/codecov-api/git/commits{/sha}","comments_url":"https://api.github.com/repos/FraBle/codecov-api/comments{/number}","issue_comment_url":"https://api.github.com/repos/FraBle/codecov-api/issues/comments{/number}","contents_url":"https://api.github.com/repos/FraBle/codecov-api/contents/{+path}","compare_url":"https://api.github.com/repos/FraBle/codecov-api/compare/{base}...{head}","merges_url":"https://api.github.com/repos/FraBle/codecov-api/merges","archive_url":"https://api.github.com/repos/FraBle/codecov-api/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/FraBle/codecov-api/downloads","issues_url":"https://api.github.com/repos/FraBle/codecov-api/issues{/number}","pulls_url":"https://api.github.com/repos/FraBle/codecov-api/pulls{/number}","milestones_url":"https://api.github.com/repos/FraBle/codecov-api/milestones{/number}","notifications_url":"https://api.github.com/repos/FraBle/codecov-api/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/FraBle/codecov-api/labels{/name}","releases_url":"https://api.github.com/repos/FraBle/codecov-api/releases{/id}","deployments_url":"https://api.github.com/repos/FraBle/codecov-api/deployments","created_at":"2023-11-28T22:10:46Z","updated_at":"2023-11-28T22:10:46Z","pushed_at":"2023-12-01T23:21:49Z","git_url":"git://github.com/FraBle/codecov-api.git","ssh_url":"git@github.com:FraBle/codecov-api.git","clone_url":"https://github.com/FraBle/codecov-api.git","svn_url":"https://github.com/FraBle/codecov-api","homepage":null,"size":27481,"stargazers_count":0,"watchers_count":0,"language":null,"has_issues":false,"has_projects":true,"has_downloads":true,"has_wiki":true,"has_pages":false,"has_discussions":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":0,"license":{"key":"other","name":"Other","spdx_id":"NOASSERTION","url":null,"node_id":"MDc6TGljZW5zZTA="},"allow_forking":true,"is_template":false,"web_commit_signoff_required":false,"topics":[],"visibility":"public","forks":0,"open_issues":0,"watchers":0,"default_branch":"main"}},"base":{"label":"codecov:main","ref":"main","sha":"109eea9a085f5856a20ae5f1714b8c4786c3327b","user":{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","avatar_url":"https://avatars.githubusercontent.com/u/8226205?v=4","gravatar_id":"","url":"https://api.github.com/users/codecov","html_url":"https://github.com/codecov","followers_url":"https://api.github.com/users/codecov/followers","following_url":"https://api.github.com/users/codecov/following{/other_user}","gists_url":"https://api.github.com/users/codecov/gists{/gist_id}","starred_url":"https://api.github.com/users/codecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/codecov/subscriptions","organizations_url":"https://api.github.com/users/codecov/orgs","repos_url":"https://api.github.com/users/codecov/repos","events_url":"https://api.github.com/users/codecov/events{/privacy}","received_events_url":"https://api.github.com/users/codecov/received_events","type":"Organization","site_admin":false},"repo":{"id":667550736,"node_id":"R_kgDOJ8oEEA","name":"codecov-api","full_name":"codecov/codecov-api","private":false,"owner":{"login":"codecov","id":8226205,"node_id":"MDEyOk9yZ2FuaXphdGlvbjgyMjYyMDU=","avatar_url":"https://avatars.githubusercontent.com/u/8226205?v=4","gravatar_id":"","url":"https://api.github.com/users/codecov","html_url":"https://github.com/codecov","followers_url":"https://api.github.com/users/codecov/followers","following_url":"https://api.github.com/users/codecov/following{/other_user}","gists_url":"https://api.github.com/users/codecov/gists{/gist_id}","starred_url":"https://api.github.com/users/codecov/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/codecov/subscriptions","organizations_url":"https://api.github.com/users/codecov/orgs","repos_url":"https://api.github.com/users/codecov/repos","events_url":"https://api.github.com/users/codecov/events{/privacy}","received_events_url":"https://api.github.com/users/codecov/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/codecov/codecov-api","description":"Code
-      for the API of Codecov","fork":false,"url":"https://api.github.com/repos/codecov/codecov-api","forks_url":"https://api.github.com/repos/codecov/codecov-api/forks","keys_url":"https://api.github.com/repos/codecov/codecov-api/keys{/key_id}","collaborators_url":"https://api.github.com/repos/codecov/codecov-api/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/codecov/codecov-api/teams","hooks_url":"https://api.github.com/repos/codecov/codecov-api/hooks","issue_events_url":"https://api.github.com/repos/codecov/codecov-api/issues/events{/number}","events_url":"https://api.github.com/repos/codecov/codecov-api/events","assignees_url":"https://api.github.com/repos/codecov/codecov-api/assignees{/user}","branches_url":"https://api.github.com/repos/codecov/codecov-api/branches{/branch}","tags_url":"https://api.github.com/repos/codecov/codecov-api/tags","blobs_url":"https://api.github.com/repos/codecov/codecov-api/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/codecov/codecov-api/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/codecov/codecov-api/git/refs{/sha}","trees_url":"https://api.github.com/repos/codecov/codecov-api/git/trees{/sha}","statuses_url":"https://api.github.com/repos/codecov/codecov-api/statuses/{sha}","languages_url":"https://api.github.com/repos/codecov/codecov-api/languages","stargazers_url":"https://api.github.com/repos/codecov/codecov-api/stargazers","contributors_url":"https://api.github.com/repos/codecov/codecov-api/contributors","subscribers_url":"https://api.github.com/repos/codecov/codecov-api/subscribers","subscription_url":"https://api.github.com/repos/codecov/codecov-api/subscription","commits_url":"https://api.github.com/repos/codecov/codecov-api/commits{/sha}","git_commits_url":"https://api.github.com/repos/codecov/codecov-api/git/commits{/sha}","comments_url":"https://api.github.com/repos/codecov/codecov-api/comments{/number}","issue_comment_url":"https://api.github.com/repos/codecov/codecov-api/issues/comments{/number}","contents_url":"https://api.github.com/repos/codecov/codecov-api/contents/{+path}","compare_url":"https://api.github.com/repos/codecov/codecov-api/compare/{base}...{head}","merges_url":"https://api.github.com/repos/codecov/codecov-api/merges","archive_url":"https://api.github.com/repos/codecov/codecov-api/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/codecov/codecov-api/downloads","issues_url":"https://api.github.com/repos/codecov/codecov-api/issues{/number}","pulls_url":"https://api.github.com/repos/codecov/codecov-api/pulls{/number}","milestones_url":"https://api.github.com/repos/codecov/codecov-api/milestones{/number}","notifications_url":"https://api.github.com/repos/codecov/codecov-api/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/codecov/codecov-api/labels{/name}","releases_url":"https://api.github.com/repos/codecov/codecov-api/releases{/id}","deployments_url":"https://api.github.com/repos/codecov/codecov-api/deployments","created_at":"2023-07-17T19:06:58Z","updated_at":"2023-12-08T12:41:15Z","pushed_at":"2023-12-12T15:56:05Z","git_url":"git://github.com/codecov/codecov-api.git","ssh_url":"git@github.com:codecov/codecov-api.git","clone_url":"https://github.com/codecov/codecov-api.git","svn_url":"https://github.com/codecov/codecov-api","homepage":null,"size":27915,"stargazers_count":197,"watchers_count":197,"language":"Python","has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":true,"has_pages":false,"has_discussions":false,"forks_count":21,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":14,"license":{"key":"other","name":"Other","spdx_id":"NOASSERTION","url":null,"node_id":"MDc6TGljZW5zZTA="},"allow_forking":true,"is_template":false,"web_commit_signoff_required":false,"topics":[],"visibility":"public","forks":21,"open_issues":14,"watchers":197,"default_branch":"main"}},"_links":{"self":{"href":"https://api.github.com/repos/codecov/codecov-api/pulls/285"},"html":{"href":"https://github.com/codecov/codecov-api/pull/285"},"issue":{"href":"https://api.github.com/repos/codecov/codecov-api/issues/285"},"comments":{"href":"https://api.github.com/repos/codecov/codecov-api/issues/285/comments"},"review_comments":{"href":"https://api.github.com/repos/codecov/codecov-api/pulls/285/comments"},"review_comment":{"href":"https://api.github.com/repos/codecov/codecov-api/pulls/comments{/number}"},"commits":{"href":"https://api.github.com/repos/codecov/codecov-api/pulls/285/commits"},"statuses":{"href":"https://api.github.com/repos/codecov/codecov-api/statuses/67a44e176ffd419f066c1cc34cff391e2a1304e2"}},"author_association":"CONTRIBUTOR","auto_merge":null,"active_lock_reason":null,"merged":false,"mergeable":true,"rebaseable":true,"mergeable_state":"behind","merged_by":null,"comments":0,"review_comments":0,"maintainer_can_modify":true,"commits":2,"additions":4,"deletions":6,"changed_files":3}'
+    content: '{"data":{"repository":{"pullRequest":{"number":285,"title":"chore: Switch
+      to Python 3.12","author":{"login":"FraBle","databaseId":1584268},"labels":{"nodes":[]},"state":"CLOSED","mergeCommit":null,"baseRefOid":"109eea9a085f5856a20ae5f1714b8c4786c3327b","baseRefName":"main","baseRepository":{"name":"codecov-api","owner":{"login":"codecov"}},"headRefOid":"67a44e176ffd419f066c1cc34cff391e2a1304e2","headRefName":"python-3-12","headRepository":{"name":"codecov-api","owner":{"login":"FraBle"}}}}}}'
     headers:
       Access-Control-Allow-Origin:
       - '*'
@@ -36,8 +38,6 @@ interactions:
         X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
         X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
         X-GitHub-Request-Id, Deprecation, Sunset
-      Cache-Control:
-      - private, max-age=60, s-maxage=60
       Content-Encoding:
       - gzip
       Content-Security-Policy:
@@ -45,50 +45,43 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 12 Dec 2023 17:17:52 GMT
-      ETag:
-      - W/"75031a844ae3475a0255b2014cb4d7f96973216079c0123c4415f75234d5b626"
-      Last-Modified:
-      - Fri, 01 Dec 2023 23:21:51 GMT
+      - Wed, 09 Oct 2024 09:22:41 GMT
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       Server:
-      - GitHub.com
+      - github.com
       Strict-Transport-Security:
       - max-age=31536000; includeSubdomains; preload
       Transfer-Encoding:
       - chunked
       Vary:
-      - Accept, Authorization, Cookie, X-GitHub-OTP
       - Accept-Encoding, Accept, X-Requested-With
       X-Accepted-OAuth-Scopes:
-      - ''
+      - repo
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
       - deny
       X-GitHub-Media-Type:
-      - github.v3
+      - github.v4
       X-GitHub-Request-Id:
-      - CF27:BC0A:16CF49:18099C:657895BF
+      - DC8C:D53EE:659D2B:66A027:67064B61
       X-OAuth-Scopes:
       - repo, user
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
-      - '4987'
+      - '4994'
       X-RateLimit-Reset:
-      - '1702401614'
+      - '1728468768'
       X-RateLimit-Resource:
-      - core
+      - graphql
       X-RateLimit-Used:
-      - '13'
+      - '6'
       X-XSS-Protection:
       - '0'
       github-authentication-token-expiration:
-      - 2023-12-19 17:14:49 UTC
-      x-github-api-version-selected:
-      - '2022-11-28'
+      - 2024-10-16 09:11:54 UTC
     http_version: HTTP/1.1
     status_code: 200
 - request:
@@ -141,22 +134,21 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 12 Dec 2023 17:17:52 GMT
+      - Wed, 09 Oct 2024 09:22:41 GMT
       ETag:
-      - W/"0ed03bab2f3600d91a5c852473bf50d36aacef2f38fbf69665673e2859dbef55"
+      - W/"c070a8c596dc65cba9941fb14498ea43edc71b0c5f1582ace08a619e970dab05"
       Last-Modified:
-      - Fri, 01 Dec 2023 23:21:51 GMT
+      - Sat, 28 Sep 2024 11:23:23 GMT
       Referrer-Policy:
       - origin-when-cross-origin, strict-origin-when-cross-origin
       Server:
-      - GitHub.com
+      - github.com
       Strict-Transport-Security:
       - max-age=31536000; includeSubdomains; preload
       Transfer-Encoding:
       - chunked
       Vary:
-      - Accept, Authorization, Cookie, X-GitHub-OTP
-      - Accept-Encoding, Accept, X-Requested-With
+      - Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With
       X-Accepted-OAuth-Scopes:
       - ''
       X-Content-Type-Options:
@@ -166,23 +158,23 @@ interactions:
       X-GitHub-Media-Type:
       - github.v3
       X-GitHub-Request-Id:
-      - CF28:10533:157338:16AD8C:657895C0
+      - DC8D:B5D27:622F74:63306C:67064B61
       X-OAuth-Scopes:
       - repo, user
       X-RateLimit-Limit:
       - '5000'
       X-RateLimit-Remaining:
-      - '4986'
+      - '4994'
       X-RateLimit-Reset:
-      - '1702401614'
+      - '1728468702'
       X-RateLimit-Resource:
       - core
       X-RateLimit-Used:
-      - '14'
+      - '6'
       X-XSS-Protection:
       - '0'
       github-authentication-token-expiration:
-      - 2023-12-19 17:14:49 UTC
+      - 2024-10-16 09:11:54 UTC
       x-github-api-version-selected:
       - '2022-11-28'
     http_version: HTTP/1.1

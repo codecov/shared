@@ -17,6 +17,7 @@ from shared.torngit.exceptions import (
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
 )
+from shared.torngit.response_types import ProviderPull
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat
 
@@ -452,7 +453,7 @@ class Bitbucket(TorngitBaseAdapter):
                         break
         return data
 
-    async def get_pull_request(self, pullid, token=None):
+    async def get_pull_request(self, pullid, token=None) -> ProviderPull:
         # https://confluence.atlassian.com/display/BITBUCKET/pullrequests+Resource#pullrequestsResource-GETaspecificpullrequest
         async with self.get_client() as client:
             try:
@@ -493,10 +494,10 @@ class Bitbucket(TorngitBaseAdapter):
             author=dict(
                 id=str(res["author"]["uuid"][1:-1]) if res["author"] else None,
                 username=(
-                    res["author"].get("nickname") or res["author"].get("username")
-                )
-                if res["author"]
-                else None,
+                    (res["author"].get("nickname") or res["author"].get("username"))
+                    if res["author"]
+                    else None
+                ),
             ),
             base=dict(
                 branch=res["destination"]["branch"]["name"], commitid=base["hash"]
@@ -508,9 +509,11 @@ class Bitbucket(TorngitBaseAdapter):
             title=res["title"],
             id=str(pullid),
             number=str(pullid),
-            merge_commit_sha=res.get("merge_commit", dict()).get("hash")
-            if res["state"] == "MERGED"
-            else None,
+            merge_commit_sha=(
+                res.get("merge_commit", dict()).get("hash")
+                if res["state"] == "MERGED"
+                else None
+            ),
         )
 
     async def post_comment(self, issueid, body, token=None):

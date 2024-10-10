@@ -5,6 +5,7 @@ import os
 from base64 import b64decode
 from datetime import datetime, timezone
 from string import Template
+from textwrap import dedent
 from typing import Dict, List, Optional
 from urllib.parse import parse_qs, urlencode
 
@@ -16,6 +17,7 @@ from shared.github import (
     get_github_integration_token,
     get_github_jwt_token,
 )
+from shared.helpers.cache import LogMapping
 from shared.helpers.redis import get_redis_connection
 from shared.metrics import Counter, metrics
 from shared.rate_limits import (
@@ -28,6 +30,7 @@ from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
+    TorngitMaxRetriesError,
     TorngitMisconfiguredCredentials,
     TorngitObjectNotFoundError,
     TorngitRateLimitError,
@@ -37,6 +40,7 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
+from shared.torngit.response_types import ProviderAuthor, ProviderCommit, ProviderPull
 from shared.torngit.status import Status
 from shared.typings.oauth_token_types import OauthConsumerToken
 from shared.typings.torngit import GithubInstallationInfo
@@ -188,7 +192,7 @@ GITHUB_API_ENDPOINTS = {
         "enterprise_counter": GITHUB_E_API_CALL_COUNTER.labels(
             endpoint="get_pull_request"
         ),
-        "url_template": Template("/repos/${slug}/pulls/${pullid}"),
+        "url_template": Template("/graphql"),
     },
     "get_distance_in_commits": {
         "counter": GITHUB_API_CALL_COUNTER.labels(endpoint="get_distance_in_commits"),
@@ -478,85 +482,138 @@ external_endpoint_template = Template("${username}/${name}/commit/${commitid}")
 
 class GitHubGraphQLQueries(object):
     _queries = dict(
-        REPOS_FROM_NODEIDS="""
-query GetReposFromNodeIds($node_ids: [ID!]!) {
-    nodes(ids: $node_ids) {
-        __typename
-        ... on Repository {
-            # databaseId == service_id
-            databaseId
-            name
-            primaryLanguage {
-                name
+        REPOS_FROM_NODEIDS=dedent(
+            """\
+            query GetReposFromNodeIds($node_ids: [ID!]!) {
+                nodes(ids: $node_ids) {
+                    __typename
+                    ... on Repository {
+                        # databaseId == service_id
+                        databaseId
+                        name
+                        primaryLanguage {
+                            name
+                        }
+                        isPrivate
+                        defaultBranchRef {
+                            name
+                        }
+                        owner {
+                            # This ID is actually the node_id, not the ownerid
+                            id
+                            login
+                        }
+                    }
+                }
             }
-            isPrivate
-            defaultBranchRef {
-                name
+            """
+        ),
+        OWNER_FROM_NODEID=dedent(
+            """\
+            query GetOwnerFromNodeId($node_id: ID!) {
+                node(id: $node_id) {
+                    __typename
+                    ... on Organization {
+                        login
+                        databaseId
+                    }
+                    ... on User {
+                        login
+                        databaseId
+                    }
+                }
             }
-            owner {
-                # This ID is actually the node_id, not the ownerid
-                id
-                login
+            """
+        ),
+        REPO_LANGUAGES_FROM_OWNER=dedent(
+            """\
+            query Repos($owner: String!, $cursor: String, $first: Int!) {
+                repositoryOwner(login: $owner) {
+                    repositories(
+                        first: $first
+                        ownerAffiliations: OWNER
+                        isFork: false
+                        isLocked: false
+                        orderBy: {field: NAME, direction: ASC}
+                        after: $cursor
+                    ) {
+                        pageInfo {
+                            hasNextPage
+                            endCursor
+                    }
+                    nodes {
+                        name
+                        languages(first: 100) {
+                            edges {
+                                node {
+                                    name
+                                    id
+                                }
+                            }
+                        }
+                    }
+                    }
+                }
             }
-        }
-    }
-}
-""",
-        OWNER_FROM_NODEID="""
-query GetOwnerFromNodeId($node_id: ID!) {
-    node(id: $node_id) {
-        __typename
-        ... on Organization {
-            login
-            databaseId
-        }
-        ... on User {
-            login
-            databaseId
-        }
-    }
-}
-""",
-        REPO_LANGUAGES_FROM_OWNER="""
-query Repos($owner: String!, $cursor: String, $first: Int!) {
-  repositoryOwner(login: $owner) {
-    repositories(
-      first: $first
-      ownerAffiliations: OWNER
-      isFork: false
-      isLocked: false
-      orderBy: {field: NAME, direction: ASC}
-      after: $cursor
-    ) {
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      nodes {
-        name
-        languages(first: 100) {
-          edges {
-            node {
-              name
-              id
+            """
+        ),
+        PULL_REQUEST_DETAILS=dedent(
+            """\
+            query GetPullRequest($owner: String!, $repo: String!, $pr_number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                    pullRequest(number: $pr_number) {
+                        number
+                        title
+                        author {
+                            login
+                            ... on User {
+                                databaseId
+                            }
+                            ... on Bot {
+                                databaseId
+                            }
+                        }
+                        labels(first: 100) {
+                            nodes {
+                                name
+                            }
+                        }
+                        state
+                        mergeCommit {
+                            oid
+                        }
+                        baseRefOid
+                        baseRefName
+                        baseRepository {
+                            name
+                            owner {
+                                login
+                            }
+                        }
+                        headRefOid
+                        headRefName
+                        headRepository {
+                            name
+                            owner {
+                                login
+                            }
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
-    }
-  }
-}
-""",
+            """
+        ),
     )
 
     def get(self, query_name: str) -> Optional[str]:
         return self._queries.get(query_name, None)
 
-    def prepare(self, query_name: str, variables: dict) -> Optional[dict]:
+    def prepare(self, query_name: str, variables: dict) -> dict | None:
         # If Query was an object we could validate the variables
         query = self.get(query_name)
         if query is not None:
             return {"query": query, "variables": variables}
+        return None
 
 
 class Github(TorngitBaseAdapter):
@@ -962,6 +1019,7 @@ class Github(TorngitBaseAdapter):
                         status=res.status_code, retry_reason=retry_reason, **log_dict
                     ),
                 )
+        raise TorngitMaxRetriesError()
 
     async def refresh_token(
         self, client: httpx.AsyncClient, original_url: str
@@ -1708,7 +1766,7 @@ class Github(TorngitBaseAdapter):
     @torngit_cache.cache_function(
         torngit_cache.get_ttl("status"),
         log_hits=True,
-        log_map={"args_indexes_to_log": [0], "kwargs_keys_to_log": ["commit"]},
+        log_map=LogMapping(args_indexes_to_log=[0], kwargs_keys_to_log=["commit"]),
     )
     async def get_commit_statuses(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.status)
@@ -1810,7 +1868,9 @@ class Github(TorngitBaseAdapter):
     @torngit_cache.cache_function(
         torngit_cache.get_ttl("compare"),
         log_hits=True,
-        log_map={"args_indexes_to_log": [0, 1], "kwargs_keys_to_log": ["base", "head"]},
+        log_map=LogMapping(
+            args_indexes_to_log=[0, 1], kwargs_keys_to_log=["base", "head"]
+        ),
     )
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
@@ -1933,65 +1993,78 @@ class Github(TorngitBaseAdapter):
 
     # Pull Requests
     # -------------
-    def _pull(self, pull):
-        return dict(
-            author=dict(
-                id=str(pull["user"]["id"]) if pull["user"] else None,
-                username=pull["user"]["login"] if pull["user"] else None,
+    def _pull(self, response: dict) -> ProviderPull:
+        response_json = response["data"]["repository"]["pullRequest"]
+        return ProviderPull(
+            id=str(response_json["number"]),
+            number=str(response_json["number"]),
+            title=response_json["title"],
+            state=response_json["state"].lower(),
+            author=ProviderAuthor(
+                id=str(response_json["author"]["databaseId"]),
+                username=response_json["author"]["login"],
             ),
-            base=dict(
-                branch=pull["base"]["ref"],
-                commitid=pull["base"]["sha"],
-                slug=pull["base"]["repo"]["full_name"],
+            base=ProviderCommit(
+                branch=response_json["baseRefName"],
+                commitid=response_json["baseRefOid"],
+                slug=f"{response_json['baseRepository']['owner']['login']}/{response_json['baseRepository']['name']}",
             ),
-            head=dict(
-                branch=pull["head"]["ref"],
-                commitid=pull["head"]["sha"],
-                # Through empiric test data it seems that the "repo" key in "head" is set to None
-                # If the PR is from the same repo (e.g. not from a fork)
-                slug=(
-                    pull["head"]["repo"]["full_name"]
-                    if pull["head"]["repo"]
-                    else pull["base"]["repo"]["full_name"]
-                ),
+            head=ProviderCommit(
+                branch=response_json["headRefName"],
+                commitid=response_json["headRefOid"],
+                slug=f"{response_json['headRepository']['owner']['login']}/{response_json['headRepository']['name']}",
             ),
-            state="merged" if pull["merged"] else pull["state"],
-            title=pull["title"],
-            id=str(pull["number"]),
-            number=str(pull["number"]),
-            labels=[label["name"] for label in pull.get("labels", [])],
-            merge_commit_sha=pull["merge_commit_sha"] if pull["merged"] else None,
+            labels=[label["name"] for label in response_json["labels"]["nodes"]],
+            merge_commit_sha=(
+                response_json["mergeCommit"]["oid"]
+                if response_json["mergeCommit"]
+                else None
+            ),
         )
 
-    async def get_pull_request(self, pullid, token=None):
+    async def get_pull_request(self, pullid, token=None) -> ProviderPull:
         token = self.get_token_by_type_if_none(token, TokenType.pull)
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         async with self.get_client() as client:
-            try:
-                url = self.count_and_get_url_template(
-                    url_name="get_pull_request"
-                ).substitute(slug=self.slug, pullid=pullid)
-                res = await self.api(client, "get", url, token=token)
-            except TorngitClientError as ce:
-                if ce.code == 404:
+            query = self.graphql.prepare(
+                "PULL_REQUEST_DETAILS",
+                variables={
+                    "owner": self.data["owner"]["username"],
+                    "repo": self.data["repo"]["name"],
+                    "pr_number": int(pullid),
+                },
+            )
+            url = self.count_and_get_url_template(
+                url_name="get_pull_request"
+            ).substitute()
+            res = await self.api(client, "post", url, body=query, token=token)
+            if "errors" in res:
+                error = res["errors"][0]
+                if error["type"] == "NOT_FOUND":
                     raise TorngitObjectNotFoundError(
-                        response_data=ce.response_data,
-                        message=f"Pull Request {pullid} not found",
+                        response_data=res,
+                        message=f"PR with id {pullid} does not exist",
                     )
-                raise
+                raise TorngitClientGeneralError(
+                    status_code=400, response_data=res, message=error["message"]
+                )
+
+            result = self._pull(res)
+            # GitHub is not consistent with the bases it returns.
+            # So we perform a tree-traversal from the HEAD of the PR up the parents until we find
+            # a commit that is not part of the PR. This is ultimately the base we select.
             commits = await self._get_raw_pull_request_commits(pullid, token)
             commit_mapping = {
                 val["sha"]: [k["sha"] for k in val["parents"]] for val in commits
             }
             all_commits_in_pr = set([val["sha"] for val in commits])
-            current_level = [res["head"]["sha"]]
+            current_level = [result["head"]["commitid"]]
             while current_level and all(x in all_commits_in_pr for x in current_level):
                 new_level = []
                 for x in current_level:
                     new_level.extend(commit_mapping[x])
                 current_level = new_level
-            result = self._pull(res)
-            if current_level == [res["head"]["sha"]]:
+            if current_level == [result["head"]["commitid"]]:
                 log.warning(
                     "Head not found in PR. PR has probably too many commits to list all of them",
                     extra=dict(number_commits=len(commits), pullid=pullid),
@@ -2172,10 +2245,10 @@ class Github(TorngitBaseAdapter):
     @torngit_cache.cache_function(
         torngit_cache.get_ttl("check"),
         log_hits=True,
-        log_map={
-            "args_indexes_to_log": [0, 1, 2],
-            "kwargs_keys_to_log": ["check_suite_id", "head_sha", "name"],
-        },
+        log_map=LogMapping(
+            args_indexes_to_log=[0, 1, 2],
+            kwargs_keys_to_log=["check_suite_id", "head_sha", "name"],
+        ),
     )
     async def get_check_runs(
         self, check_suite_id=None, head_sha=None, name=None, token=None
