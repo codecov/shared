@@ -274,6 +274,31 @@ class BundleAnalysisReport:
         Returns session ID of ingested data.
         """
         with get_db_session(self.db_path) as session:
+            # Normally Assets/Chunks/Modules are cascade deleted and the many-to-many table entries
+            # would be deleted as well as they are foreign keys. However some rare cases occurs
+            # where the chunks_modules and assets_chunks table IDs doesn't exist in its
+            # associated Assets/Chunks/Modules table even though they are foreign keys.
+            # Fix: before each ingestion we make sure these rows are deleted.
+            for params in [
+                ["chunks_modules", "chunk_id", "chunks", "module_id", "modules"],
+                ["assets_chunks", "asset_id", "assets", "chunk_id", "chunks"],
+            ]:
+                sql = text(
+                    f"""
+                    DELETE FROM {params[0]}
+                    WHERE
+                        {params[1]} NOT IN (SELECT id FROM {params[2]})
+                        OR {params[3]} NOT IN (SELECT id FROM {params[4]})
+                """
+                )
+                result = session.execute(sql)
+                session.commit()
+                rows_deleted = result.rowcount
+                if rows_deleted > 0:
+                    log.warn(
+                        f"Integrity error detected, deleted {rows_deleted} corrupted rows from {params[0]}"
+                    )
+
             parser = Parser(path, session).get_proper_parser()
             session_id, bundle_name = parser.parse(path)
 
