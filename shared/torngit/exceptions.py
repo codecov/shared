@@ -16,10 +16,6 @@ class TorngitClientError(TorngitError):
         return self._response_data
 
 
-class TorngitMaxRetriesError(TorngitClientError):
-    pass
-
-
 class TorngitClientGeneralError(TorngitClientError):
     def __init__(self, status_code, response_data, message):
         super().__init__(status_code, response_data, message)

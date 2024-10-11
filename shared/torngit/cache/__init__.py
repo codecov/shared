@@ -11,9 +11,9 @@ CachedEndpoint = Union[Literal["check"], Literal["compare"], Literal["status"]]
 
 
 class TorngitCache(OurOwnCache):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
-        self.ttls: dict[str, int] = {}
+        self.ttls = {}
         self._initialized = False
         self._enabled = False
 
@@ -48,7 +48,7 @@ class TorngitCache(OurOwnCache):
     def is_enabled(self) -> bool:
         return self._enabled
 
-    def get_ttl(self, endpoint: CachedEndpoint) -> int:
+    def get_ttl(self, endpoint: CachedEndpoint) -> dict:
         return self.ttls.get(endpoint, 120)
 
 
