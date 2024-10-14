@@ -26,7 +26,7 @@ def get_adapter_auth_information(
     repository: Optional[Repository] | Any = None,
     *,
     ignore_installations: bool = False,
-    installation_name_to_use: str = GITHUB_APP_INSTALLATION_DEFAULT_NAME,
+    installation_name_to_use: str | None = GITHUB_APP_INSTALLATION_DEFAULT_NAME,
 ) -> AdapterAuthInformation:
     """
     Gets all the auth information needed to send requests to the provider.

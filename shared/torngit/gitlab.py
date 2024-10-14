@@ -21,7 +21,6 @@ from shared.torngit.exceptions import (
     TorngitServer5xxCodeError,
     TorngitServerUnreachableError,
 )
-from shared.torngit.response_types import ProviderPull
 from shared.torngit.status import Status
 from shared.typings.oauth_token_types import OauthConsumerToken, Token
 from shared.utils.urls import url_concat
@@ -855,7 +854,7 @@ class Gitlab(TorngitBaseAdapter):
             )
         return all_groups
 
-    async def get_pull_request(self, pullid, token=None) -> ProviderPull | None:
+    async def get_pull_request(self, pullid, token=None):
         # https://docs.gitlab.com/ce/api/merge_requests.html#get-single-mr
         url = self.count_and_get_url_template("get_pull_request").substitute(
             service_id=self.data["repo"]["service_id"], pullid=pullid
@@ -908,7 +907,7 @@ class Gitlab(TorngitBaseAdapter):
             if pull["state"] == "locked":
                 pull["state"] = "closed"
 
-            return ProviderPull(
+            return dict(
                 author=dict(
                     id=str(pull["author"]["id"]) if pull["author"] else None,
                     username=pull["author"]["username"] if pull["author"] else None,
@@ -925,7 +924,6 @@ class Gitlab(TorngitBaseAdapter):
                     pull["merge_commit_sha"] if pull["state"] == "merged" else None
                 ),
             )
-        return None
 
     async def get_pull_request_files(self, pullid, token=None):
         # https://docs.gitlab.com/ee/api/merge_requests.html#list-merge-request-diffs
