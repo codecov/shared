@@ -6,6 +6,7 @@ import httpx
 
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
+from shared.torngit.response_types import ProviderPull
 from shared.typings.oauth_token_types import (
     OauthConsumerToken,
     OnRefreshCallback,
@@ -30,11 +31,11 @@ TokenTypeMapping = Dict[TokenType, Token]
 
 
 class TorngitBaseAdapter(object):
-    _repo_url: str = None
+    _repo_url: str | None = None
     _aws_key = None
-    _oauth: OauthConsumerToken = None
+    _oauth: OauthConsumerToken | None = None
     _on_token_refresh: OnRefreshCallback = None
-    _token: Token = None
+    _token: Token | None = None
     verify_ssl = None
 
     valid_languages = (
@@ -62,10 +63,10 @@ class TorngitBaseAdapter(object):
 
     def __init__(
         self,
-        oauth_consumer_token: OauthConsumerToken = None,
+        oauth_consumer_token: OauthConsumerToken | None = None,
         timeouts=None,
-        token: Token = None,
-        token_type_mapping: TokenTypeMapping = None,
+        token: Token | None = None,
+        token_type_mapping: TokenTypeMapping | None = None,
         on_token_refresh: OnRefreshCallback = None,
         verify_ssl=None,
         **kwargs,
@@ -75,7 +76,12 @@ class TorngitBaseAdapter(object):
         self._on_token_refresh = on_token_refresh
         self._token_type_mapping = token_type_mapping or {}
         self._oauth = oauth_consumer_token
-        self.data: TorngitInstanceData = {"owner": {}, "repo": {}}
+        self.data: TorngitInstanceData = {
+            "owner": {},
+            "repo": {},
+            "fallback_installations": None,
+            "installation": None,
+        }
         self.verify_ssl = verify_ssl
         self.data.update(kwargs)
         # This has the side effect of initializing the torngit_cache
@@ -124,6 +130,7 @@ class TorngitBaseAdapter(object):
             language = language.lower()
             if language in self.valid_languages:
                 return language
+        return None
 
     def set_token(self, token: OauthConsumerToken) -> None:
         self._token = token
@@ -142,6 +149,7 @@ class TorngitBaseAdapter(object):
                     self.data["owner"]["username"],
                     self.data["repo"]["name"],
                 )
+        return None
 
     def build_tree_from_commits(self, start, commit_mapping):
         parents = [
@@ -257,7 +265,7 @@ class TorngitBaseAdapter(object):
     # COMMENT LOGIC
 
     async def delete_comment(
-        self, pullid: str, commentid: str, token: str = None
+        self, pullid: str, commentid: str, token: str | None = None
     ) -> bool:
         """Deletes a comment on a PR from the provider
 
@@ -289,7 +297,7 @@ class TorngitBaseAdapter(object):
     ):
         raise NotImplementedError()
 
-    async def get_pull_request(self, pullid: str, token=None):
+    async def get_pull_request(self, pullid: str, token=None) -> ProviderPull | None:
         raise NotImplementedError()
 
     async def get_pull_request_commits(self, pullid: str, token=None):
