@@ -22,12 +22,12 @@ class GithubInstallationInfo(TypedDict):
     installation_id: int
     # The default app (configured via yaml) doesn't need this info.
     # All other apps need app_id and pem_path
-    app_id: Optional[int] = None
-    pem_path: Optional[str] = None
+    app_id: Optional[int]
+    pem_path: Optional[str]
 
 
 class TorngitInstanceData(TypedDict):
     owner: Union[OwnerInfo, Dict]
     repo: Union[RepoInfo, Dict]
-    fallback_installations: List[Optional[GithubInstallationInfo]]
+    fallback_installations: List[Optional[GithubInstallationInfo]] | None
     installation: Optional[GithubInstallationInfo]

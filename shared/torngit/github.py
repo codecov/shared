@@ -37,6 +37,7 @@ from shared.torngit.exceptions import (
     TorngitServerUnreachableError,
     TorngitUnauthorizedError,
 )
+from shared.torngit.response_types import ProviderPull
 from shared.torngit.status import Status
 from shared.typings.oauth_token_types import OauthConsumerToken
 from shared.typings.torngit import GithubInstallationInfo
@@ -549,14 +550,15 @@ query Repos($owner: String!, $cursor: String, $first: Int!) {
 """,
     )
 
-    def get(self, query_name: str) -> Optional[str]:
+    def get(self, query_name: str) -> str | None:
         return self._queries.get(query_name, None)
 
-    def prepare(self, query_name: str, variables: dict) -> Optional[dict]:
+    def prepare(self, query_name: str, variables: dict) -> dict | None:
         # If Query was an object we could validate the variables
         query = self.get(query_name)
         if query is not None:
             return {"query": query, "variables": variables}
+        return None
 
 
 class Github(TorngitBaseAdapter):
@@ -1933,7 +1935,7 @@ class Github(TorngitBaseAdapter):
 
     # Pull Requests
     # -------------
-    def _pull(self, pull):
+    def _pull(self, pull) -> ProviderPull:
         return dict(
             author=dict(
                 id=str(pull["user"]["id"]) if pull["user"] else None,
@@ -1963,7 +1965,7 @@ class Github(TorngitBaseAdapter):
             merge_commit_sha=pull["merge_commit_sha"] if pull["merged"] else None,
         )
 
-    async def get_pull_request(self, pullid, token=None):
+    async def get_pull_request(self, pullid, token=None) -> ProviderPull | None:
         token = self.get_token_by_type_if_none(token, TokenType.pull)
         # https://developer.github.com/v3/pulls/#get-a-single-pull-request
         async with self.get_client() as client:
