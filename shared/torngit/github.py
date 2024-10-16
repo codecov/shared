@@ -629,7 +629,7 @@ class Github(TorngitBaseAdapter):
                 )
                 body["actions"] = [
                     {
-                        "name": "Generate Tests",
+                        "name": "Generate Tests with Sentry",
                         "type": "copilot-chat",
                         "prompt": f"@{bot_name} generate tests for this PR.",
                     }
