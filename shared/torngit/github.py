@@ -850,6 +850,7 @@ class Github(TorngitBaseAdapter):
                         rl_limit=res.headers.get("X-RateLimit-Limit"),
                         rl_reset_time=res.headers.get("X-RateLimit-Reset"),
                         retry_after=res.headers.get("Retry-After"),
+                        gh_request_id=res.headers.get("x-github-request-id"),
                         **log_dict,
                     ),
                 )
