@@ -629,9 +629,9 @@ class Github(TorngitBaseAdapter):
                 )
                 body["actions"] = [
                     {
-                        "name": "Open Sentry Agent",
+                        "name": "Generate Tests",
                         "type": "copilot-chat",
-                        "prompt": f"@{bot_name} generate tests for PR",
+                        "prompt": f"@{bot_name} generate tests for this PR.",
                     }
                 ]
         except Exception:
