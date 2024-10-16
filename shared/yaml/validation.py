@@ -61,6 +61,11 @@ def pre_process_yaml(inputted_yaml_dict):
             val = inputted_yaml_dict["codecov"]["notify"].pop("require_ci_to_pass")
             inputted_yaml_dict["codecov"]["require_ci_to_pass"] = val
 
+    # Remove the reserved `to_string` key word in the base level of the json.
+    # This key is used to store the full YAML string preserving the original comments.
+    if "to_string" in inputted_yaml_dict:
+        inputted_yaml_dict.pop("to_string")
+
 
 def _calculate_error_location_and_message_from_error_dict(error_dict):
     current_value, location_so_far = error_dict, []
