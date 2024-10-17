@@ -162,6 +162,26 @@ class Feature:
     def check_value_async(self, identifier, default=False):
         return self.check_value(identifier, default)
 
+    def check_values(self):
+        # Will only run and refresh values from the database every ~5 minutes due to TTL cache
+        self._fetch_and_set_from_db()
+
+        # check if an override exists
+        identifier_override_field = rollout_universe_to_override_string(
+            self.feature_flag.rollout_universe
+        )
+
+        # Get values for override field
+        values = set()
+        for variant in self.ff_variants:
+            values.update(getattr(variant, identifier_override_field))
+
+        return values
+
+    @sync_to_async
+    def check_values_async(self):
+        return self.check_values()
+
     def check_value_no_fetch(self, identifier, default=False):
         """
         Same as `check_value()` except does not make any DB calls, and assumes the flag data has been passed into the class
