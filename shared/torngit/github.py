@@ -21,7 +21,6 @@ from shared.metrics import Counter, metrics
 from shared.rate_limits import (
     set_entity_to_rate_limited,
 )
-from shared.rollouts.features import INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
@@ -612,17 +611,13 @@ class Github(TorngitBaseAdapter):
         GITHUB_API_ENDPOINTS[url_name]["counter"].inc()
         return GITHUB_API_ENDPOINTS[url_name]["url_template"]
 
-    async def build_comment_request_body(
-        self, body: dict
-    ) -> dict:
+    async def build_comment_request_body(self, body: dict) -> dict:
         """
         This function is to add the expected payload for the copilot test generation
         """
         body = dict(body=body)
         try:
-            bot_name = get_config(
-                "github", "comment_action_bot_name", default="sentry"
-            )
+            bot_name = get_config("github", "comment_action_bot_name", default="sentry")
             body["actions"] = [
                 {
                     "name": "Generate Tests with Sentry",
