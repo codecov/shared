@@ -611,5 +611,5 @@ schema = {
         "schema": {
             "enabled": {"type": "boolean"},
         },
-    }
+    },
 }
