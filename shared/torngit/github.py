@@ -613,27 +613,23 @@ class Github(TorngitBaseAdapter):
         return GITHUB_API_ENDPOINTS[url_name]["url_template"]
 
     async def build_comment_request_body(
-        self, body: dict, issueid: int | None = None
+        self, body: dict
     ) -> dict:
+        """
+        This function is to add the expected payload for the copilot test generation
+        """
         body = dict(body=body)
         try:
-            ownerid = self.data["owner"].get("ownerid")
-            if (
-                issueid is not None
-                and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
-                    identifier=ownerid, default=False
-                )
-            ):
-                bot_name = get_config(
-                    "github", "comment_action_bot_name", default="sentry"
-                )
-                body["actions"] = [
-                    {
-                        "name": "Generate Tests with Sentry",
-                        "type": "copilot-chat",
-                        "prompt": f"@{bot_name} generate tests for this PR.",
-                    }
-                ]
+            bot_name = get_config(
+                "github", "comment_action_bot_name", default="sentry"
+            )
+            body["actions"] = [
+                {
+                    "name": "Generate Tests with Sentry",
+                    "type": "copilot-chat",
+                    "prompt": f"@{bot_name} generate tests for this PR.",
+                }
+            ]
         except Exception:
             pass
 
@@ -1609,7 +1605,7 @@ class Github(TorngitBaseAdapter):
     # --------
     async def post_comment(self, issueid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = await self.build_comment_request_body(body, issueid)
+        body = await self.build_comment_request_body(body)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         async with self.get_client() as client:
             url = self.count_and_get_url_template(url_name="post_comment").substitute(
@@ -1620,7 +1616,7 @@ class Github(TorngitBaseAdapter):
 
     async def edit_comment(self, issueid, commentid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = await self.build_comment_request_body(body, issueid)
+        body = await self.build_comment_request_body(body)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
