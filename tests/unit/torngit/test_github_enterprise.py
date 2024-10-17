@@ -66,7 +66,16 @@ class TestGithubEnterprise(object):
         client.__aenter__.return_value.request.assert_called_with(
             "POST",
             "https://api.github.dev/repos/stevepeak/codecov-test/issues/pullid/comments",
-            json={"body": "body"},
+            json={
+                "body": "body",
+                "actions": [
+                    {
+                        "name": "Generate Tests with Sentry",
+                        "type": "copilot-chat",
+                        "prompt": "@sentry generate tests for this PR.",
+                    }
+                ],
+            },
             headers={
                 "Accept": "application/json",
                 "Authorization": "token fake_token",

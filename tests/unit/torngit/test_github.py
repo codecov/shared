@@ -693,7 +693,16 @@ class TestUnitGithub(object):
         )
         mocked_response = respx_vcr.post(
             url="https://api.github.com/repos/ThiagoCodecov/example-python/issues/1/comments",
-            json={"body": "Hello world"},
+            json={
+                "body": "Hello world",
+                "actions": [
+                    {
+                        "name": "Generate Tests with Sentry",
+                        "type": "copilot-chat",
+                        "prompt": "@sentry generate tests for this PR.",
+                    }
+                ],
+            },
         ).mock(
             return_value=httpx.Response(
                 status_code=201,
