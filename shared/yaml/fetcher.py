@@ -1,13 +1,14 @@
 import logging
 from typing import Any, Mapping, Sequence
 
-import shared.torngit as torngit
+from shared.torngit.base import TorngitBaseAdapter
+from shared.torngit.exceptions import TorngitObjectNotFoundError
 
 log = logging.getLogger(__name__)
 
 
 async def fetch_current_yaml_from_provider_via_reference(
-    ref: str, repository_service: torngit.base.TorngitBaseAdapter
+    ref: str, repository_service: TorngitBaseAdapter
 ) -> str:
     repoid = repository_service.data["repo"]["repoid"]
     location = await determine_commit_yaml_location(ref, repository_service)
@@ -24,14 +25,14 @@ async def fetch_current_yaml_from_provider_via_reference(
     try:
         content = await repository_service.get_source(location, ref)
         return content["content"]
-    except torngit.exceptions.TorngitObjectNotFoundError:
+    except TorngitObjectNotFoundError:
         log.exception(
             "File not in %s for commit", extra=dict(commit=ref, location=location)
         )
 
 
 async def determine_commit_yaml_location(
-    ref: str, repository_service: torngit.base.TorngitBaseAdapter
+    ref: str, repository_service: TorngitBaseAdapter
 ) -> str:
     """
         Determines where in `ref` the codecov.yaml is, in a given repository

@@ -629,9 +629,9 @@ class Github(TorngitBaseAdapter):
                 )
                 body["actions"] = [
                     {
-                        "name": "Open Sentry Agent",
+                        "name": "Generate Tests with Sentry",
                         "type": "copilot-chat",
-                        "prompt": f"@{bot_name} generate tests for PR",
+                        "prompt": f"@{bot_name} generate tests for this PR.",
                     }
                 ]
         except Exception:
@@ -850,6 +850,7 @@ class Github(TorngitBaseAdapter):
                         rl_limit=res.headers.get("X-RateLimit-Limit"),
                         rl_reset_time=res.headers.get("X-RateLimit-Reset"),
                         retry_after=res.headers.get("Retry-After"),
+                        gh_request_id=res.headers.get("x-github-request-id"),
                         **log_dict,
                     ),
                 )
