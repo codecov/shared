@@ -1444,3 +1444,10 @@ def test_slack_app_validation_boolean():
     user_input = {"slack_app": True}
     result = validate_yaml(user_input)
     assert result == user_input
+
+
+def test_to_string_validation():
+    user_input = {"to_string": {"abc": 123}}
+    expected_result = {}
+    result = validate_yaml(user_input)
+    assert result == expected_result

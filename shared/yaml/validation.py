@@ -1,5 +1,6 @@
 import binascii
 import logging
+from typing import Dict, List
 
 from shared.encryption.yaml_secret import yaml_secret_encryptor
 from shared.validation.cli_schema import schema as cli_schema
@@ -8,6 +9,10 @@ from shared.validation.user_schema import schema as user_schema
 from shared.validation.validator import CodecovYamlValidator
 
 log = logging.getLogger(__name__)
+
+YAML_TOP_LEVEL_RESERVED_KEYS: List[str] = [
+    "to_string"  # Used to store the full YAML string preserving the original comments
+]
 
 # *** Reminder: when changes are made to YAML validation, you will need to update the version of shared in both
 # worker (to apply the changes) AND codecov-api (so the validate route reflects the changes) ***
@@ -38,6 +43,16 @@ def validate_yaml(inputted_yaml_dict, show_secrets_for=None):
     return do_actual_validation(inputted_yaml_dict, show_secrets_for)
 
 
+def remove_reserved_keys(inputted_yaml_dict: Dict[str, any]) -> None:
+    """
+    This step removes reserved keywords in the base level of the json.
+    If any YAML is trying to be processed and validated those reserved keys will be ignored
+    """
+    for key in YAML_TOP_LEVEL_RESERVED_KEYS:
+        if key in inputted_yaml_dict:
+            inputted_yaml_dict.pop(key)
+
+
 def pre_process_yaml(inputted_yaml_dict):
     """
     Changes the inputted_yaml_dict in-place with compatibility changes that need to be done
@@ -60,6 +75,8 @@ def pre_process_yaml(inputted_yaml_dict):
         if "require_ci_to_pass" in inputted_yaml_dict["codecov"]["notify"]:
             val = inputted_yaml_dict["codecov"]["notify"].pop("require_ci_to_pass")
             inputted_yaml_dict["codecov"]["require_ci_to_pass"] = val
+
+    remove_reserved_keys(inputted_yaml_dict)
 
 
 def _calculate_error_location_and_message_from_error_dict(error_dict):
