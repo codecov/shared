@@ -11,16 +11,16 @@ ALTER TABLE "reports_testinstance" ALTER COLUMN "duration_seconds" DROP NOT NULL
 COMMIT;
 """
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('reports', '0028_remove_test_commits_where_fail_and_more'),
+        ("reports", "0028_remove_test_commits_where_fail_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='testinstance',
-            name='duration_seconds',
+            model_name="testinstance",
+            name="duration_seconds",
             field=models.FloatField(null=True),
         ),
     ]
