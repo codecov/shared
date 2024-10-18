@@ -259,9 +259,6 @@ class Test(models.Model):
     # for example: the same test being run on windows vs. mac
     flags_hash = models.TextField()
 
-    failure_rate = models.FloatField(null=True)
-    commits_where_fail = ArrayField(models.TextField(), null=True)
-
     class Framework(models.TextChoices):
         PYTEST = "pytest"
         JEST = "jest"
@@ -298,7 +295,7 @@ class TestInstance(BaseCodecovModel):
         ERROR = "error"
         PASS = "pass"
 
-    duration_seconds = models.FloatField()
+    duration_seconds = models.FloatField(null=True)
     outcome = models.CharField(max_length=100, choices=Outcome.choices)
     upload = models.ForeignKey(
         "ReportSession",
