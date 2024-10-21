@@ -18,6 +18,7 @@ from shared.bundle_analysis.models import (
     assets_chunks,
     chunks_modules,
 )
+from shared.bundle_analysis.parsers.base import ParserTrait
 from shared.bundle_analysis.utils import get_extension
 
 log = logging.getLogger(__name__)
@@ -57,7 +58,7 @@ Version 1 Schema
 """
 
 
-class ParserV1:
+class ParserV1(ParserTrait):
     """
     This does a streaming JSON parse of the stats JSON file referenced by `path`.
     It's more complicated that just doing a `json.loads` but should keep our memory

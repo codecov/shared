@@ -136,7 +136,7 @@ class BundleReport:
         asset_types: Optional[List[AssetType]] = None,
         chunk_entry: Optional[bool] = None,
         chunk_initial: Optional[bool] = None,
-        ordering_column: Optional[str] = "size",
+        ordering_column: str = "size",
         ordering_desc: Optional[bool] = True,
     ) -> Iterator[AssetReport]:
         with get_db_session(self.db_path) as session:
@@ -185,7 +185,7 @@ class BundleReport:
         """
         Returns the sum of all assets' gzip_size if present plus
         the sum of all assets' size if they do not have gzip_size value.
-        This simulates the amount of data transfer in a realisitic setting,
+        This simulates the amount of data transfer in a realistic setting,
         for those assets that are not compressible we will use its uncompressed size.
         """
         with get_db_session(self.db_path) as session:
@@ -225,14 +225,18 @@ class BundleAnalysisReport:
     Report wrapper around multiple bundles for a single commit report.
     """
 
-    def __init__(self, db_path: Optional[str] = None):
-        self.db_path = db_path
-        if self.db_path is None:
+    db_path: str
+
+    def __init__(self, db_path: str | None = None):
+        if db_path is None:
             _, self.db_path = tempfile.mkstemp(prefix="bundle_analysis_")
+        else:
+            self.db_path = db_path
         with get_db_session(self.db_path) as db_session:
             self._setup(db_session)
 
-    def _setup(self, db_session: DbSession):
+    @sentry_sdk.trace
+    def _setup(self, db_session: DbSession) -> None:
         """
         Creates the schema for a new bundle report database.
         """
@@ -295,7 +299,7 @@ class BundleAnalysisReport:
                 session.commit()
                 rows_deleted = result.rowcount
                 if rows_deleted > 0:
-                    log.warn(
+                    log.warning(
                         f"Integrity error detected, deleted {rows_deleted} corrupted rows from {params[0]}"
                     )
 
@@ -452,6 +456,7 @@ class BundleAnalysisReport:
             cached_bundles = session.query(Bundle).filter_by(is_cached=True)
             return cached_bundles.count() > 0
 
+    @sentry_sdk.trace
     def delete_bundle_by_name(self, bundle_name: str) -> None:
         with get_db_session(self.db_path) as session:
             bundle_to_be_deleted = (
