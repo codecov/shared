@@ -1,11 +1,13 @@
 import dataclasses
-import json
 import logging
 from copy import copy
+from decimal import Decimal
+from fractions import Fraction
 from itertools import filterfalse, zip_longest
-from json import JSONEncoder, dumps, loads
+from types import GeneratorType
 from typing import Any, Dict, List, Optional
 
+import orjson
 import sentry_sdk
 
 from shared.helpers.flag import Flag
@@ -26,7 +28,6 @@ from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
 from shared.utils.merge import LineType, line_type, merge_all, merge_line
 from shared.utils.migrate import migrate_totals
-from shared.utils.ReportEncoder import ReportEncoder
 from shared.utils.sessions import Session, SessionType
 from shared.utils.totals import agg_totals, sum_totals
 
@@ -86,7 +87,7 @@ class ReportFile(object):
 
             else:
                 lines = lines.splitlines()
-                self._details = loads(lines.pop(0) or "null")
+                self._details = orjson.loads(lines.pop(0) or "null")
                 self._lines = lines
         else:
             self._details = {}
@@ -125,7 +126,7 @@ class ReportFile(object):
             return ReportLine.create(*line)
         else:
             # these are old versions
-            line = loads(line)
+            line = orjson.loads(line)
             if len(line) > 2 and line[2]:
                 line[2] = [
                     LineSession(*tuple(session)) for session in line[2] if session
@@ -406,11 +407,11 @@ class ReportFile(object):
     def details(self):
         return self._details
 
-    def _encode(self):
-        return "%s\n%s" % (
-            dumps(self.details, separators=(",", ":")),
-            "\n".join(map(_dumps_not_none, self._lines)),
-        )
+    def _encode(self) -> str:
+        details = orjson.dumps(self.details, option=orjson_option)
+        return (
+            details + b"\n" + b"\n".join(_dumps_not_none(line) for line in self._lines)
+        ).decode()
 
     @property
     def totals(self):
@@ -620,7 +621,7 @@ def get_sessions(sessions: dict) -> dict[int, Session]:
 def parse_header(header: str) -> ReportHeader:
     if header == "":
         return ReportHeader()
-    header = json.loads(header)
+    header = orjson.loads(header)
     return ReportHeader(
         # JSON can only have str as keys. We cast to int.
         # Because encoded labels in the CoverageDatapoint level are ints.
@@ -1092,11 +1093,11 @@ class Report(object):
     @sentry_sdk.trace
     def to_archive(self, with_header=True):
         # TODO: confirm removing encoding here is fine
-        chunks = END_OF_CHUNK.join(map(_encode_chunk, self._chunks))
+        chunks = END_OF_CHUNK.join(_encode_chunk(chunk) for chunk in self._chunks)
         if with_header:
             # When saving to database we want this
             return END_OF_HEADER.join(
-                [json.dumps(self._header, separators=(",", ":")), chunks]
+                [orjson.dumps(self._header, option=orjson_option).decode(), chunks]
             )
         # This is helpful to build ReadOnlyReport
         # Because Rust can't parse the header. It doesn't need it either,
@@ -1110,7 +1111,11 @@ class Report(object):
         totals["diff"] = self.diff_totals
         return (
             totals,
-            dumps({"files": self._files, "sessions": self.sessions}, cls=ReportEncoder),
+            orjson.dumps(
+                {"files": self._files, "sessions": self.sessions},
+                default=report_default,
+                option=orjson_option,
+            ).decode(),
         )
 
     def update_sessions(self, **data):
@@ -1481,12 +1486,18 @@ def _ignore_to_func(ignore):
         return lambda ln: ln in lines
 
 
-def _dumps_not_none(value):
+def _dumps_not_none(value) -> bytes:
     if isinstance(value, list):
-        return dumps(_rstrip_none(list(value)), cls=ReportEncoder)
+        return orjson.dumps(
+            _rstrip_none(list(value)), default=report_default, option=orjson_option
+        )
     if isinstance(value, ReportLine):
-        return dumps(_rstrip_none(list(value.astuple())), cls=ReportEncoder)
-    return value if value and value != "null" else ""
+        return orjson.dumps(
+            _rstrip_none(list(value.astuple())),
+            default=report_default,
+            option=orjson_option,
+        )
+    return value.encode() if value and value != "null" else b""
 
 
 def _rstrip_none(lst):
@@ -1495,19 +1506,39 @@ def _rstrip_none(lst):
     return lst
 
 
-class EnhancedJSONEncoder(JSONEncoder):
-    def default(self, o):
-        if dataclasses.is_dataclass(o):
-            return o.astuple()
-        return super().default(o)
+def chunk_default(obj):
+    if dataclasses.is_dataclass(obj):
+        return obj.astuple()
+    return obj
 
 
-def _encode_chunk(chunk):
+def report_default(obj):
+    if dataclasses.is_dataclass(obj):
+        return obj.astuple()
+    elif isinstance(obj, Fraction):
+        return str(obj)
+    elif isinstance(obj, Decimal):
+        return str(obj)
+    elif isinstance(obj, ReportTotals):
+        # reduce totals
+        return obj.to_database()
+    elif hasattr(obj, "_encode"):
+        return obj._encode()
+    elif isinstance(obj, GeneratorType):
+        obj = list(obj)
+    # let the base class default method raise the typeerror
+    return obj
+
+
+orjson_option = orjson.OPT_PASSTHROUGH_DATACLASS | orjson.OPT_NON_STR_KEYS
+
+
+def _encode_chunk(chunk) -> str:
     if chunk is None:
         return "null"
     elif isinstance(chunk, ReportFile):
         return chunk._encode()
     elif isinstance(chunk, (list, dict)):
-        return dumps(chunk, separators=(",", ":"), cls=EnhancedJSONEncoder)
+        return orjson.dumps(chunk, default=chunk_default, option=orjson_option).decode()
     else:
         return chunk

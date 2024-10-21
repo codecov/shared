@@ -40,6 +40,7 @@ setup(
         "mmh3",
         "oauth2",
         "oauthlib",
+        "orjson",
         "prometheus-client",
         "protobuf>=4.21.6",
         "pyjwt",
