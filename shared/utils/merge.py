@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import IntEnum
 from fractions import Fraction
 from itertools import groupby
-from typing import List, Optional, Sequence
+from typing import List, Optional
 
 from shared.reports.types import CoverageDatapoint, LineSession, ReportLine
 
@@ -132,47 +132,32 @@ def merge_coverage(l1, l2, branches_missing=True):
     )
 
 
-def merge_missed_branches(sessions):
-    """returns
-    None: if there is no branch data provided
-    []: list of missing branches
+def merge_missed_branches(sessions: list[LineSession]) -> list | None:
     """
-    if sessions:
-        if [1 for s in sessions if s.branches is not None] == []:
-            # no branch data provided in any session
-            return None
+    Returns a list of missed branches, defined as the *intersection* of all
+    the missed branches of the input sessions.
 
-        # missing branches or fulfilled if type=hit else not applicable
-        mb = [
-            s.branches
-            if s.branches is not None
-            else ([] if line_type(s.coverage) == 0 else None)
-            for s in sessions
-            if s
-        ]
+    Returns `None` if there is no sessions or no missed branches in the sessions.
+    Returns an empty list (no missed branches) if the line was fully covered,
+      or the missed branches are disjoint.
+    """
+    if not sessions or not any(s.branches is not None for s in sessions):
+        return None
 
-        # one of the sessions collected all the branches
-        if [] in mb:
-            return []
-
+    missed_branches: None | set = None
+    for session in sessions:
+        if session.branches is None:
+            if line_type(session.coverage) == LineType.hit:
+                return []
+            continue
+        if missed_branches is None:
+            missed_branches = set(session.branches)
         else:
-            # missing branches, remove "None"s
-            mb = [_f for _f in mb if _f]
-            # # no branch data provided
-            # if not mb:
-            #     return []
+            missed_branches.intersection_update(session.branches)
+            if not missed_branches:
+                return []
 
-            # we only have one missing branches data
-            if len(mb) == 1:
-                return mb[0]
-
-            else:
-                # combine the branches
-                mb = list(map(set, mb))
-                m1 = mb.pop(0)
-                for m in mb:
-                    m1 = m1 & m
-                return list(m1)
+    return list(missed_branches) if missed_branches is not None else None
 
 
 def merge_line(l1, l2, joined=True):
@@ -252,28 +237,29 @@ def merge_line_session(s1, s2):
     )
 
 
-def _merge_sessions(s1: Sequence[LineSession], s2: Sequence[LineSession]):
+def _merge_sessions(s1: list[LineSession], s2: list[LineSession]) -> list[LineSession]:
     """Merges two lists of different sessions into one"""
     if not s1 or not s2:
         return s1 or s2
 
-    s1k = set([s.id for s in s1])
-    s2k = set([s.id for s in s2])
-    same = s1k & s2k
-    if same:
-        s1 = dict([(s.id, s) for s in s1])
-        s2 = dict([(s.id, s) for s in s2])
-
-        # merge existing
-        for s in same:
-            s1[s] = merge_line_session(s1[s], s2.pop(s))
-
-        # add remaining new sessions
-        return list(s1.values()) + list(s2.values())
-
-    else:
+    session_ids_1 = set(s.id for s in s1)
+    session_ids_2 = set(s.id for s in s2)
+    intersection = session_ids_1.intersection(session_ids_2)
+    if not intersection:
         s1.extend(s2)
         return s1
+
+    sessions_1 = {s.id: s for s in s1}
+    sessions_2 = {s.id: s for s in s2}
+
+    # merge existing
+    for session_id in intersection:
+        sessions_1[session_id] = merge_line_session(
+            sessions_1[session_id], sessions_2.pop(session_id)
+        )
+
+    # add remaining new sessions
+    return list(sessions_1.values()) + list(sessions_2.values())
 
 
 def _ifg(s, e, c):
@@ -299,7 +285,7 @@ class LineType(IntEnum):
     partial = 2
 
 
-def line_type(line):
+def line_type(line) -> LineType | None:
     """
     -1 = skipped (had coverage data, but fixed out)
     0 = hit
