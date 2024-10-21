@@ -1,8 +1,8 @@
-import gzip
 import logging
 from typing import IO
 
 import google.cloud.exceptions
+import zstandard
 from google.cloud import storage
 from google.oauth2.service_account import Credentials
 
@@ -74,8 +74,8 @@ class GCPStorageService(BaseStorageService):
             data = data.encode()
         if isinstance(data, bytes):
             if not is_already_gzipped:
-                data = gzip.compress(data)
-            blob.content_encoding = "gzip"
+                data = zstandard.compress(data)
+            blob.content_encoding = "zstd"
             blob.upload_from_string(data)
             return True
         else:
@@ -102,16 +102,14 @@ class GCPStorageService(BaseStorageService):
 
         try:
             blob.reload()
-            if (
-                blob.content_type == "application/x-gzip"
-                and blob.content_encoding == "gzip"
-            ):
-                blob.content_type = "text/plain"
-                blob.content_encoding = "gzip"
-                blob.patch()
 
             if file_obj is None:
-                return blob.download_as_bytes(checksum="crc32c")
+                blob_content = blob.download_as_bytes(checksum="crc32c")
+                # if the content encoding is zstd we have to do the decompressing ourselves
+                if blob.content_encoding == "zstd":
+                    return zstandard.decompress(blob_content)
+                else:
+                    return blob_content
             else:
                 blob.download_to_file(file_obj, checksum="crc32c")
                 return b""  # NOTE: this is to satisfy the return type

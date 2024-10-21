@@ -52,6 +52,7 @@ setup(
         "typing_extensions",
         "typing",
         "urllib3==1.26.19",
+        "zstandard",
         # API Deps
         "django-model-utils>=4.3.1",
         "django-prometheus",

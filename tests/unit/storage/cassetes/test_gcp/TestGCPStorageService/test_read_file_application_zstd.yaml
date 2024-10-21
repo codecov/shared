@@ -1,0 +1,296 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '959'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.3
+      x-goog-api-client:
+      - gl-python/3.12.3 auth/2.35.0 auth-request-type/at cred-type/sa
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x3USZKrNgAA0Lt4/UmBmLMz3aaNPNBACwMbFYOYZ2RApHL3dOUKb/H+OcVpSpYF
+        06Eh/envE4uB/lf6V8qfPffGf4X+1r3ExXreUSivRtGZt8CfdumMd+1aCOdHb9nPPHGF9/VNf6Qr
+        OWaFf99nKQygWAj6oiqyd2hB2Sc0b+oOqQ7PbmxZ1+h5QHTBN53D1RNhJlp3JCfHNT03I+FA4hfI
+        043+/nw6ZTcBnNVQ0wXFvQR0eH6mxuUyQLQXox8rzXcQ8Si+gmi5XUXmcmb29amd8/YzPs9xtt8I
+        +9bGFeT+4rMn/fxwPgkmtzN4hR8Ha+qL1yPnc8WD0d2U/Gw3dpIt7PKh/ghbKEPrlfrXgkbTvjpc
+        Nl9uiG23ew5fKZiTsh1/rltZaL2acQ00rt/t1sbnbkuyS/qdOGFiGllQaNytu/OAX9kXdQTz2L2c
+        h8T6EO3WmQnMXLJefi5ixb7EjaeFcb6LOjgP+sgAR0WZgZeOvKI0VT2WlGSA3Yx9LfBUlEhZUhEI
+        waOFQVuTXUJqZVT8NGuQVZ2o4Al7a7dakXgAOtSarDTdJBOq8iToSW0NdjVT0tnpolipMZSH9nov
+        umZJbBe43txbs5ck4a2OCCHVdJsooIGMq1aPptSvAgrXcgdhIfBuYSxShApVNpLgcYjvtRYavGoW
+        ercjF2peYPms5Ly8rTfsBbvd+XzehIE7QJcenSOsb9lN0lQzQKMyuVLN0kBRyMmaP1Z+NC0vc2UA
+        HKidacJvCs6EGpcFjpxQbwqzC9fuvS8maOO10Oxh0NkeAaHEDoxLEVHKlDJeOq6iStnr+FCdyR1d
+        U7ZbL1J22ofV3NuENGDosun1CPvJXlnCu7kQNO8M+hYs23T2JhQplRmANQWpuNj+8e4KSSBxhXZq
+        cAuNNAimbCi8cGQcFvhZGieuq3+BpFlu1PfD6n8xrTaeugLG/hJmpfvq/bEDU6sP4iOWxZ1Po80O
+        JQMKVN2Cfdxn3PgbHhdtreeVBRO05ZxZWZNz9mD6MIwXoe0pwqaAs9mu26hRhyRd9bSbcEweUT3s
+        jWfpHBgUZ0acckBQhhGKuNFtdFozYjuMtg14LeD050T2sZrJgqvfD0RZ1/+c/s8BUzaS3yEMEs9k
+        Pv37H0Vys8o7BAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#bucket","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1","id":"testingarchive1","name":"testingarchive1","projectNumber":"600182812669","metageneration":"1","location":"US","storageClass":"STANDARD","etag":"CAE=","timeCreated":"2024-10-18T19:38:04.081Z","updated":"2024-10-18T19:38:04.081Z","softDeletePolicy":{"retentionDurationSeconds":"604800","effectiveTime":"2024-10-18T19:38:04.081Z"},"iamConfiguration":{"bucketPolicyOnly":{"enabled":false},"uniformBucketLevelAccess":{"enabled":false},"publicAccessPrevention":"inherited"},"locationType":"multi-region","rpo":"DEFAULT"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '614'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      ETag:
+      - CAE=
+      Expires:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY2a-kKnodV59-fy_GHDCKGOa78q4Zx9ydPo7u_2AArio-Fs-31-Fovn36ezOs1qSJ2Q8lSsXkxQ7A
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      enN0ZF90ZXN0LnR4dCIsICJjb250ZW50RW5jb2RpbmciOiAienN0ZCJ9CmNvbnRlbnQtdHlwZTog
+      dGV4dC9wbGFpbgoKKLUv/SAxiQEAY29udGVudCB0byB3cml0ZQpUaGlzIGlzIGNyYXp5CldoeSBk
+      b2VzIHRoaXMgd29yaw==
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '311'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/zstd_test.txt/1729539929376563\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/zstd_test.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/zstd_test.txt?generation=1729539929376563&alt=media\",\n
+        \ \"name\": \"zstd_test.txt\",\n  \"bucket\": \"testingarchive1\",\n  \"generation\":
+        \"1729539929376563\",\n  \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n
+        \ \"storageClass\": \"STANDARD\",\n  \"size\": \"58\",\n  \"md5Hash\": \"bTt7WozExi9ex84xA9Hogw==\",\n
+        \ \"contentEncoding\": \"zstd\",\n  \"crc32c\": \"RxZe0w==\",\n  \"etag\":
+        \"CLOO9qieoIkDEAE=\",\n  \"timeCreated\": \"2024-10-21T19:45:29.474Z\",\n
+        \ \"updated\": \"2024-10-21T19:45:29.474Z\",\n  \"timeStorageClassUpdated\":
+        \"2024-10-21T19:45:29.474Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '782'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      ETag:
+      - CLOO9qieoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY0QKN2pn1TFpI0D2MnN5AdOCrLgkgJdYXHqbArbsMvK-jctfqTFkALz3op5NSnN3w1Tel6KVCJB6g
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/zstd_test.txt?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#object","id":"testingarchive1/zstd_test.txt/1729539929376563","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/zstd_test.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/zstd_test.txt?generation=1729539929376563&alt=media","name":"zstd_test.txt","bucket":"testingarchive1","generation":"1729539929376563","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"58","md5Hash":"bTt7WozExi9ex84xA9Hogw==","contentEncoding":"zstd","crc32c":"RxZe0w==","etag":"CLOO9qieoIkDEAE=","timeCreated":"2024-10-21T19:45:29.474Z","updated":"2024-10-21T19:45:29.474Z","timeStorageClassUpdated":"2024-10-21T19:45:29.474Z"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '708'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      ETag:
+      - CLOO9qieoIkDEAE=
+      Expires:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY01q9oWJ6LInxdJVeJ-przSytOfwHPJEB8t2ltxg_RXfus9PX0FyFAupczESD69WIe3lFVlQ4HtZA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      accept-encoding:
+      - gzip
+      content-type:
+      - application/json; charset=UTF-8
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - application/json; charset=UTF-8
+    method: GET
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/zstd_test.txt?alt=media
+  response:
+    body:
+      string: !!binary |
+        KLUv/SAxiQEAY29udGVudCB0byB3cml0ZQpUaGlzIGlzIGNyYXp5CldoeSBkb2VzIHRoaXMgd29y
+        aw==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Disposition:
+      - attachment
+      Content-Encoding:
+      - zstd
+      Content-Length:
+      - '58'
+      Content-Type:
+      - text/plain
+      Date:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      ETag:
+      - CLOO9qieoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Last-Modified:
+      - Mon, 21 Oct 2024 19:45:29 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY06EajifkYrS9tfUYC3c4H9LtZeKhk_q2s-p-_nTOzRKGWynaD963rOBIb916cbYYJBXtnvDRKh7Q
+      X-Goog-Generation:
+      - '1729539929376563'
+      X-Goog-Hash:
+      - crc32c=RxZe0w==,md5=bTt7WozExi9ex84xA9Hogw==
+      X-Goog-Metageneration:
+      - '1'
+      X-Goog-Storage-Class:
+      - STANDARD
+      X-Goog-Stored-Content-Encoding:
+      - zstd
+      X-Goog-Stored-Content-Length:
+      - '58'
+    status:
+      code: 200
+      message: OK
+version: 1
