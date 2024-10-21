@@ -12,15 +12,10 @@ import httpx
 from httpx import Response
 
 from shared.config import get_config
-from shared.github import (
-    get_github_integration_token,
-    get_github_jwt_token,
-)
+from shared.github import get_github_integration_token, get_github_jwt_token
 from shared.helpers.redis import get_redis_connection
-from shared.metrics import Counter, metrics
-from shared.rate_limits import (
-    set_entity_to_rate_limited,
-)
+from shared.metrics import Counter
+from shared.rate_limits import set_entity_to_rate_limited
 from shared.rollouts.features import INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.cache import torngit_cache
@@ -830,11 +825,10 @@ class Github(TorngitBaseAdapter):
         for current_retry in range(1, max_number_retries + 1):
             retry_reason = "retriable_status"
             try:
-                with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
-                    res = await client.request(method, url, **kwargs)
-                    if current_retry > 1:
-                        # count retries without getting a url
-                        self.count_and_get_url_template(url_name="make_http_call_retry")
+                res = await client.request(method, url, **kwargs)
+                if current_retry > 1:
+                    # count retries without getting a url
+                    self.count_and_get_url_template(url_name="make_http_call_retry")
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
                     logged_body = res.text
@@ -844,7 +838,6 @@ class Github(TorngitBaseAdapter):
                     res.status_code,
                     extra=dict(
                         current_retry=current_retry,
-                        time_taken=timer.ms,
                         body=logged_body,
                         rl_remaining=res.headers.get("X-RateLimit-Remaining"),
                         rl_limit=res.headers.get("X-RateLimit-Limit"),
@@ -855,7 +848,6 @@ class Github(TorngitBaseAdapter):
                     ),
                 )
             except (httpx.TimeoutException, httpx.NetworkError):
-                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "GitHub was not able to be reached."
                 )
@@ -902,7 +894,6 @@ class Github(TorngitBaseAdapter):
                 is_primary_rate_limit = (
                     int(res.headers.get("X-RateLimit-Remaining", -1)) == 0
                 )
-                metrics.incr(f"{METRICS_PREFIX}.api.ratelimiterror")
 
                 # ! side effect: mark current token as rate limited
                 retry_after = res.headers.get("Retry-After")
@@ -938,22 +929,18 @@ class Github(TorngitBaseAdapter):
                 or current_retry >= max_number_retries  # Last retry
             ):
                 if res.status_code == 599:
-                    metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                     raise TorngitServerUnreachableError(
                         "Github was not able to be reached, server timed out."
                     )
                 elif res.status_code >= 500:
-                    metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Github is having 5xx issues")
                 elif res.status_code == 401:
                     message = f"Github API unauthorized error: {res.reason_phrase}"
-                    metrics.incr(f"{METRICS_PREFIX}.api.unauthorizederror")
                     raise TorngitUnauthorizedError(
                         response_data=res.text, message=message
                     )
                 elif res.status_code >= 300:
                     message = f"Github API: {res.reason_phrase}"
-                    metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
                     raise TorngitClientGeneralError(
                         res.status_code, response_data=res.text, message=message
                     )

@@ -48,7 +48,6 @@ setup(
         "pytz",
         "redis",
         "sqlalchemy==1.*",
-        "statsd>=3.3.0",
         "tlslite-ng>=0.8.0b1",
         "typing_extensions",
         "typing",
