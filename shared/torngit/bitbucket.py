@@ -6,8 +6,6 @@ from typing import List
 import httpx
 from oauthlib import oauth1
 
-# from shared.config import get_config
-from shared.metrics import metrics
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
@@ -91,8 +89,7 @@ class Bitbucket(TorngitBaseAdapter):
             repo_slug=self.slug,
         )
         try:
-            with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
-                res = await client.request(method.upper(), url, **kwargs)
+            res = await client.request(method.upper(), url, **kwargs)
             logged_body = None
             if res.status_code >= 300 and res.text is not None:
                 logged_body = res.text
@@ -100,22 +97,18 @@ class Bitbucket(TorngitBaseAdapter):
                 logging.WARNING if res.status_code >= 300 else logging.INFO,
                 "Bitbucket HTTP %s",
                 res.status_code,
-                extra=dict(time_taken=timer.ms, body=logged_body, **log_dict),
+                extra=dict(body=logged_body, **log_dict),
             )
         except (httpx.NetworkError, httpx.TimeoutException):
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
             raise TorngitServerUnreachableError("Bitbucket was not able to be reached.")
         if res.status_code == 599:
-            metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
             raise TorngitServerUnreachableError(
                 "Bitbucket was not able to be reached, server timed out."
             )
         elif res.status_code >= 500:
-            metrics.incr(f"{METRICS_PREFIX}.api.5xx")
             raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
         elif res.status_code >= 300:
             message = f"Bitbucket API: {res.reason_phrase}"
-            metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
             raise TorngitClientGeneralError(
                 res.status_code, response_data={"content": res.content}, message=message
             )
@@ -890,7 +883,9 @@ class Bitbucket(TorngitBaseAdapter):
                 ),
             )
 
-    async def get_repo_languages(self, token=None, language: str = None) -> List[str]:
+    async def get_repo_languages(
+        self, token=None, language: str | None = None
+    ) -> list[str]:
         """
         Gets the languages belonging to this repository. Bitbucket has no way to
         track languages, so we'll return a list with the existing language

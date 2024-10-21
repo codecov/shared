@@ -8,8 +8,6 @@ from typing import Any, Callable, Hashable, List, Optional
 
 from redis import Redis, RedisError
 
-from shared.metrics import metrics
-
 log = logging.getLogger(__name__)
 
 NO_VALUE = object()
@@ -179,7 +177,10 @@ class OurOwnCache(object):
         return self._backend
 
     def cache_function(
-        self, ttl: int = DEFAULT_TTL, log_hits: bool = False, log_map: LogMapping = None
+        self,
+        ttl: int = DEFAULT_TTL,
+        log_hits: bool = False,
+        log_map: LogMapping | None = None,
     ) -> "FunctionCacher":
         """Creates a FunctionCacher with all the needed configuration to cache a function
 
@@ -229,15 +230,10 @@ class FunctionCacher(object):
             key = self.generate_key(func, args, kwargs)
             value = self.cache_instance.get_backend().get(key)
             if value is not NO_VALUE:
-                metrics.incr(f"{self.cache_instance._app}.caches.{func.__name__}.hits")
                 if self.log_hits:
                     self._log_hits(func, args, kwargs, key)
                 return value
-            metrics.incr(f"{self.cache_instance._app}.caches.{func.__name__}.misses")
-            with metrics.timer(
-                f"{self.cache_instance._app}.caches.{func.__name__}.runtime"
-            ):
-                result = func(*args, **kwargs)
+            result = func(*args, **kwargs)
             self.cache_instance.get_backend().set(key, self.ttl, result)
             return result
 
@@ -255,15 +251,10 @@ class FunctionCacher(object):
             key = self.generate_key(func, args, kwargs)
             value = self.cache_instance.get_backend().get(key)
             if value is not NO_VALUE:
-                metrics.incr(f"{self.cache_instance._app}.caches.{func.__name__}.hits")
                 if self.log_hits:
                     self._log_hits(func, args, kwargs, key)
                 return value
-            metrics.incr(f"{self.cache_instance._app}.caches.{func.__name__}.misses")
-            with metrics.timer(
-                f"{self.cache_instance._app}.caches.{func.__name__}.runtime"
-            ):
-                result = await func(*args, **kwargs)
+            result = await func(*args, **kwargs)
             self.cache_instance.get_backend().set(key, self.ttl, result)
             return result
 

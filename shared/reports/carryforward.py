@@ -2,7 +2,6 @@ import logging
 import re
 from typing import Mapping, Sequence
 
-from shared.metrics import metrics
 from shared.reports.editable import EditableReport
 from shared.reports.resources import Report
 from shared.utils.match import match
@@ -32,12 +31,11 @@ def carriedforward_session_name(original_session_name: str) -> str:
     return f"CF[1] - {original_session_name}"
 
 
-@metrics.timer("services.report.carryforward.generate_carryforward_report")
 def generate_carryforward_report(
     report: Report,
     flags: Sequence[str],
     paths: Sequence[str],
-    session_extras: Mapping[str, str] = None,
+    session_extras: Mapping[str, str] | None = None,
 ) -> EditableReport:
     """
         Generates a carriedforward report starting from report `report`, flags `flags`

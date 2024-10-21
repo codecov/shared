@@ -6,7 +6,6 @@ import sentry_sdk
 from cc_rustyribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 
 from shared.helpers.flag import Flag
-from shared.metrics import metrics
 from shared.reports.resources import (
     END_OF_HEADER,
     Report,
@@ -140,7 +139,6 @@ class ReadOnlyReport(object):
         return self.inner_report.get(*args, **kwargs)
 
     @sentry_sdk.trace
-    @metrics.timer("shared.reports.readonly._process_totals")
     def _process_totals(self):
         if self.inner_report.has_precalculated_totals():
             return self.inner_report.totals
