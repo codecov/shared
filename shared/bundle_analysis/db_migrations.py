@@ -1,3 +1,6 @@
+from collections.abc import Callable
+
+import sentry_sdk
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -26,7 +29,7 @@ class BundleAnalysisMigration:
 
         # Mapping of the schema_version number to the migration function that needs to run
         # {x: fcn} means to bring version x-1 to x, fcn must be ran
-        self.migrations = {
+        self.migrations: dict[int, Callable[[Session], None]] = {
             2: add_gzip_size,
             3: add_is_cached,
             4: modify_gzip_size_nullable,
@@ -38,6 +41,7 @@ class BundleAnalysisMigration:
         """
         self.db_session.execute(text(stmt))
 
+    @sentry_sdk.trace
     def migrate(self):
         for version in range(self.from_version + 1, self.to_version + 1):
             self.migrations[version](self.db_session)
