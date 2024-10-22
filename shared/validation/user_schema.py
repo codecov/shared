@@ -606,10 +606,4 @@ schema = {
             "flake_detection": {"type": "boolean"},
         },
     },
-    "hide_codecov_token": {
-        "type": ["dict"],
-        "schema": {
-            "enabled": {"type": "boolean"},
-        },
-    },
 }

@@ -389,6 +389,12 @@ config_schema = {
         "schema": {"flag_pattern_matching": {"type": "boolean"}},
     },
     "migrations": {"type": "dict", "schema": {"skip_risky_steps": {"type": "boolean"}}},
+    "hide_all_codecov_tokens": {
+        "type": ["dict"],
+        "schema": {
+            "enabled": {"type": "boolean"},
+        },
+    },
 }
 
 
