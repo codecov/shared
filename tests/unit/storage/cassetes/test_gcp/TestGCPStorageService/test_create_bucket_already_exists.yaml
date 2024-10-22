@@ -1,0 +1,120 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '959'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.3
+      x-goog-api-client:
+      - gl-python/3.12.3 auth/2.35.0 auth-request-type/at cred-type/sa
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x2UybKiSABF/8V1UQEkaNI7UXmChZiJjBuCGZkhk7Gi/72N/oN77ok4fw9hHKeE
+        BLSr0vbwz2ELeel3/DtmzyZ+sD8emWX66gT9unNvAAQv2Z5/FOllWTmbXs3OSFZ623hYI3CHSXwM
+        Nb1seumFmOt7GZ/j0wFJGoP3+169UNgWW1TbVkG7C1QAvKv244XOqjA82Z+S3ITZffA3fnsPRZ4+
+        wki4C+V+56xHjfjYWuQ1MIpzCT5sPMyXdmDa5ekOH+0oBqcrifQ2zJBURsWZeb4d7qzmlN+np3XZ
+        8o85N1V7FxfK+53+VJ7hiJ/S+2zwNza/x7eN8a2Zr2xHuLDTe5tuPMCrTKV+kk+v9lTc4H3NG4KH
+        HP2J4XyMbxF70bn3S2PNFP1xswyt1zkRoCrj5bQYiBwZlPSXxUThVei2wQ7W20spJBvAsOLUd3Py
+        TW9k6AOgnV+1ML+elafTvciFczmiTTT/ARJ/XlnCnhpCRVvHFHMjWRrMrEUD+d3EVaZXSIW5mXFl
+        6JvRKnJRLDsQ23ufRb0SYbI7tjdU1BCXoIszn+/lia+JW28NnjMQTH2wWy0ZxXogEMiKL6SMJBft
+        nM1zvtg+Ywo007xCn09l1jBp0Ixe58Ec77XGbpy5R4skQRYVYo5YiYXJZ6AV9NzJVqHWTx7/kWch
+        WQwvsevvuQOQj/7k6m1p6wzlyjL+cgJnccTwu9RfuXDJR68sy5SlX7henb3xOFOZGQxjMEsZ5DGU
+        vS7VURY5KlV4s7EMzU9JupliuLly2OtjGCyiXX+KOetoKgLWTNYpwZgxWA0N+sBK8zoAwPR2onJ1
+        LkTIpOtQCI5scEiQGY/zdbE9EkQiiRS4nAq64mSNUc5FX4l9mLXRp5C0hp8dP3Ek6nKKcSS1M4yn
+        Uu95XAFVXLbV3QjX76iuAxkFWD6GegdHF3eGMwqFoEv8UQjNrredJINZjdrGYho3s2ND1VrRrsxT
+        shde3PX63DQqDKTTae/LIPcmVWlrr3XxQvHwySFQKrNZqc53LjRXEFckwHxsQjvGaSotu8LKlg+T
+        ubQwADjtlFKPhLAXgtFZNWk0Uy1f0s4LljxUXDNb2sOvQ7r2nzElwefbAyBK0q/D/3EI6Nan30LI
+        aTim4+Hf/wBigoEHOwQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:22 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"name": "testingarchive1"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '27'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: POST
+    uri: https://storage.googleapis.com/storage/v1/b?prettyPrint=false&project=codecov-dev
+  response:
+    body:
+      string: '{"error":{"code":409,"message":"Your previous request to create the
+        named bucket succeeded and you already own it.","errors":[{"message":"Your
+        previous request to create the named bucket succeeded and you already own
+        it.","domain":"global","reason":"conflict"}]}}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '263'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:23 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY0Kkc4ZIDs1SytZsp4D4zw842xJZzSkPdAGwzll5awFCXc0cHxeiY3nC32HAIVYVlSHa2O7-sY
+    status:
+      code: 409
+      message: Conflict
+version: 1

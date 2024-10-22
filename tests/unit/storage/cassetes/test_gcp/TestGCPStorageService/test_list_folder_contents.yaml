@@ -1,0 +1,562 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '959'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.3
+      x-goog-api-client:
+      - gl-python/3.12.3 auth/2.35.0 auth-request-type/at cred-type/sa
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x3UyXKjOAAA0H/xuekCsc/NTkIsYkIAs14oQIhdCLG7a/59uuZ9xPtzyYqinOd0
+        GbuSXP65nBnQfxe/C/7quV/8Z/ydnf78o8wdjY0+Vb+Wu2e06Xvf309pth/5V2Ig8/5s29oSvnfZ
+        Rk0nzB+WKX68idM1yvguGLIuV4/zg9mGBPIbDAI7OH7sqxYuz8T6iKZXfWvTlmJhXa6xGTw8Pmt7
+        Q1eY8qbd9kSYXvl1GnPYqlHIqoY9vekJBcxVG+MjEThf1/WD7Cc+gj2v1kR7/z7x1cDyU9K31hEK
+        UG2Wgfm1MUaxrkL8+f1JTXbMXGiSx8eSNmIA7wcbE6PLt73nH2o5K6u3XBmEK6uW9P5gxv1VcRv5
+        +Zxa9sieEaV736Y04wnNskOU7gKkiKBxSpBXzxH//S5ugl8P6X3tOJHtssgauVIk7cWZsis2zyDl
+        svf1C7fr5ymkpvTztnEupbANb0dyfYi68F44C8djUPSrFZJNdewYVOZQC2jOYy+ITj0cKj+3nHS0
+        xViLcgpta5ZkgPwctfmBBDuAesryBYRz1lXt0vuV7xI/qNaaDCOq3aTXbo2DsBCFdYbipeiKKgV4
+        NSFU4E3kNUssGztqiwWngTg5PNNNsSRGn6xujEJLGGtbB+Jx9grQUMjbvh+7Jk+S1cz6CSz+Dpyp
+        xzIU4ryHmjN1mBp96bqugUcz5mpJI0HSBXK+MlnVcA8rzmsXp6J26dwAtdhe6+Yh5sOUQALdhFTK
+        KiiAs1XTSSgaX1UAdEKWGiONuG1MhszeNlQXTIBEdc4wKuR+DjNE1UpybqfTaBFWmdGv4lkObocZ
+        NUc3VP0WHKfMFVrqD1qTVZYhmfyyu7kr5utrI+OhtlRErwENuBf08+irLGsGT+DOWd5DzK2ckqwC
+        PDhuZmiP0VJwMJIN2Ae4oBZ1GoWfwAh8dN6UW5441ksKiBSrknHobH+5Np+WNUf03IWuNEi1YoBD
+        W4Vx0M0YkorKhX0oMSWN55EC2PWRG1orHacCzlbmuMBXHegfdZoJm5YGpmfbTLc0tZZ2gwdBIEkj
+        Z6qWqdIuCH25ykqGlnkwMNhtiztrZPiyGyv6fPl1KQ/asHJOm78fiLKu/7r8n0O6nLT8O8StzFjJ
+        Lv/+B9/bi1Q7BAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGhpYWdvL3Rlc3RfbGlzdF9mb2xkZXJfY29udGVudHMvcmVzdWx0XzEudHh0IiwgImNvbnRlbnRF
+      bmNvZGluZyI6ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IEYFAgBiBA8V
+      sKcKAFCK203sYo3WWElNbexuSiAC1jR+ciCoY1rTskd2lESpFZimvof1tZc0hjtuwzNG6ZMWOR/T
+      FAIA
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '358'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/thiago/test_list_folder_contents/result_1.txt/1729539931973866\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1729539931973866&alt=media\",\n
+        \ \"name\": \"thiago/test_list_folder_contents/result_1.txt\",\n  \"bucket\":
+        \"testingarchive1\",\n  \"generation\": \"1729539931973866\",\n  \"metageneration\":
+        \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n
+        \ \"size\": \"73\",\n  \"md5Hash\": \"XhZzF7I6FY5BpT20JAsHuw==\",\n  \"contentEncoding\":
+        \"zstd\",\n  \"crc32c\": \"A3Szqg==\",\n  \"etag\": \"COrRlKqeoIkDEAE=\",\n
+        \ \"timeCreated\": \"2024-10-21T19:45:32.065Z\",\n  \"updated\": \"2024-10-21T19:45:32.065Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:32.065Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '918'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:32 GMT
+      ETag:
+      - COrRlKqeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3q53cZGQZN8ed81sC6HYtwU6YP6lcvHuEceTwv2h7a1jxqZKuA6DVjSGg7mXU93_2giYsBHmyQoQ
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGhpYWdvL3Rlc3RfbGlzdF9mb2xkZXJfY29udGVudHMvcmVzdWx0XzIudHh0IiwgImNvbnRlbnRF
+      bmNvZGluZyI6ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IEgVAgCChA8W
+      kLVtAChJ6CQQFp/Wf3URF4eipbtXCEalLvXAA8GeaU/J/tyPC9Mz0sW+mPa9Ex8EAl6XWOq4TFqE
+      ZU49BAA=
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '360'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/thiago/test_list_folder_contents/result_2.txt/1729539932193608\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1729539932193608&alt=media\",\n
+        \ \"name\": \"thiago/test_list_folder_contents/result_2.txt\",\n  \"bucket\":
+        \"testingarchive1\",\n  \"generation\": \"1729539932193608\",\n  \"metageneration\":
+        \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n
+        \ \"size\": \"75\",\n  \"md5Hash\": \"y+MD8WUa/JE1JgrVsTEqUw==\",\n  \"contentEncoding\":
+        \"zstd\",\n  \"crc32c\": \"I9Jkrg==\",\n  \"etag\": \"CMiGoqqeoIkDEAE=\",\n
+        \ \"timeCreated\": \"2024-10-21T19:45:32.277Z\",\n  \"updated\": \"2024-10-21T19:45:32.277Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:32.277Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '918'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:32 GMT
+      ETag:
+      - CMiGoqqeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3kUTI83VOoqAyhfLNHtDq1AJM8EbU1Ii1roZdqg8NqVV13UFTvxu4Qck-BhKE3jMJaypZl_vaB6g
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGhpYWdvL3Rlc3RfbGlzdF9mb2xkZXJfY29udGVudHMvcmVzdWx0XzMudHh0IiwgImNvbnRlbnRF
+      bmNvZGluZyI6ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IEodAgCixA8W
+      kLVtAChJ6CQQFp/Wf3URZ82ipbtXCEZGpS71wAPBnmlPyf7cjwvTM9LFvpj2vRMfBAJel1jquExa
+      hGVOPQQA
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '361'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/thiago/test_list_folder_contents/result_3.txt/1729539932418719\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1729539932418719&alt=media\",\n
+        \ \"name\": \"thiago/test_list_folder_contents/result_3.txt\",\n  \"bucket\":
+        \"testingarchive1\",\n  \"generation\": \"1729539932418719\",\n  \"metageneration\":
+        \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n
+        \ \"size\": \"76\",\n  \"md5Hash\": \"jVRVnNtfZz009vUyQ/CT5Q==\",\n  \"contentEncoding\":
+        \"zstd\",\n  \"crc32c\": \"7G0RnA==\",\n  \"etag\": \"CJ/lr6qeoIkDEAE=\",\n
+        \ \"timeCreated\": \"2024-10-21T19:45:32.502Z\",\n  \"updated\": \"2024-10-21T19:45:32.502Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:32.502Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '918'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:32 GMT
+      ETag:
+      - CJ/lr6qeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3kccqvPi5lFyB0B6zmHKiT_Aj_Vdz_mZGyepDLUzK0RfQXgwqqmqtMR-Bbfniu7h8B5vlPizgppA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGhpYWdvL3Rlc3RfbGlzdF9mb2xkZXJfY29udGVudHMvZjEvcmVzdWx0XzEudHh0IiwgImNvbnRl
+      bnRFbmNvZGluZyI6ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IE8tAgDy
+      RBAVoCdtAHQSsBNJWPvd/1FcZUiE77+bTqdz1DY/HEDoWGzpIDb2pV48IC0C2uh7SN/6cEFwhk/h
+      2RQPUWzeEKUOBAA=
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '366'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/thiago/test_list_folder_contents/f1/result_1.txt/1729539932640403\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1729539932640403&alt=media\",\n
+        \ \"name\": \"thiago/test_list_folder_contents/f1/result_1.txt\",\n  \"bucket\":
+        \"testingarchive1\",\n  \"generation\": \"1729539932640403\",\n  \"metageneration\":
+        \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n
+        \ \"size\": \"78\",\n  \"md5Hash\": \"DgsorxMER8LqlGgp0RGaPw==\",\n  \"contentEncoding\":
+        \"zstd\",\n  \"crc32c\": \"h5TKYQ==\",\n  \"etag\": \"CJOpvaqeoIkDEAE=\",\n
+        \ \"timeCreated\": \"2024-10-21T19:45:32.745Z\",\n  \"updated\": \"2024-10-21T19:45:32.745Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:32.745Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '934'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:32 GMT
+      ETag:
+      - CJOpvaqeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1quC39gN-qFraDjHKVdw_BbUofm_qMo-esjQ_uGFzqD5UOChFLCX9q-3JccidT8xdGyj4jbuMw4Q
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGhpYWdvL3Rlc3RfbGlzdF9mb2xkZXJfY29udGVudHMvZjEvcmVzdWx0XzIudHh0IiwgImNvbnRl
+      bnRFbmNvZGluZyI6ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IFE9AgAS
+      xRAWoCdtAHQSsBNxEPvd/1FcdWuPbv/dBE6n0zlqmycOENCx2NIRsLEv9eICaRnQRt9D+taHD4RD
+      fArPpnhIsXlDSj0IAA==
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '368'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/thiago/test_list_folder_contents/f1/result_2.txt/1729539932857146\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1729539932857146&alt=media\",\n
+        \ \"name\": \"thiago/test_list_folder_contents/f1/result_2.txt\",\n  \"bucket\":
+        \"testingarchive1\",\n  \"generation\": \"1729539932857146\",\n  \"metageneration\":
+        \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n
+        \ \"size\": \"80\",\n  \"md5Hash\": \"JVp1F3rV2A20qLFUfma56Q==\",\n  \"contentEncoding\":
+        \"zstd\",\n  \"crc32c\": \"WubvKw==\",\n  \"etag\": \"CLrGyqqeoIkDEAE=\",\n
+        \ \"timeCreated\": \"2024-10-21T19:45:32.941Z\",\n  \"updated\": \"2024-10-21T19:45:32.941Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:32.941Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '934'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:32 GMT
+      ETag:
+      - CLrGyqqeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY0RZynUkfwxejwmrKCWdsTAcJt8tcYcmFzRZUY4JmNId-fr5nZi4OberT2UKNj2Et4N4kfygyxNOA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGhpYWdvL3Rlc3RfbGlzdF9mb2xkZXJfY29udGVudHMvZjEvcmVzdWx0XzMudHh0IiwgImNvbnRl
+      bnRFbmNvZGluZyI6ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IFNFAgAy
+      BREWoCdtAHQSsBNxEPvd/1Fctf8Rvv9uAk6n0+kctc0TBwjoWGzpCNjYl3pxgbQMaKPvIX3rwwfC
+      IT6FZ1M8pNi8IaUeBAA=
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '369'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/thiago/test_list_folder_contents/f1/result_3.txt/1729539933097641\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1729539933097641&alt=media\",\n
+        \ \"name\": \"thiago/test_list_folder_contents/f1/result_3.txt\",\n  \"bucket\":
+        \"testingarchive1\",\n  \"generation\": \"1729539933097641\",\n  \"metageneration\":
+        \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n
+        \ \"size\": \"81\",\n  \"md5Hash\": \"8W0bqydRU5V9zixTXJeqWg==\",\n  \"contentEncoding\":
+        \"zstd\",\n  \"crc32c\": \"Haopgg==\",\n  \"etag\": \"CKmd2aqeoIkDEAE=\",\n
+        \ \"timeCreated\": \"2024-10-21T19:45:33.210Z\",\n  \"updated\": \"2024-10-21T19:45:33.210Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:33.210Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '934'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:33 GMT
+      ETag:
+      - CKmd2aqeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY2Z3uD3n8_ICkXy-Z_5L_gHW5hF7HSiyuKf2ccWu0noaA7R8I4BWV_U_YWWo0oNWf-3fRebMeubXQ
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o?prefix=thiago%2Ftest_list_folder_contents&prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#objects","items":[{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/f1/result_1.txt/1729539932640403","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1729539932640403&alt=media","name":"thiago/test_list_folder_contents/f1/result_1.txt","bucket":"testingarchive1","generation":"1729539932640403","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"78","md5Hash":"DgsorxMER8LqlGgp0RGaPw==","contentEncoding":"zstd","crc32c":"h5TKYQ==","etag":"CJOpvaqeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.745Z","updated":"2024-10-21T19:45:32.745Z","timeStorageClassUpdated":"2024-10-21T19:45:32.745Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/f1/result_2.txt/1729539932857146","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1729539932857146&alt=media","name":"thiago/test_list_folder_contents/f1/result_2.txt","bucket":"testingarchive1","generation":"1729539932857146","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"80","md5Hash":"JVp1F3rV2A20qLFUfma56Q==","contentEncoding":"zstd","crc32c":"WubvKw==","etag":"CLrGyqqeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.941Z","updated":"2024-10-21T19:45:32.941Z","timeStorageClassUpdated":"2024-10-21T19:45:32.941Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/f1/result_3.txt/1729539933097641","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1729539933097641&alt=media","name":"thiago/test_list_folder_contents/f1/result_3.txt","bucket":"testingarchive1","generation":"1729539933097641","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"81","md5Hash":"8W0bqydRU5V9zixTXJeqWg==","contentEncoding":"zstd","crc32c":"Haopgg==","etag":"CKmd2aqeoIkDEAE=","timeCreated":"2024-10-21T19:45:33.210Z","updated":"2024-10-21T19:45:33.210Z","timeStorageClassUpdated":"2024-10-21T19:45:33.210Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/result_1.txt/1729539931973866","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_1.txt?generation=1729539931973866&alt=media","name":"thiago/test_list_folder_contents/result_1.txt","bucket":"testingarchive1","generation":"1729539931973866","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"73","md5Hash":"XhZzF7I6FY5BpT20JAsHuw==","contentEncoding":"zstd","crc32c":"A3Szqg==","etag":"COrRlKqeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.065Z","updated":"2024-10-21T19:45:32.065Z","timeStorageClassUpdated":"2024-10-21T19:45:32.065Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/result_2.txt/1729539932193608","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_2.txt?generation=1729539932193608&alt=media","name":"thiago/test_list_folder_contents/result_2.txt","bucket":"testingarchive1","generation":"1729539932193608","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"75","md5Hash":"y+MD8WUa/JE1JgrVsTEqUw==","contentEncoding":"zstd","crc32c":"I9Jkrg==","etag":"CMiGoqqeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.277Z","updated":"2024-10-21T19:45:32.277Z","timeStorageClassUpdated":"2024-10-21T19:45:32.277Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/result_3.txt/1729539932418719","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Fresult_3.txt?generation=1729539932418719&alt=media","name":"thiago/test_list_folder_contents/result_3.txt","bucket":"testingarchive1","generation":"1729539932418719","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"76","md5Hash":"jVRVnNtfZz009vUyQ/CT5Q==","contentEncoding":"zstd","crc32c":"7G0RnA==","etag":"CJ/lr6qeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.502Z","updated":"2024-10-21T19:45:32.502Z","timeStorageClassUpdated":"2024-10-21T19:45:32.502Z"}]}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '5154'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:33 GMT
+      Expires:
+      - Mon, 21 Oct 2024 19:45:33 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY0Zim2mWLb-PwGKSNhn9fRzSlRmfWHvI_P7RB1STnCmuVi_ESEx-PpcRC1dU48CBvYnPBs4at5xWA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o?prefix=thiago%2Ftest_list_folder_contents%2Ff1&prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#objects","items":[{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/f1/result_1.txt/1729539932640403","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_1.txt?generation=1729539932640403&alt=media","name":"thiago/test_list_folder_contents/f1/result_1.txt","bucket":"testingarchive1","generation":"1729539932640403","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"78","md5Hash":"DgsorxMER8LqlGgp0RGaPw==","contentEncoding":"zstd","crc32c":"h5TKYQ==","etag":"CJOpvaqeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.745Z","updated":"2024-10-21T19:45:32.745Z","timeStorageClassUpdated":"2024-10-21T19:45:32.745Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/f1/result_2.txt/1729539932857146","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_2.txt?generation=1729539932857146&alt=media","name":"thiago/test_list_folder_contents/f1/result_2.txt","bucket":"testingarchive1","generation":"1729539932857146","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"80","md5Hash":"JVp1F3rV2A20qLFUfma56Q==","contentEncoding":"zstd","crc32c":"WubvKw==","etag":"CLrGyqqeoIkDEAE=","timeCreated":"2024-10-21T19:45:32.941Z","updated":"2024-10-21T19:45:32.941Z","timeStorageClassUpdated":"2024-10-21T19:45:32.941Z"},{"kind":"storage#object","id":"testingarchive1/thiago/test_list_folder_contents/f1/result_3.txt/1729539933097641","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/thiago%2Ftest_list_folder_contents%2Ff1%2Fresult_3.txt?generation=1729539933097641&alt=media","name":"thiago/test_list_folder_contents/f1/result_3.txt","bucket":"testingarchive1","generation":"1729539933097641","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"81","md5Hash":"8W0bqydRU5V9zixTXJeqWg==","contentEncoding":"zstd","crc32c":"Haopgg==","etag":"CKmd2aqeoIkDEAE=","timeCreated":"2024-10-21T19:45:33.210Z","updated":"2024-10-21T19:45:33.210Z","timeStorageClassUpdated":"2024-10-21T19:45:33.210Z"}]}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '2619'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:33 GMT
+      Expires:
+      - Mon, 21 Oct 2024 19:45:33 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1EHFowgiObpMfdH_VPkw4W7_2wDgmFM_9IQ3cGP_Ia6lgIMMhf5kT95r9zpyXaglm5uaLCzYWfdw
+    status:
+      code: 200
+      message: OK
+version: 1

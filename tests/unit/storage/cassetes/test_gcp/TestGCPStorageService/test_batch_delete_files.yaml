@@ -1,0 +1,482 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '959'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.3
+      x-goog-api-client:
+      - gl-python/3.12.3 auth/2.35.0 auth-request-type/at cred-type/sa
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x3Ux66jSACF4XfxummRw+yMfaHBxlzApNogqihCkUwOrXn3uZr9Wf06+v5eUoTw
+        NCVzX+Pu8s/lSFnlN/qN6KvnPmgdvG/d/GZddGMKgcu/9ap5qUN5XCn5xI9XceaDh4RKmuFTh/BR
+        AI9suRK4U6OvM/ruz2ub4wl+Qqqfbd0oNMdfWR0w76LQ2KFM4+G5dVgtbXGKPh8eW3LnfukrqvUg
+        Fb00metBOu8SzvydPsLr9KWHz7uL2gXeGEB92te3pv1x7ztmSVS5Qzwxw+4Xxko10BwNapNOPtAf
+        zo1nZeRmpO/XFSLdttHe3aHFfbHlLcPOg0gEWlJ9pbLaLw13V9xAsL5XQvb3H+3zou9TiAVVTXh7
+        Kd8WpaYSk75EUuhf7eSY2mZJscCO3XIbzSd9Bs4z04CfhysxMH4M14F/OOv9fev7eb1rDic+c6P9
+        +iMzdfW86elC5TI2SLl/16/9fTP9Jycr15RQZKxOtkJjXKfhCeLww2A+R1TuKCGfp1zTYz914hDb
+        FD9xUaacbZxtAr/Ag57UNIFpMbkVaDQfnXFbJa3vuqpTs9Lk1BLs7RXUfcNKtVVULV6YsuMs0yaV
+        xtmJOoAp4YLC0FikrJ9BVSQcrDLsmJ1MlNuBzdAAFv2GGDz2BwhbOvjIax0KnborkU0XtGwtFQoO
+        ulibERNZZBMKH2dtHj6wjTHlBzkiU7hOqoM8HvB2v1tiAg+LZKzpq+Xc5CUzRXI29/GB8jRloSji
+        srd8ny4Wx9WCSdibOcw8bStJGSzgPEBXtSRnM2IAspxMSGKU9BXH4LAB1U5GsxAwuzqRGx9G7k1Q
+        Yn/y0o4dDPzYtUZQegK0DGdSJLDIMweg1bZ5kVRnuc27eULbq+IlMxafCY6Z1iJT7hqTGmVqssSQ
+        KMvZOhxBIhN72tibPGMJHhtx7QkSEaX+uA2fdifmAflmwFHrIKNVKFbAfZ5VxFY+gjbKDGj4Aabp
+        ZoPTKeh8XREKBcLapRlxhozlU92TvY8GZdesWDgXjRjQoNTeyipL+hkrceJV3i7tXdr76vrzNrUk
+        CGgCSD3RCUxxg80+glU58zLd6LIy3OD0F8eRtE4S+cuvC94/1YinpPrxgBMU5dflfxyS+fjgHyFU
+        nI54vPz7Hy7Pr1I7BAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:30 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGVzdF9iYXRjaF9kZWxldGVfZmlsZXMvcmVzdWx0XzEudHh0IiwgImNvbnRlbnRFbmNvZGluZyI6
+      ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IC5xAQBsb3JlbSBpcHN1bSBk
+      b2xvciB0ZXN0X3dyaXRlX3RoZW5fcmVhZF9maWxlIMOh
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '331'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/test_batch_delete_files/result_1.txt/1729539930809815\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_1.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_1.txt?generation=1729539930809815&alt=media\",\n
+        \ \"name\": \"test_batch_delete_files/result_1.txt\",\n  \"bucket\": \"testingarchive1\",\n
+        \ \"generation\": \"1729539930809815\",\n  \"metageneration\": \"1\",\n  \"contentType\":
+        \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n  \"size\": \"55\",\n
+        \ \"md5Hash\": \"YQkIIIyfjftGPIpJyGfucA==\",\n  \"contentEncoding\": \"zstd\",\n
+        \ \"crc32c\": \"eEbPfg==\",\n  \"etag\": \"CNfLzameoIkDEAE=\",\n  \"timeCreated\":
+        \"2024-10-21T19:45:30.858Z\",\n  \"updated\": \"2024-10-21T19:45:30.858Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:30.858Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '878'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:30 GMT
+      ETag:
+      - CNfLzameoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY2zD_jjYpb4fXZPZd7TYYGOrH2H11kp3nmOU-VvEIH52Z92iD6ml-yREtXrNRTe2bVp3cfCM6SFag
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGVzdF9iYXRjaF9kZWxldGVfZmlsZXMvcmVzdWx0XzMudHh0IiwgImNvbnRlbnRFbmNvZGluZyI6
+      ICJ6c3RkIn0KY29udGVudC10eXBlOiB0ZXh0L3BsYWluCgootS/9IC5xAQBsb3JlbSBpcHN1bSBk
+      b2xvciB0ZXN0X3dyaXRlX3RoZW5fcmVhZF9maWxlIMOh
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '331'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/test_batch_delete_files/result_3.txt/1729539930971142\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_3.txt\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_3.txt?generation=1729539930971142&alt=media\",\n
+        \ \"name\": \"test_batch_delete_files/result_3.txt\",\n  \"bucket\": \"testingarchive1\",\n
+        \ \"generation\": \"1729539930971142\",\n  \"metageneration\": \"1\",\n  \"contentType\":
+        \"text/plain\",\n  \"storageClass\": \"STANDARD\",\n  \"size\": \"55\",\n
+        \ \"md5Hash\": \"YQkIIIyfjftGPIpJyGfucA==\",\n  \"contentEncoding\": \"zstd\",\n
+        \ \"crc32c\": \"eEbPfg==\",\n  \"etag\": \"CIa416meoIkDEAE=\",\n  \"timeCreated\":
+        \"2024-10-21T19:45:31.027Z\",\n  \"updated\": \"2024-10-21T19:45:31.027Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:31.027Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '878'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      ETag:
+      - CIa416meoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1GI3-PbZkuxtEY_F5PK1Z4oOnE8SLquqfWteDDbMqvt630xSf4dGOoqVOCXMrMATO_2ZwaNMaIUg
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: DELETE
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_1.txt?prettyPrint=false
+  response:
+    body:
+      string: ''
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY2A1FOkraYQEiTEj9q-GFEIIDR9Q4JqAtNorUIixpmMp3wySkYVSS0Hoi1BKxHJCkN7op9T2-2GQg
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: DELETE
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_2.txt?prettyPrint=false
+  response:
+    body:
+      string: '{"error":{"code":404,"message":"No such object: testingarchive1/test_batch_delete_files/result_2.txt","errors":[{"message":"No
+        such object: testingarchive1/test_batch_delete_files/result_2.txt","domain":"global","reason":"notFound"}]}}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '235'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3JHOJ79ALaoc-w7ihXH5dg_FMpSqqNT948-ZoaAmSBFUHCyVT166fYFvGWaC1SyCfsoBUwLf8mYA
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: DELETE
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_3.txt?prettyPrint=false
+  response:
+    body:
+      string: ''
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '0'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY2EOdO3Dn9BDJg4lXOW3E8fCD8ZMqvdd0KfQd0OYBIxstZHv8cshG_P3Z8SKFtBEird_3xm512ggg
+    status:
+      code: 204
+      message: No Content
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_1.txt?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"error":{"code":404,"message":"No such object: testingarchive1/test_batch_delete_files/result_1.txt","errors":[{"message":"No
+        such object: testingarchive1/test_batch_delete_files/result_1.txt","domain":"global","reason":"notFound"}]}}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '235'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1zIaxZk8lnmh9N5yCAyC3CoWHPIZh3hdnkBX_GTH5P2u4QE2quF-_IUSvj3bIAF8KZmHJgpLJ5FQ
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_2.txt?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"error":{"code":404,"message":"No such object: testingarchive1/test_batch_delete_files/result_2.txt","errors":[{"message":"No
+        such object: testingarchive1/test_batch_delete_files/result_2.txt","domain":"global","reason":"notFound"}]}}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '235'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY14J3AqeFEEiQCVjjTiLpIiZ9dhRFuCKXj1lRX_ARVpj1TdrZTZtdsW4XzG03OigUVVheIZUOXa1g
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_batch_delete_files%2Fresult_3.txt?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"error":{"code":404,"message":"No such object: testingarchive1/test_batch_delete_files/result_3.txt","errors":[{"message":"No
+        such object: testingarchive1/test_batch_delete_files/result_3.txt","domain":"global","reason":"notFound"}]}}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '235'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:31 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3Ws58gyVLZij6Ac1cYxSCCZb7S8J2lJl-bNkpaHbUEmZrbRTzP5gx5qkXcnDs8wbXG610cVOhd7w
+    status:
+      code: 404
+      message: Not Found
+version: 1

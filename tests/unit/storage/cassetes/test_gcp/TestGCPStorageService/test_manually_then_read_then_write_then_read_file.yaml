@@ -1,0 +1,524 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '959'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.3
+      x-goog-api-client:
+      - gl-python/3.12.3 auth/2.35.0 auth-request-type/at cred-type/sa
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/x3Ux66jSACF4XfxummRoWYH7WsbHDBgqIINIlNFzqE17z7WvMBZHP36/p7COE7H
+        MZjaMm1O/5z2kAW/498xrdjWnb6GlIS2V+psOvN5P2jXvvWTdFYzA4lL+KcM2D3ynln7SB9wPapb
+        KdwyysvG+ixYo/1GZH4p4KzOMsdDtQ/03FkNS4GZidqf+/mRdqVPVR7vhtXnyt0UT0DaYirNeeGa
+        ImhJyTY7Bi/v/WPH/WA3LKwSfw1pQcxu2R0KaTrQsjICfJuuvs4uyueeCT9Q0XMujGKivTnqXOZw
+        G39kUGl8EX8+M8KMunlebEm2xLtOsrNkvXq6Ghm3s/KZDtYa3Jf3oETwZBzMlgmjrC8wDYfin2vh
+        hpvbmCUZdHLlmod5GhvZfaauXn6dzoqK5AgecMxpcjCSXMijNYMtnN68P84RdlrF1iZI34ue728r
+        ebya/Q/SJ7Z8d/7P5Q11fTU+g53o+YMDjIIdyu86p5/VqMjNDo86w0S6PWUogkmuaoV2MVZ+roy1
+        M6m5PGqDC/JFDtTRqrPUqW2nfabsJJV5adCubNM0G2YYtFjaosTfYVwSWXIzFKOes+rSZiO6K/ZK
+        BbJOLb40HoxXWMCBth2ZwZxkqec/LULUI/GOMNHKabQPIKf8kJMOtDFnUvjicAkgEtuYKcdqFrT3
+        mBKWkWMu0KVZc3Mg4TlDq9JIwLHDIFizZPFBO4qshYJAdXbRCDePU3dTqCxoTFoNDCLa/Mxznqa3
+        IlgZM16mOLkkA9ErNQczqNtpNoyyCcQkIj3KnKQVEf8M6omXvG+fhq1uM25U0XZxTsa6iDUcYRxE
+        wC6gCeSJHg32W0hI0asDktLIE8n3zN0a29WPD0RxKPQh6jqaK4qwcpqVCLik+Uu0rL1WOw5nwaVc
+        0jCYkN8yLppYeU54k/S5yJcu1tljb7OyAvOlCe0h93pvSbC/lLw7a9zqM8ZlIF62NuxS+gZsZ46h
+        /JSJU99BxvaMYa3CDLWuNo9PnOhHRoUTG1UqcaWg6tqRx7neV6YE5l7gbZsX67mKgfmdXUhPnEzS
+        ik0eDtQ4g9iI6cpyWyVh0prdxdNWuLrf61FiubSF/NOvU7p1eEjHAH894AQAfp3+xyGY9i79CqGm
+        4ZAOp3//A/Lbktc7BAAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:26 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: 'content-type: application/json; charset=UTF-8
+
+
+      {"name": "test_manually_then_read_then_write_then_read_file/result01"}
+
+      content-type: text/plain
+
+
+      some data around'
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '287'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/test_manually_then_read_then_write_then_read_file/result01/1729539926729141\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?generation=1729539926729141&alt=media\",\n
+        \ \"name\": \"test_manually_then_read_then_write_then_read_file/result01\",\n
+        \ \"bucket\": \"testingarchive1\",\n  \"generation\": \"1729539926729141\",\n
+        \ \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\":
+        \"STANDARD\",\n  \"size\": \"16\",\n  \"md5Hash\": \"92IESanFY7xh6KhusAtAxw==\",\n
+        \ \"crc32c\": \"+vcXTQ==\",\n  \"etag\": \"CLXD1KeeoIkDEAE=\",\n  \"timeCreated\":
+        \"2024-10-21T19:45:26.819Z\",\n  \"updated\": \"2024-10-21T19:45:26.819Z\",\n
+        \ \"timeStorageClassUpdated\": \"2024-10-21T19:45:26.819Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '937'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:26 GMT
+      ETag:
+      - CLXD1KeeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1smMEbrnQOxzj75k8o6XK57-XP2xd5gYVNmcUzsSlbioXiNp65qKN1kVxrWftfQCF-pyt5zbeBnA
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#object","id":"testingarchive1/test_manually_then_read_then_write_then_read_file/result01/1729539926729141","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?generation=1729539926729141&alt=media","name":"test_manually_then_read_then_write_then_read_file/result01","bucket":"testingarchive1","generation":"1729539926729141","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"16","md5Hash":"92IESanFY7xh6KhusAtAxw==","crc32c":"+vcXTQ==","etag":"CLXD1KeeoIkDEAE=","timeCreated":"2024-10-21T19:45:26.819Z","updated":"2024-10-21T19:45:26.819Z","timeStorageClassUpdated":"2024-10-21T19:45:26.819Z"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '867'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:26 GMT
+      ETag:
+      - CLXD1KeeoIkDEAE=
+      Expires:
+      - Mon, 21 Oct 2024 19:45:26 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY0Y4xG7VPp3TNFWcHULGUUhnCc0rzJ1sRBq7D6jYhrzpLYNBCIXDQ-FqvuoAga13NYYKn-ILRt3xg
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      accept-encoding:
+      - gzip
+      content-type:
+      - application/json; charset=UTF-8
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - application/json; charset=UTF-8
+    method: GET
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?alt=media
+  response:
+    body:
+      string: some data around
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Disposition:
+      - attachment
+      Content-Length:
+      - '16'
+      Content-Type:
+      - text/plain
+      Date:
+      - Mon, 21 Oct 2024 19:45:26 GMT
+      ETag:
+      - CLXD1KeeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Last-Modified:
+      - Mon, 21 Oct 2024 19:45:26 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1-voaT1JId_f0p8rFYHupIWc-xgutmZDdHKce2wawWeQyBkK9BRQRu2Dg40a1_EajgniPn9uhQnw
+      X-Goog-Generation:
+      - '1729539926729141'
+      X-Goog-Hash:
+      - crc32c=+vcXTQ==,md5=92IESanFY7xh6KhusAtAxw==
+      X-Goog-Metageneration:
+      - '1'
+      X-Goog-Storage-Class:
+      - STANDARD
+      X-Goog-Stored-Content-Encoding:
+      - identity
+      X-Goog-Stored-Content-Length:
+      - '16'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#object","id":"testingarchive1/test_manually_then_read_then_write_then_read_file/result01/1729539926729141","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?generation=1729539926729141&alt=media","name":"test_manually_then_read_then_write_then_read_file/result01","bucket":"testingarchive1","generation":"1729539926729141","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"16","md5Hash":"92IESanFY7xh6KhusAtAxw==","crc32c":"+vcXTQ==","etag":"CLXD1KeeoIkDEAE=","timeCreated":"2024-10-21T19:45:26.819Z","updated":"2024-10-21T19:45:26.819Z","timeStorageClassUpdated":"2024-10-21T19:45:26.819Z"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '867'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      ETag:
+      - CLXD1KeeoIkDEAE=
+      Expires:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY1OXEUG5IKQu0WKAEijLUagkOFXN-6fXcHhkQ2JegkiQpSS1fwb7sC5MX8FKFzXPMv2RoqSfn4vCw
+    status:
+      code: 200
+      message: OK
+- request:
+    body: !!binary |
+      Y29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uOyBjaGFyc2V0PVVURi04Cgp7Im5hbWUiOiAi
+      dGVzdF9tYW51YWxseV90aGVuX3JlYWRfdGhlbl93cml0ZV90aGVuX3JlYWRfZmlsZS9yZXN1bHQw
+      MSIsICJjb250ZW50RW5jb2RpbmciOiAienN0ZCJ9CmNvbnRlbnQtdHlwZTogdGV4dC9wbGFpbgoK
+      KLUv/SAucQEAbG9yZW0gaXBzdW0gZG9sb3IgdGVzdF93cml0ZV90aGVuX3JlYWRfZmlsZSDDoQ==
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '353'
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      content-type:
+      - !!binary |
+        bXVsdGlwYXJ0L3JlbGF0ZWQ7
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - text/plain
+    method: POST
+    uri: https://storage.googleapis.com/upload/storage/v1/b/testingarchive1/o?uploadType=multipart
+  response:
+    body:
+      string: "{\n  \"kind\": \"storage#object\",\n  \"id\": \"testingarchive1/test_manually_then_read_then_write_then_read_file/result01/1729539927149396\",\n
+        \ \"selfLink\": \"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01\",\n
+        \ \"mediaLink\": \"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?generation=1729539927149396&alt=media\",\n
+        \ \"name\": \"test_manually_then_read_then_write_then_read_file/result01\",\n
+        \ \"bucket\": \"testingarchive1\",\n  \"generation\": \"1729539927149396\",\n
+        \ \"metageneration\": \"1\",\n  \"contentType\": \"text/plain\",\n  \"storageClass\":
+        \"STANDARD\",\n  \"size\": \"55\",\n  \"md5Hash\": \"YQkIIIyfjftGPIpJyGfucA==\",\n
+        \ \"contentEncoding\": \"zstd\",\n  \"crc32c\": \"eEbPfg==\",\n  \"etag\":
+        \"CNSW7qeeoIkDEAE=\",\n  \"timeCreated\": \"2024-10-21T19:45:27.282Z\",\n
+        \ \"updated\": \"2024-10-21T19:45:27.282Z\",\n  \"timeStorageClassUpdated\":
+        \"2024-10-21T19:45:27.282Z\"\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Length:
+      - '966'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      ETag:
+      - CNSW7qeeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY0GcNuNIRaEqNYk5i1dBgq7y3S1qBVR760FzNH9UmhiAmtIqh172gHyEo4pC-sp89P2bzMZv834-A
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#object","id":"testingarchive1/test_manually_then_read_then_write_then_read_file/result01/1729539927149396","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?generation=1729539927149396&alt=media","name":"test_manually_then_read_then_write_then_read_file/result01","bucket":"testingarchive1","generation":"1729539927149396","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"55","md5Hash":"YQkIIIyfjftGPIpJyGfucA==","contentEncoding":"zstd","crc32c":"eEbPfg==","etag":"CNSW7qeeoIkDEAE=","timeCreated":"2024-10-21T19:45:27.282Z","updated":"2024-10-21T19:45:27.282Z","timeStorageClassUpdated":"2024-10-21T19:45:27.282Z"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '892'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      ETag:
+      - CNSW7qeeoIkDEAE=
+      Expires:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3T1hO1jwuz4VAlMogcvAxcoCSyqUoieFQj1Q05Clx5xt9xhMzHfK21xW7jNTm1H-dRtdT_8yLVQg
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      accept-encoding:
+      - gzip
+      content-type:
+      - application/json; charset=UTF-8
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+      x-upload-content-type:
+      - application/json; charset=UTF-8
+    method: GET
+    uri: https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?alt=media
+  response:
+    body:
+      string: !!binary |
+        KLUv/SAucQEAbG9yZW0gaXBzdW0gZG9sb3IgdGVzdF93cml0ZV90aGVuX3JlYWRfZmlsZSDDoQ==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Disposition:
+      - attachment
+      Content-Encoding:
+      - zstd
+      Content-Length:
+      - '55'
+      Content-Type:
+      - text/plain
+      Date:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      ETag:
+      - CNSW7qeeoIkDEAE=
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Last-Modified:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY3t-GRfYoehpgb_QR9KL8kT4wkhzHHJiXaZu0A5aoLT4VpJKDFSNqXw0_IqkDsLkQglkmrpEKSmWA
+      X-Goog-Generation:
+      - '1729539927149396'
+      X-Goog-Hash:
+      - crc32c=eEbPfg==,md5=YQkIIIyfjftGPIpJyGfucA==
+      X-Goog-Metageneration:
+      - '1'
+      X-Goog-Storage-Class:
+      - STANDARD
+      X-Goog-Stored-Content-Encoding:
+      - zstd
+      X-Goog-Stored-Content-Length:
+      - '55'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip
+      Connection:
+      - keep-alive
+      User-Agent:
+      - gcloud-python/2.18.2  gl-python/3.12.3 grpc/1.66.2 gax/2.20.0 gccl/2.18.2
+      x-allowed-locations:
+      - '0x0'
+      x-goog-api-client:
+      - cred-type/sa
+    method: GET
+    uri: https://storage.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?prettyPrint=false&projection=noAcl
+  response:
+    body:
+      string: '{"kind":"storage#object","id":"testingarchive1/test_manually_then_read_then_write_then_read_file/result01/1729539927149396","selfLink":"https://www.googleapis.com/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01","mediaLink":"https://storage.googleapis.com/download/storage/v1/b/testingarchive1/o/test_manually_then_read_then_write_then_read_file%2Fresult01?generation=1729539927149396&alt=media","name":"test_manually_then_read_then_write_then_read_file/result01","bucket":"testingarchive1","generation":"1729539927149396","metageneration":"1","contentType":"text/plain","storageClass":"STANDARD","size":"55","md5Hash":"YQkIIIyfjftGPIpJyGfucA==","contentEncoding":"zstd","crc32c":"eEbPfg==","etag":"CNSW7qeeoIkDEAE=","timeCreated":"2024-10-21T19:45:27.282Z","updated":"2024-10-21T19:45:27.282Z","timeStorageClassUpdated":"2024-10-21T19:45:27.282Z"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Length:
+      - '892'
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      ETag:
+      - CNSW7qeeoIkDEAE=
+      Expires:
+      - Mon, 21 Oct 2024 19:45:27 GMT
+      Server:
+      - UploadServer
+      Vary:
+      - Origin
+      - X-Origin
+      X-GUploader-UploadID:
+      - AHmUCY2vGjxwRWvbAElHDgJK1Xz_yG2gnkRzscN6ZF4mZtGumCsfd2W8PrphCOg68K5mBT-YYrC4MQf0Ng
+    status:
+      code: 200
+      message: OK
+version: 1
