@@ -25,6 +25,7 @@ def inc_counter(counter: Counter, labels: dict = None) -> None:
     except Exception as e:
         log.warning(f"Error incrementing counter {counter._name}: {e}")
 
+
 def set_gauge(gauge: Gauge, value, labels: dict = None) -> None:
     try:
         if labels:
