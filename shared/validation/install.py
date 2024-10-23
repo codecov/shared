@@ -130,6 +130,12 @@ config_schema = {
             "api_cors_allowed_origins": {"type": "string"},
             "codecov_dashboard_url": {"type": "string"},
             "enterprise_license": {"type": "string"},
+            "hide_all_codecov_tokens": {
+                "type": ["dict"],
+                "schema": {
+                    "enabled": {"type": "boolean"},
+                },
+            },
             "admins": {
                 "type": "list",
                 "schema": {
@@ -389,12 +395,6 @@ config_schema = {
         "schema": {"flag_pattern_matching": {"type": "boolean"}},
     },
     "migrations": {"type": "dict", "schema": {"skip_risky_steps": {"type": "boolean"}}},
-    "hide_all_codecov_tokens": {
-        "type": ["dict"],
-        "schema": {
-            "enabled": {"type": "boolean"},
-        },
-    },
 }
 
 
