@@ -15,8 +15,11 @@ __all__ = [
 ]
 
 
-def inc_counter(counter: Counter, labels: dict) -> None:
+def inc_counter(counter: Counter, labels: dict = None) -> None:
     try:
-        counter.labels(**labels).inc()
+        if labels:
+            counter.labels(**labels).inc()
+        else:
+            counter.inc()
     except Exception as e:
         log.warning(f"Error incrementing counter {counter._name}: {e}")
