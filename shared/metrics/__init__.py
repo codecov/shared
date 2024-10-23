@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-def inc_counter(counter: Counter, labels: dict):
+def inc_counter(counter: Counter, labels: dict) -> None:
     try:
         counter.labels(**labels).inc()
     except Exception as e:
