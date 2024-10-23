@@ -3,7 +3,6 @@ import logging
 
 from shared.config import get_config
 from shared.helpers.numeric import ratio
-from shared.metrics import metrics
 from shared.reports.types import EMPTY, ReportTotals
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import match, match_any
@@ -258,7 +257,6 @@ class FilteredReport(object):
                 if res and res.lines > 0:
                     yield res
 
-    @metrics.timer("shared.reports.filtered._process_totals")
     def _process_totals(self):
         """Runs through the file network to aggregate totals
         returns <ReportTotals>

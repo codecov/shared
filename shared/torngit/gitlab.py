@@ -9,7 +9,7 @@ from urllib.parse import quote, urlencode
 import httpx
 
 from shared.config import get_config
-from shared.metrics import Counter, metrics
+from shared.metrics import Counter
 from shared.torngit.base import TokenType, TorngitBaseAdapter
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
@@ -407,7 +407,7 @@ class Gitlab(TorngitBaseAdapter):
         url_path,
         *,
         body=None,
-        token: OauthConsumerToken = None,
+        token: OauthConsumerToken | None = None,
         version=4,
         **args,
     ):
@@ -437,13 +437,12 @@ class Gitlab(TorngitBaseAdapter):
                 headers["Authorization"] = "Bearer %s" % (token or self.token)["key"]
 
             try:
-                with metrics.timer(f"{METRICS_PREFIX}.api.run") as timer:
-                    res = await client.request(
-                        method.upper(), url, headers=headers, data=body
-                    )
-                    if current_retry > 1:
-                        # count retries without getting a url
-                        self.count_and_get_url_template("fetch_and_handle_errors_retry")
+                res = await client.request(
+                    method.upper(), url, headers=headers, data=body
+                )
+                if current_retry > 1:
+                    # count retries without getting a url
+                    self.count_and_get_url_template("fetch_and_handle_errors_retry")
                 logged_body = None
                 if res.status_code >= 300 and res.text is not None:
                     logged_body = res.text
@@ -451,16 +450,14 @@ class Gitlab(TorngitBaseAdapter):
                     logging.WARNING if res.status_code >= 300 else logging.INFO,
                     "GitLab HTTP %s",
                     res.status_code,
-                    extra=dict(time_taken=timer.ms, body=logged_body, **_log),
+                    extra=dict(body=logged_body, **_log),
                 )
 
                 if res.status_code == 599:
-                    metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                     raise TorngitServerUnreachableError(
                         "Gitlab was not able to be reached, server timed out."
                     )
                 elif res.status_code >= 500:
-                    metrics.incr(f"{METRICS_PREFIX}.api.5xx")
                     raise TorngitServer5xxCodeError("Gitlab is having 5xx issues")
                 elif (
                     res.status_code == 401
@@ -473,7 +470,6 @@ class Gitlab(TorngitBaseAdapter):
                         await self._on_token_refresh(token)
                 elif res.status_code >= 400:
                     message = f"Gitlab API: {res.status_code}"
-                    metrics.incr(f"{METRICS_PREFIX}.api.clienterror")
                     raise TorngitClientGeneralError(
                         res.status_code, response_data=res.json(), message=message
                     )
@@ -481,7 +477,6 @@ class Gitlab(TorngitBaseAdapter):
                     # Success case
                     return res
             except (httpx.TimeoutException, httpx.NetworkError):
-                metrics.incr(f"{METRICS_PREFIX}.api.unreachable")
                 raise TorngitServerUnreachableError(
                     "GitLab was not able to be reached. Gateway 502. Please try again."
                 )

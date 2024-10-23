@@ -4,11 +4,12 @@ import ijson
 from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis.parsers import ParserInterface, ParserV1, ParserV2
+from shared.bundle_analysis.parsers.base import ParserTrait
 
 log = logging.getLogger(__name__)
 
 
-PARSER_VERSION_MAPPING = {
+PARSER_VERSION_MAPPING: dict[str, type[ParserTrait]] = {
     "1": ParserV1,
     "2": ParserV2,
 }
@@ -23,7 +24,7 @@ class Parser:
         self.path = path
         self.db_session = db_session
 
-    def get_proper_parser(self) -> object:
+    def get_proper_parser(self) -> ParserTrait:
         error = None
         try:
             with open(self.path, "rb") as f:
@@ -33,11 +34,13 @@ class Parser:
                         selected_parser = PARSER_VERSION_MAPPING.get(value)
                         if selected_parser is None:
                             error = f"parser not implemented for version {value}"
-                        if not issubclass(selected_parser, ParserInterface):
+                        elif not issubclass(selected_parser, ParserInterface):
                             error = "invalid parser implementation"
-                        return selected_parser(self.db_session)
+                        else:
+                            return selected_parser(self.db_session)
             error = "version does not exist in bundle file"
         except IOError:
             error = "unable to open file"
         if error:
             raise Exception(f"Couldn't parse bundle: {error}")
+        raise Exception("Couldn't parse bundle: unknown error")

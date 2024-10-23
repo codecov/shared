@@ -70,39 +70,6 @@ class TestLazyRustReport(object):
         assert r is not None
         assert r.get_report() is not None
 
-    def test_get_report_is_lazy_loaded(self, mocker):
-        mocker.patch(
-            "shared.reports.readonly.metrics.timer",
-            return_value=mocker.MagicMock(
-                ms=10000,
-                __enter__=mocker.MagicMock(return_value=mocker.MagicMock(ms=10000)),
-            ),
-        )
-        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
-            chunks = f.read()
-        filename_mapping = {
-            "awesome/__init__.py": 2,
-            "tests/__init__.py": 0,
-            "tests/test_sample.py": 1,
-        }
-        session_mapping = {0: ["unit"]}
-        r = LazyRustReport(filename_mapping, chunks, session_mapping)
-        assert r is not None
-        assert r.get_report() is not None
-
-    def test_get_report_took_too_long(self):
-        with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
-            chunks = f.read()
-        filename_mapping = {
-            "awesome/__init__.py": 2,
-            "tests/__init__.py": 0,
-            "tests/test_sample.py": 1,
-        }
-        session_mapping = {0: ["unit"]}
-        r = LazyRustReport(filename_mapping, chunks, session_mapping)
-        assert r is not None
-        assert r.get_report() is not None
-
 
 class TestReadOnly(object):
     @pytest.mark.parametrize(

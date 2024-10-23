@@ -77,7 +77,7 @@ class LineSession(object):
     __slots__ = ("id", "coverage", "branches", "partials", "complexity")
     id: int
     coverage: Decimal
-    branches: int
+    branches: list[int] | None
     partials: Sequence[int]
     complexity: int
 
