@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-def inc_counter(counter: Counter, labels: dict = None) -> None:
+def inc_counter(counter: Counter, labels: dict | None = None) -> None:
     try:
         if labels:
             counter.labels(**labels).inc()
@@ -26,7 +26,7 @@ def inc_counter(counter: Counter, labels: dict = None) -> None:
         log.warning(f"Error incrementing counter {counter._name}: {e}")
 
 
-def set_gauge(gauge: Gauge, value, labels: dict = None) -> None:
+def set_gauge(gauge: Gauge, value, labels: dict | None = None) -> None:
     try:
         if labels:
             gauge.labels(**labels).set(value)
