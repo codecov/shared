@@ -58,7 +58,6 @@ class CommitTests(TestCase):
         mock_read_file = MagicMock()
         mock_archive.return_value.read_file = mock_read_file
         commit._report = self.sample_report
-        commit._files_array_storage_path = None
         commit.save()
 
         fetched = Commit.objects.get(id=commit.id)
