@@ -227,17 +227,17 @@ class Feature:
         variants should equal to 1, and proportions should never be greater than
         1 or less than 0.
         """
+        variant_proportion_sum = sum(map(lambda x: x.proportion, self.ff_variants))
+        variant_proportions_in_range = True not in map(
+            lambda x: x.proportion < 0 or x.proportion > 1, self.ff_variants
+        )
+        feature_proportion_in_range = (
+            self.feature_flag.proportion <= 1 and self.feature_flag.proportion >= 0
+        )
         return (
-            (sum(map(lambda x: x.proportion, self.ff_variants)) == 1.0)
-            and (
-                True
-                not in map(
-                    lambda x: x.proportion < 0 or x.proportion > 1, self.ff_variants
-                )
-            )
-            and (
-                self.feature_flag.proportion <= 1 and self.feature_flag.proportion >= 0
-            )
+            (variant_proportion_sum == 1.0 or variant_proportion_sum == 0.0)
+            and variant_proportions_in_range
+            and feature_proportion_in_range
         )
 
     @ttl_cache(maxsize=64, ttl=300)  # 5 minute time-to-live cache
