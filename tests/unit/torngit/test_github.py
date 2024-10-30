@@ -170,16 +170,32 @@ class TestUnitGithub(object):
             await valid_handler.api(client, method, url)
 
     @pytest.mark.asyncio
-    async def test_socker_gaierror(self, mocker, valid_handler):
+    async def test_torngit_server_unreachable_error(self, mocker, valid_handler):
         client = mocker.MagicMock(
             request=mocker.AsyncMock(
-                side_effect=httpx.TimeoutException("message", request="request")
+                side_effect=[httpx.TimeoutException("message", request="request")] * 3,
             )
         )
         with pytest.raises(TorngitServerUnreachableError):
             await valid_handler.api(
-                client, "get", "/repos/%s/branches" % valid_handler.slug, per_page=100
+                client, "get", f"/repos/{valid_handler.slug}/branches", per_page=100
             )
+
+    @pytest.mark.asyncio
+    async def test_timeout_twice_then_success(self, mocker, valid_handler):
+        timeout_exception = httpx.TimeoutException("message", request="request")
+        success_response = mocker.MagicMock(text="kowabunga", status_code=200)
+
+        client = mocker.MagicMock(
+            request=mocker.AsyncMock(
+                side_effect=[timeout_exception, timeout_exception, success_response],
+            )
+        )
+
+        res = await valid_handler.api(
+            client, "get", f"/repos/{valid_handler.slug}/branches", per_page=100
+        )
+        assert res == "kowabunga"
 
     @pytest.mark.asyncio
     async def test_api_client_query_params(self, valid_handler, mocker):
@@ -1736,7 +1752,7 @@ class TestUnitGithub(object):
                 side_effect=side_effect
             )
             res = await ghapp_handler.is_student()
-            assert mocked_route.call_count == 1
+            assert mocked_route.call_count == 3
             assert res == False
         after = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total", labels={"endpoint": "is_student"}
@@ -1757,7 +1773,7 @@ class TestUnitGithub(object):
                 side_effect=side_effect
             )
             res = await ghapp_handler.is_student()
-            assert mocked_route.call_count == 1
+            assert mocked_route.call_count == 3
             assert res == False
         after = REGISTRY.get_sample_value(
             "git_provider_api_calls_github_total", labels={"endpoint": "is_student"}

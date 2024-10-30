@@ -848,7 +848,7 @@ class Github(TorngitBaseAdapter):
                     ),
                 )
             except (httpx.TimeoutException, httpx.NetworkError):
-                if current_retry <= max_number_retries:
+                if current_retry < max_number_retries:
                     log.warning(
                         "GitHub was not able to be reached, retrying",
                         extra=dict(
@@ -856,6 +856,7 @@ class Github(TorngitBaseAdapter):
                             **log_dict,
                         ),
                     )
+                    continue
                 else:
                     raise TorngitServerUnreachableError(
                         "GitHub was not able to be reached."
