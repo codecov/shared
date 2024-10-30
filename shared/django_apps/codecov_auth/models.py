@@ -16,6 +16,7 @@ from django.db.models.manager import BaseManager
 from django.forms import ValidationError
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
+from model_utils import FieldTracker
 
 from shared.config import get_config
 from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
@@ -381,7 +382,9 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     )
 
     objects = OwnerManager()
-
+    tracker = FieldTracker(
+        fields=["username", "service", "upload_token_required_for_public_repos"]
+    )
     repository_set = RepositoryManager()
 
     def __str__(self):
