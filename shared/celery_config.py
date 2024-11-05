@@ -45,6 +45,15 @@ test_results_finisher_task_name = (
 sync_test_results_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.SyncTestResultsTask"
 )
+
+cache_test_rollups_task_name = (
+    f"app.tasks.{TaskConfigGroup.test_results.value}.CacheTestRollupsTask"
+)
+
+cache_test_rollups_redis_task_name = (
+    f"app.tasks.{TaskConfigGroup.test_results.value}.CacheTestRollupsRedisTask"
+)
+
 process_flakes_task_name = f"app.tasks.{TaskConfigGroup.flakes.value}.ProcessFlakesTask"
 
 manual_upload_completion_trigger_task_name = (

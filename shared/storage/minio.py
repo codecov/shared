@@ -20,6 +20,8 @@ from minio.error import MinioException, S3Error
 from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
+from typing import overload, BinaryIO
+
 log = logging.getLogger(__name__)
 
 
@@ -195,7 +197,13 @@ class MinioStorageService(BaseStorageService):
         except MinioException:
             raise
 
-    def read_file(self, bucket_name, path, file_obj=None):
+    @overload
+    def read_file(self, bucket_name: str, path: str) -> bytes: ...
+
+    @overload
+    def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
+
+    def read_file(self, bucket_name, path, file_obj=None) -> bytes | None:
         try:
             res = self.minio_client.get_object(bucket_name, path)
             if file_obj is None:

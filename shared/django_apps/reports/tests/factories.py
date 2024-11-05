@@ -13,6 +13,7 @@ from shared.django_apps.reports.models import (
     ReportResults,
     Test,
     TestInstance,
+    TestFlagBridge,
 )
 
 
@@ -175,3 +176,11 @@ class DailyTestRollupFactory(DjangoModelFactory):
     avg_duration_seconds = 0.0
     latest_run = dt.datetime.now()
     commits_where_fail: list[str] = []
+
+
+class TestFlagBridgeFactory(DjangoModelFactory):
+    class Meta:
+        model = TestFlagBridge
+
+    test = factory.SubFactory(TestFactory)
+    flag = factory.SubFactory(RepositoryFlagFactory)
