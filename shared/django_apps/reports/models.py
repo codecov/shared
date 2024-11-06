@@ -466,3 +466,9 @@ class TestFlagBridge(models.Model):
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test_results_flag_bridge"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["flag", "test"],
+                name="reports_test_results_flag_bridge_flag_test",
+            )
+        ]
