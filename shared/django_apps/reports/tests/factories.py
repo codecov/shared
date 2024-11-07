@@ -9,11 +9,12 @@ from shared.django_apps.reports import models
 from shared.django_apps.reports.models import (
     DailyTestRollup,
     Flake,
+    LastCacheRollupDate,
     ReducedError,
     ReportResults,
     Test,
-    TestInstance,
     TestFlagBridge,
+    TestInstance,
 )
 
 
@@ -184,3 +185,12 @@ class TestFlagBridgeFactory(DjangoModelFactory):
 
     test = factory.SubFactory(TestFactory)
     flag = factory.SubFactory(RepositoryFlagFactory)
+
+
+class LastCacheRollupDateFactory(DjangoModelFactory):
+    class Meta:
+        model = LastCacheRollupDate
+
+    repository = factory.SubFactory(RepositoryFactory)
+    branch = "main"
+    last_rollup_date = dt.date.today()
