@@ -6,6 +6,7 @@ import shutil
 import sys
 import tempfile
 from io import BytesIO
+from typing import BinaryIO, overload
 
 from minio import Minio
 from minio.credentials import (
@@ -19,8 +20,6 @@ from minio.error import MinioException, S3Error
 
 from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
-
-from typing import overload, BinaryIO
 
 log = logging.getLogger(__name__)
 
