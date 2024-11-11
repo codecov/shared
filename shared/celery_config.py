@@ -47,11 +47,11 @@ sync_test_results_task_name = (
 )
 
 cache_test_rollups_task_name = (
-    f"app.tasks.{TaskConfigGroup.test_results.value}.CacheTestRollupsTask"
+    f"app.tasks.{TaskConfigGroup.cache_rollup.value}.CacheTestRollupsTask"
 )
 
 cache_test_rollups_redis_task_name = (
-    f"app.tasks.{TaskConfigGroup.test_results.value}.CacheTestRollupsRedisTask"
+    f"app.tasks.{TaskConfigGroup.cache_rollup.value}.CacheTestRollupsRedisTask"
 )
 
 process_flakes_task_name = f"app.tasks.{TaskConfigGroup.flakes.value}.ProcessFlakesTask"
@@ -351,6 +351,15 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.flakes.value,
+                "queue",
+                default=task_default_queue,
+            )
+        },
+        f"app.tasks.{TaskConfigGroup.cache_rollup.value}.*": {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.cache_rollup.value,
                 "queue",
                 default=task_default_queue,
             )

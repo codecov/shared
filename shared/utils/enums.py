@@ -21,6 +21,7 @@ class TaskConfigGroup(Enum):
     """
 
     archive = "archive"
+    cache_rollup = "cache_rollup"
     comment = "comment"
     commit_update = "commit_update"
     compute_comparison = "compute_comparison"
