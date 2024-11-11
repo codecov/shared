@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('codecov_auth', '0061_user_email_opt_in'),
+        ("codecov_auth", "0061_user_email_opt_in"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='owner',
-            name='upload_token_required_for_public_repos',
+            model_name="owner",
+            name="upload_token_required_for_public_repos",
             field=models.BooleanField(default=False),
         ),  # this is a no-op on the db
     ]
