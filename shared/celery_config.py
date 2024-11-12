@@ -63,9 +63,6 @@ comment_task_name = f"app.tasks.{TaskConfigGroup.comment.value}.Comment"
 flush_repo_task_name = f"app.tasks.{TaskConfigGroup.flush_repo.value}.FlushRepo"
 ghm_sync_plans_task_name = f"app.tasks.{TaskConfigGroup.sync_plans.value}.SyncPlans"
 send_email_task_name = f"app.tasks.{TaskConfigGroup.send_email.value}.SendEmail"
-remove_webhook_task_name = (
-    f"app.tasks.{TaskConfigGroup.remove_webhook.value}.RemoveOldHook"
-)
 synchronize_task_name = f"app.tasks.{TaskConfigGroup.synchronize.value}.Synchronize"
 new_user_activated_task_name = (
     f"app.tasks.{TaskConfigGroup.new_user_activated.value}.NewUserActivated"
@@ -394,15 +391,6 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.sync_plans.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        remove_webhook_task_name: {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.remove_webhook.value,
                 "queue",
                 default=task_default_queue,
             )
