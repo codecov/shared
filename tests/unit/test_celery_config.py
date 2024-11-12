@@ -53,7 +53,6 @@ def test_celery_config():
         "app.tasks.test_results.*",
         "app.tasks.timeseries.*",
         "app.tasks.upload.*",
-        "app.tasks.verify_bot.VerifyBot",
     ]
     assert config.broker_transport_options == {"visibility_timeout": 21600}
     assert config.result_extended is True
@@ -73,7 +72,6 @@ def test_celery_config():
         ("app.cron.healthcheck.HealthCheckTask", TaskConfigGroup.healthcheck.value),
         ("app.cron.profiling.findinguncollected", TaskConfigGroup.profiling.value),
         ("app.tasks.archive.MigrateToArchive", TaskConfigGroup.archive.value),
-        ("app.tasks.verify_bot.VerifyBot", TaskConfigGroup.verify_bot.value),
         ("app.tasks.comment.Comment", TaskConfigGroup.comment.value),
         ("app.tasks.commit_update.CommitUpdate", TaskConfigGroup.commit_update.value),
         (

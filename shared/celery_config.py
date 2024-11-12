@@ -60,7 +60,6 @@ manual_upload_completion_trigger_task_name = (
     f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
 )
 archive_task_name = f"app.tasks.{TaskConfigGroup.archive.value}.MigrateToArchive"
-bot_task_name = f"app.tasks.{TaskConfigGroup.verify_bot.value}.VerifyBot"
 comment_task_name = f"app.tasks.{TaskConfigGroup.comment.value}.Comment"
 flush_repo_task_name = f"app.tasks.{TaskConfigGroup.flush_repo.value}.FlushRepo"
 ghm_sync_plans_task_name = f"app.tasks.{TaskConfigGroup.sync_plans.value}.SyncPlans"
@@ -369,15 +368,6 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.archive.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        bot_task_name: {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.verify_bot.value,
                 "queue",
                 default=task_default_queue,
             )
