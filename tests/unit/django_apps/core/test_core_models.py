@@ -4,8 +4,12 @@ from unittest.mock import MagicMock, patch
 from django.forms import ValidationError
 from django.test import TestCase
 
-from shared.django_apps.core.models import Commit
-from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
+from shared.django_apps.core.models import Commit, PullStates
+from shared.django_apps.core.tests.factories import (
+    CommitFactory,
+    PullFactory,
+    RepositoryFactory,
+)
 from shared.django_apps.reports.tests.factories import CommitReportFactory
 from shared.storage.exceptions import FileNotInStorageError
 
@@ -15,6 +19,28 @@ class RepoTests(TestCase):
         repo = RepositoryFactory(using_integration=None)
         with self.assertRaises(ValidationError):
             repo.clean()
+
+
+class PullTests(TestCase):
+    def test_save_method(self):
+        test_value_for_flare = {"test": "test"}
+        pull = PullFactory(
+            state=PullStates.OPEN.value,
+            _flare=test_value_for_flare,
+            repository=RepositoryFactory(),
+        )
+        self.assertEqual(pull.flare, test_value_for_flare)
+
+        pull.title = "changing something on the pull while it is open"
+        pull.save()
+        pull.refresh_from_db()
+        self.assertEqual(pull.flare, test_value_for_flare)
+
+        pull.state = PullStates.MERGED.value
+        pull.save()
+        pull.refresh_from_db()
+        self.assertNotEqual(pull.flare, test_value_for_flare)
+        self.assertEqual(pull.flare, {})
 
 
 class CommitTests(TestCase):

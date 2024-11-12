@@ -430,13 +430,16 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
     _flare = models.JSONField(db_column="flare", null=True)
     _flare_storage_path = models.URLField(db_column="flare_storage_path", null=True)
     flare = ArchiveField(
-        should_write_to_storage_fn=should_write_to_storage, default_value_class=dict
+        should_write_to_storage_fn=should_write_to_storage,
+        default_value_class=dict,
     )
 
     def save(self, *args, **kwargs):
         self.updatestamp = timezone.now()
-        if self.state != PullStates.OPEN.value and self.flare is not None:
+        if self.state != PullStates.OPEN.value and self.flare:
             # flare is used to draw graphs, can be quite large, so dump it when it's no longer needed
+            # flare can be None or {} to indicate empty
+            # this gets set in the db as {} since that is the default value for the field
             self.flare = None
         super().save(*args, **kwargs)
 
