@@ -71,7 +71,6 @@ def test_celery_config():
     [
         ("app.cron.healthcheck.HealthCheckTask", TaskConfigGroup.healthcheck.value),
         ("app.cron.profiling.findinguncollected", TaskConfigGroup.profiling.value),
-        ("app.tasks.archive.MigrateToArchive", TaskConfigGroup.archive.value),
         ("app.tasks.comment.Comment", TaskConfigGroup.comment.value),
         ("app.tasks.commit_update.CommitUpdate", TaskConfigGroup.commit_update.value),
         (
