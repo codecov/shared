@@ -444,7 +444,11 @@ class DailyTestRollup(PostgresPartitionedModel, BaseModel):
                     "date",
                 ],
                 name="dailytestrollups_repoid_date",
-            )
+            ),
+            models.Index(
+                fields=["repoid", "date", "branch"],
+                name="testrollups_repoid_date_branch",
+            ),
         ]
 
 
