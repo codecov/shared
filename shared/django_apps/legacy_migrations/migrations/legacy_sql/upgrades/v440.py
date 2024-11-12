@@ -57,24 +57,6 @@ def run_sql(schema_editor):
         )
         execute procedure owner_yaml_updated();
 
-
-        drop trigger pulls_before_insert on pulls;
-        drop function pulls_insert();
-        drop trigger pulls_before_update on pulls;
-        drop function pulls_update();
-
-        create or replace function pulls_drop_flare() returns trigger as $$
-        begin
-            new.flare = null;
-            return new;
-        end;
-        $$ language plpgsql;
-
-        create trigger pulls_before_update_drop_flare before update on pulls
-        for each row
-        when (new.state != 'open'::pull_state)
-        execute procedure pulls_drop_flare();
-
         ---- Function Changes -----
         drop function if exists get_new_repos(int);
         drop function if exists get_pull(int, int);
