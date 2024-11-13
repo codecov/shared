@@ -6,6 +6,7 @@ import shutil
 import sys
 import tempfile
 from io import BytesIO
+from typing import BinaryIO, overload
 
 from minio import Minio
 from minio.credentials import (
@@ -195,7 +196,13 @@ class MinioStorageService(BaseStorageService):
         except MinioException:
             raise
 
-    def read_file(self, bucket_name, path, file_obj=None):
+    @overload
+    def read_file(self, bucket_name: str, path: str) -> bytes: ...
+
+    @overload
+    def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
+
+    def read_file(self, bucket_name, path, file_obj=None) -> bytes | None:
         try:
             res = self.minio_client.get_object(bucket_name, path)
             if file_obj is None:

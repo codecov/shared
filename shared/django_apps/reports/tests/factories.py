@@ -9,9 +9,11 @@ from shared.django_apps.reports import models
 from shared.django_apps.reports.models import (
     DailyTestRollup,
     Flake,
+    LastCacheRollupDate,
     ReducedError,
     ReportResults,
     Test,
+    TestFlagBridge,
     TestInstance,
 )
 
@@ -175,3 +177,20 @@ class DailyTestRollupFactory(DjangoModelFactory):
     avg_duration_seconds = 0.0
     latest_run = dt.datetime.now()
     commits_where_fail: list[str] = []
+
+
+class TestFlagBridgeFactory(DjangoModelFactory):
+    class Meta:
+        model = TestFlagBridge
+
+    test = factory.SubFactory(TestFactory)
+    flag = factory.SubFactory(RepositoryFlagFactory)
+
+
+class LastCacheRollupDateFactory(DjangoModelFactory):
+    class Meta:
+        model = LastCacheRollupDate
+
+    repository = factory.SubFactory(RepositoryFactory)
+    branch = "main"
+    last_rollup_date = dt.date.today()

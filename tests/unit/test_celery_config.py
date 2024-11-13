@@ -28,6 +28,7 @@ def test_celery_config():
         "app.cron.healthcheck.HealthCheckTask",
         "app.cron.profiling.*",
         "app.tasks.archive.*",
+        "app.tasks.cache_rollup.*",
         "app.tasks.comment.Comment",
         "app.tasks.commit_update.CommitUpdate",
         "app.tasks.compute_comparison.ComputeComparison",

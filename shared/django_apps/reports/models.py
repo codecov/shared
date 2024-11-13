@@ -412,7 +412,7 @@ class DailyTestRollup(PostgresPartitionedModel, BaseModel):
     )
     date = models.DateField()
     repoid = models.IntegerField()
-    branch = models.TextField()
+    branch = models.TextField(null=True)
 
     fail_count = models.IntegerField()
     flaky_fail_count = models.IntegerField()
@@ -466,3 +466,28 @@ class TestFlagBridge(models.Model):
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test_results_flag_bridge"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["flag", "test"],
+                name="reports_test_results_flag_bridge_flag_test",
+            )
+        ]
+
+
+class LastCacheRollupDate(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    repository = models.ForeignKey(
+        "core.Repository", db_column="repoid", on_delete=models.CASCADE
+    )
+    branch = models.TextField()
+    last_rollup_date = models.DateField()
+
+    class Meta:
+        app_label = REPORTS_APP_LABEL
+        db_table = "reports_lastrollupdate"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["repository", "branch"],
+                name="reports_lastrollupdate_repoid_branch",
+            )
+        ]

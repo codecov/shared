@@ -362,17 +362,17 @@ class Bitbucket(TorngitBaseAdapter):
         )
         async with self.get_client() as client:
             for team in usernames:
+                page = 0
                 try:
                     while True:
                         page += 1
-
                         repos, has_next = await self._fetch_page_of_repos(
                             client, team, token, page
                         )
+
                         data.extend(repos)
 
                         if len(repos) == 0 or not has_next:
-                            page = 0
                             break
                 except TorngitClientError:
                     log.warning(
@@ -400,19 +400,18 @@ class Bitbucket(TorngitBaseAdapter):
             extra=dict(usernames=usernames, repos=repos_to_log),
         )
         async with self.get_client() as client:
-            page = 0
             for team in usernames:
+                page = 0
                 try:
                     while True:
                         page += 1
-
                         repos, has_next = await self._fetch_page_of_repos(
                             client, team, token, page
                         )
+
                         yield repos
 
                         if len(repos) == 0 or not has_next:
-                            page = 0
                             break
                 except TorngitClientError:
                     log.warning(

@@ -848,9 +848,19 @@ class Github(TorngitBaseAdapter):
                     ),
                 )
             except (httpx.TimeoutException, httpx.NetworkError):
-                raise TorngitServerUnreachableError(
-                    "GitHub was not able to be reached."
-                )
+                if current_retry < max_number_retries:
+                    log.warning(
+                        "GitHub was not able to be reached, retrying",
+                        extra=dict(
+                            current_retry=current_retry,
+                            **log_dict,
+                        ),
+                    )
+                    continue
+                else:
+                    raise TorngitServerUnreachableError(
+                        "GitHub was not able to be reached."
+                    )
             # Github doesn't have any specific message for trying to use an expired token
             # on top of that they return 404 for certain endpoints (not 401).
             # So this is the little heuristics that we follow to decide on refreshing a token
