@@ -4,10 +4,10 @@ from django.db import migrations
 
 from shared.django_apps.migration_utils import RiskyRunSQL
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('legacy_migrations', '0004_auto_20231024_1937'),
+        ("legacy_migrations", "0004_auto_20231024_1937"),
     ]
 
     operations = [
