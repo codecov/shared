@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
             """
             DROP TRIGGER IF EXISTS branch_update ON branches;
             DROP FUNCTION IF EXISTS branches_update();
-            """
-        ),
+            """,
+            reverse_sql=migrations.RunSQL.noop,
+        )
     ]
