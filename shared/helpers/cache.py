@@ -1,8 +1,8 @@
 import asyncio
 import base64
 import hashlib
+import json
 import logging
-import pickle
 from functools import wraps
 from typing import Any, Callable, Hashable, List, Optional
 
@@ -86,8 +86,6 @@ class NullBackend(BaseBackend):
 
 
 class RedisBackend(BaseBackend):
-    current_protocol = pickle.DEFAULT_PROTOCOL
-
     def __init__(self, redis_connection: Redis):
         self.redis_connection = redis_connection
 
@@ -100,16 +98,18 @@ class RedisBackend(BaseBackend):
         if serialized_value is None:
             return NO_VALUE
         try:
-            return pickle.loads(serialized_value)
+            return json.loads(serialized_value)
         except ValueError:
             return NO_VALUE
 
     def set(self, key: str, ttl: int, value: Any):
-        serialized_value = pickle.dumps(value, self.current_protocol)
         try:
+            serialized_value = json.dumps(value)
             self.redis_connection.setex(key, ttl, serialized_value)
         except RedisError:
             log.warning("Unable to set cache on redis", exc_info=True)
+        except TypeError:
+            log.exception("Attempted to cache a type that is not JSON-serializable")
 
 
 class LogMapping(dict):
