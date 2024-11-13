@@ -435,9 +435,6 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
 
     def save(self, *args, **kwargs):
         self.updatestamp = timezone.now()
-        if self.state != PullStates.OPEN.value and self.flare is not None:
-            # flare is used to draw graphs, can be quite large, so dump it when it's no longer needed
-            self.flare = None
         super().save(*args, **kwargs)
 
 

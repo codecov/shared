@@ -40,7 +40,7 @@ class ArchiveFieldInterface(metaclass=ArchiveFieldInterfaceMeta):
 
 class ArchiveField:
     """This is a helper class that transparently handles models' fields that are saved in storage.
-    Classes that use the ArchiveField MUST implement ArchiveFieldInterface. It will throw an error otherwise.
+    Classes that use the ArchiveField MUST implement ArchiveFieldInterface. It ill throw an error otherwise.
     It uses the Descriptor pattern: https://docs.python.org/3/howto/descriptor.html
 
     Arguments:
