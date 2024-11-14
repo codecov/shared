@@ -95,6 +95,13 @@ class TestRedisBackend(unittest.TestCase):
         redis_backend.set("normal_key", 120, unserializable)
         assert redis_backend.get("normal_key") == NO_VALUE
 
+    def test_simple_redis_call_dict_with_int_keys(self):
+        redis_backend = RedisBackend(FakeRedis())
+
+        d = {"abcde": {1: [1, 2, 3], 2: [4, 5, 6]}}
+        redis_backend.set("normal_key", 120, d)
+        assert redis_backend.get("normal_key") == NO_VALUE
+
 
 class TestCache(object):
     def test_simple_caching_no_backend_no_params(self, mocker):

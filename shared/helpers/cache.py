@@ -15,6 +15,22 @@ NO_VALUE = object()
 DEFAULT_TTL = 120
 
 
+def attempt_json_dumps(value: Any) -> str:
+    def assert_string_keys(d: dict[Any, Any]) -> None:
+        for k, v in d.items():
+            if type(k) is not str:
+                raise TypeError(
+                    f"Attempted to JSON-serialize a dictionary with non-string key: {k}"
+                )
+            if isinstance(v, dict):
+                assert_string_keys(v)
+
+    if isinstance(value, dict):
+        assert_string_keys(value)
+
+    return json.dumps(value)
+
+
 def make_hash_sha256(o: Any) -> str:
     """Provides a machine-independent, consistent hash value for any object
 
@@ -104,12 +120,14 @@ class RedisBackend(BaseBackend):
 
     def set(self, key: str, ttl: int, value: Any):
         try:
-            serialized_value = json.dumps(value)
+            serialized_value = attempt_json_dumps(value)
             self.redis_connection.setex(key, ttl, serialized_value)
         except RedisError:
             log.warning("Unable to set cache on redis", exc_info=True)
         except TypeError:
-            log.exception("Attempted to cache a type that is not JSON-serializable")
+            log.exception(
+                f"Attempted to cache a type that is not JSON-serializable: {value}"
+            )
 
 
 class LogMapping(dict):
