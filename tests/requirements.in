@@ -1,14 +1,13 @@
 beautifulsoup4
 coverage>=7.3.2
-ddt
 factory-boy
+freezegun>=1.5.1
 httpx>=0.23.0
 mock
 psycopg2
 pytest-asyncio
 pytest-cov
 pytest-django
-pytest-freezegun
 pytest-mock
 pytest>=7.2.0
 pyyaml>=6.0.1
