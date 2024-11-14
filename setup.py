@@ -37,7 +37,6 @@ setup(
         "ijson==3.*",
         "minio~=7.0",
         "mmh3",
-        "oauth2",
         "oauthlib",
         "orjson",
         "prometheus-client",
@@ -46,7 +45,6 @@ setup(
         "pyparsing",
         "redis",
         "sqlalchemy==1.*",
-        "tlslite-ng>=0.8.0b1",
         "urllib3==1.26.19",
         # API Deps
         "django-model-utils>=4.3.1",

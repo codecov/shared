@@ -1,24 +1,18 @@
-import base64
 import logging
 import os
 from datetime import datetime
-from json import dumps, loads
-from typing import List
-from urllib.parse import parse_qsl
 
-import oauth2 as oauth
-from tlslite.utils import keyfactory
+import httpx
+from oauthlib import oauth1
 
-from shared.config import (
-    MissingConfigException,
-    get_config,
-    load_file_from_path_at_config,
-)
+from shared.config import get_config
 from shared.torngit.base import TorngitBaseAdapter
 from shared.torngit.exceptions import (
     TorngitClientError,
     TorngitClientGeneralError,
     TorngitObjectNotFoundError,
+    TorngitServer5xxCodeError,
+    TorngitServerUnreachableError,
 )
 from shared.torngit.status import Status
 from shared.utils.urls import url_concat
@@ -26,68 +20,8 @@ from shared.utils.urls import url_concat
 log = logging.getLogger(__name__)
 
 
-class _Signature(oauth.SignatureMethod):
-    name = "RSA-SHA1"
-    privkey = None
-
-    def _prepare_private_key():
-        # The user should provide a path to a pemfile in `bitbucket_server.pemfile`
-        try:
-            pemfile = load_file_from_path_at_config("bitbucket_server", "pemfile")
-        except MissingConfigException:
-            log.exception("`bitbucket_server.pemfile` config required but not found")
-            raise
-        except FileNotFoundError:
-            log.exception(
-                "No PEM file found at configured path (`bitbucket_server.pemfile`)",
-                extra=dict(path=get_config("bitbucket_server", "pemfile")),
-            )
-            raise
-
-        # Parse and memoize the pemfile, if it's valid
-        try:
-            _Signature.privkey = keyfactory.parsePrivateKey(pemfile)
-        except Exception as e:
-            log.exception("Failed to parse PEM file", extra=dict(exception=e))
-            raise
-
-    def signing_base(self, request, consumer, token):
-        if not hasattr(request, "normalized_url") or request.normalized_url is None:
-            raise ValueError("Base URL for request is not set.")
-
-        sig = (
-            oauth.escape(request.method),
-            oauth.escape(request.normalized_url),
-            oauth.escape(request.get_normalized_parameters()),
-        )
-        # ('POST',
-        # 'http%3A%2F%2Flocalhost%3A7990%2Fplugins%2Fservlet%2Foauth%2Frequest-token',
-        # 'oauth_consumer_key%3DjFzYB8pKJnz2BhaDUw%26oauth_nonce%3D15620364%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1442832674%26oauth_version%3D1.0')
-
-        key = "%s&" % oauth.escape(consumer.secret)
-        if token:
-            key += oauth.escape(token.secret)
-        raw = "&".join(sig)
-        return key, raw.encode()
-
-    def sign(self, request, consumer, token):
-        """Builds the base signature string."""
-        key, raw = self.signing_base(request, consumer, token)
-
-        # If this is the first time we're signing a request, initialize the private key
-        if not _Signature.privkey:
-            _Signature._prepare_private_key()
-            assert _Signature.privkey, "Failed to load private key to sign requests"
-
-        signature = _Signature.privkey.hashAndSign(raw)
-        return base64.b64encode(signature)
-
-
-signature = _Signature()
-
-
 class BitbucketServer(TorngitBaseAdapter):
-    # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html
+    # https://developer.atlassian.com/server/bitbucket/rest/v903/intro/#about
     service = "bitbucket_server"
 
     @classmethod
@@ -170,53 +104,65 @@ class BitbucketServer(TorngitBaseAdapter):
         if kwargs:
             url = url_concat(url, kwargs)
 
-        # get accessing token
-        if token:
-            token = oauth.Token(token["key"], token["secret"])
-        elif self.token:
-            token = oauth.Token(self.token["key"], self.token["secret"])
-        else:
-            token = None
-
-        # create oauth consumer
-        if self.verify_ssl is False:
-            # https://github.com/joestump/python-oauth2/blob/9d5a569fc9edda678102edccb330e1f692122a5a/oauth2/__init__.py#L627
-            # https://github.com/jcgregorio/httplib2/blob/e7f6e622047107e701ee70e7ec586717d97b0cbb/python2/httplib2/__init__.py#L1158
-            verify_ssl = dict(disable_ssl_certificate_validation=True, ca_certs=False)
-        elif self.verify_ssl:
-            verify_ssl = dict(ca_certs=self.verify_ssl)
-        else:
-            verify_ssl = dict(ca_certs=os.getenv("REQUESTS_CA_BUNDLE"))
-
-        client = oauth.Client(
-            oauth.Consumer(self._oauth_consumer_token()["key"], ""), token, **verify_ssl
+        token_to_use = token or self.token
+        oauth_client = oauth1.Client(
+            self._oauth_consumer_token()["key"],
+            client_secret=self._oauth_consumer_token()["secret"],
+            resource_owner_key=token_to_use["key"],
+            resource_owner_secret=token_to_use["secret"],
+            signature_type=oauth1.SIGNATURE_TYPE_QUERY,
         )
-        client.set_signature_method(signature)
 
-        response, content = client.request(
-            url,
-            method.upper(),
-            dumps(body).encode() if body else b"",
-            headers={"Content-Type": "application/json"} if body else {},
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": os.getenv("USER_AGENT", "Default"),
+        }
+        url, headers, _oauth_body = oauth_client.sign(
+            url, http_method=method, headers=headers
         )
-        status = int(response["status"])
 
-        if status in (200, 201):
-            if "application/json" in response.get("content-type"):
-                return loads(content)
-            else:
-                try:
-                    content = dict(parse_qsl(content)) or content
-                except Exception:
-                    pass
+        log_dict = dict(
+            event="api",
+            endpoint=url,
+            method=method,
+            bot=token_to_use.get("username"),
+            repo_slug=self.slug,
+        )
 
-                return content
-
-        elif status == 204:
+        try:
+            async with self.get_client() as client:
+                res = await client.request(
+                    method.upper(), url, json=body, headers=headers
+                )
+            logged_body = None
+            if res.status_code >= 300 and res.text is not None:
+                logged_body = res.text
+            log.log(
+                logging.WARNING if res.status_code >= 300 else logging.INFO,
+                "Bitbucket HTTP %s",
+                res.status_code,
+                extra=dict(body=logged_body, **log_dict),
+            )
+        except (httpx.NetworkError, httpx.TimeoutException):
+            raise TorngitServerUnreachableError("Bitbucket was not able to be reached.")
+        if res.status_code == 599:
+            raise TorngitServerUnreachableError(
+                "Bitbucket was not able to be reached, server timed out."
+            )
+        elif res.status_code >= 500:
+            raise TorngitServer5xxCodeError("Bitbucket is having 5xx issues")
+        elif res.status_code >= 300:
+            message = f"Bitbucket API: {res.reason_phrase}"
+            raise TorngitClientGeneralError(
+                res.status_code, response_data={"content": res.content}, message=message
+            )
+        if res.status_code == 204:
             return None
-
-        message = f"BitBucket Server API: {status}"
-        raise TorngitClientGeneralError(status, response_data=response, message=message)
+        elif "application/json" in res.headers.get("Content-Type"):
+            return res.json()
+        else:
+            return res.text
 
     async def get_authenticated(self, token=None):
         # https://developer.atlassian.com/static/rest/bitbucket-server/4.0.1/bitbucket-rest.html#idp1889424
@@ -289,7 +235,9 @@ class BitbucketServer(TorngitBaseAdapter):
             ),
         )
 
-    async def get_repo_languages(self, token=None, language: str = None) -> List[str]:
+    async def get_repo_languages(
+        self, token=None, language: str | None = None
+    ) -> list[str]:
         """
         Gets the languages belonging to this repository. Bitbucket has no way to
         track languages, so we'll return a list with the existing language
