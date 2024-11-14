@@ -1,7 +1,6 @@
-from typing import Union
+from typing import Literal, Union
 
 from redis import Redis
-from typing_extensions import Literal
 
 from shared.config import get_config
 from shared.helpers.cache import OurOwnCache, RedisBackend

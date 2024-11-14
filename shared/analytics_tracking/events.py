@@ -1,13 +1,9 @@
 import logging
 from base64 import b64encode
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Mapping
 from uuid import uuid1
-
-import pytz
-
-from shared.helpers.date import to_timestamp
 
 log = logging.getLogger("__name__")
 
@@ -24,9 +20,9 @@ class Events(Enum):
 
 
 class Event:
-    def __init__(self, event_name: str, dt: datetime = None, **data: Any) -> None:
+    def __init__(self, event_name: str, dt: datetime | None = None, **data) -> None:
         self.uuid = uuid1()
-        self.datetime = dt or datetime.now(tz=pytz.utc)
+        self.datetime = dt or datetime.now(timezone.utc)
         self.name = self._get_event_name(event_name)
         self.data = data
 
@@ -38,7 +34,7 @@ class Event:
     def serialize(self) -> Mapping[str, Any]:
         return {
             "uuid": b64encode(self.uuid.bytes).decode(),
-            "timestamp": to_timestamp(self.datetime),
+            "timestamp": self.datetime.timestamp(),
             "type": self.name,
             "data": self.data,
         }

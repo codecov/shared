@@ -20,7 +20,6 @@ setup(
     author_email="support@codecov.io",
     python_requires=">=3.12",
     install_requires=[
-        "analytics-python==1.3.0b1",
         "boto3>=1.9.218",
         "cachetools",
         "cerberus",
@@ -45,12 +44,9 @@ setup(
         "protobuf>=4.21.6",
         "pyjwt",
         "pyparsing",
-        "pytz",
         "redis",
         "sqlalchemy==1.*",
         "tlslite-ng>=0.8.0b1",
-        "typing_extensions",
-        "typing",
         "urllib3==1.26.19",
         # API Deps
         "django-model-utils>=4.3.1",
