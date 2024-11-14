@@ -1,24 +1,6 @@
 import pytest
 
-from shared.config import ConfigHelper
 from shared.torngit.bitbucket_server import BitbucketServer
-
-# NOT A REAL KEY; this was generated for use in tests
-mock_private_key = """-----BEGIN RSA PRIVATE KEY-----
-MIICXAIBAAKBgQDCFqq2ygFh9UQU/6PoDJ6L9e4ovLPCHtlBt7vzDwyfwr3XGxln
-0VbfycVLc6unJDVEGZ/PsFEuS9j1QmBTTEgvCLR6RGpfzmVuMO8wGVEO52pH73h9
-rviojaheX/u3ZqaA0di9RKy8e3L+T0ka3QYgDx5wiOIUu1wGXCs6PhrtEwICBAEC
-gYBu9jsi0eVROozSz5dmcZxUAzv7USiUcYrxX007SUpm0zzUY+kPpWLeWWEPaddF
-VONCp//0XU8hNhoh0gedw7ZgUTG6jYVOdGlaV95LhgY6yXaQGoKSQNNTY+ZZVT61
-zvHOlPynt3GZcaRJOlgf+3hBF5MCRoWKf+lDA5KiWkqOYQJBAMQp0HNVeTqz+E0O
-6E0neqQDQb95thFmmCI7Kgg4PvkS5mz7iAbZa5pab3VuyfmvnVvYLWejOwuYSp0U
-9N8QvUsCQQD9StWHaVNM4Lf5zJnB1+lJPTXQsmsuzWvF3HmBkMHYWdy84N/TdCZX
-Cxve1LR37lM/Vijer0K77wAx2RAN/ppZAkB8+GwSh5+mxZKydyPaPN29p6nC6aLx
-3DV2dpzmhD0ZDwmuk8GN+qc0YRNOzzJ/2UbHH9L/lvGqui8I6WLOi8nDAkEA9CYq
-ewfdZ9LcytGz7QwPEeWVhvpm0HQV9moetFWVolYecqBP4QzNyokVnpeUOqhIQAwe
-Z0FJEQ9VWsG+Df0noQJBALFjUUZEtv4x31gMlV24oiSWHxIRX4fEND/6LpjleDZ5
-C/tY+lZIEO1Gg/FxSMB+hwwhwfSuE3WohZfEcSy+R48=
------END RSA PRIVATE KEY-----"""
 
 
 def valid_handler():
@@ -28,34 +10,6 @@ def valid_handler():
         oauth_consumer_token=dict(key=""),
         token=dict(secret="", key=""),
     )
-
-
-def mock_config_get(configs, mocker):
-    orig_get = ConfigHelper.get
-
-    def mock_get(obj, *args, **kwargs):
-        conf_key = ".".join(args)
-        if conf_key in configs:
-            return configs.get(conf_key)
-        else:
-            return orig_get(obj, *args, **kwargs)
-
-    m = mocker.patch.object(ConfigHelper, "get", mock_get)
-    return m
-
-
-def mock_config_load_file(configs, mocker):
-    orig_load_file = ConfigHelper.load_filename_from_path
-
-    def mock_load_file(obj, *args):
-        conf_key = ".".join(args)
-        if conf_key in configs:
-            return configs.get(conf_key)
-        else:
-            return orig_load_file(obj, *args)
-
-    m = mocker.patch.object(ConfigHelper, "load_filename_from_path", mock_load_file)
-    return m
 
 
 class TestBitbucketTestCase(object):
