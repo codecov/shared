@@ -1,6 +1,3 @@
-import json
-
-import oauth2 as oauth
 import pytest
 
 from shared.torngit.bitbucket_server import BitbucketServer
@@ -9,9 +6,12 @@ from shared.torngit.exceptions import (
     TorngitObjectNotFoundError,
 )
 
+MOCK_BASE = "https://bitbucketserver.codecov.dev"
+
 
 @pytest.fixture
-def valid_handler():
+def valid_handler(mock_configuration):
+    mock_configuration._params["bitbucket_server"] = {"url": MOCK_BASE}
     return BitbucketServer(
         repo=dict(name="example-python"),
         owner=dict(
@@ -36,42 +36,21 @@ class TestBitbucketServer(object):
         )
 
     @pytest.mark.asyncio
-    async def test_fetch_uses_proper_endpoint(
-        self, valid_handler, mocker, mock_configuration
-    ):
-        response_dict = {"status": 201, "content-type": "application/json"}
-        content = json.dumps({"id": "198", "version": "3"})
-        mocked_fetch = mocker.patch.object(
-            oauth.Client, "request", return_value=(response_dict, content)
-        )
-        mock_configuration._params["bitbucket_server"] = {
-            "url": "https://bitbucketserver.codecov.dev",
-            "api_url": "https://api.gitlab.dev",
-        }
+    @pytest.mark.respx(base_url=MOCK_BASE)
+    async def test_fetch_uses_proper_endpoint(self, valid_handler, respx_mock):
+        respx_mock.post(
+            "/rest/api/1.0/projects/THIAGOCODECOV/repos/example-python/pull-requests/pullid/comments"
+        ).respond(status_code=201, json={"id": 198, "version": 3})
 
         res = await valid_handler.post_comment("pullid", "body")
         assert res == {"id": "198:3"}
-        mocked_fetch.assert_called_with(
-            "https://bitbucketserver.codecov.dev/rest/api/1.0/projects/THIAGOCODECOV/repos/example-python/pull-requests/pullid/comments",
-            "POST",
-            b'{"text": "body"}',
-            headers={"Content-Type": "application/json"},
-        )
 
     @pytest.mark.asyncio
-    async def test_api_client_not_found(self, valid_handler, mocker):
-        response_dict = {"status": 404, "content-type": "application/json"}
-        content = json.dumps({})
-        mocker.patch.object(
-            oauth.Client, "request", return_value=(response_dict, content)
-        )
-        mocker.MagicMock(
-            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=404))
-        )
-        method = "GET"
-        url = "random_url"
+    async def test_api_client_not_found(self, valid_handler, respx_mock):
+        respx_mock.get("/rest/api/1.0/random_url").respond(status_code=404, json={})
+
         with pytest.raises(TorngitClientGeneralError):
-            await valid_handler.api(method, url)
+            await valid_handler.api("GET", "/random_url")
 
     @pytest.mark.asyncio
     async def test_get_repo_languages(self):
@@ -92,16 +71,11 @@ class TestBitbucketServer(object):
         assert res == expected_result
 
     @pytest.mark.asyncio
-    async def test_get_source_object_not_found(self, valid_handler, mocker):
-        response_dict = {"status": 404, "content-type": "application/json"}
-        content = json.dumps({})
-        mocker.patch.object(
-            oauth.Client, "request", return_value=(response_dict, content)
-        )
-        mocker.MagicMock(
-            request=mocker.AsyncMock(return_value=mocker.MagicMock(status_code=404))
-        )
-        path = "some/path/"
-        ref = "commitsha"
+    @pytest.mark.respx(base_url=MOCK_BASE)
+    async def test_get_source_object_not_found(self, valid_handler, respx_mock):
+        respx_mock.get(
+            "/rest/api/1.0/projects/THIAGOCODECOV/repos/example-python/browse/some/path/"
+        ).respond(status_code=404, json={})
+
         with pytest.raises(TorngitObjectNotFoundError):
-            await valid_handler.get_source(path, ref)
+            await valid_handler.get_source("some/path/", "commitsha")

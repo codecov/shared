@@ -1,9 +1,7 @@
-from unittest.mock import Mock
-
 import pytest
 
-from shared.config import ConfigHelper, MissingConfigException
-from shared.torngit.bitbucket_server import BitbucketServer, _Signature
+from shared.config import ConfigHelper
+from shared.torngit.bitbucket_server import BitbucketServer
 
 # NOT A REAL KEY; this was generated for use in tests
 mock_private_key = """-----BEGIN RSA PRIVATE KEY-----
@@ -61,96 +59,6 @@ def mock_config_load_file(configs, mocker):
 
 
 class TestBitbucketTestCase(object):
-    def test_signature_without_config(self, mocker):
-        _Signature.privkey = None
-
-        def raise_missing_config(obj, *args, **kwargs):
-            raise MissingConfigException(args)
-
-        mocker.patch.object(ConfigHelper, "get", side_effect=raise_missing_config)
-
-        signature = _Signature()
-
-        mock_req = Mock(
-            method="get", normalized_url="", get_normalized_parameters=lambda: ""
-        )
-        mock_token = Mock(secret="")
-        mock_consumer = Mock(secret="")
-
-        try:
-            signature.sign(mock_req, mock_consumer, mock_token)
-        except MissingConfigException:
-            assert True
-        else:
-            assert False, "MissingConfigException should have been thrown"
-
-    def test_signature_with_invalid_config(self, mocker):
-        _Signature.privkey = None
-        mock_config_get({"bitbucket_server.pemfile": "/invalid"}, mocker)
-
-        signature = _Signature()
-        mock_req = Mock(
-            method="get", normalized_url="", get_normalized_parameters=lambda: ""
-        )
-        mock_token = Mock(secret="")
-        mock_consumer = Mock(secret="")
-
-        try:
-            signature.sign(mock_req, mock_consumer, mock_token)
-        except FileNotFoundError:
-            assert True
-        else:
-            assert False, "FileNotFoundError should have been thrown"
-
-    def test_signature_with_invalid_pemfile(self, mocker):
-        _Signature.privkey = None
-        mock_config_load_file({"bitbucket_server.pemfile": "invalid pemfile"}, mocker)
-
-        signature = _Signature()
-        mock_req = Mock(
-            method="get", normalized_url="", get_normalized_parameters=lambda: ""
-        )
-        mock_token = Mock(secret="")
-        mock_consumer = Mock(secret="")
-
-        try:
-            signature.sign(mock_req, mock_consumer, mock_token)
-        except SyntaxError:
-            assert True
-        else:
-            assert False, "SyntaxError should have been thrown"
-
-    def test_signature_with_valid_pemfile(self, mocker):
-        _Signature.privkey = None
-
-        mock_config_load_file({"bitbucket_server.pemfile": mock_private_key}, mocker)
-
-        signature = _Signature()
-        mock_req = Mock(
-            method="get", normalized_url="", get_normalized_parameters=lambda: ""
-        )
-        mock_token = Mock(secret="")
-        mock_consumer = Mock(secret="")
-
-        try:
-            signature.sign(mock_req, mock_consumer, mock_token)
-        except Exception:
-            assert False, "This operation should have succeeded"
-        else:
-            assert True
-
-    """
-    def test_signature_without_pemfile(self, mocker):
-        mock_config_factory({"bitbucket_server.pemfile": None}, mocker)
-
-        self.assertRaises(
-
-
-
-        signature = _Signature()
-        handler = valid_handler()
-    """
-
     @pytest.mark.asyncio
     async def test_find_pull_request_found(self, mocker):
         api_result = {

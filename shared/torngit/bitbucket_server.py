@@ -131,7 +131,7 @@ class BitbucketServer(TorngitBaseAdapter):
         )
 
         try:
-            with self.get_client() as client:
+            async with self.get_client() as client:
                 res = await client.request(
                     method.upper(), url, json=body, headers=headers
                 )
