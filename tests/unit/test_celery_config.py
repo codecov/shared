@@ -40,7 +40,6 @@ def test_celery_config():
         "app.tasks.notify.Notify",
         "app.tasks.profiling.*",
         "app.tasks.pulls.Sync",
-        "app.tasks.remove_webhook.RemoveOldHook",
         "app.tasks.static_analysis.*",
         "app.tasks.status.*",
         "app.tasks.sync_account.ActivateAccountUser",
@@ -49,11 +48,9 @@ def test_celery_config():
         "app.tasks.sync_repo_languages_gql.SyncLanguagesGQL",
         "app.tasks.sync_repos.SyncRepos",
         "app.tasks.sync_teams.SyncTeams",
-        "app.tasks.synchronize.Synchronize",
         "app.tasks.test_results.*",
         "app.tasks.timeseries.*",
         "app.tasks.upload.*",
-        "app.tasks.verify_bot.VerifyBot",
     ]
     assert config.broker_transport_options == {"visibility_timeout": 21600}
     assert config.result_extended is True
@@ -72,8 +69,6 @@ def test_celery_config():
     [
         ("app.cron.healthcheck.HealthCheckTask", TaskConfigGroup.healthcheck.value),
         ("app.cron.profiling.findinguncollected", TaskConfigGroup.profiling.value),
-        ("app.tasks.archive.MigrateToArchive", TaskConfigGroup.archive.value),
-        ("app.tasks.verify_bot.VerifyBot", TaskConfigGroup.verify_bot.value),
         ("app.tasks.comment.Comment", TaskConfigGroup.comment.value),
         ("app.tasks.commit_update.CommitUpdate", TaskConfigGroup.commit_update.value),
         (
@@ -92,10 +87,6 @@ def test_celery_config():
         ("app.tasks.profiling.normalizer", TaskConfigGroup.profiling.value),
         ("app.tasks.profiling.summarization", TaskConfigGroup.profiling.value),
         ("app.tasks.pulls.Sync", TaskConfigGroup.pulls.value),
-        (
-            "app.tasks.remove_webhook.RemoveOldHook",
-            TaskConfigGroup.remove_webhook.value,
-        ),
         ("app.tasks.status.SetError", TaskConfigGroup.status.value),
         ("app.tasks.status.SetPending", TaskConfigGroup.status.value),
         ("app.tasks.sync_repos.SyncRepos", TaskConfigGroup.sync_repos.value),
@@ -108,7 +99,6 @@ def test_celery_config():
             TaskConfigGroup.sync_repo_languages_gql.value,
         ),
         ("app.tasks.sync_teams.SyncTeams", TaskConfigGroup.sync_teams.value),
-        ("app.tasks.synchronize.Synchronize", TaskConfigGroup.synchronize.value),
         ("app.tasks.timeseries.backfill", TaskConfigGroup.timeseries.value),
         ("app.tasks.timeseries.backfill_commits", TaskConfigGroup.timeseries.value),
         ("app.tasks.timeseries.backfill_dataset", TaskConfigGroup.timeseries.value),
