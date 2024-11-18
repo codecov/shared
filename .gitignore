@@ -135,9 +135,10 @@ dmypy.json
 cython_debug/
 
 # Editor junk
-.vscode/settings.json
 .*.sw?
 .idea/
+
+.ruff_cache/
 
 /target
 

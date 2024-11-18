@@ -6,10 +6,10 @@ export CODECOV_TOKEN=${CODECOV_UPLOAD_TOKEN}
 .ONESHELL:
 
 test:
-	docker compose exec shared python -m pytest --cov=./ 
+	docker compose exec shared uv run pytest --cov=./
 
 test.path:
-	docker compose exec shared python -m pytest $(TEST_PATH)
+	docker compose exec shared uv run pytest $(TEST_PATH)
 
 lint:
 	make lint.install
@@ -30,24 +30,20 @@ lint.check:
 	ruff format --check
 
 requirements.install:
-	python -m venv venv
-	. venv/bin/activate
-	pip install -r tests/requirements.txt
-	pip install -r requirements.txt
-	python setup.py develop
-	pip install codecov-cli==0.7.2
+	uv sync
+	. .venv/bin/activate
 
 test_env.install_cli:
-	pip install codecov-cli==0.7.2
+	pip install codecov-cli
 
 test_env.build:
-	docker-compose build
+	docker compose build
 
 test_env.up:
-	docker-compose up -d
+	docker compose up -d
 
 test_env.test:
-	docker-compose exec shared python -m pytest --cov=./ --junitxml=junit.xml
+	docker compose exec shared uv run pytest --cov=./ --junitxml=junit.xml
 
 test_env.down:
-	docker-compose down
+	docker compose down
