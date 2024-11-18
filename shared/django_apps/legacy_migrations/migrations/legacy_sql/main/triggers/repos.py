@@ -29,24 +29,6 @@ def run_sql(schema_editor):
         )
         execute procedure repo_yaml_update();
 
-
-        create or replace function repo_cache_state_update() returns trigger as $$
-        begin
-            -- update cache of number of repos
-            update owners o
-            set cache=update_json(cache, 'stats', update_json(cache->'stats', 'repos', (select count(*) from repos r where r.ownerid=o.ownerid and active)::int)),
-                updatestamp=now()
-            where ownerid=new.ownerid;
-            return null;
-        end;
-        $$ language plpgsql;
-
-        create trigger repo_cache_state_update after update on repos
-        for each row
-        when (new.active is distinct from old.active)
-        execute procedure repo_cache_state_update();
-
-
         create or replace function repos_before_insert_or_update() returns trigger as $$
         begin
             -- repo name changed or deleted
