@@ -178,10 +178,13 @@ def get_ownerid_if_member(
     It expects a service, owner username and owner id, and returns the id of an
     owner if the record exists.
     """
-    owner = Owner.objects.filter(
-        service=service.lower(),
-        username=owner_username,
-        organizations__contains=[owner_id],
-        private_access=True,
-    ).first()
-    return getattr(owner, "ownerid", None)
+    return (
+        Owner.objects.filter(
+            service=service.lower(),
+            username=owner_username,
+            organizations__contains=[owner_id],
+            private_access=True,
+        )
+        .values("ownerid")
+        .first()
+    )
