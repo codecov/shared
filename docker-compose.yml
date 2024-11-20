@@ -11,9 +11,10 @@ services:
       dockerfile: docker/Dockerfile
     tty: true
     depends_on:
-      - postgres
-      - timescale
       - minio
+      - postgres
+      - redis
+      - timescale
     volumes:
       - ./shared/:/app/shared
       - ./tests/:/app/tests
@@ -32,12 +33,12 @@ services:
           size: 1024M
 
   redis:
-    image: redis:7-alpine
+    image: redis:6-alpine
     volumes:
       - redis-volume:/data
 
   timescale:
-    image: timescale/timescaledb-ha:pg14-latest
+    image: timescale/timescaledb:latest-pg14
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
