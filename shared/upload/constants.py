@@ -228,6 +228,7 @@ class UploadErrorCode(StrEnum):
     FILE_NOT_IN_STORAGE = "file_not_in_storage"
     REPORT_EXPIRED = "report_expired"
     REPORT_EMPTY = "report_empty"
+    PROCESSING_TIMEOUT = "processing_timeout"
 
     # We don't want these - try to add error cases when they arise
     UNKNOWN_PROCESSING = "unknown_processing"
