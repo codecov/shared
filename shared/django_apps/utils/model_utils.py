@@ -188,4 +188,4 @@ def get_ownerid_if_member(
         .values("ownerid")
         .first()
     )
-    return getattr(owner, "ownerid", None)
+    return owner.get("ownerid") if owner else None
