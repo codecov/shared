@@ -32,7 +32,7 @@ dependencies = [
     "pyyaml>=6.0.2",
     "redis>=5.2.0",
     "requests>=2.32.3",
-    "sentry-sdk>=2.18.0",
+    "sentry-sdk==2.13.0",
     "sqlalchemy<2",
 ]
 
