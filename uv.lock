@@ -383,18 +383,6 @@ wheels = [
 ]
 
 [[package]]
-name = "ecdsa"
-version = "0.19.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "six" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/d0/ec8ac1de7accdcf18cfe468653ef00afd2f609faf67c423efbd02491051b/ecdsa-0.19.0.tar.gz", hash = "sha256:60eaad1199659900dd0af521ed462b793bbdf867432b3948e87416ae4caf6bf8", size = 197791 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/e7/ed3243b30d1bec41675b6394a1daae46349dc2b855cb83be846a5a918238/ecdsa-0.19.0-py2.py3-none-any.whl", hash = "sha256:2cea9b88407fdac7bbeca0833b189e4c9c53f2ef1e1eaa29f6224dbc809b707a", size = 149266 },
-]
-
-[[package]]
 name = "factory-boy"
 version = "3.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -678,18 +666,6 @@ wheels = [
 ]
 
 [[package]]
-name = "httplib2"
-version = "0.22.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pyparsing" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/3d/ad/2371116b22d616c194aa25ec410c9c6c37f23599dcd590502b74db197584/httplib2-0.22.0.tar.gz", hash = "sha256:d7a10bc5ef5ab08322488bde8c726eeee5c8618723fdb399597ec58f3d82df81", size = 351116 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/6c/d2fbdaaa5959339d53ba38e94c123e4e84b8fbc4b84beb0e70d7c1608486/httplib2-0.22.0-py3-none-any.whl", hash = "sha256:14ae0a53c1ba8f3d37e9e27cf37eabb0fb9980f435ba405d546948b009dd64dc", size = 96854 },
-]
-
-[[package]]
 name = "httpx"
 version = "0.27.2"
 source = { registry = "https://pypi.org/simple" }
@@ -915,18 +891,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/43/16/fc88b08840de0e0a72a2f9d8c6bae36be573e475a6326ae854bcc549fc45/nodeenv-1.9.1.tar.gz", hash = "sha256:6ec12890a2dab7946721edbfbcd91f3319c6ccc9aec47be7c7e6b7011ee6645f", size = 47437 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d2/1d/1b658dbd2b9fa9c4c9f32accbfc0205d532c8c6194dc0f2a4c0428e7128a/nodeenv-1.9.1-py2.py3-none-any.whl", hash = "sha256:ba11c9782d29c27c70ffbdda2d7415098754709be8a7056d79a737cd901155c9", size = 22314 },
-]
-
-[[package]]
-name = "oauth2"
-version = "1.9.0.post1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httplib2" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/64/19/8b9066e94088e8d06d649e10319349bfca961e87768a525aba4a2627c986/oauth2-1.9.0.post1.tar.gz", hash = "sha256:c006a85e7c60107c7cc6da1b184b5c719f6dd7202098196dfa6e55df669b59bf", size = 21306 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a0/6f/86db603912ecd04109af952c38bc08928886cf0e34c723481fa7db98b4b5/oauth2-1.9.0.post1-py2.py3-none-any.whl", hash = "sha256:15b5c42301f46dd63113f1214b0d81a8b16254f65a86d3c32a1b52297f3266e6", size = 25381 },
 ]
 
 [[package]]
@@ -1309,12 +1273,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pyutil"
-version = "3.3.6"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ea/3a/34d4b9005628e0a097f522dc88a22312875de62ce33c3b4dc674cc9ef23a/pyutil-3.3.6.tar.gz", hash = "sha256:5dc3d6bb9c5bababb5d0b773e094045d75712e8b34af2d29b0e28602668267c0", size = 137461 }
-
-[[package]]
 name = "pyyaml"
 version = "6.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1461,20 +1419,17 @@ dependencies = [
     { name = "ijson" },
     { name = "minio" },
     { name = "mmh3" },
-    { name = "oauth2" },
     { name = "oauthlib" },
     { name = "orjson" },
     { name = "prometheus-client" },
     { name = "pyjwt" },
     { name = "pyparsing" },
     { name = "python-redis-lock" },
-    { name = "pyutil" },
     { name = "pyyaml" },
     { name = "redis" },
     { name = "requests" },
     { name = "sentry-sdk" },
     { name = "sqlalchemy" },
-    { name = "tlslite-ng" },
 ]
 
 [package.dev-dependencies]
@@ -1517,20 +1472,17 @@ requires-dist = [
     { name = "ijson", specifier = ">=3.3.0" },
     { name = "minio", specifier = ">=7.2.10" },
     { name = "mmh3", specifier = ">=5.0.1" },
-    { name = "oauth2", specifier = ">=1.9.0.post1" },
     { name = "oauthlib", specifier = ">=3.2.2" },
     { name = "orjson", specifier = ">=3.10.11" },
     { name = "prometheus-client", specifier = ">=0.21.0" },
     { name = "pyjwt", specifier = ">=2.9.0" },
     { name = "pyparsing", specifier = ">=3.2.0" },
     { name = "python-redis-lock", specifier = ">=4.0.0" },
-    { name = "pyutil", specifier = ">=3.3.6" },
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "redis", specifier = ">=5.2.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "sentry-sdk", specifier = ">=2.18.0" },
     { name = "sqlalchemy", specifier = "<2" },
-    { name = "tlslite-ng", specifier = ">=0.8.0b1" },
 ]
 
 [package.metadata.requires-dev]
@@ -1595,15 +1547,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/73/82/dfa23ec2cbed08a80
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5d/a5/b2860373aa8de1e626b2bdfdd6df4355f0565b47e51f7d0c54fe70faf8fe/sqlparse-0.5.1-py3-none-any.whl", hash = "sha256:773dcbf9a5ab44a090f3441e2180efe2560220203dc2f8c0b0fa141e18b505e4", size = 44156 },
 ]
-
-[[package]]
-name = "tlslite-ng"
-version = "0.8.0b5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "ecdsa" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/04/d5/24677435948000c1d0d964076b51090685b8f89505b2d3340e0cc4b04cba/tlslite-ng-0.8.0b5.tar.gz", hash = "sha256:524c7d05d3e1ed56777dcc00029565c3820cbf18a3fc13e722d1988452dbc6ea", size = 1316206 }
 
 [[package]]
 name = "types-mock"
