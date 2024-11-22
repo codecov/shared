@@ -200,7 +200,7 @@ class ReportSession(
         indexes = [
             models.Index(
                 fields=["report_id", "upload_type", "order_number"],
-                name="reports_upload_order_number_upload_type_report_id_index",
+                name="upload_index_id_type_number",
             ),
         ]
 
