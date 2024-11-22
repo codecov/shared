@@ -1489,20 +1489,20 @@ requires-dist = [
 dev = [
     { name = "factory-boy", specifier = ">=3.2.0" },
     { name = "freezegun", specifier = ">=1.1.0" },
-    { name = "mock", specifier = ">=5.1.0" },
+    { name = "mock", specifier = ">=4.0.3" },
     { name = "mypy", specifier = ">=1.13.0" },
     { name = "pre-commit", specifier = ">=2.11.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.2" },
     { name = "pytest", specifier = ">=8.1.1" },
-    { name = "pytest-asyncio", specifier = ">=0.23.6" },
+    { name = "pytest-asyncio", specifier = ">=0.14.0" },
     { name = "pytest-cov", specifier = ">=5.0.0" },
-    { name = "pytest-django", specifier = ">=4.8.0" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "respx", specifier = ">=0.21.1" },
+    { name = "pytest-django", specifier = ">=4.7.0" },
+    { name = "pytest-mock", specifier = ">=1.13.0" },
+    { name = "respx", specifier = ">=0.20.2" },
     { name = "ruff", specifier = ">=0.7.3" },
     { name = "types-mock", specifier = ">=5.1.0.20240425" },
     { name = "urllib3", specifier = "==1.26.19" },
-    { name = "vcrpy", specifier = ">=6.0.1" },
+    { name = "vcrpy", specifier = ">=4.1.1" },
 ]
 
 [[package]]
