@@ -17,6 +17,5 @@ class Migration(migrations.Migration):
                 fields=["report_id", "upload_type", "order_number"],
                 name="reports_upload_order_number_upload_type_report_id_index",
             ),
-            reverse_sql=migrations.RunSQL.noop,
         ),
     ]
