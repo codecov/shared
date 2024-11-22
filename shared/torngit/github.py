@@ -1616,9 +1616,9 @@ class Github(TorngitBaseAdapter):
             res = await self.api(client, "post", url, body=body, token=token)
             return res
 
-    async def edit_comment(self, issueid, commentid, body, token=None):
+    async def edit_comment(self, issueid, commentid, body, token=None, allow_copilot_button = True):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = await self.build_comment_request_body(body, issueid)
+        body = await self.build_comment_request_body(body, issueid, allow_copilot_button)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
