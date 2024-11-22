@@ -197,6 +197,12 @@ class ReportSession(
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_upload"
+        indexes = [
+            models.Index(
+                fields=["report_id", "upload_type", "order_number"],
+                name="reports_upload_order_number_upload_type_report_id_index",
+            ),
+        ]
 
     @property
     def ci_url(self):
