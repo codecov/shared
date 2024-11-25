@@ -164,3 +164,28 @@ def rollout_universe_to_override_string(rollout_universe: RolloutUniverse):
         return "override_org_ids"
     else:
         return ""
+
+
+# This is the place for DB trigger logic that's been moved into code
+# Owner
+def get_ownerid_if_member(
+    service: str, owner_username: str, owner_id: int
+) -> Optional[int]:
+    from shared.django_apps.codecov_auth.models import Owner
+
+    """
+    This is a Python representation of the get_ownerid_if_member DB function.
+    It expects a service, owner username and owner id, and returns the id of an
+    owner if the record exists.
+    """
+    owner = (
+        Owner.objects.filter(
+            service=service.lower(),
+            username=owner_username,
+            organizations__contains=[owner_id],
+            private_access=True,
+        )
+        .values("ownerid")
+        .first()
+    )
+    return owner.get("ownerid") if owner else None
