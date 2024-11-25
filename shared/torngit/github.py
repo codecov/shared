@@ -608,30 +608,29 @@ class Github(TorngitBaseAdapter):
         return GITHUB_API_ENDPOINTS[url_name]["url_template"]
 
     async def build_comment_request_body(
-        self, body: dict, issueid: int | None = None, allow_copilot_button: bool = True
+        self, body: dict, issueid: int | None = None
     ) -> dict:
         body = dict(body=body)
-        if allow_copilot_button:
-            try:
-                ownerid = self.data["owner"].get("ownerid")
-                if (
-                    issueid is not None
-                    and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
-                        identifier=ownerid, default=False
-                    )
-                ):
-                    bot_name = get_config(
-                        "github", "comment_action_bot_name", default="sentry"
-                    )
-                    body["actions"] = [
-                        {
-                            "name": "Generate Unit Tests",
-                            "type": "copilot-chat",
-                            "prompt": f"@{bot_name} generate tests for this PR.",
-                        }
-                    ]
-            except Exception:
-                pass
+        try:
+            ownerid = self.data["owner"].get("ownerid")
+            if (
+                issueid is not None
+                and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
+                    identifier=ownerid, default=False
+                )
+            ):
+                bot_name = get_config(
+                    "github", "comment_action_bot_name", default="sentry"
+                )
+                body["actions"] = [
+                    {
+                        "name": "Generate Unit Tests",
+                        "type": "copilot-chat",
+                        "prompt": f"@{bot_name} generate tests for this PR.",
+                    }
+                ]
+        except Exception:
+            pass
 
         return body
 
@@ -1605,11 +1604,9 @@ class Github(TorngitBaseAdapter):
 
     # Comments
     # --------
-    async def post_comment(self, issueid, body, token=None, allow_copilot_button=True):
+    async def post_comment(self, issueid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = await self.build_comment_request_body(
-            body, issueid, allow_copilot_button
-        )
+        body = await self.build_comment_request_body(body, issueid)
         # https://developer.github.com/v3/issues/comments/#create-a-comment
         async with self.get_client() as client:
             url = self.count_and_get_url_template(url_name="post_comment").substitute(
@@ -1618,13 +1615,9 @@ class Github(TorngitBaseAdapter):
             res = await self.api(client, "post", url, body=body, token=token)
             return res
 
-    async def edit_comment(
-        self, issueid, commentid, body, token=None, allow_copilot_button=True
-    ):
+    async def edit_comment(self, issueid, commentid, body, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.comment)
-        body = await self.build_comment_request_body(
-            body, issueid, allow_copilot_button
-        )
+        body = await self.build_comment_request_body(body, issueid)
         # https://developer.github.com/v3/issues/comments/#edit-a-comment
         try:
             async with self.get_client() as client:
