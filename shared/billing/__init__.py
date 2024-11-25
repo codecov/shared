@@ -1,10 +1,7 @@
-import logging
 from enum import Enum
 
 from django.conf import settings
 from license import get_current_license
-
-log = logging.getLogger(__name__)
 
 
 class BillingPlan(Enum):
