@@ -1,3 +1,5 @@
+from django.test import override_settings
+
 from shared.billing import BillingPlan, is_enterprise_cloud_plan, is_pr_billing_plan
 
 
@@ -39,6 +41,7 @@ def test_is_enterprise_cloud_plan():
     assert is_enterprise_cloud_plan(BillingPlan.enterprise_cloud_monthly)
 
 
+@override_settings(IS_ENTERPRISE=True)
 def test_is_pr_billing_plan():
     assert is_pr_billing_plan(BillingPlan.pr_monthly)
     assert is_pr_billing_plan(BillingPlan.pr_yearly)
@@ -46,3 +49,13 @@ def test_is_pr_billing_plan():
     assert not is_pr_billing_plan(BillingPlan.enterprise_cloud_monthly)
     assert not is_pr_billing_plan(BillingPlan.team_monthly)
     assert not is_pr_billing_plan(BillingPlan.team_yearly)
+
+
+@override_settings(IS_ENTERPRISE=False)
+def test_is_pr_billing_plan_false():
+    assert not is_pr_billing_plan(BillingPlan.pr_monthly)
+    assert not is_pr_billing_plan(BillingPlan.pr_yearly)
+    assert is_pr_billing_plan(BillingPlan.users_free)
+    assert is_pr_billing_plan(BillingPlan.users_basic)
+    assert is_pr_billing_plan(BillingPlan.users_trial)
+    assert is_pr_billing_plan(BillingPlan.users_ghm)
