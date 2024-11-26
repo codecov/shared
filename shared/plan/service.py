@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+from shared.config import get_config
 from shared.django_apps.codecov.commands.exceptions import ValidationError
 from shared.django_apps.codecov_auth.models import Owner
 from shared.plan.constants import (
@@ -20,18 +21,14 @@ from shared.plan.constants import (
     TrialDaysAmount,
     TrialStatus,
 )
-
 from shared.self_hosted.service import enterprise_has_seats_left, license_seats
-from shared.config import get_config
 
 log = logging.getLogger(__name__)
 
 
 # This originally belongs to the sentry service in API but this is a temporary fn to avoid importing the whole service
 def is_sentry_user(owner: Owner) -> bool:
-    """
-    Returns true if the given owner has been linked with a Sentry user.
-    """
+    """Returns true if the given owner has been linked with a Sentry user."""
     return owner.sentry_user_id is not None
 
 
@@ -39,21 +36,21 @@ def is_sentry_user(owner: Owner) -> bool:
 class PlanService:
     def __init__(self, current_org: Owner):
         """
-        Initializes a plan service object with a plan. The plan will be a trial plan
-        if applicable
+        Initializes a PlanService object for a specific organization.
 
         Args:
-            current_org (Owner): this is selected organization entry. This is not the user that is sending the request.
+            current_org (Owner): The organization for which the plan service is being initialized.
 
-        Returns:
-            No value
+        Raises:
+            ValueError: If the organization's plan is unsupported.
         """
         self.current_org = current_org
         if self.current_org.plan not in USER_PLAN_REPRESENTATIONS:
             raise ValueError("Unsupported plan")
         self._plan_data = None
 
-    def update_plan(self, name, user_count: int | None) -> None:
+    def update_plan(self, name: str, user_count: Optional[int]) -> None:
+        """Updates the organization's plan and user count."""
         if name not in USER_PLAN_REPRESENTATIONS:
             raise ValueError("Unsupported plan")
         if not user_count:
@@ -68,6 +65,7 @@ class PlanService:
         return self.current_org
 
     def set_default_plan_data(self) -> None:
+        """Sets the organization to the default basic plan."""
         log.info(f"Setting plan to users-basic for owner {self.current_org.ownerid}")
         self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
         self.current_org.plan_activated_users = None
@@ -77,29 +75,33 @@ class PlanService:
 
     @property
     def has_account(self) -> bool:
-        return False if self.current_org.account is None else True
+        """Returns whether the organization has an associated account."""
+        return self.current_org.account is not None
 
     @property
     def plan_data(self) -> PlanData:
-        if self._plan_data is not None:
-            return self._plan_data
-
-        if self.has_account:
-            self._plan_data = USER_PLAN_REPRESENTATIONS[self.current_org.account.plan]
-        else:
-            self._plan_data = USER_PLAN_REPRESENTATIONS[self.current_org.plan]
+        """Returns the plan data for the organization, either from account or default."""
+        if self._plan_data is None:
+            self._plan_data = USER_PLAN_REPRESENTATIONS.get(
+                self.current_org.account.plan
+                if self.has_account
+                else self.current_org.plan
+            )
         return self._plan_data
 
     @plan_data.setter
-    def set_plan_data(self, plan_data: PlanData | None) -> None:
+    def plan_data(self, plan_data: Optional[PlanData]) -> None:
+        """Sets the plan data directly."""
         self._plan_data = plan_data
 
     @property
     def plan_name(self) -> str:
+        """Returns the name of the organization's current plan."""
         return self.plan_data.value
 
     @property
     def plan_user_count(self) -> int:
+        """Returns the number of users allowed by the organization's plan."""
         if get_config("setup", "enterprise_license"):
             return license_seats()
         if self.has_account:
@@ -108,26 +110,32 @@ class PlanService:
 
     @property
     def plan_activated_users(self) -> Optional[List[int]]:
+        """Returns the list of activated users for the plan."""
         return self.current_org.plan_activated_users
 
     @property
     def pretrial_users_count(self) -> int:
+        """Returns the number of pretrial users."""
         return self.current_org.pretrial_users_count or 1
 
     @property
     def marketing_name(self) -> str:
+        """Returns the marketing name of the plan."""
         return self.plan_data.marketing_name
 
     @property
     def billing_rate(self) -> Optional[str]:
+        """Returns the billing rate for the plan."""
         return self.plan_data.billing_rate
 
     @property
     def base_unit_price(self) -> int:
+        """Returns the base unit price for the plan."""
         return self.plan_data.base_unit_price
 
     @property
     def benefits(self) -> List[str]:
+        """Returns the benefits associated with the plan."""
         return self.plan_data.benefits
 
     @property
@@ -142,30 +150,21 @@ class PlanService:
 
     @property
     def tier_name(self) -> str:
+        """Returns the tier name of the plan."""
         return self.plan_data.tier_name
 
     def available_plans(self, owner: Owner) -> List[PlanData]:
-        """
-        Returns the available plans for an owner and an organization
-
-        Args:
-            current_owner (Owner): this is the user that is sending the request.
-
-        Returns:
-            No value
-        """
-        available_plans = []
-        available_plans.append(BASIC_PLAN)
+        """Returns the available plans for the owner and organization."""
+        available_plans = [BASIC_PLAN]
 
         if self.plan_name == FREE_PLAN.value:
             available_plans.append(FREE_PLAN)
 
         available_plans += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
 
-        if owner and is_sentry_user(owner=owner):
+        if is_sentry_user(owner):
             available_plans += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
 
-            # If number of activated users is less than or equal to TEAM_PLAN_MAX_USERS
         if (
             self.plan_activated_users is None
             or len(self.plan_activated_users) <= TEAM_PLAN_MAX_USERS
@@ -180,9 +179,9 @@ class PlanService:
         end_date: Optional[datetime] = None,
         is_extension: bool = False,
     ) -> None:
+        """Helper method to start or extend a trial for the organization."""
         start_date = datetime.now()
 
-        # When they are not extending a trial, have to setup all the default values
         if not is_extension:
             self.current_org.trial_start_date = start_date
             self.current_org.trial_status = TrialStatus.ONGOING.value
@@ -191,12 +190,11 @@ class PlanService:
             self.current_org.plan_user_count = TRIAL_PLAN_SEATS
             self.current_org.plan_auto_activate = True
 
-        if end_date is None:
-            self.current_org.trial_end_date = start_date + timedelta(
-                days=TrialDaysAmount.CODECOV_SENTRY.value
-            )
-        else:
-            self.current_org.trial_end_date = end_date
+        self.current_org.trial_end_date = (
+            end_date
+            if end_date
+            else start_date + timedelta(days=TrialDaysAmount.CODECOV_SENTRY.value)
+        )
         self.current_org.trial_fired_by = current_owner.ownerid
         self.current_org.save()
 
@@ -238,6 +236,7 @@ class PlanService:
             raise ValidationError("Cannot trial from a paid plan")
 
     def cancel_trial(self) -> None:
+        """Cancels the ongoing trial for the organization."""
         if not self.is_org_trialing:
             raise ValidationError("Cannot cancel a trial that is not ongoing")
         now = datetime.now()
@@ -269,18 +268,22 @@ class PlanService:
 
     @property
     def trial_status(self) -> TrialStatus:
+        """Returns the trial status of the organization."""
         return self.current_org.trial_status
 
     @property
     def trial_start_date(self) -> Optional[datetime]:
+        """Returns the trial start date."""
         return self.current_org.trial_start_date
 
     @property
     def trial_end_date(self) -> Optional[datetime]:
+        """Returns the trial end date."""
         return self.current_org.trial_end_date
 
     @property
     def trial_total_days(self) -> Optional[int]:
+        """Returns the total number of trial days."""
         return self.plan_data.trial_days
 
     @property

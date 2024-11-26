@@ -5,14 +5,13 @@ from typing import Optional
 from django.conf import settings
 from django.db import transaction
 from django.db.models import F, Func, Q, QuerySet
+
+from shared.config import get_config
+from shared.django_apps.codecov_auth.models import Owner
 from shared.license import get_current_license
 
-from shared.django_apps.codecov_auth.models import Owner
-from shared.exceptions import ServiceException
-from shared.config import get_config
 
-
-class LicenseException(ServiceException):
+class LicenseException(Exception):
     def __init__(self, message: str):
         self.message = message
         super().__init__(message)
