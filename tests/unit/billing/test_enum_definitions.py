@@ -1,4 +1,4 @@
-from shared.billing import BillingPlan, is_enterprise_cloud_plan
+from shared.billing import BillingPlan, is_enterprise_cloud_plan, is_pr_billing_plan
 
 
 def test_billing_enums():
@@ -10,6 +10,8 @@ def test_billing_enums():
     assert BillingPlan.pr_yearly.db_name == "users-pr-inappy"
     assert BillingPlan.enterprise_cloud_yearly.db_name == "users-enterprisey"
     assert BillingPlan.enterprise_cloud_monthly.db_name == "users-enterprisem"
+    assert BillingPlan.team_monthly.db_name == "users-teamm"
+    assert BillingPlan.team_yearly.db_name == "users-teamy"
 
 
 def test_get_from_string():
@@ -26,6 +28,8 @@ def test_get_from_string():
         BillingPlan.from_str("users-enterprisem")
         == BillingPlan.enterprise_cloud_monthly
     )
+    assert BillingPlan.from_str("users-teamm") == BillingPlan.team_monthly
+    assert BillingPlan.from_str("users-teamy") == BillingPlan.team_yearly
 
 
 def test_is_enterprise_cloud_plan():
@@ -33,3 +37,12 @@ def test_is_enterprise_cloud_plan():
     assert not is_enterprise_cloud_plan(BillingPlan.pr_yearly)
     assert is_enterprise_cloud_plan(BillingPlan.enterprise_cloud_yearly)
     assert is_enterprise_cloud_plan(BillingPlan.enterprise_cloud_monthly)
+
+
+def test_is_pr_billing_plan():
+    assert is_pr_billing_plan(BillingPlan.pr_monthly)
+    assert is_pr_billing_plan(BillingPlan.pr_yearly)
+    assert not is_pr_billing_plan(BillingPlan.enterprise_cloud_yearly)
+    assert not is_pr_billing_plan(BillingPlan.enterprise_cloud_monthly)
+    assert not is_pr_billing_plan(BillingPlan.team_monthly)
+    assert not is_pr_billing_plan(BillingPlan.team_yearly)

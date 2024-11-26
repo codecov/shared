@@ -1,7 +1,8 @@
 from enum import Enum
 
 from django.conf import settings
-from license import get_current_license
+
+from shared.license import get_current_license
 
 
 class BillingPlan(Enum):
