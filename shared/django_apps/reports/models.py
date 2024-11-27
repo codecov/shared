@@ -301,7 +301,7 @@ class TestInstance(BaseCodecovModel):
         ERROR = "error"
         PASS = "pass"
 
-    duration_seconds = models.FloatField()
+    duration_seconds = models.FloatField(null=True)
     outcome = models.CharField(max_length=100, choices=Outcome.choices)
     upload = models.ForeignKey(
         "ReportSession",
