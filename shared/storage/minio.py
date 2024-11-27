@@ -7,8 +7,6 @@ import tempfile
 from io import BytesIO
 from typing import BinaryIO, Protocol, overload
 
-import sentry_sdk
-import sentry_sdk.scope
 import zstandard
 from minio import Minio
 from minio.credentials import (
@@ -172,25 +170,10 @@ class MinioStorageService(BaseStorageService):
         compression_type: str = "zstd",
     ):
         if is_already_gzipped:
-            log.warning(
-                "is_already_gzipped is deprecated and will be removed in a future version, instead compress using zstd and use the is_already_zstd_compressed argument"
-            )
-            with sentry_sdk.new_scope() as scope:
-                scope.set_extra("bucket_name", bucket_name)
-                scope.set_extra("path", path)
-                sentry_sdk.capture_message("is_already_gzipped passed with True")
             is_compressed = True
             compression_type = "gzip"
 
         if isinstance(data, str):
-            log.warning(
-                "passing data as a str to write_file is deprecated and will be removed in a future version, instead pass an object compliant with the BinaryIO type"
-            )
-            with sentry_sdk.new_scope() as scope:
-                scope.set_extra("bucket_name", bucket_name)
-                scope.set_extra("path", path)
-                sentry_sdk.capture_message("write_file data argument passed as str")
-
             data = BytesIO(data.encode())
 
         if not is_compressed:
@@ -242,43 +225,24 @@ class MinioStorageService(BaseStorageService):
     def read_file(self, bucket_name: str, path: str, file_obj: str) -> None: ...
 
     def read_file(self, bucket_name, path, file_obj=None) -> bytes | None:
+        response = None
         try:
             headers = {"Accept-Encoding": "gzip, zstd"}
-            if file_obj:
-                _, tmpfilepath = tempfile.mkstemp()
-                to_file_response: GetObjectToFileResponse = (
-                    self.minio_client.fget_object(
-                        bucket_name, path, tmpfilepath, request_headers=headers
-                    )
-                )
-                data = open(tmpfilepath, "rb")
-                content_encoding = to_file_response.metadata.get(
-                    "Content-Encoding", None
-                )
-            else:
-                response: HTTPResponse = self.minio_client.get_object(
-                    bucket_name, path, request_headers=headers
-                )
-                data = response
-                content_encoding = response.headers.get("Content-Encoding", None)
+            response: HTTPResponse = self.minio_client.get_object(
+                bucket_name, path, request_headers=headers
+            )
 
+            content_encoding = response.headers.get("Content-Encoding", None)
             reader: Readable | None = None
-            if content_encoding == "gzip":
-                # HTTPResponse automatically decodes gzipped data for us
-                # minio_client.fget_object uses HTTPResponse under the hood,
-                # so this applies to both get_object and fget_object
-                reader = data
-            elif content_encoding == "zstd":
+            if content_encoding == "zstd":
                 # we have to manually decompress zstandard compressed data
                 cctx = zstandard.ZstdDecompressor()
-                reader = cctx.stream_reader(data)
+                reader = cctx.stream_reader(response)
             else:
-                with sentry_sdk.new_scope() as scope:
-                    scope.set_extra("bucket_name", bucket_name)
-                    scope.set_extra("path", path)
-                    raise ValueError("Blob does not have Content-Encoding set")
+                reader = response
 
             if file_obj:
+                file_obj.seek(0)
                 while chunk := reader.read(16384):
                     file_obj.write(chunk)
                 return None
@@ -296,9 +260,9 @@ class MinioStorageService(BaseStorageService):
         except MinioException:
             raise
         finally:
-            if file_obj:
-                data.close()
-                os.unlink(tmpfilepath)
+            if response:
+                response.close()
+                response.release_conn()
 
     """
         Deletes file url in specified bucket.

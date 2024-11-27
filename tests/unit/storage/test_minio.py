@@ -115,6 +115,32 @@ def test_write_then_read_file_obj():
         assert f.read().decode() == data
 
 
+def test_write_then_read_file_obj_x_gzip():
+    storage = make_storage()
+    path = f"test_write_then_read_file_obj_x_gzip/{uuid4().hex}"
+    compressed = gzip.compress("lorem ipsum dolor test_write_then_read_file á".encode())
+    outsize = len(compressed)
+    data = BytesIO(compressed)
+
+    ensure_bucket(storage)
+
+    headers = {"Content-Encoding": "gzip"}
+    storage.minio_client.put_object(
+        BUCKET_NAME,
+        path,
+        data,
+        content_type="application/x-gzip",
+        metadata=headers,
+        length=outsize,
+    )
+
+    _, local_path = tempfile.mkstemp()
+    with open(local_path, "wb") as f:
+        storage.read_file(BUCKET_NAME, path, file_obj=f)
+    with open(local_path, "rb") as f:
+        assert f.read().decode() == "lorem ipsum dolor test_write_then_read_file á"
+
+
 def test_write_then_read_file_obj_already_gzipped():
     storage = make_storage()
     path = f"test_write_then_read_file_obj_already_gzipped/{uuid4().hex}"

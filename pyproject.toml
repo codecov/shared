@@ -34,7 +34,7 @@ dependencies = [
     "requests>=2.32.3",
     "sentry-sdk>=2.18.0",
     "sqlalchemy<2",
-    "zstandard==0.23.0",
+    "zstandard>=0.23.0",
 ]
 
 [build-system]
