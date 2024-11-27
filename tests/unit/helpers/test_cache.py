@@ -1,3 +1,5 @@
+import unittest
+
 import pytest
 from redis.exceptions import TimeoutError
 
@@ -67,28 +69,37 @@ class FakeRedisWithIssues(object):
         raise TimeoutError()
 
 
-class TestRedisBackend(object):
+class TestRedisBackend(unittest.TestCase):
     def test_simple_redis_call(self):
         redis_backend = RedisBackend(FakeRedis())
         assert redis_backend.get("normal_key") == NO_VALUE
-        redis_backend.set("normal_key", 120, {"value_1": set("ascdefgh"), 1: [1, 3]})
+        value_1 = list(set("ascdefgh"))
+        redis_backend.set("normal_key", 120, {"value_1": value_1, "1": [1, 3]})
         assert redis_backend.get("normal_key") == {
-            "value_1": set("ascdefgh"),
-            1: [1, 3],
+            "value_1": value_1,
+            "1": [1, 3],
         }
-
-    def test_simple_redis_call_invalid_pickle_version(self):
-        redis_instance = FakeRedis()
-        # PICKLE HERE WILL BE SET TO VERSION 9 (\x09 in the second byte of the value)
-        # IF THIS STOPS FAILING WITH ValueError, CHANGE THE SECOND BYTE TO SOMETHING HIGHER
-        redis_instance.setex("key", 120, b"\x80\x09X\x05\x00\x00\x00valueq\x00.")
-        redis_backend = RedisBackend(redis_instance)
-        assert redis_backend.get("key") == NO_VALUE
 
     def test_simple_redis_call_exception(self):
         redis_backend = RedisBackend(FakeRedisWithIssues())
         assert redis_backend.get("normal_key") == NO_VALUE
-        redis_backend.set("normal_key", 120, {"value_1": set("ascdefgh"), 1: [1, 3]})
+        redis_backend.set(
+            "normal_key", 120, {"value_1": list(set("ascdefgh")), "1": [1, 3]}
+        )
+        assert redis_backend.get("normal_key") == NO_VALUE
+
+    def test_simple_redis_call_not_json_serializable(self):
+        redis_backend = RedisBackend(FakeRedis())
+
+        unserializable = set("abcdefg")
+        redis_backend.set("normal_key", 120, unserializable)
+        assert redis_backend.get("normal_key") == NO_VALUE
+
+    def test_simple_redis_call_dict_with_int_keys(self):
+        redis_backend = RedisBackend(FakeRedis())
+
+        d = {"abcde": {1: [1, 2, 3], 2: [4, 5, 6]}}
+        redis_backend.set("normal_key", 120, d)
         assert redis_backend.get("normal_key") == NO_VALUE
 
 

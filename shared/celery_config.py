@@ -47,11 +47,11 @@ sync_test_results_task_name = (
 )
 
 cache_test_rollups_task_name = (
-    f"app.tasks.{TaskConfigGroup.test_results.value}.CacheTestRollupsTask"
+    f"app.tasks.{TaskConfigGroup.cache_rollup.value}.CacheTestRollupsTask"
 )
 
 cache_test_rollups_redis_task_name = (
-    f"app.tasks.{TaskConfigGroup.test_results.value}.CacheTestRollupsRedisTask"
+    f"app.tasks.{TaskConfigGroup.cache_rollup.value}.CacheTestRollupsRedisTask"
 )
 
 process_flakes_task_name = f"app.tasks.{TaskConfigGroup.flakes.value}.ProcessFlakesTask"
@@ -59,16 +59,10 @@ process_flakes_task_name = f"app.tasks.{TaskConfigGroup.flakes.value}.ProcessFla
 manual_upload_completion_trigger_task_name = (
     f"app.tasks.{TaskConfigGroup.upload.value}.ManualUploadCompletionTrigger"
 )
-archive_task_name = f"app.tasks.{TaskConfigGroup.archive.value}.MigrateToArchive"
-bot_task_name = f"app.tasks.{TaskConfigGroup.verify_bot.value}.VerifyBot"
 comment_task_name = f"app.tasks.{TaskConfigGroup.comment.value}.Comment"
 flush_repo_task_name = f"app.tasks.{TaskConfigGroup.flush_repo.value}.FlushRepo"
 ghm_sync_plans_task_name = f"app.tasks.{TaskConfigGroup.sync_plans.value}.SyncPlans"
 send_email_task_name = f"app.tasks.{TaskConfigGroup.send_email.value}.SendEmail"
-remove_webhook_task_name = (
-    f"app.tasks.{TaskConfigGroup.remove_webhook.value}.RemoveOldHook"
-)
-synchronize_task_name = f"app.tasks.{TaskConfigGroup.synchronize.value}.Synchronize"
 new_user_activated_task_name = (
     f"app.tasks.{TaskConfigGroup.new_user_activated.value}.NewUserActivated"
 )
@@ -355,20 +349,20 @@ class BaseCeleryConfig(object):
                 default=task_default_queue,
             )
         },
+        f"app.tasks.{TaskConfigGroup.cache_rollup.value}.*": {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.cache_rollup.value,
+                "queue",
+                default=task_default_queue,
+            )
+        },
         f"app.tasks.{TaskConfigGroup.archive.value}.*": {
             "queue": get_config(
                 "setup",
                 "tasks",
                 TaskConfigGroup.archive.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        bot_task_name: {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.verify_bot.value,
                 "queue",
                 default=task_default_queue,
             )
@@ -396,24 +390,6 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.sync_plans.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        remove_webhook_task_name: {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.remove_webhook.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        synchronize_task_name: {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.synchronize.value,
                 "queue",
                 default=task_default_queue,
             )

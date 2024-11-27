@@ -360,7 +360,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     onboarding_completed = models.BooleanField(default=False)
     is_superuser = models.BooleanField(null=True, default=False)
     max_upload_limit = models.IntegerField(null=True, default=150, blank=True)
-    upload_token_required_for_public_repos = models.BooleanField(default=True)
+    upload_token_required_for_public_repos = models.BooleanField(default=False)
 
     sentry_user_id = models.TextField(null=True, blank=True, unique=True)
     sentry_user_data = models.JSONField(null=True)
