@@ -115,6 +115,50 @@ def test_write_then_read_file_obj():
         assert f.read().decode() == data
 
 
+def test_write_then_read_file_obj_gzip():
+    storage = make_storage()
+    path = f"test_write_then_read_file_gzip/{uuid4().hex}"
+    data = "lorem ipsum dolor test_write_then_read_file á"
+
+    ensure_bucket(storage)
+
+    _, local_path = tempfile.mkstemp()
+    with open(local_path, "w") as f:
+        f.write(data)
+    with open(local_path, "rb") as f:
+        writing_result = storage.write_file(
+            BUCKET_NAME, path, f, compression_type="gzip"
+        )
+    assert writing_result
+
+    _, local_path = tempfile.mkstemp()
+    with open(local_path, "wb") as f:
+        storage.read_file(BUCKET_NAME, path, file_obj=f)
+    with open(local_path, "rb") as f:
+        assert f.read().decode() == data
+
+
+def test_write_then_read_file_obj_no_compression():
+    storage = make_storage()
+    path = f"test_write_then_read_file_no_compression/{uuid4().hex}"
+    data = "lorem ipsum dolor test_write_then_read_file á"
+
+    ensure_bucket(storage)
+
+    _, local_path = tempfile.mkstemp()
+    with open(local_path, "w") as f:
+        f.write(data)
+    with open(local_path, "rb") as f:
+        writing_result = storage.write_file(BUCKET_NAME, path, f, compression_type=None)
+    assert writing_result
+
+    _, local_path = tempfile.mkstemp()
+    with open(local_path, "wb") as f:
+        storage.read_file(BUCKET_NAME, path, file_obj=f)
+    with open(local_path, "rb") as f:
+        assert f.read().decode() == data
+
+
 def test_write_then_read_file_obj_x_gzip():
     storage = make_storage()
     path = f"test_write_then_read_file_obj_x_gzip/{uuid4().hex}"

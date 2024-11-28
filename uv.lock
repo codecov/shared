@@ -1484,7 +1484,7 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.3" },
     { name = "sentry-sdk", specifier = ">=2.18.0" },
     { name = "sqlalchemy", specifier = "<2" },
-    { name = "zstandard", specifier = "==0.23.0" },
+    { name = "zstandard", specifier = ">=0.23.0" },
 ]
 
 [package.metadata.requires-dev]
