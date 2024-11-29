@@ -28,6 +28,7 @@ from shared.bundle_analysis.models import (
     get_db_session,
 )
 from shared.bundle_analysis.parser import Parser
+from shared.bundle_analysis.utils import AssetRoute, AssetRoutePluginName
 
 log = logging.getLogger(__name__)
 
@@ -37,16 +38,16 @@ class ModuleReport:
     Report wrapper around a single module (many of which can exist in a single Asset via Chunks)
     """
 
-    def __init__(self, db_path: str, module: Module):
+    def __init__(self, db_path: str, module: Module) -> None:
         self.db_path = db_path
         self.module = module
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.module.name
 
     @property
-    def size(self):
+    def size(self) -> int:
         return self.module.size
 
 
@@ -55,39 +56,40 @@ class AssetReport:
     Report wrapper around a single asset (many of which can exist in a single bundle).
     """
 
-    def __init__(self, db_path: str, asset: Asset):
+    def __init__(self, db_path: str, asset: Asset, bundle_info: dict = {}) -> None:
         self.db_path = db_path
         self.asset = asset
+        self.bundle_info = bundle_info
 
     @property
-    def id(self):
+    def id(self) -> int:
         return self.asset.id
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.asset.normalized_name
 
     @property
-    def hashed_name(self):
+    def hashed_name(self) -> str:
         return self.asset.name
 
     @property
-    def size(self):
+    def size(self) -> int:
         return self.asset.size
 
     @property
-    def gzip_size(self):
+    def gzip_size(self) -> int:
         return self.asset.gzip_size
 
     @property
-    def uuid(self):
+    def uuid(self) -> str:
         return self.asset.uuid
 
     @property
-    def asset_type(self):
+    def asset_type(self) -> AssetType:
         return self.asset.asset_type
 
-    def modules(self):
+    def modules(self) -> List[ModuleReport]:
         with get_db_session(self.db_path) as session:
             modules = (
                 session.query(Module)
@@ -97,6 +99,20 @@ class AssetReport:
                 .all()
             )
             return [ModuleReport(self.db_path, module) for module in modules]
+
+    def routes(self) -> Optional[List[str]]:
+        plugin_name = self.bundle_info.get("plugin_name")
+        if plugin_name not in [item.value for item in AssetRoutePluginName]:
+            return None
+
+        asset_route_compute = AssetRoute(AssetRoutePluginName(plugin_name))
+        module_names, routes = [m.name for m in self.modules()], set()
+        for module_name in module_names:
+            route = asset_route_compute.get_from_filename(module_name)
+            if route is not None:
+                routes.add(route)
+
+        return list(routes)
 
 
 class BundleReport:
@@ -131,6 +147,12 @@ class BundleReport:
         return query
 
     @sentry_sdk.trace
+    def asset_report_by_name(self, name: str) -> Optional[AssetReport]:
+        with get_db_session(self.db_path) as session:
+            asset = session.query(Asset).filter(Asset.name == name).one_or_none()
+            return AssetReport(self.db_path, asset, self.info()) if asset else None
+
+    @sentry_sdk.trace
     def asset_reports(
         self,
         asset_types: Optional[List[AssetType]] = None,
@@ -153,7 +175,9 @@ class BundleReport:
                 chunk_entry,
                 chunk_initial,
             ).order_by(ordering(getattr(Asset, ordering_column)))
-            return (AssetReport(self.db_path, asset) for asset in assets.all())
+            return (
+                AssetReport(self.db_path, asset, self.info()) for asset in assets.all()
+            )
 
     def total_size(
         self,
