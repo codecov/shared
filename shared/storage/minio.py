@@ -49,12 +49,12 @@ class MinioStorageService(BaseStorageService):
         self,
         host: str,
         port: str,
-        access_key: str = None,
-        secret_key: str = None,
+        access_key: str | None = None,
+        secret_key: str | None = None,
         verify_ssl: bool = False,
         iam_auth: bool = False,
-        iam_endpoint: str = None,
-        region: str = None,
+        iam_endpoint: str | None = None,
+        region: str | None = None,
     ):
         """
             Initialize the minio client
@@ -153,6 +153,7 @@ class MinioStorageService(BaseStorageService):
         if isinstance(data, str):
             data = data.encode()
 
+        out: BinaryIO
         if isinstance(data, bytes):
             if not is_already_gzipped:
                 out = BytesIO()
@@ -202,7 +203,9 @@ class MinioStorageService(BaseStorageService):
     @overload
     def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
 
-    def read_file(self, bucket_name, path, file_obj=None) -> bytes | None:
+    def read_file(
+        self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
+    ) -> bytes | None:
         try:
             res = self.minio_client.get_object(bucket_name, path)
             if file_obj is None:
@@ -214,6 +217,7 @@ class MinioStorageService(BaseStorageService):
             else:
                 for d in res.stream(CHUNK_SIZE):
                     file_obj.write(d)
+                return None
         except S3Error as e:
             if e.code == "NoSuchKey":
                 raise FileNotInStorageError(

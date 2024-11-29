@@ -1,3 +1,5 @@
+from typing import BinaryIO, overload
+
 CHUNK_SIZE = 1024 * 32
 
 
@@ -46,7 +48,15 @@ class BaseStorageService(object):
         """
         raise NotImplementedError()
 
-    def read_file(self, bucket_name, path, file_obj=None):
+    @overload
+    def read_file(self, bucket_name: str, path: str) -> bytes: ...
+
+    @overload
+    def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
+
+    def read_file(
+        self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
+    ) -> bytes | None:
         """Reads the content of a file
 
         Args:
