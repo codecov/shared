@@ -112,6 +112,10 @@ class Feature:
         self.feature_flag = feature_flag
         self.ff_variants = ff_variants
 
+        # Force the feature to be created in the database when it is initialized
+        # and not just when `check_value()` is called.
+        self._fetch_and_set_from_db()
+
         # See if this environment has disabled feature flagging entirely.
         # These environments will always get default values.
         self.env_disable = os.getenv("CODECOV__FEATURE__DISABLE") is not None
