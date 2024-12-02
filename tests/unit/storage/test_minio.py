@@ -7,9 +7,25 @@ import pytest
 import zstandard
 
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
-from shared.storage.minio import MinioStorageService
+from shared.storage.minio import MinioStorageService, zstd_decoded_by_default
 
 BUCKET_NAME = "archivetest"
+
+
+def test_zstd_by_default():
+    assert not zstd_decoded_by_default()
+
+
+def test_gzip_stream_compression():
+    data = "lorem ipsum dolor test_write_then_read_file á"
+
+    split_data = [data[i : i + 5] for i in range(0, len(data), 5)]
+
+    compressed_pieces: list[bytes] = [
+        gzip.compress(piece.encode()) for piece in split_data
+    ]
+
+    assert gzip.decompress(b"".join(compressed_pieces)) == data.encode()
 
 
 def make_storage() -> MinioStorageService:

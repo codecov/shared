@@ -1,4 +1,5 @@
 import gzip
+import importlib.metadata
 import json
 import logging
 import sys
@@ -37,9 +38,29 @@ class GZipStreamReader:
         return gzip.compress(curr_data)
 
 
+def zstd_decoded_by_default() -> bool:
+    try:
+        version = importlib.metadata.version("urllib3")
+    except importlib.metadata.PackageNotFoundError:
+        return False
+
+    if version < "2.0.0":
+        return False
+
+    distribution = importlib.metadata.metadata("urllib3")
+    if requires_dist := distribution.get_all("Requires-Dist"):
+        for req in requires_dist:
+            if "[zstd]" in req:
+                return True
+
+    return False
+
+
 # Service class for interfacing with codecov's underlying storage layer, minio
 class MinioStorageService(BaseStorageService):
     def __init__(self, minio_config):
+        self.zstd_default = zstd_decoded_by_default()
+
         self.minio_config = minio_config
         log.debug("Connecting to minio with config %s", self.minio_config)
 
@@ -242,7 +263,7 @@ class MinioStorageService(BaseStorageService):
             raise e
         if response.headers:
             content_encoding = response.headers.get("Content-Encoding", None)
-            if content_encoding == "zstd":
+            if not self.zstd_default and content_encoding == "zstd":
                 # we have to manually decompress zstandard compressed data
                 cctx = zstandard.ZstdDecompressor()
                 # if the object passed to this has a read method then that's
