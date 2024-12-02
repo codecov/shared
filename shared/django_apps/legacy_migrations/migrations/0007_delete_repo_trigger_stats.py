@@ -7,7 +7,7 @@ from shared.django_apps.migration_utils import RiskyRunSQL
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("legacy_migrations", "0005_delete_branch_update_db_trigger"),
+        ("legacy_migrations", "0006_delete_many_owner_triggers"),
     ]
 
     operations = [
@@ -15,6 +15,8 @@ class Migration(migrations.Migration):
             """
             DROP TRIGGER IF EXISTS repo_cache_state_update ON repos;
             DROP FUNCTION IF EXISTS repo_cache_state_update();
+            DROP TRIGGER IF EXISTS repo_yaml_update ON repos;
+            DROP FUNCTION IF EXISTS repo_yaml_update();
             """,
             reverse_sql=migrations.RunSQL.noop,
         )
