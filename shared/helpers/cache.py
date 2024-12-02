@@ -18,7 +18,7 @@ DEFAULT_TTL = 120
 def attempt_json_dumps(value: Any) -> str:
     def assert_string_keys(d: dict[Any, Any]) -> None:
         for k, v in d.items():
-            if type(k) is not str:
+            if not isinstance(k, str):
                 raise TypeError(
                     f"Attempted to JSON-serialize a dictionary with non-string key: {k}"
                 )

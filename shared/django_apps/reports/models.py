@@ -197,6 +197,12 @@ class ReportSession(
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_upload"
+        indexes = [
+            models.Index(
+                fields=["report_id", "upload_type", "order_number"],
+                name="upload_index_id_type_number",
+            ),
+        ]
 
     @property
     def ci_url(self):
@@ -295,7 +301,7 @@ class TestInstance(BaseCodecovModel):
         ERROR = "error"
         PASS = "pass"
 
-    duration_seconds = models.FloatField()
+    duration_seconds = models.FloatField(null=True)
     outcome = models.CharField(max_length=100, choices=Outcome.choices)
     upload = models.ForeignKey(
         "ReportSession",

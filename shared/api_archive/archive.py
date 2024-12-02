@@ -3,11 +3,8 @@ import logging
 from base64 import b16encode
 from enum import Enum
 from hashlib import md5
-from uuid import uuid4
 
 import sentry_sdk
-from django.conf import settings
-from django.utils import timezone
 
 from shared.api_archive.storage import StorageService
 from shared.config import get_config
@@ -16,7 +13,7 @@ from shared.utils.ReportEncoder import ReportEncoder
 log = logging.getLogger(__name__)
 
 
-# TODO deduplicate this logic from worker, api, shared
+# TODO deduplicate this logic from worker and shared
 class MinioEndpoints(Enum):
     chunks = "{version}/repos/{repo_hash}/commits/{commitid}/chunks.txt"
     json_data = "{version}/repos/{repo_hash}/commits/{commitid}/json_data/{table}/{field}/{external_id}.json"
@@ -33,61 +30,44 @@ class MinioEndpoints(Enum):
     static_analysis_single_file = (
         "{version}/repos/{repo_hash}/static_analysis/files/{location}"
     )
-
     test_results = "test_results/v1/raw/{date}/{repo_hash}/{commit_sha}/{uploadid}.txt"
 
     def get_path(self, **kwaargs):
         return self.value.format(**kwaargs)
 
 
-# Service class for performing archive operations. Meant to work against the
-# underlying StorageService
 class ArchiveService(object):
     """
-    The root level of the archive. In s3 terms,
-    this would be the name of the bucket
+    Service class for performing archive operations.
+    Meant to work against the underlying `StorageService`.
     """
 
-    root = None
-
+    root: str
     """
-    Region where the storage is located.
+    The root level of the archive.
+    In s3 terms, this would be the name of the bucket
     """
-    region = None
 
+    storage_hash: str
     """
     A hash key of the repo for internal storage
     """
-    storage_hash = None
 
+    ttl = 10
     """
     Time to life, how long presigned PUTs/GETs should live
     """
-    ttl = 10
 
     def __init__(self, repository, ttl=None):
         self.root = get_config("services", "minio", "bucket", default="archive")
-        self.region = get_config("services", "minio", "region", default="us-east-1")
         # Set TTL from config and default to existing value
         self.ttl = ttl or int(get_config("services", "minio", "ttl", default=self.ttl))
+
         self.storage = StorageService()
         self.storage_hash = self.get_archive_hash(repository)
 
-    def storage_client(self):
-        """
-        Accessor for underlying StorageService. You typically shouldn't need
-        this for anything.
-        """
-        return self.storage
-
-    def is_enterprise(self):
-        """
-        Getter. Returns true if the current configuration is enterprise.
-        """
-        return settings.IS_ENTERPRISE
-
     @classmethod
-    def get_archive_hash(cls, repository):
+    def get_archive_hash(cls, repository) -> str:
         """
         Generates a hash key from repo specific information.
         Provides slight obfuscation of data in minio storage
@@ -142,7 +122,9 @@ class ArchiveService(object):
         return path
 
     @sentry_sdk.trace
-    def write_file(self, path, data, reduced_redundancy=False, gzipped=False):
+    def write_file(
+        self, path, data, reduced_redundancy=False, is_already_gzipped=False
+    ):
         """
         Writes a generic file to the archive -- it's typically recommended to
         not use this in lieu of the convenience methods write_raw_upload and
@@ -153,40 +135,8 @@ class ArchiveService(object):
             path,
             data,
             reduced_redundancy=reduced_redundancy,
-            gzipped=gzipped,
+            is_already_gzipped=is_already_gzipped,
         )
-
-    def write_raw_upload(self, commit_sha, report_id, data, gzipped=False):
-        """
-        Convenience write method, writes a raw upload to a destination.
-        Returns the path it writes.
-        """
-        # create a custom report path for a raw upload.
-        # write the file.
-        path = "/".join(
-            (
-                "v4/raw",
-                timezone.now().strftime("%Y-%m-%d"),
-                self.storage_hash,
-                commit_sha,
-                "%s.txt" % report_id,
-            )
-        )
-
-        self.write_file(path, data, gzipped=gzipped)
-
-        return path
-
-    def write_chunks(self, commit_sha, data):
-        """
-        Convenience method to write a chunks.txt file to storage.
-        """
-        path = MinioEndpoints.chunks.get_path(
-            version="v4", repo_hash=self.storage_hash, commitid=commit_sha
-        )
-
-        self.write_file(path, data)
-        return path
 
     @sentry_sdk.trace
     def read_file(self, path: str) -> str:
@@ -203,15 +153,6 @@ class ArchiveService(object):
         """
         self.storage.delete_file(self.root, path)
 
-    def delete_repo_files(self):
-        """
-        Deletes an entire repository's contents
-        """
-        path = "v4/repos/{}".format(self.storage_hash)
-        objects = self.storage.list_folder_contents(self.root, path)
-        for obj in objects:
-            self.storage.delete_file(self.root, obj.object_name)
-
     def read_chunks(self, commit_sha: str) -> str:
         """
         Convenience method to read a chunks file from the archive.
@@ -219,34 +160,7 @@ class ArchiveService(object):
         path = MinioEndpoints.chunks.get_path(
             version="v4", repo_hash=self.storage_hash, commitid=commit_sha
         )
-        log.info("Downloading chunks from path %s for commit %s", path, commit_sha)
         return self.read_file(path)
-
-    def delete_chunk_from_archive(self, commit_sha: str):
-        """
-        Delete a chunk file from the archive
-        """
-        path = "v4/repos/{}/commits/{}/chunks.txt".format(self.storage_hash, commit_sha)
-
-        self.delete_file(path)
 
     def create_presigned_put(self, path):
         return self.storage.create_presigned_put(self.root, path, self.ttl)
-
-    def create_raw_upload_presigned_put(
-        self, commit_sha, repo_hash=None, filename=None, expires=None
-    ):
-        if repo_hash is None:
-            repo_hash = self.storage_hash
-
-        if not filename:
-            filename = "{}.txt".format(uuid4())
-
-        path = "v4/raw/{}/{}/{}/{}".format(
-            timezone.now().strftime("%Y-%m-%d"), self.storage_hash, commit_sha, filename
-        )
-
-        if expires is None:
-            expires = self.ttl
-
-        return self.storage.create_presigned_put(self.root, path, expires)

@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Tuple
+from unittest import TestCase
 from unittest.mock import patch
 
 import pytest
@@ -45,6 +46,12 @@ sample_bundle_stats_path_5 = (
     / "sample_bundle_stats_another_bundle.json"
 )
 
+sample_bundle_stats_path_6 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_asset_routes.json"
+)
+
 
 def _table_rows_count(db_session: DbSession) -> Tuple[int]:
     return (
@@ -73,6 +80,23 @@ def test_create_bundle_report():
         bundle_report = report.bundle_report("invalid")
         assert bundle_report is None
         bundle_report = report.bundle_report("sample")
+
+        # Find an asset by its name
+        asset_report_by_name = bundle_report.asset_report_by_name(
+            "assets/index-666d2e09.js"
+        )
+        assert asset_report_by_name.name == "assets/index-*.js"
+        assert asset_report_by_name.hashed_name == "assets/index-666d2e09.js"
+        assert asset_report_by_name.size == 144577
+        assert asset_report_by_name.gzip_size == 144576
+        assert len(asset_report_by_name.modules()) == 28
+        assert asset_report_by_name.asset_type == AssetType.JAVASCRIPT
+
+        # Find a non existent asset by its name
+        asset_report_by_name = bundle_report.asset_report_by_name(
+            "assets/doesnotexist.js"
+        )
+        assert asset_report_by_name is None
 
         asset_reports = list(bundle_report.asset_reports())
 
@@ -271,6 +295,83 @@ def test_bundle_report_asset_ordering():
             ("assets/index-*.css", 1421),
             ("assets/react-*.svg", 4126),
         ]
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_asset_routes_supported_plugin():
+    try:
+        report = BundleAnalysisReport()
+        report.ingest(sample_bundle_stats_path_6)
+
+        bundle_report = report.bundle_report("sample")
+        all_asset_reports = list(bundle_report.asset_reports())
+
+        EXPECTED_ASSET_ROUTES_MAPPING = {
+            "_app/immutable/assets/0.CT0x_Q5c.css": [],
+            "_app/immutable/assets/2.Cs8KR-Bb.css": [],
+            "_app/immutable/assets/4.DOkkq0IA.css": [],
+            "_app/immutable/assets/5.CU6psp88.css": [],
+            "_app/immutable/assets/fira-mono-all-400-normal.B2mvLtSD.woff": [],
+            "_app/immutable/assets/fira-mono-cyrillic-400-normal.36-45Uyg.woff2": [],
+            "_app/immutable/assets/fira-mono-cyrillic-ext-400-normal.B04YIrm4.woff2": [],
+            "_app/immutable/assets/fira-mono-greek-400-normal.C3zng6O6.woff2": [],
+            "_app/immutable/assets/fira-mono-greek-ext-400-normal.CsqI23CO.woff2": [],
+            "_app/immutable/assets/fira-mono-latin-400-normal.DKjLVgQi.woff2": [],
+            "_app/immutable/assets/fira-mono-latin-ext-400-normal.D6XfiR-_.woff2": [],
+            "_app/immutable/assets/svelte-welcome.0pIiHnVF.webp": [],
+            "_app/immutable/assets/svelte-welcome.VNiyy3gC.png": [],
+            "_app/immutable/chunks/entry.BaWB2kHj.js": [],
+            "_app/immutable/chunks/index.DDRweiI9.js": [],
+            "_app/immutable/chunks/index.Ice1EKvx.js": [],
+            "_app/immutable/chunks/index.R8ovVqwX.js": [],
+            "_app/immutable/chunks/scheduler.Dk-snqIU.js": [],
+            "_app/immutable/chunks/stores.BrqGIpx3.js": [],
+            "_app/immutable/entry/app.Dd9ByE1Q.js": [],
+            "_app/immutable/entry/start.B1Q1eB84.js": [],
+            "_app/immutable/nodes/0.CL_S-12h.js": ["/"],
+            "_app/immutable/nodes/1.stWWSe4n.js": [],
+            "_app/immutable/nodes/2.BMQFqo-e.js": ["/"],
+            "_app/immutable/nodes/3.BqQOub2U.js": ["/about"],
+            "_app/immutable/nodes/4.CcjRtXvw.js": ["/sverdle"],
+            "_app/immutable/nodes/5.CwxmUzn6.js": ["/sverdle/how-to-play"],
+            "_app/version.json": [],
+        }
+
+        asset_routes_mapping = {}
+        for asset_report in all_asset_reports:
+            asset_routes_mapping[asset_report.hashed_name] = asset_report.routes()
+        tc = TestCase()
+        tc.maxDiff = None
+        tc.assertDictEqual(EXPECTED_ASSET_ROUTES_MAPPING, asset_routes_mapping)
+
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_asset_routes_unsupported_plugin():
+    try:
+        report = BundleAnalysisReport()
+        report.ingest(sample_bundle_stats_path)
+
+        bundle_report = report.bundle_report("sample")
+        all_asset_reports = list(bundle_report.asset_reports())
+
+        EXPECTED_ASSET_ROUTES_MAPPING = {
+            "assets/LazyComponent-fcbb0922.js": None,
+            "assets/index-666d2e09.js": None,
+            "assets/index-c8676264.js": None,
+            "assets/index-d526a0c5.css": None,
+            "assets/react-35ef61ed.svg": None,
+        }
+
+        asset_routes_mapping = {}
+        for asset_report in all_asset_reports:
+            asset_routes_mapping[asset_report.hashed_name] = asset_report.routes()
+        tc = TestCase()
+        tc.maxDiff = None
+        tc.assertDictEqual(EXPECTED_ASSET_ROUTES_MAPPING, asset_routes_mapping)
+
     finally:
         report.cleanup()
 
