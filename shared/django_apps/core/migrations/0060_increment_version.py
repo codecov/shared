@@ -12,7 +12,7 @@ def update_version(apps, schema):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('core', '0059_increment_version'),
+        ("core", "0059_increment_version"),
     ]
 
     operations = [
