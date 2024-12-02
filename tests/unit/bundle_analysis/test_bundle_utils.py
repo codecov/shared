@@ -3,7 +3,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from shared.bundle_analysis.utils import AssetRoute, PluginName, split_by_delimiter
+from shared.bundle_analysis.utils import (
+    AssetRoute,
+    AssetRoutePluginName,
+    split_by_delimiter,
+)
 
 
 @pytest.fixture
@@ -12,11 +16,11 @@ def sample_filenames():
     A fixture providing sample filenames for testing different plugins.
     """
     return {
-        PluginName.REMIX_VITE: "routes/index.tsx",
-        PluginName.NEXTJS_WEBPACK: "pages/api/hello.js",
-        PluginName.NUXT: "pages/index.vue",
-        PluginName.SOLIDSTART: "routes/dashboard.ts",
-        PluginName.SVELTEKIT: "src/routes/about/+page.svelte",
+        AssetRoutePluginName.REMIX_VITE: "routes/index.tsx",
+        AssetRoutePluginName.NEXTJS_WEBPACK: "pages/api/hello.js",
+        AssetRoutePluginName.NUXT: "pages/index.vue",
+        AssetRoutePluginName.SOLIDSTART: "routes/dashboard.ts",
+        AssetRoutePluginName.SVELTEKIT: "src/routes/about/+page.svelte",
     }
 
 
@@ -24,7 +28,7 @@ def test_bundle_asset_route_asset_route_remix_vite_get_from_filename():
     """
     Test the get_from_filename method for the Remive Vite plugin.
     """
-    plugin = PluginName.REMIX_VITE
+    plugin = AssetRoutePluginName.REMIX_VITE
 
     # Valid cases
     valid_cases = [
@@ -86,7 +90,7 @@ def test_bundle_asset_route_nextjs_webpack_get_from_filename():
     """
     Test the get_from_filename method for the Next.js Webpack plugin.
     """
-    plugin = PluginName.NEXTJS_WEBPACK
+    plugin = AssetRoutePluginName.NEXTJS_WEBPACK
 
     # Valid cases
     valid_cases = [
@@ -123,7 +127,7 @@ def test_bundle_asset_route_nuxt_get_from_filename():
     """
     Test the get_from_filename method for the Nuxt plugin.
     """
-    plugin = PluginName.NUXT
+    plugin = AssetRoutePluginName.NUXT
 
     # Valid cases
     valid_cases = [
@@ -160,7 +164,7 @@ def test_bundle_asset_route_solidstart_get_from_filename():
     """
     Test the get_from_filename method for the SolidStart plugin.
     """
-    plugin = PluginName.SOLIDSTART
+    plugin = AssetRoutePluginName.SOLIDSTART
 
     # Valid cases
     valid_cases = [
@@ -205,7 +209,7 @@ def test_bundle_asset_route_sveltekit_get_from_filename():
     """
     Test the get_from_filename method for the SvelteKit plugin.
     """
-    plugin = PluginName.SVELTEKIT
+    plugin = AssetRoutePluginName.SVELTEKIT
 
     # Valid cases
     valid_cases = [
@@ -247,7 +251,7 @@ def test_bundle_asset_route_exception_handling():
     """
     Test that get_from_filename correctly handles exceptions and logs them.
     """
-    plugin = PluginName.REMIX_VITE
+    plugin = AssetRoutePluginName.REMIX_VITE
     filename = "invalid_filename"
 
     # Mock the `_compute_from_filename` method to raise an exception
@@ -291,7 +295,7 @@ def test_bundle_asset_route_exception_handling():
     ],
 )
 def test_bundle_asset_route_is_file(input_str, extensions, expected):
-    asset_route = AssetRoute(plugin=PluginName.NEXTJS_WEBPACK)
+    asset_route = AssetRoute(plugin=AssetRoutePluginName.NEXTJS_WEBPACK)
     result = asset_route._is_file(input_str, extensions)
     assert result == expected, f"Failed for input: {input_str}, extension: {extensions}"
 

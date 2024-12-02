@@ -8,7 +8,7 @@ from typing import List, Optional
 log = logging.getLogger(__name__)
 
 
-class PluginName(Enum):
+class AssetRoutePluginName(Enum):
     REMIX_VITE = "@codecov/remix-vite-plugin"
     NEXTJS_WEBPACK = "@codecov/nextjs-webpack-plugin"
     NUXT = "@codecov/nuxt-plugin"
@@ -18,14 +18,22 @@ class PluginName(Enum):
 
 class AssetRoute:
     def __init__(
-        self, plugin: PluginName, configured_route_prefix: Optional[str] = None
+        self,
+        plugin: AssetRoutePluginName,
+        configured_route_prefix: Optional[str] = None,
     ) -> None:
         self._from_filename_map = {
-            PluginName.REMIX_VITE: (self._compute_remix, ["app", "routes"]),
-            PluginName.NEXTJS_WEBPACK: (self._compute_nextjs_webpack, "app"),
-            PluginName.NUXT: (self._compute_nuxt, "pages"),
-            PluginName.SOLIDSTART: (self._compute_solidstart, ["src", "routes"]),
-            PluginName.SVELTEKIT: (self._compute_sveltekit, ["src", "routes"]),
+            AssetRoutePluginName.REMIX_VITE: (self._compute_remix, ["app", "routes"]),
+            AssetRoutePluginName.NEXTJS_WEBPACK: (self._compute_nextjs_webpack, "app"),
+            AssetRoutePluginName.NUXT: (self._compute_nuxt, "pages"),
+            AssetRoutePluginName.SOLIDSTART: (
+                self._compute_solidstart,
+                ["src", "routes"],
+            ),
+            AssetRoutePluginName.SVELTEKIT: (
+                self._compute_sveltekit,
+                ["src", "routes"],
+            ),
         }
         self._compute_from_filename = self._from_filename_map[plugin][0]
 
