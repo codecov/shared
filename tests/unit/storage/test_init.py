@@ -1,8 +1,10 @@
+from shared.rollouts.features import USE_NEW_MINIO
 from shared.storage import get_appropriate_storage_service
 from shared.storage.aws import AWSStorageService
 from shared.storage.fallback import StorageWithFallbackService
 from shared.storage.gcp import GCPStorageService
 from shared.storage.minio import MinioStorageService
+from shared.storage.new_minio import NewMinioStorageService
 
 fake_private_key = """-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCnND/Neha4aNJ6
@@ -108,5 +110,33 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         res = get_appropriate_storage_service()
+        assert isinstance(res, MinioStorageService)
+        assert res.minio_config == minio_config
+
+    def test_get_appropriate_storage_service_new_minio(
+        self, mock_configuration, mocker
+    ):
+        mock_configuration.params["services"] = {
+            "chosen_storage": "minio",
+            "gcp": gcp_config,
+            "aws": aws_config,
+            "minio": minio_config,
+        }
+        mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=True)
+        res = get_appropriate_storage_service(repoid=123)
+        assert isinstance(res, NewMinioStorageService)
+        assert res.minio_config == minio_config
+
+    def test_get_appropriate_storage_service_new_minio_false(
+        self, mock_configuration, mocker
+    ):
+        mock_configuration.params["services"] = {
+            "chosen_storage": "minio",
+            "gcp": gcp_config,
+            "aws": aws_config,
+            "minio": minio_config,
+        }
+        mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
+        res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
