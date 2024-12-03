@@ -5,7 +5,7 @@ from decimal import Decimal
 from fractions import Fraction
 from itertools import filterfalse, zip_longest
 from types import GeneratorType
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import orjson
 import sentry_sdk
@@ -150,29 +150,23 @@ class ReportFile(object):
                 yield ln, line
 
     def calculate_diff(self, all_file_segments):
-        fg = self.get
         lines = []
-        le = lines.extend
         # add all new lines data to a new file to get totals
-        [
-            le(
-                [
-                    fg(i)
-                    for i, line in enumerate(
-                        [ln for ln in segment["lines"] if ln[0] != "-"],
-                        start=int(segment["header"][2]) or 1,
-                    )
-                    if line[0] == "+"
-                ]
+        for segment in all_file_segments:
+            lines.extend(
+                self.get(i)
+                for i, line in enumerate(
+                    (ln for ln in segment["lines"] if ln[0] != "-"),
+                    start=int(segment["header"][2]) or 1,
+                )
+                if line[0] == "+"
             )
-            for segment in all_file_segments
-        ]
         return ReportFile(name=None, totals=None, lines=lines).totals
 
     def delete_session(self, sessionid: int):
         self.delete_multiple_sessions([sessionid])
 
-    def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
+    def delete_multiple_sessions(self, session_ids_to_delete: list[int]):
         self._totals = None
         for sessionid in session_ids_to_delete:
             for index, line in self.lines:
@@ -200,21 +194,6 @@ class ReportFile(object):
                 yield line
             else:
                 yield None
-
-    def ignore_lines(self, lines=None, eof: Optional[int] = None) -> bool:
-        changed = False
-        if lines:
-            _len = len(self._lines)
-            for ln in lines:
-                if ln <= _len and self._lines[ln - 1] is not None:
-                    changed = True
-                    self._lines[ln - 1] = None
-        if eof and len(self._lines) > eof:
-            changed = True
-            self._lines = self._lines[:eof]
-        if changed:
-            self._totals = None
-        return changed
 
     def __getitem__(self, ln):
         """Return a single line or None"""
@@ -273,7 +252,7 @@ class ReportFile(object):
         return len(self._lines) + 1
 
     def _getslice(self, start, stop):
-        """Retrns a stream of lines between two indexes
+        """Returns a stream of lines between two indexes
 
         slice = report[5:25]
 
@@ -420,14 +399,30 @@ class ReportFile(object):
         return self._totals
 
     def _process_totals(self) -> ReportTotals:
-        cov, types, messages = [], [], []
-        for ln, line in self.lines:
-            cov.append(line_type(line.coverage))
-            types.append(line.type)
-            messages.append(len(line.messages or []))
-        hits = cov.count(LineType.hit)
-        misses = cov.count(LineType.miss)
-        partials = cov.count(LineType.partial)
+        hits = 0
+        misses = 0
+        partials = 0
+        branches = 0
+        methods = 0
+        messages = 0
+
+        for _ln, line in self.lines:
+            match line_type(line.coverage):
+                case LineType.hit:
+                    hits += 1
+                case LineType.miss:
+                    misses += 1
+                case LineType.partial:
+                    partials += 1
+
+            if line.type == "b":
+                branches += 1
+            elif line.type == "m":
+                methods += 1
+
+            if line.messages:
+                messages += len(line.messages)
+
         total_lines = hits + misses + partials
 
         def sum_of_complexity(ln):
@@ -452,9 +447,9 @@ class ReportFile(object):
             misses=misses,
             partials=partials,
             coverage=ratio(hits, total_lines) if total_lines else None,
-            branches=types.count("b"),
-            methods=types.count("m"),
-            messages=sum(messages),
+            branches=branches,
+            methods=methods,
+            messages=messages,
             sessions=0,
             complexity=complexity[0],
             complexity_total=complexity[1],
@@ -516,7 +511,7 @@ class ReportFile(object):
 
     @classmethod
     def line_without_labels(
-        cls, line, session_ids_to_delete: List[int], label_ids_to_delete: List[int]
+        cls, line, session_ids_to_delete: list[int], label_ids_to_delete: list[int]
     ):
         new_datapoints = (
             [
@@ -554,21 +549,22 @@ class ReportFile(object):
 
     @classmethod
     def line_without_session(cls, line: ReportLine, sessionid: int):
-        return cls.line_without_multiple_sessions(line, [sessionid])
+        return cls.line_without_multiple_sessions(line, {sessionid})
 
     @classmethod
     def line_without_multiple_sessions(
-        cls, line: ReportLine, session_ids_to_delete: List[int]
+        cls, line: ReportLine, session_ids_to_delete: set[int]
     ):
         new_sessions = [s for s in line.sessions if s.id not in session_ids_to_delete]
-        remaining_coverages = [s.coverage for s in new_sessions]
         if len(new_sessions) == 0:
             return EMPTY
+
         new_datapoints = (
             [dt for dt in line.datapoints if dt.sessionid not in session_ids_to_delete]
             if line.datapoints is not None
             else None
         )
+        remaining_coverages = [s.coverage for s in new_sessions]
         new_coverage = merge_all(remaining_coverages)
         return dataclasses.replace(
             line,
@@ -694,11 +690,11 @@ class Report(object):
         self._header = value
 
     @property
-    def labels_index(self) -> Optional[Dict[int, str]]:
+    def labels_index(self) -> dict[int, str] | None:
         return self._header.get("labels_index")
 
     @labels_index.setter
-    def labels_index(self, value: Dict[int, str]):
+    def labels_index(self, value: dict[int, str]):
         self.header = {**self.header, "labels_index": value}
 
     def lookup_label_by_id(self, label_id: int) -> str:
@@ -746,7 +742,7 @@ class Report(object):
             return "<%s files=n/a>" % self.__class__.__name__
 
     @property
-    def files(self):
+    def files(self) -> list[str]:
         """returns a list of files in the report"""
         path_filter = None
         if path_filter:
@@ -881,18 +877,6 @@ class Report(object):
 
         return _else
 
-    def ignore_lines(self, ignore_lines):
-        """
-        :ignore_lines {"path": {"lines": ["1"]}}
-        only used during processing and does not effect the chunks inside this Report object
-        """
-        for path, data in ignore_lines.items():
-            _file = self.get(path)
-            if _file is not None:
-                file_was_changed = _file.ignore_lines(**data)
-                if file_was_changed:
-                    self._files[path].file_totals = _file.totals
-
     def resolve_paths(self, paths):
         """
         :paths [(old_path, new_path), ...]
@@ -937,13 +921,9 @@ class Report(object):
         self._chunks[_file.file_index] = None
         return True
 
-    def get_file_totals(self, path, _else=None):
-        """
-        returns <ReportTotals> for the file if it exists
-        """
+    def get_file_totals(self, path: str) -> ReportTotals | None:
         if self._path_filter and not self._path_filter(path):
-            # filtered out of report
-            return _else
+            return None
 
         if path not in self._files:
             log.warning(
@@ -957,19 +937,6 @@ class Report(object):
             return totals
         else:
             return ReportTotals(*totals)
-
-    def get_folder_totals(self, path):
-        """
-        returns <ReportTotals> for files contained in a folder
-        """
-        path = path.strip("/") + "/"
-        return sum_totals(
-            (
-                self[filename].totals
-                for filename, _ in self._files.items()
-                if filename.startswith(path)
-            )
-        )
 
     @property
     def totals(self):
@@ -998,26 +965,15 @@ class Report(object):
         totals = agg_totals(_iter_totals())
         if self._filter_cache and self._filter_cache[1]:
             flags = set(self._filter_cache[1])
-            totals.sessions = len(
-                [
-                    1
-                    for _, session in self.sessions.items()
-                    if set(session.flags or []) & flags
-                ]
+            totals.sessions = sum(
+                1
+                for _, session in self.sessions.items()
+                if set(session.flags or []) & flags
             )
         else:
             totals.sessions = len(self.sessions)
 
         return ReportTotals(*tuple(totals))
-
-    @property
-    def manifest(self):
-        """returns a list of files in the report"""
-        if self._path_filter:
-            return list(filter(self._path_filter, list(self._files)))
-
-        else:
-            return list(self._files)
 
     def next_session_number(self):
         start_number = len(self.sessions)
@@ -1117,9 +1073,6 @@ class Report(object):
                 option=orjson_option,
             ).decode(),
         )
-
-    def update_sessions(self, **data):
-        pass
 
     @sentry_sdk.trace
     def flare(self, changes=None, color=None):
@@ -1292,7 +1245,7 @@ class Report(object):
                         diff_totals=None,
                     )
 
-    def calculate_diff(self, diff: Dict) -> Dict:
+    def calculate_diff(self, diff: dict) -> dict:
         """
             Calculates the per-file totals (and total) of the parts
                 from a `git diff` that are relevant in the report
@@ -1348,6 +1301,7 @@ class Report(object):
             }
         """
         file_dict = {}
+        totals = ReportTotals()
         if diff and diff.get("files"):
             list_of_file_totals = []
             for path, data in diff["files"].items():
@@ -1365,7 +1319,7 @@ class Report(object):
                     totals, coverage=None, complexity=None, complexity_total=None
                 )
 
-            return {"general": totals, "files": file_dict}
+        return {"general": totals, "files": file_dict}
 
     def save_diff_calculation(self, diff, diff_result):
         diff["totals"] = diff_result["general"]
@@ -1393,24 +1347,11 @@ class Report(object):
             self.save_diff_calculation(diff, totals)
         return totals.get("general")
 
-    def has_flag(self, flag_name):
-        """
-        Returns boolean: if the flag is found
-        """
-        for data in self.sessions.values():
-            if flag_name in (data.flags or []):
-                return True
-        return False
-
     def get_uploaded_flags(self):
-        uploaded_session_flags = [
-            sess.flags
-            for sess in self.sessions.values()
-            if sess.session_type == SessionType.uploaded and sess.flags is not None
-        ]
         flags = set()
-        for k in uploaded_session_flags:
-            flags.update(k)
+        for sess in self.sessions.values():
+            if sess.session_type == SessionType.uploaded and sess.flags is not None:
+                flags.update(sess.flags)
         return flags
 
     @sentry_sdk.trace

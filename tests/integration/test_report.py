@@ -310,25 +310,7 @@ def test_del_item():
     ],
 )
 def test_manifest(r, manifest):
-    assert r.manifest == manifest
-
-
-@pytest.mark.integration
-def test_get_folder_totals():
-    r = Report(
-        files={
-            "path/file1.py": [0, ReportTotals(1)],
-            "path/file2.py": [0, ReportTotals(1)],
-            "wrong/path/file2.py": [0, ReportTotals(1)],
-        },
-        chunks=[
-            ReportFile(name="path/file1.py", totals=[1, 2, 1]),
-            ReportFile(name="path/file2.py", totals=[1, 2, 1]),
-        ],
-    )
-    assert r.get_folder_totals("/path/") == ReportTotals(
-        files=2, lines=4, hits=2, misses=0, partials=0, coverage="50.00000"
-    )
+    assert r.files == manifest
 
 
 @pytest.mark.integration
@@ -379,9 +361,9 @@ def test_contains():
     ],
 )
 def test_merge(r, new_report, manifest):
-    assert r.manifest == ["file.py"]
+    assert r.files == ["file.py"]
     r.merge(new_report)
-    assert r.manifest == manifest
+    assert r.files == manifest
 
 
 @pytest.mark.integration
@@ -586,13 +568,6 @@ def test_apply_diff_no_append():
     assert "totals" not in diff["files"]["a"]
     assert "totals" not in diff["files"]["c"]
     assert res.coverage == "50.00000"
-
-
-@pytest.mark.integration
-def test_report_has_flag():
-    report = Report(sessions={1: dict(flags=["a"])})
-    assert report.has_flag("a")
-    assert not report.has_flag("b")
 
 
 @pytest.mark.integration
