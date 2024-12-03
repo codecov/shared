@@ -3,7 +3,7 @@ import logging
 import re
 import uuid
 from collections import defaultdict
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import ijson
 import sentry_sdk
@@ -99,7 +99,7 @@ class ParserV3(ParserTrait):
         self.module_list = []
 
         # dynamic imports: mapping between Chunk and each file name of its dynamic imports
-        self.dynamic_imports_mapping = defaultdict(
+        self.dynamic_import_file_names_by_chunk = defaultdict(
             list
         )  # typing: Dict[Chunk, List[str]]
 
@@ -284,7 +284,7 @@ class ParserV3(ParserTrait):
         elif prefix == "chunks.item.files.item":
             self.chunk_asset_names.append(value)
         elif prefix == "chunks.item.dynamicImports.item":
-            self.dynamic_imports_mapping[self.chunk].append(value)
+            self.dynamic_import_file_names_by_chunk[self.chunk].append(value)
         elif (prefix, event) == ("chunks.item", "end_map"):
             self.chunk_list.append(self.chunk)
 
@@ -322,9 +322,17 @@ class ParserV3(ParserTrait):
             self.module = None
             self.module_chunk_unique_external_ids = []
 
-    def _parse_dynamic_imports(self) -> List[dict]:
+    def _parse_dynamic_imports(self) -> List[Dict[str, int]]:
+        """
+        Computes all the dynamic imports that needs to be inserted to the DB
+        Returns a list of dictionary objects representing the insert params
+        [{
+            "chunk_id": chunk.id,
+            "asset_id": asset.id,
+        }]
+        """
         dynamic_imports_list = []
-        for chunk, filenames in self.dynamic_imports_mapping.items():
+        for chunk, filenames in self.dynamic_import_file_names_by_chunk.items():
             imported_assets = {}
             for filename in filenames:
                 try:
