@@ -3,7 +3,7 @@ import logging
 import ijson
 from sqlalchemy.orm import Session as DbSession
 
-from shared.bundle_analysis.parsers import ParserInterface, ParserV1, ParserV2
+from shared.bundle_analysis.parsers import ParserInterface, ParserV1, ParserV2, ParserV3
 from shared.bundle_analysis.parsers.base import ParserTrait
 
 log = logging.getLogger(__name__)
@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 PARSER_VERSION_MAPPING: dict[str, type[ParserTrait]] = {
     "1": ParserV1,
     "2": ParserV2,
+    "3": ParserV3,
 }
 
 

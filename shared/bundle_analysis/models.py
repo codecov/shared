@@ -84,9 +84,17 @@ create table chunks_modules (
     foreign key (chunk_id) references chunks (id),
     foreign key (module_id) references modules (id)
 );
+
+create table dynamic_imports (
+    chunk_id integer not null,
+    asset_id integer not null,
+    primary key (chunk_id, asset_id),
+    foreign key (chunk_id) references chunks (id),
+    foreign key (asset_id) references assets (id)
+);
 """
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 Base = declarative_base()
 
@@ -272,6 +280,25 @@ class Module(Base):
         "Chunk",
         secondary=chunks_modules,
         back_populates="modules",
+    )
+
+
+class DynamicImport(Base):
+    """
+    These represents a mapping of each chunk's dynamically imported assets
+    """
+
+    __tablename__ = "dynamic_imports"
+
+    chunk_id = Column(types.Integer, ForeignKey("chunks.id"), primary_key=True)
+    asset_id = Column(types.Integer, ForeignKey("assets.id"), primary_key=True)
+
+    # Relationships
+    chunk = relationship(
+        "Chunk", backref=backref("dynamic_imports", cascade="all, delete-orphan")
+    )
+    asset = relationship(
+        "Asset", backref=backref("dynamic_imports", cascade="all, delete-orphan")
     )
 
 

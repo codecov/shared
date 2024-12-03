@@ -4,6 +4,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import pytest
+from sqlalchemy import select
 from sqlalchemy.orm import Session as DbSession
 
 from shared.bundle_analysis import BundleAnalysisReport, BundleAnalysisReportLoader
@@ -13,6 +14,7 @@ from shared.bundle_analysis.models import (
     AssetType,
     Bundle,
     Chunk,
+    DynamicImport,
     Metadata,
     MetadataKey,
     Module,
@@ -50,6 +52,18 @@ sample_bundle_stats_path_6 = (
     Path(__file__).parent.parent.parent
     / "samples"
     / "sample_bundle_stats_asset_routes.json"
+)
+
+sample_bundle_stats_path_7 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_dynamic_imports_1.json"
+)
+
+sample_bundle_stats_path_8 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_dynamic_imports_2.json"
 )
 
 
@@ -873,5 +887,79 @@ def test_bundle_report_total_gzip_size():
 
         assert bundle_report.total_size() == 150572
         assert bundle_report.total_gzip_size() == 150567
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_dynamic_imports_object_model():
+    try:
+        report = BundleAnalysisReport()
+        with get_db_session(report.db_path) as db_session:
+            # Check that the DB is set up correctly
+            # 1 chunk has 2, another chunk has 1
+            report.ingest(sample_bundle_stats_path_7)
+
+            query = (
+                select(Chunk.unique_external_id, Asset.name)
+                .join(DynamicImport, Chunk.id == DynamicImport.chunk_id)
+                .join(Asset, Asset.id == DynamicImport.asset_id)
+                .order_by(Chunk.unique_external_id)
+            )
+
+            results = db_session.execute(query).all()
+
+            result_dicts = [
+                {"unique_external_id": unique_external_id, "asset_name": asset_name}
+                for unique_external_id, asset_name in results
+            ]
+
+            assert result_dicts == [
+                {
+                    "asset_name": "index-C-Z8zsvD.js",
+                    "unique_external_id": "1-LazyComponent",
+                },
+                {
+                    "asset_name": "index-C-Z8zsvD.js",
+                    "unique_external_id": "2-index",
+                },
+                {
+                    "asset_name": "LazyComponent-BBSC53Nv.js",
+                    "unique_external_id": "2-index",
+                },
+            ]
+
+            # Check that the DB is set up correctly after a rewrite of a new file
+            # 1 chunk has 1, another chunk has 1, another chunk has 1
+            report.ingest(sample_bundle_stats_path_8)
+
+            query = (
+                select(Chunk.unique_external_id, Asset.name)
+                .join(DynamicImport, Chunk.id == DynamicImport.chunk_id)
+                .join(Asset, Asset.id == DynamicImport.asset_id)
+                .order_by(Chunk.unique_external_id)
+            )
+
+            results = db_session.execute(query).all()
+
+            result_dicts = [
+                {"unique_external_id": unique_external_id, "asset_name": asset_name}
+                for unique_external_id, asset_name in results
+            ]
+
+            assert result_dicts == [
+                {
+                    "asset_name": "LazyComponent-BBSC53Nv.js",
+                    "unique_external_id": "0-index",
+                },
+                {
+                    "asset_name": "index-C-Z8zsvD.js",
+                    "unique_external_id": "1-LazyComponent",
+                },
+                {
+                    "asset_name": "index-C-Z8zsvD.js",
+                    "unique_external_id": "2-index",
+                },
+            ]
+
     finally:
         report.cleanup()

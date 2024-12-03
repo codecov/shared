@@ -9,6 +9,9 @@ from shared.bundle_analysis.migrations.v002_bundle_is_cached import add_is_cache
 from shared.bundle_analysis.migrations.v003_modify_gzip_size_nullable import (
     modify_gzip_size_nullable,
 )
+from shared.bundle_analysis.migrations.v004_add_dynamic_imports import (
+    add_dynamic_imports,
+)
 
 
 class BundleAnalysisMigration:
@@ -33,6 +36,7 @@ class BundleAnalysisMigration:
             2: add_gzip_size,
             3: add_is_cached,
             4: modify_gzip_size_nullable,
+            5: add_dynamic_imports,
         }
 
     def update_schema_version(self, version):
