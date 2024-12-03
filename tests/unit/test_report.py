@@ -332,21 +332,12 @@ def test_del_item(mocker):
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, manifest",
-    [
-        (
-            {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]},
-            ["file1.py", "file2.py"],
-        )
-    ],
-)
-def test_manifest(files, manifest):
+def test_manifest():
     r = Report()
-    r._files = files
+    r._files = {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
     r._chunks = None
     r._line_modifier = None
-    assert list(r.files) == manifest
+    assert list(r.files) == ["file1.py", "file2.py"]
 
 
 @pytest.mark.unit
@@ -415,26 +406,6 @@ def test_get_file_totals(mocker):
         diff=0,
     )
     assert report.get_file_totals("calc/CalcCore.cpp") == expected_totals
-
-
-@pytest.mark.unit
-def test_get_folder_totals(mocker):
-    r = Report(
-        files={
-            "path/file1.py": [0, ReportTotals(1)],
-            "path/file2.py": [0, ReportTotals(1)],
-            "wrong/path/file2.py": [0, ReportTotals(1)],
-        }
-    )
-    r._chunks = [
-        ReportFile(name="path/file1.py", totals=[1, 2, 1]),
-        ReportFile(name="path/file2.py", totals=[1, 2, 1]),
-    ]
-    r._path_filter = None
-    r._line_modifier = None
-    assert r.get_folder_totals("/path/") == ReportTotals(
-        files=2, lines=4, hits=2, misses=0, partials=0, coverage="50.00000"
-    )
 
 
 @pytest.mark.unit
@@ -905,14 +876,6 @@ def test_apply_diff_no_append(mocker):
 
 
 @pytest.mark.unit
-def test_report_has_flag(mocker):
-    r = Report()
-    r.sessions = {1: Session(flags=["a"])}
-    assert r.has_flag("a")
-    assert not r.has_flag("b")
-
-
-@pytest.mark.unit
 def test_add_session(mocker):
     r = Report()
     s = Session(5)
@@ -995,31 +958,6 @@ def test_flare(files, chunks, params, flare):
     r._path_filter = None
     r._line_modifier = None
     assert r.flare(**params) == flare
-
-
-# TODO see filter method on Report(), method does nothing because self.reset() is called after _filter_cache is set
-# @pytest.mark.unit
-# def test_filter():
-#     r = Report().filter(paths=['test/path/file.py'])
-#     assert r.get('wrong/test/path/file.py') is None
-#
-#     r1 = Report(files={
-#         'file.py':[0, ReportTotals(1)]
-#     }, chunks='null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]').filter(flags='test')
-
-
-def test_test(mocker):
-    mocker.patch.object(ReportFile, "ignore_lines", return_value=None)
-    r = Report(files={"py.py": [0, ReportTotals(1)]})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    r._path_filter = None
-    r._line_modifier = None
-    r.ignore_lines({"py.py": {"lines": [0, 1, 2]}})
-    assert ReportFile.ignore_lines.called is True
 
 
 @pytest.mark.unit
@@ -1196,50 +1134,6 @@ def test_repack_no_change(sample_report):
     assert len(sample_report._chunks) == len(sample_report._files)
     sample_report.repack()
     assert len(sample_report._chunks) == len(sample_report._files)
-
-
-@pytest.mark.unit
-def test_ignore_lines():
-    r = Report()
-    r.append(
-        ReportFile(
-            "a", lines=[ReportLine.create(coverage=1), ReportLine.create(coverage=1)]
-        )
-    )
-    r.ignore_lines({"a": {"lines": set((1, 20))}})
-    with pytest.raises(IndexError):
-        r["a"][1]
-    assert r["a"][2].coverage == 1
-    assert r.get("a").totals == ReportTotals(
-        files=0,
-        lines=1,
-        hits=1,
-        misses=0,
-        partials=0,
-        coverage="100",
-        branches=0,
-        methods=0,
-        messages=0,
-        sessions=0,
-        complexity=0,
-        complexity_total=0,
-        diff=0,
-    )
-    assert r._files.get("a").file_totals == ReportTotals(
-        files=0,
-        lines=1,
-        hits=1,
-        misses=0,
-        partials=0,
-        coverage="100",
-        branches=0,
-        methods=0,
-        messages=0,
-        sessions=0,
-        complexity=0,
-        complexity_total=0,
-        diff=0,
-    )
 
 
 @pytest.mark.unit

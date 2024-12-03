@@ -104,7 +104,7 @@ class EditableReportFile(ReportFile):
         for index, line in self.lines:
             if any(s.id in session_ids_to_delete for s in line.sessions):
                 new_line = self.line_without_multiple_sessions(
-                    line, session_ids_to_delete
+                    line, set(session_ids_to_delete)
                 )
                 if new_line == EMPTY:
                     del self[index]

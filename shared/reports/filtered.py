@@ -238,10 +238,6 @@ class FilteredReport(object):
         return None
 
     @property
-    def manifest(self):
-        return self.files
-
-    @property
     def totals(self):
         if not self._totals:
             self._totals = self._process_totals()
