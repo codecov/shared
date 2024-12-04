@@ -1,14 +1,15 @@
 import gzip
-import importlib.metadata
 import json
 import logging
+import os
+import shutil
 import sys
+import tempfile
 from io import BytesIO
-from typing import IO, BinaryIO, Tuple, cast, overload
+from typing import BinaryIO, overload
 
-import zstandard
 from minio import Minio
-from minio.credentials.providers import (
+from minio.credentials import (
     ChainedProvider,
     EnvAWSProvider,
     EnvMinioProvider,
@@ -16,51 +17,16 @@ from minio.credentials.providers import (
 )
 from minio.deleteobjects import DeleteObject
 from minio.error import MinioException, S3Error
-from minio.helpers import ObjectWriteResult
-from urllib3 import HTTPResponse
 
-from shared.storage.base import CHUNK_SIZE, PART_SIZE, BaseStorageService
+from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
 
 
-class GZipStreamReader:
-    def __init__(self, fileobj: IO[bytes]):
-        self.data = fileobj
-
-    def read(self, size: int = -1, /) -> bytes:
-        curr_data = self.data.read(size)
-
-        if not curr_data:
-            return b""
-
-        return gzip.compress(curr_data)
-
-
-def zstd_decoded_by_default() -> bool:
-    try:
-        version = importlib.metadata.version("urllib3")
-    except importlib.metadata.PackageNotFoundError:
-        return False
-
-    if version < "2.0.0":
-        return False
-
-    distribution = importlib.metadata.metadata("urllib3")
-    if requires_dist := distribution.get_all("Requires-Dist"):
-        for req in requires_dist:
-            if "[zstd]" in req:
-                return True
-
-    return False
-
-
 # Service class for interfacing with codecov's underlying storage layer, minio
 class MinioStorageService(BaseStorageService):
     def __init__(self, minio_config):
-        self.zstd_default = zstd_decoded_by_default()
-
         self.minio_config = minio_config
         log.debug("Connecting to minio with config %s", self.minio_config)
 
@@ -91,21 +57,20 @@ class MinioStorageService(BaseStorageService):
         region: str | None = None,
     ):
         """
-        Initialize the minio client
+            Initialize the minio client
 
         `iam_auth` adds support for IAM base authentication in a fallback pattern.
-        The following will be checked in order:
+            The following will be checked in order:
 
         * EC2 metadata -- a custom endpoint can be provided, default is None.
-        * Minio env vars, specifically MINIO_ACCESS_KEY and MINIO_SECRET_KEY
         * AWS env vars, specifically AWS_ACCESS_KEY and AWS_SECRECT_KEY
+        * Minio env vars, specifically MINIO_ACCESS_KEY and MINIO_SECRET_KEY
 
-        to support backward compatibility, the iam_auth setting should be used
-        in the installation configuration
+        to support backward compatibility, the iam_auth setting should be used in the installation
+            configuration
 
         Args:
             host (str): The address of the host where minio lives
-
             port (str): The port number (as str or int should be ok)
             access_key (str, optional): The access key (optional if IAM is being used)
             secret_key (str, optional): The secret key (optional if IAM is being used)
@@ -178,118 +143,89 @@ class MinioStorageService(BaseStorageService):
     # Writes a file to storage will gzip if not compressed already
     def write_file(
         self,
-        bucket_name: str,
-        path: str,
-        data: IO[bytes] | str | bytes,
-        reduced_redundancy: bool = False,
+        bucket_name,
+        path,
+        data,
+        reduced_redundancy=False,
         *,
-        is_already_gzipped: bool = False,  # deprecated
-        is_compressed: bool = False,
-        compression_type: str | None = "zstd",
-    ) -> ObjectWriteResult:
+        is_already_gzipped: bool = False,
+    ):
         if isinstance(data, str):
-            data = BytesIO(data.encode())
-        elif isinstance(data, (bytes, bytearray, memoryview)):
-            data = BytesIO(data)
+            data = data.encode()
 
-        if is_already_gzipped:
-            is_compressed = True
-            compression_type = "gzip"
-
-        if is_compressed:
-            result = data
-        else:
-            if compression_type == "zstd":
-                cctx = zstandard.ZstdCompressor()
-                result = cctx.stream_reader(data)
-
-            elif compression_type == "gzip":
-                result = GZipStreamReader(data)
-
+        out: BinaryIO
+        if isinstance(data, bytes):
+            if not is_already_gzipped:
+                out = BytesIO()
+                with gzip.GzipFile(fileobj=out, mode="w", compresslevel=9) as gz:
+                    gz.write(data)
             else:
-                result = data
+                out = BytesIO(data)
 
-        headers: dict[str, str | list[str] | Tuple[str]] = {}
+            # get file size
+            out.seek(0, os.SEEK_END)
+            out_size = out.tell()
+        else:
+            # data is already a file-like object
+            if not is_already_gzipped:
+                _, filename = tempfile.mkstemp()
+                with gzip.open(filename, "wb") as f:
+                    shutil.copyfileobj(data, f)
+                out = open(filename, "rb")
+            else:
+                out = data
 
-        if compression_type:
-            headers["Content-Encoding"] = compression_type
+            out_size = os.stat(filename).st_size
 
-        if reduced_redundancy:
-            headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY"
-
-        # it's safe to do a BinaryIO cast here because we know that put_object only uses a function of the shape:
-        # read(self, size: int = -1, /) -> bytes
-        # GZipStreamReader implements this (we did it ourselves)
-        # ZstdCompressionReader implements read(): https://github.com/indygreg/python-zstandard/blob/12a80fac558820adf43e6f16206120685b9eb880/zstandard/__init__.pyi#L233C5-L233C49
-        # BytesIO implements read(): https://docs.python.org/3/library/io.html#io.BufferedReader.read
-        # IO[bytes] implements read(): https://github.com/python/cpython/blob/3.13/Lib/typing.py#L3502
-
-        return self.minio_client.put_object(
-            bucket_name,
-            path,
-            cast(BinaryIO, result),
-            -1,
-            metadata=headers,
-            content_type="text/plain",
-            part_size=PART_SIZE,
-        )
-
-    @overload
-    def read_file(
-        self, bucket_name: str, path: str, file_obj: None = None
-    ) -> bytes: ...
-
-    @overload
-    def read_file(self, bucket_name: str, path: str, file_obj: IO[bytes]) -> None: ...
-
-    def read_file(
-        self, bucket_name: str, path: str, file_obj: IO[bytes] | None = None
-    ) -> bytes | None:
-        headers: dict[str, str | list[str] | Tuple[str]] = {
-            "Accept-Encoding": "gzip, zstd"
-        }
         try:
-            response = cast(
-                HTTPResponse,
-                self.minio_client.get_object(  # this returns an HTTPResponse
-                    bucket_name, path, request_headers=headers
-                ),
+            # reset pos for minio reading.
+            out.seek(0)
+
+            headers = {"Content-Encoding": "gzip"}
+            if reduced_redundancy:
+                headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY"
+            self.minio_client.put_object(
+                bucket_name,
+                path,
+                out,
+                out_size,
+                metadata=headers,
+                content_type="text/plain",
             )
+            return True
+
+        except MinioException:
+            raise
+
+    @overload
+    def read_file(self, bucket_name: str, path: str) -> bytes: ...
+
+    @overload
+    def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
+
+    def read_file(
+        self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
+    ) -> bytes | None:
+        try:
+            res = self.minio_client.get_object(bucket_name, path)
+            if file_obj is None:
+                data = BytesIO()
+                for d in res.stream(CHUNK_SIZE):
+                    data.write(d)
+                data.seek(0)
+                return data.getvalue()
+            else:
+                for d in res.stream(CHUNK_SIZE):
+                    file_obj.write(d)
+                return None
         except S3Error as e:
             if e.code == "NoSuchKey":
                 raise FileNotInStorageError(
                     f"File {path} does not exist in {bucket_name}"
                 )
             raise e
-        if response.headers:
-            content_encoding = response.headers.get("Content-Encoding", None)
-            if not self.zstd_default and content_encoding == "zstd":
-                # we have to manually decompress zstandard compressed data
-                cctx = zstandard.ZstdDecompressor()
-                # if the object passed to this has a read method then that's
-                # all this object will ever need, since it will just call read
-                # and get the bytes object resulting from it then compress that
-                # HTTPResponse
-                reader = cctx.stream_reader(cast(IO[bytes], response))
-            else:
-                reader = response
-        else:
-            reader = response
-
-        if file_obj:
-            file_obj.seek(0)
-            while chunk := reader.read(CHUNK_SIZE):
-                file_obj.write(chunk)
-            response.close()
-            response.release_conn()
-            return None
-        else:
-            res = BytesIO()
-            while chunk := reader.read(CHUNK_SIZE):
-                res.write(chunk)
-            response.close()
-            response.release_conn()
-            return res.getvalue()
+        except MinioException:
+            raise
 
     """
         Deletes file url in specified bucket.
