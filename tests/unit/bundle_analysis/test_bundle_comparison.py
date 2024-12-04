@@ -11,6 +11,7 @@ from shared.bundle_analysis import (
     MissingBaseReportError,
     MissingBundleError,
     MissingHeadReportError,
+    RouteChange,
 )
 from shared.bundle_analysis.models import Bundle, get_db_session
 from shared.storage.memory import MemoryStorageService
@@ -21,6 +22,26 @@ base_report_bundle_stats_path = (
 )
 head_report_bundle_stats_path = (
     here.parent.parent.parent / "samples" / "sample_bundle_stats_other.json"
+)
+head_report_bundle_stats_path_route_base_1 = (
+    here.parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_v3_comparison_base_1.json"
+)
+head_report_bundle_stats_path_route_base_2 = (
+    here.parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_v3_comparison_base_2.json"
+)
+head_report_bundle_stats_path_route_head_1 = (
+    here.parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_v3_comparison_head_1.json"
+)
+head_report_bundle_stats_path_route_head_2 = (
+    here.parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_v3_comparison_head_2.json"
 )
 
 
@@ -173,3 +194,200 @@ def test_bundle_analysis_total_size_delta():
     finally:
         base_report.cleanup()
         head_report.cleanup()
+
+
+def test_bundle_analysis_route_comparison_by_bundle_name():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(head_report_bundle_stats_path_route_base_1)
+        base_report.ingest(head_report_bundle_stats_path_route_base_2)
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path_route_head_1)
+        head_report.ingest(head_report_bundle_stats_path_route_head_2)
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    route_changes = comparison.bundle_routes_changes_by_bundle("bundle1")
+    sorted_route_changes = sorted(route_changes, key=lambda x: x.route_name)
+    expected_changes = [
+        RouteChange(
+            route_name="/sverdle/about",
+            change_type=AssetChange.ChangeType.CHANGED,
+            size_delta=900,
+            percentage_delta=810.81,
+        ),
+        RouteChange(
+            route_name="/sverdle/faq",
+            change_type=AssetChange.ChangeType.REMOVED,
+            size_delta=-110,
+            percentage_delta=-100.0,
+        ),
+        RouteChange(
+            route_name="/sverdle/faq-prime",
+            change_type=AssetChange.ChangeType.ADDED,
+            size_delta=1010,
+            percentage_delta=100,
+        ),
+        RouteChange(
+            route_name="/sverdle/users",
+            change_type=AssetChange.ChangeType.CHANGED,
+            size_delta=900,
+            percentage_delta=810.81,
+        ),
+    ]
+
+    assert sorted_route_changes == expected_changes
+
+
+def test_bundle_analysis_route_comparison_all_bundles():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(head_report_bundle_stats_path_route_base_1)
+        base_report.ingest(head_report_bundle_stats_path_route_base_2)
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path_route_head_1)
+        head_report.ingest(head_report_bundle_stats_path_route_head_2)
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    route_changes = comparison.bundle_routes_changes()
+
+    assert len(route_changes) == 2
+    assert "bundle1" in route_changes and "bundle2" in route_changes
+
+    sorted_route_changes = sorted(route_changes["bundle1"], key=lambda x: x.route_name)
+    expected_bundle1_changes = [
+        RouteChange(
+            route_name="/sverdle/about",
+            change_type=AssetChange.ChangeType.CHANGED,
+            size_delta=900,
+            percentage_delta=810.81,
+        ),
+        RouteChange(
+            route_name="/sverdle/faq",
+            change_type=AssetChange.ChangeType.REMOVED,
+            size_delta=-110,
+            percentage_delta=-100.0,
+        ),
+        RouteChange(
+            route_name="/sverdle/faq-prime",
+            change_type=AssetChange.ChangeType.ADDED,
+            size_delta=1010,
+            percentage_delta=100,
+        ),
+        RouteChange(
+            route_name="/sverdle/users",
+            change_type=AssetChange.ChangeType.CHANGED,
+            size_delta=900,
+            percentage_delta=810.81,
+        ),
+    ]
+    assert sorted_route_changes == expected_bundle1_changes
+
+    sorted_route_changes = sorted(route_changes["bundle2"], key=lambda x: x.route_name)
+    expected_bundle2_changes = [
+        RouteChange(
+            route_name="/sverdle/about",
+            change_type=AssetChange.ChangeType.CHANGED,
+            size_delta=9999,
+            percentage_delta=9008.11,
+        ),
+        RouteChange(
+            route_name="/sverdle/faq",
+            change_type=AssetChange.ChangeType.REMOVED,
+            size_delta=-110,
+            percentage_delta=-100.0,
+        ),
+        RouteChange(
+            route_name="/sverdle/faq-prime",
+            change_type=AssetChange.ChangeType.ADDED,
+            size_delta=10100,
+            percentage_delta=100,
+        ),
+        RouteChange(
+            route_name="/sverdle/users",
+            change_type=AssetChange.ChangeType.CHANGED,
+            size_delta=9999,
+            percentage_delta=9008.11,
+        ),
+    ]
+    assert sorted_route_changes == expected_bundle2_changes
+
+
+def test_bundle_analysis_route_comparison_by_bundle_name_not_exist():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(head_report_bundle_stats_path_route_base_1)
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path_route_head_1)
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    with pytest.raises(MissingBundleError):
+        comparison.bundle_routes_changes_by_bundle("bundle2")
