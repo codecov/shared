@@ -3,12 +3,14 @@ import logging
 import os
 import sqlite3
 import tempfile
+from collections import defaultdict, deque
 from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
 import sentry_sdk
 from sqlalchemy import asc, desc, text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session as DbSession
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
 from sqlalchemy.sql.functions import coalesce
@@ -21,6 +23,7 @@ from shared.bundle_analysis.models import (
     AssetType,
     Bundle,
     Chunk,
+    DynamicImport,
     Metadata,
     MetadataKey,
     Module,
@@ -113,6 +116,57 @@ class AssetReport:
                 routes.add(route)
 
         return list(routes)
+
+    def dynamically_imported_assets(self) -> List["AssetReport"]:
+        """
+        Returns all dynamically imported assets of the current Asset.
+        This is retrieving by querying all unique Assets in the DynamicImport
+        model for each Chunk of the current Asset.
+        """
+        with get_db_session(self.db_path) as session:
+            # Reattach self.asset to the current session to avoid DetachedInstanceError
+            asset = session.merge(self.asset)
+
+            # Alias the chunks table for the Asset.chunks relationship
+            asset_chunks = aliased(Chunk)
+
+            assets = (
+                session.query(Asset)
+                .distinct()
+                .join(DynamicImport, DynamicImport.asset_id == Asset.id)
+                .join(Chunk, DynamicImport.chunk_id == Chunk.id)
+                .join(asset_chunks, asset_chunks.id == DynamicImport.chunk_id)
+                .filter(asset_chunks.id.in_([chunk.id for chunk in asset.chunks]))
+            )
+
+            return (
+                AssetReport(self.db_path, asset, self.bundle_info)
+                for asset in assets.all()
+            )
+
+
+class BundleRouteReport:
+    """
+    Report wrapper for asset route analytics. Mainly used for BundleRouteComparison
+    Stores a dictionary
+        keys: all routes of the bundle
+        values: a list of distinct Assets (as AssetReports) that is associated with the route
+    """
+
+    def __init__(self, db_path: str, data: Dict[str, List[AssetReport]]):
+        self.db_path = db_path
+        self.data = data
+
+    def get_sizes(self) -> Dict[str, int]:
+        results = {}
+        for route, asset_reports in self.data.items():
+            results[route] = sum([asset.size for asset in asset_reports])
+        return results
+
+    def get_size(self, route: str) -> Optional[int]:
+        if route not in self.data:
+            return None
+        return sum([asset.size for asset in self.data[route]])
 
 
 class BundleReport:
@@ -242,6 +296,45 @@ class BundleReport:
         with get_db_session(self.db_path) as session:
             result = session.query(Bundle).filter(Bundle.id == self.bundle.id).first()
             return result.is_cached
+
+    def routes(self) -> Dict[str, List[AssetReport]]:
+        """
+        Returns a mapping of routes and all Assets (as AssetReports) that belongs to it
+        Note that this ignores dynamically imported Assets (ie only the direct asset)
+        """
+        route_map = defaultdict(list)
+        for asset_report in self.asset_reports():
+            for route in asset_report.routes():
+                route_map[route].append(asset_report)
+        return route_map
+
+    @sentry_sdk.trace
+    def full_route_report(self) -> BundleRouteReport:
+        """
+        A more powerful routes function that will additionally associate dynamically
+        imported Assets into the belonging route. Also this function returns a
+        BundleRouteReport object as this will be used for comparison and additional
+        data manipulation.
+        """
+        return_data = defaultdict(list)  # typing: Dict[str, List[AssetReport]]
+        for route, asset_reports in self.routes().items():
+            # Implements a graph traversal algorithm to get all nodes (Asset) linked by edges
+            # represented as DynamicImport.
+            visited_asset_ids = set()
+            unique_assets = []
+
+            # For each Asset get all the dynamic imported Asset that we will need to traverse into
+            to_be_processed_asset = deque(asset_reports)
+            while to_be_processed_asset:
+                current_asset = to_be_processed_asset.popleft()
+                if current_asset.id not in visited_asset_ids:
+                    visited_asset_ids.add(current_asset.id)
+                    unique_assets.append(current_asset)
+                    to_be_processed_asset += current_asset.dynamically_imported_assets()
+
+            # Add all the assets found to the route we were processing
+            return_data[route] = unique_assets
+        return BundleRouteReport(self.db_path, return_data)
 
 
 class BundleAnalysisReport:

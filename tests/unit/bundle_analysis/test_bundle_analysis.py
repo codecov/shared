@@ -66,6 +66,12 @@ sample_bundle_stats_path_8 = (
     / "sample_bundle_stats_dynamic_imports_2.json"
 )
 
+sample_bundle_stats_path_9 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_dynamic_import_routing_1.json"
+)
+
 
 def _table_rows_count(db_session: DbSession) -> Tuple[int]:
     return (
@@ -961,5 +967,90 @@ def test_bundle_report_dynamic_imports_object_model():
                 },
             ]
 
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_dynamic_imports_fetching():
+    try:
+        report = BundleAnalysisReport()
+        report.ingest(sample_bundle_stats_path_7)
+        bundle_report = report.bundle_report("dynamic_imports")
+
+        # There should only be 3 dynamic imports total
+        dynamic_imports = []
+        for asset in list(bundle_report.asset_reports()):
+            dynamic_imports.extend(asset.dynamically_imported_assets())
+        assert len(dynamic_imports) == 3
+
+        # 1 of them should be from the asset called: LazyComponent-BBSC53Nv.js
+        asset = bundle_report.asset_report_by_name("LazyComponent-BBSC53Nv.js")
+        imports = [item for item in asset.dynamically_imported_assets()]
+        assert len(imports) == 1
+        assert imports[0].hashed_name == "index-C-Z8zsvD.js"
+
+        # 2 of them should be from the asset called: assets/index-oTNkmlIs.js
+        asset = bundle_report.asset_report_by_name("assets/index-oTNkmlIs.js")
+        imports = [item.hashed_name for item in asset.dynamically_imported_assets()]
+        assert len(imports) == 2
+        assert "index-C-Z8zsvD.js" in imports
+        assert "LazyComponent-BBSC53Nv.js" in imports
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_routes():
+    try:
+        report = BundleAnalysisReport()
+        report.ingest(sample_bundle_stats_path_6)
+        bundle_report = report.bundle_report("sample")
+        route_map = bundle_report.routes()
+
+        # Total of 4 routes in this bundle
+        assert len(route_map) == 4
+
+        # "/" route has two Assets
+        assets = sorted([item.hashed_name for item in route_map["/"]])
+        assert assets == [
+            "_app/immutable/nodes/0.CL_S-12h.js",
+            "_app/immutable/nodes/2.BMQFqo-e.js",
+        ]
+
+        # "/about" has one asset
+        assets = sorted([item.hashed_name for item in route_map["/about"]])
+        assert assets == ["_app/immutable/nodes/3.BqQOub2U.js"]
+
+        # "/sverdle" has one asset
+        assets = sorted([item.hashed_name for item in route_map["/sverdle"]])
+        assert assets == ["_app/immutable/nodes/4.CcjRtXvw.js"]
+
+        # "/sverdle/how-to-play" has one asset
+        assets = sorted(
+            [item.hashed_name for item in route_map["/sverdle/how-to-play"]]
+        )
+        assert assets == ["_app/immutable/nodes/5.CwxmUzn6.js"]
+    finally:
+        report.cleanup()
+
+
+def test_bundle_report_route_report_with_dynamic_imports():
+    try:
+        report = BundleAnalysisReport()
+        report.ingest(sample_bundle_stats_path_9)
+        bundle_report = report.bundle_report("dynamic_imports")
+
+        route_report = bundle_report.full_route_report()
+
+        assert route_report.get_sizes() == {
+            "/sverdle/about": 2111,
+            "/sverdle/careers": 2100,
+            "/sverdle/faq": 2110,
+            "/sverdle/users": 2111,
+        }
+        assert route_report.get_size("/sverdle/fake") is None
+        assert route_report.get_size("/sverdle/about") == 2111
+        assert route_report.get_size("/sverdle/careers") == 2100
+        assert route_report.get_size("/sverdle/faq") == 2110
+        assert route_report.get_size("/sverdle/users") == 2111
     finally:
         report.cleanup()

@@ -1,0 +1,66 @@
+{
+    "version": "3",
+    "builtAt": 1732907862271,
+    "duration": 252,
+    "bundleName": "bundle1",
+    "outputPath": "/dist",
+    "bundler": { "name": "rollup", "version": "4.22.4" },
+    "plugin": { "name": "@codecov/sveltekit-plugin", "version": "0.0.1-beta.11" },
+    "assets": [
+      {
+        "name": "A1.js",
+        "size": 1,
+        "gzipSize": 1,
+        "normalized": "index1-*.js"
+      },
+      {
+        "name": "A2.js",
+        "size": 10,
+        "gzipSize": 10,
+        "normalized": "index2-*.js"
+      },
+      {
+        "name": "A3-prime.js",
+        "size": 1000,
+        "gzipSize": 1000,
+        "normalized": "index3-*.js"
+      }
+    ],
+    "chunks": [
+      {
+        "id": "C1",
+        "uniqueId": "C1",
+        "entry": false,
+        "initial": true,
+        "files": ["A1.js"],
+        "names": ["index"],
+        "dynamicImports": ["A2.js"]
+      },
+      {
+        "id": "C2",
+        "uniqueId": "C2",
+        "entry": false,
+        "initial": true,
+        "files": ["A2.js"],
+        "names": ["index"],
+        "dynamicImports": ["A3-prime.js"]
+      }
+    ],
+    "modules": [
+      {
+        "name": "./src/routes/sverdle/about/+page.ts",
+        "size": 189,
+        "chunkUniqueIds": ["C1"]
+      },
+      {
+        "name": "./src/routes/sverdle/users/+page.ts",
+        "size": 189,
+        "chunkUniqueIds": ["C1"]
+      },
+      {
+        "name": "./src/routes/sverdle/faq-prime/+page.ts",
+        "size": 189,
+        "chunkUniqueIds": ["C2"]
+      }
+    ]
+  }

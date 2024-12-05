@@ -7,6 +7,7 @@ from shared.bundle_analysis.comparison import (
     MissingBaseReportError,
     MissingBundleError,
     MissingHeadReportError,
+    RouteChange,
 )
 from shared.bundle_analysis.parser import Parser
 from shared.bundle_analysis.report import (
@@ -33,4 +34,5 @@ __all__ = [
     "ModuleReport",
     "BundleAnalysisReportLoader",
     "StoragePaths",
+    "RouteChange",
 ]

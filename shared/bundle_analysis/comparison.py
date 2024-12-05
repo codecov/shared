@@ -3,7 +3,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property
-from typing import Iterator, List, MutableSet, Optional, Tuple
+from typing import Dict, Iterator, List, MutableSet, Optional, Tuple
 
 import sentry_sdk
 
@@ -12,6 +12,7 @@ from shared.bundle_analysis.report import (
     AssetReport,
     BundleAnalysisReport,
     BundleReport,
+    BundleRouteReport,
 )
 from shared.bundle_analysis.storage import BundleAnalysisReportLoader
 from shared.django_apps.core.models import Repository
@@ -33,36 +34,47 @@ class MissingBundleError(Exception):
 
 
 @dataclass(frozen=True)
-class BundleChange:
+class BaseChange:
+    """
+    Base class for representing changes between two different reports.
+    """
+
+    class ChangeType(Enum):
+        ADDED = "added"
+        REMOVED = "removed"
+        CHANGED = "changed"
+
+    change_type: ChangeType
+    size_delta: int
+
+
+@dataclass(frozen=True)
+class BundleChange(BaseChange):
     """
     Info about how a bundle has changed between two different reports.
     """
 
-    class ChangeType(Enum):
-        ADDED = "added"
-        REMOVED = "removed"
-        CHANGED = "changed"
-
     bundle_name: str
-    change_type: ChangeType
-    size_delta: int
     percentage_delta: float
 
 
 @dataclass(frozen=True)
-class AssetChange:
+class RouteChange(BaseChange):
+    """
+    Info about how a bundle route has changed between two different reports.
+    """
+
+    route_name: str
+    percentage_delta: float
+
+
+@dataclass(frozen=True)
+class AssetChange(BaseChange):
     """
     Info about how an asset has changed between two different reports.
     """
 
-    class ChangeType(Enum):
-        ADDED = "added"
-        REMOVED = "removed"
-        CHANGED = "changed"
-
     asset_name: str
-    change_type: ChangeType
-    size_delta: int
 
 
 AssetMatch = Tuple[Optional[AssetReport], Optional[AssetReport]]
@@ -174,6 +186,68 @@ class BundleComparison:
                 raise Exception("incorrect asset matching logic")  # pragma: no cover
 
         return matches
+
+
+class BundleRoutesComparison:
+    """
+    Compares all routes of two bundle route reports for a given bundle
+    """
+
+    def __init__(
+        self,
+        base_report: BundleRouteReport,
+        head_report: BundleRouteReport,
+    ):
+        self.base_report = base_report
+        self.head_report = head_report
+
+    @sentry_sdk.trace
+    def size_changes(self) -> List[RouteChange]:
+        """
+        Returns a list of changes for each unique route that exists between the base and head.
+        If a route exists on base but not head that is considered "removed" and -100% percentage delta
+        If a route exists on head but not base that is considered "added" and +100% percentage delta
+        Otherwise it is considered "changed" and percentage delta = (diff_size / base_size) * 100
+        """
+        base_sizes = self.base_report.get_sizes()
+        head_sizes = self.head_report.get_sizes()
+
+        all_routes, results = base_sizes.keys() | head_sizes.keys(), []
+        for route_name in all_routes:
+            # Added new route
+            if route_name not in base_sizes or base_sizes[route_name] == 0:
+                results.append(
+                    RouteChange(
+                        route_name=route_name,
+                        change_type=RouteChange.ChangeType.ADDED,
+                        size_delta=head_sizes[route_name],
+                        percentage_delta=100,
+                    )
+                )
+            # Removed old route
+            elif route_name not in head_sizes:
+                results.append(
+                    RouteChange(
+                        route_name=route_name,
+                        change_type=RouteChange.ChangeType.REMOVED,
+                        size_delta=-base_sizes[route_name],
+                        percentage_delta=-100.0,
+                    )
+                )
+            # Changed
+            else:
+                size_delta = head_sizes[route_name] - base_sizes[route_name]
+                percentage_delta = round((size_delta / base_sizes[route_name]) * 100, 2)
+                results.append(
+                    RouteChange(
+                        route_name=route_name,
+                        change_type=RouteChange.ChangeType.CHANGED,
+                        size_delta=size_delta,
+                        percentage_delta=percentage_delta,
+                    )
+                )
+
+        return results
 
 
 class BundleAnalysisComparison:
@@ -310,3 +384,47 @@ class BundleAnalysisComparison:
         if base_bundle_report is None or head_bundle_report is None:
             raise MissingBundleError()
         return BundleComparison(base_bundle_report, head_bundle_report)
+
+    @sentry_sdk.trace
+    def bundle_routes_changes(self) -> Dict[str, List[RouteChange]]:
+        """
+        Comparison for all the routes available to a pair of bundles.
+        """
+        comparison_mapping = {}
+        base_bundle_reports = {
+            bundle_report.name: bundle_report.full_route_report()
+            for bundle_report in self.base_report.bundle_reports()
+        }
+        head_bundle_reports = {
+            bundle_report.name: bundle_report.full_route_report()
+            for bundle_report in self.head_report.bundle_reports()
+        }
+
+        # Combine all bundle route reports with base and head. If either don't exist
+        # then it will be set as None in the comparison param.
+        bundle_names = base_bundle_reports.keys() | head_bundle_reports.keys()
+        comparison_mapping = {
+            name: BundleRoutesComparison(
+                base_bundle_reports.get(name), head_bundle_reports.get(name)
+            ).size_changes()
+            for name in bundle_names
+        }
+
+        return comparison_mapping
+
+    @sentry_sdk.trace
+    def bundle_routes_changes_by_bundle(self, bundle_name: str) -> List[RouteChange]:
+        """
+        Comparison for all the routes available to a pair of bundles.
+        """
+        base_bundle_report = self.base_report.bundle_report(bundle_name)
+        head_bundle_report = self.head_report.bundle_report(bundle_name)
+        if base_bundle_report is None or head_bundle_report is None:
+            raise MissingBundleError()
+
+        base_route_report = base_bundle_report.full_route_report()
+        head_route_report = head_bundle_report.full_route_report()
+
+        return BundleRoutesComparison(
+            base_route_report, head_route_report
+        ).size_changes()
