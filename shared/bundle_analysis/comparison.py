@@ -209,13 +209,13 @@ class BundleRoutesComparison:
         If a route exists on head but not base that is considered "added" and +100% percentage delta
         Otherwise it is considered "changed" and percentage delta = (diff_size / base_size) * 100
         """
-        base_sizes = self.base_report.get_size()
-        head_sizes = self.head_report.get_size()
+        base_sizes = self.base_report.get_sizes()
+        head_sizes = self.head_report.get_sizes()
 
         all_routes, results = base_sizes.keys() | head_sizes.keys(), []
         for route_name in all_routes:
             # Added new route
-            if route_name not in base_sizes:
+            if route_name not in base_sizes or base_sizes[route_name] == 0:
                 results.append(
                     RouteChange(
                         route_name=route_name,

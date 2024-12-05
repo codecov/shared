@@ -1041,16 +1041,16 @@ def test_bundle_report_route_report_with_dynamic_imports():
 
         route_report = bundle_report.full_route_report()
 
-        assert route_report.get_size() == {
+        assert route_report.get_sizes() == {
             "/sverdle/about": 2111,
             "/sverdle/careers": 2100,
             "/sverdle/faq": 2110,
             "/sverdle/users": 2111,
         }
-        assert route_report.get_size_by_route("/sverdle/fake") is None
-        assert route_report.get_size_by_route("/sverdle/about") == 2111
-        assert route_report.get_size_by_route("/sverdle/careers") == 2100
-        assert route_report.get_size_by_route("/sverdle/faq") == 2110
-        assert route_report.get_size_by_route("/sverdle/users") == 2111
+        assert route_report.get_size("/sverdle/fake") is None
+        assert route_report.get_size("/sverdle/about") == 2111
+        assert route_report.get_size("/sverdle/careers") == 2100
+        assert route_report.get_size("/sverdle/faq") == 2110
+        assert route_report.get_size("/sverdle/users") == 2111
     finally:
         report.cleanup()

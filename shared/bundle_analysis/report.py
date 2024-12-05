@@ -157,13 +157,13 @@ class BundleRouteReport:
         self.db_path = db_path
         self.data = data
 
-    def get_size(self) -> Dict[str, int]:
+    def get_sizes(self) -> Dict[str, int]:
         results = {}
         for route, asset_reports in self.data.items():
             results[route] = sum([asset.size for asset in asset_reports])
         return results
 
-    def get_size_by_route(self, route: str) -> Optional[int]:
+    def get_size(self, route: str) -> Optional[int]:
         if route not in self.data:
             return None
         return sum([asset.size for asset in self.data[route]])
