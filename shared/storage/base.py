@@ -1,6 +1,7 @@
 from typing import BinaryIO, overload
 
 CHUNK_SIZE = 1024 * 32
+PART_SIZE = 1024 * 1024 * 20  # 20MiB
 
 
 # Interface class for interfacing with codecov's underlying storage layer

@@ -17,7 +17,7 @@ from shared.django_apps.rollouts.models import (
     Platform,
     RolloutUniverse,
 )
-from shared.django_apps.utils.model_utils import rollout_universe_to_override_string
+from shared.django_apps.utils.rollout_utils import rollout_universe_to_override_string
 
 log = logging.getLogger("__name__")
 
