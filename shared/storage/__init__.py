@@ -7,16 +7,32 @@ from shared.storage.gcp import GCPStorageService
 from shared.storage.minio import MinioStorageService
 from shared.storage.new_minio import NewMinioStorageService
 
+_storage_service_cache: dict[str, BaseStorageService] = {}
+
 
 def get_appropriate_storage_service(
     repoid: int | None = None,
 ) -> BaseStorageService:
     chosen_storage: str = get_config("services", "chosen_storage", default="minio")  # type: ignore
-    return _get_appropriate_storage_service_given_storage(chosen_storage, repoid)
+
+    # TODO: remove this later, as it's temporary for testing the new_minio client
+    if (
+        chosen_storage == "minio"
+        and repoid
+        and USE_NEW_MINIO.check_value(repoid, default=False)
+    ):
+        chosen_storage = "new_minio"
+
+    if chosen_storage not in _storage_service_cache:
+        _storage_service_cache[chosen_storage] = (
+            _get_appropriate_storage_service_given_storage(chosen_storage)
+        )
+
+    return _storage_service_cache[chosen_storage]
 
 
 def _get_appropriate_storage_service_given_storage(
-    chosen_storage: str, repoid: int | None
+    chosen_storage: str,
 ) -> BaseStorageService:
     if chosen_storage == "gcp":
         gcp_config = get_config("services", "gcp", default={})
@@ -30,8 +46,9 @@ def _get_appropriate_storage_service_given_storage(
         aws_config = get_config("services", "aws", default={})
         aws_service = AWSStorageService(aws_config)
         return StorageWithFallbackService(gcp_service, aws_service)
+    elif chosen_storage == "new_minio":
+        minio_config = get_config("services", "minio", default={})
+        return NewMinioStorageService(minio_config)
     else:
         minio_config = get_config("services", "minio", default={})
-        if repoid and USE_NEW_MINIO.check_value(repoid, default=False):
-            return NewMinioStorageService(minio_config)
         return MinioStorageService(minio_config)
