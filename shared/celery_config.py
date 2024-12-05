@@ -113,6 +113,7 @@ gh_app_webhook_check_task_name = (
 brolly_stats_rollup_task_name = (
     f"app.cron.{TaskConfigGroup.daily.value}.BrollyStatsRollupTask"
 )
+flare_cleanup_task_name = f"app.cron.{TaskConfigGroup.daily.value}.FlareCleanupTask"
 
 
 def get_task_group(task_name: str) -> Optional[str]:
@@ -169,7 +170,7 @@ class BaseCeleryConfig(object):
     worker_prefetch_multiplier = int(
         get_config("setup", "tasks", "celery", "prefetch", default=1)
     )
-    # !!! NEVER 0 !!! 0 == infinate
+    # !!! NEVER 0 !!! 0 == infinite
 
     # http://celery.readthedocs.org/en/latest/configuration.html#celeryd-task-soft-time-limit
     task_soft_time_limit = int(
