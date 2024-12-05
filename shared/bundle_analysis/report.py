@@ -304,8 +304,10 @@ class BundleReport:
         """
         route_map = defaultdict(list)
         for asset_report in self.asset_reports():
-            for route in asset_report.routes():
-                route_map[route].append(asset_report)
+            routes = asset_report.routes()
+            if routes is not None:
+                for route in routes:
+                    route_map[route].append(asset_report)
         return route_map
 
     @sentry_sdk.trace

@@ -66,6 +66,8 @@ class RouteChange(BaseChange):
 
     route_name: str
     percentage_delta: float
+    size_base: int
+    size_head: int
 
 
 @dataclass(frozen=True)
@@ -222,6 +224,8 @@ class BundleRoutesComparison:
                         change_type=RouteChange.ChangeType.ADDED,
                         size_delta=head_sizes[route_name],
                         percentage_delta=100,
+                        size_base=0,
+                        size_head=head_sizes[route_name],
                     )
                 )
             # Removed old route
@@ -232,6 +236,8 @@ class BundleRoutesComparison:
                         change_type=RouteChange.ChangeType.REMOVED,
                         size_delta=-base_sizes[route_name],
                         percentage_delta=-100.0,
+                        size_base=base_sizes[route_name],
+                        size_head=0,
                     )
                 )
             # Changed
@@ -244,6 +250,8 @@ class BundleRoutesComparison:
                         change_type=RouteChange.ChangeType.CHANGED,
                         size_delta=size_delta,
                         percentage_delta=percentage_delta,
+                        size_base=base_sizes[route_name],
+                        size_head=head_sizes[route_name],
                     )
                 )
 
