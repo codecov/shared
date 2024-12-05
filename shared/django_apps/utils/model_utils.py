@@ -58,7 +58,7 @@ class ArchiveField:
             rehydrate_fn=rehidrate_data,
             default_value='default'
         )
-    For a full example check utils/tests/unit/test_model_utils.py
+    For a full example check utils/tests/unit/test_model_utils.py in worker
     """
 
     def __init__(
