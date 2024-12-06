@@ -270,7 +270,6 @@ config_schema = {
                     "bucket": {"type": "string"},
                     "region": {"type": "string"},
                     "expire_raw_after_n_days": {"type": "boolean"},
-                    "periodic_callback_ms": {"type": ("boolean", "integer")},
                     "verify_ssl": {"type": "boolean"},
                 },
             },
