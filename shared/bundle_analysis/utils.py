@@ -14,6 +14,7 @@ class AssetRoutePluginName(Enum):
     NUXT = "@codecov/nuxt-plugin"
     SOLIDSTART = "@codecov/solidstart-plugin"
     SVELTEKIT = "@codecov/sveltekit-plugin"
+    ASTRO = "@codecov/astro-plugin"
 
 
 class AssetRoute:
@@ -33,6 +34,10 @@ class AssetRoute:
             AssetRoutePluginName.SVELTEKIT: (
                 self._compute_sveltekit,
                 ["src", "routes"],
+            ),
+            AssetRoutePluginName.ASTRO: (
+                self._compute_astro,
+                ["src", "pages"],
             ),
         }
         self._compute_from_filename = self._from_filename_map[plugin][0]
@@ -208,6 +213,50 @@ class AssetRoute:
 
         # Build path from items excluding 2 prefix and suffix
         return "/" + "/".join(path_items[2:-1])
+
+    def _compute_astro(self, filename: str) -> Optional[str]:
+        """
+        Computes the route for Astro plugin.
+        Doc: https://docs.astro.build/en/guides/routing
+        """
+        path_items = Path(filename).parts
+
+        # Check if contains at least 3 parts (2 prefix and suffix)
+        if len(path_items) < 3:
+            return None
+
+        # Check if 2 prefix is present
+        if path_items[0] != self._prefix[0] or path_items[1] != self._prefix[1]:
+            return None
+
+        path_items = list(path_items)
+        file = path_items[-1]
+
+        # Remove parameters after extension
+        if file.rfind("?") >= 0:
+            file = file[: file.rfind("?")]
+
+        # Check if suffix is a file that with valid extensions
+        if not self._is_file(
+            file, extensions=["astro", "md", "mdx", "html", "js", "ts"]
+        ):
+            return None
+
+        # Excludes pages if anywhere in the path it starts with _
+        if any([path.startswith("_") for path in path_items]):
+            return None
+
+        # Get the file name without extension
+        file = file[: file.rfind(".")]
+
+        path_items[-1] = file
+
+        # Drop file index if exists
+        if file == "index":
+            path_items.pop()
+
+        # Build path from items excluding 2 prefix
+        return "/" + "/".join(path_items[2:])
 
     def get_from_filename(self, filename: str) -> Optional[str]:
         """

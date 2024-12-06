@@ -415,3 +415,102 @@ def test_bundle_analysis_route_comparison_by_bundle_name_not_exist():
 
     with pytest.raises(MissingBundleError):
         comparison.bundle_routes_changes_by_bundle("bundle2")
+
+
+def test_bundle_analysis_route_comparison_different_bundle_names():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(head_report_bundle_stats_path_route_base_1)
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path_route_head_2)
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    route_changes = comparison.bundle_routes_changes()
+
+    EXPECTED_CHANGES = {
+        "bundle1": [
+            RouteChange(
+                change_type=RouteChange.ChangeType.REMOVED,
+                size_delta=-111,
+                route_name="/sverdle/about",
+                percentage_delta=-100.0,
+                size_base=111,
+                size_head=0,
+            ),
+            RouteChange(
+                change_type=RouteChange.ChangeType.REMOVED,
+                size_delta=-110,
+                route_name="/sverdle/faq",
+                percentage_delta=-100.0,
+                size_base=110,
+                size_head=0,
+            ),
+            RouteChange(
+                change_type=RouteChange.ChangeType.REMOVED,
+                size_delta=-111,
+                route_name="/sverdle/users",
+                percentage_delta=-100.0,
+                size_base=111,
+                size_head=0,
+            ),
+        ],
+        "bundle2": [
+            RouteChange(
+                change_type=RouteChange.ChangeType.ADDED,
+                size_delta=10110,
+                route_name="/sverdle/about",
+                percentage_delta=100,
+                size_base=0,
+                size_head=10110,
+            ),
+            RouteChange(
+                change_type=RouteChange.ChangeType.ADDED,
+                size_delta=10100,
+                route_name="/sverdle/faq-prime",
+                percentage_delta=100,
+                size_base=0,
+                size_head=10100,
+            ),
+            RouteChange(
+                change_type=RouteChange.ChangeType.ADDED,
+                size_delta=10110,
+                route_name="/sverdle/users",
+                percentage_delta=100,
+                size_base=0,
+                size_head=10110,
+            ),
+        ],
+    }
+
+    assert len(route_changes) == 2
+    assert (
+        sorted(route_changes["bundle1"], key=lambda x: x.route_name)
+        == EXPECTED_CHANGES["bundle1"]
+    )
+    assert (
+        sorted(route_changes["bundle2"], key=lambda x: x.route_name)
+        == EXPECTED_CHANGES["bundle2"]
+    )
