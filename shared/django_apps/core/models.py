@@ -418,6 +418,11 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
         return self.pullid
 
     def should_write_to_storage(self) -> bool:
+        """
+        This only applies to the flare field.
+        Flare is used to draw static graphs (see GraphHandler view in api) and can be large.
+        Flare cleanup is handled by FlareCleanupTask in worker.
+        """
         if self.repository is None or self.repository.author is None:
             return False
         is_codecov_repo = self.repository.author.username == "codecov"
@@ -430,7 +435,8 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
     _flare = models.JSONField(db_column="flare", null=True)
     _flare_storage_path = models.URLField(db_column="flare_storage_path", null=True)
     flare = ArchiveField(
-        should_write_to_storage_fn=should_write_to_storage, default_value_class=dict
+        should_write_to_storage_fn=should_write_to_storage,
+        default_value_class=dict,
     )
 
     def save(self, *args, **kwargs):
