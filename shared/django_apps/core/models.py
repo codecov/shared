@@ -421,16 +421,8 @@ class Pull(ExportModelOperationsMixin("core.pull"), models.Model):
         """
         This only applies to the flare field.
         Flare is used to draw static graphs (see GraphHandler view in api) and can be large.
-        The majority of flare graphs are used in pr comments, so we keep the (maybe large) flare available while
-        the pull is OPEN. If the pull is not OPEN, we dump the flare to save space. We will recreate it on
-        the fly if it is needed for a non-OPEN pull (see GraphHandler view in api).
         Flare cleanup is handled by FlareCleanupTask in worker.
         """
-        if self.state != PullStates.OPEN.value:
-            # while a pull is OPEN, we check whether to write_to_storage
-            # when a pull is no longer OPEN, we no longer want the flare in storage.
-            # The nightly cron job cleans up the value in storage (see FlareCleanupTask in worker)
-            return False
         if self.repository is None or self.repository.author is None:
             return False
         is_codecov_repo = self.repository.author.username == "codecov"
