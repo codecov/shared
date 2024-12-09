@@ -247,6 +247,61 @@ def test_bundle_asset_route_sveltekit_get_from_filename():
         assert result == expected, f"Failed for invalid case: {filename}"
 
 
+def test_bundle_asset_route_asset_route_astro_get_from_filename():
+    """
+    Test the get_from_filename method for the Astro plugin.
+    """
+    plugin = AssetRoutePluginName.ASTRO
+
+    # Valid cases
+    valid_cases = [
+        ("./src/pages/index.astro", "/"),  # Root
+        (
+            "src/pages/index.ts?__client-route",
+            "/",
+        ),  # With parameter after extension
+        ("src/pages/about.md", "/about"),  # Base case
+        ("src/pages/concerts/new-york.mdx", "/concerts/new-york"),  # Multiple
+        ("src/pages/concerts/index.ts", "/concerts"),  # Dynamic segments
+        (
+            "src/pages/[concerts].html",
+            "/[concerts]",
+        ),  # HTML
+        (
+            "src/pages/[city]/[..concerts]/[band].astro",
+            "/[city]/[..concerts]/[band]",
+        ),  # Dot dot expansion
+        # Ignoring underscore prefix
+        ("src/pages/_city/index.ts", None),
+        ("src/pages/city/_bank/index.ts", None),
+        ("src/pages/city/bank/_index.ts", None),
+        ("src/pages/city/bank/_post.ts", None),
+    ]
+
+    # Invalid cases
+    invalid_cases = [
+        ("hello.js", None),  # Contain at lease 3 parts
+        ("app/bout/hello.js", None),  # Prefix is not present
+        ("gap/routest/hello.js", None),  # Prefix is not present
+        ("src/pages/.hiddenfile", None),  # Hidden file (no valid name)
+        ("src/pages/invalidfile.", None),  # Ends with a dot
+        ("src/pages/invalidfile", None),  # No dot (not a file)
+        ("src/pages/badextension.py", None),  # Not valid extension
+    ]
+
+    # Test valid cases
+    for filename, expected in valid_cases:
+        asset_route = AssetRoute(plugin=plugin)
+        result = asset_route.get_from_filename(filename=filename)
+        assert result == expected, f"Failed for valid case: {filename}"
+
+    # Test invalid cases
+    for filename, expected in invalid_cases:
+        asset_route = AssetRoute(plugin=plugin)
+        result = asset_route.get_from_filename(filename=filename)
+        assert result == expected, f"Failed for invalid case: {filename}"
+
+
 def test_bundle_asset_route_exception_handling():
     """
     Test that get_from_filename correctly handles exceptions and logs them.

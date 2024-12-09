@@ -413,7 +413,12 @@ class BundleAnalysisComparison:
         bundle_names = base_bundle_reports.keys() | head_bundle_reports.keys()
         comparison_mapping = {
             name: BundleRoutesComparison(
-                base_bundle_reports.get(name), head_bundle_reports.get(name)
+                base_bundle_reports.get(
+                    name, BundleRouteReport(self.base_report.db_path, {})
+                ),
+                head_bundle_reports.get(
+                    name, BundleRouteReport(self.head_report.db_path, {})
+                ),
             ).size_changes()
             for name in bundle_names
         }
