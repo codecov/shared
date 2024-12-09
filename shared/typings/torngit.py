@@ -1,5 +1,10 @@
+from enum import Enum
 from typing import Dict, List, Optional, TypedDict, Union
 
+class UploadType(Enum):
+    COVERAGE = "coverage"
+    TEST_RESULTS = "test_results"
+    BUNDLE_ANALYSIS = "bundle_analysis"
 
 class OwnerInfo(TypedDict):
     service_id: str
@@ -25,9 +30,13 @@ class GithubInstallationInfo(TypedDict):
     app_id: Optional[int]
     pem_path: Optional[str]
 
+class AdditionalData(TypedDict):
+    upload_type: Optional[UploadType]
+
 
 class TorngitInstanceData(TypedDict):
     owner: Union[OwnerInfo, Dict]
     repo: Union[RepoInfo, Dict]
     fallback_installations: List[Optional[GithubInstallationInfo]] | None
     installation: Optional[GithubInstallationInfo]
+    additional_data: Optional[AdditionalData]
