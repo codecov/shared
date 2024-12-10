@@ -835,12 +835,12 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_sentry_plan == True
         assert self.plan_service.is_team_plan == False
         assert self.plan_service.is_free_plan == False
-        assert self.plan_service.is_pro_plan == False
+        assert self.plan_service.is_pro_plan == True
         assert self.plan_service.is_enterprise_plan == False
 
     def test_is_free_plan(self):
         self.current_org = OwnerFactory(
-            plan=PlanName.FREE_PLAN.value,
+            plan=PlanName.FREE_PLAN_NAME.value,
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
@@ -868,7 +868,7 @@ class PlanServiceIs___PlanTests(TestCase):
 
     def test_is_enterprise_plan(self):
         self.current_org = OwnerFactory(
-            plan=PlanName.ENTERPRISE_PLAN.value,
+            plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value,
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
