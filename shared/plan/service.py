@@ -316,39 +316,27 @@ class PlanService:
 
     @property
     def is_enterprise_plan(self) -> bool:
-        if self.plan_name in ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS:
-            return True
-        return False
+        return self.plan_name in ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS
 
     @property
     def is_free_plan(self) -> bool:
-        if self.plan_name in FREE_PLAN_REPRESENTATIONS:
-            return True
-        return False
+        return self.plan_name in FREE_PLAN_REPRESENTATIONS
 
     @property
     def is_pro_plan(self) -> bool:
-        if (
+        return (
             self.plan_name in PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS
             or self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS
-        ):
-            return True
-        return False
+        )
 
     @property
     def is_sentry_plan(self) -> bool:
-        if self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS:
-            return True
-        return False
+        return self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS
 
     @property
     def is_team_plan(self) -> bool:
-        if self.plan_name in TEAM_PLAN_REPRESENTATIONS:
-            return True
-        return False
+        return self.plan_name in TEAM_PLAN_REPRESENTATIONS
 
     @property
     def is_trial_plan(self) -> bool:
-        if self.plan_name in TRIAL_PLAN_REPRESENTATION:
-            return True
-        return False
+        return self.plan_name in TRIAL_PLAN_REPRESENTATION
