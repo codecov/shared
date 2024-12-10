@@ -786,3 +786,96 @@ class AvailablePlansOngoingTrial(TestCase):
 
         # Can not do Team plan when at 11 activated users
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
+
+
+class PlanServiceIs___PlanTests(TestCase):
+    def test_is_trial_plan(self):
+        self.current_org = OwnerFactory(
+            plan=PlanName.TRIAL_PLAN_NAME.value,
+            trial_start_date=datetime.utcnow(),
+            trial_end_date=datetime.utcnow() + timedelta(days=14),
+            trial_status=TrialStatus.ONGOING.value,
+            plan_user_count=1000,
+            plan_activated_users=None,
+        )
+        self.owner = OwnerFactory()
+        self.plan_service = PlanService(current_org=self.current_org)
+
+        assert self.plan_service.is_trial_plan == True
+        assert self.plan_service.is_sentry_plan == False
+        assert self.plan_service.is_team_plan == False
+        assert self.plan_service.is_free_plan == False
+        assert self.plan_service.is_pro_plan == False
+        assert self.plan_service.is_enterprise_plan == False
+
+    def test_is_team_plan(self):
+        self.current_org = OwnerFactory(
+            plan=PlanName.TEAM_MONTHLY.value,
+            trial_status=TrialStatus.EXPIRED.value,
+        )
+        self.owner = OwnerFactory()
+        self.plan_service = PlanService(current_org=self.current_org)
+
+        assert self.plan_service.is_trial_plan == False
+        assert self.plan_service.is_sentry_plan == False
+        assert self.plan_service.is_team_plan == True
+        assert self.plan_service.is_free_plan == False
+        assert self.plan_service.is_pro_plan == False
+        assert self.plan_service.is_enterprise_plan == False
+
+    def test_is_sentry_plan(self):
+        self.current_org = OwnerFactory(
+            plan=PlanName.SENTRY_MONTHLY.value,
+            trial_status=TrialStatus.EXPIRED.value,
+        )
+        self.owner = OwnerFactory()
+        self.plan_service = PlanService(current_org=self.current_org)
+
+        assert self.plan_service.is_trial_plan == False
+        assert self.plan_service.is_sentry_plan == True
+        assert self.plan_service.is_team_plan == False
+        assert self.plan_service.is_free_plan == False
+        assert self.plan_service.is_pro_plan == True
+        assert self.plan_service.is_enterprise_plan == False
+
+    def test_is_free_plan(self):
+        self.current_org = OwnerFactory(
+            plan=PlanName.FREE_PLAN_NAME.value,
+        )
+        self.owner = OwnerFactory()
+        self.plan_service = PlanService(current_org=self.current_org)
+
+        assert self.plan_service.is_trial_plan == False
+        assert self.plan_service.is_sentry_plan == False
+        assert self.plan_service.is_team_plan == False
+        assert self.plan_service.is_free_plan == True
+        assert self.plan_service.is_pro_plan == False
+        assert self.plan_service.is_enterprise_plan == False
+
+    def test_is_pro_plan(self):
+        self.current_org = OwnerFactory(
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
+        )
+        self.owner = OwnerFactory()
+        self.plan_service = PlanService(current_org=self.current_org)
+
+        assert self.plan_service.is_trial_plan == False
+        assert self.plan_service.is_sentry_plan == False
+        assert self.plan_service.is_team_plan == False
+        assert self.plan_service.is_free_plan == False
+        assert self.plan_service.is_pro_plan == True
+        assert self.plan_service.is_enterprise_plan == False
+
+    def test_is_enterprise_plan(self):
+        self.current_org = OwnerFactory(
+            plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value,
+        )
+        self.owner = OwnerFactory()
+        self.plan_service = PlanService(current_org=self.current_org)
+
+        assert self.plan_service.is_trial_plan == False
+        assert self.plan_service.is_sentry_plan == False
+        assert self.plan_service.is_team_plan == False
+        assert self.plan_service.is_free_plan == False
+        assert self.plan_service.is_pro_plan == False
+        assert self.plan_service.is_enterprise_plan == True

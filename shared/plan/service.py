@@ -7,6 +7,7 @@ from shared.django_apps.codecov.commands.exceptions import ValidationError
 from shared.django_apps.codecov_auth.models import Owner
 from shared.plan.constants import (
     BASIC_PLAN,
+    ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
     FREE_PLAN,
     FREE_PLAN_REPRESENTATIONS,
     PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS,
@@ -16,6 +17,7 @@ from shared.plan.constants import (
     TRIAL_PLAN_REPRESENTATION,
     TRIAL_PLAN_SEATS,
     USER_PLAN_REPRESENTATIONS,
+    PlanBillingRate,
     PlanData,
     PlanName,
     TrialDaysAmount,
@@ -124,7 +126,7 @@ class PlanService:
         return self.plan_data.marketing_name
 
     @property
-    def billing_rate(self) -> Optional[str]:
+    def billing_rate(self) -> Optional[PlanBillingRate]:
         """Returns the billing rate for the plan."""
         return self.plan_data.billing_rate
 
@@ -282,7 +284,7 @@ class PlanService:
         return self.current_org.trial_end_date
 
     @property
-    def trial_total_days(self) -> Optional[int]:
+    def trial_total_days(self) -> Optional[TrialDaysAmount]:
         """Returns the total number of trial days."""
         return self.plan_data.trial_days
 
@@ -311,3 +313,30 @@ class PlanService:
             self.plan_activated_users is None
             or len(self.plan_activated_users) < self.plan_user_count
         )
+
+    @property
+    def is_enterprise_plan(self) -> bool:
+        return self.plan_name in ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS
+
+    @property
+    def is_free_plan(self) -> bool:
+        return self.plan_name in FREE_PLAN_REPRESENTATIONS
+
+    @property
+    def is_pro_plan(self) -> bool:
+        return (
+            self.plan_name in PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS
+            or self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS
+        )
+
+    @property
+    def is_sentry_plan(self) -> bool:
+        return self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS
+
+    @property
+    def is_team_plan(self) -> bool:
+        return self.plan_name in TEAM_PLAN_REPRESENTATIONS
+
+    @property
+    def is_trial_plan(self) -> bool:
+        return self.plan_name in TRIAL_PLAN_REPRESENTATION
