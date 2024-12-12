@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from dataclasses import asdict, dataclass
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
@@ -252,3 +253,8 @@ class ReportFileSummary(object):
             None,
             self.diff_totals,
         )
+
+class UploadType(Enum):
+    COVERAGE = "coverage"
+    TEST_RESULTS = "test_results"
+    BUNDLE_ANALYSIS = "bundle_analysis"

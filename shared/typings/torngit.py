@@ -1,10 +1,6 @@
-from enum import Enum
-from typing import Dict, List, Optional, TypedDict, Union
+from typing import Dict, List, Optional, TypedDict, Union, NotRequired
+from shared.reports.types import UploadType
 
-class UploadType(Enum):
-    COVERAGE = "coverage"
-    TEST_RESULTS = "test_results"
-    BUNDLE_ANALYSIS = "bundle_analysis"
 
 class OwnerInfo(TypedDict):
     service_id: str
@@ -31,7 +27,7 @@ class GithubInstallationInfo(TypedDict):
     pem_path: Optional[str]
 
 class AdditionalData(TypedDict):
-    upload_type: Optional[UploadType]
+    upload_type: NotRequired[UploadType]
 
 
 class TorngitInstanceData(TypedDict):
