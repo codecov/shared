@@ -611,7 +611,10 @@ class Github(TorngitBaseAdapter):
         self, body: dict, issueid: int | None = None
     ) -> dict:
         body = dict(body=body)
-        if self.data.get("additional_data", {}).get("upload_type") != UploadType.BUNDLE_ANALYSIS:
+        if (
+            self.data.get("additional_data", {}).get("upload_type")
+            != UploadType.BUNDLE_ANALYSIS
+        ):
             try:
                 ownerid = self.data["owner"].get("ownerid")
                 if (

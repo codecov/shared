@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, TypedDict, Union, NotRequired
+from typing import Dict, List, NotRequired, Optional, TypedDict, Union
+
 from shared.reports.types import UploadType
 
 
@@ -25,6 +26,7 @@ class GithubInstallationInfo(TypedDict):
     # All other apps need app_id and pem_path
     app_id: Optional[int]
     pem_path: Optional[str]
+
 
 class AdditionalData(TypedDict):
     upload_type: NotRequired[UploadType]

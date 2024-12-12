@@ -1,7 +1,7 @@
 import logging
-from enum import Enum
 from dataclasses import asdict, dataclass
 from decimal import Decimal
+from enum import Enum
 from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
 log = logging.getLogger(__name__)
@@ -253,6 +253,7 @@ class ReportFileSummary(object):
             None,
             self.diff_totals,
         )
+
 
 class UploadType(Enum):
     COVERAGE = "coverage"
