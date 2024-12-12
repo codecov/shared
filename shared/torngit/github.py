@@ -35,7 +35,7 @@ from shared.torngit.exceptions import (
 from shared.torngit.response_types import ProviderPull
 from shared.torngit.status import Status
 from shared.typings.oauth_token_types import OauthConsumerToken
-from shared.typings.torngit import GithubInstallationInfo
+from shared.typings.torngit import GithubInstallationInfo, UploadType
 from shared.utils.urls import url_concat
 
 log = logging.getLogger(__name__)
@@ -611,26 +611,30 @@ class Github(TorngitBaseAdapter):
         self, body: dict, issueid: int | None = None
     ) -> dict:
         body = dict(body=body)
-        try:
-            ownerid = self.data["owner"].get("ownerid")
-            if (
-                issueid is not None
-                and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
-                    identifier=ownerid, default=False
-                )
-            ):
-                bot_name = get_config(
-                    "github", "comment_action_bot_name", default="sentry"
-                )
-                body["actions"] = [
-                    {
-                        "name": "Generate Unit Tests",
-                        "type": "copilot-chat",
-                        "prompt": f"@{bot_name} generate tests for this PR.",
-                    }
-                ]
-        except Exception:
-            pass
+        if (
+            self.data.get("additional_data", {}).get("upload_type")
+            != UploadType.BUNDLE_ANALYSIS
+        ):
+            try:
+                ownerid = self.data["owner"].get("ownerid")
+                if (
+                    issueid is not None
+                    and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
+                        identifier=ownerid, default=False
+                    )
+                ):
+                    bot_name = get_config(
+                        "github", "comment_action_bot_name", default="sentry"
+                    )
+                    body["actions"] = [
+                        {
+                            "name": "Generate Unit Tests",
+                            "type": "copilot-chat",
+                            "prompt": f"@{bot_name} generate tests for this PR.",
+                        }
+                    ]
+            except Exception:
+                pass
 
         return body
 

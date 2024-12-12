@@ -81,6 +81,7 @@ class TorngitBaseAdapter(object):
             "repo": {},
             "fallback_installations": None,
             "installation": None,
+            "additional_data": {},
         }
         self.verify_ssl = verify_ssl
         self.data.update(kwargs)

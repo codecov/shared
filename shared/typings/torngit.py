@@ -1,4 +1,6 @@
-from typing import Dict, List, Optional, TypedDict, Union
+from typing import Dict, List, NotRequired, Optional, TypedDict, Union
+
+from shared.reports.types import UploadType
 
 
 class OwnerInfo(TypedDict):
@@ -26,8 +28,13 @@ class GithubInstallationInfo(TypedDict):
     pem_path: Optional[str]
 
 
+class AdditionalData(TypedDict):
+    upload_type: NotRequired[UploadType]
+
+
 class TorngitInstanceData(TypedDict):
     owner: Union[OwnerInfo, Dict]
     repo: Union[RepoInfo, Dict]
     fallback_installations: List[Optional[GithubInstallationInfo]] | None
     installation: Optional[GithubInstallationInfo]
+    additional_data: Optional[AdditionalData]
