@@ -18,11 +18,12 @@ def test_validate_install_configuration_simple(mocker):
 
 
 def test_validate_install_configuration_invalid(mocker):
-    mock_warning = mocker.patch.object(install_log, "warning")
+    install_log.setLevel("DEBUG")
+    mock_debug = mocker.patch.object(install_log, "debug")
     assert validate_install_configuration(
         {"setup": {"codecov_url": "http://codecov.company.com"}, "gitlab": 1}
     ) == {"setup": {"codecov_url": "http://codecov.company.com"}, "gitlab": 1}
-    assert mock_warning.call_count == 1
+    assert mock_debug.call_count == 1
 
 
 def test_validate_install_configuration_with_user_yaml(mocker):
@@ -448,6 +449,7 @@ def test_admins(mocker):
 
 
 def test_validate_install_configuration_raise_warning(mocker):
+    install_log.setLevel("DEBUG")
     mock_debug = mocker.patch.object(install_log, "debug")
     input = {
         "setup": {
