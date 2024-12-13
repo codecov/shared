@@ -611,30 +611,29 @@ class Github(TorngitBaseAdapter):
         self, body: dict, issueid: int | None = None
     ) -> dict:
         body = dict(body=body)
-        if (
-            self.data.get("additional_data", {}).get("upload_type")
-            != UploadType.BUNDLE_ANALYSIS
-        ):
-            try:
-                ownerid = self.data["owner"].get("ownerid")
-                if (
-                    issueid is not None
-                    and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
-                        identifier=ownerid, default=False
-                    )
-                ):
-                    bot_name = get_config(
-                        "github", "comment_action_bot_name", default="sentry"
-                    )
-                    body["actions"] = [
-                        {
-                            "name": "Generate Unit Tests",
-                            "type": "copilot-chat",
-                            "prompt": f"@{bot_name} generate tests for this PR.",
-                        }
-                    ]
-            except Exception:
-                pass
+        upload_type = self.data.get("additional_data", {}).get("upload_type")
+        if upload_type in [UploadType.BUNDLE_ANALYSIS, UploadType.TEST_RESULTS]:
+            return body
+        try:
+            ownerid = self.data["owner"].get("ownerid")
+            if (
+                issueid is not None
+                and await INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER.check_value_async(
+                    identifier=ownerid, default=False
+                )
+            ):
+                bot_name = get_config(
+                    "github", "comment_action_bot_name", default="sentry"
+                )
+                body["actions"] = [
+                    {
+                        "name": "Generate Unit Tests",
+                        "type": "copilot-chat",
+                        "prompt": f"@{bot_name} generate tests for this PR.",
+                    }
+                ]
+        except Exception:
+            pass
 
         return body
 
