@@ -448,7 +448,7 @@ def test_admins(mocker):
 
 
 def test_validate_install_configuration_raise_warning(mocker):
-    mock_warning = mocker.patch.object(install_log, "warning")
+    mock_debug = mocker.patch.object(install_log, "debug")
     input = {
         "setup": {
             "tasks": {
@@ -464,7 +464,7 @@ def test_validate_install_configuration_raise_warning(mocker):
         }
     }
     validate_install_configuration(input)
-    mock_warning.assert_called_with(
+    mock_debug.assert_called_with(
         "Configuration considered invalid, using dict as it is",
         extra={
             "errors": {
