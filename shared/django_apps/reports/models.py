@@ -373,7 +373,8 @@ class ReducedError(BaseModel):
         ]
 
 
-class Flake(BaseModel):
+class Flake(models.Model):
+    id = models.BigAutoField(primary_key=True)
     repository = models.ForeignKey(
         "core.Repository",
         db_column="repoid",
