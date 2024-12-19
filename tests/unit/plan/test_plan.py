@@ -349,6 +349,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -365,6 +366,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result.append(FREE_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -380,6 +382,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -393,6 +396,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -411,6 +415,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -429,6 +434,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -445,6 +451,7 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -481,6 +488,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -496,6 +504,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -509,6 +518,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -527,6 +537,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -545,6 +556,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -563,6 +575,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -594,6 +607,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -611,6 +625,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -628,6 +643,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -643,6 +659,9 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.expected_result.append(BASIC_PLAN)
         self.expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         self.expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        self.expected_result = [
+            result.convert_to_DTO() for result in self.expected_result
+        ]
 
     def test_currently_team_plan(self):
         self.current_org = OwnerFactory(
@@ -700,6 +719,10 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.expected_result.append(BASIC_PLAN)
         self.expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         self.expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        self.expected_result = [
+            result.convert_to_DTO() for result in self.expected_result
+        ]
+
         assert (
             self.plan_service.available_plans(owner=self.owner) == self.expected_result
         )
@@ -734,6 +757,7 @@ class AvailablePlansOngoingTrial(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         # Can do Team plan when plan_activated_users is null
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
@@ -751,6 +775,7 @@ class AvailablePlansOngoingTrial(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         # Can not do Team plan when at 11 activated users
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
@@ -765,6 +790,7 @@ class AvailablePlansOngoingTrial(TestCase):
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         # Can do Team plan when plan_activated_users is null
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
@@ -783,6 +809,7 @@ class AvailablePlansOngoingTrial(TestCase):
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
         # Can not do Team plan when at 11 activated users
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
