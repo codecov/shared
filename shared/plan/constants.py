@@ -90,6 +90,23 @@ class PlanData:
     monthly_uploads_limit: Optional[MonthlyUploadLimits]
     trial_days: Optional[TrialDaysAmount]
 
+    def convert_to_DTO(self) -> dict:
+        return {
+            "marketing_name": self.marketing_name,
+            "value": self.value,
+            "billing_rate": self.billing_rate,
+            "base_unit_price": self.base_unit_price,
+            "benefits": self.benefits,
+            "tier_name": self.tier_name,
+            "monthly_uploads_limit": self.monthly_uploads_limit,
+            "trial_days": self.trial_days,
+            "is_free_plan": self.tier_name == TierName.BASIC,
+            "is_pro_plan": self.tier_name == TierName.PRO,
+            "is_team_plan": self.tier_name == TierName.TEAM,
+            "is_enterprise_plan": self.tier_name == TierName.ENTERPRISE,
+            "is_sentry_plan": self.value in SENTRY_PAID_USER_PLAN_REPRESENTATIONS,
+        }
+
 
 NON_PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS = {
     PlanName.CODECOV_PRO_MONTHLY_LEGACY.value: PlanData(

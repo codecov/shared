@@ -173,7 +173,7 @@ class PlanService:
         ):
             available_plans += TEAM_PLAN_REPRESENTATIONS.values()
 
-        return available_plans
+        return [plan.convert_to_DTO() for plan in available_plans]
 
     def _start_trial_helper(
         self,
