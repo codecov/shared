@@ -100,10 +100,11 @@ class PlanData:
             "tier_name": self.tier_name,
             "monthly_uploads_limit": self.monthly_uploads_limit,
             "trial_days": self.trial_days,
-            "is_free_plan": self.tier_name == TierName.BASIC,
-            "is_pro_plan": self.tier_name == TierName.PRO,
-            "is_team_plan": self.tier_name == TierName.TEAM,
-            "is_enterprise_plan": self.tier_name == TierName.ENTERPRISE,
+            "is_free_plan": self.tier_name == TierName.BASIC.value,
+            "is_pro_plan": self.tier_name == TierName.PRO.value,
+            "is_team_plan": self.tier_name == TierName.TEAM.value,
+            "is_enterprise_plan": self.tier_name == TierName.ENTERPRISE.value,
+            "is_trial_plan": self.value == PlanName.TRIAL_PLAN_NAME.value,
             "is_sentry_plan": self.value in SENTRY_PAID_USER_PLAN_REPRESENTATIONS,
         }
 
