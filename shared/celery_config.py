@@ -42,6 +42,9 @@ test_results_finisher_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.TestResultsFinisherTask"
 )
 
+ta_processor_task_name = f"app.tasks.{TaskConfigGroup.test_results.value}.TAProcessor"
+ta_finisher_task_name = f"app.tasks.{TaskConfigGroup.test_results.value}.TAFinisher"
+
 sync_test_results_task_name = (
     f"app.tasks.{TaskConfigGroup.test_results.value}.SyncTestResultsTask"
 )
