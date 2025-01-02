@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Tuple
 
 import httpx
 
+from shared.django_apps.core.models import Repository
 from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.response_types import ProviderPull
@@ -38,28 +39,7 @@ class TorngitBaseAdapter(object):
     _token: Token | None = None
     verify_ssl = None
 
-    valid_languages = (
-        "javascript",
-        "shell",
-        "python",
-        "ruby",
-        "perl",
-        "dart",
-        "java",
-        "c",
-        "clojure",
-        "d",
-        "fortran",
-        "go",
-        "groovy",
-        "kotlin",
-        "php",
-        "r",
-        "scala",
-        "swift",
-        "objective-c",
-        "xtend",
-    )
+    valid_languages = set(language.value for language in Repository.Languages)
 
     def __init__(
         self,
