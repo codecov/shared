@@ -7,8 +7,8 @@ from shared.license import get_current_license
 
 class BillingPlan(Enum):
     users_ghm = "users"
-    users_monthly = "users-inappm"
-    users_yearly = "users-inappy"
+    users_monthly = "users-inappm"  # not pr_billing_plan
+    users_yearly = "users-inappy"  # not pr_billing_plan
     users_free = "users-free"
     users_basic = "users-basic"
     users_trial = "users-trial"
@@ -37,6 +37,7 @@ def is_enterprise_cloud_plan(plan: BillingPlan) -> bool:
 
 
 def is_pr_billing_plan(plan: str) -> bool:
+    # use is_pr_billing_plan() in PlanService instead of accessing this directly
     if not settings.IS_ENTERPRISE:
         return plan in [
             BillingPlan.pr_monthly.value,

@@ -2,9 +2,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+from shared.billing import is_pr_billing_plan
 from shared.config import get_config
 from shared.django_apps.codecov.commands.exceptions import ValidationError
-from shared.django_apps.codecov_auth.models import Owner
+from shared.django_apps.codecov_auth.models import Owner, Service
 from shared.plan.constants import (
     BASIC_PLAN,
     ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
@@ -46,7 +47,14 @@ class PlanService:
         Raises:
             ValueError: If the organization's plan is unsupported.
         """
-        self.current_org = current_org
+        if (
+            current_org.service == Service.GITLAB.value
+            and current_org.parent_service_id
+        ):
+            # for GitLab groups and subgroups, use the plan on the root org
+            self.current_org = current_org.root_organization
+        else:
+            self.current_org = current_org
         if self.current_org.plan not in USER_PLAN_REPRESENTATIONS:
             raise ValueError("Unsupported plan")
         self._plan_data = None
@@ -340,3 +348,7 @@ class PlanService:
     @property
     def is_trial_plan(self) -> bool:
         return self.plan_name in TRIAL_PLAN_REPRESENTATION
+
+    @property
+    def is_pr_billing_plan(self) -> bool:
+        return is_pr_billing_plan(plan=self.plan_name)
