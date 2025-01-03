@@ -9,10 +9,10 @@ def update_version(apps, schema):
     version.value = "25.1.3"
     version.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('core', '0060_increment_version'),
+        ("core", "0060_increment_version"),
     ]
 
     operations = [migrations.RunPython(update_version)]
