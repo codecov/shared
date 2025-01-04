@@ -147,7 +147,7 @@ class AWSStorageService(BaseStorageService):
         except ClientError:
             raise
 
-    def delete_files(self, bucket_name, paths=[]):
+    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
         """Batch deletes a list of files from a given bucket
 
         Note:

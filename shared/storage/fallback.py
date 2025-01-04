@@ -89,7 +89,7 @@ class StorageWithFallbackService(BaseStorageService):
         second_deletion = self.fallback_service.delete_file(bucket_name, path)
         return first_deletion and second_deletion
 
-    def delete_files(self, bucket_name, paths=[]):
+    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
         """Batch deletes a list of files from a given bucket
             (what happens to the files that don't exist?)
 

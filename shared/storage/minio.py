@@ -233,21 +233,21 @@ class MinioStorageService(BaseStorageService):
         deletion, returns a ResponseError otherwise.
     """
 
-    def delete_file(self, bucket_name, url):
+    def delete_file(self, bucket_name: str, path: str) -> bool:
         try:
-            # delete a file given a bucket name and a url
-            self.minio_client.remove_object(bucket_name, url)
+            # delete a file given a bucket name and a path
+            self.minio_client.remove_object(bucket_name, path)
             return True
         except MinioException:
             raise
 
-    def delete_files(self, bucket_name, urls=[]):
+    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
         try:
             for del_err in self.minio_client.remove_objects(
-                bucket_name, [DeleteObject(url) for url in urls]
+                bucket_name, [DeleteObject(path) for path in paths]
             ):
                 print("Deletion error: {}".format(del_err))
-            return [True] * len(urls)
+            return [True] * len(paths)
         except MinioException:
             raise
 

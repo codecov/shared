@@ -48,7 +48,7 @@ class ArchiveService(object):
     In s3 terms, this would be the name of the bucket
     """
 
-    storage_hash: str
+    storage_hash: str | None
     """
     A hash key of the repo for internal storage
     """
@@ -64,7 +64,10 @@ class ArchiveService(object):
         self.ttl = ttl or int(get_config("services", "minio", "ttl", default=self.ttl))
 
         self.storage = StorageService()
-        self.storage_hash = self.get_archive_hash(repository)
+        if repository:
+            self.storage_hash = self.get_archive_hash(repository)
+        else:
+            self.storage_hash = None
 
     @classmethod
     def get_archive_hash(cls, repository) -> str:
@@ -98,6 +101,8 @@ class ArchiveService(object):
         *,
         encoder=ReportEncoder,
     ):
+        if not self.storage_hash:
+            raise ValueError("No hash key provided")
         if commit_id is None:
             # Some classes don't have a commit associated with them
             # For example Pull belongs to multiple commits.
@@ -147,20 +152,29 @@ class ArchiveService(object):
         return contents.decode()
 
     @sentry_sdk.trace
-    def delete_file(self, path):
+    def delete_file(self, path: str) -> None:
         """
         Generic method to delete a file from the archive.
         """
         self.storage.delete_file(self.root, path)
 
+    @sentry_sdk.trace
+    def delete_files(self, paths: list[str]) -> None:
+        """
+        Generic method to delete files from the archive.
+        """
+        self.storage.delete_files(bucket_name=self.root, paths=paths)
+
     def read_chunks(self, commit_sha: str) -> str:
         """
         Convenience method to read a chunks file from the archive.
         """
+        if not self.storage_hash:
+            raise ValueError("No hash key provided")
         path = MinioEndpoints.chunks.get_path(
             version="v4", repo_hash=self.storage_hash, commitid=commit_sha
         )
         return self.read_file(path)
 
-    def create_presigned_put(self, path):
+    def create_presigned_put(self, path: str) -> str:
         return self.storage.create_presigned_put(self.root, path, self.ttl)
