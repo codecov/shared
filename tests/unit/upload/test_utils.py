@@ -14,6 +14,7 @@ from shared.django_apps.reports.tests.factories import (
 from shared.django_apps.user_measurements.models import UserMeasurement
 from shared.plan.service import PlanService
 from shared.upload.utils import (
+    bulk_insert_coverage_measurements,
     insert_coverage_measurement,
     query_monthly_coverage_measurements,
 )
@@ -145,3 +146,28 @@ class CoverageMeasurement(TestCase):
         )
         # 10 uploads total, max 3 returned
         assert monthly_measurements == 3
+
+    def test_bulk_insert_user_measurements(self):
+        owner = OwnerFactory()
+        measurements = []
+        for _ in range(5):
+            repo = RepositoryFactory.create(author=owner)
+            commit = CommitFactory.create(repository=repo)
+            report = CommitReportFactory.create(commit=commit)
+            upload = UploadFactory.create(report=report)
+            measurements.append(
+                UserMeasurement(
+                    owner_id=owner.ownerid,
+                    repo_id=repo.repoid,
+                    commit_id=commit.id,
+                    upload_id=upload.id,
+                    uploader_used="CLI",
+                    private_repo=repo.private,
+                    report_type=report.report_type,
+                )
+            )
+
+        inserted_measurements = bulk_insert_coverage_measurements(
+            measurements=measurements
+        )
+        assert len(inserted_measurements) == 5
