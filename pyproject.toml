@@ -35,6 +35,7 @@ dependencies = [
     "sentry-sdk>=2.13.0",
     "sqlalchemy<2",
     "zstandard>=0.23.0",
+    "pydantic>=2.10.4",
 ]
 
 [build-system]
@@ -61,4 +62,5 @@ dev-dependencies = [
     # `oauth2` / `minio` deal with requests forces us to downgrade `urllib3`:
     "urllib3==1.26.19",
     "vcrpy>=4.1.1",
+    "types-requests>=2.31.0.6",
 ]

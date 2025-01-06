@@ -11,8 +11,9 @@ log = logging.getLogger(__name__)
 RATE_LIMIT_REDIS_KEY_PREFIX = "rate_limited_entity_"
 
 
-def gh_app_key_name(installation_id: int, app_id: Optional[int] = None) -> str:
-    app_id = app_id or "default_app"
+def gh_app_key_name(installation_id: int, app_id: str | int | None = None) -> str:
+    if app_id is None:
+        return f"default_app_{installation_id}"
     return f"{app_id}_{installation_id}"
 
 

@@ -1,13 +1,11 @@
 import logging
-from typing import Any, List, Optional
+from typing import Any, List
 
 from shared.bots.github_apps import get_github_app_info_for_owner
 from shared.bots.owner_bots import get_owner_appropriate_bot_token
 from shared.bots.public_bots import get_token_type_mapping
 from shared.bots.repo_bots import get_repo_appropriate_bot_token
-from shared.bots.types import (
-    AdapterAuthInformation,
-)
+from shared.bots.types import AdapterAuthInformation
 from shared.django_apps.codecov_auth.models import (
     GITHUB_APP_INSTALLATION_DEFAULT_NAME,
     Owner,
@@ -18,12 +16,13 @@ from shared.typings.torngit import GithubInstallationInfo
 
 log = logging.getLogger(__name__)
 
+SQLAlchemyOwner = Any
+SQLAlchemyRepository = Any
+
 
 def get_adapter_auth_information(
-    # Owner type can be a Django Owner | SQLAlchemy Owner - added Any to help with IDE typing
-    owner: Owner | Any,
-    # Owner type can be a Django Repository | SQLAlchemy Repository - added Any to help with IDE typing
-    repository: Optional[Repository] | Any = None,
+    owner: Owner | SQLAlchemyOwner,
+    repository: Repository | SQLAlchemyRepository | None = None,
     *,
     ignore_installations: bool = False,
     installation_name_to_use: str = GITHUB_APP_INSTALLATION_DEFAULT_NAME,
