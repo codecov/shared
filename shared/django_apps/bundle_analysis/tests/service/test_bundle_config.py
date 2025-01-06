@@ -68,7 +68,7 @@ class BundleAnalysisCacheConfigServiceTest(TestCase):
 
     def test_bundle_config_get_or_create(self):
         # Create 1 -- default as is_caching=True
-        BundleAnalysisCacheConfigService.create_cache_option(repo_id=1, name="bundleA")
+        BundleAnalysisCacheConfigService.create_if_not_exists(repo_id=1, name="bundleA")
         query_results = CacheConfig.objects.all()
         assert len(query_results) == 1
         assert query_results[0].repo_id == 1
@@ -76,7 +76,7 @@ class BundleAnalysisCacheConfigServiceTest(TestCase):
         assert query_results[0].is_caching == True
 
         # Create 2 -- already exist don't change is_caching value
-        BundleAnalysisCacheConfigService.create_cache_option(
+        BundleAnalysisCacheConfigService.create_if_not_exists(
             repo_id=1, name="bundleA", is_caching=False
         )
         query_results = CacheConfig.objects.all()
@@ -86,7 +86,7 @@ class BundleAnalysisCacheConfigServiceTest(TestCase):
         assert query_results[0].is_caching == True
 
         # Create 3 -- new bundle
-        BundleAnalysisCacheConfigService.create_cache_option(
+        BundleAnalysisCacheConfigService.create_if_not_exists(
             repo_id=1, name="bundleB", is_caching=False
         )
         query_results = CacheConfig.objects.all()

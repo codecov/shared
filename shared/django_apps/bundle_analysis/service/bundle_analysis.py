@@ -9,7 +9,7 @@ class BundleAnalysisCacheConfigService:
         )
 
     @staticmethod
-    def create_cache_option(repo_id, name, is_caching=True) -> None:
+    def create_if_not_exists(repo_id, name, is_caching=True) -> None:
         CacheConfig.objects.get_or_create(
             repo_id=repo_id, bundle_name=name, defaults={"is_caching": is_caching}
         )
