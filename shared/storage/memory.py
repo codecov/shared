@@ -123,7 +123,7 @@ class MemoryStorageService(BaseStorageService):
             raise FileNotInStorageError()
         return True
 
-    def delete_files(self, bucket_name, paths=[]):
+    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
         """Batch deletes a list of files from a given bucket
             (what happens to the files that don't exist?)
 
