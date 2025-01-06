@@ -5,7 +5,10 @@ from django.forms import ValidationError
 from django.test import TestCase
 
 from shared.django_apps.core.models import Commit
-from shared.django_apps.core.tests.factories import CommitFactory, RepositoryFactory
+from shared.django_apps.core.tests.factories import (
+    CommitFactory,
+    RepositoryFactory,
+)
 from shared.django_apps.reports.tests.factories import CommitReportFactory
 from shared.storage.exceptions import FileNotInStorageError
 
