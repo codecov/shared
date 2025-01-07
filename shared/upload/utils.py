@@ -1,6 +1,7 @@
 from datetime import timedelta
 from enum import Enum
 
+from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 
@@ -33,6 +34,18 @@ def query_monthly_coverage_measurements(plan_service: PlanService) -> int:
         )
     monthly_limit = plan_service.monthly_uploads_limit
     return queryset[:monthly_limit].count()
+
+
+def bulk_insert_coverage_measurements(
+    measurements: list[UserMeasurement],
+) -> list[UserMeasurement]:
+    """
+    This function takes measurements as input and bulk_creates them into the DB.
+    The atomic transaction ensures either all transactions are inserted or none
+    if there's an error
+    """
+    with transaction.atomic():
+        return UserMeasurement.objects.bulk_create(measurements)
 
 
 def insert_coverage_measurement(
