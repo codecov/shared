@@ -29,8 +29,8 @@ class PlanName(enum.Enum):
     TRIAL_PLAN_NAME = "users-trial"
     CODECOV_PRO_MONTHLY = "users-pr-inappm"
     CODECOV_PRO_YEARLY = "users-pr-inappy"
-    SENTRY_MONTHLY = "users-sentrym"  # not in BillingPlan
-    SENTRY_YEARLY = "users-sentryy"  # not in BillingPlan
+    SENTRY_MONTHLY = "users-sentrym"
+    SENTRY_YEARLY = "users-sentryy"
     TEAM_MONTHLY = "users-teamm"
     TEAM_YEARLY = "users-teamy"
     GHM_PLAN_NAME = "users"

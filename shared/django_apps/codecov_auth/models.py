@@ -1,12 +1,12 @@
-import binascii
 import logging
 import os
 import uuid
 from dataclasses import asdict
 from datetime import datetime
 from hashlib import md5
-from typing import Self
+from typing import Self, Optional
 
+import binascii
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
@@ -425,7 +425,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
             return int(self.plan[:-1])
 
     @property
-    def root_organization(self):
+    def root_organization(self: "Owner") -> Optional["Owner"]:
         """
         Find the root organization of Gitlab, by using the root_parent_service_id
         if it exists, otherwise iterating through the parents and caches it in root_parent_service_id

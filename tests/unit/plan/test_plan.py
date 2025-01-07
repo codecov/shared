@@ -896,7 +896,7 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == False
         assert self.plan_service.is_pro_plan == True
         assert self.plan_service.is_enterprise_plan == False
-        assert self.plan_service.is_pr_billing_plan == False
+        assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_free_plan(self):
         self.current_org = OwnerFactory(
