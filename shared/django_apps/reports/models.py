@@ -199,8 +199,13 @@ class ReportSession(
         db_table = "reports_upload"
         indexes = [
             models.Index(
-                fields=["report_id", "upload_type", "order_number"],
+                name="upload_report_type_idx",
+                fields=["report_id", "upload_type"],
+            ),
+            # TODO(swatinem): remove the index below in a followup migration:
+            models.Index(
                 name="upload_index_id_type_number",
+                fields=["report_id", "upload_type", "order_number"],
             ),
         ]
 
