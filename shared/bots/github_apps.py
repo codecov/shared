@@ -1,7 +1,7 @@
 import logging
 import random
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from shared.bots.exceptions import NoConfiguredAppsAvailable, RequestedGithubAppNotFound
 from shared.bots.types import TokenWithOwner
@@ -12,10 +12,7 @@ from shared.django_apps.codecov_auth.models import (
     Service,
 )
 from shared.django_apps.core.models import Repository
-from shared.github import (
-    InvalidInstallationError,
-    get_github_integration_token,
-)
+from shared.github import InvalidInstallationError, get_github_integration_token
 from shared.helpers.redis import get_redis_connection
 from shared.orms.owner_helper import DjangoSQLAlchemyOwnerWrapper
 from shared.rate_limits import determine_if_entity_is_rate_limited, gh_app_key_name
@@ -42,7 +39,7 @@ def _get_installation_weight(installation: GithubAppInstallation) -> int:
 
 
 def _can_use_this_app(
-    app: GithubAppInstallation, installation_name: str, repository: Optional[Repository]
+    app: GithubAppInstallation, installation_name: str, repository: Repository | None
 ) -> bool:
     return (
         app.name == installation_name
@@ -54,7 +51,7 @@ def _can_use_this_app(
 
 
 def _get_apps_from_weighted_selection(
-    owner: Owner, installation_name: str, repository: Optional[Repository]
+    owner: Owner, installation_name: str, repository: Repository | None
 ) -> List[GithubAppInstallation]:
     """This function returns an ordered list of GithubAppInstallations that can be used to communicate with GitHub
     in behalf of the owner. The list is ordered in such a way that the 1st element is the app to be used in Torngit,
@@ -162,12 +159,16 @@ def get_github_app_token(
         github_token = get_github_integration_token(
             service.value,
             installation_id,
-            app_id=installation_info.get("app_id", None),
+            app_id=str(app_id) if app_id else None,
             pem_path=installation_info.get("pem_path", None),
         )
         installation_token = Token(
             key=github_token,
-            entity_name=gh_app_key_name(installation_id=installation_id, app_id=app_id),
+            username=f"installation_{installation_id}",
+            entity_name=gh_app_key_name(
+                installation_id=installation_id,
+                app_id=app_id,
+            ),
         )
         # The token is not owned by an Owner object, so 2nd arg is None
         return installation_token, None
@@ -191,7 +192,7 @@ def get_specific_github_app_details(
             The assumption is that we need this specific app for a reason, and if we can't find the app
             it's better to just fail
     """
-    app: GithubAppInstallation = next(
+    app: GithubAppInstallation | None = next(
         (
             obj
             for obj in DjangoSQLAlchemyOwnerWrapper.get_github_app_installations(owner)
@@ -242,7 +243,7 @@ def _filter_suspended_apps(
 def get_github_app_info_for_owner(
     owner: Owner,
     *,
-    repository: Optional[Repository] = None,
+    repository: Repository | None = None,
     installation_name: str = GITHUB_APP_INSTALLATION_DEFAULT_NAME,
 ) -> List[GithubInstallationInfo]:
     """Gets the GitHub app info needed to communicate with GitHub using an app for this owner.

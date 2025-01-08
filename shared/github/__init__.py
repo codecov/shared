@@ -1,6 +1,6 @@
 import logging
 from time import time
-from typing import Literal, Optional
+from typing import Literal
 from urllib.parse import urlparse
 
 import jwt
@@ -29,7 +29,7 @@ def load_pem_from_path(pem_path: str) -> str:
     raise Exception("Unknown schema to load PEM")
 
 
-def get_pem(*, pem_name: Optional[str] = None, pem_path: Optional[str] = None) -> str:
+def get_pem(pem_name: str | None = None, pem_path: str | None = None) -> str:
     if pem_path:
         return load_pem_from_path(pem_path)
     if pem_name:
@@ -38,14 +38,15 @@ def get_pem(*, pem_name: Optional[str] = None, pem_path: Optional[str] = None) -
     raise Exception("No PEM provided to get installation token")
 
 
-InstallationErrorCause = (
-    Literal["installation_not_found"]
-    | Literal["permission_error"]
-    | Literal["requires_authentication"]
-    | Literal["installation_suspended"]
-    | Literal["validation_failed_or_spammed"]
-    | Literal["rate_limit"]
-)
+InstallationErrorCause = Literal[
+    "installation_not_found",
+    "permission_error",
+    "requires_authentication",
+    "installation_suspended",
+    "validation_failed_or_spammed",
+    "rate_limit",
+    "unknown_error",
+]
 
 
 class InvalidInstallationError(Exception):
@@ -78,11 +79,13 @@ def decide_installation_error_cause(
                 return "rate_limit"
             else:
                 return "permission_error"
+        case _:
+            return "unknown_error"
 
 
 def get_github_jwt_token(
-    service: str, app_id: Optional[str] = None, pem_path: Optional[str] = None
-) -> Optional[str]:
+    service: str, app_id: str | None = None, pem_path: str | None = None
+) -> str:
     # https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/
     now = int(time())
     payload = {
@@ -100,9 +103,9 @@ def get_github_jwt_token(
 def get_github_integration_token(
     service,
     integration_id=None,
-    app_id: Optional[str] = None,
-    pem_path: Optional[str] = None,
-) -> Optional[str]:
+    app_id: str | None = None,
+    pem_path: str | None = None,
+) -> str:
     # https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/
     token = get_github_jwt_token(service, app_id, pem_path)
     if integration_id:

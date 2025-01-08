@@ -18,14 +18,19 @@ class RepoInfo(TypedDict):
 
 
 class GithubInstallationInfo(TypedDict):
-    """Required info to get a token from Github for a given installation"""
+    """
+    Information about a Github installation.
+    `id` - The id of the GithubAppInstallation object in the database
+           If using the deprecated owner.integration_id it doesn't exist.
+    `installation_id` - Required info to get a token from Github for a given installation.
+    """
 
-    id: int
+    id: NotRequired[int]
     installation_id: int
-    # The default app (configured via yaml) doesn't need this info.
-    # All other apps need app_id and pem_path
-    app_id: Optional[int]
-    pem_path: Optional[str]
+    # The default app (configured via yaml) doesn't need `app_id` and `pem_path`.
+    # All other apps need `app_id` and `pem_path`.
+    app_id: NotRequired[int | None]
+    pem_path: NotRequired[str | None]
 
 
 class AdditionalData(TypedDict):

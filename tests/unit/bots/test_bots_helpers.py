@@ -49,7 +49,7 @@ def mock_configuration(mock_configuration):
 )
 @patch("shared.bots.helpers.get_github_integration_token")
 def test_get_dedicated_app_token_from_config(
-    mock_get_integration_token, token_type, mock_configuration
+    mock_get_integration_token, token_type: TokenType, mock_configuration
 ):
     mock_get_integration_token.return_value = "installation_access_token"
     dedicated_app_details = mock_configuration["github"]["dedicated_apps"][
@@ -57,11 +57,13 @@ def test_get_dedicated_app_token_from_config(
     ]
 
     assert get_dedicated_app_token_from_config("github", token_type) == Token(
-        key="installation_access_token", username=f"{token_type.value}_dedicated_app"
+        key="installation_access_token",
+        username=f"{token_type.value}_dedicated_app",
+        entity_name=token_type.value,
     )
     mock_get_integration_token.assert_called_with(
         "github",
-        app_id=dedicated_app_details["id"],
+        app_id=str(dedicated_app_details["id"]),
         installation_id=dedicated_app_details["installation_id"],
         pem_path=f"yaml+file://github.dedicated_apps.{token_type.value}.pem",
     )
@@ -92,13 +94,21 @@ def test_get_dedicated_app_token_from_config_not_configured(
     [
         pytest.param(
             TokenType.read,
-            Token(key="installation_access_token", username="read_dedicated_app"),
+            Token(
+                key="installation_access_token",
+                username="read_dedicated_app",
+                entity_name="read",
+            ),
             id="dedicated_app_AND_bot_configured",
         ),
         pytest.param(TokenType.pull, None, id="no_dedicated_app_no_bot"),
         pytest.param(
             TokenType.tokenless,
-            Token(key="bot_token", username="tokenless_bot"),
+            Token(
+                key="bot_token",
+                username="tokenless_bot",
+                entity_name="tokenless",
+            ),
             id="no_dedicated_app_yes_bot",
         ),
     ],
@@ -116,6 +126,6 @@ def test_get_token_type_from_config_not_github_skip_dedicated_apps(
     mock_get_integration_token, mock_configuration
 ):
     assert get_token_type_from_config("gitlab", TokenType.read) == Token(
-        key="bot_token", username="read_bot"
+        key="bot_token", username="read_bot", entity_name="read"
     )
     mock_get_integration_token.assert_not_called()
