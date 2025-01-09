@@ -8,6 +8,11 @@ from psqlextra.models import PostgresPartitionedModel
 from psqlextra.types import PostgresPartitioningMethod
 
 from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
+from shared.django_apps.reports.compare import (
+    CompareCommit,  # noqa: F401
+    CompareComponent,  # noqa: F401
+    CompareFlag,  # noqa: F401
+)
 from shared.django_apps.reports.managers import CommitReportManager
 from shared.django_apps.utils.config import should_write_data_to_storage_config_check
 from shared.django_apps.utils.model_utils import ArchiveField
