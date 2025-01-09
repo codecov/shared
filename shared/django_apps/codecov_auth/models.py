@@ -1012,8 +1012,8 @@ class Plans(BaseModel):
     benefits = ArrayField(models.TextField(), blank=True, default=list)
     billing_rate = models.TextField(
         choices=BillingRate.choices,
-        null=True, 
-        blank=True, 
+        null=True,
+        blank=True,
     )
     is_active = models.BooleanField(default=True)
     marketing_name = models.CharField(max_length=255)
