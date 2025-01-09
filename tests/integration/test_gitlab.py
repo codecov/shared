@@ -287,7 +287,7 @@ class TestGitlabTestCase(object):
                                 "-> This repo is used for CI "
                                 "Testing. Enjoy this gif as a "
                                 "reward!",
-                                "+> This repo is used for CI " "Testing",
+                                "+> This repo is used for CI Testing",
                                 "+",
                                 "+",
                                 "+| [https://codecov.io/][1] "
@@ -301,10 +301,10 @@ class TestGitlabTestCase(object):
                                 "+",
                                 "+",
                                 "+[1]: https://codecov.io/",
-                                "+[2]: " "https://twitter.com/codecov",
-                                "+[3]: " "mailto:hello@codecov.io",
+                                "+[2]: https://twitter.com/codecov",
+                                "+[3]: mailto:hello@codecov.io",
                                 " ",
-                                "-![i can do " "that](http://gph.is/17cvPc4)",
+                                "-![i can do that](http://gph.is/17cvPc4)",
                             ],
                         }
                     ],

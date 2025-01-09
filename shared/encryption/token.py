@@ -10,7 +10,7 @@ def encode_token(token: OauthConsumerToken) -> str:
     string_to_save = (
         token["key"]
         + f":{token['secret'] if token.get('secret') else ' '}"
-        + (f':{token["refresh_token"]}' if token.get("refresh_token") else "")
+        + (f":{token['refresh_token']}" if token.get("refresh_token") else "")
     )
     return string_to_save
 
