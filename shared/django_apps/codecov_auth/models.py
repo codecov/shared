@@ -1005,7 +1005,7 @@ class BillingRate(models.TextChoices):
 
 
 class Plans(BaseModel):
-    tier = models.ForeignKey("Tiers", on_delete=models.SET_NULL, related_name="plans")
+    tier = models.ForeignKey("Tiers", on_delete=models.CASCADE, related_name="plans")
     base_unit_price = models.IntegerField(default=0, blank=True)
     benefits = ArrayField(models.TextField(), blank=True, default=list)
     billing_rate = models.TextField(
