@@ -56,7 +56,7 @@ dev-dependencies = [
     "pytest-mock>=1.13.0",
     "pytest>=8.1.1",
     "respx>=0.20.2",
-    "ruff>=0.7.3",
+    "ruff>=0.9.0",
     "types-mock>=5.1.0.20240425",
     # NOTE: some weird interaction between existing `vcrpy` snapshots and the way
     # `oauth2` / `minio` deal with requests forces us to downgrade `urllib3`:

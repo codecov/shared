@@ -86,7 +86,7 @@ def startup_license_logging():
         current_license = get_current_license()
         is_valid = current_license.is_valid
         statements_to_print.append(
-            f"    License is {"valid" if is_valid else "INVALID"}"
+            f"    License is {'valid' if is_valid else 'INVALID'}"
         )
 
         if current_license.message:
@@ -94,7 +94,7 @@ def startup_license_logging():
 
         exp_date = current_license.expires
         statements_to_print.append(
-            f"    License expires {datetime.strftime(exp_date, "%Y-%m-%d %H:%M:%S") if exp_date else "NOT FOUND"} <=="
+            f"    License expires {datetime.strftime(exp_date, '%Y-%m-%d %H:%M:%S') if exp_date else 'NOT FOUND'} <=="
         )
         statements_to_print.append("")  # padding
 

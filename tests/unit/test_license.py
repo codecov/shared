@@ -186,7 +186,7 @@ class TestUserGivenSecret(BaseTestCase):
             "",
             "==> Checking License",
             "    License is INVALID",
-            f"    Warning: {LICENSE_ERRORS_MESSAGES["no-license"]}",
+            f"    Warning: {LICENSE_ERRORS_MESSAGES['no-license']}",
             "    License expires NOT FOUND <==",
             "",
         ]
