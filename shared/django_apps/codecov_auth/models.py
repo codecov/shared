@@ -1001,14 +1001,12 @@ class InvoiceBilling(BaseModel):
 
 class BillingRate(models.TextChoices):
     MONTHLY = "monthly"
-    YEARLY = "yearly"
+    ANNUALLY = "annually"
 
 
 class Plans(BaseModel):
-    tier = models.ForeignKey(
-        "Tiers", on_delete=models.CASCADE, related_name="plans", db_index=True
-    )
-    base_unit_price = models.IntegerField(default=0)
+    tier = models.ForeignKey("Tiers", on_delete=models.SET_NULL, related_name="plans")
+    base_unit_price = models.IntegerField(default=0, blank=True)
     benefits = ArrayField(models.TextField(), blank=True, default=list)
     billing_rate = models.TextField(
         choices=BillingRate.choices,
@@ -1020,11 +1018,7 @@ class Plans(BaseModel):
     max_seats = models.IntegerField(null=True, blank=True)
     monthly_uploads_limit = models.IntegerField(null=True, blank=True)
     paid_plan = models.BooleanField(default=False)
-    plan_name = models.CharField(max_length=255, unique=True)
-
-    class Meta:
-        db_table = "plans"
-        app_label = CODECOV_AUTH_APP_LABEL
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.plan_name
@@ -1035,12 +1029,8 @@ class Tiers(BaseModel):
     bundle_analysis = models.BooleanField(default=False)
     test_analytics = models.BooleanField(default=False)
     flaky_test_detection = models.BooleanField(default=False)
-    patch_coverage = models.BooleanField(default=False)
+    project_coverage = models.BooleanField(default=False)
     private_repo_support = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = "tiers"
-        app_label = CODECOV_AUTH_APP_LABEL
 
     def __str__(self):
         return self.tier_name
