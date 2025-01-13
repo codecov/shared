@@ -1,6 +1,5 @@
 import re
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 import httpx
 
@@ -13,7 +12,6 @@ from shared.typings.oauth_token_types import (
     OnRefreshCallback,
     Token,
 )
-from shared.typings.torngit import TorngitInstanceData
 
 get_start_of_line = re.compile(r"@@ \-(\d+),?(\d*) \+(\d+),?(\d*).*").match
 
@@ -28,48 +26,55 @@ class TokenType(Enum):
     pull = "pull"
 
 
-TokenTypeMapping = Dict[TokenType, Token]
+TokenTypeMapping = dict[TokenType, Token]
 
 
 class TorngitBaseAdapter(object):
     _repo_url: str | None = None
     _aws_key = None
-    _oauth: OauthConsumerToken | None = None
-    _on_token_refresh: OnRefreshCallback = None
+    _oauth: OauthConsumerToken | None
+    _on_token_refresh: OnRefreshCallback | None
     _token: Token | None = None
-    verify_ssl = None
+    verify_ssl: str | bool
+    _timeout: httpx.Timeout
+    valid_languages = set(language[0] for language in Repository.Languages.choices)
 
-    valid_languages = set(language.value for language in Repository.Languages)
+    # These are set by the subclasses
+    service_url: str | None = None
+    service: str | None = None
+    urls: dict[str, str] | None = None
 
     def __init__(
         self,
         oauth_consumer_token: OauthConsumerToken | None = None,
-        timeouts=None,
+        timeout: httpx.Timeout | tuple[int, int] | None = None,
         token: Token | None = None,
         token_type_mapping: TokenTypeMapping | None = None,
-        on_token_refresh: OnRefreshCallback = None,
-        verify_ssl=None,
+        on_token_refresh: OnRefreshCallback | None = None,
+        verify_ssl: str | bool = True,
         **kwargs,
-    ):
-        self._timeouts = timeouts or [10, 30]
+    ) -> None:
+        if isinstance(timeout, tuple):
+            self._timeout = httpx.Timeout(timeout[1], connect=timeout[0])
+        else:
+            self._timeout = timeout or httpx.Timeout(30, connect=10)
         self._token = token
         self._on_token_refresh = on_token_refresh
         self._token_type_mapping = token_type_mapping or {}
         self._oauth = oauth_consumer_token
-        self.data: TorngitInstanceData = {
-            "owner": {},
-            "repo": {},
-            "fallback_installations": None,
-            "installation": None,
-            "additional_data": {},
-        }
         self.verify_ssl = verify_ssl
-        self.data.update(kwargs)
+        self.data = {
+            "owner": kwargs.get("owner", {}),
+            "repo": kwargs.get("repo", {}),
+            "fallback_installations": kwargs.get("fallback_installations", None),
+            "installation": kwargs.get("installation", None),
+            "additional_data": kwargs.get("additional_data", {}),
+        }
         # This has the side effect of initializing the torngit_cache
         # (if not yet initialized)
         torngit_cache.initialize()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<%s slug=%s ownerid=%s repoid=%s>" % (
             self.service,
             self.slug,
@@ -77,17 +82,11 @@ class TorngitBaseAdapter(object):
             self.data["repo"].get("repoid"),
         )
 
-    def get_client(self, timeouts: List[int] = []) -> httpx.AsyncClient:
-        if timeouts:
-            timeout = httpx.Timeout(timeouts[1], connect=timeouts[0])
-        else:
-            timeout = httpx.Timeout(self._timeouts[1], connect=self._timeouts[0])
+    def get_client(self, timeout: httpx.Timeout | None = None) -> httpx.AsyncClient:
+        if timeout is None:
+            timeout = self._timeout
         return httpx.AsyncClient(
-            verify=(
-                self.verify_ssl
-                if not isinstance(self.verify_ssl, bool)
-                else self.verify_ssl
-            ),
+            verify=self.verify_ssl,
             timeout=timeout,
         )
 
@@ -96,7 +95,7 @@ class TorngitBaseAdapter(object):
             return self._token_type_mapping.get(token_type)
         return self.token
 
-    def get_token_by_type_if_none(self, token: Optional[str], token_type: TokenType):
+    def get_token_by_type_if_none(self, token: str | None, token_type: TokenType):
         if token is not None:
             return token
         return self.get_token_by_type(token_type)
@@ -106,14 +105,15 @@ class TorngitBaseAdapter(object):
             raise Exception("Oauth consumer token not present")
         return self._oauth
 
-    def _validate_language(self, language: str) -> str | None:
+    def _validate_language(self, language: str | None) -> str | None:
         if language:
             language = language.lower()
+
             if language in self.valid_languages:
                 return language
         return None
 
-    def set_token(self, token: OauthConsumerToken) -> None:
+    def set_token(self, token: Token) -> None:
         self._token = token
 
     @property
@@ -329,7 +329,7 @@ class TorngitBaseAdapter(object):
 
     # OTHERS
 
-    async def get_authenticated(self, token=None) -> Tuple[bool, bool]:
+    async def get_authenticated(self, token=None) -> tuple[bool, bool]:
         """Finds the user permissions about about whether the user on
             `self.data["user"]` can access the repo from `self.data["repo"]`
             Returns a `can_view` and a `can_edit` permission tuple
@@ -357,7 +357,7 @@ class TorngitBaseAdapter(object):
     async def get_branches(self, token=None):
         raise NotImplementedError()
 
-    async def get_branch(self, token=None):
+    async def get_branch(self, branch_name: str, token=None):
         raise NotImplementedError()
 
     async def get_compare(
@@ -426,7 +426,7 @@ class TorngitBaseAdapter(object):
     async def get_workflow_run(self, run_id, token=None):
         raise NotImplementedError()
 
-    async def get_best_effort_branches(self, commit_sha: str, token=None) -> List[str]:
+    async def get_best_effort_branches(self, commit_sha: str, token=None) -> list[str]:
         """
         Gets a 'best effort' list of branches this commit is in.
         If a branch is returned, this means this commit is in that branch. If not, it could still be
