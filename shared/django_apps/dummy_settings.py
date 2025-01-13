@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "shared.django_apps.profiling",
     "shared.django_apps.reports",
     "shared.django_apps.staticanalysis",
+    "shared.django_apps.test_analytics",
 ]
 
 # Needed for makemigrations to work
