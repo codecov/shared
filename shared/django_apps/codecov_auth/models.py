@@ -1021,7 +1021,7 @@ class Plans(BaseModel):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.plan_name
+        return self.name
 
 
 class Tiers(BaseModel):
