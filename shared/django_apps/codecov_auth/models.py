@@ -1020,6 +1020,9 @@ class Plans(BaseModel):
     paid_plan = models.BooleanField(default=False)
     name = models.CharField(max_length=255, unique=True)
 
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
     def __str__(self):
         return self.name
 
@@ -1031,6 +1034,9 @@ class Tiers(BaseModel):
     flaky_test_detection = models.BooleanField(default=False)
     project_coverage = models.BooleanField(default=False)
     private_repo_support = models.BooleanField(default=False)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
 
     def __str__(self):
         return self.tier_name
