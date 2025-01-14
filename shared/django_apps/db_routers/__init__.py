@@ -38,16 +38,13 @@ class MultiDatabaseRouter:
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         match db:
             case "timeseries_read" | "test_analytics_read" | "default_read":
-                log.warning("Skipping migration of read-only database")
                 return False
             case "timeseries":
                 if not settings.TIMESERIES_ENABLED:
-                    log.warning("Skipping migration of timeseries")
                     return False
                 return app_label == "timeseries"
             case "test_analytics":
                 if not settings.TEST_ANALYTICS_DATABASE_ENABLED:
-                    log.warning("Skipping migration of test_analytics")
                     return False
                 return app_label == "test_analytics"
             case _:
