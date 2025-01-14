@@ -1,8 +1,9 @@
-from typing import Awaitable, Callable, Optional, TypedDict
+from typing import Awaitable, Callable, NotRequired, TypedDict
 
 
 class Token(TypedDict):
     key: str
+    refresh_token: NotRequired[str]
     # This information is used to identify the token owner in the logs, if present
     username: str | None
     # This represents the entity it belongs to. Entities can have the form of
@@ -13,9 +14,9 @@ class Token(TypedDict):
     entity_name: str | None
 
 
-class OauthConsumerToken(Token):
-    secret: Optional[str]
-    refresh_token: Optional[str]
+class OauthConsumerToken(TypedDict):
+    key: str  # client_id
+    secret: str
 
 
-OnRefreshCallback = Optional[Callable[[OauthConsumerToken], Awaitable[None]]]
+OnRefreshCallback = Callable[[Token], Awaitable[None]]

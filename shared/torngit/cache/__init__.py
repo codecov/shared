@@ -47,7 +47,7 @@ class TorngitCache(OurOwnCache):
     def is_enabled(self) -> bool:
         return self._enabled
 
-    def get_ttl(self, endpoint: CachedEndpoint) -> dict:
+    def get_ttl(self, endpoint: CachedEndpoint) -> int:
         return self.ttls.get(endpoint, 120)
 
 
