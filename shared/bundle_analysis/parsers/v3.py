@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 
 import ijson
 import sentry_sdk
+from sqlalchemy import tuple_
 from sqlalchemy.orm import Session as DbSession
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
@@ -160,6 +161,16 @@ class ParserV3(ParserTrait):
                 # but first we need to find the Asset by the hashed file name
                 dynamic_imports_list = self._parse_dynamic_imports()
                 if dynamic_imports_list:
+                    self.db_session.execute(
+                        DynamicImport.__table__.delete().where(
+                            tuple_(DynamicImport.chunk_id, DynamicImport.asset_id).in_(
+                                [
+                                    (item["chunk_id"], item["asset_id"])
+                                    for item in dynamic_imports_list
+                                ]
+                            )
+                        )
+                    )
                     insert_dynamic_imports = DynamicImport.__table__.insert().values(
                         dynamic_imports_list
                     )
