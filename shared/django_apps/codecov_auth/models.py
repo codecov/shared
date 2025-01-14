@@ -1004,8 +1004,8 @@ class BillingRate(models.TextChoices):
     ANNUALLY = "annually"
 
 
-class Plans(BaseModel):
-    tier = models.ForeignKey("Tiers", on_delete=models.CASCADE, related_name="plans")
+class Plan(BaseModel):
+    tier = models.ForeignKey("Tier", on_delete=models.CASCADE, related_name="plans")
     base_unit_price = models.IntegerField(default=0, blank=True)
     benefits = ArrayField(models.TextField(), blank=True, default=list)
     billing_rate = models.TextField(
@@ -1027,7 +1027,7 @@ class Plans(BaseModel):
         return self.name
 
 
-class Tiers(BaseModel):
+class Tier(BaseModel):
     tier_name = models.CharField(max_length=255, unique=True)
     bundle_analysis = models.BooleanField(default=False)
     test_analytics = models.BooleanField(default=False)
