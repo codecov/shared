@@ -1,5 +1,5 @@
 from shared.config import get_config
-from shared.rollouts.features import USE_NEW_MINIO
+from shared.rollouts.features import USE_MINIO, USE_NEW_MINIO
 from shared.storage.aws import AWSStorageService
 from shared.storage.base import BaseStorageService
 from shared.storage.fallback import StorageWithFallbackService
@@ -14,6 +14,9 @@ def get_appropriate_storage_service(
     repoid: int | None = None,
 ) -> BaseStorageService:
     chosen_storage: str = get_config("services", "chosen_storage", default="minio")  # type: ignore
+
+    if USE_MINIO.check_value(repoid, default=False):
+        chosen_storage = "minio"
 
     # TODO: remove this later, as it's temporary for testing the new_minio client
     if (
