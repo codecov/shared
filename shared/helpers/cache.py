@@ -142,7 +142,7 @@ class LogMapping(dict):
         return self.get("args_indexes_to_log", [])
 
     @property
-    def kwargs_keys_to_log(self) -> List[str]:
+    def kwargs_keys_to_log(self) -> List[Any]:
         """List of args from the function to be logged (if present)"""
         return self.get("kwargs_keys_to_log", [])
 
