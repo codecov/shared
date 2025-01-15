@@ -997,3 +997,46 @@ class InvoiceBilling(BaseModel):
                 id=self.id
             ).update(is_active=False)
         return super().save(*args, **kwargs)
+
+
+class BillingRate(models.TextChoices):
+    MONTHLY = "monthly"
+    ANNUALLY = "annually"
+
+
+class Plan(BaseModel):
+    tier = models.ForeignKey("Tier", on_delete=models.CASCADE, related_name="plans")
+    base_unit_price = models.IntegerField(default=0, blank=True)
+    benefits = ArrayField(models.TextField(), blank=True, default=list)
+    billing_rate = models.TextField(
+        choices=BillingRate.choices,
+        null=True,
+        blank=True,
+    )
+    is_active = models.BooleanField(default=True)
+    marketing_name = models.CharField(max_length=255)
+    max_seats = models.IntegerField(null=True, blank=True)
+    monthly_uploads_limit = models.IntegerField(null=True, blank=True)
+    paid_plan = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, unique=True)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
+    def __str__(self):
+        return self.name
+
+
+class Tier(BaseModel):
+    tier_name = models.CharField(max_length=255, unique=True)
+    bundle_analysis = models.BooleanField(default=False)
+    test_analytics = models.BooleanField(default=False)
+    flaky_test_detection = models.BooleanField(default=False)
+    project_coverage = models.BooleanField(default=False)
+    private_repo_support = models.BooleanField(default=False)
+
+    class Meta:
+        app_label = CODECOV_AUTH_APP_LABEL
+
+    def __str__(self):
+        return self.tier_name
