@@ -15,16 +15,12 @@ def get_appropriate_storage_service(
 ) -> BaseStorageService:
     chosen_storage: str = get_config("services", "chosen_storage", default="minio")  # type: ignore
 
-    if repoid and USE_MINIO.check_value(repoid, default=False):
-        chosen_storage = "minio"
+    if repoid:
+        if USE_MINIO.check_value(repoid, default=False):
+            chosen_storage = "minio"
 
-    # TODO: remove this later, as it's temporary for testing the new_minio client
-    if (
-        chosen_storage == "minio"
-        and repoid
-        and USE_NEW_MINIO.check_value(repoid, default=False)
-    ):
-        chosen_storage = "new_minio"
+        if USE_NEW_MINIO.check_value(repoid, default=False):
+            chosen_storage = "new_minio"
 
     if chosen_storage not in _storage_service_cache:
         _storage_service_cache[chosen_storage] = (

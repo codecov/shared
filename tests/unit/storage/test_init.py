@@ -143,6 +143,21 @@ class TestStorageInitialization(object):
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
 
+    def test_get_appropriate_storage_service_use_minio_and_new_minio(
+        self, mock_configuration, mocker
+    ):
+        mock_configuration.params["services"] = {
+            "chosen_storage": "minio",
+            "gcp": gcp_config,
+            "aws": aws_config,
+            "minio": minio_config,
+        }
+        mocker.patch.object(USE_MINIO, "check_value", return_value=True)
+        mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=True)
+        res = get_appropriate_storage_service(repoid=123)
+        assert isinstance(res, NewMinioStorageService)
+        assert res.minio_config == minio_config
+
     def test_get_appropriate_storage_service_new_minio_false(
         self, mock_configuration, mocker
     ):
