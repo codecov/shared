@@ -15,7 +15,7 @@ def get_appropriate_storage_service(
 ) -> BaseStorageService:
     chosen_storage: str = get_config("services", "chosen_storage", default="minio")  # type: ignore
 
-    if USE_MINIO.check_value(repoid, default=False):
+    if repoid and USE_MINIO.check_value(repoid, default=False):
         chosen_storage = "minio"
 
     # TODO: remove this later, as it's temporary for testing the new_minio client

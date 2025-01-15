@@ -1,5 +1,3 @@
-import pytest
-
 from shared.rollouts.features import USE_MINIO, USE_NEW_MINIO
 from shared.storage import get_appropriate_storage_service
 from shared.storage.aws import AWSStorageService
@@ -71,7 +69,6 @@ minio_config = {
 
 
 class TestStorageInitialization(object):
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_fallback(self, mock_configuration):
         mock_configuration.params["services"] = {
             "chosen_storage": "gcp_with_fallback",
@@ -85,7 +82,6 @@ class TestStorageInitialization(object):
         assert isinstance(res.fallback_service, AWSStorageService)
         assert res.fallback_service.config == aws_config
 
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_aws(self, mock_configuration):
         mock_configuration.params["services"] = {
             "chosen_storage": "aws",
@@ -96,7 +92,6 @@ class TestStorageInitialization(object):
         assert isinstance(res, AWSStorageService)
         assert res.config == aws_config
 
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_gcp(self, mock_configuration):
         mock_configuration.params["services"] = {
             "chosen_storage": "gcp",
@@ -107,7 +102,6 @@ class TestStorageInitialization(object):
         assert isinstance(res, GCPStorageService)
         assert res.config == gcp_config
 
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_minio(self, mock_configuration):
         mock_configuration.params["services"] = {
             "chosen_storage": "minio",
@@ -119,7 +113,6 @@ class TestStorageInitialization(object):
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
 
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_new_minio(
         self, mock_configuration, mocker
     ):
@@ -130,11 +123,11 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=True)
+        mocker.patch.object(USE_MINIO, "check_value", return_value=False)
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, NewMinioStorageService)
         assert res.minio_config == minio_config
 
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_use_minio(
         self, mock_configuration, mocker
     ):
@@ -145,6 +138,7 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch.object(USE_MINIO, "check_value", return_value=True)
+        mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
@@ -159,11 +153,11 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
+        mocker.patch.object(USE_MINIO, "check_value", return_value=False)
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
 
-    @pytest.mark.django_db(transaction=True)
     def test_get_appropriate_storage_service_new_minio_cached(
         self, mock_configuration, mocker
     ):
@@ -175,6 +169,7 @@ class TestStorageInitialization(object):
         }
 
         mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
+        mocker.patch.object(USE_MINIO, "check_value", return_value=False)
 
         res = get_appropriate_storage_service(repoid=123)
 
