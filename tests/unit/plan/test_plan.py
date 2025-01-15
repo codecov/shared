@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from freezegun import freeze_time
 
 from shared.django_apps.codecov.commands.exceptions import ValidationError
+from shared.django_apps.codecov_auth.models import Service
 from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
 from shared.plan.constants import (
     BASIC_PLAN,
@@ -316,6 +317,34 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
 
         assert plan_service.has_trial_dates == True
+
+    def test_plan_service_gitlab_with_root_org(self):
+        root_owner_org = OwnerFactory(
+            service=Service.GITLAB.value,
+            plan=PlanName.FREE_PLAN_NAME.value,
+            plan_user_count=1,
+            service_id="1234",
+        )
+        middle_org = OwnerFactory(
+            service=Service.GITLAB.value,
+            service_id="5678",
+            parent_service_id=root_owner_org.service_id,
+        )
+        child_owner_org = OwnerFactory(
+            service=Service.GITLAB.value,
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
+            plan_user_count=20,
+            parent_service_id=middle_org.service_id,
+        )
+        # root_plan and child_plan should be the same
+        root_plan = PlanService(current_org=root_owner_org)
+        child_plan = PlanService(current_org=child_owner_org)
+
+        assert root_plan.is_pro_plan == child_plan.is_pro_plan == False
+        assert root_plan.plan_user_count == child_plan.plan_user_count == 1
+        assert (
+            root_plan.plan_name == child_plan.plan_name == PlanName.FREE_PLAN_NAME.value
+        )
 
 
 class AvailablePlansBeforeTrial(TestCase):
@@ -815,6 +844,7 @@ class AvailablePlansOngoingTrial(TestCase):
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
 
 
+@override_settings(IS_ENTERPRISE=False)
 class PlanServiceIs___PlanTests(TestCase):
     def test_is_trial_plan(self):
         self.current_org = OwnerFactory(
@@ -834,6 +864,7 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == False
         assert self.plan_service.is_pro_plan == False
         assert self.plan_service.is_enterprise_plan == False
+        assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_team_plan(self):
         self.current_org = OwnerFactory(
@@ -849,6 +880,7 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == False
         assert self.plan_service.is_pro_plan == False
         assert self.plan_service.is_enterprise_plan == False
+        assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_sentry_plan(self):
         self.current_org = OwnerFactory(
@@ -864,6 +896,7 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == False
         assert self.plan_service.is_pro_plan == True
         assert self.plan_service.is_enterprise_plan == False
+        assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_free_plan(self):
         self.current_org = OwnerFactory(
@@ -878,6 +911,7 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == True
         assert self.plan_service.is_pro_plan == False
         assert self.plan_service.is_enterprise_plan == False
+        assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_pro_plan(self):
         self.current_org = OwnerFactory(
@@ -892,6 +926,7 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == False
         assert self.plan_service.is_pro_plan == True
         assert self.plan_service.is_enterprise_plan == False
+        assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_enterprise_plan(self):
         self.current_org = OwnerFactory(
@@ -906,3 +941,4 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_free_plan == False
         assert self.plan_service.is_pro_plan == False
         assert self.plan_service.is_enterprise_plan == True
+        assert self.plan_service.is_pr_billing_plan == True
