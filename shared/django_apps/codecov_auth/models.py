@@ -1019,7 +1019,7 @@ class Plan(BaseModel):
     monthly_uploads_limit = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255, unique=True)
     paid_plan = models.BooleanField(default=False)
-    stripe_id = models.CharField(max_length=255, null=True)
+    stripe_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         app_label = CODECOV_AUTH_APP_LABEL
