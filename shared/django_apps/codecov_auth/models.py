@@ -1,12 +1,12 @@
+import binascii
 import logging
 import os
 import uuid
 from dataclasses import asdict
 from datetime import datetime
 from hashlib import md5
-from typing import Self, Optional
+from typing import Optional, Self
 
-import binascii
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
@@ -1017,8 +1017,9 @@ class Plan(BaseModel):
     marketing_name = models.CharField(max_length=255)
     max_seats = models.IntegerField(null=True, blank=True)
     monthly_uploads_limit = models.IntegerField(null=True, blank=True)
-    paid_plan = models.BooleanField(default=False)
     name = models.CharField(max_length=255, unique=True)
+    paid_plan = models.BooleanField(default=False)
+    stripe_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         app_label = CODECOV_AUTH_APP_LABEL
