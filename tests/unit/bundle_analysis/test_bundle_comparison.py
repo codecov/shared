@@ -111,6 +111,80 @@ def test_bundle_analysis_comparison():
     )
 
     bundle_comparison = comparison.bundle_comparison("sample")
+    total_size_delta = bundle_comparison.total_size_delta()
+    assert total_size_delta == 1100
+    assert comparison.percentage_delta == 0.73
+
+    with pytest.raises(MissingBundleError):
+        comparison.bundle_comparison("new")
+
+
+def test_bundle_asset_comparison_using_closest_size_delta():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(base_report_bundle_stats_path)
+
+        old_bundle = Bundle(name="old")
+        with get_db_session(base_report.db_path) as db_session:
+            db_session.add(old_bundle)
+            db_session.commit()
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path)
+
+        new_bundle = Bundle(name="new")
+        with get_db_session(head_report.db_path) as db_session:
+            db_session.add(new_bundle)
+            db_session.commit()
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    bundle_changes = comparison.bundle_changes()
+    assert set(bundle_changes) == set(
+        [
+            BundleChange(
+                bundle_name="sample",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=1100,
+                percentage_delta=0.73,
+            ),
+            BundleChange(
+                bundle_name="new",
+                change_type=BundleChange.ChangeType.ADDED,
+                size_delta=0,
+                percentage_delta=100,
+            ),
+            BundleChange(
+                bundle_name="old",
+                change_type=BundleChange.ChangeType.REMOVED,
+                size_delta=0,
+                percentage_delta=-100,
+            ),
+        ]
+    )
+
+    bundle_comparison = comparison.bundle_comparison("sample")
     asset_comparisons = bundle_comparison.asset_comparisons()
     assert len(asset_comparisons) == 6
 
@@ -267,12 +341,186 @@ def test_bundle_analysis_comparison():
         "./index.html",
     ]
 
-    total_size_delta = bundle_comparison.total_size_delta()
-    assert total_size_delta == 1100
-    assert comparison.percentage_delta == 0.73
 
-    with pytest.raises(MissingBundleError):
-        comparison.bundle_comparison("new")
+def test_bundle_asset_comparison_using_uuid():
+    """
+    In the default setup we have:
+        (base:index-666d2e09.js, head:index-666d2e09.js): 144577 -> 144577
+        (base:index-c8676264.js, head:index-c8676264.js): 154 -> 254
+    this matches based on closes size delta, now we will update to the following UUIDs
+        base:index-666d2e09.js -> UUID=123
+        base:index-c8676264.js -> UUID=456
+        head:index-666d2e09.js -> UUID=456
+        head:index-c8676264.js -> UUID=123
+    this will yield the following comparisons
+        (base:index-666d2e09.js, head:index-c8676264.js): 144577 -> 254
+        (base:index-c8676264.js, head:index-666d2e09.js): 154 -> 144577
+    """
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(base_report_bundle_stats_path)
+
+        old_bundle = Bundle(name="old")
+        with get_db_session(base_report.db_path) as db_session:
+            db_session.add(old_bundle)
+            db_session.commit()
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path)
+
+        new_bundle = Bundle(name="new")
+        with get_db_session(head_report.db_path) as db_session:
+            db_session.add(new_bundle)
+            db_session.commit()
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    # Update the UUIDs
+    with get_db_session(comparison.base_report.db_path) as db_session:
+        from shared.bundle_analysis.models import Asset
+
+        db_session.query(Asset).filter(Asset.name == "assets/index-666d2e09.js").update(
+            {Asset.uuid: "123"}, synchronize_session="fetch"
+        )
+        db_session.query(Asset).filter(Asset.name == "assets/index-c8676264.js").update(
+            {Asset.uuid: "456"}, synchronize_session="fetch"
+        )
+        db_session.commit()
+
+    with get_db_session(comparison.head_report.db_path) as db_session:
+        from shared.bundle_analysis.models import Asset
+
+        db_session.query(Asset).filter(Asset.name == "assets/index-666d2e09.js").update(
+            {Asset.uuid: "456"}, synchronize_session="fetch"
+        )
+        db_session.query(Asset).filter(Asset.name == "assets/index-c8676264.js").update(
+            {Asset.uuid: "123"}, synchronize_session="fetch"
+        )
+        db_session.commit()
+
+    bundle_changes = comparison.bundle_changes()
+    assert set(bundle_changes) == set(
+        [
+            BundleChange(
+                bundle_name="sample",
+                change_type=BundleChange.ChangeType.CHANGED,
+                size_delta=1100,
+                percentage_delta=0.73,
+            ),
+            BundleChange(
+                bundle_name="new",
+                change_type=BundleChange.ChangeType.ADDED,
+                size_delta=0,
+                percentage_delta=100,
+            ),
+            BundleChange(
+                bundle_name="old",
+                change_type=BundleChange.ChangeType.REMOVED,
+                size_delta=0,
+                percentage_delta=-100,
+            ),
+        ]
+    )
+
+    bundle_comparison = comparison.bundle_comparison("sample")
+    asset_comparisons = bundle_comparison.asset_comparisons()
+    assert len(asset_comparisons) == 6
+
+    asset_comparison_d = {}
+    for asset_comparison in asset_comparisons:
+        key = (
+            asset_comparison.base_asset_report.hashed_name
+            if asset_comparison.base_asset_report
+            else None,
+            asset_comparison.head_asset_report.hashed_name
+            if asset_comparison.head_asset_report
+            else None,
+        )
+        assert key not in asset_comparison_d
+        asset_comparison_d[key] = asset_comparison
+
+    # Check asset change is correct
+    assert asset_comparison_d[
+        ("assets/index-666d2e09.js", "assets/index-c8676264.js")
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.CHANGED,
+        size_delta=-144323,
+        asset_name="assets/index-*.js",
+        percentage_delta=-99.82,
+        size_base=144577,
+        size_head=254,
+    )
+    assert asset_comparison_d[
+        ("assets/index-c8676264.js", "assets/index-666d2e09.js")
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.CHANGED,
+        size_delta=144423,
+        asset_name="assets/index-*.js",
+        percentage_delta=93781.17,
+        size_base=154,
+        size_head=144577,
+    )
+    assert asset_comparison_d[
+        (None, "assets/other-35ef61ed.svg")
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.ADDED,
+        size_delta=5126,
+        asset_name="assets/other-*.svg",
+        percentage_delta=100,
+        size_base=0,
+        size_head=5126,
+    )
+    assert asset_comparison_d[
+        ("assets/index-d526a0c5.css", "assets/index-d526a0c5.css")
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.CHANGED,
+        size_delta=0,
+        asset_name="assets/index-*.css",
+        percentage_delta=0,
+        size_base=1421,
+        size_head=1421,
+    )
+    assert asset_comparison_d[
+        ("assets/LazyComponent-fcbb0922.js", "assets/LazyComponent-fcbb0922.js")
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.CHANGED,
+        size_delta=0,
+        asset_name="assets/LazyComponent-*.js",
+        percentage_delta=0,
+        size_base=294,
+        size_head=294,
+    )
+    assert asset_comparison_d[
+        ("assets/react-35ef61ed.svg", None)
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.REMOVED,
+        size_delta=-4126,
+        asset_name="assets/react-*.svg",
+        percentage_delta=-100,
+        size_base=4126,
+        size_head=0,
+    )
 
 
 def test_bundle_analysis_total_size_delta():

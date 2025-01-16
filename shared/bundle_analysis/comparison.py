@@ -190,9 +190,11 @@ class BundleComparison:
         This method attempts to pick the most likely matching of assets between
         base and head (so as to track their changes through time).
 
-        The current approach is fairly naive and just picks the asset with the
-        closest size.  There are probably better ways of doing this that we can
-        improve upon in the future.
+        Current approach:
+        1. Pick asset with the same UUID. This means the base and head assets have either of:
+            - same hashed name
+            - same modules by name
+        2. Pick asset with the closest size
         """
         n = max([len(base_asset_reports), len(head_asset_reports)])
         matches: List[AssetMatch] = []
@@ -206,13 +208,24 @@ class BundleComparison:
                     # no more base assets to match against
                     matches.append((None, head_asset_report))
                 else:
-                    # try and find the most "similar" base asset
-                    size_deltas = {
-                        abs(head_asset_report.size - base_bundle.size): base_bundle
+                    # 1. Pick asset with the same UUID
+                    base_asset_report_uuids = {
+                        base_bundle.uuid: base_bundle
                         for base_bundle in base_asset_reports
                     }
-                    min_delta = min(size_deltas.keys())
-                    base_asset_report = size_deltas[min_delta]
+                    if head_asset_report.uuid in base_asset_report_uuids:
+                        base_asset_report = base_asset_report_uuids[
+                            head_asset_report.uuid
+                        ]
+
+                    # 2. Pick asset with the closest size
+                    else:
+                        size_deltas = {
+                            abs(head_asset_report.size - base_bundle.size): base_bundle
+                            for base_bundle in base_asset_reports
+                        }
+                        min_delta = min(size_deltas.keys())
+                        base_asset_report = size_deltas[min_delta]
 
                     matches.append((base_asset_report, head_asset_report))
                     base_asset_reports.remove(base_asset_report)
