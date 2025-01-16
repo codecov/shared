@@ -1,12 +1,11 @@
+import binascii
 import logging
 import os
 import uuid
-from dataclasses import asdict
 from datetime import datetime
 from hashlib import md5
-from typing import Self, Optional
+from typing import Optional, Self
 
-import binascii
 from django.contrib.postgres.fields import ArrayField, CITextField
 from django.contrib.sessions.models import Session as DjangoSession
 from django.db import models
@@ -30,7 +29,7 @@ from shared.django_apps.codecov_auth.helpers import get_gitlab_url
 from shared.django_apps.codecov_auth.managers import OwnerManager
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.core.models import DateTimeWithoutTZField, Repository
-from shared.plan.constants import USER_PLAN_REPRESENTATIONS, PlanName
+from shared.plan.constants import PlanName
 
 # Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error\
 # Needs to be called the same as the API app
@@ -221,10 +220,9 @@ class Account(BaseModel):
         This is how we represent the details of a plan to a user, see plan.constants.py
         We inject quantity to make plan management easier on api, see PlanSerializer
         """
-        if self.plan in USER_PLAN_REPRESENTATIONS:
-            plan_details = asdict(USER_PLAN_REPRESENTATIONS[self.plan])
-            plan_details.update({"quantity": self.plan_seat_count})
-            return plan_details
+        plan_details = Plan.objects.get(name=self.plan)
+        plan_details.update({"quantity": self.plan_seat_count})
+        return plan_details
 
     def can_activate_user(self, user: User | None = None) -> bool:
         """
@@ -593,16 +591,15 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     def pretty_plan(self):
         if self.account:
             return self.account.pretty_plan
-        if self.plan in USER_PLAN_REPRESENTATIONS:
-            plan_details = asdict(USER_PLAN_REPRESENTATIONS[self.plan])
 
-            # update with quantity they've purchased
-            # allows api users to update the quantity
-            # by modifying the "plan", sidestepping
-            # some iffy data modeling
+        plan_details = Plan.objects.get(name=self.plan)
+        # update with quantity they've purchased
+        # allows api users to update the quantity
+        # by modifying the "plan", sidestepping
+        # some iffy data modeling
 
-            plan_details.update({"quantity": self.plan_user_count})
-            return plan_details
+        plan_details.update({"quantity": self.plan_user_count})
+        return plan_details
 
     def can_activate_user(self, owner_user: Self) -> bool:
         owner_org = self

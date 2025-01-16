@@ -5,22 +5,14 @@ from typing import List, Optional
 from shared.billing import is_pr_billing_plan
 from shared.config import get_config
 from shared.django_apps.codecov.commands.exceptions import ValidationError
-from shared.django_apps.codecov_auth.models import Owner, Service
+from shared.django_apps.codecov_auth.models import Owner, Plan, Service
 from shared.plan.constants import (
-    BASIC_PLAN,
-    ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
-    FREE_PLAN,
-    FREE_PLAN_REPRESENTATIONS,
-    PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS,
-    SENTRY_PAID_USER_PLAN_REPRESENTATIONS,
     TEAM_PLAN_MAX_USERS,
-    TEAM_PLAN_REPRESENTATIONS,
-    TRIAL_PLAN_REPRESENTATION,
     TRIAL_PLAN_SEATS,
-    USER_PLAN_REPRESENTATIONS,
     PlanBillingRate,
     PlanData,
     PlanName,
+    TierName,
     TrialDaysAmount,
     TrialStatus,
 )
@@ -55,19 +47,20 @@ class PlanService:
             self.current_org = current_org.root_organization
         else:
             self.current_org = current_org
-        if self.current_org.plan not in USER_PLAN_REPRESENTATIONS:
+
+        if self.current_org.plan not in Plan.objects.values_list("name", flat=True):
             raise ValueError("Unsupported plan")
         self._plan_data = None
 
     def update_plan(self, name: str, user_count: Optional[int]) -> None:
         """Updates the organization's plan and user count."""
-        if name not in USER_PLAN_REPRESENTATIONS:
+        if name not in Plan.objects.values_list("name", flat=True):
             raise ValueError("Unsupported plan")
         if not user_count:
             raise ValueError("Quantity Needed")
         self.current_org.plan = name
         self.current_org.plan_user_count = user_count
-        self._plan_data = USER_PLAN_REPRESENTATIONS[self.current_org.plan]
+        self._plan_data = Plan.objects.get(name=self.current_org.plan)
         self.current_org.delinquent = False
         self.current_org.save()
 
@@ -92,8 +85,8 @@ class PlanService:
     def plan_data(self) -> PlanData:
         """Returns the plan data for the organization, either from account or default."""
         if self._plan_data is None:
-            self._plan_data = USER_PLAN_REPRESENTATIONS.get(
-                self.current_org.account.plan
+            self._plan_data = Plan.objects.get(
+                name=self.current_org.account.plan
                 if self.has_account
                 else self.current_org.plan
             )
@@ -159,27 +152,33 @@ class PlanService:
         return self.plan_data.monthly_uploads_limit
 
     @property
-    def tier_name(self) -> str:
+    def tier_name(self) -> TierName:
         """Returns the tier name of the plan."""
         return self.plan_data.tier_name
 
     def available_plans(self, owner: Owner) -> List[PlanData]:
         """Returns the available plans for the owner and organization."""
-        available_plans = [BASIC_PLAN]
+        available_plans = {Plan.objects.get(name=PlanName.BASIC_PLAN_NAME.value)}
 
-        if self.plan_name == FREE_PLAN.value:
-            available_plans.append(FREE_PLAN)
+        curr_plan = Plan.objects.get(name=self.plan_name)
+        if not curr_plan.paid_plan:
+            available_plans.add(curr_plan)
 
-        available_plans += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
+        # Build list of available tiers based on conditions
+        available_tiers = [TierName.PRO.value]
 
         if is_sentry_user(owner):
-            available_plans += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
+            available_tiers.append(TierName.SENTRY.value)
 
         if (
-            self.plan_activated_users is None
+            not self.plan_activated_users
             or len(self.plan_activated_users) <= TEAM_PLAN_MAX_USERS
         ):
-            available_plans += TEAM_PLAN_REPRESENTATIONS.values()
+            available_tiers.append(TierName.TEAM.value)
+
+        available_plans.update(
+            Plan.objects.filter(tier_name__in=available_tiers, is_active=True)
+        )
 
         return [plan.convert_to_DTO() for plan in available_plans]
 
@@ -222,7 +221,9 @@ class PlanService:
         """
         if self.trial_status != TrialStatus.NOT_STARTED.value:
             raise ValidationError("Cannot start an existing trial")
-        if self.plan_name not in FREE_PLAN_REPRESENTATIONS:
+        if self.plan_name not in Plan.objects.filter(paid_plan=False).values_list(
+            "name", flat=True
+        ):
             raise ValidationError("Cannot trial from a paid plan")
 
         self._start_trial_helper(current_owner)
@@ -236,10 +237,14 @@ class PlanService:
             No value
         """
         # Start a new trial plan for free users currently not on trial
-        if self.plan_name in FREE_PLAN_REPRESENTATIONS:
+        if self.plan_name in Plan.objects.filter(paid_plan=False).values_list(
+            "name", flat=True
+        ):
             self._start_trial_helper(current_owner, end_date, is_extension=False)
         # Extend an existing trial plan for users currently on trial
-        elif self.plan_name in TRIAL_PLAN_REPRESENTATION:
+        elif self.plan_name in Plan.objects.filter(
+            tier=TierName.TRIAL.value, is_active=True
+        ).values_list("name", flat=True):
             self._start_trial_helper(current_owner, end_date, is_extension=True)
         # Paying users cannot start a trial
         else:
@@ -324,30 +329,30 @@ class PlanService:
 
     @property
     def is_enterprise_plan(self) -> bool:
-        return self.plan_name in ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS
+        return self.plan_data.tier_name == TierName.ENTERPRISE.value
 
     @property
     def is_free_plan(self) -> bool:
-        return self.plan_name in FREE_PLAN_REPRESENTATIONS
+        return self.plan_data.paid_plan is False
 
     @property
     def is_pro_plan(self) -> bool:
         return (
-            self.plan_name in PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS
-            or self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS
+            self.plan_data.tier_name == TierName.PRO.value
+            or self.plan_data.tier_name == TierName.SENTRY.value
         )
 
     @property
     def is_sentry_plan(self) -> bool:
-        return self.plan_name in SENTRY_PAID_USER_PLAN_REPRESENTATIONS
+        return self.plan_data.tier_name == TierName.SENTRY.value
 
     @property
     def is_team_plan(self) -> bool:
-        return self.plan_name in TEAM_PLAN_REPRESENTATIONS
+        return self.plan_data.tier_name == TierName.TEAM.value
 
     @property
     def is_trial_plan(self) -> bool:
-        return self.plan_name in TRIAL_PLAN_REPRESENTATION
+        return self.plan_data.tier_name == TierName.TRIAL.value
 
     @property
     def is_pr_billing_plan(self) -> bool:

@@ -73,6 +73,8 @@ class TierName(enum.Enum):
     TEAM = "team"
     PRO = "pro"
     ENTERPRISE = "enterprise"
+    SENTRY = "sentry"
+    TRIAL = "trial"
 
 
 @dataclass(repr=False)
@@ -100,12 +102,13 @@ class PlanData:
             "tier_name": self.tier_name,
             "monthly_uploads_limit": self.monthly_uploads_limit,
             "trial_days": self.trial_days,
-            "is_free_plan": self.tier_name == TierName.BASIC.value,
+            "is_free_plan": not self.paid_plan,
             "is_pro_plan": self.tier_name == TierName.PRO.value,
             "is_team_plan": self.tier_name == TierName.TEAM.value,
             "is_enterprise_plan": self.tier_name == TierName.ENTERPRISE.value,
-            "is_trial_plan": self.value == PlanName.TRIAL_PLAN_NAME.value,
-            "is_sentry_plan": self.value in SENTRY_PAID_USER_PLAN_REPRESENTATIONS,
+            "is_trial_plan": self.value
+            == PlanName.TRIAL_PLAN_NAME.value,  # This could also use the trial "Tier" if we want to make one for that...
+            "is_sentry_plan": self.tier_name == TierName.SENTRY.value,
         }
 
 
