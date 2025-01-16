@@ -110,7 +110,7 @@ class AssetComparison:
             return AssetChange(
                 asset_name=self.base_asset_report.name,
                 change_type=AssetChange.ChangeType.REMOVED,
-                size_delta=self.head_asset_report.size,
+                size_delta=-self.base_asset_report.size,
                 percentage_delta=-100.0,
                 size_base=self.base_asset_report.size,
                 size_head=0,
@@ -151,7 +151,7 @@ class BundleComparison:
         return head_size - base_size
 
     @sentry_sdk.trace
-    def asset_changes(self) -> List[AssetComparison]:
+    def asset_comparisons(self) -> List[AssetComparison]:
         # this groups assets by name
         # there can be multiple assets with the same name and we
         # need to try and match them across base and head reports
