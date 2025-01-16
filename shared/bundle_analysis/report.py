@@ -92,16 +92,28 @@ class AssetReport:
     def asset_type(self) -> AssetType:
         return self.asset.asset_type
 
-    def modules(self) -> List[ModuleReport]:
+    def modules(
+        self, pr_changed_files: Optional[List[str]] = None
+    ) -> List[ModuleReport]:
         with get_db_session(self.db_path) as session:
-            modules = (
+            query = (
                 session.query(Module)
                 .join(Module.chunks)
                 .join(Chunk.assets)
                 .filter(Asset.id == self.asset.id)
-                .all()
             )
-            return [ModuleReport(self.db_path, module) for module in modules]
+
+            # Apply additional filter if pr_changed_files is provided
+            if pr_changed_files:
+                # Normalize pr_changed_files to have './' prefix for relative paths
+                normalized_files = {
+                    f"./{file}" if not file.startswith("./") else file
+                    for file in pr_changed_files
+                }
+                query = query.filter(Module.name.in_(normalized_files))
+
+            modules = query.all()
+        return [ModuleReport(self.db_path, module) for module in modules]
 
     def routes(self) -> Optional[List[str]]:
         plugin_name = self.bundle_info.get("plugin_name")
