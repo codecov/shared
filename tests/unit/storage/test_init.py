@@ -1,4 +1,4 @@
-from shared.rollouts.features import USE_NEW_MINIO
+from shared.rollouts.features import USE_MINIO, USE_NEW_MINIO
 from shared.storage import get_appropriate_storage_service
 from shared.storage.aws import AWSStorageService
 from shared.storage.fallback import StorageWithFallbackService
@@ -123,6 +123,37 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=True)
+        mocker.patch.object(USE_MINIO, "check_value", return_value=False)
+        res = get_appropriate_storage_service(repoid=123)
+        assert isinstance(res, NewMinioStorageService)
+        assert res.minio_config == minio_config
+
+    def test_get_appropriate_storage_service_use_minio(
+        self, mock_configuration, mocker
+    ):
+        mock_configuration.params["services"] = {
+            "chosen_storage": "minio",
+            "gcp": gcp_config,
+            "aws": aws_config,
+            "minio": minio_config,
+        }
+        mocker.patch.object(USE_MINIO, "check_value", return_value=True)
+        mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
+        res = get_appropriate_storage_service(repoid=123)
+        assert isinstance(res, MinioStorageService)
+        assert res.minio_config == minio_config
+
+    def test_get_appropriate_storage_service_use_minio_and_new_minio(
+        self, mock_configuration, mocker
+    ):
+        mock_configuration.params["services"] = {
+            "chosen_storage": "minio",
+            "gcp": gcp_config,
+            "aws": aws_config,
+            "minio": minio_config,
+        }
+        mocker.patch.object(USE_MINIO, "check_value", return_value=True)
+        mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=True)
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, NewMinioStorageService)
         assert res.minio_config == minio_config
@@ -137,6 +168,7 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
+        mocker.patch.object(USE_MINIO, "check_value", return_value=False)
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
@@ -152,6 +184,7 @@ class TestStorageInitialization(object):
         }
 
         mocker.patch.object(USE_NEW_MINIO, "check_value", return_value=False)
+        mocker.patch.object(USE_MINIO, "check_value", return_value=False)
 
         res = get_appropriate_storage_service(repoid=123)
 
