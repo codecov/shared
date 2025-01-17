@@ -2,6 +2,8 @@ import enum
 from dataclasses import dataclass
 from typing import List, Optional
 
+from shared.django_apps.codecov_auth.models import Plan, Tier
+
 
 class MonthlyUploadLimits(enum.Enum):
     CODECOV_BASIC_PLAN = 250
@@ -88,7 +90,7 @@ class PlanData:
     billing_rate: Optional[PlanBillingRate]
     base_unit_price: PlanPrice
     benefits: List[str]
-    tier_name: TierName
+    tier: Tier
     monthly_uploads_limit: Optional[MonthlyUploadLimits]
     trial_days: Optional[TrialDaysAmount]
 
@@ -99,17 +101,36 @@ class PlanData:
             "billing_rate": self.billing_rate,
             "base_unit_price": self.base_unit_price,
             "benefits": self.benefits,
-            "tier_name": self.tier_name,
+            "tier_name": self.tier.tier_name,
             "monthly_uploads_limit": self.monthly_uploads_limit,
             "trial_days": self.trial_days,
             "is_free_plan": not self.paid_plan,
-            "is_pro_plan": self.tier_name == TierName.PRO.value,
-            "is_team_plan": self.tier_name == TierName.TEAM.value,
-            "is_enterprise_plan": self.tier_name == TierName.ENTERPRISE.value,
+            "is_pro_plan": self.tier.tier_name == TierName.PRO.value,
+            "is_team_plan": self.tier.tier_name == TierName.TEAM.value,
+            "is_enterprise_plan": self.tier.tier_name == TierName.ENTERPRISE.value,
             "is_trial_plan": self.value
             == PlanName.TRIAL_PLAN_NAME.value,  # This could also use the trial "Tier" if we want to make one for that...
-            "is_sentry_plan": self.tier_name == TierName.SENTRY.value,
+            "is_sentry_plan": self.tier.tier_name == TierName.SENTRY.value,
         }
+
+
+def convert_to_DTO(plan: Plan) -> dict:
+    return {
+        "marketing_name": plan.marketing_name,
+        "value": plan.name,
+        "billing_rate": plan.billing_rate,
+        "base_unit_price": plan.base_unit_price,
+        "benefits": plan.benefits,
+        "tier_name": plan.tier.tier_name,
+        "monthly_uploads_limit": plan.monthly_uploads_limit,
+        "trial_days": plan.trial_days,
+        "is_free_plan": not plan.paid_plan,
+        "is_pro_plan": plan.tier.tier_name == TierName.PRO.value,
+        "is_team_plan": plan.tier.tier_name == TierName.TEAM.value,
+        "is_enterprise_plan": plan.tier.tier_name == TierName.ENTERPRISE.value,
+        "is_trial_plan": plan.tier.tier_name == TierName.TRIAL.value,
+        "is_sentry_plan": plan.tier.tier_name == TierName.SENTRY.value,
+    }
 
 
 NON_PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS = {

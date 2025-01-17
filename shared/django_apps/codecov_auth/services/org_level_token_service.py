@@ -20,9 +20,7 @@ class OrgLevelTokenService(object):
     # MIGHT BE ABLE TO REMOVE THIS AND SUBSEQUENT DOWNSTREAM STUFF
     @classmethod
     def org_can_have_upload_token(cls, org: Owner):
-        return org.plan in Plan.objects.filter(is_active=True).values_list(
-            "name", flat=True
-        )
+        return Plan.objects.filter(name=org.plan, is_active=True).exists()
 
     @classmethod
     def get_or_create_org_token(cls, org: Owner):

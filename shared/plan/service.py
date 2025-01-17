@@ -10,11 +10,11 @@ from shared.plan.constants import (
     TEAM_PLAN_MAX_USERS,
     TRIAL_PLAN_SEATS,
     PlanBillingRate,
-    PlanData,
     PlanName,
     TierName,
     TrialDaysAmount,
     TrialStatus,
+    convert_to_DTO,
 )
 from shared.self_hosted.service import enterprise_has_seats_left, license_seats
 
@@ -48,19 +48,19 @@ class PlanService:
         else:
             self.current_org = current_org
 
-        if self.current_org.plan not in Plan.objects.values_list("name", flat=True):
+        if not Plan.objects.filter(name=self.current_org.plan).exists():
             raise ValueError("Unsupported plan")
         self._plan_data = None
 
     def update_plan(self, name: str, user_count: Optional[int]) -> None:
         """Updates the organization's plan and user count."""
-        if name not in Plan.objects.values_list("name", flat=True):
+        if not Plan.objects.filter(name=name).exists():
             raise ValueError("Unsupported plan")
         if not user_count:
             raise ValueError("Quantity Needed")
         self.current_org.plan = name
         self.current_org.plan_user_count = user_count
-        self._plan_data = Plan.objects.get(name=self.current_org.plan)
+        self._plan_data = Plan.objects.get(name=name)
         self.current_org.delinquent = False
         self.current_org.save()
 
@@ -82,7 +82,7 @@ class PlanService:
         return self.current_org.account is not None
 
     @property
-    def plan_data(self) -> PlanData:
+    def plan_data(self) -> Plan:
         """Returns the plan data for the organization, either from account or default."""
         if self._plan_data is None:
             self._plan_data = Plan.objects.get(
@@ -93,7 +93,7 @@ class PlanService:
         return self._plan_data
 
     @plan_data.setter
-    def plan_data(self, plan_data: Optional[PlanData]) -> None:
+    def plan_data(self, plan_data: Optional[Plan]) -> None:
         """Sets the plan data directly."""
         self._plan_data = plan_data
 
@@ -154,9 +154,9 @@ class PlanService:
     @property
     def tier_name(self) -> TierName:
         """Returns the tier name of the plan."""
-        return self.plan_data.tier_name
+        return self.plan_data.tier.tier_name
 
-    def available_plans(self, owner: Owner) -> List[PlanData]:
+    def available_plans(self, owner: Owner) -> List[Plan]:
         """Returns the available plans for the owner and organization."""
         available_plans = {Plan.objects.get(name=PlanName.BASIC_PLAN_NAME.value)}
 
@@ -177,10 +177,10 @@ class PlanService:
             available_tiers.append(TierName.TEAM.value)
 
         available_plans.update(
-            Plan.objects.filter(tier_name__in=available_tiers, is_active=True)
+            Plan.objects.filter(tier__tier_name__in=available_tiers, is_active=True)
         )
 
-        return [plan.convert_to_DTO() for plan in available_plans]
+        return [convert_to_DTO(plan) for plan in available_plans]
 
     def _start_trial_helper(
         self,
@@ -221,9 +221,7 @@ class PlanService:
         """
         if self.trial_status != TrialStatus.NOT_STARTED.value:
             raise ValidationError("Cannot start an existing trial")
-        if self.plan_name not in Plan.objects.filter(paid_plan=False).values_list(
-            "name", flat=True
-        ):
+        if not Plan.objects.filter(name=self.plan_name, paid_plan=False).exists():
             raise ValidationError("Cannot trial from a paid plan")
 
         self._start_trial_helper(current_owner)
@@ -237,14 +235,12 @@ class PlanService:
             No value
         """
         # Start a new trial plan for free users currently not on trial
-        if self.plan_name in Plan.objects.filter(paid_plan=False).values_list(
-            "name", flat=True
-        ):
+
+        plan = Plan.objects.get(name=self.plan_name)
+        if plan.paid_plan is False:
             self._start_trial_helper(current_owner, end_date, is_extension=False)
         # Extend an existing trial plan for users currently on trial
-        elif self.plan_name in Plan.objects.filter(
-            tier=TierName.TRIAL.value, is_active=True
-        ).values_list("name", flat=True):
+        elif plan.tier.tier_name == TierName.TRIAL.value:
             self._start_trial_helper(current_owner, end_date, is_extension=True)
         # Paying users cannot start a trial
         else:
