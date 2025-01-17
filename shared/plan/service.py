@@ -100,7 +100,7 @@ class PlanService:
     @property
     def plan_name(self) -> str:
         """Returns the name of the organization's current plan."""
-        return self.plan_data.value
+        return self.plan_data.name
 
     @property
     def plan_user_count(self) -> int:
@@ -325,7 +325,7 @@ class PlanService:
 
     @property
     def is_enterprise_plan(self) -> bool:
-        return self.plan_data.tier_name == TierName.ENTERPRISE.value
+        return self.plan_data.tier.tier_name == TierName.ENTERPRISE.value
 
     @property
     def is_free_plan(self) -> bool:
@@ -334,21 +334,21 @@ class PlanService:
     @property
     def is_pro_plan(self) -> bool:
         return (
-            self.plan_data.tier_name == TierName.PRO.value
-            or self.plan_data.tier_name == TierName.SENTRY.value
+            self.plan_data.tier.tier_name == TierName.PRO.value
+            or self.plan_data.tier.tier_name == TierName.SENTRY.value
         )
 
     @property
     def is_sentry_plan(self) -> bool:
-        return self.plan_data.tier_name == TierName.SENTRY.value
+        return self.plan_data.tier.tier_name == TierName.SENTRY.value
 
     @property
     def is_team_plan(self) -> bool:
-        return self.plan_data.tier_name == TierName.TEAM.value
+        return self.plan_data.tier.tier_name == TierName.TEAM.value
 
     @property
     def is_trial_plan(self) -> bool:
-        return self.plan_data.tier_name == TierName.TRIAL.value
+        return self.plan_data.tier.tier_name == TierName.TRIAL.value
 
     @property
     def is_pr_billing_plan(self) -> bool:

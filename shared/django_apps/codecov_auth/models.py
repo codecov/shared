@@ -598,8 +598,9 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         # by modifying the "plan", sidestepping
         # some iffy data modeling
 
-        plan_details.update({"quantity": self.plan_user_count})
-        return plan_details
+        if plan_details:
+            plan_details.update({"quantity": self.plan_user_count})
+            return plan_details
 
     def can_activate_user(self, owner_user: Self) -> bool:
         owner_org = self
