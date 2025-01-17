@@ -8,7 +8,7 @@ TEST_ANALYTICS_APP_LABEL = "test_analytics"
 class Flake(models.Model):
     id = models.BigAutoField(primary_key=True)
 
-    repoid = models.IntegerField
+    repoid = models.IntegerField()
     test_id = models.BinaryField()
 
     recent_passes_count = models.IntegerField()
