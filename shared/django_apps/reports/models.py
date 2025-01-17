@@ -202,6 +202,10 @@ class ReportSession(
                 name="upload_report_type_idx",
                 fields=["report_id", "upload_type"],
             ),
+            models.Index(
+                name="upload_storage_path_idx",
+                fields=["storage_path"],
+            ),
         ]
 
     @property
