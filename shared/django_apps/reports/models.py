@@ -187,7 +187,7 @@ class ReportSession(
         "CommitReport", related_name="sessions", on_delete=models.CASCADE
     )
     state = models.CharField(max_length=100)
-    storage_path = models.TextField()
+    storage_path = models.TextField(null=True)
     order_number = models.IntegerField(null=True)
     upload_type = models.CharField(max_length=100, default="uploaded")
     upload_extras = models.JSONField(default=dict)
