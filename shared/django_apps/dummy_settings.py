@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "shared.django_apps.profiling",
     "shared.django_apps.reports",
     "shared.django_apps.staticanalysis",
+    "shared.django_apps.test_analytics",
 ]
 
 # Needed for makemigrations to work
@@ -88,6 +89,14 @@ DATABASES = {
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "timescale",
+        "PORT": 5432,
+    },
+    "test_analytics": {
+        "ENGINE": "psqlextra.backend",
+        "NAME": "test_analytics",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "postgres",
         "PORT": 5432,
     },
 }
