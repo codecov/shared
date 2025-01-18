@@ -23,7 +23,7 @@ from shared.django_apps.codecov_auth.models import (
     UserToken,
 )
 from shared.encryption.oauth import get_encryptor_from_configuration
-from shared.plan.constants import TrialStatus
+from shared.plan.constants import PlanName, TierName, TrialStatus
 
 encryptor = get_encryptor_from_configuration()
 
@@ -177,20 +177,26 @@ class TierFactory(DjangoModelFactory):
     class Meta:
         model = Tier
 
-    tier_name = factory.Faker("name")
+    tier_name = TierName.BASIC.value
+    bundle_analysis = False
+    test_analytics = False
+    flaky_test_detection = False
+    project_coverage = False
+    private_repo_support = False
 
 
 class PlanFactory(DjangoModelFactory):
     class Meta:
         model = Plan
 
-    base_unit_price = factory.Faker("pyint")
-    benefits = []
+    tier = factory.SubFactory(TierFactory)
+    base_unit_price = 0
+    benefits = factory.LazyFunction(lambda: ["Benefit 1", "Benefit 2", "Benefit 3"])
     billing_rate = None
     is_active = True
-    marketing_name = factory.Faker("name")
-    max_seats = None
+    marketing_name = factory.Faker("catch_phrase")
+    max_seats = 1
     monthly_uploads_limit = None
-    paid_plan = True
-    name = factory.Faker("name")
-    tier = factory.SubFactory(TierFactory)
+    name = PlanName.BASIC_PLAN_NAME.value
+    paid_plan = False
+    stripe_id = None
