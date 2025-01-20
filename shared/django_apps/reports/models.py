@@ -279,12 +279,6 @@ class Test(models.Model):
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["repository", "name", "testsuite", "flags_hash"],
-                name="reports_test_repoid_name_testsuite_flags_hash",
-            ),
-        ]
 
 
 class TestInstance(BaseCodecovModel):
