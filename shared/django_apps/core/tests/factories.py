@@ -15,7 +15,7 @@ class RepositoryFactory(DjangoModelFactory):
         model = models.Repository
 
     private = True
-    name = factory.Faker("word")
+    name = factory.Faker("slug")
     service_id = factory.Sequence(lambda n: f"{n}")
     author = factory.SubFactory(OwnerFactory)
     language = factory.Iterator(
@@ -109,8 +109,7 @@ class CommitWithReportFactory(CommitFactory):
         # The following replaces the old `commits.report` JSON column
         # TODO: we may want to find another way to create this since the imports below
         # create a cyclic dependency
-
-        from reports.tests.factories import (
+        from shared.django_apps.reports.tests.factories import (
             CommitReportFactory,
             ReportLevelTotalsFactory,
             UploadFactory,
@@ -222,7 +221,7 @@ class BranchFactory(DjangoModelFactory):
         model = models.Branch
 
     repository = factory.SubFactory(RepositoryFactory)
-    name = factory.Faker("sentence", nb_words=1)
+    name = factory.Faker("slug")
     head = factory.LazyAttribute(lambda o: sha1(o.name.encode("utf-8")).hexdigest())
 
 
