@@ -901,24 +901,24 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can do Team plan when plan_activated_users is null
         assert self.plan_service.available_plans(owner=self.owner) == expected_result
 
-        # self.current_org.plan_activated_users = [i for i in range(10)]
-        # self.current_org.save()
+        self.current_org.plan_activated_users = [i for i in range(10)]
+        self.current_org.save()
 
-        # # Can do Team plan when at 10 activated users
-        # assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        # Can do Team plan when at 10 activated users
+        assert self.plan_service.available_plans(owner=self.owner) == expected_result
 
-        # self.current_org.plan_activated_users = [i for i in range(11)]
-        # self.current_org.save()
+        self.current_org.plan_activated_users = [i for i in range(11)]
+        self.current_org.save()
 
-        # # [Basic, Pro Monthly, Pro Yearly, Sentry Monthly, Sentry Yearly]
-        # expected_result = []
-        # expected_result.append(BASIC_PLAN)
-        # expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        # expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        # expected_result = [result.convert_to_DTO() for result in expected_result]
+        # [Basic, Pro Monthly, Pro Yearly, Sentry Monthly, Sentry Yearly]
+        expected_result = []
+        expected_result.append(BASIC_PLAN)
+        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result = [result.convert_to_DTO() for result in expected_result]
 
-        # # Can not do Team plan when at 11 activated users
-        # assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        # Can not do Team plan when at 11 activated users
+        assert self.plan_service.available_plans(owner=self.owner) == expected_result
 
 
 @override_settings(IS_ENTERPRISE=False)
