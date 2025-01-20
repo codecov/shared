@@ -329,7 +329,7 @@ class PlanService:
 
     @property
     def is_free_plan(self) -> bool:
-        return self.plan_data.paid_plan is False
+        return self.plan_data.paid_plan is False and not self.is_org_trialing
 
     @property
     def is_pro_plan(self) -> bool:
