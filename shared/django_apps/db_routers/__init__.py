@@ -12,46 +12,52 @@ class MultiDatabaseRouter:
     """
 
     def db_for_read(self, model, **hints):
-        if model._meta.app_label == "timeseries":
-            if settings.TIMESERIES_DATABASE_READ_REPLICA_ENABLED:
-                return "timeseries_read"
-            else:
-                return "timeseries"
-        else:
-            if settings.DATABASE_READ_REPLICA_ENABLED:
-                return "default_read"
-            else:
-                return "default"
+        match model._meta.app_label:
+            case "timeseries":
+                if settings.TIMESERIES_DATABASE_READ_REPLICA_ENABLED:
+                    return "timeseries_read"
+                else:
+                    return "timeseries"
+            case "test_analytics":
+                return "test_analytics"
+            case _:
+                if settings.DATABASE_READ_REPLICA_ENABLED:
+                    return "default_read"
+                else:
+                    return "default"
 
     def db_for_write(self, model, **hints):
-        if model._meta.app_label == "timeseries":
-            return "timeseries"
-        else:
-            return "default"
+        match model._meta.app_label:
+            case "timeseries":
+                return "timeseries"
+            case "test_analytics":
+                return "test_analytics"
+            case _:
+                return "default"
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        if (
-            db == "timeseries" or db == "timeseries_read"
-        ) and not settings.TIMESERIES_ENABLED:
-            log.warning("Skipping timeseries migration")
-            return False
-        if db == "default_read" or db == "timeseries_read":
-            log.warning("Skipping migration of read-only database")
-            return False
-        if app_label == "timeseries":
-            return db == "timeseries"
-        else:
-            return db == "default"
+        match db:
+            case "timeseries_read" | "test_analytics_read" | "default_read":
+                return False
+            case "timeseries":
+                if not settings.TIMESERIES_ENABLED:
+                    return False
+                return app_label == "timeseries"
+            case "test_analytics":
+                if not settings.TEST_ANALYTICS_DATABASE_ENABLED:
+                    return False
+                return app_label == "test_analytics"
+            case _:
+                return app_label not in {"timeseries", "test_analytics"}
 
     def allow_relation(self, obj1, obj2, **hints):
         obj1_app = obj1._meta.app_label
         obj2_app = obj2._meta.app_label
 
-        # cannot form relationship across default <-> timeseries dbs
-        if obj1_app == "timeseries" and obj2_app != "timeseries":
-            return False
-        if obj1_app != "timeseries" and obj2_app == "timeseries":
-            return False
-
-        # otherwise we allow it
-        return True
+        if obj1_app in {"timeseries", "test_analytics"} or obj2_app in {
+            "timeseries",
+            "test_analytics",
+        }:
+            return obj1_app == obj2_app
+        else:
+            return True

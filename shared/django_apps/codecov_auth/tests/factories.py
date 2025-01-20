@@ -13,9 +13,11 @@ from shared.django_apps.codecov_auth.models import (
     OrganizationLevelToken,
     Owner,
     OwnerProfile,
+    Plan,
     SentryUser,
     Session,
     StripeBilling,
+    Tier,
     TokenTypeChoices,
     User,
     UserToken,
@@ -169,3 +171,26 @@ class InvoiceBillingFactory(DjangoModelFactory):
         model = InvoiceBilling
 
     account = factory.SubFactory(Account)
+
+
+class TierFactory(DjangoModelFactory):
+    class Meta:
+        model = Tier
+
+    tier_name = factory.Faker("name")
+
+
+class PlanFactory(DjangoModelFactory):
+    class Meta:
+        model = Plan
+
+    base_unit_price = factory.Faker("pyint")
+    benefits = []
+    billing_rate = None
+    is_active = True
+    marketing_name = factory.Faker("name")
+    max_seats = None
+    monthly_uploads_limit = None
+    paid_plan = True
+    name = factory.Faker("name")
+    tier = factory.SubFactory(TierFactory)
