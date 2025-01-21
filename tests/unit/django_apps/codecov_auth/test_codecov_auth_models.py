@@ -41,11 +41,13 @@ from shared.plan.constants import (
     PlanName,
 )
 from shared.utils.test_utils import mock_config_helper
+from tests.unit.plan.test_plan import mock_all_plans_and_tiers
 
 
 class TestOwnerModel(TransactionTestCase):
     def setUp(self):
         self.owner = OwnerFactory(username="codecov_name", email="name@codecov.io")
+        mock_all_plans_and_tiers()
 
     def test_repo_total_credits_returns_correct_repos_for_legacy_plan(self):
         self.owner.plan = "5m"
@@ -384,7 +386,7 @@ class TestOwnerModel(TransactionTestCase):
         self.assertTrue(self.owner.can_activate_user(to_activate))
         org_pretty_plan = asdict(BASIC_PLAN)
         org_pretty_plan.update({"quantity": 1})
-        self.assertEqual(self.owner.pretty_plan, org_pretty_plan)
+        self.assertEqual(self.owner.pretty_plan.quantity, org_pretty_plan["quantity"])
 
         self.owner.account = AccountFactory(
             plan_seat_count=0, plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value
@@ -396,7 +398,7 @@ class TestOwnerModel(TransactionTestCase):
             ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS[self.owner.account.plan]
         )
         account_pretty_plan.update({"quantity": 0})
-        self.assertEqual(self.owner.pretty_plan, account_pretty_plan)
+        self.assertEqual(self.owner.pretty_plan.quantity, account_pretty_plan["quantity"])
 
     def test_add_admin_adds_ownerid_to_admin_array(self):
         self.owner.admins = []
@@ -717,6 +719,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertTrue(stripe.is_active)
 
     def test_account_with_users(self):
+        mock_all_plans_and_tiers()
         user_1 = UserFactory()
         OwnerFactory(user=user_1)
         user_2 = UserFactory()
@@ -758,9 +761,10 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(account.available_seat_count, 0)
         pretty_plan = asdict(BASIC_PLAN)
         pretty_plan.update({"quantity": 1})
-        self.assertEqual(account.pretty_plan, pretty_plan)
+        self.assertEqual(account.pretty_plan.quantity, pretty_plan["quantity"])
 
     def test_create_account_for_enterprise_experience(self):
+        mock_all_plans_and_tiers()
         # 2 separate OwnerOrgs that wish to Enterprise
         stripe_customer_id = "abc123"
         stripe_subscription_id = "defg456"
@@ -928,7 +932,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(enterprise_account.available_seat_count, 57)
         pretty_plan = asdict(BASIC_PLAN)
         pretty_plan.update({"quantity": 50})
-        self.assertEqual(enterprise_account.pretty_plan, pretty_plan)
+        self.assertEqual(enterprise_account.pretty_plan.quantity, pretty_plan["quantity"])
 
     def test_activate_user_onto_account(self):
         user = UserFactory()

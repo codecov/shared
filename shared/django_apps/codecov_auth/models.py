@@ -221,7 +221,9 @@ class Account(BaseModel):
         We inject quantity to make plan management easier on api, see PlanSerializer
         """
         plan_details = Plan.objects.get(name=self.plan)
-        plan_details.update({"quantity": self.plan_seat_count})
+        plan_details.quantity = self.plan_seat_count
+        plan_details.save()
+        
         return plan_details
 
     def can_activate_user(self, user: User | None = None) -> bool:
@@ -599,7 +601,8 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         # some iffy data modeling
 
         if plan_details:
-            plan_details.update({"quantity": self.plan_user_count})
+            plan_details.quantity = self.plan_user_count
+            plan_details.save()
             return plan_details
 
     def can_activate_user(self, owner_user: Self) -> bool:

@@ -18,9 +18,13 @@ from shared.upload.utils import (
     insert_coverage_measurement,
     query_monthly_coverage_measurements,
 )
+from tests.unit.plan.test_plan import mock_all_plans_and_tiers
 
 
 class CoverageMeasurement(TestCase):
+    def setUp(self):
+        mock_all_plans_and_tiers()
+
     def add_upload_measurements_records(
         self,
         owner: Owner,
