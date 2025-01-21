@@ -604,8 +604,8 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -623,8 +623,8 @@ class AvailablePlansBeforeTrial(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -638,10 +638,10 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = []
-        expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result.append(BASIC_PLAN)
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -730,12 +730,6 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
         expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
-        print(
-            "array 1",
-            expected_result,
-            "array 2",
-            plan_service.available_plans(owner=self.owner),
-        )
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -771,8 +765,8 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -861,13 +855,13 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.expected_result = [
             result.convert_to_DTO() for result in self.expected_result
         ]
+        mock_all_plans_and_tiers()
 
     def test_currently_team_plan(self):
-        plan = PlanFactory(name=PlanName.TEAM_MONTHLY.value)
         self.current_org = OwnerFactory(
             plan_user_count=100,
             plan_activated_users=[i for i in range(10)],
-            plan=plan.name,
+            plan=PlanName.TEAM_MONTHLY.value,
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
@@ -992,8 +986,8 @@ class AvailablePlansOngoingTrial(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         # Can do Team plan when plan_activated_users is null
