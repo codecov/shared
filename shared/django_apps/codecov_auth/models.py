@@ -223,7 +223,7 @@ class Account(BaseModel):
         plan_details = Plan.objects.get(name=self.plan)
         plan_details.quantity = self.plan_seat_count
         plan_details.save()
-        
+
         return plan_details
 
     def can_activate_user(self, user: User | None = None) -> bool:

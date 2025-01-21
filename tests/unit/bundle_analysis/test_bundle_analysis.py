@@ -848,18 +848,18 @@ def test_bundle_report_asset_type_javascript():
             report.ingest(report_path)
             bundle_report = report.bundle_report("sample")
             asset_reports = list(bundle_report.asset_reports())
-            assert (
-                bundle_report.total_size() == expected_total_size
-            ), f"Version {version}: Total size mismatch"
+            assert bundle_report.total_size() == expected_total_size, (
+                f"Version {version}: Total size mismatch"
+            )
 
             total_js_size = sum(
                 asset.size
                 for asset in asset_reports
                 if asset.asset_type == AssetType.JAVASCRIPT
             )
-            assert (
-                total_js_size == expected_js_size
-            ), f"Version {version}: JS size mismatch"
+            assert total_js_size == expected_js_size, (
+                f"Version {version}: JS size mismatch"
+            )
         finally:
             report.cleanup()
 
