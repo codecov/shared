@@ -6,8 +6,10 @@ from typing import Any, List, Optional
 
 from shared.components import Component
 from shared.config import (
+    NOTIFY_ERROR_TIME_START,
     PATCH_CENTRIC_DEFAULT_CONFIG,
     PATCH_CENTRIC_DEFAULT_TIME_START,
+    add_notify_error_to_config,
     get_config,
 )
 
@@ -19,6 +21,11 @@ class OwnerContext(object):
     ownerid: Optional[int] = None
     owner_onboarding_date: Optional[datetime] = None
     owner_plan: Optional[str] = None
+
+
+@dataclass
+class RepoContext(object):
+    repo_creation_date: datetime | None = None
 
 
 class UserYaml(object):
@@ -119,11 +126,12 @@ class UserYaml(object):
     def get_final_yaml(
         cls,
         *,
-        owner_yaml: Optional[dict[str, Any]] = None,
-        repo_yaml: Optional[dict[str, Any]] = None,
-        commit_yaml: Optional[dict[str, Any]] = None,
-        ownerid: int = None,
-        owner_context: Optional[OwnerContext] = None,
+        owner_yaml: dict[str, Any] | None = None,
+        repo_yaml: dict[str, Any] | None = None,
+        commit_yaml: dict[str, Any] | None = None,
+        ownerid: int | None = None,
+        owner_context: OwnerContext | None = None,
+        repo_context: RepoContext | None = None,
     ):
         """Given a owner yaml, repo yaml and user yaml, determines what yaml we need to use
 
@@ -159,10 +167,11 @@ class UserYaml(object):
             additional_yaml = _get_possible_additional_user_yaml(ownerid)
             resulting_yaml = merge_yamls(resulting_yaml, additional_yaml)
 
-        if owner_context and owner_context.owner_onboarding_date:
-            resulting_yaml = _fix_yaml_defaults_based_on_owner_onboarding_date(
-                resulting_yaml, owner_context.owner_onboarding_date
-            )
+        resulting_yaml = _fix_yaml_defaults_based_on_time(
+            resulting_yaml,
+            getattr(owner_context, "owner_onboarding_date", None),
+            getattr(repo_context, "repo_creation_date", None),
+        )
 
         if owner_yaml is not None:
             resulting_yaml = merge_yamls(resulting_yaml, owner_yaml)
@@ -185,8 +194,10 @@ def _get_possible_additional_user_yaml(ownerid):
     return {}
 
 
-def _fix_yaml_defaults_based_on_owner_onboarding_date(
-    current_yaml: dict, owner_onboarding_date: datetime
+def _fix_yaml_defaults_based_on_time(
+    current_yaml: dict,
+    owner_onboarding_date: datetime | None,
+    repo_creation_date: datetime | None,
 ) -> dict:
     """Changes the site defaults based on the owner_onboarding_date.
     Owners onboarded (Owner.created_at) after PATCH_CENTRIC_DEFAULT_TIME_START use the
@@ -195,9 +206,15 @@ def _fix_yaml_defaults_based_on_owner_onboarding_date(
     Owners can still override the defaults through owner_yaml, repo_yaml and commit_yaml.
     """
     res = deepcopy(current_yaml)
-    if owner_onboarding_date > PATCH_CENTRIC_DEFAULT_TIME_START:
-        adding = deepcopy(PATCH_CENTRIC_DEFAULT_CONFIG)
-        res.update(adding)
+    if owner_onboarding_date:
+        if owner_onboarding_date > PATCH_CENTRIC_DEFAULT_TIME_START:
+            adding = deepcopy(PATCH_CENTRIC_DEFAULT_CONFIG)
+            res.update(adding)
+
+    if repo_creation_date:
+        if repo_creation_date > NOTIFY_ERROR_TIME_START:
+            add_notify_error_to_config(res)
+
     return res
 
 
