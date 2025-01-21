@@ -41,7 +41,7 @@ from shared.plan.constants import (
     PlanName,
 )
 from shared.utils.test_utils import mock_config_helper
-from tests.unit.plan.test_plan import mock_all_plans_and_tiers
+from tests.helper import mock_all_plans_and_tiers
 
 
 class TestOwnerModel(TransactionTestCase):
@@ -398,7 +398,9 @@ class TestOwnerModel(TransactionTestCase):
             ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS[self.owner.account.plan]
         )
         account_pretty_plan.update({"quantity": 0})
-        self.assertEqual(self.owner.pretty_plan.quantity, account_pretty_plan["quantity"])
+        self.assertEqual(
+            self.owner.pretty_plan.quantity, account_pretty_plan["quantity"]
+        )
 
     def test_add_admin_adds_ownerid_to_admin_array(self):
         self.owner.admins = []
@@ -932,7 +934,9 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(enterprise_account.available_seat_count, 57)
         pretty_plan = asdict(BASIC_PLAN)
         pretty_plan.update({"quantity": 50})
-        self.assertEqual(enterprise_account.pretty_plan.quantity, pretty_plan["quantity"])
+        self.assertEqual(
+            enterprise_account.pretty_plan.quantity, pretty_plan["quantity"]
+        )
 
     def test_activate_user_onto_account(self):
         user = UserFactory()

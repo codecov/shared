@@ -295,7 +295,7 @@ class PlanService:
     @property
     def trial_total_days(self) -> Optional[TrialDaysAmount]:
         """Returns the total number of trial days."""
-        return TrialDaysAmount.CODECOV_SENTRY.value if self.is_org_trialing else None
+        return TrialDaysAmount.CODECOV_SENTRY.value
 
     @property
     def is_org_trialing(self) -> bool:
