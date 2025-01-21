@@ -20,12 +20,16 @@ from shared.plan.constants import (
     TEAM_PLAN_REPRESENTATIONS,
     TRIAL_PLAN_REPRESENTATION,
     TRIAL_PLAN_SEATS,
+    MonthlyUploadLimits,
+    PlanBillingRate,
     PlanName,
+    PlanPrice,
     TierName,
     TrialDaysAmount,
     TrialStatus,
 )
 from shared.plan.service import PlanService
+
 
 def mock_all_plans_and_tiers():
     trial_tier = TierFactory(tier_name=TierName.TRIAL.value)
@@ -33,37 +37,156 @@ def mock_all_plans_and_tiers():
         tier=trial_tier,
         name=PlanName.TRIAL_PLAN_NAME.value,
         paid_plan=False,
+        marketing_name="Developer",
+        benefits=[
+            "Configurable # of users",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
     )
 
     basic_tier = TierFactory(tier_name=TierName.BASIC.value)
-    PlanFactory(name=PlanName.BASIC_PLAN_NAME.value, tier=basic_tier)
-    PlanFactory(name=PlanName.FREE_PLAN_NAME.value, tier=basic_tier)
+    PlanFactory(
+        name=PlanName.BASIC_PLAN_NAME.value,
+        tier=basic_tier,
+        marketing_name="Developer",
+        benefits=[
+            "Up to 1 user",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+        ],
+        monthly_uploads_limit=MonthlyUploadLimits.CODECOV_BASIC_PLAN.value,
+    )
+    PlanFactory(
+        name=PlanName.FREE_PLAN_NAME.value,
+        tier=basic_tier,
+        marketing_name="Developer",
+        benefits=[
+            "Up to 1 user",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+        ],
+    )
 
     pro_tier = TierFactory(tier_name=TierName.PRO.value)
-    PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value, tier=pro_tier)
-    PlanFactory(name=PlanName.CODECOV_PRO_YEARLY.value, tier=pro_tier)
-    PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY_LEGACY.value, tier=pro_tier)
-    PlanFactory(name=PlanName.CODECOV_PRO_YEARLY_LEGACY.value, tier=pro_tier)
+    PlanFactory(
+        name=PlanName.CODECOV_PRO_MONTHLY.value,
+        tier=pro_tier,
+        marketing_name="Pro",
+        benefits=[
+            "Configurable # of users",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
+        billing_rate=PlanBillingRate.MONTHLY.value,
+        base_unit_price=PlanPrice.MONTHLY.value,
+        paid_plan=True,
+    )
+    PlanFactory(
+        name=PlanName.CODECOV_PRO_YEARLY.value,
+        tier=pro_tier,
+        marketing_name="Pro",
+        benefits=[
+            "Configurable # of users",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
+        billing_rate=PlanBillingRate.YEARLY.value,
+        base_unit_price=PlanPrice.YEARLY.value,
+        paid_plan=True,
+    )
 
     team_tier = TierFactory(tier_name=TierName.TEAM.value)
-    PlanFactory(name=PlanName.TEAM_MONTHLY.value, tier=team_tier)
-    PlanFactory(name=PlanName.TEAM_YEARLY.value, tier=team_tier)
+    PlanFactory(
+        name=PlanName.TEAM_MONTHLY.value,
+        tier=team_tier,
+        marketing_name="Team",
+        benefits=[
+            "Up to 10 users",
+            "Unlimited repositories",
+            "2500 private repo uploads",
+            "Patch coverage analysis",
+        ],
+        billing_rate=PlanBillingRate.MONTHLY.value,
+        base_unit_price=PlanPrice.TEAM_MONTHLY.value,
+        monthly_uploads_limit=MonthlyUploadLimits.CODECOV_TEAM_PLAN.value,
+        paid_plan=True,
+    )
+    PlanFactory(
+        name=PlanName.TEAM_YEARLY.value,
+        tier=team_tier,
+        marketing_name="Team",
+        benefits=[
+            "Up to 10 users",
+            "Unlimited repositories",
+            "2500 private repo uploads",
+            "Patch coverage analysis",
+        ],
+        billing_rate=PlanBillingRate.YEARLY.value,
+        base_unit_price=PlanPrice.TEAM_YEARLY.value,
+        monthly_uploads_limit=MonthlyUploadLimits.CODECOV_TEAM_PLAN.value,
+        paid_plan=True,
+    )
 
     sentry_tier = TierFactory(tier_name=TierName.SENTRY.value)
-    PlanFactory(name=PlanName.SENTRY_MONTHLY.value, tier=sentry_tier)
-    PlanFactory(name=PlanName.SENTRY_YEARLY.value, tier=sentry_tier)
+    PlanFactory(
+        name=PlanName.SENTRY_MONTHLY.value,
+        tier=sentry_tier,
+        marketing_name="Sentry Pro",
+        billing_rate=PlanBillingRate.MONTHLY.value,
+        base_unit_price=PlanPrice.MONTHLY.value,
+        paid_plan=True,
+        benefits=[
+            "Includes 5 seats",
+            "$12 per additional seat",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
+    )
+    PlanFactory(
+        name=PlanName.SENTRY_YEARLY.value,
+        tier=sentry_tier,
+        marketing_name="Sentry Pro",
+        billing_rate=PlanBillingRate.YEARLY.value,
+        base_unit_price=PlanPrice.YEARLY.value,
+        paid_plan=True,
+        benefits=[
+            "Includes 5 seats",
+            "$10 per additional seat",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
+    )
 
     enterprise_tier = TierFactory(tier_name=TierName.ENTERPRISE.value)
     PlanFactory(
-        name=PlanName.ENTERPRISE_CLOUD_MONTHLY.value, tier=enterprise_tier
+        name=PlanName.ENTERPRISE_CLOUD_MONTHLY.value,
+        tier=enterprise_tier,
+        marketing_name="Enterprise",
+        billing_rate=PlanBillingRate.MONTHLY.value,
+        base_unit_price=PlanPrice.MONTHLY.value,
+        paid_plan=True,
     )
     PlanFactory(
-        name=PlanName.ENTERPRISE_CLOUD_YEARLY.value, tier=enterprise_tier
+        name=PlanName.ENTERPRISE_CLOUD_YEARLY.value,
+        tier=enterprise_tier,
+        marketing_name="Enterprise",
+        billing_rate=PlanBillingRate.YEARLY.value,
+        base_unit_price=PlanPrice.YEARLY.value,
+        paid_plan=True,
     )
 
 
 @freeze_time("2023-06-19")
 class PlanServiceTests(TestCase):
+    def setUp(self):
+        mock_all_plans_and_tiers()
+
     def test_plan_service_trial_status_not_started(self):
         current_org = OwnerFactory(plan=PlanName.BASIC_PLAN_NAME.value)
         plan_service = PlanService(current_org=current_org)
@@ -100,9 +223,8 @@ class PlanServiceTests(TestCase):
     def test_plan_service_expire_trial_when_upgrading_successful_if_trial_is_not_started(
         self,
     ):
-        plan = PlanFactory()
         current_org_with_ongoing_trial = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=None,
             trial_end_date=None,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -119,9 +241,8 @@ class PlanServiceTests(TestCase):
     ):
         trial_start_date = datetime.utcnow()
         trial_end_date_ongoing = trial_start_date + timedelta(days=5)
-        plan = PlanFactory()
         current_org_with_ongoing_trial = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date_ongoing,
             trial_status=TrialStatus.ONGOING.value,
@@ -139,9 +260,8 @@ class PlanServiceTests(TestCase):
         trial_start_date = datetime.utcnow()
         trial_end_date_ongoing = trial_start_date + timedelta(days=5)
         pretrial_users_count = 5
-        plan = PlanFactory()
         current_org_with_ongoing_trial = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date_ongoing,
             trial_status=TrialStatus.ONGOING.value,
@@ -159,9 +279,8 @@ class PlanServiceTests(TestCase):
         trial_end_date = trial_start_date + timedelta(
             days=TrialDaysAmount.CODECOV_SENTRY.value
         )
-        plan = PlanFactory()
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.ONGOING.value,
@@ -175,9 +294,8 @@ class PlanServiceTests(TestCase):
     def test_plan_service_start_trial_errors_if_status_is_expired(self):
         trial_start_date = datetime.utcnow()
         trial_end_date = trial_start_date + timedelta(days=-1)
-        plan = PlanFactory()
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.EXPIRED.value,
@@ -189,9 +307,8 @@ class PlanServiceTests(TestCase):
             plan_service.start_trial(current_owner=current_owner)
 
     def test_plan_service_start_trial_errors_if_status_is_cannot_trial(self):
-        plan = PlanFactory()
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=None,
             trial_end_date=None,
             trial_status=TrialStatus.CANNOT_TRIAL.value,
@@ -203,9 +320,8 @@ class PlanServiceTests(TestCase):
             plan_service.start_trial(current_owner=current_owner)
 
     def test_plan_service_start_trial_errors_owners_plan_is_not_a_free_plan(self):
-        plan = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value)
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
             trial_start_date=None,
             trial_end_date=None,
             trial_status=TrialStatus.CANNOT_TRIAL.value,
@@ -220,9 +336,8 @@ class PlanServiceTests(TestCase):
         trial_start_date = None
         trial_end_date = None
         plan_user_count = 5
-        plan = PlanFactory()
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -247,9 +362,8 @@ class PlanServiceTests(TestCase):
         trial_start_date = None
         trial_end_date = None
         plan_user_count = 5
-        plan = PlanFactory()
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -271,9 +385,8 @@ class PlanServiceTests(TestCase):
         assert current_org.trial_fired_by == current_owner.ownerid
 
     def test_plan_service_start_trial_manually_already_on_paid_plan(self):
-        plan = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value)
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
             trial_start_date=None,
             trial_end_date=None,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -289,9 +402,8 @@ class PlanServiceTests(TestCase):
     def test_plan_service_returns_plan_data_for_non_trial_basic_plan(self):
         trial_start_date = None
         trial_end_date = None
-        plan = PlanFactory()
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
         )
@@ -319,9 +431,8 @@ class PlanServiceTests(TestCase):
         trial_end_date = datetime.utcnow() + timedelta(
             days=TrialDaysAmount.CODECOV_SENTRY.value
         )
-        plan = PlanFactory(name=PlanName.TRIAL_PLAN_NAME.value)
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.TRIAL_PLAN_NAME.value,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.ONGOING.value,
@@ -339,9 +450,8 @@ class PlanServiceTests(TestCase):
         assert plan_service.monthly_uploads_limit is None  # Not 250 since it's trialing
 
     def test_plan_service_sets_default_plan_data_values_correctly(self):
-        plan = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value)
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
             stripe_subscription_id="test-sub-123",
             plan_user_count=20,
             plan_activated_users=[44],
@@ -358,9 +468,8 @@ class PlanServiceTests(TestCase):
         assert current_org.stripe_subscription_id is None
 
     def test_plan_service_returns_if_owner_has_trial_dates(self):
-        plan = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value)
         current_org = OwnerFactory(
-            plan=plan.name,
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
             trial_start_date=datetime.utcnow(),
             trial_end_date=datetime.utcnow() + timedelta(days=14),
         )
@@ -371,11 +480,9 @@ class PlanServiceTests(TestCase):
         assert plan_service.has_trial_dates == True
 
     def test_plan_service_gitlab_with_root_org(self):
-        tier = TierFactory(tier_name=TierName.BASIC.value)
-        plan = PlanFactory(name=PlanName.FREE_PLAN_NAME.value, tier=tier)
         root_owner_org = OwnerFactory(
             service=Service.GITLAB.value,
-            plan=plan.name,
+            plan=PlanName.FREE_PLAN_NAME.value,
             plan_user_count=1,
             service_id="1234",
         )
@@ -384,11 +491,9 @@ class PlanServiceTests(TestCase):
             service_id="5678",
             parent_service_id=root_owner_org.service_id,
         )
-        tier2 = TierFactory(tier_name=TierName.PRO.value)
-        plan2 = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value, tier=tier2)
         child_owner_org = OwnerFactory(
             service=Service.GITLAB.value,
-            plan=plan2.name,
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
             plan_user_count=20,
             parent_service_id=middle_org.service_id,
         )
@@ -426,8 +531,7 @@ class AvailablePlansBeforeTrial(TestCase):
     def test_available_plans_for_basic_plan_non_trial(
         self,
     ):
-        plan = PlanFactory(name=PlanName.BASIC_PLAN_NAME.value)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -562,13 +666,12 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
             plan_user_count=3,
         )
         self.owner = OwnerFactory()
+        mock_all_plans_and_tiers()
 
     def test_available_plans_for_basic_plan_expired_trial_less_than_10_users(
         self,
     ):
-        tier = TierFactory(tier_name=TierName.BASIC.value)
-        plan = PlanFactory(name=PlanName.BASIC_PLAN_NAME.value, tier=tier)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -584,9 +687,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
     def test_available_plans_for_team_plan_expired_trial_less_than_10_users(
         self,
     ):
-        tier = TierFactory(tier_name=TierName.BASIC.value)
-        plan = PlanFactory(name=PlanName.TEAM_MONTHLY.value, tier=tier)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.TEAM_MONTHLY.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -600,9 +701,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
     def test_available_plans_for_pro_plan_expired_trial_less_than_10_users(self):
-        tier = TierFactory(tier_name=TierName.BASIC.value)
-        plan = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value, tier=tier)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.CODECOV_PRO_MONTHLY.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -617,12 +716,10 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_expired_trial_less_than_10_users(
-        self, is_sentry_user    
+        self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        tier = TierFactory(tier_name=TierName.BASIC.value)
-        plan = PlanFactory(name=PlanName.BASIC_PLAN_NAME.value, tier=tier)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -630,9 +727,15 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
+        print(
+            "array 1",
+            expected_result,
+            "array 2",
+            plan_service.available_plans(owner=self.owner),
+        )
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
 
@@ -641,8 +744,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        plan = PlanFactory(name=PlanName.TEAM_MONTHLY.value)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.TEAM_MONTHLY.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -650,8 +752,8 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         expected_result = []
         expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -661,8 +763,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        plan = PlanFactory(name=PlanName.SENTRY_MONTHLY.value)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.SENTRY_MONTHLY.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -697,8 +798,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         mock_all_plans_and_tiers()
 
     def test_available_plans_for_pro_plan_expired_trial_more_than_10_users(self):
-        plan = PlanFactory(name=PlanName.CODECOV_PRO_MONTHLY.value)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.CODECOV_PRO_MONTHLY.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -715,8 +815,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        plan = PlanFactory(name=PlanName.BASIC_PLAN_NAME.value)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
@@ -734,8 +833,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        plan = PlanFactory(name=PlanName.SENTRY_MONTHLY.value)
-        self.current_org.plan = plan.name
+        self.current_org.plan = PlanName.SENTRY_MONTHLY.value
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
