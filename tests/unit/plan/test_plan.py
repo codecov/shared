@@ -584,9 +584,9 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = []
-        expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
         expected_result += TEAM_PLAN_REPRESENTATIONS.values()
+        expected_result.append(BASIC_PLAN)
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -798,8 +798,8 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = []
-        expected_result.append(BASIC_PLAN)
         expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
+        expected_result.append(BASIC_PLAN)
         expected_result = [result.convert_to_DTO() for result in expected_result]
 
         assert plan_service.available_plans(owner=self.owner) == expected_result
@@ -934,8 +934,9 @@ class AvailablePlansOngoingTrial(TestCase):
     """
 
     def setUp(self):
+        mock_all_plans_and_tiers()
         self.current_org = OwnerFactory(
-            plan=PlanName.TRIAL_PLAN_NAME.value,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=datetime.utcnow(),
             trial_end_date=datetime.utcnow() + timedelta(days=14),
             trial_status=TrialStatus.ONGOING.value,
@@ -944,7 +945,6 @@ class AvailablePlansOngoingTrial(TestCase):
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
-        mock_all_plans_and_tiers()
 
     def test_non_sentry_user(self):
         # [Basic, Pro Monthly, Pro Yearly, Team Monthly, Team Yearly]
