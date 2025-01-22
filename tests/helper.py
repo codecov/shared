@@ -192,7 +192,13 @@ def mock_all_plans_and_tiers():
     PlanFactory(
         name=PlanName.ENTERPRISE_CLOUD_MONTHLY.value,
         tier=enterprise_tier,
-        marketing_name="Enterprise",
+        marketing_name="Enterprise Cloud",
+        benefits=[
+            "Configurable # of users",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
         billing_rate=BillingRate.MONTHLY.value,
         base_unit_price=PlanPrice.MONTHLY.value,
         paid_plan=True,
@@ -200,8 +206,14 @@ def mock_all_plans_and_tiers():
     PlanFactory(
         name=PlanName.ENTERPRISE_CLOUD_YEARLY.value,
         tier=enterprise_tier,
-        marketing_name="Enterprise",
+        marketing_name="Enterprise Cloud",
         billing_rate=BillingRate.ANNUALLY.value,
         base_unit_price=PlanPrice.YEARLY.value,
         paid_plan=True,
+        benefits=[
+            "Configurable # of users",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+            "Priority Support",
+        ],
     )

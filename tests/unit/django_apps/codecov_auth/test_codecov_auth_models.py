@@ -386,7 +386,7 @@ class TestOwnerModel(TransactionTestCase):
         self.assertTrue(self.owner.can_activate_user(to_activate))
         org_pretty_plan = asdict(BASIC_PLAN)
         org_pretty_plan.update({"quantity": 1})
-        self.assertEqual(self.owner.pretty_plan.quantity, org_pretty_plan["quantity"])
+        self.assertEqual(self.owner.pretty_plan, org_pretty_plan)
 
         self.owner.account = AccountFactory(
             plan_seat_count=0, plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value
@@ -398,9 +398,13 @@ class TestOwnerModel(TransactionTestCase):
             ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS[self.owner.account.plan]
         )
         account_pretty_plan.update({"quantity": 0})
-        self.assertEqual(
-            self.owner.pretty_plan.quantity, account_pretty_plan["quantity"]
+        print(
+            "account_pretty_plan",
+            account_pretty_plan,
+            "self.owner.pretty_plan",
+            self.owner.pretty_plan,
         )
+        self.assertEqual(self.owner.pretty_plan, account_pretty_plan)
 
     def test_add_admin_adds_ownerid_to_admin_array(self):
         self.owner.admins = []
@@ -763,7 +767,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(account.available_seat_count, 0)
         pretty_plan = asdict(BASIC_PLAN)
         pretty_plan.update({"quantity": 1})
-        self.assertEqual(account.pretty_plan.quantity, pretty_plan["quantity"])
+        self.assertEqual(account.pretty_plan, pretty_plan)
 
     def test_create_account_for_enterprise_experience(self):
         mock_all_plans_and_tiers()
@@ -934,9 +938,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(enterprise_account.available_seat_count, 57)
         pretty_plan = asdict(BASIC_PLAN)
         pretty_plan.update({"quantity": 50})
-        self.assertEqual(
-            enterprise_account.pretty_plan.quantity, pretty_plan["quantity"]
-        )
+        self.assertEqual(enterprise_account.pretty_plan, pretty_plan)
 
     def test_activate_user_onto_account(self):
         user = UserFactory()
