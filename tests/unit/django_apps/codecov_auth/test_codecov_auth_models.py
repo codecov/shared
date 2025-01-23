@@ -47,7 +47,6 @@ from tests.helper import mock_all_plans_and_tiers
 class TestOwnerModel(TransactionTestCase):
     def setUp(self):
         self.owner = OwnerFactory(username="codecov_name", email="name@codecov.io")
-        mock_all_plans_and_tiers()
 
     def test_repo_total_credits_returns_correct_repos_for_legacy_plan(self):
         self.owner.plan = "5m"
@@ -379,6 +378,7 @@ class TestOwnerModel(TransactionTestCase):
         assert not self.owner.can_activate_user(self.owner)
 
     def test_fields_that_account_overrides(self):
+        mock_all_plans_and_tiers()
         to_activate = OwnerFactory()
         self.owner.plan = PlanName.BASIC_PLAN_NAME.value
         self.owner.plan_user_count = 1
@@ -398,12 +398,6 @@ class TestOwnerModel(TransactionTestCase):
             ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS[self.owner.account.plan]
         )
         account_pretty_plan.update({"quantity": 0})
-        print(
-            "account_pretty_plan",
-            account_pretty_plan,
-            "self.owner.pretty_plan",
-            self.owner.pretty_plan,
-        )
         self.assertEqual(self.owner.pretty_plan, account_pretty_plan)
 
     def test_add_admin_adds_ownerid_to_admin_array(self):

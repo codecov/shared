@@ -220,7 +220,7 @@ class Account(BaseModel):
         This is how we represent the details of a plan to a user, see plan.constants.py
         We inject quantity to make plan management easier on api, see PlanSerializer
         """
-        plan_details = Plan.objects.get(name=self.plan)
+        plan_details = Plan.objects.select_related("tier").get(name=self.plan)
         if plan_details:
             return {
                 "marketing_name": plan_details.marketing_name,
@@ -605,7 +605,8 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         if self.account:
             return self.account.pretty_plan
 
-        plan_details = Plan.objects.get(name=self.plan)
+        print("@@@@@@@@@@@@@@@@@@@@", self.plan)
+        plan_details = Plan.objects.select_related("tier").get(name=self.plan)
         if plan_details:
             return {
                 "marketing_name": plan_details.marketing_name,

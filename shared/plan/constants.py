@@ -77,6 +77,24 @@ class TierName(enum.Enum):
     TRIAL = "trial"
 
 
+def convert_to_DTO(plan) -> dict:
+    return {
+        "marketing_name": plan.marketing_name,
+        "value": plan.name,
+        "billing_rate": plan.billing_rate,
+        "base_unit_price": plan.base_unit_price,
+        "benefits": plan.benefits,
+        "tier_name": plan.tier.tier_name,
+        "monthly_uploads_limit": plan.monthly_uploads_limit,
+        "is_free_plan": not plan.paid_plan,
+        "is_pro_plan": plan.tier.tier_name == TierName.PRO.value,
+        "is_team_plan": plan.tier.tier_name == TierName.TEAM.value,
+        "is_enterprise_plan": plan.tier.tier_name == TierName.ENTERPRISE.value,
+        "is_trial_plan": plan.tier.tier_name == TierName.TRIAL.value,
+        "is_sentry_plan": plan.tier.tier_name == TierName.SENTRY.value,
+    }
+
+
 @dataclass(repr=False)
 class PlanData:
     """
@@ -108,24 +126,6 @@ class PlanData:
             "is_trial_plan": self.value == PlanName.TRIAL_PLAN_NAME.value,
             "is_sentry_plan": self.value in SENTRY_PAID_USER_PLAN_REPRESENTATIONS,
         }
-
-
-def convert_to_DTO(plan) -> dict:
-    return {
-        "marketing_name": plan.marketing_name,
-        "value": plan.name,
-        "billing_rate": plan.billing_rate,
-        "base_unit_price": plan.base_unit_price,
-        "benefits": plan.benefits,
-        "tier_name": plan.tier.tier_name,
-        "monthly_uploads_limit": plan.monthly_uploads_limit,
-        "is_free_plan": not plan.paid_plan,
-        "is_pro_plan": plan.tier.tier_name == TierName.PRO.value,
-        "is_team_plan": plan.tier.tier_name == TierName.TEAM.value,
-        "is_enterprise_plan": plan.tier.tier_name == TierName.ENTERPRISE.value,
-        "is_trial_plan": plan.tier.tier_name == TierName.TRIAL.value,
-        "is_sentry_plan": plan.tier.tier_name == TierName.SENTRY.value,
-    }
 
 
 NON_PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS = {

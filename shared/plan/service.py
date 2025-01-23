@@ -158,9 +158,11 @@ class PlanService:
 
     def available_plans(self, owner: Owner) -> List[Plan]:
         """Returns the available plans for the owner and organization."""
-        available_plans = {Plan.objects.get(name=PlanName.BASIC_PLAN_NAME.value)}
+        available_plans = {
+            Plan.objects.select_related("tier").get(name=PlanName.BASIC_PLAN_NAME.value)
+        }
 
-        curr_plan = Plan.objects.get(name=self.plan_name)
+        curr_plan = self.plan_data
         if not curr_plan.paid_plan:
             available_plans.add(curr_plan)
 
@@ -177,7 +179,9 @@ class PlanService:
             available_tiers.append(TierName.TEAM.value)
 
         available_plans.update(
-            Plan.objects.filter(tier__tier_name__in=available_tiers, is_active=True)
+            Plan.objects.select_related("tier").filter(
+                tier__tier_name__in=available_tiers, is_active=True
+            )
         )
 
         return [convert_to_DTO(plan) for plan in available_plans]
@@ -236,13 +240,11 @@ class PlanService:
         """
         # Start a new trial plan for free users currently not on trial
 
-        plan = Plan.objects.get(name=self.plan_name)
-        if plan.paid_plan is False:
+        if self.plan_data.tier.tier_name == TierName.TRIAL.value:
+            self._start_trial_helper(current_owner, end_date, is_extension=True)
+        elif self.plan_data.paid_plan is False:
             self._start_trial_helper(current_owner, end_date, is_extension=False)
         # Extend an existing trial plan for users currently on trial
-        elif plan.tier.tier_name == TierName.TRIAL.value:
-            self._start_trial_helper(current_owner, end_date, is_extension=True)
-        # Paying users cannot start a trial
         else:
             raise ValidationError("Cannot trial from a paid plan")
 

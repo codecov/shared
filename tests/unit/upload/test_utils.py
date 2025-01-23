@@ -22,7 +22,9 @@ from tests.helper import mock_all_plans_and_tiers
 
 
 class CoverageMeasurement(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         mock_all_plans_and_tiers()
 
     def add_upload_measurements_records(
