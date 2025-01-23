@@ -605,7 +605,6 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         if self.account:
             return self.account.pretty_plan
 
-        print("@@@@@@@@@@@@@@@@@@@@", self.plan)
         plan_details = Plan.objects.select_related("tier").get(name=self.plan)
         if plan_details:
             return {
