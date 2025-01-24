@@ -1,5 +1,4 @@
 import dataclasses
-import pprint
 from json import loads
 
 import pytest
@@ -400,7 +399,6 @@ class TestCarryfowardFlag(object):
         assert res.files == ["file_1.go"]
         readable_report = self.convert_report_to_better_readable(res)
 
-        pprint.pprint(readable_report)
         expected_result = {
             "archive": {
                 "file_1.go": [
@@ -473,7 +471,6 @@ class TestCarryfowardFlag(object):
         assert res.files == ["file_1.go"]
         readable_report = self.convert_report_to_better_readable(res)
 
-        pprint.pprint(readable_report)
         expected_result = {
             "archive": {
                 "file_1.go": [

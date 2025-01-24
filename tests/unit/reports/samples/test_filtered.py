@@ -866,7 +866,6 @@ class TestFilteredReport(object):
         }
 
     def test_network(self, sample_report):
-        print(list(sample_report.filter(paths=[".*go"]).network))
         assert list(sample_report.filter(paths=[".*go"]).network) == [
             (
                 "file_1.go",

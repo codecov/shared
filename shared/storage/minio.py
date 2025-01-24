@@ -246,7 +246,7 @@ class MinioStorageService(BaseStorageService):
             for del_err in self.minio_client.remove_objects(
                 bucket_name, [DeleteObject(path) for path in paths]
             ):
-                print("Deletion error: {}".format(del_err))
+                print("Deletion error: {}".format(del_err))  # noqa: T201
             return [True] * len(paths)
         except MinioException:
             raise

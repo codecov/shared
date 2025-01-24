@@ -120,7 +120,6 @@ class TestNetworkFile(object):
             ),
             diff_totals=None,
         )
-        print(network_file.astuple())
         assert network_file.astuple() == (
             (0, 0, -2, 1, 0, -23.333330000000004, 0, 0, 0, 0, 0, 0, 0),
             None,
