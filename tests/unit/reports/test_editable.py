@@ -1887,8 +1887,6 @@ class TestEditableReport(object):
                 if line.datapoints:
                     for dp in line.datapoints:
                         assert dp.sessionid != 0 or 3 not in dp.label_ids
-        print(sample_with_labels_report)
-        print(sample_with_labels_report._files)
         res = self.convert_report_to_better_readable(sample_with_labels_report)
         expected_result = {
             "totals": {

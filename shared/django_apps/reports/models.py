@@ -187,7 +187,7 @@ class ReportSession(
         "CommitReport", related_name="sessions", on_delete=models.CASCADE
     )
     state = models.CharField(max_length=100)
-    storage_path = models.TextField()
+    storage_path = models.TextField(null=True)
     order_number = models.IntegerField(null=True)
     upload_type = models.CharField(max_length=100, default="uploaded")
     upload_extras = models.JSONField(default=dict)
@@ -279,12 +279,6 @@ class Test(models.Model):
     class Meta:
         app_label = REPORTS_APP_LABEL
         db_table = "reports_test"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["repository", "name", "testsuite", "flags_hash"],
-                name="reports_test_repoid_name_testsuite_flags_hash",
-            ),
-        ]
 
 
 class TestInstance(BaseCodecovModel):

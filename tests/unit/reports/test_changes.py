@@ -83,7 +83,6 @@ def test_run_comparison_using_rust(sample_rust_report):
         }
     }
     k = run_comparison_using_rust(base_report, head_report, diff)
-    print(k)
     assert k == {
         "files": [
             {
@@ -154,7 +153,6 @@ def test_get_changes_using_rust(sample_rust_report):
         }
     }
     k = get_changes_using_rust(base_report, head_report, diff)
-    print(k)
     assert k == [
         Change(
             path="tests/__init__.py",
@@ -532,5 +530,4 @@ class TestRustifyDiff(object):
                 [((43, 7, 43, 7), [" ", " ", " ", "-", "+", " ", " ", " "])],
             ),
         }
-        print(rustify_diff(user_input))
         assert rustify_diff(user_input) == expected_result

@@ -316,7 +316,6 @@ class TestGitlabTestCase(object):
         res = await valid_handler.get_commit_diff(
             "c739768fcac68144a3a6d82305b9c4106934d31a"
         )
-        print(list(res.keys()))
         assert res == expected_result
 
     @pytest.mark.asyncio
@@ -364,7 +363,6 @@ class TestGitlabTestCase(object):
     @pytest.mark.asyncio
     async def test_get_branches(self, valid_handler, codecov_vcr):
         branches = sorted(await valid_handler.get_branches())
-        print(branches)
         assert list(map(lambda a: a[0], branches)) == ["main", "other-branch"]
 
     @pytest.mark.asyncio
@@ -374,7 +372,6 @@ class TestGitlabTestCase(object):
             "sha": "0fc784af11c401449e56b24a174bae7b9af86c98",
         }
         branch = await valid_handler.get_branch("main")
-        print(branch)
         assert branch == expected_result
 
     @pytest.mark.asyncio
@@ -507,7 +504,6 @@ class TestGitlabTestCase(object):
             ],
         }
         res = await valid_handler.get_compare(base, head)
-        print(res)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         for key in res:
             assert res[key] == expected_result[key]

@@ -13,6 +13,7 @@ from shared.bundle_analysis.report import (
     BundleAnalysisReport,
     BundleReport,
     BundleRouteReport,
+    ModuleReport,
 )
 from shared.bundle_analysis.storage import BundleAnalysisReportLoader
 from shared.django_apps.core.models import Repository
@@ -77,9 +78,64 @@ class AssetChange(BaseChange):
     """
 
     asset_name: str
+    percentage_delta: float
+    size_base: int
+    size_head: int
 
 
 AssetMatch = Tuple[Optional[AssetReport], Optional[AssetReport]]
+
+
+class AssetComparison:
+    def __init__(
+        self,
+        base_asset_report: Optional[AssetReport] = None,
+        head_asset_report: Optional[AssetReport] = None,
+    ):
+        self.base_asset_report = base_asset_report
+        self.head_asset_report = head_asset_report
+
+    @sentry_sdk.trace
+    def asset_change(self) -> AssetChange:
+        if self.base_asset_report is None:
+            return AssetChange(
+                asset_name=self.head_asset_report.name,
+                change_type=AssetChange.ChangeType.ADDED,
+                size_delta=self.head_asset_report.size,
+                percentage_delta=100,
+                size_base=0,
+                size_head=self.head_asset_report.size,
+            )
+        elif self.head_asset_report is None:
+            return AssetChange(
+                asset_name=self.base_asset_report.name,
+                change_type=AssetChange.ChangeType.REMOVED,
+                size_delta=-self.base_asset_report.size,
+                percentage_delta=-100.0,
+                size_base=self.base_asset_report.size,
+                size_head=0,
+            )
+        else:
+            size_delta = self.head_asset_report.size - self.base_asset_report.size
+            percentage_delta = round(
+                (size_delta / self.base_asset_report.size) * 100, 2
+            )
+            return AssetChange(
+                asset_name=self.head_asset_report.name,
+                change_type=AssetChange.ChangeType.CHANGED,
+                size_delta=size_delta,
+                percentage_delta=percentage_delta,
+                size_base=self.base_asset_report.size,
+                size_head=self.head_asset_report.size,
+            )
+
+    def contributing_modules(
+        self, pr_changed_files: Optional[List[str]] = None
+    ) -> List[ModuleReport]:
+        asset_report = self.head_asset_report
+        if asset_report is None:
+            return []
+        return asset_report.modules(pr_changed_files)
 
 
 class BundleComparison:
@@ -95,7 +151,7 @@ class BundleComparison:
         return head_size - base_size
 
     @sentry_sdk.trace
-    def asset_changes(self) -> List[AssetChange]:
+    def asset_comparisons(self) -> List[AssetComparison]:
         # this groups assets by name
         # there can be multiple assets with the same name and we
         # need to try and match them across base and head reports
@@ -119,29 +175,10 @@ class BundleComparison:
             if asset_name not in asset_names:
                 matches += self._match_assets(asset_reports, [])
 
-        changes = []
-        for base_asset_report, head_asset_report in matches:
-            if base_asset_report is None:
-                change = AssetChange(
-                    asset_name=head_asset_report.name,
-                    change_type=AssetChange.ChangeType.ADDED,
-                    size_delta=head_asset_report.size,
-                )
-            elif head_asset_report is None:
-                change = AssetChange(
-                    asset_name=base_asset_report.name,
-                    change_type=AssetChange.ChangeType.REMOVED,
-                    size_delta=-base_asset_report.size,
-                )
-            else:
-                change = AssetChange(
-                    asset_name=head_asset_report.name,
-                    change_type=AssetChange.ChangeType.CHANGED,
-                    size_delta=head_asset_report.size - base_asset_report.size,
-                )
-            changes.append(change)
-
-        return changes
+        return [
+            AssetComparison(base_asset_report, head_asset_report)
+            for base_asset_report, head_asset_report in matches
+        ]
 
     def _match_assets(
         self,
@@ -153,9 +190,11 @@ class BundleComparison:
         This method attempts to pick the most likely matching of assets between
         base and head (so as to track their changes through time).
 
-        The current approach is fairly naive and just picks the asset with the
-        closest size.  There are probably better ways of doing this that we can
-        improve upon in the future.
+        Current approach:
+        1. Pick asset with the same UUID. This means the base and head assets have either of:
+            - same hashed name
+            - same modules by name
+        2. Pick asset with the closest size
         """
         n = max([len(base_asset_reports), len(head_asset_reports)])
         matches: List[AssetMatch] = []
@@ -169,13 +208,24 @@ class BundleComparison:
                     # no more base assets to match against
                     matches.append((None, head_asset_report))
                 else:
-                    # try and find the most "similar" base asset
-                    size_deltas = {
-                        abs(head_asset_report.size - base_bundle.size): base_bundle
+                    # 1. Pick asset with the same UUID
+                    base_asset_report_uuids = {
+                        base_bundle.uuid: base_bundle
                         for base_bundle in base_asset_reports
                     }
-                    min_delta = min(size_deltas.keys())
-                    base_asset_report = size_deltas[min_delta]
+                    if head_asset_report.uuid in base_asset_report_uuids:
+                        base_asset_report = base_asset_report_uuids[
+                            head_asset_report.uuid
+                        ]
+
+                    # 2. Pick asset with the closest size
+                    else:
+                        size_deltas = {
+                            abs(head_asset_report.size - base_bundle.size): base_bundle
+                            for base_bundle in base_asset_reports
+                        }
+                        min_delta = min(size_deltas.keys())
+                        base_asset_report = size_deltas[min_delta]
 
                     matches.append((base_asset_report, head_asset_report))
                     base_asset_reports.remove(base_asset_report)

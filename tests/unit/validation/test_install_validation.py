@@ -338,7 +338,6 @@ def test_validate_sample_production_config(mocker):
     }
     mock_warning = mocker.patch.object(install_log, "warning")
     res = validate_install_configuration(user_input)
-    print(mock_warning.call_args)
     assert mock_warning.call_count == 0
     assert res["site"] == expected_result["site"]
     assert res == expected_result

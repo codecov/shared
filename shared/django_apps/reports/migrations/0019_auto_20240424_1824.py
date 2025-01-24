@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
     ]
 
     def populate_test_instances(apps, schema_editor):
-        print("Not running due to performance")
+        print("Not running due to performance")  # noqa: T201
         return
         TestInstance = apps.get_model("reports", "TestInstance")
 

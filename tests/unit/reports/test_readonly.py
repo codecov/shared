@@ -203,8 +203,6 @@ class TestReadOnly(object):
 
     def test_get_file_totals(self, sample_report, mocker):
         r = ReadOnlyReport.create_from_report(sample_report)
-        print(sample_report._files)
-        print(r)
         assert r.get_file_totals("location/file_1.py") == ReportTotals(
             files=0,
             lines=2,

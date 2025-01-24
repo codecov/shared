@@ -100,4 +100,4 @@ def startup_license_logging():
 
         # printing the message in a single statement so the lines won't get split up
         # among all the other messages during startup
-        print(*statements_to_print, sep="\n")
+        print(*statements_to_print, sep="\n")  # noqa: T201
