@@ -140,14 +140,11 @@ class TestGithubEnterprise(object):
         await gl.make_http_call(client, method, url, **query_params)
         assert client.request.call_count == 1
         args, kwargs = client.request.call_args
-        print(args)
-        print(kwargs)
         assert kwargs.get("headers") is not None
         assert kwargs.get("headers").get("Host") == "ghe.com"
         assert len(args) == 2
         built_url = args[1]
         parsed_url = urlparse(built_url)
-        print(parsed_url)
         assert parsed_url.scheme == "https"
         assert parsed_url.netloc == mock_host
         assert parsed_url.path == "/random_url"

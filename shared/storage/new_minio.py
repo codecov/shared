@@ -310,7 +310,7 @@ class NewMinioStorageService(BaseStorageService):
             for del_err in self.minio_client.remove_objects(
                 bucket_name, [DeleteObject(url) for url in urls]
             ):
-                print("Deletion error: {}".format(del_err))
+                print("Deletion error: {}".format(del_err))  # noqa: T201
             return [True] * len(urls)
         except MinioException:
             raise

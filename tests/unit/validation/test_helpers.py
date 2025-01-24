@@ -261,7 +261,6 @@ class TestGlobToRegexTranslation(BaseTestCase):
             re.compile(translate_glob_to_regex("**/test*.ts")).match("src/src2/test.ts")
             is not None
         )
-        print(f'"a/*/*b*.ts" => {translate_glob_to_regex("a/*/*b*.ts")}')
         assert (
             re.compile(translate_glob_to_regex("a/*/*b*.ts")).match("a/folder/b.ts")
             is not None
@@ -285,7 +284,6 @@ class TestGlobToRegexTranslation(BaseTestCase):
             )
             is None
         )
-        print(f'"a/**/*b*.ts" => {translate_glob_to_regex("a/**/*b*.ts")}')
         assert (
             re.compile(translate_glob_to_regex("a/**/*b*.ts")).match("a/folder/b.ts")
             is not None

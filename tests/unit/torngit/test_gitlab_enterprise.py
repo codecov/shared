@@ -11,7 +11,6 @@ class TestGitlabEnterprise(object):
         assert gle.redirect_uri == "https://codecov.io/login/gle"
 
         def custom_config(*args, **kwargs):
-            print(args)
             if args == ("gitlab_enterprise", "redirect_uri"):
                 return "https://custom_redirect.com"
             if args == ("setup", "codecov_url"):
@@ -26,7 +25,6 @@ class TestGitlabEnterprise(object):
         )
 
         def custom_config(*args, **kwargs):
-            print(args)
             if args == ("gitlab", "redirect_uri"):
                 return None
             if args == ("setup", "codecov_url"):

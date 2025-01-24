@@ -525,7 +525,6 @@ class TestBitbucketTestCase(object):
             "commits": [{"commitid": "b92edba"}, {"commitid": "6ae5f17"}],
         }
         res = await valid_handler.get_compare(base, head)
-        print(res)
         assert sorted(list(res.keys())) == sorted(list(expected_result.keys()))
         assert res == expected_result
 
@@ -1043,7 +1042,6 @@ class TestBitbucketTestCase(object):
             }
         ]
         res = await valid_handler.list_repos()
-        print(res)
         assert sorted(res, key=lambda x: x["repo"]["service_id"]) == sorted(
             expected_result, key=lambda x: x["repo"]["service_id"]
         )
@@ -1089,7 +1087,6 @@ class TestBitbucketTestCase(object):
             },
         ]
         res = await valid_handler.list_teams()
-        print(res)
         assert res == expected_result
 
     @pytest.mark.asyncio
