@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timedelta
+from functools import cached_property
 from typing import List, Optional
 
 from shared.billing import is_pr_billing_plan
@@ -81,7 +82,7 @@ class PlanService:
         """Returns whether the organization has an associated account."""
         return self.current_org.account is not None
 
-    @property
+    @cached_property
     def plan_data(self) -> Plan:
         """Returns the plan data for the organization, either from account or default."""
         if self._plan_data is None:
@@ -91,11 +92,6 @@ class PlanService:
                 else self.current_org.plan
             )
         return self._plan_data
-
-    @plan_data.setter
-    def plan_data(self, plan_data: Optional[Plan]) -> None:
-        """Sets the plan data directly."""
-        self._plan_data = plan_data
 
     @property
     def plan_name(self) -> str:
