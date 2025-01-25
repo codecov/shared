@@ -103,17 +103,33 @@ class AssetReport:
                 .filter(Asset.id == self.asset.id)
             )
 
-            # Apply additional filter if pr_changed_files is provided
-            if pr_changed_files:
-                # Normalize pr_changed_files to have './' prefix for relative paths
-                normalized_files = {
-                    f"./{file}" if not file.startswith("./") else file
-                    for file in pr_changed_files
-                }
-                query = query.filter(Module.name.in_(normalized_files))
+            if pr_changed_files is None:
+                return [ModuleReport(self.db_path, module) for module in query]
 
-            modules = query.all()
-        return [ModuleReport(self.db_path, module) for module in modules]
+            """
+            Apply filter on modules where the module name has to be part of the PR's changed file list.
+            However we can't simply do a simple equality match because the module names we store is relative
+            to the root of the app while the PR's file path is relative to the root of the repo. So we will
+            need to check that any of the PR's file lists ends with any of the modules for the given asset.
+            For example,
+                PR changed files: ["abc/def.ts", "ghi/jkl.ts"],
+                modules: ["def.ts", "mno.ts"]
+                -> ["def.ts"]
+            """
+            normalized_changed_files = [
+                os.path.normpath(path[2:] if path.startswith("./") else path)
+                for path in pr_changed_files
+            ]
+            filtered_modules = set()
+            for file in normalized_changed_files:
+                for module in query:
+                    normalized_module = os.path.normpath(
+                        module.name[1:] if file.startswith(".") else module.name
+                    )
+                    if file.endswith(normalized_module):
+                        filtered_modules.add(module)
+
+            return [ModuleReport(self.db_path, module) for module in filtered_modules]
 
     def routes(self) -> Optional[List[str]]:
         plugin_name = self.bundle_info.get("plugin_name")
