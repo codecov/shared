@@ -96,33 +96,3 @@ class BaseStorageService(object):
             bool: True if the deletion was succesful
         """
         raise NotImplementedError()
-
-    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
-        """Batch deletes a list of files from a given bucket
-            (what happens to the files that don't exist?)
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            paths (list): A list of the paths to be deletes (default: {[]})
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-
-        Returns:
-            list: A list of booleans, where each result indicates whether that file was deleted
-                successfully
-        """
-        raise NotImplementedError()
-
-    def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
-        """List the contents of a specific folder
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            prefix: The prefix of the files to be listed (default: {None})
-            recursive: Whether the listing should be recursive (default: {True})
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-        """
-        raise NotImplementedError()

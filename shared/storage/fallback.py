@@ -88,35 +88,3 @@ class StorageWithFallbackService(BaseStorageService):
         first_deletion = self.main_service.delete_file(bucket_name, path)
         second_deletion = self.fallback_service.delete_file(bucket_name, path)
         return first_deletion and second_deletion
-
-    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
-        """Batch deletes a list of files from a given bucket
-            (what happens to the files that don't exist?)
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            paths (list): A list of the paths to be deletes (default: {[]})
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-
-        Returns:
-            list: A list of booleans, where each result indicates whether that file was deleted
-                successfully
-        """
-        first_results = self.main_service.delete_files(bucket_name, paths)
-        second_results = self.fallback_service.delete_files(bucket_name, paths)
-        return [f and s for f, s in zip(first_results, second_results)]
-
-    def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
-        """List the contents of a specific folder
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            prefix: The prefix of the files to be listed (default: {None})
-            recursive: Whether the listing should be recursive (default: {True})
-
-        Raises:
-            NotImplementedError: If the current instance did not implement this method
-        """
-        return self.main_service.list_folder_contents(bucket_name, prefix, recursive)
