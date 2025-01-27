@@ -6,25 +6,31 @@ from freezegun import freeze_time
 
 from shared.django_apps.codecov.commands.exceptions import ValidationError
 from shared.django_apps.codecov_auth.models import Service
-from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
+from shared.django_apps.codecov_auth.tests.factories import (
+    OwnerFactory,
+    PlanFactory,
+    TierFactory,
+)
 from shared.plan.constants import (
-    BASIC_PLAN,
-    FREE_PLAN,
     FREE_PLAN_REPRESENTATIONS,
-    PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS,
-    SENTRY_PAID_USER_PLAN_REPRESENTATIONS,
-    TEAM_PLAN_REPRESENTATIONS,
     TRIAL_PLAN_REPRESENTATION,
     TRIAL_PLAN_SEATS,
     PlanName,
+    TierName,
     TrialDaysAmount,
     TrialStatus,
 )
 from shared.plan.service import PlanService
+from tests.helper import mock_all_plans_and_tiers
 
 
 @freeze_time("2023-06-19")
 class PlanServiceTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        mock_all_plans_and_tiers()
+
     def test_plan_service_trial_status_not_started(self):
         current_org = OwnerFactory(plan=PlanName.BASIC_PLAN_NAME.value)
         plan_service = PlanService(current_org=current_org)
@@ -262,7 +268,6 @@ class PlanServiceTests(TestCase):
         assert (
             plan_service.monthly_uploads_limit == 250
         )  # should be 250 since not trialing
-        assert plan_service.trial_total_days == basic_plan.trial_days
 
     def test_plan_service_returns_plan_data_for_trialing_user_trial_plan(self):
         trial_start_date = datetime.utcnow()
@@ -286,7 +291,6 @@ class PlanServiceTests(TestCase):
         assert plan_service.base_unit_price == trial_plan.base_unit_price
         assert plan_service.benefits == trial_plan.benefits
         assert plan_service.monthly_uploads_limit is None  # Not 250 since it's trialing
-        assert plan_service.trial_total_days == trial_plan.trial_days
 
     def test_plan_service_sets_default_plan_data_values_correctly(self):
         current_org = OwnerFactory(
@@ -358,6 +362,11 @@ class AvailablePlansBeforeTrial(TestCase):
     - sentry customer, users-sentrym/y, no trial -> users-pr-inappm/y, users-sentrym/y, users-basic
     """
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        mock_all_plans_and_tiers()
+
     def setUp(self):
         self.current_org = OwnerFactory(
             trial_start_date=None,
@@ -374,13 +383,20 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     def test_available_plans_for_free_plan_non_trial(
         self,
@@ -390,14 +406,21 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result.append(FREE_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.FREE_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     def test_available_plans_for_team_plan_non_trial(
         self,
@@ -407,13 +430,20 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     def test_available_plans_for_pro_plan_non_trial(self):
         self.current_org.plan = PlanName.CODECOV_PRO_MONTHLY.value
@@ -421,13 +451,20 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_non_trial(
@@ -439,14 +476,22 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_team_plan_non_trial(
@@ -458,14 +503,22 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_plan_non_trial(self, is_sentry_user):
@@ -475,14 +528,22 @@ class AvailablePlansBeforeTrial(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
 
 @freeze_time("2023-06-19")
@@ -495,6 +556,11 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
     - sentry customer, users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, users-basic, users-teamm/y
     - sentry customer, users-sentrym/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, users-basic, users-teamm/y
     """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        mock_all_plans_and_tiers()
 
     def setUp(self):
         self.current_org = OwnerFactory(
@@ -513,13 +579,20 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     def test_available_plans_for_team_plan_expired_trial_less_than_10_users(
         self,
@@ -529,13 +602,20 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     def test_available_plans_for_pro_plan_expired_trial_less_than_10_users(self):
         self.current_org.plan = PlanName.CODECOV_PRO_MONTHLY.value
@@ -543,13 +623,20 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_expired_trial_less_than_10_users(
@@ -561,14 +648,22 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_team_plan_expired_trial_less_than_10_users(
@@ -580,14 +675,22 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_plan_expired_trial_less_than_10_users(
@@ -599,14 +702,22 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
 
 @freeze_time("2023-06-19")
@@ -616,6 +727,11 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
     - sentry customer, users-basic, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y, users-basic
     - sentry customer, users-sentrym/y, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y, users-basic
     """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        mock_all_plans_and_tiers()
 
     def setUp(self):
         self.current_org = OwnerFactory(
@@ -633,12 +749,18 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_customer_basic_plan_expired_trial_more_than_10_users(
@@ -650,13 +772,20 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_available_plans_for_sentry_plan_expired_trial_more_than_10_users(
@@ -668,13 +797,20 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
 
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+        }
 
-        assert plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
 
 @freeze_time("2023-06-19")
@@ -683,14 +819,19 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
     Tests that what matters for Team plan is activated users not the total seat count
     """
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        mock_all_plans_and_tiers()
+
     def setUp(self):
-        self.expected_result = []
-        self.expected_result.append(BASIC_PLAN)
-        self.expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        self.expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        self.expected_result = [
-            result.convert_to_DTO() for result in self.expected_result
-        ]
+        self.expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
     def test_currently_team_plan(self):
         self.current_org = OwnerFactory(
@@ -702,7 +843,11 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.plan_service = PlanService(current_org=self.current_org)
 
         assert (
-            self.plan_service.available_plans(owner=self.owner) == self.expected_result
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == self.expected_result
         )
 
     def test_trial_expired(self):
@@ -717,7 +862,11 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.plan_service = PlanService(current_org=self.current_org)
 
         assert (
-            self.plan_service.available_plans(owner=self.owner) == self.expected_result
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == self.expected_result
         )
 
     def test_trial_ongoing(self):
@@ -732,7 +881,11 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.plan_service = PlanService(current_org=self.current_org)
 
         assert (
-            self.plan_service.available_plans(owner=self.owner) == self.expected_result
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == self.expected_result
         )
 
     def test_trial_not_started(self):
@@ -744,16 +897,20 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
 
-        self.expected_result = []
-        self.expected_result.append(BASIC_PLAN)
-        self.expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        self.expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        self.expected_result = [
-            result.convert_to_DTO() for result in self.expected_result
-        ]
+        self.expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
         assert (
-            self.plan_service.available_plans(owner=self.owner) == self.expected_result
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == self.expected_result
         )
 
 
@@ -768,9 +925,14 @@ class AvailablePlansOngoingTrial(TestCase):
         when > 10 activated seats -> users-pr-inappm/y, users-sentrym/y, users-basic
     """
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        mock_all_plans_and_tiers()
+
     def setUp(self):
         self.current_org = OwnerFactory(
-            plan=PlanName.TRIAL_PLAN_NAME.value,
+            plan=PlanName.BASIC_PLAN_NAME.value,
             trial_start_date=datetime.utcnow(),
             trial_end_date=datetime.utcnow() + timedelta(days=14),
             trial_status=TrialStatus.ONGOING.value,
@@ -782,73 +944,125 @@ class AvailablePlansOngoingTrial(TestCase):
 
     def test_non_sentry_user(self):
         # [Basic, Pro Monthly, Pro Yearly, Team Monthly, Team Yearly]
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
 
         # Can do Team plan when plan_activated_users is null
-        assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
         self.current_org.plan_activated_users = [i for i in range(10)]
         self.current_org.save()
 
         # Can do Team plan when at 10 activated users
-        assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
         self.current_org.plan_activated_users = [i for i in range(11)]
         self.current_org.save()
 
-        # [Basic, Pro Monthly, Pro Yearly, Team Monthly, Team Yearly]
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        # [Basic, Pro Monthly, Pro Yearly]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+        }
 
         # Can not do Team plan when at 11 activated users
-        assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
     @patch("shared.plan.service.is_sentry_user")
     def test_sentry_user(self, is_sentry_user):
+        self.current_org.plan = PlanName.SENTRY_MONTHLY.value
+        self.current_org.save()
+
         is_sentry_user.return_value = True
 
         # [Basic, Pro Monthly, Pro Yearly, Sentry Monthly, Sentry Yearly, Team Monthly, Team Yearly]
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += TEAM_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
-
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
         # Can do Team plan when plan_activated_users is null
-        assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
         self.current_org.plan_activated_users = [i for i in range(10)]
         self.current_org.save()
 
         # Can do Team plan when at 10 activated users
-        assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
         self.current_org.plan_activated_users = [i for i in range(11)]
         self.current_org.save()
 
         # [Basic, Pro Monthly, Pro Yearly, Sentry Monthly, Sentry Yearly]
-        expected_result = []
-        expected_result.append(BASIC_PLAN)
-        expected_result += PR_AUTHOR_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result += SENTRY_PAID_USER_PLAN_REPRESENTATIONS.values()
-        expected_result = [result.convert_to_DTO() for result in expected_result]
+        expected_result = {
+            PlanName.BASIC_PLAN_NAME.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+        }
 
         # Can not do Team plan when at 11 activated users
-        assert self.plan_service.available_plans(owner=self.owner) == expected_result
+        assert (
+            set(
+                plan["value"]
+                for plan in self.plan_service.available_plans(owner=self.owner)
+            )
+            == expected_result
+        )
 
 
 @override_settings(IS_ENTERPRISE=False)
 class PlanServiceIs___PlanTests(TestCase):
     def test_is_trial_plan(self):
+        tier = TierFactory(tier_name=TierName.TRIAL.value)
+        plan = PlanFactory(
+            tier=tier,
+            name=PlanName.TRIAL_PLAN_NAME.value,
+            paid_plan=False,
+        )
         self.current_org = OwnerFactory(
-            plan=PlanName.TRIAL_PLAN_NAME.value,
+            plan=plan.name,
             trial_start_date=datetime.utcnow(),
             trial_end_date=datetime.utcnow() + timedelta(days=14),
             trial_status=TrialStatus.ONGOING.value,
@@ -867,8 +1081,14 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_team_plan(self):
+        tier = TierFactory(tier_name=TierName.TEAM.value)
+        plan = PlanFactory(
+            tier=tier,
+            name=PlanName.TEAM_MONTHLY.value,
+            paid_plan=True,
+        )
         self.current_org = OwnerFactory(
-            plan=PlanName.TEAM_MONTHLY.value,
+            plan=plan.name,
             trial_status=TrialStatus.EXPIRED.value,
         )
         self.owner = OwnerFactory()
@@ -883,8 +1103,14 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_sentry_plan(self):
+        tier = TierFactory(tier_name=TierName.SENTRY.value)
+        plan = PlanFactory(
+            tier=tier,
+            name=PlanName.SENTRY_MONTHLY.value,
+            paid_plan=True,
+        )
         self.current_org = OwnerFactory(
-            plan=PlanName.SENTRY_MONTHLY.value,
+            plan=plan.name,
             trial_status=TrialStatus.EXPIRED.value,
         )
         self.owner = OwnerFactory()
@@ -899,8 +1125,14 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_free_plan(self):
+        tier = TierFactory(tier_name=TierName.BASIC.value)
+        plan = PlanFactory(
+            tier=tier,
+            name=PlanName.FREE_PLAN_NAME.value,
+            paid_plan=False,
+        )
         self.current_org = OwnerFactory(
-            plan=PlanName.FREE_PLAN_NAME.value,
+            plan=plan.name,
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
@@ -914,8 +1146,15 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_pro_plan(self):
+        tier = TierFactory(tier_name=TierName.PRO.value)
+        plan = PlanFactory(
+            tier=tier,
+            name=PlanName.CODECOV_PRO_MONTHLY.value,
+            paid_plan=True,
+        )
+
         self.current_org = OwnerFactory(
-            plan=PlanName.CODECOV_PRO_MONTHLY.value,
+            plan=plan.name,
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)
@@ -929,8 +1168,14 @@ class PlanServiceIs___PlanTests(TestCase):
         assert self.plan_service.is_pr_billing_plan == True
 
     def test_is_enterprise_plan(self):
+        tier = TierFactory(tier_name=TierName.ENTERPRISE.value)
+        plan = PlanFactory(
+            tier=tier,
+            name=PlanName.ENTERPRISE_CLOUD_YEARLY.value,
+            paid_plan=True,
+        )
         self.current_org = OwnerFactory(
-            plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value,
+            plan=plan.name,
         )
         self.owner = OwnerFactory()
         self.plan_service = PlanService(current_org=self.current_org)

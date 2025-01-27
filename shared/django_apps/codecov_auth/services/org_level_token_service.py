@@ -5,8 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms import ValidationError
 
-from shared.django_apps.codecov_auth.models import OrganizationLevelToken, Owner
-from shared.plan.constants import USER_PLAN_REPRESENTATIONS
+from shared.django_apps.codecov_auth.models import OrganizationLevelToken, Owner, Plan
 
 log = logging.getLogger(__name__)
 
@@ -18,9 +17,10 @@ class OrgLevelTokenService(object):
         -- only 1 token per Owner
     """
 
+    # MIGHT BE ABLE TO REMOVE THIS AND SUBSEQUENT DOWNSTREAM STUFF
     @classmethod
     def org_can_have_upload_token(cls, org: Owner):
-        return org.plan in USER_PLAN_REPRESENTATIONS
+        return Plan.objects.filter(name=org.plan, is_active=True).exists()
 
     @classmethod
     def get_or_create_org_token(cls, org: Owner):

@@ -73,6 +73,26 @@ class TierName(enum.Enum):
     TEAM = "team"
     PRO = "pro"
     ENTERPRISE = "enterprise"
+    SENTRY = "sentry"
+    TRIAL = "trial"
+
+
+def convert_to_DTO(plan) -> dict:
+    return {
+        "marketing_name": plan.marketing_name,
+        "value": plan.name,
+        "billing_rate": plan.billing_rate,
+        "base_unit_price": plan.base_unit_price,
+        "benefits": plan.benefits,
+        "tier_name": plan.tier.tier_name,
+        "monthly_uploads_limit": plan.monthly_uploads_limit,
+        "is_free_plan": not plan.paid_plan,
+        "is_pro_plan": plan.tier.tier_name == TierName.PRO.value,
+        "is_team_plan": plan.tier.tier_name == TierName.TEAM.value,
+        "is_enterprise_plan": plan.tier.tier_name == TierName.ENTERPRISE.value,
+        "is_trial_plan": plan.tier.tier_name == TierName.TRIAL.value,
+        "is_sentry_plan": plan.tier.tier_name == TierName.SENTRY.value,
+    }
 
 
 @dataclass(repr=False)
@@ -99,7 +119,6 @@ class PlanData:
             "benefits": self.benefits,
             "tier_name": self.tier_name,
             "monthly_uploads_limit": self.monthly_uploads_limit,
-            "trial_days": self.trial_days,
             "is_free_plan": self.tier_name == TierName.BASIC.value,
             "is_pro_plan": self.tier_name == TierName.PRO.value,
             "is_team_plan": self.tier_name == TierName.TEAM.value,
@@ -189,7 +208,7 @@ SENTRY_PAID_USER_PLAN_REPRESENTATIONS = {
             "Unlimited private repositories",
             "Priority Support",
         ],
-        tier_name=TierName.PRO.value,
+        tier_name=TierName.SENTRY.value,
         trial_days=TrialDaysAmount.CODECOV_SENTRY.value,
         monthly_uploads_limit=None,
     ),
@@ -205,7 +224,7 @@ SENTRY_PAID_USER_PLAN_REPRESENTATIONS = {
             "Unlimited private repositories",
             "Priority Support",
         ],
-        tier_name=TierName.PRO.value,
+        tier_name=TierName.SENTRY.value,
         trial_days=TrialDaysAmount.CODECOV_SENTRY.value,
         monthly_uploads_limit=None,
     ),
@@ -342,7 +361,7 @@ TRIAL_PLAN_REPRESENTATION = {
             "Unlimited private repositories",
             "Priority Support",
         ],
-        tier_name=TierName.PRO.value,
+        tier_name=TierName.TRIAL.value,
         trial_days=None,
         monthly_uploads_limit=None,
     ),
