@@ -158,13 +158,6 @@ class ArchiveService(object):
         """
         self.storage.delete_file(self.root, path)
 
-    @sentry_sdk.trace
-    def delete_files(self, paths: list[str]) -> None:
-        """
-        Generic method to delete files from the archive.
-        """
-        self.storage.delete_files(bucket_name=self.root, paths=paths)
-
     def read_chunks(self, commit_sha: str) -> str:
         """
         Convenience method to read a chunks file from the archive.

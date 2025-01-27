@@ -2,7 +2,6 @@ import gzip
 import importlib.metadata
 import json
 import logging
-import sys
 from io import BytesIO
 from typing import IO, BinaryIO, Tuple, cast, overload
 
@@ -14,7 +13,6 @@ from minio.credentials.providers import (
     EnvMinioProvider,
     IamAwsProvider,
 )
-from minio.deleteobjects import DeleteObject
 from minio.error import MinioException, S3Error
 from minio.helpers import ObjectWriteResult
 from urllib3 import HTTPResponse
@@ -304,27 +302,3 @@ class NewMinioStorageService(BaseStorageService):
             return True
         except MinioException:
             raise
-
-    def delete_files(self, bucket_name, urls=[]):
-        try:
-            for del_err in self.minio_client.remove_objects(
-                bucket_name, [DeleteObject(url) for url in urls]
-            ):
-                print("Deletion error: {}".format(del_err))  # noqa: T201
-            return [True] * len(urls)
-        except MinioException:
-            raise
-
-    def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
-        return (
-            self.object_to_dict(b)
-            for b in self.minio_client.list_objects(bucket_name, prefix, recursive)
-        )
-
-    def object_to_dict(self, obj):
-        return {"name": obj.object_name, "size": obj.size}
-
-    # TODO remove this function -- just using it for output during testing.
-    def write(self, string, silence=False):
-        if not silence:
-            sys.stdout.write((string or "") + "\n")
