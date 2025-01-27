@@ -61,7 +61,7 @@ class PlanService:
             raise ValueError("Quantity Needed")
         self.current_org.plan = name
         self.current_org.plan_user_count = user_count
-        self._plan_data = Plan.objects.get(name=name)
+        self._plan_data = Plan.objects.select_related("tier").get(name=name)
         self.current_org.delinquent = False
         self.current_org.save()
 
@@ -86,7 +86,7 @@ class PlanService:
     def plan_data(self) -> Plan:
         """Returns the plan data for the organization, either from account or default."""
         if self._plan_data is None:
-            self._plan_data = Plan.objects.get(
+            self._plan_data = Plan.objects.select_related("tier").get(
                 name=self.current_org.account.plan
                 if self.has_account
                 else self.current_org.plan
