@@ -324,22 +324,33 @@ def test_bundle_asset_comparison_using_closest_size_delta():
     ].contributing_modules()
     assert [module.name for module in module_reports] == []
 
-    # Check asset contributing modules is correct when pr_files are used for filtering
+    # Check no contributing modules filter
+    module_reports = asset_comparison_d[
+        ("assets/index-666d2e09.js", "assets/index-666d2e09.js")
+    ].contributing_modules()
+    assert len(module_reports) == 28
+
+    # Check no PR changed files
+    module_reports = asset_comparison_d[
+        ("assets/index-666d2e09.js", "assets/index-666d2e09.js")
+    ].contributing_modules([])
+    assert len(module_reports) == 0
+
+    # Check with proper filtered files
     module_reports = asset_comparison_d[
         ("assets/index-666d2e09.js", "assets/index-666d2e09.js")
     ].contributing_modules(
-        pr_changed_files=[
-            "src/index.css",
-            "src/main.tsx",
-            "./index.html",
-            "/src/App.css",
-        ]  # first 3 is in, 4th is not
+        [
+            "app1/index.html",
+            "app2/index.html",  # <- don't match because dupe
+            "./app1/src/main.tsx",
+            "/example/svelte/app1/src/App.css",
+            "abc/def/ghi.ts",  # <- don't match
+        ]
     )
-    assert [module.name for module in module_reports] == [
-        "./src/index.css",
-        "./src/main.tsx",
-        "./index.html",
-    ]
+    assert set([module.name for module in module_reports]) == set(
+        ["./index.html", "./src/App.css", "./src/main.tsx"]
+    )
 
 
 def test_bundle_asset_comparison_using_uuid():
