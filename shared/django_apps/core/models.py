@@ -108,12 +108,12 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
     language = models.TextField(
         null=True, blank=True, choices=Languages.choices
     )  # Really an ENUM in db
-    languages = ArrayField(models.CharField(), default=[], blank=True, null=True)
+    languages = ArrayField(models.CharField(), default=list, blank=True, null=True)
     languages_last_updated = DateTimeWithoutTZField(null=True, blank=True)
     fork = models.ForeignKey(
         "core.Repository",
         db_column="forkid",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
@@ -149,6 +149,7 @@ class Repository(ExportModelOperationsMixin("core.repository"), models.Model):
         app_label = CORE_APP_LABEL
         ordering = ["-repoid"]
         indexes = [
+            models.Index(fields=["fork"]),
             models.Index(
                 fields=["service_id", "author"],
                 name="repos_service_id_author",
@@ -287,6 +288,7 @@ class Commit(ExportModelOperationsMixin("core.commit"), models.Model):
             )
         ]
         indexes = [
+            models.Index(fields=["author"]),
             models.Index(
                 fields=["repository", "-timestamp"],
                 name="commits_repoid_timestamp_desc",
