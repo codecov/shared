@@ -10,6 +10,7 @@ class Flake(models.Model):
 
     repoid = models.IntegerField()
     test_id = models.BinaryField()
+    flags_id = models.BinaryField(null=True)
 
     recent_passes_count = models.IntegerField()
     count = models.IntegerField()
