@@ -142,37 +142,3 @@ class GCPStorageService(BaseStorageService):
         except google.cloud.exceptions.NotFound:
             raise FileNotInStorageError(f"File {path} does not exist in {bucket_name}")
         return True
-
-    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
-        """Batch deletes a list of files from a given bucket
-            (what happens to the files that don't exist?)
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            paths (list): A list of the paths to be deletes (default: {[]})
-
-        Returns:
-            list: A list of booleans, where each result indicates whether that file was deleted
-                successfully
-        """
-        bucket = self.storage_client.bucket(bucket_name)
-        blobs = [bucket.blob(path) for path in paths]
-        blobs_errored: set[storage.Blob] = set()
-        bucket.delete_blobs(blobs, on_error=blobs_errored.add)
-        return [b not in blobs_errored for b in blobs]
-
-    def list_folder_contents(self, bucket_name: str, prefix=None, recursive=True):
-        """List the contents of a specific folder
-
-        Attention: google ignores the `recursive` param
-
-        Args:
-            bucket_name (str): The name of the bucket for the file lives
-            prefix: The prefix of the files to be listed (default: {None})
-            recursive: Whether the listing should be recursive (default: {True})
-        """
-        assert recursive
-        bucket = self.storage_client.bucket(bucket_name)
-        return (
-            {"name": b.name, "size": b.size} for b in bucket.list_blobs(prefix=prefix)
-        )

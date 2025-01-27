@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import shutil
-import sys
 import tempfile
 from io import BytesIO
 from typing import BinaryIO, overload
@@ -15,7 +14,6 @@ from minio.credentials import (
     EnvMinioProvider,
     IamAwsProvider,
 )
-from minio.deleteobjects import DeleteObject
 from minio.error import MinioException, S3Error
 
 from shared.storage.base import CHUNK_SIZE, BaseStorageService
@@ -240,27 +238,3 @@ class MinioStorageService(BaseStorageService):
             return True
         except MinioException:
             raise
-
-    def delete_files(self, bucket_name: str, paths: list[str]) -> list[bool]:
-        try:
-            for del_err in self.minio_client.remove_objects(
-                bucket_name, [DeleteObject(path) for path in paths]
-            ):
-                print("Deletion error: {}".format(del_err))  # noqa: T201
-            return [True] * len(paths)
-        except MinioException:
-            raise
-
-    def list_folder_contents(self, bucket_name, prefix=None, recursive=True):
-        return (
-            self.object_to_dict(b)
-            for b in self.minio_client.list_objects(bucket_name, prefix, recursive)
-        )
-
-    def object_to_dict(self, obj):
-        return {"name": obj.object_name, "size": obj.size}
-
-    # TODO remove this function -- just using it for output during testing.
-    def write(self, string, silence=False):
-        if not silence:
-            sys.stdout.write((string or "") + "\n")

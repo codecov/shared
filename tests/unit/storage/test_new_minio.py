@@ -275,67 +275,6 @@ def test_write_then_delete_file():
         storage.read_file(BUCKET_NAME, path)
 
 
-def test_batch_delete_files():
-    storage = make_storage()
-    path = f"test_batch_delete_files/{uuid4().hex}"
-    path_1 = f"{path}/result_1.txt"
-    path_2 = f"{path}/result_2.txt"
-    path_3 = f"{path}/result_3.txt"
-    paths = [path_1, path_2, path_3]
-    data = "lorem ipsum dolor test_batch_delete_files á"
-
-    ensure_bucket(storage)
-    storage.write_file(BUCKET_NAME, path_1, data)
-    storage.write_file(BUCKET_NAME, path_3, data)
-
-    deletion_result = storage.delete_files(BUCKET_NAME, paths)
-    assert deletion_result == [True, True, True]
-    for p in paths:
-        with pytest.raises(FileNotInStorageError):
-            storage.read_file(BUCKET_NAME, p)
-
-
-def test_list_folder_contents():
-    storage = make_storage()
-    path = f"test_list_folder_contents/{uuid4().hex}"
-    path_1 = "/result_1.txt"
-    path_2 = "/result_2.txt"
-    path_3 = "/result_3.txt"
-    path_4 = "/x1/result_1.txt"
-    path_5 = "/x1/result_2.txt"
-    path_6 = "/x1/result_3.txt"
-    all_paths = [path_1, path_2, path_3, path_4, path_5, path_6]
-
-    ensure_bucket(storage)
-    for i, p in enumerate(all_paths):
-        data = f"Lorem ipsum on file {p} for {i * 'po'}"
-        storage.write_file(BUCKET_NAME, f"{path}{p}", data)
-
-    results_1 = sorted(
-        storage.list_folder_contents(BUCKET_NAME, path),
-        key=lambda x: x["name"],
-    )
-    # NOTE: the `size` here is actually the compressed (currently gzip) size
-    assert results_1 == [
-        {"name": f"{path}{path_1}", "size": 47},
-        {"name": f"{path}{path_2}", "size": 49},
-        {"name": f"{path}{path_3}", "size": 51},
-        {"name": f"{path}{path_4}", "size": 56},
-        {"name": f"{path}{path_5}", "size": 58},
-        {"name": f"{path}{path_6}", "size": 60},
-    ]
-
-    results_2 = sorted(
-        storage.list_folder_contents(BUCKET_NAME, f"{path}/x1"),
-        key=lambda x: x["name"],
-    )
-    assert results_2 == [
-        {"name": f"{path}{path_4}", "size": 56},
-        {"name": f"{path}{path_5}", "size": 58},
-        {"name": f"{path}{path_6}", "size": 60},
-    ]
-
-
 def test_minio_without_ports(mocker):
     mocked_minio_client = mocker.patch("shared.storage.new_minio.Minio")
     minio_no_ports_config = {
