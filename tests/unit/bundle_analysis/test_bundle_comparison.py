@@ -896,6 +896,7 @@ def test_bundle_analysis_route_comparison_different_bundle_names():
         == EXPECTED_CHANGES["bundle2"]
     )
 
+
 def test_bundle_analysis_zero_asset_size_base_and_head():
     loader = BundleAnalysisReportLoader(
         storage_service=MemoryStorageService({}),
@@ -939,6 +940,7 @@ def test_bundle_analysis_zero_asset_size_base_and_head():
         size_base=144577,
         size_head=144577,
     )
+
 
 def test_bundle_analysis_zero_asset_size_base_sized_head():
     loader = BundleAnalysisReportLoader(
