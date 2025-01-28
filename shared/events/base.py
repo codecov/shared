@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class EventPublisherPropertyError(Exception):
+class EventPublisherPropertyException(Exception):
     pass
 
 class EventPublisher[T, P](ABC):
