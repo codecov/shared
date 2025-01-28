@@ -102,7 +102,7 @@ class AssetComparison:
                 asset_name=self.head_asset_report.name,
                 change_type=AssetChange.ChangeType.ADDED,
                 size_delta=self.head_asset_report.size,
-                percentage_delta=100,
+                percentage_delta=100.0,
                 size_base=0,
                 size_head=self.head_asset_report.size,
             )
@@ -117,9 +117,14 @@ class AssetComparison:
             )
         else:
             size_delta = self.head_asset_report.size - self.base_asset_report.size
-            percentage_delta = round(
-                (size_delta / self.base_asset_report.size) * 100, 2
-            )
+            if size_delta == 0:
+                percentage_delta = 0
+            elif self.base_asset_report.size == 0:
+                percentage_delta = 100.0
+            else:
+                percentage_delta = round(
+                    (size_delta / self.base_asset_report.size) * 100, 2
+                )
             return AssetChange(
                 asset_name=self.head_asset_report.name,
                 change_type=AssetChange.ChangeType.CHANGED,

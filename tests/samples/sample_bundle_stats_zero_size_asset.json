@@ -1,0 +1,36 @@
+{
+    "version": "2",
+    "plugin": {
+      "name": "codecov-vite-bundle-analysis-plugin",
+      "version": "1.0.0"
+    },
+    "builtAt": 1701451048604,
+    "duration": 331,
+    "bundler": { "name": "rollup", "version": "3.29.4" },
+    "bundleName": "sample",
+    "assets": [
+      {
+        "name": "assets/LazyComponent-fcbb0922.js",
+        "size": 0,
+        "gzipSize": 0,
+        "normalized": "assets/LazyComponent-*.js"
+      }
+    ],
+    "chunks": [
+      {
+        "id": "LazyComponent",
+        "uniqueId": "0-LazyComponent",
+        "entry": false,
+        "initial": true,
+        "files": ["assets/LazyComponent-fcbb0922.js"],
+        "names": ["LazyComponent"]
+      }
+    ],
+    "modules": [
+      {
+        "name": "./src/LazyComponent/LazyComponent.tsx",
+        "size": 0,
+        "chunkUniqueIds": ["0-LazyComponent"]
+      }
+    ]
+  }
