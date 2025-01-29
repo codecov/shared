@@ -1,56 +1,105 @@
-from typing import Literal, TypedDict
+import logging
+from typing import Literal, TypedDict, Union
 from shared.events.base import EventPublisher, EventPublisherPropertyException
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
+from django.conf import settings
 
-AMPLITUDE_API_KEY = None
+log = logging.getLogger(__name__)
 
+"""
+
+Add new events as a string in the AmplitudeEventType type below!
+
+Adding event types in this way provides type safety for names and allows us to
+specify required properties.
+E.g., every 'App Installed' event must have the 'ownerid' property.
+
+Guidelines:
+ - Event names should:
+   - be of the form "[Noun] [Past-tense verb]",
+   - have each word capitalized,
+   - describe an action taken by the user.
+ - Keep the event types very generic as we have a limited number of them. 
+   Instead, add more detail in `properties` where possible.
+ - Try to keep event property names unique to the event type to avoid
+   accidental correlation of unrelated events.
+ - Use Camel Case for event property names.
+ - Never include names, only use ids. E.g., use repoid instead of repo name.
+
+"""
+ 
 type AmplitudeEventType = Literal[
     "User Created",
     "App Installed",
-    "Coverage Uploaded",
+    "Upload Sent",
     "set_orgs" # special event for setting a user's member orgs
 ]
 
+"""
+
+Add Event Properties here, define their types in AmplitudeEventProperties, 
+and finally add them as required properties where needed in 
+amplitude_required_properties.
+
+"""
 type AmplitudeEventProperty = Literal[
-    "user_ownerid",
+    "userOwnerid",
     "ownerid",
-    "org_ids",
+    "orgIds",
+    "repoid",
+    "uploadType",
 ]
 
-# Separate type required to make user_ownerid mandatory, but all others optional
+# Separate type required to make userOwnerid mandatory with total=True
 class BaseAmplitudeEventProperties(TypedDict, total=True):
-    user_ownerid: int # ownerid of user performing event action
+    userOwnerid: int # ownerid of user performing event action
 
 class AmplitudeEventProperties(BaseAmplitudeEventProperties, total=False):
     ownerid: int # ownerid of owner being acted upon
-    org_ids: list[str]
+    orgIds: list[int]
+    repoid: int
+    uploadType: Literal["Coverage report", "Bundle", "Test results"]
 
-# user_ownerid is always required, don't need to check here.
+
+# userOwnerid is always required, don't need to check here.
 amplitude_required_properties: dict[AmplitudeEventType, list[AmplitudeEventProperty]] = {
-    'App Installed': ['ownerid']
+    'User Created': [],
+    'App Installed': ['ownerid'],
+    'Upload Sent': ['ownerid', 'repoid', 'uploadType']
 }
 
 class AmplitudeEventPublisher(EventPublisher):
+    """
+
+    EventPublisher for Amplitude events. 
+
+    For now, can only be instantiated in API. To get this working in worker, 
+    you'd just need to add the amplitude dependency and set the 
+    AMPLITUDE_API_KEY environment variable/django setting.
+
+    """
+
     client: Amplitude
 
     def __init__(self):
-        if AMPLITUDE_API_KEY is None:
-            raise Exception("AMPLITUDE_API_KEY is not defined. Amplitude events will not be tracked.")
-        
-        self.client = Amplitude(AMPLITUDE_API_KEY, Config(
-            min_id_length=1  # necessary to accommodate our ownerids
-        ))
+        api_key = settings.AMPLITUDE_API_KEY
+        if api_key is None:
+            log.warning("AMPLITUDE_API_KEY is not defined. Amplitude events will not be tracked.")
+            self.client = StubbedAmplitudeClient()
+        else:
+            # min_id_length necessary to accommodate our ownerids
+            self.client = Amplitude(api_key, Config(min_id_length=1))
 
     def publish(self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties):
         # Handle special set_orgs event
         if event_type == "set_orgs":
-            if 'org_ids' not in event_properties:
-                raise EventPublisherPropertyException("event_type 'set_orgs' requires property 'org_ids'")
+            if 'orgIds' not in event_properties:
+                raise EventPublisherPropertyException(f"Property 'orgIds' is required for event type 'set_orgs'")
 
             self.client.set_group(
                 group_type="org", 
-                group_name=[str(orgid) for orgid in event_properties['org_ids']], 
-                event_options=EventOptions(user_id=str(event_properties['user_ownerid']))
+                group_name=[str(orgid) for orgid in event_properties['orgIds']], 
+                event_options=EventOptions(user_id=str(event_properties['userOwnerid']))
             )
             return
 
@@ -60,11 +109,35 @@ class AmplitudeEventPublisher(EventPublisher):
         # Track event with validated payload, we will raise an exception before
         # this if bad payload.
         self.client.track(
-            BaseEvent(event_type, user_id=str(event_properties['user_ownerid']), event_properties=structured_payload)
+            BaseEvent(event_type, user_id=str(event_properties['userOwnerid']), event_properties=structured_payload)
         )
         return
 
+class StubbedAmplitudeClient(Amplitude):
+    """
+
+    Stubbed Amplitude client for use when no AMPLITUDE_API_KEY is defined.
+
+    """
+
+    def __init__(self):
+        return
+    
+    def set_group(self, group_type: str, group_name: Union[str, list[str]], event_options: EventOptions):
+        return
+    
+    def track(self, event: BaseEvent):
+        return
+
+
 def transform_properties(event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties) -> dict:
+    """
+
+    Helper function to validate all required properties exist for the provided 
+    event_type and ensure only those properties are sent in the payload.
+
+    """
+
     payload = {}
 
     for property in amplitude_required_properties[event_type]:
