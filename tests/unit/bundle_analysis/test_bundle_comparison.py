@@ -43,6 +43,9 @@ head_report_bundle_stats_path_route_head_2 = (
     / "samples"
     / "sample_bundle_stats_v3_comparison_head_2.json"
 )
+base_report_bundle_stats_zero_size_asset = (
+    here.parent.parent.parent / "samples" / "sample_bundle_stats_zero_size_asset.json"
+)
 
 
 def test_bundle_analysis_comparison():
@@ -891,4 +894,109 @@ def test_bundle_analysis_route_comparison_different_bundle_names():
     assert (
         sorted(route_changes["bundle2"], key=lambda x: x.route_name)
         == EXPECTED_CHANGES["bundle2"]
+    )
+
+
+def test_bundle_analysis_zero_asset_size_base_and_head():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(base_report_bundle_stats_zero_size_asset)
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(base_report_bundle_stats_zero_size_asset)
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    bundle_comparison = comparison.bundle_comparison("sample")
+    asset_comparisons = bundle_comparison.asset_comparisons()
+    assert len(asset_comparisons) == 1
+
+    asset_comparisons[0].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.CHANGED,
+        size_delta=0,
+        asset_name="assets/index-*.js",
+        percentage_delta=0,
+        size_base=144577,
+        size_head=144577,
+    )
+
+
+def test_bundle_analysis_zero_asset_size_base_sized_head():
+    loader = BundleAnalysisReportLoader(
+        storage_service=MemoryStorageService({}),
+        repo_key="testing",
+    )
+
+    comparison = BundleAnalysisComparison(
+        loader=loader,
+        base_report_key="base-report",
+        head_report_key="head-report",
+    )
+
+    # raises errors when either report doesn't exist in storage
+    with pytest.raises(MissingBaseReportError):
+        comparison.base_report
+    with pytest.raises(MissingHeadReportError):
+        comparison.head_report
+
+    try:
+        base_report = BundleAnalysisReport()
+        base_report.ingest(base_report_bundle_stats_zero_size_asset)
+
+        head_report = BundleAnalysisReport()
+        head_report.ingest(head_report_bundle_stats_path)
+
+        loader.save(base_report, "base-report")
+        loader.save(head_report, "head-report")
+    finally:
+        base_report.cleanup()
+        head_report.cleanup()
+
+    bundle_comparison = comparison.bundle_comparison("sample")
+    asset_comparisons = bundle_comparison.asset_comparisons()
+    assert len(asset_comparisons) == 5
+
+    asset_comparison_d = {}
+    for asset_comparison in asset_comparisons:
+        key = (
+            asset_comparison.base_asset_report.hashed_name
+            if asset_comparison.base_asset_report
+            else None,
+            asset_comparison.head_asset_report.hashed_name
+            if asset_comparison.head_asset_report
+            else None,
+        )
+        assert key not in asset_comparison_d
+        asset_comparison_d[key] = asset_comparison
+
+    assert asset_comparison_d[
+        ("assets/LazyComponent-fcbb0922.js", "assets/LazyComponent-fcbb0922.js")
+    ].asset_change() == AssetChange(
+        change_type=AssetChange.ChangeType.CHANGED,
+        size_delta=294,
+        asset_name="assets/LazyComponent-*.js",
+        percentage_delta=100.0,
+        size_base=0,
+        size_head=294,
     )
