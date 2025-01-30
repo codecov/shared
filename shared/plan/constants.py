@@ -6,7 +6,7 @@ from typing import List, Optional
 class MonthlyUploadLimits(enum.Enum):
     CODECOV_BASIC_PLAN = 250
     CODECOV_TEAM_PLAN = 2500
-
+    CODECOV_DEVELOPER_PLAN = 250
 
 class TrialDaysAmount(enum.Enum):
     CODECOV_SENTRY = 14
@@ -21,6 +21,7 @@ class PlanMarketingName(enum.Enum):
     BASIC = "Developer"
     TRIAL = "Developer"
     TEAM = "Team"
+    DEVELOPER = "Developer"
 
 
 class PlanName(enum.Enum):
@@ -39,6 +40,7 @@ class PlanName(enum.Enum):
     CODECOV_PRO_YEARLY_LEGACY = "users-inappy"
     ENTERPRISE_CLOUD_MONTHLY = "users-enterprisem"
     ENTERPRISE_CLOUD_YEARLY = "users-enterprisey"
+    USERS_DEVELOPER = "users-developer"
 
     @classmethod
     def choices(cls):
@@ -73,6 +75,26 @@ class TierName(enum.Enum):
     TEAM = "team"
     PRO = "pro"
     ENTERPRISE = "enterprise"
+    SENTRY = "sentry"
+    TRIAL = "trial"
+
+
+def convert_to_DTO(plan) -> dict:
+    return {
+        "marketing_name": plan.marketing_name,
+        "value": plan.name,
+        "billing_rate": plan.billing_rate,
+        "base_unit_price": plan.base_unit_price,
+        "benefits": plan.benefits,
+        "tier_name": plan.tier.tier_name,
+        "monthly_uploads_limit": plan.monthly_uploads_limit,
+        "is_free_plan": not plan.paid_plan,
+        "is_pro_plan": plan.tier.tier_name == TierName.PRO.value,
+        "is_team_plan": plan.tier.tier_name == TierName.TEAM.value,
+        "is_enterprise_plan": plan.tier.tier_name == TierName.ENTERPRISE.value,
+        "is_trial_plan": plan.tier.tier_name == TierName.TRIAL.value,
+        "is_sentry_plan": plan.tier.tier_name == TierName.SENTRY.value,
+    }
 
 
 @dataclass(repr=False)
@@ -99,7 +121,6 @@ class PlanData:
             "benefits": self.benefits,
             "tier_name": self.tier_name,
             "monthly_uploads_limit": self.monthly_uploads_limit,
-            "trial_days": self.trial_days,
             "is_free_plan": self.tier_name == TierName.BASIC.value,
             "is_pro_plan": self.tier_name == TierName.PRO.value,
             "is_team_plan": self.tier_name == TierName.TEAM.value,
@@ -189,7 +210,7 @@ SENTRY_PAID_USER_PLAN_REPRESENTATIONS = {
             "Unlimited private repositories",
             "Priority Support",
         ],
-        tier_name=TierName.PRO.value,
+        tier_name=TierName.SENTRY.value,
         trial_days=TrialDaysAmount.CODECOV_SENTRY.value,
         monthly_uploads_limit=None,
     ),
@@ -205,7 +226,7 @@ SENTRY_PAID_USER_PLAN_REPRESENTATIONS = {
             "Unlimited private repositories",
             "Priority Support",
         ],
-        tier_name=TierName.PRO.value,
+        tier_name=TierName.SENTRY.value,
         trial_days=TrialDaysAmount.CODECOV_SENTRY.value,
         monthly_uploads_limit=None,
     ),
@@ -292,9 +313,25 @@ FREE_PLAN = PlanData(
     monthly_uploads_limit=None,
 )
 
+DEVELOPER_PLAN = PlanData(
+    marketing_name=PlanMarketingName.DEVELOPER.value,
+    value=PlanName.USERS_DEVELOPER.value,
+    billing_rate=None,
+    base_unit_price=PlanPrice.CODECOV_FREE.value,
+    benefits=[
+        "Up to 1 user",
+        "Unlimited public repositories",
+        "Unlimited private repositories",
+    ],
+    tier_name=TierName.TEAM.value,
+    trial_days=None,
+    monthly_uploads_limit=None,
+)
+
 FREE_PLAN_REPRESENTATIONS = {
     PlanName.FREE_PLAN_NAME.value: FREE_PLAN,
     PlanName.BASIC_PLAN_NAME.value: BASIC_PLAN,
+    PlanName.USERS_DEVELOPER.value: DEVELOPER_PLAN,
 }
 
 TEAM_PLAN_REPRESENTATIONS = {
@@ -342,7 +379,7 @@ TRIAL_PLAN_REPRESENTATION = {
             "Unlimited private repositories",
             "Priority Support",
         ],
-        tier_name=TierName.PRO.value,
+        tier_name=TierName.TRIAL.value,
         trial_days=None,
         monthly_uploads_limit=None,
     ),
@@ -370,6 +407,7 @@ USER_PLAN_REPRESENTATIONS = {
 }
 
 PLANS_THAT_CAN_TRIAL = [
+    PlanName.USERS_DEVELOPER.value,
     PlanName.FREE_PLAN_NAME.value,
     PlanName.BASIC_PLAN_NAME.value,
     PlanName.CODECOV_PRO_MONTHLY.value,

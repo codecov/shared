@@ -7,7 +7,7 @@ from shared.config import get_config
 from shared.django_apps.codecov.commands.exceptions import ValidationError
 from shared.django_apps.codecov_auth.models import Owner, Service
 from shared.plan.constants import (
-    BASIC_PLAN,
+    DEVELOPER_PLAN,
     ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
     FREE_PLAN,
     FREE_PLAN_REPRESENTATIONS,
@@ -77,7 +77,7 @@ class PlanService:
     def set_default_plan_data(self) -> None:
         """Sets the organization to the default basic plan."""
         log.info(f"Setting plan to users-basic for owner {self.current_org.ownerid}")
-        self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
+        self.current_org.plan = PlanName.USERS_DEVELOPER.value
         self.current_org.plan_activated_users = None
         self.current_org.plan_user_count = 1
         self.current_org.stripe_subscription_id = None
@@ -165,7 +165,7 @@ class PlanService:
 
     def available_plans(self, owner: Owner) -> List[PlanData]:
         """Returns the available plans for the owner and organization."""
-        available_plans = [BASIC_PLAN]
+        available_plans = [DEVELOPER_PLAN]
 
         if self.plan_name == FREE_PLAN.value:
             available_plans.append(FREE_PLAN)

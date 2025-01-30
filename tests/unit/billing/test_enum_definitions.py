@@ -72,7 +72,7 @@ def test_billing_enums():
     assert BillingPlan.enterprise_cloud_monthly.db_name == "users-enterprisem"
     assert BillingPlan.team_monthly.db_name == "users-teamm"
     assert BillingPlan.team_yearly.db_name == "users-teamy"
-
+    assert BillingPlan.users_developer.db_name == "users-developer"
 
 def test_get_from_string():
     assert BillingPlan.from_str("users-inappm") == BillingPlan.users_monthly
@@ -90,7 +90,7 @@ def test_get_from_string():
     )
     assert BillingPlan.from_str("users-teamm") == BillingPlan.team_monthly
     assert BillingPlan.from_str("users-teamy") == BillingPlan.team_yearly
-
+    assert BillingPlan.from_str("users-developer") == BillingPlan.users_developer   
 
 def test_is_enterprise_cloud_plan():
     assert not is_enterprise_cloud_plan(BillingPlan.pr_monthly)
