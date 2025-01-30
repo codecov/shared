@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from django.db import IntegrityError
 from django.forms import ValidationError
-from django.test import TransactionTestCase
+from django.test import TestCase, TransactionTestCase
 from pytest import LogCaptureFixture
 
 from shared.django_apps.codecov_auth.models import (
@@ -41,9 +41,10 @@ from shared.plan.constants import (
     PlanName,
 )
 from shared.utils.test_utils import mock_config_helper
+from tests.helper import mock_all_plans_and_tiers
 
 
-class TestOwnerModel(TransactionTestCase):
+class TestOwnerModel(TestCase):
     def setUp(self):
         self.owner = OwnerFactory(username="codecov_name", email="name@codecov.io")
 
@@ -377,6 +378,7 @@ class TestOwnerModel(TransactionTestCase):
         assert not self.owner.can_activate_user(self.owner)
 
     def test_fields_that_account_overrides(self):
+        mock_all_plans_and_tiers()
         to_activate = OwnerFactory()
         self.owner.plan = PlanName.BASIC_PLAN_NAME.value
         self.owner.plan_user_count = 1
@@ -523,7 +525,7 @@ class TestOwnerModel(TransactionTestCase):
         assert org.has_yaml is True
 
 
-class TestOrganizationLevelTokenModel(TransactionTestCase):
+class TestOrganizationLevelTokenModel(TestCase):
     def test_can_save_org_token_for_org_basic_plan(self):
         owner = OwnerFactory(plan="users-basic")
         owner.save()
@@ -548,7 +550,7 @@ class TestOrganizationLevelTokenModel(TransactionTestCase):
         assert OrganizationLevelToken.objects.filter(owner=owner).count() == 0
 
 
-class TestGithubAppInstallationModel(TransactionTestCase):
+class TestGithubAppInstallationModel(TestCase):
     DEFAULT_APP_ID = 12345
 
     @pytest.fixture(autouse=True)
@@ -673,7 +675,7 @@ class TestGithubAppInstallationModel(TransactionTestCase):
         )
 
 
-class TestGitHubAppInstallationNoDefaultAppIdConfig(TransactionTestCase):
+class TestGitHubAppInstallationNoDefaultAppIdConfig(TestCase):
     @pytest.fixture(autouse=True)
     def mock_no_default_app_id(self, mocker):
         mock_config_helper(mocker, configs={"github.integration.id": None})
@@ -717,6 +719,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertTrue(stripe.is_active)
 
     def test_account_with_users(self):
+        mock_all_plans_and_tiers()
         user_1 = UserFactory()
         OwnerFactory(user=user_1)
         user_2 = UserFactory()
@@ -761,6 +764,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(account.pretty_plan, pretty_plan)
 
     def test_create_account_for_enterprise_experience(self):
+        mock_all_plans_and_tiers()
         # 2 separate OwnerOrgs that wish to Enterprise
         stripe_customer_id = "abc123"
         stripe_subscription_id = "defg456"
