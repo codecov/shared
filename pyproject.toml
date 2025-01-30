@@ -36,6 +36,7 @@ dependencies = [
     "sqlalchemy<2",
     "zstandard>=0.23.0",
     "pydantic>=2.10.4",
+    "amplitude-analytics>=1.1.4",
 ]
 
 [build-system]
