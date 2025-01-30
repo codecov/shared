@@ -80,10 +80,6 @@ class AmplitudeEventPublisher(EventPublisher):
 
     EventPublisher for Amplitude events.
 
-    For now, can only be instantiated in API. To get this working in worker,
-    you'd just need to add the amplitude dependency and set the
-    AMPLITUDE_API_KEY environment variable/django setting.
-
     """
 
     client: Amplitude
