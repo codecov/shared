@@ -80,7 +80,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
 
     amplitude.publish(
         "Upload Sent",
-        {"user_ownerid": 123, "ownerid": 321, "upload_type": "Coverage report"},
+        {"user_ownerid": 123, "ownerid": 321, "upload_type": "Coverage report", "repoid": 132},
     )
 
     amplitude_mock.assert_called_once()
@@ -88,7 +88,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
     base_event_mock.assert_called_once_with(
         "App Installed",
         user_id="123",
-        event_properties={"ownerid": 321, "uploadType": "Coverage report"},
+        event_properties={"ownerid": 321, "uploadType": "Coverage report", "repoid": 132},
     )
 
 
