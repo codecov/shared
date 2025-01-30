@@ -69,6 +69,7 @@ def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
         "App Installed", user_id="123", event_properties={"ownerid": 321}
     )
 
+
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.BaseEvent")
 @patch("shared.events.amplitude.Amplitude")
@@ -78,13 +79,16 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
     amplitude.client.track = Mock()
 
     amplitude.publish(
-        "Upload Sent", {"user_ownerid": 123, "ownerid": 321, "upload_type": 'Coverage report'}
+        "Upload Sent",
+        {"user_ownerid": 123, "ownerid": 321, "upload_type": "Coverage report"},
     )
 
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
-        "App Installed", user_id="123", event_properties={"ownerid": 321, "uploadType": 'Coverage report'}
+        "App Installed",
+        user_id="123",
+        event_properties={"ownerid": 321, "uploadType": "Coverage report"},
     )
 
 
