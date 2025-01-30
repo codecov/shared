@@ -91,7 +91,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
-        "App Installed",
+        "Upload Sent",
         user_id="123",
         event_properties={
             "ownerid": 321,
