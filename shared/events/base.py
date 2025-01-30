@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class EventPublisherPropertyException(Exception):
+class MissingEventPropertyException(Exception):
     pass
 
 

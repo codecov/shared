@@ -4,7 +4,7 @@ from django.test import override_settings
 from pytest import raises
 
 from shared.events.amplitude import AmplitudeEventPublisher, StubbedAmplitudeClient
-from shared.events.base import EventPublisherPropertyException
+from shared.events.base import MissingEventPropertyException
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
@@ -16,7 +16,7 @@ def test_set_orgs(amplitude_mock, event_options_mock):
     amplitude.client.set_group = Mock()
     event_options_mock.return_value = "mock_event_options"
 
-    amplitude.publish("set_orgs", {"userOwnerid": 123, "orgIds": [1, 32]})
+    amplitude.publish("set_orgs", {"user_ownerid": 123, "org_ids": [1, 32]})
 
     amplitude_mock.assert_called_once()
     amplitude.client.set_group.assert_called_once_with(
@@ -27,11 +27,11 @@ def test_set_orgs(amplitude_mock, event_options_mock):
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.Amplitude")
-def test_set_orgs_throws_when_missing_orgIds(_):
+def test_set_orgs_throws_when_missing_org_ids(_):
     amplitude = AmplitudeEventPublisher()
 
-    with raises(EventPublisherPropertyException):
-        amplitude.publish("set_orgs", {"userOwnerid": 123})
+    with raises(MissingEventPropertyException):
+        amplitude.publish("set_orgs", {"user_ownerid": 123})
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
@@ -42,7 +42,7 @@ def test_publish(amplitude_mock, base_event_mock):
 
     amplitude.client.track = Mock()
 
-    amplitude.publish("App Installed", {"userOwnerid": 123, "ownerid": 321})
+    amplitude.publish("App Installed", {"user_ownerid": 123, "ownerid": 321})
 
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
@@ -60,13 +60,31 @@ def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
     amplitude.client.track = Mock()
 
     amplitude.publish(
-        "App Installed", {"userOwnerid": 123, "ownerid": 321, "repoid": 9}
+        "App Installed", {"user_ownerid": 123, "ownerid": 321, "repoid": 9}
     )
 
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
         "App Installed", user_id="123", event_properties={"ownerid": 321}
+    )
+
+@override_settings(AMPLITUDE_API_KEY="asdf1234")
+@patch("shared.events.amplitude.BaseEvent")
+@patch("shared.events.amplitude.Amplitude")
+def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
+    amplitude = AmplitudeEventPublisher()
+
+    amplitude.client.track = Mock()
+
+    amplitude.publish(
+        "Upload Sent", {"user_ownerid": 123, "ownerid": 321, "upload_type": 'Coverage report'}
+    )
+
+    amplitude_mock.assert_called_once()
+    amplitude.client.track.assert_called_once()
+    base_event_mock.assert_called_once_with(
+        "App Installed", user_id="123", event_properties={"ownerid": 321, "uploadType": 'Coverage report'}
     )
 
 
@@ -77,8 +95,8 @@ def test_publish_missing_required_property(_):
 
     amplitude.client.track = Mock()
 
-    with raises(EventPublisherPropertyException):
-        amplitude.publish("App Installed", {"userOwnerid": 123})
+    with raises(MissingEventPropertyException):
+        amplitude.publish("App Installed", {"user_ownerid": 123})
 
 
 @override_settings(AMPLITUDE_API_KEY=None)
@@ -93,7 +111,7 @@ def test_uses_stubbed_amplitude_when_None_api_key():
 def test_stubbed_amplitude_does_not_call_amplitude(amplitude_mock):
     amplitude = AmplitudeEventPublisher()
 
-    amplitude.publish("User Created", {"userOwnerid": 123})
-    amplitude.publish("set_orgs", {"userOwnerid": 123, "orgIds": [1, 32]})
+    amplitude.publish("User Created", {"user_ownerid": 123})
+    amplitude.publish("set_orgs", {"user_ownerid": 123, "org_ids": [1, 32]})
 
     amplitude_mock.assert_not_called()

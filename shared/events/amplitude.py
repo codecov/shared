@@ -4,7 +4,8 @@ from typing import Literal, TypedDict, Union
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
 from django.conf import settings
 
-from shared.events.base import EventPublisher, EventPublisherPropertyException
+from shared.events.base import EventPublisher, MissingEventPropertyException
+from shared.utils.snake_to_camel_case import snake_to_camel_case
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +26,6 @@ Guidelines:
    Instead, add more detail in `properties` where possible.
  - Try to keep event property names unique to the event type to avoid
    accidental correlation of unrelated events.
- - Use Camel Case for event property names.
  - Never include names, only use ids. E.g., use repoid instead of repo name.
 
 """
@@ -43,35 +43,37 @@ Add Event Properties here, define their types in AmplitudeEventProperties,
 and finally add them as required properties where needed in
 amplitude_required_properties.
 
+Note: these are converted to camel case before they're sent to Amplitude!
+
 """
 type AmplitudeEventProperty = Literal[
-    "userOwnerid",
+    "user_ownerid",
     "ownerid",
-    "orgIds",
+    "org_ids",
     "repoid",
-    "uploadType",
+    "upload_type",
 ]
 
 
-# Separate type required to make userOwnerid mandatory with total=True
+# Separate type required to make user_ownerid mandatory with total=True
 class BaseAmplitudeEventProperties(TypedDict, total=True):
-    userOwnerid: int  # ownerid of user performing event action
+    user_ownerid: int  # ownerid of user performing event action
 
 
 class AmplitudeEventProperties(BaseAmplitudeEventProperties, total=False):
     ownerid: int  # ownerid of owner being acted upon
-    orgIds: list[int]
+    org_ids: list[int]
     repoid: int
-    uploadType: Literal["Coverage report", "Bundle", "Test results"]
+    upload_type: Literal["Coverage report", "Bundle", "Test results"]
 
 
-# userOwnerid is always required, don't need to check here.
+# user_ownerid is always required, don't need to check here.
 amplitude_required_properties: dict[
     AmplitudeEventType, list[AmplitudeEventProperty]
 ] = {
     "User Created": [],
     "App Installed": ["ownerid"],
-    "Upload Sent": ["ownerid", "repoid", "uploadType"],
+    "Upload Sent": ["ownerid", "repoid", "upload_type"],
 }
 
 
@@ -100,16 +102,16 @@ class AmplitudeEventPublisher(EventPublisher):
     ):
         # Handle special set_orgs event
         if event_type == "set_orgs":
-            if "orgIds" not in event_properties:
-                raise EventPublisherPropertyException(
-                    "Property 'orgIds' is required for event type 'set_orgs'"
+            if "org_ids" not in event_properties:
+                raise MissingEventPropertyException(
+                    "Property 'org_ids' is required for event type 'set_orgs'"
                 )
 
             self.client.set_group(
                 group_type="org",
-                group_name=[str(orgid) for orgid in event_properties["orgIds"]],
+                group_name=[str(orgid) for orgid in event_properties["org_ids"]],
                 event_options=EventOptions(
-                    user_id=str(event_properties["userOwnerid"])
+                    user_id=str(event_properties["user_ownerid"])
                 ),
             )
             return
@@ -122,7 +124,7 @@ class AmplitudeEventPublisher(EventPublisher):
         self.client.track(
             BaseEvent(
                 event_type,
-                user_id=str(event_properties["userOwnerid"]),
+                user_id=str(event_properties["user_ownerid"]),
                 event_properties=structured_payload,
             )
         )
@@ -165,9 +167,9 @@ def transform_properties(
 
     for property in amplitude_required_properties[event_type]:
         if property not in event_properties:
-            raise EventPublisherPropertyException(
+            raise MissingEventPropertyException(
                 f"Property {property} is required for event type {event_type}"
             )
-        payload[property] = event_properties.get(property)
+        payload[snake_to_camel_case(property)] = event_properties.get(property)
 
     return payload
