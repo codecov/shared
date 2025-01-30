@@ -8,6 +8,7 @@ class MonthlyUploadLimits(enum.Enum):
     CODECOV_TEAM_PLAN = 2500
     CODECOV_DEVELOPER_PLAN = 250
 
+
 class TrialDaysAmount(enum.Enum):
     CODECOV_SENTRY = 14
 
