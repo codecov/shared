@@ -39,6 +39,7 @@ from shared.plan.constants import (
     DEVELOPER_PLAN,
     ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
     PlanName,
+    DEFAULT_FREE_PLAN,
 )
 from shared.utils.test_utils import mock_config_helper
 from tests.helper import mock_all_plans_and_tiers
@@ -380,7 +381,7 @@ class TestOwnerModel(TestCase):
     def test_fields_that_account_overrides(self):
         mock_all_plans_and_tiers()
         to_activate = OwnerFactory()
-        self.owner.plan = PlanName.USERS_DEVELOPER.value
+        self.owner.plan = DEFAULT_FREE_PLAN
         self.owner.plan_user_count = 1
         self.owner.save()
         self.assertTrue(self.owner.can_activate_user(to_activate))
@@ -527,7 +528,7 @@ class TestOwnerModel(TestCase):
 
 class TestOrganizationLevelTokenModel(TestCase):
     def test_can_save_org_token_for_org_basic_plan(self):
-        owner = OwnerFactory(plan="users-developer")
+        owner = OwnerFactory(plan=DEFAULT_FREE_PLAN)
         owner.save()
         token = OrganizationLevelToken(owner=owner)
         token.save()
@@ -545,7 +546,7 @@ class TestOrganizationLevelTokenModel(TestCase):
         owner.save()
         org_token.save()
         assert OrganizationLevelToken.objects.filter(owner=owner).count() == 1
-        owner.plan = "users-developer"
+        owner.plan = DEFAULT_FREE_PLAN
         owner.save()
         assert OrganizationLevelToken.objects.filter(owner=owner).count() == 0
 
@@ -772,21 +773,21 @@ class TestAccountModel(TransactionTestCase):
         user_for_owner_1 = UserFactory(email="hello@email.com", name="Luigi")
         owner_1 = OwnerFactory(
             username="codecov-1",
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=1,
             organizations=[],
             user_id=user_for_owner_1.id,  # has user
         )
         owner_2 = OwnerFactory(
             username="codecov-sentry",
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=1,
             organizations=[],
             user_id=None,  # no user
         )
         owner_3 = OwnerFactory(
             username="sentry-1",
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=1,
             organizations=[],
             user_id=None,  # no user
@@ -810,7 +811,7 @@ class TestAccountModel(TransactionTestCase):
             username="codecov-org",
             stripe_customer_id=stripe_customer_id,
             stripe_subscription_id=stripe_subscription_id,
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=50,
             plan_activated_users=[owner_1.ownerid, owner_2.ownerid],
             free=10,

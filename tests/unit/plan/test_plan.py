@@ -12,6 +12,7 @@ from shared.django_apps.codecov_auth.tests.factories import (
     TierFactory,
 )
 from shared.plan.constants import (
+    DEFAULT_FREE_PLAN,
     FREE_PLAN_REPRESENTATIONS,
     TRIAL_PLAN_REPRESENTATION,
     TRIAL_PLAN_SEATS,
@@ -32,7 +33,7 @@ class PlanServiceTests(TestCase):
         mock_all_plans_and_tiers()
 
     def test_plan_service_trial_status_not_started(self):
-        current_org = OwnerFactory(plan=PlanName.USERS_DEVELOPER.value)
+        current_org = OwnerFactory(plan=DEFAULT_FREE_PLAN)
         plan_service = PlanService(current_org=current_org)
 
         assert plan_service.trial_status == TrialStatus.NOT_STARTED.value
@@ -41,7 +42,7 @@ class PlanServiceTests(TestCase):
         trial_start_date = datetime.utcnow()
         trial_end_date_expired = trial_start_date - timedelta(days=1)
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date_expired,
             trial_status=TrialStatus.EXPIRED.value,
@@ -68,7 +69,7 @@ class PlanServiceTests(TestCase):
         self,
     ):
         current_org_with_ongoing_trial = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=None,
             trial_end_date=None,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -86,7 +87,7 @@ class PlanServiceTests(TestCase):
         trial_start_date = datetime.utcnow()
         trial_end_date_ongoing = trial_start_date + timedelta(days=5)
         current_org_with_ongoing_trial = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date_ongoing,
             trial_status=TrialStatus.ONGOING.value,
@@ -105,7 +106,7 @@ class PlanServiceTests(TestCase):
         trial_end_date_ongoing = trial_start_date + timedelta(days=5)
         pretrial_users_count = 5
         current_org_with_ongoing_trial = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date_ongoing,
             trial_status=TrialStatus.ONGOING.value,
@@ -124,7 +125,7 @@ class PlanServiceTests(TestCase):
             days=TrialDaysAmount.CODECOV_SENTRY.value
         )
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.ONGOING.value,
@@ -139,7 +140,7 @@ class PlanServiceTests(TestCase):
         trial_start_date = datetime.utcnow()
         trial_end_date = trial_start_date + timedelta(days=-1)
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.EXPIRED.value,
@@ -152,7 +153,7 @@ class PlanServiceTests(TestCase):
 
     def test_plan_service_start_trial_errors_if_status_is_cannot_trial(self):
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=None,
             trial_end_date=None,
             trial_status=TrialStatus.CANNOT_TRIAL.value,
@@ -181,7 +182,7 @@ class PlanServiceTests(TestCase):
         trial_end_date = None
         plan_user_count = 5
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -207,7 +208,7 @@ class PlanServiceTests(TestCase):
         trial_end_date = None
         plan_user_count = 5
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
             trial_status=TrialStatus.NOT_STARTED.value,
@@ -247,13 +248,13 @@ class PlanServiceTests(TestCase):
         trial_start_date = None
         trial_end_date = None
         current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=trial_start_date,
             trial_end_date=trial_end_date,
         )
         plan_service = PlanService(current_org=current_org)
 
-        developer_plan = FREE_PLAN_REPRESENTATIONS[PlanName.USERS_DEVELOPER.value]
+        developer_plan = FREE_PLAN_REPRESENTATIONS[DEFAULT_FREE_PLAN]
         assert plan_service.current_org == current_org
         assert plan_service.trial_status == TrialStatus.NOT_STARTED.value
         assert plan_service.marketing_name == developer_plan.marketing_name
@@ -303,7 +304,7 @@ class PlanServiceTests(TestCase):
         plan_service = PlanService(current_org=current_org)
         plan_service.set_default_plan_data()
 
-        assert current_org.plan == PlanName.USERS_DEVELOPER.value
+        assert current_org.plan == DEFAULT_FREE_PLAN
         assert current_org.plan_user_count == 1
         assert current_org.plan_activated_users is None
         assert current_org.stripe_subscription_id is None
@@ -351,13 +352,13 @@ class PlanServiceTests(TestCase):
 
 class AvailablePlansBeforeTrial(TestCase):
     """
-    - users-developer, no trial -> users-pr-inappm/y, users-developer
-    - users-free, no trial -> users-pr-inappm/y, users-developer, users-free
-    - users-teamm/y, no trial -> users-pr-inappm/y, users-developer, users-teamm/y
-    - users-pr-inappm/y, no trial -> users-pr-inappm/y, users-developer
-    - sentry customer, users-developer, no trial -> users-pr-inappm/y, users-sentrym/y, users-developer
-    - sentry customer, users-teamm/y, no trial -> users-pr-inappm/y, users-sentrym/y, users-developer, users-teamm/y
-    - sentry customer, users-sentrym/y, no trial -> users-pr-inappm/y, users-sentrym/y, users-developer
+    - DEFAULT_FREE_PLAN, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
+    - users-free, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-free
+    - users-teamm/y, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - users-pr-inappm/y, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
+    - sentry customer,  DEFAULT_FREE_PLAN, no trial -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
+    - sentry customer, users-teamm/y, no trial -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, users-sentrym/y, no trial -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
     """
 
     @classmethod
@@ -376,13 +377,13 @@ class AvailablePlansBeforeTrial(TestCase):
     def test_available_plans_for_developer_plan_non_trial(
         self,
     ):
-        self.current_org.plan = PlanName.USERS_DEVELOPER.value
+        self.current_org.plan = DEFAULT_FREE_PLAN
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -405,7 +406,7 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.FREE_PLAN_NAME.value,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
@@ -429,7 +430,7 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -450,7 +451,7 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -469,13 +470,13 @@ class AvailablePlansBeforeTrial(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        self.current_org.plan = PlanName.USERS_DEVELOPER.value
+        self.current_org.plan = DEFAULT_FREE_PLAN
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -502,7 +503,7 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -526,7 +527,7 @@ class AvailablePlansBeforeTrial(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -546,12 +547,12 @@ class AvailablePlansBeforeTrial(TestCase):
 @freeze_time("2023-06-19")
 class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
     """
-    - users-developer, has trialed, less than 10 users -> users-pr-inappm/y, users-developer, users-teamm/y
-    - users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-developer, users-teamm/y
-    - users-pr-inappm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-developer, users-teamm/y
-    - sentry customer, users-developer, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, users-developer, users-teamm/y
-    - sentry customer, users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, users-developer, users-teamm/y
-    - sentry customer, users-sentrym/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, users-developer, users-teamm/y
+    - { DEFAULT_FREE_PLAN}, has trialed, less than 10 users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - users-pr-inappm/y, has trialed, less than 10 users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer,  DEFAULT_FREE_PLAN, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, users-sentrym/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
     """
 
     @classmethod
@@ -571,13 +572,13 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
     def test_available_plans_for_developer_plan_expired_trial_less_than_10_users(
         self,
     ):
-        self.current_org.plan = PlanName.USERS_DEVELOPER.value
+        self.current_org.plan = DEFAULT_FREE_PLAN
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -599,7 +600,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -619,7 +620,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -638,13 +639,13 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        self.current_org.plan = PlanName.USERS_DEVELOPER.value
+        self.current_org.plan = DEFAULT_FREE_PLAN
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -670,7 +671,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 
         plan_service = PlanService(current_org=self.current_org)
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -697,7 +698,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -717,9 +718,9 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 @freeze_time("2023-06-19")
 class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
     """
-    - users-pr-inappm/y, has trialed, more than 10 activated users -> users-pr-inappm/y, users-developer
-    - sentry customer, users-developer, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y, users-developer
-    - sentry customer, users-sentrym/y, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y, users-developer
+    - users-pr-inappm/y, has trialed, more than 10 activated users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
+    - sentry customer,  DEFAULT_FREE_PLAN, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
+    - sentry customer, users-sentrym/y, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
     """
 
     @classmethod
@@ -744,7 +745,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
         }
@@ -761,13 +762,13 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         self, is_sentry_user
     ):
         is_sentry_user.return_value = True
-        self.current_org.plan = PlanName.USERS_DEVELOPER.value
+        self.current_org.plan = DEFAULT_FREE_PLAN
         self.current_org.save()
 
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -791,7 +792,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         plan_service = PlanService(current_org=self.current_org)
 
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -819,7 +820,7 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 
     def setUp(self):
         self.expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -891,7 +892,7 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
         self.plan_service = PlanService(current_org=self.current_org)
 
         self.expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -911,11 +912,11 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 class AvailablePlansOngoingTrial(TestCase):
     """
     Non Sentry User is trialing
-        when <=10 activated seats -> users-pr-inappm/y, users-developer, users-teamm/y
-        when > 10 activated seats -> users-pr-inappm/y, users-developer
+        when <=10 activated seats -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
+        when > 10 activated seats -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
     Sentry User is trialing
-        when <=10 activated seats -> users-pr-inappm/y, users-sentrym/y, users-developer, users-teamm/y
-        when > 10 activated seats -> users-pr-inappm/y, users-sentrym/y, users-developer
+        when <=10 activated seats -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
+        when > 10 activated seats -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
     """
 
     @classmethod
@@ -925,7 +926,7 @@ class AvailablePlansOngoingTrial(TestCase):
 
     def setUp(self):
         self.current_org = OwnerFactory(
-            plan=PlanName.USERS_DEVELOPER.value,
+            plan=DEFAULT_FREE_PLAN,
             trial_start_date=datetime.utcnow(),
             trial_end_date=datetime.utcnow() + timedelta(days=14),
             trial_status=TrialStatus.ONGOING.value,
@@ -938,7 +939,7 @@ class AvailablePlansOngoingTrial(TestCase):
     def test_non_sentry_user(self):
         # [Developer, Pro Monthly, Pro Yearly, Team Monthly, Team Yearly]
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.TEAM_MONTHLY.value,
@@ -971,7 +972,7 @@ class AvailablePlansOngoingTrial(TestCase):
 
         # [Developer, Pro Monthly, Pro Yearly]
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.CODECOV_PRO_MONTHLY.value,
         }
@@ -994,7 +995,7 @@ class AvailablePlansOngoingTrial(TestCase):
 
         # [Developer, Pro Monthly, Pro Yearly, Sentry Monthly, Sentry Yearly, Team Monthly, Team Yearly]
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.SENTRY_MONTHLY.value,
@@ -1028,7 +1029,7 @@ class AvailablePlansOngoingTrial(TestCase):
 
         # [Developer, Pro Monthly, Pro Yearly, Sentry Monthly, Sentry Yearly]
         expected_result = {
-            PlanName.USERS_DEVELOPER.value,
+            DEFAULT_FREE_PLAN,
             PlanName.CODECOV_PRO_YEARLY.value,
             PlanName.CODECOV_PRO_MONTHLY.value,
             PlanName.SENTRY_MONTHLY.value,

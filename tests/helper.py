@@ -3,6 +3,7 @@ from json import dumps
 from shared.django_apps.codecov_auth.models import BillingRate
 from shared.django_apps.codecov_auth.tests.factories import PlanFactory, TierFactory
 from shared.plan.constants import (
+    DEFAULT_FREE_PLAN,
     PlanName,
     PlanPrice,
     TierName,
@@ -219,7 +220,7 @@ def mock_all_plans_and_tiers():
     )
 
     PlanFactory(
-        name=PlanName.USERS_DEVELOPER.value,
+        name=DEFAULT_FREE_PLAN,
         tier=team_tier,
         marketing_name="Developer",
         billing_rate=None,
