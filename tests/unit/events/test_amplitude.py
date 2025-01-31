@@ -6,7 +6,6 @@ from pytest import raises
 from shared.events.amplitude import AmplitudeEventPublisher
 from shared.events.amplitude.publisher import StubbedAmplitudeClient
 from shared.events.base import (
-    IncorrectEventPropertyTypeException,
     MissingEventPropertyException,
 )
 
@@ -103,25 +102,6 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
             "repoid": 132,
         },
     )
-
-
-@override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.publisher.Amplitude")
-def test_publish_rejects_props_with_wrong_type(_):
-    amplitude = AmplitudeEventPublisher()
-
-    amplitude.client.track = Mock()
-
-    with raises(IncorrectEventPropertyTypeException):
-        amplitude.publish(
-            "Upload Sent",
-            {
-                "user_ownerid": 123,
-                "ownerid": 321,
-                "upload_type": "Coverage report",
-                "repoid": "123",  # pyright: ignore[reportArgumentType]
-            },
-        )
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")

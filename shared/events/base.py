@@ -5,10 +5,6 @@ class MissingEventPropertyException(Exception):
     pass
 
 
-class IncorrectEventPropertyTypeException(Exception):
-    pass
-
-
 class EventPublisher[T, P](ABC):
     @abstractmethod
     def publish(self, event_type: T, event_properties: P):

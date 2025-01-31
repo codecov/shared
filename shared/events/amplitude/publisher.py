@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Literal, Type, Union, get_args, get_origin, get_type_hints
+from typing import Union
 
 from django.conf import settings
 
@@ -11,7 +11,6 @@ from shared.events.amplitude.types import (
 )
 from shared.events.base import (
     EventPublisher,
-    IncorrectEventPropertyTypeException,
     MissingEventPropertyException,
 )
 from shared.utils.snake_to_camel_case import snake_to_camel_case
@@ -90,26 +89,9 @@ class AmplitudeEventPublisher(EventPublisher):
                     f"Property {property} is required for event type {event_type}"
                 )
 
-            type_hints = get_type_hints(AmplitudeEventProperties)
-            property_value = event_properties.get(property)
-            if not self.__value_is_type(property_value, type_hints[property]):
-                raise IncorrectEventPropertyTypeException(
-                    f"Property {property} has wrong type. Expected {type_hints[property]} and value is {property_value}."
-                )
-
             payload[snake_to_camel_case(property)] = event_properties.get(property)
 
         return payload
-
-    def __value_is_type(self, value: Any, type: Type) -> bool:
-        # Special case for Literals
-        if get_origin(type) == Literal and value not in get_args(type):
-            return False
-        elif get_origin(type) == Literal:
-            return True
-
-        # Basic type case
-        return isinstance(value, type)
 
 
 class StubbedAmplitudeClient(Amplitude):
