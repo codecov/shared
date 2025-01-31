@@ -36,10 +36,10 @@ from shared.django_apps.codecov_auth.tests.factories import (
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.plan.constants import (
+    DEFAULT_FREE_PLAN,
     DEVELOPER_PLAN,
     ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
     PlanName,
-    DEFAULT_FREE_PLAN,
 )
 from shared.utils.test_utils import mock_config_helper
 from tests.helper import mock_all_plans_and_tiers

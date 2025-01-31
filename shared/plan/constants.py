@@ -4,6 +4,7 @@ from typing import List, Optional
 
 DEFAULT_FREE_PLAN = "users-developer"
 
+
 class MonthlyUploadLimits(enum.Enum):
     CODECOV_BASIC_PLAN = 250
     CODECOV_TEAM_PLAN = 2500
