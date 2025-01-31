@@ -217,3 +217,18 @@ def mock_all_plans_and_tiers():
             "Priority Support",
         ],
     )
+
+    PlanFactory(
+        name=PlanName.USERS_DEVELOPER.value,
+        tier=team_tier,
+        marketing_name="Developer",
+        billing_rate=None,
+        base_unit_price=0,
+        paid_plan=False,
+        monthly_uploads_limit=250,
+        benefits=[
+            "Up to 1 user",
+            "Unlimited public repositories",
+            "Unlimited private repositories",
+        ],
+    )

@@ -326,7 +326,7 @@ DEVELOPER_PLAN = PlanData(
     ],
     tier_name=TierName.TEAM.value,
     trial_days=None,
-    monthly_uploads_limit=None,
+    monthly_uploads_limit=250,
 )
 
 FREE_PLAN_REPRESENTATIONS = {

@@ -69,8 +69,10 @@ class PlanService:
         return self.current_org
 
     def set_default_plan_data(self) -> None:
-        """Sets the organization to the default basic plan."""
-        log.info(f"Setting plan to users-basic for owner {self.current_org.ownerid}")
+        """Sets the organization to the default developer plan."""
+        log.info(
+            f"Setting plan to users-developer for owner {self.current_org.ownerid}"
+        )
         self.current_org.plan = PlanName.USERS_DEVELOPER.value
         self.current_org.plan_activated_users = None
         self.current_org.plan_user_count = 1

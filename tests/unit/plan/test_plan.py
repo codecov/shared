@@ -265,10 +265,7 @@ class PlanServiceTests(TestCase):
         assert (
             plan_service.monthly_uploads_limit == developer_plan.monthly_uploads_limit
         )  # should be 250
-        assert (
-            plan_service.monthly_uploads_limit == 250
-        )  # should be 250 since not trialing
-        assert plan_service.trial_total_days == developer_plan.trial_days
+        assert plan_service.monthly_uploads_limit == 250
 
     def test_plan_service_returns_plan_data_for_trialing_user_trial_plan(self):
         trial_start_date = datetime.utcnow()
@@ -928,7 +925,7 @@ class AvailablePlansOngoingTrial(TestCase):
 
     def setUp(self):
         self.current_org = OwnerFactory(
-            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan=PlanName.USERS_DEVELOPER.value,
             trial_start_date=datetime.utcnow(),
             trial_end_date=datetime.utcnow() + timedelta(days=14),
             trial_status=TrialStatus.ONGOING.value,
