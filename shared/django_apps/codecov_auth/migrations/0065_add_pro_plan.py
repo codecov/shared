@@ -1,9 +1,15 @@
 from django.db import migrations
 
+from shared.django_apps.utils.config import RUN_ENV
+
 
 def add_pro_plan(apps, schema_editor):
+    if RUN_ENV != "ENTERPRISE":
+        return
+
     Plan = apps.get_model("codecov_auth", "Plan")
     Tier = apps.get_model("codecov_auth", "Tier")
+    Owner = apps.get_model("codecov_auth", "Owner")
 
     pro_tier = Tier.objects.create(
         tier_name="pro",
@@ -31,6 +37,10 @@ def add_pro_plan(apps, schema_editor):
         name="users-pr-inappy",
         paid_plan=True,
     )
+
+    for owner in Owner.objects.all():
+        owner.plan = "users-pr-inappy"
+        owner.save()
 
 
 class Migration(migrations.Migration):
