@@ -3,13 +3,14 @@ from unittest.mock import Mock, patch
 from django.test import override_settings
 from pytest import raises
 
-from shared.events.amplitude import AmplitudeEventPublisher, StubbedAmplitudeClient
+from shared.events.amplitude import AmplitudeEventPublisher
+from shared.events.amplitude.publisher import StubbedAmplitudeClient
 from shared.events.base import MissingEventPropertyException
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.EventOptions")
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.EventOptions")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_set_orgs(amplitude_mock, event_options_mock):
     amplitude = AmplitudeEventPublisher()
 
@@ -26,7 +27,7 @@ def test_set_orgs(amplitude_mock, event_options_mock):
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_set_orgs_throws_when_missing_org_ids(_):
     amplitude = AmplitudeEventPublisher()
 
@@ -35,8 +36,8 @@ def test_set_orgs_throws_when_missing_org_ids(_):
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.BaseEvent")
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.BaseEvent")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish(amplitude_mock, base_event_mock):
     amplitude = AmplitudeEventPublisher()
 
@@ -52,8 +53,8 @@ def test_publish(amplitude_mock, base_event_mock):
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.BaseEvent")
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.BaseEvent")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
     amplitude = AmplitudeEventPublisher()
 
@@ -71,8 +72,8 @@ def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.BaseEvent")
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.BaseEvent")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
     amplitude = AmplitudeEventPublisher()
 
@@ -102,7 +103,26 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.Amplitude")
+def test_publish_rejects_props_with_wrong_type(_):
+    amplitude = AmplitudeEventPublisher()
+
+    amplitude.client.track = Mock()
+
+    with raises(MissingEventPropertyException):
+        amplitude.publish(
+            "Upload Sent",
+            {
+                "user_ownerid": 123,
+                "ownerid": 321,
+                "upload_type": "Coverage report",
+                "repoid": "123",  # pyright: ignore[reportArgumentType]
+            },
+        )
+
+
+@override_settings(AMPLITUDE_API_KEY="asdf1234")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish_missing_required_property(_):
     amplitude = AmplitudeEventPublisher()
 
@@ -120,7 +140,7 @@ def test_uses_stubbed_amplitude_when_None_api_key():
 
 
 @override_settings(AMPLITUDE_API_KEY=None)
-@patch("shared.events.amplitude.Amplitude")
+@patch("shared.events.amplitude.publisher.Amplitude")
 def test_stubbed_amplitude_does_not_call_amplitude(amplitude_mock):
     amplitude = AmplitudeEventPublisher()
 
