@@ -350,6 +350,43 @@ class PlanServiceTests(TestCase):
             root_plan.plan_name == child_plan.plan_name == PlanName.FREE_PLAN_NAME.value
         )
 
+    def test_plan_service_activated_user_count_includes_student_users(self):
+        student_user = OwnerFactory(student=True)
+        other_user = OwnerFactory()
+        current_org = OwnerFactory(
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
+            plan_activated_users=[student_user.ownerid, other_user.ownerid],
+            plan_auto_activate=False,
+            plan_user_count=2,
+        )
+        current_org.save()
+
+        plan = PlanService(current_org=current_org)
+
+        assert plan.has_seats_left == True
+
+    def test_plan_service_activated_user_count_includes_student_users_and_has_no_seats_left(
+        self,
+    ):
+        student_user = OwnerFactory(student=True)
+        other_user = OwnerFactory()
+        other_user_2 = OwnerFactory()
+        current_org = OwnerFactory(
+            plan=PlanName.CODECOV_PRO_MONTHLY.value,
+            plan_activated_users=[
+                student_user.ownerid,
+                other_user.ownerid,
+                other_user_2.ownerid,
+            ],
+            plan_auto_activate=False,
+            plan_user_count=2,
+        )
+        current_org.save()
+
+        plan = PlanService(current_org=current_org)
+
+        assert plan.has_seats_left == False
+
 
 class AvailablePlansBeforeTrial(TestCase):
     """
