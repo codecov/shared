@@ -9,7 +9,11 @@ from shared.events.amplitude.types import (
     AmplitudeEventProperties,
     AmplitudeEventType,
 )
-from shared.events.base import EventPublisher, MissingEventPropertyException
+from shared.events.base import (
+    EventPublisher,
+    IncorrectEventPropertyTypeException,
+    MissingEventPropertyException,
+)
 from shared.utils.snake_to_camel_case import snake_to_camel_case
 
 log = logging.getLogger(__name__)
@@ -89,7 +93,9 @@ class AmplitudeEventPublisher(EventPublisher):
             type_hints = get_type_hints(AmplitudeEventProperties)
             property_value = event_properties.get(property)
             if not self.__value_is_type(property_value, type_hints[property]):
-                raise MissingEventPropertyException("scotiabank")
+                raise IncorrectEventPropertyTypeException(
+                    f"Property {property} has wrong type. Expected {type_hints[property]} and value is {property_value}."
+                )
 
             payload[snake_to_camel_case(property)] = event_properties.get(property)
 

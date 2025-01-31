@@ -5,7 +5,10 @@ from pytest import raises
 
 from shared.events.amplitude import AmplitudeEventPublisher
 from shared.events.amplitude.publisher import StubbedAmplitudeClient
-from shared.events.base import MissingEventPropertyException
+from shared.events.base import (
+    IncorrectEventPropertyTypeException,
+    MissingEventPropertyException,
+)
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
@@ -109,7 +112,7 @@ def test_publish_rejects_props_with_wrong_type(_):
 
     amplitude.client.track = Mock()
 
-    with raises(MissingEventPropertyException):
+    with raises(IncorrectEventPropertyTypeException):
         amplitude.publish(
             "Upload Sent",
             {
