@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "shared.django_apps.reports",
     "shared.django_apps.staticanalysis",
     "shared.django_apps.test_analytics",
+    "shared.django_apps.timeseries",
 ]
 
 # Needed for makemigrations to work
