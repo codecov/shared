@@ -23,7 +23,6 @@ class BillingPlan(Enum):
     users_yearly = PlanName.CODECOV_PRO_YEARLY_LEGACY.value
     enterprise_cloud_monthly = PlanName.ENTERPRISE_CLOUD_MONTHLY.value
     enterprise_cloud_yearly = PlanName.ENTERPRISE_CLOUD_YEARLY.value
-    users_developer = PlanName.USERS_DEVELOPER.value
 
     def __init__(self, db_name):
         self.db_name = db_name

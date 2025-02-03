@@ -352,13 +352,13 @@ class PlanServiceTests(TestCase):
 
 class AvailablePlansBeforeTrial(TestCase):
     """
-    - DEFAULT_FREE_PLAN, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
-    - users-free, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-free
-    - users-teamm/y, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - DEFAULT_FREE_PLAN, no trial -> users-pr-inappm/y, DEFAULT_FREE_PLAN
+    - users-free, no trial -> users-pr-inappm/y, DEFAULT_FREE_PLAN, users-free
+    - users-teamm/y, no trial -> users-pr-inappm/y, DEFAULT_FREE_PLAN, users-teamm/y
     - users-pr-inappm/y, no trial -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
-    - sentry customer,  DEFAULT_FREE_PLAN, no trial -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
-    - sentry customer, users-teamm/y, no trial -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
-    - sentry customer, users-sentrym/y, no trial -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
+    - sentry customer, DEFAULT_FREE_PLAN, no trial -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN
+    - sentry customer, users-teamm/y, no trial -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, users-sentrym/y, no trial -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN
     """
 
     @classmethod
@@ -547,12 +547,12 @@ class AvailablePlansBeforeTrial(TestCase):
 @freeze_time("2023-06-19")
 class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
     """
-    - { DEFAULT_FREE_PLAN}, has trialed, less than 10 users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
-    - users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
-    - users-pr-inappm/y, has trialed, less than 10 users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
-    - sentry customer,  DEFAULT_FREE_PLAN, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
-    - sentry customer, users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
-    - sentry customer, users-sentrym/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
+    - {DEFAULT_FREE_PLAN}, has trialed, less than 10 users -> users-pr-inappm/y, DEFAULT_FREE_PLAN, users-teamm/y
+    - users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, DEFAULT_FREE_PLAN, users-teamm/y
+    - users-pr-inappm/y, has trialed, less than 10 users -> users-pr-inappm/y, DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, DEFAULT_FREE_PLAN, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, users-teamm/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN, users-teamm/y
+    - sentry customer, users-sentrym/y, has trialed, less than 10 users -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN, users-teamm/y
     """
 
     @classmethod
@@ -718,9 +718,9 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
 @freeze_time("2023-06-19")
 class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
     """
-    - users-pr-inappm/y, has trialed, more than 10 activated users -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
-    - sentry customer,  DEFAULT_FREE_PLAN, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
-    - sentry customer, users-sentrym/y, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
+    - users-pr-inappm/y, has trialed, more than 10 activated users -> users-pr-inappm/y, DEFAULT_FREE_PLAN
+    - sentry customer, DEFAULT_FREE_PLAN, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN
+    - sentry customer, users-sentrym/y, has trialed, more than 10 activated users -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN
     """
 
     @classmethod
@@ -912,11 +912,11 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 class AvailablePlansOngoingTrial(TestCase):
     """
     Non Sentry User is trialing
-        when <=10 activated seats -> users-pr-inappm/y,  DEFAULT_FREE_PLAN, users-teamm/y
-        when > 10 activated seats -> users-pr-inappm/y,  DEFAULT_FREE_PLAN
+        when <=10 activated seats -> users-pr-inappm/y, DEFAULT_FREE_PLAN, users-teamm/y
+        when > 10 activated seats -> users-pr-inappm/y, DEFAULT_FREE_PLAN
     Sentry User is trialing
-        when <=10 activated seats -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN, users-teamm/y
-        when > 10 activated seats -> users-pr-inappm/y, users-sentrym/y,  DEFAULT_FREE_PLAN
+        when <=10 activated seats -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN, users-teamm/y
+        when > 10 activated seats -> users-pr-inappm/y, users-sentrym/y, DEFAULT_FREE_PLAN
     """
 
     @classmethod

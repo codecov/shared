@@ -10,9 +10,6 @@ def test_route_tasks_based_on_user_plan_defaults():
         upload_task_name, BillingPlan.users_basic.db_name
     ) == {"queue": "celery", "extra_config": {}}
     assert route_tasks_based_on_user_plan(
-        upload_task_name, BillingPlan.users_developer.db_name
-    ) == {"queue": "celery", "extra_config": {}}
-    assert route_tasks_based_on_user_plan(
         upload_task_name, BillingPlan.enterprise_cloud_monthly.db_name
     ) == {"queue": "enterprise_celery", "extra_config": {}}
     assert route_tasks_based_on_user_plan(

@@ -2,8 +2,6 @@ import enum
 from dataclasses import dataclass
 from typing import List, Optional
 
-DEFAULT_FREE_PLAN = "users-developer"
-
 
 class MonthlyUploadLimits(enum.Enum):
     CODECOV_FREE_PLAN = 250
@@ -23,6 +21,9 @@ class PlanMarketingName(enum.Enum):
     BASIC = "Developer"
     TRIAL = "Developer"
     TEAM = "Team"
+
+
+DEFAULT_FREE_PLAN = "users-developer"
 
 
 class PlanName(enum.Enum):

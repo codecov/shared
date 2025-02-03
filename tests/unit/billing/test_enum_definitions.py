@@ -3,7 +3,6 @@ from django.test import override_settings
 
 from shared.billing import BillingPlan, is_enterprise_cloud_plan, is_pr_billing_plan
 from shared.django_apps.codecov_auth.tests.factories import OwnerFactory
-from shared.plan.constants import DEFAULT_FREE_PLAN
 
 
 @pytest.fixture
@@ -73,7 +72,6 @@ def test_billing_enums():
     assert BillingPlan.enterprise_cloud_monthly.db_name == "users-enterprisem"
     assert BillingPlan.team_monthly.db_name == "users-teamm"
     assert BillingPlan.team_yearly.db_name == "users-teamy"
-    assert BillingPlan.users_developer.db_name == DEFAULT_FREE_PLAN
 
 
 def test_get_from_string():
@@ -92,7 +90,6 @@ def test_get_from_string():
     )
     assert BillingPlan.from_str("users-teamm") == BillingPlan.team_monthly
     assert BillingPlan.from_str("users-teamy") == BillingPlan.team_yearly
-    assert BillingPlan.from_str(DEFAULT_FREE_PLAN) == BillingPlan.users_developer
 
 
 def test_is_enterprise_cloud_plan():
