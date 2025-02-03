@@ -50,7 +50,10 @@ def test_publish(amplitude_mock, base_event_mock):
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
-        "App Installed", user_id="123", event_properties={"ownerid": 321}
+        "App Installed",
+        user_id="123",
+        event_properties={"ownerid": 321},
+        groups={"org": 321},
     )
 
 
@@ -69,7 +72,10 @@ def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
-        "App Installed", user_id="123", event_properties={"ownerid": 321}
+        "App Installed",
+        user_id="123",
+        event_properties={"ownerid": 321},
+        groups={"org": 321},
     )
 
 
@@ -100,6 +106,9 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
             "ownerid": 321,
             "uploadType": "Coverage report",
             "repoid": 132,
+        },
+        groups={
+            "org": 321,
         },
     )
 

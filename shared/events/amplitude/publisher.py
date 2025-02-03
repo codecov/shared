@@ -62,11 +62,13 @@ class AmplitudeEventPublisher(EventPublisher):
 
         # Track event with validated payload, we will raise an exception before
         # this if bad payload.
+        org = structured_payload.get("ownerid", None)
         self.client.track(
             BaseEvent(
                 event_type,
                 user_id=str(event_properties["user_ownerid"]),
                 event_properties=structured_payload,
+                groups={"org": org} if org is not None else {},
             )
         )
         return
