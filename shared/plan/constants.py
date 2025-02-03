@@ -6,9 +6,8 @@ DEFAULT_FREE_PLAN = "users-developer"
 
 
 class MonthlyUploadLimits(enum.Enum):
-    CODECOV_BASIC_PLAN = 250
+    CODECOV_FREE_PLAN = 250
     CODECOV_TEAM_PLAN = 2500
-    CODECOV_DEVELOPER_PLAN = 250
 
 
 class TrialDaysAmount(enum.Enum):
@@ -24,7 +23,6 @@ class PlanMarketingName(enum.Enum):
     BASIC = "Developer"
     TRIAL = "Developer"
     TEAM = "Team"
-    DEVELOPER = "Developer"
 
 
 class PlanName(enum.Enum):
@@ -297,7 +295,7 @@ BASIC_PLAN = PlanData(
         "Unlimited private repositories",
     ],
     tier_name=TierName.BASIC.value,
-    monthly_uploads_limit=MonthlyUploadLimits.CODECOV_BASIC_PLAN.value,
+    monthly_uploads_limit=MonthlyUploadLimits.CODECOV_FREE_PLAN.value,
     trial_days=None,
 )
 
@@ -317,7 +315,7 @@ FREE_PLAN = PlanData(
 )
 
 DEVELOPER_PLAN = PlanData(
-    marketing_name=PlanMarketingName.DEVELOPER.value,
+    marketing_name=PlanMarketingName.FREE.value,
     value=DEFAULT_FREE_PLAN,
     billing_rate=None,
     base_unit_price=PlanPrice.CODECOV_FREE.value,
