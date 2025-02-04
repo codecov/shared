@@ -8,6 +8,7 @@ from shared.config import get_config
 from shared.django_apps.codecov.commands.exceptions import ValidationError
 from shared.django_apps.codecov_auth.models import Owner, Plan, Service
 from shared.plan.constants import (
+    DEFAULT_FREE_PLAN,
     TEAM_PLAN_MAX_USERS,
     TRIAL_PLAN_SEATS,
     PlanBillingRate,
@@ -69,9 +70,11 @@ class PlanService:
         return self.current_org
 
     def set_default_plan_data(self) -> None:
-        """Sets the organization to the default basic plan."""
-        log.info(f"Setting plan to users-basic for owner {self.current_org.ownerid}")
-        self.current_org.plan = PlanName.BASIC_PLAN_NAME.value
+        """Sets the organization to the default developer plan."""
+        log.info(
+            f"Setting plan to {DEFAULT_FREE_PLAN} for owner {self.current_org.ownerid}"
+        )
+        self.current_org.plan = DEFAULT_FREE_PLAN
         self.current_org.plan_activated_users = None
         self.current_org.plan_user_count = 1
         self.current_org.stripe_subscription_id = None
@@ -155,9 +158,8 @@ class PlanService:
     def available_plans(self, owner: Owner) -> List[Plan]:
         """Returns the available plans for the owner and organization."""
         available_plans = {
-            Plan.objects.select_related("tier").get(name=PlanName.BASIC_PLAN_NAME.value)
+            Plan.objects.select_related("tier").get(name=DEFAULT_FREE_PLAN)
         }
-
         curr_plan = self.plan_data
         if not curr_plan.paid_plan:
             available_plans.add(curr_plan)
@@ -317,8 +319,8 @@ class PlanService:
             # has_seats_left will evaluate as False even though the User should be allowed to activate on the Org.
             return self.current_org.account.can_activate_user()
         return (
-            self.plan_activated_users is None
-            or len(self.plan_activated_users) < self.plan_user_count
+            self.current_org.activated_user_count is None
+            or self.current_org.activated_user_count < self.plan_user_count
         )
 
     @property

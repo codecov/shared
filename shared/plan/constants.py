@@ -4,7 +4,7 @@ from typing import List, Optional
 
 
 class MonthlyUploadLimits(enum.Enum):
-    CODECOV_BASIC_PLAN = 250
+    CODECOV_FREE_PLAN = 250
     CODECOV_TEAM_PLAN = 2500
 
 
@@ -23,6 +23,9 @@ class PlanMarketingName(enum.Enum):
     TEAM = "Team"
 
 
+DEFAULT_FREE_PLAN = "users-developer"
+
+
 class PlanName(enum.Enum):
     # If you add or remove, make a migration for Account table
     BASIC_PLAN_NAME = "users-basic"
@@ -39,6 +42,7 @@ class PlanName(enum.Enum):
     CODECOV_PRO_YEARLY_LEGACY = "users-inappy"
     ENTERPRISE_CLOUD_MONTHLY = "users-enterprisem"
     ENTERPRISE_CLOUD_YEARLY = "users-enterprisey"
+    USERS_DEVELOPER = "users-developer"
 
     @classmethod
     def choices(cls):
@@ -292,7 +296,7 @@ BASIC_PLAN = PlanData(
         "Unlimited private repositories",
     ],
     tier_name=TierName.BASIC.value,
-    monthly_uploads_limit=MonthlyUploadLimits.CODECOV_BASIC_PLAN.value,
+    monthly_uploads_limit=MonthlyUploadLimits.CODECOV_FREE_PLAN.value,
     trial_days=None,
 )
 
@@ -311,9 +315,25 @@ FREE_PLAN = PlanData(
     monthly_uploads_limit=None,
 )
 
+DEVELOPER_PLAN = PlanData(
+    marketing_name=PlanMarketingName.FREE.value,
+    value=DEFAULT_FREE_PLAN,
+    billing_rate=None,
+    base_unit_price=PlanPrice.CODECOV_FREE.value,
+    benefits=[
+        "Up to 1 user",
+        "Unlimited public repositories",
+        "Unlimited private repositories",
+    ],
+    tier_name=TierName.TEAM.value,
+    trial_days=None,
+    monthly_uploads_limit=250,
+)
+
 FREE_PLAN_REPRESENTATIONS = {
     PlanName.FREE_PLAN_NAME.value: FREE_PLAN,
     PlanName.BASIC_PLAN_NAME.value: BASIC_PLAN,
+    DEFAULT_FREE_PLAN: DEVELOPER_PLAN,
 }
 
 TEAM_PLAN_REPRESENTATIONS = {
@@ -389,6 +409,7 @@ USER_PLAN_REPRESENTATIONS = {
 }
 
 PLANS_THAT_CAN_TRIAL = [
+    DEFAULT_FREE_PLAN,
     PlanName.FREE_PLAN_NAME.value,
     PlanName.BASIC_PLAN_NAME.value,
     PlanName.CODECOV_PRO_MONTHLY.value,
