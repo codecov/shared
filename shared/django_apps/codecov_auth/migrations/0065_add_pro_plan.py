@@ -10,6 +10,7 @@ def add_pro_plan(apps, schema_editor):
     Plan = apps.get_model("codecov_auth", "Plan")
     Tier = apps.get_model("codecov_auth", "Tier")
     Owner = apps.get_model("codecov_auth", "Owner")
+    Account = apps.get_model("codecov_auth", "Account")
 
     pro_tier = Tier.objects.create(
         tier_name="pro",
@@ -41,6 +42,10 @@ def add_pro_plan(apps, schema_editor):
     for owner in Owner.objects.all():
         owner.plan = "users-pr-inappy"
         owner.save()
+
+    for account in Account.objects.all():
+        account.plan = "users-pr-inappy"
+        account.save()
 
 
 class Migration(migrations.Migration):
