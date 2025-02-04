@@ -378,6 +378,10 @@ class TestOwnerModel(TestCase):
         self.owner.save()
         assert not self.owner.can_activate_user(self.owner)
 
+    def test_default_owner_plan_is_developer(self):
+        owner = OwnerFactory()
+        assert owner.plan == DEFAULT_FREE_PLAN
+
     def test_fields_that_account_overrides(self):
         mock_all_plans_and_tiers()
         to_activate = OwnerFactory()
