@@ -145,7 +145,7 @@ class Account(BaseModel):
         max_length=50,
         choices=PlanName.choices(),
         null=False,
-        default=PlanName.BASIC_PLAN_NAME.value,
+        default=PlanName.USERS_DEVELOPER.value,
     )
     plan_seat_count = models.SmallIntegerField(default=1, null=False, blank=True)
     free_seat_count = models.SmallIntegerField(default=0, null=False, blank=True)
@@ -328,7 +328,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     cache = models.JSONField(null=True)
     # Really an ENUM in db
     plan = models.TextField(
-        null=True, default=PlanName.BASIC_PLAN_NAME.value, blank=True
+        null=True, default=PlanName.USERS_DEVELOPER.value, blank=True
     )
     plan_provider = models.TextField(
         null=True, choices=PlanProviders.choices, blank=True

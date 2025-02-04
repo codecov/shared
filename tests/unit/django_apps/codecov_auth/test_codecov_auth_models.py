@@ -36,7 +36,8 @@ from shared.django_apps.codecov_auth.tests.factories import (
 )
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.plan.constants import (
-    BASIC_PLAN,
+    DEFAULT_FREE_PLAN,
+    DEVELOPER_PLAN,
     ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
     PlanName,
 )
@@ -380,11 +381,11 @@ class TestOwnerModel(TestCase):
     def test_fields_that_account_overrides(self):
         mock_all_plans_and_tiers()
         to_activate = OwnerFactory()
-        self.owner.plan = PlanName.BASIC_PLAN_NAME.value
+        self.owner.plan = DEFAULT_FREE_PLAN
         self.owner.plan_user_count = 1
         self.owner.save()
         self.assertTrue(self.owner.can_activate_user(to_activate))
-        org_pretty_plan = asdict(BASIC_PLAN)
+        org_pretty_plan = asdict(DEVELOPER_PLAN)
         org_pretty_plan.update({"quantity": 1})
         self.assertEqual(self.owner.pretty_plan, org_pretty_plan)
 
@@ -527,7 +528,7 @@ class TestOwnerModel(TestCase):
 
 class TestOrganizationLevelTokenModel(TestCase):
     def test_can_save_org_token_for_org_basic_plan(self):
-        owner = OwnerFactory(plan="users-basic")
+        owner = OwnerFactory(plan=DEFAULT_FREE_PLAN)
         owner.save()
         token = OrganizationLevelToken(owner=owner)
         token.save()
@@ -545,7 +546,7 @@ class TestOrganizationLevelTokenModel(TestCase):
         owner.save()
         org_token.save()
         assert OrganizationLevelToken.objects.filter(owner=owner).count() == 1
-        owner.plan = "users-basic"
+        owner.plan = DEFAULT_FREE_PLAN
         owner.save()
         assert OrganizationLevelToken.objects.filter(owner=owner).count() == 0
 
@@ -759,7 +760,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(account.activated_student_count, 0)
         self.assertEqual(account.total_seat_count, 1)
         self.assertEqual(account.available_seat_count, 0)
-        pretty_plan = asdict(BASIC_PLAN)
+        pretty_plan = asdict(DEVELOPER_PLAN)
         pretty_plan.update({"quantity": 1})
         self.assertEqual(account.pretty_plan, pretty_plan)
 
@@ -772,21 +773,21 @@ class TestAccountModel(TransactionTestCase):
         user_for_owner_1 = UserFactory(email="hello@email.com", name="Luigi")
         owner_1 = OwnerFactory(
             username="codecov-1",
-            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=1,
             organizations=[],
             user_id=user_for_owner_1.id,  # has user
         )
         owner_2 = OwnerFactory(
             username="codecov-sentry",
-            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=1,
             organizations=[],
             user_id=None,  # no user
         )
         owner_3 = OwnerFactory(
             username="sentry-1",
-            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=1,
             organizations=[],
             user_id=None,  # no user
@@ -810,7 +811,7 @@ class TestAccountModel(TransactionTestCase):
             username="codecov-org",
             stripe_customer_id=stripe_customer_id,
             stripe_subscription_id=stripe_subscription_id,
-            plan=PlanName.BASIC_PLAN_NAME.value,
+            plan=DEFAULT_FREE_PLAN,
             plan_user_count=50,
             plan_activated_users=[owner_1.ownerid, owner_2.ownerid],
             free=10,
@@ -930,7 +931,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(enterprise_account.activated_student_count, 0)
         self.assertEqual(enterprise_account.total_seat_count, 60)
         self.assertEqual(enterprise_account.available_seat_count, 57)
-        pretty_plan = asdict(BASIC_PLAN)
+        pretty_plan = asdict(DEVELOPER_PLAN)
         pretty_plan.update({"quantity": 50})
         self.assertEqual(enterprise_account.pretty_plan, pretty_plan)
 
