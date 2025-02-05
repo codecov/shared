@@ -4,7 +4,7 @@ from shared.django_apps.utils.config import RUN_ENV
 
 
 def add_pro_plan(apps, schema_editor):
-    if RUN_ENV != "ENTERPRISE":
+    if RUN_ENV == "ENTERPRISE":
         return
 
     Plan = apps.get_model("codecov_auth", "Plan")
@@ -12,7 +12,7 @@ def add_pro_plan(apps, schema_editor):
     Owner = apps.get_model("codecov_auth", "Owner")
     Account = apps.get_model("codecov_auth", "Account")
 
-    pro_tier = Tier.objects.create(
+    pro_tier, _ = Tier.objects.get_or_create(
         tier_name="pro",
         bundle_analysis=True,
         test_analytics=True,
@@ -21,7 +21,7 @@ def add_pro_plan(apps, schema_editor):
         private_repo_support=True,
     )
 
-    Plan.objects.create(
+    Plan.objects.get_or_create(
         tier=pro_tier,
         base_unit_price=10,
         benefits=[
@@ -50,7 +50,7 @@ def add_pro_plan(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("codecov_auth", "0064_plan_stripe_id"),
+        ("codecov_auth", "0065_alter_account_plan_alter_owner_plan"),
     ]
 
     operations = [
