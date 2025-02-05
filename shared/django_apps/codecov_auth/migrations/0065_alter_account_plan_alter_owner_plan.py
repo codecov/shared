@@ -52,7 +52,16 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.RunSQL(
-            "ALTER TYPE plans ADD VALUE IF NOT EXISTS 'users-developer';"
+            sql="""
+            DO $$
+            BEGIN
+                ALTER TYPE plans ADD VALUE 'users-developer';
+            EXCEPTION
+                WHEN OTHERS THEN
+                    RAISE NOTICE 'An unexpected error occurred: %', SQLERRM;
+            END$$;
+            """,
+            reverse_sql=migrations.RunSQL.noop,
         ),
         migrations.AlterField(
             model_name="owner",
