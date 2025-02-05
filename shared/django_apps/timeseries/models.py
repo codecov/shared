@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 import django.db.models as models
-from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
@@ -185,5 +184,3 @@ class Dataset(ExportModelOperationsMixin("timeseries.dataset"), models.Model):
         if not self.created_at:
             return False
         return datetime.now() > self.created_at + timedelta(hours=1)
-
-
