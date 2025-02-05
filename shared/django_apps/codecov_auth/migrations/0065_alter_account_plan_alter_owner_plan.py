@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+from shared.django_apps.migration_utils import RiskyRunSQL
+
 
 class Migration(migrations.Migration):
     """
@@ -51,18 +53,7 @@ class Migration(migrations.Migration):
                 max_length=50,
             ),
         ),
-        migrations.RunSQL(
-            sql="""
-            DO $$
-            BEGIN
-                ALTER TYPE plans ADD VALUE 'users-developer';
-            EXCEPTION
-                WHEN OTHERS THEN
-                    RAISE NOTICE 'An unexpected error occurred: %', SQLERRM;
-            END$$;
-            """,
-            reverse_sql=migrations.RunSQL.noop,
-        ),
+        RiskyRunSQL("ALTER TYPE plans ADD VALUE 'users-developer';"),
         migrations.AlterField(
             model_name="owner",
             name="plan",
