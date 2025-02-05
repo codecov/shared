@@ -4,7 +4,7 @@ from shared.django_apps.utils.config import RUN_ENV
 
 
 def add_pro_plan(apps, schema_editor):
-    if RUN_ENV == "ENTERPRISE":
+    if RUN_ENV != "ENTERPRISE":
         return
 
     Plan = apps.get_model("codecov_auth", "Plan")

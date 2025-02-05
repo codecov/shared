@@ -70,7 +70,7 @@ AUTH_USER_MODEL = "codecov_auth.User"
 # Needed as certain migrations refer to it
 SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)  # noqa: F405
 
-DEFAULT_PLAN_NAME = get_config("plan", "default_plan_name", default="users-developer")
+DEFAULT_PLAN_NAME = get_config("setup", "default_plan_name", default="users-developer")
 
 TEST = True
 
