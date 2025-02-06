@@ -26,6 +26,8 @@ DATABASE_READ_REPLICA_ENABLED = get_config(
     "setup", "database", "read_replica_enabled", default=False
 )
 
+DEFAULT_PLAN_NAME = get_config("setup", "default_plan_name", default="users-developer")
+
 db_read_url = get_config("services", "database_read_url")
 if db_read_url:
     db_conf = urlparse(db_read_url)
