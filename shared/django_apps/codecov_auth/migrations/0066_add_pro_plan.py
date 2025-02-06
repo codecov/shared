@@ -4,7 +4,7 @@ from shared.django_apps.utils.config import RUN_ENV
 
 
 def add_pro_plan(apps, schema_editor):
-    if RUN_ENV != "ENTERPRISE":
+    if RUN_ENV == "ENTERPRISE":
         return
 
     Plan = apps.get_model("codecov_auth", "Plan")
@@ -12,31 +12,38 @@ def add_pro_plan(apps, schema_editor):
     Owner = apps.get_model("codecov_auth", "Owner")
     Account = apps.get_model("codecov_auth", "Account")
 
-    pro_tier, _ = Tier.objects.get_or_create(
+    defaults = {
+        "bundle_analysis": True,
+        "test_analytics": True,
+        "flaky_test_detection": True,
+        "project_coverage": True,
+        "private_repo_support": True,
+    }
+    pro_tier, _ = Tier.objects.update_or_create(
         tier_name="pro",
-        bundle_analysis=True,
-        test_analytics=True,
-        flaky_test_detection=True,
-        project_coverage=True,
-        private_repo_support=True,
+        defaults=defaults,
     )
 
-    Plan.objects.get_or_create(
-        tier=pro_tier,
-        base_unit_price=10,
-        benefits=[
+    plan_defaults = {
+        "tier": pro_tier,
+        "base_unit_price": 10,
+        "benefits": [
             "Configurable # of users",
             "Unlimited public repositories",
             "Unlimited private repositories",
             "Priority Support",
         ],
-        billing_rate="annually",
-        is_active=True,
-        marketing_name="Pro",
-        max_seats=None,
-        monthly_uploads_limit=None,
+        "billing_rate": "annually",
+        "is_active": True,
+        "marketing_name": "Pro",
+        "max_seats": None,
+        "monthly_uploads_limit": None,
+        "paid_plan": True,
+    }
+
+    Plan.objects.update_or_create(
         name="users-pr-inappy",
-        paid_plan=True,
+        defaults=plan_defaults,
     )
 
     Owner.objects.all().update(plan="users-pr-inappy")
