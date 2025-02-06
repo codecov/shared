@@ -39,13 +39,9 @@ def add_pro_plan(apps, schema_editor):
         paid_plan=True,
     )
 
-    for owner in Owner.objects.all():
-        owner.plan = "users-pr-inappy"
-        owner.save()
+    Owner.objects.all().update(plan="users-pr-inappy")
 
-    for account in Account.objects.all():
-        account.plan = "users-pr-inappy"
-        account.save()
+    Account.objects.all().update(plan="users-pr-inappy")
 
 
 class Migration(migrations.Migration):
