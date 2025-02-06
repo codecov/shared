@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+from shared.django_apps.migration_utils import RiskyRunSQL
+
 
 class Migration(migrations.Migration):
     """
@@ -51,9 +53,7 @@ class Migration(migrations.Migration):
                 max_length=50,
             ),
         ),
-        migrations.RunSQL(
-            "ALTER TYPE plans ADD VALUE IF NOT EXISTS 'users-developer';"
-        ),
+        RiskyRunSQL("ALTER TYPE plans ADD VALUE 'users-developer';"),
         migrations.AlterField(
             model_name="owner",
             name="plan",
