@@ -4,7 +4,7 @@ from typing import Mapping, Sequence
 
 from shared.reports.editable import EditableReport
 from shared.reports.resources import Report
-from shared.utils.match import match
+from shared.utils.match import Matcher
 from shared.utils.sessions import SessionType
 
 log = logging.getLogger(__name__)
@@ -73,8 +73,9 @@ def generate_carryforward_report(
         totals=None,
     )
     if paths:
+        matcher = Matcher(paths)
         for filename in new_report.files:
-            if not match(paths, filename):
+            if not matcher.match(filename):
                 del new_report[filename]
     sessions_to_delete = []
     for sid, session in new_report.sessions.items():

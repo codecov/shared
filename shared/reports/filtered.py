@@ -5,7 +5,7 @@ from shared.config import get_config
 from shared.helpers.numeric import ratio
 from shared.reports.types import EMPTY, ReportTotals
 from shared.utils.make_network_file import make_network_file
-from shared.utils.match import match, match_any
+from shared.utils.match import Matcher
 from shared.utils.merge import get_complexity_from_sessions, line_type, merge_all
 from shared.utils.totals import agg_totals, sum_totals
 
@@ -161,6 +161,7 @@ class FilteredReport(object):
     def __init__(self, report, path_patterns, flags):
         self.report = report
         self.path_patterns = path_patterns
+        self._matcher = Matcher(path_patterns)
         self.flags = flags
         self._totals = None
         self._sessions_to_include = None
@@ -172,10 +173,11 @@ class FilteredReport(object):
     def _calculate_sessionids_to_include(self):
         if not self.flags:
             return set(self.report.sessions.keys())
+        flags_matcher = Matcher(self.flags)
         old_style_sessions = set(
             sid
             for (sid, session) in self.report.sessions.items()
-            if match_any(self.flags, session.flags)
+            if flags_matcher.match_any(session.flags)
         )
         new_style_sessions = set(
             sid
@@ -203,7 +205,7 @@ class FilteredReport(object):
         return self._sessions_to_include
 
     def should_include(self, filename):
-        return match(self.path_patterns, filename)
+        return self._matcher.match(filename)
 
     @property
     def network(self):
