@@ -71,6 +71,7 @@ AUTH_USER_MODEL = "codecov_auth.User"
 # Needed as certain migrations refer to it
 SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)  # noqa: F405
 
+
 TEST = True
 
 # Database

@@ -2,6 +2,8 @@ import enum
 from dataclasses import dataclass
 from typing import List, Optional
 
+from shared.django_apps.utils.config import RUN_ENV
+
 
 class MonthlyUploadLimits(enum.Enum):
     CODECOV_FREE_PLAN = 250
@@ -23,7 +25,7 @@ class PlanMarketingName(enum.Enum):
     TEAM = "Team"
 
 
-DEFAULT_FREE_PLAN = "users-developer"
+DEFAULT_FREE_PLAN = "users-pr-inappy" if RUN_ENV == "ENTERPRISE" else "users-developer"
 
 
 class PlanName(enum.Enum):
