@@ -229,6 +229,7 @@ class UploadErrorCode(StrEnum):
     REPORT_EXPIRED = "report_expired"
     REPORT_EMPTY = "report_empty"
     PROCESSING_TIMEOUT = "processing_timeout"
+    UNSUPPORTED_FILE_FORMAT = "unsupported_file_format"
 
     # We don't want these - try to add error cases when they arise
     UNKNOWN_PROCESSING = "unknown_processing"

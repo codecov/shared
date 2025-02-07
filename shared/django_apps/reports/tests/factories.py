@@ -23,6 +23,7 @@ class UploadErrorEnum(enum.Enum):
     FILE_NOT_IN_STORAGE = "file_not_in_storage"
     REPORT_EXPIRED = "report_expired"
     REPORT_EMPTY = "report_empty"
+    UNSUPPORTED_FILE_FORMAT = "unsupported_file_format"
 
 
 class CommitReportFactory(DjangoModelFactory):
@@ -98,6 +99,7 @@ class UploadErrorFactory(DjangoModelFactory):
             UploadErrorEnum.FILE_NOT_IN_STORAGE,
             UploadErrorEnum.REPORT_EMPTY,
             UploadErrorEnum.REPORT_EXPIRED,
+            UploadErrorEnum.UNSUPPORTED_FILE_FORMAT,
         ]
     )
 
