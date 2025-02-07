@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from shared.django_apps.db_settings import *  # noqa: F403
-from shared.django_apps.utils.config import RUN_ENV
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
@@ -71,7 +70,6 @@ AUTH_USER_MODEL = "codecov_auth.User"
 # Needed as certain migrations refer to it
 SKIP_RISKY_MIGRATION_STEPS = get_config("migrations", "skip_risky_steps", default=False)  # noqa: F405
 
-DEFAULT_PLAN_NAME = "users-pr-inappy" if RUN_ENV == "ENTERPRISE" else "users-developer"
 
 TEST = True
 
