@@ -62,6 +62,28 @@ def mock_chunks():
     return [b"chunk1", b"chunk2"]
 
 
+@pytest.fixture
+def mock_get_config_cache_enabled(mock_get_config):
+    def side_effect(*args, **kwargs):
+        if (
+            len(args) == 3
+            and args[0] == "setup"
+            and args[1] == "report_service"
+            and args[2] == "cache_enabled"
+        ):
+            return True
+        if (
+            len(args) == 3
+            and args[0] == "setup"
+            and args[1] == "report_service"
+            and args[2] == "cache_timeout"
+        ):
+            return 3600
+
+    mock_get_config.side_effect = side_effect
+    return mock_get_config
+
+
 @pytest.mark.django_db
 class TestBuildReportFromCommit:
     def test_returns_none_when_no_report(self, mock_commit):
@@ -90,102 +112,87 @@ class TestBuildReportFromCommit:
     ):
         mock_get_config.return_value = False
 
-        with patch("shared.reports.api_report_service.ArchiveService") as MockArchive:
+        with (
+            patch("shared.reports.api_report_service.ArchiveService") as MockArchive,
+            patch("shared.reports.api_report_service.cache") as mock_cache,
+        ):
             MockArchive.return_value.read_chunks.return_value = mock_chunks
             build_report_from_commit(mock_commit)
 
             MockArchive.return_value.read_file.assert_not_called()
             MockArchive.return_value.write_file.assert_not_called()
+            mock_cache.get.assert_not_called()
+            mock_cache.set.assert_not_called()
 
     @patch("shared.reports.api_report_service.get_config")
-    def test_uses_cache_when_enabled(self, mock_get_config, mock_commit):
-        def side_effect(*args, **kwargs):
-            if (
-                len(args) == 3
-                and args[0] == "setup"
-                and args[1] == "report_service"
-                and args[2] == "cache_enabled"
-            ):
-                return True
-            if (
-                len(args) == 3
-                and args[0] == "setup"
-                and args[1] == "report_service"
-                and args[2] == "cache_timeout"
-            ):
-                return 3600
-
-        mock_get_config.side_effect = side_effect
-
+    def test_uses_archive_when_redis_cache_exists(
+        self, mock_get_config_cache_enabled, mock_commit
+    ):
         cached_report = SerializableReport.from_chunks([], {}, {}, {})
         cached_bytes = pickle.dumps(cached_report)
 
-        with patch("shared.reports.api_report_service.ArchiveService") as MockArchive:
+        with (
+            patch("shared.reports.api_report_service.ArchiveService") as MockArchive,
+            patch("shared.reports.api_report_service.cache") as mock_cache,
+        ):
+            mock_cache.get.return_value = "cached"  # Redis has the key
             MockArchive.return_value.read_file.return_value = cached_bytes
 
             result = build_report_from_commit(mock_commit)
 
             assert result.__class__ == cached_report.__class__
+            redis_key = f"report:{mock_commit.repository_id}:{mock_commit.commitid}"
+            mock_cache.get.assert_called_once_with(redis_key)
             cache_key = f"reports/cache/{mock_commit.commitid}/SerializableReport"
             MockArchive.return_value.read_file.assert_called_once_with(cache_key)
-            MockArchive.return_value.write_file.assert_not_called()
+            mock_cache.set.assert_not_called()
 
     @patch("shared.reports.api_report_service.get_config")
-    def test_sets_cache_for_new_report(self, mock_get_config, mock_commit, mock_chunks):
-        def side_effect(*args, **kwargs):
-            if (
-                len(args) == 3
-                and args[0] == "setup"
-                and args[1] == "report_service"
-                and args[2] == "cache_enabled"
-            ):
-                return True
-            if (
-                len(args) == 3
-                and args[0] == "setup"
-                and args[1] == "report_service"
-                and args[2] == "cache_timeout"
-            ):
-                return 3600
+    def test_skips_archive_when_redis_cache_missing(
+        self, mock_get_config_cache_enabled, mock_commit, mock_chunks
+    ):
+        with (
+            patch("shared.reports.api_report_service.ArchiveService") as MockArchive,
+            patch("shared.reports.api_report_service.cache") as mock_cache,
+        ):
+            mock_cache.get.return_value = None  # Redis cache miss
+            MockArchive.return_value.read_chunks.return_value = mock_chunks
 
-        mock_get_config.side_effect = side_effect
+            report = build_report_from_commit(mock_commit)
 
-        with patch("shared.reports.api_report_service.ArchiveService") as MockArchive:
-            MockArchive.return_value.read_file.side_effect = FileNotInStorageError()
+            redis_key = f"report:{mock_commit.repository_id}:{mock_commit.commitid}"
+            mock_cache.get.assert_called_once_with(redis_key)
+            MockArchive.return_value.read_file.assert_not_called()
+            assert isinstance(report, SerializableReport)
+
+    @patch("shared.reports.api_report_service.get_config")
+    def test_caches_new_report(
+        self, mock_get_config_cache_enabled, mock_commit, mock_chunks
+    ):
+        with (
+            patch("shared.reports.api_report_service.ArchiveService") as MockArchive,
+            patch("shared.reports.api_report_service.cache") as mock_cache,
+        ):
+            mock_cache.get.return_value = None
             MockArchive.return_value.read_chunks.return_value = mock_chunks
 
             report = build_report_from_commit(mock_commit)
 
             cache_key = f"reports/cache/{mock_commit.commitid}/SerializableReport"
-            MockArchive.return_value.read_file.assert_called_once_with(cache_key)
+
             MockArchive.return_value.write_file.assert_called_once_with(
                 cache_key, pickle.dumps(report)
             )
 
     @patch("shared.reports.api_report_service.get_config")
-    def test_handles_cache_write_failure(
-        self, mock_get_config, mock_commit, mock_chunks
+    def test_handles_archive_cache_write_failure(
+        self, mock_get_config_cache_enabled, mock_commit, mock_chunks
     ):
-        def side_effect(*args, **kwargs):
-            if (
-                len(args) == 3
-                and args[0] == "setup"
-                and args[1] == "report_service"
-                and args[2] == "cache_enabled"
-            ):
-                return True
-            if (
-                len(args) == 3
-                and args[0] == "setup"
-                and args[1] == "report_service"
-                and args[2] == "cache_timeout"
-            ):
-                return 3600
-
-        mock_get_config.side_effect = side_effect
-
-        with patch("shared.reports.api_report_service.ArchiveService") as MockArchive:
-            MockArchive.return_value.read_file.side_effect = FileNotInStorageError()
+        with (
+            patch("shared.reports.api_report_service.ArchiveService") as MockArchive,
+            patch("shared.reports.api_report_service.cache") as mock_cache,
+        ):
+            mock_cache.get.return_value = None
             MockArchive.return_value.read_chunks.return_value = mock_chunks
             MockArchive.return_value.write_file.side_effect = Exception("Storage error")
 
@@ -193,3 +200,5 @@ class TestBuildReportFromCommit:
 
             # Should still return report even if caching fails
             assert isinstance(report, SerializableReport)
+            # Redis cache should not be set if archive fails
+            mock_cache.set.assert_not_called()

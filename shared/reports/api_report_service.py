@@ -3,6 +3,7 @@ import pickle
 import sys
 
 import sentry_sdk
+from django.core.cache import cache
 from django.utils.functional import cached_property
 from prometheus_client import Gauge
 
@@ -72,12 +73,18 @@ def build_report_from_commit(commit: Commit, report_class=None):
 
     if cache_enabled:
         cache_key = f"reports/cache/{commit.commitid}/{report_class.__name__ if report_class else 'SerializableReport'}"
-        try:
-            cached_data = archive_service.read_file(cache_key)
-            if cached_data:
-                return pickle.loads(cached_data)
-        except FileNotInStorageError:
-            pass
+
+        redis_key = f"report:{commit.repository_id}:{commit.commitid}"
+        cached_report = cache.get(redis_key)
+        if cached_report:
+            # if ttl is not expired pull from archive
+            try:
+                cached_data = archive_service.read_file(cache_key)
+                if cached_data:
+                    report = pickle.loads(cached_data)
+                    return report
+            except FileNotInStorageError:
+                pass
 
     files = commit.report["files"]
     sessions = commit.report["sessions"]
@@ -95,14 +102,22 @@ def build_report_from_commit(commit: Commit, report_class=None):
             report_size_gauge.labels(report_type=report.__class__.__name__).set(
                 report_size
             )
-            #write to redis cache a ttl of 3600
-            # if ttl is expired pull from archive but still upload to the archive
-            # Cache the report
+
+            serialized_report = pickle.dumps(report)
+
             try:
-                archive_service.write_file(cache_key, pickle.dumps(report))
+                archive_service.write_file(cache_key, serialized_report)
+                # Set TTL for cache in redis
+                cache.set(
+                    redis_key,
+                    "cached",
+                    timeout=get_config(
+                        "setup", "report_service", "cache_timeout", default=3600
+                    ),
+                )
             except Exception as e:
                 log.warning(
-                    "Failed to cache report",
+                    "Failed to cache report in archive",
                     extra=dict(
                         commit=commit.commitid, repo=commit.repository_id, error=str(e)
                     ),
