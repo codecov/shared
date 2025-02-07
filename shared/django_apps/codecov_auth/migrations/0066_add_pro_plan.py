@@ -1,11 +1,10 @@
+from django.conf import settings
 from django.db import migrations
-
-from shared.django_apps.utils.config import RUN_ENV
 
 
 def add_pro_plan(apps, schema_editor):
-    if RUN_ENV != "ENTERPRISE":
-        return
+    # if RUN_ENV == "ENTERPRISE":
+    #     return
 
     Plan = apps.get_model("codecov_auth", "Plan")
     Tier = apps.get_model("codecov_auth", "Tier")
@@ -42,13 +41,13 @@ def add_pro_plan(apps, schema_editor):
     }
 
     Plan.objects.update_or_create(
-        name="users-pr-inappy",
+        name=settings.DEFAULT_PLAN_NAME,
         defaults=plan_defaults,
     )
 
-    Owner.objects.all().update(plan="users-pr-inappy")
+    Owner.objects.all().update(plan=settings.DEFAULT_PLAN_NAME)
 
-    Account.objects.all().update(plan="users-pr-inappy")
+    Account.objects.all().update(plan=settings.DEFAULT_PLAN_NAME)
 
 
 class Migration(migrations.Migration):

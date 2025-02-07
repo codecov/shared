@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 import django_prometheus
 
 from shared.config import get_config
+from shared.django_apps.utils.config import RUN_ENV
 from shared.timeseries.helpers import is_timeseries_enabled
 
 db_url = get_config("services", "database_url")
@@ -26,7 +27,7 @@ DATABASE_READ_REPLICA_ENABLED = get_config(
     "setup", "database", "read_replica_enabled", default=False
 )
 
-DEFAULT_PLAN_NAME = get_config("setup", "default_plan_name", default="users-developer")
+DEFAULT_PLAN_NAME = "users-pr-inappy" if RUN_ENV == "ENTERPRISE" else "users-developer"
 
 db_read_url = get_config("services", "database_read_url")
 if db_read_url:
