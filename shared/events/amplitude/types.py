@@ -23,6 +23,7 @@ from typing import Literal, TypedDict
 
 type AmplitudeEventType = Literal[
     "User Created",
+    "User Logged in",
     "App Installed",
     "Upload Sent",
     "set_orgs",  # special event for setting a user's member orgs
@@ -63,6 +64,7 @@ AMPLITUDE_REQUIRED_PROPERTIES: dict[
     AmplitudeEventType, list[AmplitudeEventProperty]
 ] = {
     "User Created": [],
+    "User Logged in": [],
     "App Installed": ["ownerid"],
     "Upload Sent": ["ownerid", "repoid", "upload_type"],
 }
