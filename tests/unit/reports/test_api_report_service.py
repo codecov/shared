@@ -1,4 +1,5 @@
 import pickle
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -84,7 +85,6 @@ def mock_get_config_cache_enabled(mock_get_config):
     return mock_get_config
 
 
-@pytest.mark.django_db
 class TestBuildReportFromCommit:
     def test_returns_none_when_no_report(self, mock_commit):
         mock_commit.report = None
@@ -202,3 +202,19 @@ class TestBuildReportFromCommit:
             assert isinstance(report, SerializableReport)
             # Redis cache should not be set if archive fails
             mock_cache.set.assert_not_called()
+
+    def test_records_report_size(self, mock_commit, mock_chunks):
+        with (
+            patch("shared.reports.api_report_service.ArchiveService") as MockArchive,
+            patch("shared.reports.api_report_service.report_size_gauge") as mock_gauge,
+        ):
+            mock_labels = MagicMock()
+            mock_gauge.labels.return_value = mock_labels
+
+            MockArchive.return_value.read_chunks.return_value = mock_chunks
+            report = build_report_from_commit(mock_commit)
+
+            mock_gauge.labels.assert_called_once_with(
+                report_type=report.__class__.__name__
+            )
+            mock_labels.set.assert_called_once_with(sys.getsizeof(report))

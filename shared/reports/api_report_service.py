@@ -95,14 +95,10 @@ def build_report_from_commit(commit: Commit, report_class=None):
         report = build_report(
             chunks, files, sessions, totals, report_class=report_class
         )
-
+        # Record size metrics
+        report_size = sys.getsizeof(report)
+        report_size_gauge.labels(report_type=report.__class__.__name__).set(report_size)
         if report and cache_enabled:
-            # Record size metrics
-            report_size = sys.getsizeof(report)
-            report_size_gauge.labels(report_type=report.__class__.__name__).set(
-                report_size
-            )
-
             serialized_report = pickle.dumps(report)
 
             try:
