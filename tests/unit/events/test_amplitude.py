@@ -14,7 +14,7 @@ from shared.events.base import (
 @patch("shared.events.amplitude.publisher.EventOptions")
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_set_orgs(amplitude_mock, event_options_mock):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.client.set_group = Mock()
     event_options_mock.return_value = "mock_event_options"
@@ -31,7 +31,7 @@ def test_set_orgs(amplitude_mock, event_options_mock):
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_set_orgs_throws_when_missing_org_ids(_):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     with raises(MissingEventPropertyException):
         amplitude.publish("set_orgs", {"user_ownerid": 123})
@@ -41,7 +41,7 @@ def test_set_orgs_throws_when_missing_org_ids(_):
 @patch("shared.events.amplitude.publisher.BaseEvent")
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish(amplitude_mock, base_event_mock):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.client.track = Mock()
 
@@ -61,7 +61,7 @@ def test_publish(amplitude_mock, base_event_mock):
 @patch("shared.events.amplitude.publisher.BaseEvent")
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.client.track = Mock()
 
@@ -83,7 +83,7 @@ def test_publish_removes_extra_properties(amplitude_mock, base_event_mock):
 @patch("shared.events.amplitude.publisher.BaseEvent")
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.client.track = Mock()
 
@@ -116,7 +116,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_publish_missing_required_property(_):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.client.track = Mock()
 
@@ -126,7 +126,7 @@ def test_publish_missing_required_property(_):
 
 @override_settings(AMPLITUDE_API_KEY=None)
 def test_uses_stubbed_amplitude_when_None_api_key():
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     assert isinstance(amplitude.client, StubbedAmplitudeClient)
 
@@ -134,7 +134,7 @@ def test_uses_stubbed_amplitude_when_None_api_key():
 @override_settings(AMPLITUDE_API_KEY=None)
 @patch("shared.events.amplitude.publisher.Amplitude")
 def test_stubbed_amplitude_does_not_call_amplitude(amplitude_mock):
-    amplitude = AmplitudeEventPublisher()
+    amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.publish("User Created", {"user_ownerid": 123})
     amplitude.publish("set_orgs", {"user_ownerid": 123, "org_ids": [1, 32]})
