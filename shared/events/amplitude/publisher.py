@@ -4,7 +4,7 @@ from typing import Union
 from django.conf import settings
 
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
-from shared.environment.environment import get_current_env
+from shared.environment.environment import get_current_env, Environment
 from shared.events.amplitude.types import (
     AMPLITUDE_REQUIRED_PROPERTIES,
     AmplitudeEventProperties,
@@ -29,7 +29,7 @@ class AmplitudeEventPublisher(EventPublisher):
     client: Amplitude
 
     def __init__(self, override_env=False):
-        if get_current_env() != "production" and not override_env:
+        if get_current_env() != Environment.production and not override_env:
             log.info("RUN_ENV is not production. Amplitude events will not be tracked.")
             self.client = StubbedAmplitudeClient()
             return
