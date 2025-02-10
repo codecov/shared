@@ -13,3 +13,10 @@ class BundleAnalysisCacheConfigService:
         CacheConfig.objects.get_or_create(
             repo_id=repo_id, bundle_name=name, defaults={"is_caching": is_caching}
         )
+
+    @staticmethod
+    def get_cache_option(repo_id, name) -> bool:
+        cache_option = CacheConfig.objects.filter(
+            repo_id=repo_id, bundle_name=name
+        ).first()
+        return cache_option.is_caching if cache_option else False

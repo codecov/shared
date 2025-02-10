@@ -101,3 +101,38 @@ class BundleAnalysisCacheConfigServiceTest(TestCase):
         assert query_results[0].repo_id == 1
         assert query_results[0].bundle_name == "bundleB"
         assert query_results[0].is_caching == False
+
+    def test_bundle_config_get_cache_option(self):
+        # Does not exist
+        assert (
+            BundleAnalysisCacheConfigService.get_cache_option(repo_id=1, name="bundleA")
+            == False
+        )
+
+        # Create
+        BundleAnalysisCacheConfigService.create_if_not_exists(repo_id=1, name="bundleA")
+        assert (
+            BundleAnalysisCacheConfigService.get_cache_option(repo_id=1, name="bundleA")
+            == True
+        )
+
+        # Update
+        BundleAnalysisCacheConfigService.update_cache_option(
+            repo_id=1, name="bundleA", is_caching=False
+        )
+        assert (
+            BundleAnalysisCacheConfigService.get_cache_option(repo_id=1, name="bundleA")
+            == False
+        )
+
+        # Create another 2 bundles
+        BundleAnalysisCacheConfigService.create_if_not_exists(
+            repo_id=1, name="bundleB", is_caching=True
+        )
+        BundleAnalysisCacheConfigService.create_if_not_exists(
+            repo_id=2, name="bundleA", is_caching=True
+        )
+        assert (
+            BundleAnalysisCacheConfigService.get_cache_option(repo_id=1, name="bundleA")
+            == False
+        )
