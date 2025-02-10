@@ -1,5 +1,4 @@
 import logging
-from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest
@@ -22,6 +21,7 @@ from shared.django_apps.codecov_auth.models import (
     GithubAppInstallation,
     OrganizationLevelToken,
     Owner,
+    Plan,
     Service,
     User,
 )
@@ -37,8 +37,6 @@ from shared.django_apps.codecov_auth.tests.factories import (
 from shared.django_apps.core.tests.factories import RepositoryFactory
 from shared.plan.constants import (
     DEFAULT_FREE_PLAN,
-    DEVELOPER_PLAN,
-    ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS,
     PlanName,
 )
 from shared.utils.test_utils import mock_config_helper
@@ -389,7 +387,7 @@ class TestOwnerModel(TestCase):
         self.owner.plan_user_count = 1
         self.owner.save()
         self.assertTrue(self.owner.can_activate_user(to_activate))
-        org_pretty_plan = asdict(DEVELOPER_PLAN)
+        org_pretty_plan = Plan.objects.get(value=self.owner.plan)
         org_pretty_plan.update({"quantity": 1})
         self.assertEqual(self.owner.pretty_plan, org_pretty_plan)
 
@@ -399,9 +397,7 @@ class TestOwnerModel(TestCase):
         self.owner.save()
         self.owner.refresh_from_db()
         self.assertFalse(self.owner.can_activate_user(to_activate))
-        account_pretty_plan = asdict(
-            ENTERPRISE_CLOUD_USER_PLAN_REPRESENTATIONS[self.owner.account.plan]
-        )
+        account_pretty_plan = Plan.objects.get(value=self.owner.account.plan)
         account_pretty_plan.update({"quantity": 0})
         self.assertEqual(self.owner.pretty_plan, account_pretty_plan)
 
@@ -764,7 +760,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(account.activated_student_count, 0)
         self.assertEqual(account.total_seat_count, 1)
         self.assertEqual(account.available_seat_count, 0)
-        pretty_plan = asdict(DEVELOPER_PLAN)
+        pretty_plan = Plan.objects.get(value=DEFAULT_FREE_PLAN)
         pretty_plan.update({"quantity": 1})
         self.assertEqual(account.pretty_plan, pretty_plan)
 
@@ -935,7 +931,7 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(enterprise_account.activated_student_count, 0)
         self.assertEqual(enterprise_account.total_seat_count, 60)
         self.assertEqual(enterprise_account.available_seat_count, 57)
-        pretty_plan = asdict(DEVELOPER_PLAN)
+        pretty_plan = Plan.objects.get(value=DEFAULT_FREE_PLAN)
         pretty_plan.update({"quantity": 50})
         self.assertEqual(enterprise_account.pretty_plan, pretty_plan)
 

@@ -16,7 +16,6 @@ from shared.plan.constants import (
     TierName,
     TrialDaysAmount,
     TrialStatus,
-    convert_to_DTO,
 )
 from shared.self_hosted.service import enterprise_has_seats_left, license_seats
 
@@ -182,7 +181,7 @@ class PlanService:
             )
         )
 
-        return [convert_to_DTO(plan) for plan in available_plans]
+        return list(available_plans)
 
     def _start_trial_helper(
         self,
