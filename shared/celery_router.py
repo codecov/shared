@@ -3,9 +3,9 @@ import re
 from collections import OrderedDict
 from collections.abc import Mapping
 
-from shared.billing import BillingPlan, is_enterprise_cloud_plan
 from shared.celery_config import BaseCeleryConfig, get_task_group
 from shared.config import get_config
+from shared.django_apps.codecov_auth.models import Plan
 
 Pattern = re.Pattern
 
@@ -48,8 +48,8 @@ def route_tasks_based_on_user_plan(task_name: str, user_plan: str):
     default_task_queue = (
         route(task_name) or dict(queue=BaseCeleryConfig.task_default_queue)
     )["queue"]
-    billing_plan = BillingPlan.from_str(user_plan)
-    if is_enterprise_cloud_plan(billing_plan):
+    plan = Plan.objects.get(name=user_plan)
+    if plan.is_enterprise_plan:
         default_enterprise_queue_specific_config = get_config(
             "setup", "tasks", "celery", "enterprise", default=dict()
         )
