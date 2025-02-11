@@ -324,30 +324,27 @@ class PlanService:
 
     @property
     def is_enterprise_plan(self) -> bool:
-        return self.plan_data.tier.tier_name == TierName.ENTERPRISE.value
+        return self.plan_data.is_enterprise_plan
 
     @property
     def is_free_plan(self) -> bool:
-        return self.plan_data.paid_plan is False and not self.is_org_trialing
+        return self.plan_data.is_free_plan and not self.is_org_trialing
 
     @property
     def is_pro_plan(self) -> bool:
-        return (
-            self.plan_data.tier.tier_name == TierName.PRO.value
-            or self.plan_data.tier.tier_name == TierName.SENTRY.value
-        )
+        return self.plan_data.is_pro_plan
 
     @property
     def is_sentry_plan(self) -> bool:
-        return self.plan_data.tier.tier_name == TierName.SENTRY.value
+        return self.plan_data.is_sentry_plan
 
     @property
     def is_team_plan(self) -> bool:
-        return self.plan_data.tier.tier_name == TierName.TEAM.value
+        return self.plan_data.is_team_plan
 
     @property
     def is_trial_plan(self) -> bool:
-        return self.plan_data.tier.tier_name == TierName.TRIAL.value
+        return self.plan_data.is_trial_plan
 
     @property
     def is_pr_billing_plan(self) -> bool:
