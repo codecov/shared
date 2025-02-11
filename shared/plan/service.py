@@ -3,10 +3,12 @@ from datetime import datetime, timedelta
 from functools import cached_property
 from typing import List, Optional
 
-from shared.billing import is_pr_billing_plan
+from django.conf import settings
+
 from shared.config import get_config
 from shared.django_apps.codecov.commands.exceptions import ValidationError
 from shared.django_apps.codecov_auth.models import Owner, Plan, Service
+from shared.license import get_current_license
 from shared.plan.constants import (
     DEFAULT_FREE_PLAN,
     TEAM_PLAN_MAX_USERS,
@@ -348,4 +350,10 @@ class PlanService:
 
     @property
     def is_pr_billing_plan(self) -> bool:
-        return is_pr_billing_plan(plan=self.plan_name)
+        if not settings.IS_ENTERPRISE:
+            return self.plan_data.name not in [
+                PlanName.CODECOV_PRO_MONTHLY_LEGACY.value,
+                PlanName.CODECOV_PRO_YEARLY_LEGACY.value,
+            ]
+        else:
+            return get_current_license().is_pr_billing
