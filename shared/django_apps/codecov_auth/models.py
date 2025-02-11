@@ -1065,6 +1065,10 @@ class Plan(BaseModel):
     def is_sentry_plan(self):
         return self.tier.tier_name == TierName.SENTRY.value
 
+    @property
+    def is_trial_plan(self):
+        return self.tier.tier_name == TierName.TRIAL.value
+
 
 class Tier(BaseModel):
     tier_name = models.CharField(max_length=255, unique=True)
