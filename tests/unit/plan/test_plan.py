@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from freezegun import freeze_time
 
 from shared.django_apps.codecov.commands.exceptions import ValidationError
-from shared.django_apps.codecov_auth.models import Service
+from shared.django_apps.codecov_auth.models import Plan, Service
 from shared.django_apps.codecov_auth.tests.factories import (
     OwnerFactory,
     PlanFactory,
@@ -13,8 +13,6 @@ from shared.django_apps.codecov_auth.tests.factories import (
 )
 from shared.plan.constants import (
     DEFAULT_FREE_PLAN,
-    FREE_PLAN_REPRESENTATIONS,
-    TRIAL_PLAN_REPRESENTATION,
     TRIAL_PLAN_SEATS,
     PlanName,
     TierName,
@@ -253,13 +251,12 @@ class PlanServiceTests(TestCase):
             trial_end_date=trial_end_date,
         )
         plan_service = PlanService(current_org=current_org)
-
-        developer_plan = FREE_PLAN_REPRESENTATIONS[DEFAULT_FREE_PLAN]
+        developer_plan = Plan.objects.get(name=DEFAULT_FREE_PLAN)
         assert plan_service.current_org == current_org
         assert plan_service.trial_status == TrialStatus.NOT_STARTED.value
         assert plan_service.marketing_name == developer_plan.marketing_name
-        assert plan_service.plan_name == developer_plan.value
-        assert plan_service.tier_name == developer_plan.tier_name
+        assert plan_service.plan_name == developer_plan.name
+        assert plan_service.tier_name == developer_plan.tier.tier_name
         assert plan_service.billing_rate == developer_plan.billing_rate
         assert plan_service.base_unit_price == developer_plan.base_unit_price
         assert plan_service.benefits == developer_plan.benefits
@@ -281,11 +278,11 @@ class PlanServiceTests(TestCase):
         )
         plan_service = PlanService(current_org=current_org)
 
-        trial_plan = TRIAL_PLAN_REPRESENTATION[PlanName.TRIAL_PLAN_NAME.value]
+        trial_plan = Plan.objects.get(name=PlanName.TRIAL_PLAN_NAME.value)
         assert plan_service.trial_status == TrialStatus.ONGOING.value
         assert plan_service.marketing_name == trial_plan.marketing_name
-        assert plan_service.plan_name == trial_plan.value
-        assert plan_service.tier_name == trial_plan.tier_name
+        assert plan_service.plan_name == trial_plan.name
+        assert plan_service.tier_name == trial_plan.tier.tier_name
         assert plan_service.billing_rate == trial_plan.billing_rate
         assert plan_service.base_unit_price == trial_plan.base_unit_price
         assert plan_service.benefits == trial_plan.benefits
@@ -428,9 +425,7 @@ class AvailablePlansBeforeTrial(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -452,9 +447,7 @@ class AvailablePlansBeforeTrial(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -475,9 +468,7 @@ class AvailablePlansBeforeTrial(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -496,9 +487,7 @@ class AvailablePlansBeforeTrial(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -523,9 +512,7 @@ class AvailablePlansBeforeTrial(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -549,9 +536,7 @@ class AvailablePlansBeforeTrial(TestCase):
             PlanName.TEAM_YEARLY.value,
         }
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -574,9 +559,7 @@ class AvailablePlansBeforeTrial(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -622,9 +605,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
             PlanName.TEAM_YEARLY.value,
         }
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -644,9 +625,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
             PlanName.TEAM_YEARLY.value,
         }
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -665,9 +644,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -692,9 +669,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -718,9 +693,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -745,9 +718,7 @@ class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -788,9 +759,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -812,9 +781,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
             PlanName.SENTRY_YEARLY.value,
         }
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -837,9 +804,7 @@ class AvailablePlansExpiredTrialMoreThanTenActivatedUsers(TestCase):
         }
 
         assert (
-            set(
-                plan["value"] for plan in plan_service.available_plans(owner=self.owner)
-            )
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
             == expected_result
         )
 
@@ -875,7 +840,7 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == self.expected_result
@@ -894,7 +859,7 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == self.expected_result
@@ -913,7 +878,7 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == self.expected_result
@@ -938,7 +903,7 @@ class AvailablePlansExpiredTrialMoreThanTenSeatsLessThanTenActivatedUsers(TestCa
 
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == self.expected_result
@@ -986,7 +951,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can do Team plan when plan_activated_users is null
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == expected_result
@@ -998,7 +963,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can do Team plan when at 10 activated users
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == expected_result
@@ -1017,7 +982,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can not do Team plan when at 11 activated users
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == expected_result
@@ -1043,7 +1008,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can do Team plan when plan_activated_users is null
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == expected_result
@@ -1055,7 +1020,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can do Team plan when at 10 activated users
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == expected_result
@@ -1076,7 +1041,7 @@ class AvailablePlansOngoingTrial(TestCase):
         # Can not do Team plan when at 11 activated users
         assert (
             set(
-                plan["value"]
+                plan.name
                 for plan in self.plan_service.available_plans(owner=self.owner)
             )
             == expected_result

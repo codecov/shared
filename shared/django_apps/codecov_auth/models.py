@@ -29,7 +29,7 @@ from shared.django_apps.codecov_auth.helpers import get_gitlab_url
 from shared.django_apps.codecov_auth.managers import OwnerManager
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.core.models import DateTimeWithoutTZField, Repository
-from shared.plan.constants import PlanName, TrialDaysAmount
+from shared.plan.constants import PlanName, TierName, TrialDaysAmount
 
 # Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error\
 # Needs to be called the same as the API app
@@ -1044,6 +1044,33 @@ class Plan(BaseModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def is_free_plan(self):
+        return not self.paid_plan
+
+    @property
+    def is_pro_plan(self):
+        return (
+            self.tier.tier_name == TierName.PRO.value
+            or self.tier.tier_name == TierName.SENTRY.value
+        )
+
+    @property
+    def is_team_plan(self):
+        return self.tier.tier_name == TierName.TEAM.value
+
+    @property
+    def is_enterprise_plan(self):
+        return self.tier.tier_name == TierName.ENTERPRISE.value
+
+    @property
+    def is_sentry_plan(self):
+        return self.tier.tier_name == TierName.SENTRY.value
+
+    @property
+    def is_trial_plan(self):
+        return self.tier.tier_name == TierName.TRIAL.value
 
 
 class Tier(BaseModel):
