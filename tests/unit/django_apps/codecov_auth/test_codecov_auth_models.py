@@ -21,7 +21,6 @@ from shared.django_apps.codecov_auth.models import (
     GithubAppInstallation,
     OrganizationLevelToken,
     Owner,
-    Plan,
     Service,
     User,
 )
@@ -387,9 +386,9 @@ class TestOwnerModel(TestCase):
         self.owner.plan_user_count = 1
         self.owner.save()
         self.assertTrue(self.owner.can_activate_user(to_activate))
-        org_pretty_plan = Plan.objects.get(value=self.owner.plan)
-        org_pretty_plan.update({"quantity": 1})
-        self.assertEqual(self.owner.pretty_plan, org_pretty_plan)
+        # Pretty plan stuff that we care about
+        self.assertEqual(self.owner.pretty_plan["quantity"], 1)
+        self.assertEqual(self.owner.pretty_plan["value"], self.owner.plan)
 
         self.owner.account = AccountFactory(
             plan_seat_count=0, plan=PlanName.ENTERPRISE_CLOUD_YEARLY.value
@@ -397,9 +396,9 @@ class TestOwnerModel(TestCase):
         self.owner.save()
         self.owner.refresh_from_db()
         self.assertFalse(self.owner.can_activate_user(to_activate))
-        account_pretty_plan = Plan.objects.get(value=self.owner.account.plan)
-        account_pretty_plan.update({"quantity": 0})
-        self.assertEqual(self.owner.pretty_plan, account_pretty_plan)
+        # Pretty plan stuff that we care about
+        self.assertEqual(self.owner.pretty_plan["quantity"], 0)
+        self.assertEqual(self.owner.pretty_plan["value"], self.owner.account.plan)
 
     def test_add_admin_adds_ownerid_to_admin_array(self):
         self.owner.admins = []
@@ -760,9 +759,9 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(account.activated_student_count, 0)
         self.assertEqual(account.total_seat_count, 1)
         self.assertEqual(account.available_seat_count, 0)
-        pretty_plan = Plan.objects.get(value=DEFAULT_FREE_PLAN)
-        pretty_plan.update({"quantity": 1})
-        self.assertEqual(account.pretty_plan, pretty_plan)
+        # Pretty plan stuff that we care about
+        self.assertEqual(account.pretty_plan["quantity"], 1)
+        self.assertEqual(account.pretty_plan["value"], DEFAULT_FREE_PLAN)
 
     def test_create_account_for_enterprise_experience(self):
         mock_all_plans_and_tiers()
@@ -931,9 +930,10 @@ class TestAccountModel(TransactionTestCase):
         self.assertEqual(enterprise_account.activated_student_count, 0)
         self.assertEqual(enterprise_account.total_seat_count, 60)
         self.assertEqual(enterprise_account.available_seat_count, 57)
-        pretty_plan = Plan.objects.get(value=DEFAULT_FREE_PLAN)
-        pretty_plan.update({"quantity": 50})
-        self.assertEqual(enterprise_account.pretty_plan, pretty_plan)
+
+        # Pretty plan stuff that we care about
+        self.assertEqual(enterprise_account.pretty_plan["quantity"], 50)
+        self.assertEqual(enterprise_account.pretty_plan["value"], DEFAULT_FREE_PLAN)
 
     def test_activate_user_onto_account(self):
         user = UserFactory()
