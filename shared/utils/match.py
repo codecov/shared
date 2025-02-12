@@ -6,7 +6,9 @@ class Matcher:
     def __init__(self, patterns: Sequence[str] | None):
         self._patterns = set(patterns or [])
         self._is_initialized = False
+        # a list of patterns that will result in `True` on a match
         self._positives: list[re.Pattern] = []
+        # a list of patterns that will result in `False` on a match
         self._negatives: list[re.Pattern] = []
 
     def _get_matchers(self) -> tuple[list[re.Pattern], list[re.Pattern]]:
@@ -44,7 +46,7 @@ class Matcher:
             return False
 
         else:
-            # no positives: everyting else is ok
+            # no positives: everything else is ok
             return True
 
     def match_any(self, strings: Sequence[str] | None) -> bool:
