@@ -12,7 +12,7 @@ from shared.reports.resources import (
     ReportTotals,
     chunks_from_storage_contains_header,
 )
-from shared.utils.match import match
+from shared.utils.match import Matcher
 
 log = logging.getLogger(__name__)
 
@@ -173,8 +173,9 @@ class ReadOnlyReport(object):
     def filter(self, paths=None, flags=None):
         if paths is None and flags is None:
             return self
+        matcher = Matcher(paths)
         matching_files = (
-            set(f for f in self.files if match(paths, f)) if paths else None
+            set(f for f in self.files if matcher.match(f)) if paths else None
         )
         rust_analyzer = FilterAnalyzer(
             files=matching_files, flags=flags if flags else None
