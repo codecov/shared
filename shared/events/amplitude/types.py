@@ -58,7 +58,7 @@ class AmplitudeEventProperties(BaseAmplitudeEventProperties, total=False):
     ownerid: int  # ownerid of owner being acted upon
     org_ids: list[int]
     repoid: int
-    commitid: int # commit.id NOT commit.commitid. We do not want a commit SHA here!
+    commitid: int  # commit.id NOT commit.commitid. We do not want a commit SHA here!
     pullid: int | None
     upload_type: Literal["Coverage report", "Bundle", "Test results"]
 
