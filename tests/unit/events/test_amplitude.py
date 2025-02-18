@@ -92,8 +92,10 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
         {
             "user_ownerid": 123,
             "ownerid": 321,
-            "upload_type": "Coverage report",
             "repoid": 132,
+            "commitid": 12,
+            "pullid": None,
+            "upload_type": "Coverage report",
         },
     )
 
@@ -104,8 +106,10 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
         user_id="123",
         event_properties={
             "ownerid": 321,
-            "uploadType": "Coverage report",
             "repoid": 132,
+            "commitid": 12,
+            "pullid": None,
+            "uploadType": "Coverage report",
         },
         groups={
             "org": 321,

@@ -43,6 +43,8 @@ type AmplitudeEventProperty = Literal[
     "ownerid",
     "org_ids",
     "repoid",
+    "commitid",
+    "pullid",
     "upload_type",
 ]
 
@@ -56,6 +58,8 @@ class AmplitudeEventProperties(BaseAmplitudeEventProperties, total=False):
     ownerid: int  # ownerid of owner being acted upon
     org_ids: list[int]
     repoid: int
+    commitid: int  # commit.id NOT commit.commitid. We do not want a commit SHA here!
+    pullid: int | None
     upload_type: Literal["Coverage report", "Bundle", "Test results"]
 
 
@@ -66,5 +70,5 @@ AMPLITUDE_REQUIRED_PROPERTIES: dict[
     "User Created": [],
     "User Logged in": [],
     "App Installed": ["ownerid"],
-    "Upload Sent": ["ownerid", "repoid", "upload_type"],
+    "Upload Sent": ["ownerid", "repoid", "commitid", "pullid", "upload_type"],
 }
