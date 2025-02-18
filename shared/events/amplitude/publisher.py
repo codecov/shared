@@ -118,7 +118,9 @@ class StubbedAmplitudeClient(Amplitude):
         group_name: Union[str, list[str]],
         event_options: EventOptions,
     ):
+        log.info(f'StubbedAmplitudeClient set_group {group_type}: {group_name}', extra=event_options.get_event_body())
         return
 
     def track(self, event: BaseEvent):
+        log.info(f'StubbedAmplitudeClient tracked event {event.event_type}', extra=event.get_event_body())
         return
