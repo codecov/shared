@@ -7,6 +7,8 @@ import tempfile
 from io import BytesIO
 from typing import BinaryIO, overload
 
+import certifi
+import urllib3
 from minio import Minio
 from minio.credentials import (
     ChainedProvider,
@@ -15,11 +17,16 @@ from minio.credentials import (
     IamAwsProvider,
 )
 from minio.error import MinioException, S3Error
+from urllib3 import Retry
+from urllib3.util import Timeout
 
 from shared.storage.base import CHUNK_SIZE, BaseStorageService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
+
+CONNECT_TIMEOUT = 10
+READ_TIMEOUT = 60
 
 
 # Service class for interfacing with codecov's underlying storage layer, minio
@@ -80,6 +87,24 @@ class MinioStorageService(BaseStorageService):
         if port is not None:
             host = "{}:{}".format(host, port)
 
+        http_client = urllib3.PoolManager(
+            timeout=Timeout(connect=CONNECT_TIMEOUT, read=READ_TIMEOUT),
+            maxsize=10,
+            cert_reqs="CERT_REQUIRED",
+            ca_certs=os.environ.get("SSL_CERT_FILE") or certifi.where(),
+            retries=Retry(
+                total=5,
+                backoff_factor=1,
+                status_forcelist=[
+                    408,
+                    429,
+                    500,
+                    502,
+                    503,
+                    504,
+                ],  # https://cloud.google.com/storage/docs/retry-strategy#python
+            ),
+        )
         if iam_auth:
             return Minio(
                 host,
@@ -92,6 +117,7 @@ class MinioStorageService(BaseStorageService):
                         EnvAWSProvider(),
                     ]
                 ),
+                http_client=http_client,
             )
         return Minio(
             host,
@@ -99,6 +125,7 @@ class MinioStorageService(BaseStorageService):
             secret_key=secret_key,
             secure=verify_ssl,
             region=region,
+            http_client=http_client,
         )
 
     # writes the initial storage bucket to storage via minio.
