@@ -33,7 +33,6 @@ class TaskConfigGroup(Enum):
     label_analysis = "label_analysis"
     new_user_activated = "new_user_activated"
     notify = "notify"
-    profiling = "profiling"
     pulls = "pulls"
     send_email = "send_email"
     static_analysis = "static_analysis"
