@@ -108,6 +108,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
             "ownerid": 321,
             "repoid": 132,
             "commitid": 12,
+            "pullid": None,
             "uploadType": "Coverage report",
         },
         groups={
