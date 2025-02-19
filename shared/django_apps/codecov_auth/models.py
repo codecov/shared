@@ -462,8 +462,16 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
         return self.repository_set.filter(active=True, private=True).count()
 
     @property
+    def has_public_repos(self):
+        return self.repository_set.filter(private=False).exists()
+
+    @property
     def has_private_repos(self):
         return self.repository_set.filter(private=True).exists()
+
+    @property
+    def has_active_repos(self):
+        return self.repository_set.filter(active=True).exists()
 
     @property
     def repo_credits(self):
