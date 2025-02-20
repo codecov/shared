@@ -1,5 +1,7 @@
+from typing import Literal
+
 from shared.config import get_config
-from shared.rollouts.features import USE_MINIO, USE_NEW_MINIO
+from shared.rollouts.features import USE_NEW_MINIO
 from shared.storage.aws import AWSStorageService
 from shared.storage.base import BaseStorageService
 from shared.storage.fallback import StorageWithFallbackService
@@ -14,16 +16,9 @@ def get_appropriate_storage_service(
     repoid: int | None = None,
     force_minio=False,
 ) -> BaseStorageService:
-    chosen_storage: str = get_config("services", "chosen_storage", default="minio")  # type: ignore
-    if force_minio:
-        chosen_storage = "minio"
-
-    if repoid:
-        if USE_MINIO.check_value(repoid, default=False):
-            chosen_storage = "minio"
-
-        if USE_NEW_MINIO.check_value(repoid, default=False):
-            chosen_storage = "new_minio"
+    chosen_storage = "minio"
+    if repoid and USE_NEW_MINIO.check_value(repoid, default=False):
+        chosen_storage = "new_minio"
 
     if chosen_storage not in _storage_service_cache:
         _storage_service_cache[chosen_storage] = (
@@ -34,23 +29,11 @@ def get_appropriate_storage_service(
 
 
 def _get_appropriate_storage_service_given_storage(
-    chosen_storage: str,
+    chosen_storage: Literal["minio", "new_minio"],
 ) -> BaseStorageService:
-    if chosen_storage == "gcp":
-        gcp_config = get_config("services", "gcp", default={})
-        return GCPStorageService(gcp_config)
-    elif chosen_storage == "aws":
-        aws_config = get_config("services", "aws", default={})
-        return AWSStorageService(aws_config)
-    elif chosen_storage == "gcp_with_fallback":
-        gcp_config = get_config("services", "gcp", default={})
-        gcp_service = GCPStorageService(gcp_config)
-        aws_config = get_config("services", "aws", default={})
-        aws_service = AWSStorageService(aws_config)
-        return StorageWithFallbackService(gcp_service, aws_service)
-    elif chosen_storage == "new_minio":
+    if chosen_storage == "new_minio":
         minio_config = get_config("services", "minio", default={})
         return NewMinioStorageService(minio_config)
-    else:
+    elif chosen_storage == "minio":
         minio_config = get_config("services", "minio", default={})
         return MinioStorageService(minio_config)

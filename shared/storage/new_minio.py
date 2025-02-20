@@ -260,20 +260,19 @@ class NewMinioStorageService(BaseStorageService, PresignedURLService):
                     f"File {path} does not exist in {bucket_name}"
                 )
             raise e
-        if response.headers:
-            content_encoding = response.headers.get("Content-Encoding", None)
-            if not self.zstd_default and content_encoding == "zstd":
-                # we have to manually decompress zstandard compressed data
-                cctx = zstandard.ZstdDecompressor()
-                # if the object passed to this has a read method then that's
-                # all this object will ever need, since it will just call read
-                # and get the bytes object resulting from it then compress that
-                # HTTPResponse
-                reader = cctx.stream_reader(cast(IO[bytes], response))
-            else:
-                reader = response
-        else:
-            reader = response
+        reader = response
+        if (
+            response.headers
+            and not self.zstd_default
+            and response.headers.get("Content-Encoding") == "zstd"
+        ):
+            # we have to manually decompress zstandard compressed data
+            cctx = zstandard.ZstdDecompressor()
+            # if the object passed to this has a read method then that's
+            # all this object will ever need, since it will just call read
+            # and get the bytes object resulting from it then compress that
+            # HTTPResponse
+            reader = cctx.stream_reader(cast(IO[bytes], response))
 
         if file_obj:
             file_obj.seek(0)
