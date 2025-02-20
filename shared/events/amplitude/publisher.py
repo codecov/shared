@@ -54,9 +54,9 @@ class AmplitudeEventPublisher(EventPublisher):
         # Handle special set_orgs event
         if event_type == "set_orgs":
             if user_id == UNKNOWN_USER_OWNERID:
-                # We don't want to track these events for unknown users, 
+                # We don't want to track these events for unknown users,
                 # shouldn't happen, but can't hurt to add this.
-                return 
+                return
 
             if "org_ids" not in event_properties:
                 raise MissingEventPropertyException(
@@ -81,7 +81,9 @@ class AmplitudeEventPublisher(EventPublisher):
         self.client.track(
             BaseEvent(
                 event_type,
-                user_id=str(user_id) if user_id != UNKNOWN_USER_OWNERID else self.anon_user_id,
+                user_id=str(user_id)
+                if user_id != UNKNOWN_USER_OWNERID
+                else self.anon_user_id,
                 event_properties=structured_payload,
                 groups={"org": org} if org is not None else {},
             )

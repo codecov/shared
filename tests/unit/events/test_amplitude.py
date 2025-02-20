@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from django.test import override_settings
 from pytest import raises
 
-from shared.events.amplitude import AmplitudeEventPublisher, UNKNOWN_USER_OWNERID
+from shared.events.amplitude import UNKNOWN_USER_OWNERID, AmplitudeEventPublisher
 from shared.events.amplitude.publisher import StubbedAmplitudeClient
 from shared.events.base import (
     MissingEventPropertyException,
@@ -35,6 +35,7 @@ def test_set_orgs_throws_when_missing_org_ids(_):
 
     with raises(MissingEventPropertyException):
         amplitude.publish("set_orgs", {"user_ownerid": 123})
+
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.Amplitude")
@@ -128,7 +129,9 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.BaseEvent")
 @patch("shared.events.amplitude.publisher.Amplitude")
-def test_publish_converts_anonymous_owner_id_to_user_id(amplitude_mock, base_event_mock):
+def test_publish_converts_anonymous_owner_id_to_user_id(
+    amplitude_mock, base_event_mock
+):
     amplitude = AmplitudeEventPublisher(override_env=True)
 
     amplitude.client.track = Mock()
