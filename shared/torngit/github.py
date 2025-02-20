@@ -1937,34 +1937,34 @@ class Github(TorngitBaseAdapter):
     # Pull Requests
     # -------------
     def _pull(self, pull) -> ProviderPull:
-        return dict(
-            author=dict(
-                id=str(pull["user"]["id"]) if pull["user"] else None,
-                username=pull["user"]["login"] if pull["user"] else None,
-            ),
-            base=dict(
-                branch=pull["base"]["ref"],
-                commitid=pull["base"]["sha"],
-                slug=pull["base"]["repo"]["full_name"],
-            ),
-            head=dict(
-                branch=pull["head"]["ref"],
-                commitid=pull["head"]["sha"],
+        return {
+            "author": {
+                "id": str(pull["user"]["id"]) if pull["user"] else None,
+                "username": pull["user"]["login"] if pull["user"] else None,
+            },
+            "base": {
+                "branch": pull["base"]["ref"],
+                "commitid": pull["base"]["sha"],
+                "slug": pull["base"]["repo"]["full_name"],
+            },
+            "head": {
+                "branch": pull["head"]["ref"],
+                "commitid": pull["head"]["sha"],
                 # Through empiric test data it seems that the "repo" key in "head" is set to None
                 # If the PR is from the same repo (e.g. not from a fork)
-                slug=(
+                "slug": (
                     pull["head"]["repo"]["full_name"]
                     if pull["head"]["repo"]
                     else pull["base"]["repo"]["full_name"]
                 ),
-            ),
-            state="merged" if pull["merged"] else pull["state"],
-            title=pull["title"],
-            id=str(pull["number"]),
-            number=str(pull["number"]),
-            labels=[label["name"] for label in pull.get("labels", [])],
-            merge_commit_sha=pull["merge_commit_sha"] if pull["merged"] else None,
-        )
+            },
+            "state": "merged" if pull["merged"] else pull["state"],
+            "title": pull["title"],
+            "id": str(pull["number"]),
+            "number": str(pull["number"]),
+            "labels": [label["name"] for label in pull.get("labels", [])],
+            "merge_commit_sha": pull["merge_commit_sha"] if pull["merged"] else None,
+        }
 
     async def get_pull_request(self, pullid, token=None) -> ProviderPull | None:
         token = self.get_token_by_type_if_none(token, TokenType.pull)
