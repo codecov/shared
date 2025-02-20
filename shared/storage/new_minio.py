@@ -243,15 +243,10 @@ class NewMinioStorageService(BaseStorageService):
     def read_file(
         self, bucket_name: str, path: str, file_obj: IO[bytes] | None = None
     ) -> bytes | None:
-        headers: dict[str, str | list[str] | Tuple[str]] = {
-            "Accept-Encoding": "gzip, zstd"
-        }
         try:
             response = cast(
                 HTTPResponse,
-                self.minio_client.get_object(  # this returns an HTTPResponse
-                    bucket_name, path, request_headers=headers
-                ),
+                self.minio_client.get_object(bucket_name, path),
             )
         except S3Error as e:
             if e.code == "NoSuchKey":
