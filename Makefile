@@ -6,7 +6,8 @@ export CODECOV_TOKEN=${CODECOV_UPLOAD_TOKEN}
 .ONESHELL:
 
 test:
-	docker compose exec shared uv run pytest --cov=./
+	# Emit coverage/junit files inside the bind-mounted `test` directory
+	docker compose exec shared uv run pytest --cov-report=xml:tests/unit.coverage.xml --junitxml=tests/unit.junit.xml -o junit_family=legacy
 
 test.path:
 	docker compose exec shared uv run pytest $(TEST_PATH)
@@ -43,7 +44,8 @@ test_env.up:
 	docker compose up -d
 
 test_env.test:
-	docker compose exec shared uv run pytest --cov=./ --junitxml=junit.xml
+	# Emit coverage/junit files inside the bind-mounted `test` directory
+	docker compose exec shared uv run pytest --cov ./shared --cov-report=xml:tests/unit.coverage.xml --junitxml=tests/unit.junit.xml -o junit_family=legacy
 
 test_env.down:
 	docker compose down
