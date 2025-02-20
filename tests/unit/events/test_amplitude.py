@@ -27,6 +27,7 @@ def test_set_orgs(amplitude_mock, event_options_mock):
     )
     event_options_mock.assert_called_once_with(user_id="123")
 
+
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.EventOptions")
 @patch("shared.events.amplitude.publisher.Amplitude")
@@ -36,7 +37,9 @@ def test_set_orgs_returns_early_when_anonymous_user(amplitude_mock, event_option
     amplitude.client.set_group = Mock()
     event_options_mock.return_value = "mock_event_options"
 
-    amplitude.publish("set_orgs", {"user_ownerid": UNKNOWN_USER_OWNERID, "org_ids": [1, 32]})
+    amplitude.publish(
+        "set_orgs", {"user_ownerid": UNKNOWN_USER_OWNERID, "org_ids": [1, 32]}
+    )
 
     amplitude_mock.assert_called_once()
     amplitude.client.set_group.assert_not_called()
