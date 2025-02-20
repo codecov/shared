@@ -26,7 +26,6 @@ def test_celery_config():
     assert hasattr(config, "worker_max_memory_per_child")
     assert sorted(config.task_routes.keys()) == [
         "app.cron.healthcheck.HealthCheckTask",
-        "app.cron.profiling.*",
         "app.tasks.archive.*",
         "app.tasks.cache_rollup.*",
         "app.tasks.comment.Comment",
@@ -38,7 +37,6 @@ def test_celery_config():
         "app.tasks.label_analysis.*",
         "app.tasks.new_user_activated.NewUserActivated",
         "app.tasks.notify.Notify",
-        "app.tasks.profiling.*",
         "app.tasks.pulls.Sync",
         "app.tasks.static_analysis.*",
         "app.tasks.status.*",
@@ -68,7 +66,6 @@ def test_celery_config():
     "task_name,task_group",
     [
         ("app.cron.healthcheck.HealthCheckTask", TaskConfigGroup.healthcheck.value),
-        ("app.cron.profiling.findinguncollected", TaskConfigGroup.profiling.value),
         ("app.tasks.comment.Comment", TaskConfigGroup.comment.value),
         ("app.tasks.commit_update.CommitUpdate", TaskConfigGroup.commit_update.value),
         (
@@ -83,9 +80,6 @@ def test_celery_config():
             TaskConfigGroup.new_user_activated.value,
         ),
         ("app.tasks.notify.Notify", TaskConfigGroup.notify.value),
-        ("app.tasks.profiling.collection", TaskConfigGroup.profiling.value),
-        ("app.tasks.profiling.normalizer", TaskConfigGroup.profiling.value),
-        ("app.tasks.profiling.summarization", TaskConfigGroup.profiling.value),
         ("app.tasks.pulls.Sync", TaskConfigGroup.pulls.value),
         ("app.tasks.status.SetError", TaskConfigGroup.status.value),
         ("app.tasks.status.SetPending", TaskConfigGroup.status.value),

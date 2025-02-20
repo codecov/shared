@@ -73,19 +73,6 @@ commit_update_task_name = (
     f"app.tasks.{TaskConfigGroup.commit_update.value}.CommitUpdate"
 )
 
-profiling_finding_task_name = (
-    f"app.cron.{TaskConfigGroup.profiling.value}.findinguncollected"
-)
-profiling_summarization_task_name = (
-    f"app.tasks.{TaskConfigGroup.profiling.value}.summarization"
-)
-profiling_collection_task_name = (
-    f"app.tasks.{TaskConfigGroup.profiling.value}.collection"
-)
-profiling_normalization_task_name = (
-    f"app.tasks.{TaskConfigGroup.profiling.value}.normalizer"
-)
-
 # Timeseries tasks
 timeseries_backfill_task_name = f"app.tasks.{TaskConfigGroup.timeseries.value}.backfill"
 timeseries_backfill_dataset_task_name = (
@@ -400,24 +387,6 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.new_user_activated.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        f"app.tasks.{TaskConfigGroup.profiling.value}.*": {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.profiling.value,
-                "queue",
-                default=task_default_queue,
-            )
-        },
-        f"app.cron.{TaskConfigGroup.profiling.value}.*": {
-            "queue": get_config(
-                "setup",
-                "tasks",
-                TaskConfigGroup.profiling.value,
                 "queue",
                 default=task_default_queue,
             )
