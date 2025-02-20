@@ -93,6 +93,48 @@ class TestOwnerModel(TestCase):
 
         assert owner.nb_active_private_repos == 1
 
+    def test_has_public_repos(self):
+        owner1 = OwnerFactory()
+        RepositoryFactory(author=owner1, active=True, private=True)
+        RepositoryFactory(author=owner1, active=True, private=False)
+        RepositoryFactory(author=owner1, active=False, private=True)
+        RepositoryFactory(author=owner1, active=False, private=False)
+        assert owner1.has_public_repos is True
+
+        owner2 = OwnerFactory()
+        RepositoryFactory(author=owner2, active=True, private=True)
+        RepositoryFactory(author=owner2, active=False, private=True)
+        RepositoryFactory(author=owner2, active=False, private=False)
+        assert owner2.has_public_repos is True
+
+        owner3 = OwnerFactory()
+        RepositoryFactory(author=owner3, active=True, private=True)
+        RepositoryFactory(author=owner3, active=False, private=True)
+        assert owner3.has_public_repos is False
+
+        owner4 = OwnerFactory()
+        assert owner4.has_public_repos is False
+
+    def test_has_active_repos(self):
+        owner1 = OwnerFactory()
+        RepositoryFactory(author=owner1, active=True, private=True)
+        RepositoryFactory(author=owner1, active=False, private=True)
+        RepositoryFactory(author=owner1, active=False, private=False)
+        assert owner1.has_active_repos is True
+
+        owner2 = OwnerFactory()
+        RepositoryFactory(author=owner2, active=False, private=True)
+        RepositoryFactory(author=owner2, active=True, private=False)
+        assert owner2.has_active_repos is True
+
+        owner3 = OwnerFactory()
+        RepositoryFactory(author=owner3, active=False, private=False)
+        RepositoryFactory(author=owner3, active=False, private=True)
+        assert owner3.has_active_repos is False
+
+        owner4 = OwnerFactory()
+        assert owner4.has_active_repos is False
+
     def test_plan_is_null_when_validating_form(self):
         owner = OwnerFactory()
         owner.plan = ""
