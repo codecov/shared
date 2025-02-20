@@ -93,7 +93,13 @@ class EditableReportFile(ReportFile):
         new_sessions = current_sessions.difference(session_ids_to_delete)
         if current_sessions == new_sessions:
             return  # nothing to do
+
         self._details["present_sessions"] = new_sessions
+        self._totals = None  # force a refresh of the on-demand totals
+
+        if not new_sessions:
+            self._lines = []  # no remaining sessions means no line data
+            return
 
         for index, line in self.lines:
             if any(s.id in session_ids_to_delete for s in line.sessions):
@@ -104,7 +110,6 @@ class EditableReportFile(ReportFile):
                     del self[index]
                 else:
                     self[index] = new_line
-        self._totals = None
 
 
 class EditableReport(Report):
