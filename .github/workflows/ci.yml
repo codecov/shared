@@ -32,7 +32,7 @@ jobs:
 
       - uses: CodSpeedHQ/action@v3
         with:
-          run: uv run pytest tests/ --codspeed
+          run: uv run pytest tests/ --codspeed --codspeed-mode=walltime --codspeed-warmup-time=0.25 --codspeed-max-time=1
           token: ${{ secrets.CODSPEED_TOKEN }}
 
   test:
