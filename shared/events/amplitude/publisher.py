@@ -5,7 +5,7 @@ from django.conf import settings
 
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
 from shared.environment.environment import Environment, get_current_env
-from shared.events.amplitude.constants import UNKNOWN_USER_OWNERID
+from shared.events.amplitude import UNKNOWN_USER_OWNERID
 from shared.events.amplitude.types import (
     AMPLITUDE_REQUIRED_PROPERTIES,
     AmplitudeEventProperties,
