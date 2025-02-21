@@ -11,10 +11,10 @@ import orjson
 import sentry_sdk
 
 from shared.helpers.flag import Flag
-from shared.helpers.numeric import ratio
 from shared.helpers.yaml import walk
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.filtered import FilteredReport
+from shared.reports.totals import get_line_totals
 from shared.reports.types import (
     EMPTY,
     TOTALS_MAP,
@@ -26,7 +26,7 @@ from shared.reports.types import (
 )
 from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
-from shared.utils.merge import LineType, line_type, merge_all, merge_line
+from shared.utils.merge import merge_all, merge_line
 from shared.utils.migrate import migrate_totals
 from shared.utils.sessions import Session, SessionType
 from shared.utils.totals import agg_totals, sum_totals
@@ -384,61 +384,7 @@ class ReportFile(object):
         return self._totals
 
     def _process_totals(self) -> ReportTotals:
-        hits = 0
-        misses = 0
-        partials = 0
-        branches = 0
-        methods = 0
-        messages = 0
-
-        for _ln, line in self.lines:
-            match line_type(line.coverage):
-                case LineType.hit:
-                    hits += 1
-                case LineType.miss:
-                    misses += 1
-                case LineType.partial:
-                    partials += 1
-
-            if line.type == "b":
-                branches += 1
-            elif line.type == "m":
-                methods += 1
-
-            if line.messages:
-                messages += len(line.messages)
-
-        total_lines = hits + misses + partials
-
-        def sum_of_complexity(ln):
-            # (hit, total)
-            c = ln[1].complexity
-            if not c:
-                # no coverage data provided
-                return (0, 0)
-            elif isinstance(c, int):
-                # coverage is of type int
-                return (c, 0)
-            else:
-                # coverage is ratio
-                return c
-
-        complexity = tuple(map(sum, zip(*map(sum_of_complexity, self.lines)))) or (0, 0)
-
-        return ReportTotals(
-            files=0,
-            lines=total_lines,
-            hits=hits,
-            misses=misses,
-            partials=partials,
-            coverage=ratio(hits, total_lines) if total_lines else None,
-            branches=branches,
-            methods=methods,
-            messages=messages,
-            sessions=0,
-            complexity=complexity[0],
-            complexity_total=complexity[1],
-        )
+        return get_line_totals(line for _ln, line in self.lines)
 
     def apply_line_modifier(self, line_modifier):
         if line_modifier is None and self._line_modifier is None:
