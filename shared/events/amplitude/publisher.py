@@ -5,6 +5,7 @@ from django.conf import settings
 
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
 from shared.environment.environment import Environment, get_current_env
+from shared.events.amplitude import UNKNOWN_USER_OWNERID
 from shared.events.amplitude.types import (
     AMPLITUDE_REQUIRED_PROPERTIES,
     AmplitudeEventProperties,
@@ -27,6 +28,7 @@ class AmplitudeEventPublisher(EventPublisher):
     """
 
     client: Amplitude
+    anon_user_id = "anon"
 
     def __init__(self, override_env=False):
         if get_current_env() != Environment.production and not override_env:
@@ -47,8 +49,15 @@ class AmplitudeEventPublisher(EventPublisher):
     def publish(
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
     ):
+        user_id = event_properties["user_ownerid"]
+
         # Handle special set_orgs event
         if event_type == "set_orgs":
+            if user_id == UNKNOWN_USER_OWNERID:
+                # We don't want to track these events for unknown users,
+                # shouldn't happen, but can't hurt to add this.
+                return
+
             if "org_ids" not in event_properties:
                 raise MissingEventPropertyException(
                     "Property 'org_ids' is required for event type 'set_orgs'"
@@ -72,7 +81,9 @@ class AmplitudeEventPublisher(EventPublisher):
         self.client.track(
             BaseEvent(
                 event_type,
-                user_id=str(event_properties["user_ownerid"]),
+                user_id=str(user_id)
+                if user_id != UNKNOWN_USER_OWNERID
+                else self.anon_user_id,
                 event_properties=structured_payload,
                 groups={"org": org} if org is not None else {},
             )
