@@ -73,15 +73,15 @@ def test_merge_coverage():
 class TestEditableReportHelpers(object):
     def test_line_without_session(self):
         line = ReportLine.create(1, None, [LineSession(1, 0), LineSession(0, 1)])
-        assert EditableReportFile.line_without_session(line, 1) == ReportLine.create(
-            1, None, [LineSession(0, 1)]
-        )
-        assert EditableReportFile.line_without_session(line, 0) == ReportLine.create(
-            0, None, [LineSession(1, 0)]
-        )
+        assert EditableReportFile.line_without_multiple_sessions(
+            line, {1}
+        ) == ReportLine.create(1, None, [LineSession(0, 1)])
+        assert EditableReportFile.line_without_multiple_sessions(
+            line, {0}
+        ) == ReportLine.create(0, None, [LineSession(1, 0)])
         assert (
-            EditableReportFile.line_without_session(
-                EditableReportFile.line_without_session(line, 0), 1
+            EditableReportFile.line_without_multiple_sessions(
+                EditableReportFile.line_without_multiple_sessions(line, {0}), {1}
             )
             == ""
         )
@@ -538,7 +538,7 @@ class TestEditableReportFile(object):
             complexity_total=0,
             diff=0,
         )
-        report_file.delete_session(1)
+        report_file.delete_multiple_sessions({1})
         expected_result = [
             (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
             (4, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
@@ -651,7 +651,7 @@ class TestEditableReportFile(object):
             ),
         ]
         assert list(report_file.lines) == original_lines
-        report_file.delete_session(3)
+        report_file.delete_multiple_sessions({3})
         assert list(report_file.lines) == original_lines
         assert report_file.details == {"present_sessions": [0, 1]}
 
@@ -1560,7 +1560,7 @@ class TestEditableReport(object):
                 "s": 3,
             },
         }
-        report.delete_session(1)
+        report.delete_multiple_sessions({1})
         expected_result = {
             "archive": {
                 "file_1.go": [
@@ -1674,8 +1674,7 @@ class TestEditableReport(object):
         assert res["report"] == expected_result["report"]
         assert res["totals"] == expected_result["totals"]
         assert res == expected_result
-        report.delete_session(0)
-        report.delete_session(2)
+        report.delete_multiple_sessions({0, 2})
         assert self.convert_report_to_better_readable(report) == {
             "archive": {},
             "report": {"files": {}, "sessions": {}},

@@ -1007,7 +1007,7 @@ def test_delete_session():
             '["1/2", null, [[0, 0], [1, "1/2"]]]',
         ]
     )
-    report_file = ReportFile(name="file.py", lines=chunks)
+    report_file = EditableReportFile(name="file.py", lines=chunks)
     assert report_file._lines == chunks.split("\n")[1:]
     assert report_file.totals == ReportTotals(
         files=0,
@@ -1024,7 +1024,7 @@ def test_delete_session():
         complexity_total=0,
         diff=0,
     )
-    report_file.delete_session(1)
+    report_file.delete_multiple_sessions({1})
     expected_result = [
         (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
         (4, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),

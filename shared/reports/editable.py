@@ -72,11 +72,12 @@ class EditableReportFile(ReportFile):
                     else:
                         self[index] = new_line
         self._totals = None
+        self.calculate_present_sessions()
 
     def calculate_present_sessions(self):
         all_sessions = set()
         for _, line in self.lines:
-            all_sessions.update(set([int(s.id) for s in line.sessions]))
+            all_sessions.update(int(s.id) for s in line.sessions)
         self._details["present_sessions"] = all_sessions
 
     def merge(self, *args, **kwargs):
@@ -84,33 +85,31 @@ class EditableReportFile(ReportFile):
         self.calculate_present_sessions()
         return res
 
-    def delete_session(self, sessionid: int):
-        self.delete_multiple_sessions([sessionid])
-
-    def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
+    def delete_multiple_sessions(self, session_ids_to_delete: set[int]):
         if "present_sessions" not in self._details:
             self.calculate_present_sessions()
-        needs_deletion = False
-        for sessionid in session_ids_to_delete:
-            if sessionid in self._details["present_sessions"]:
-                needs_deletion = True
-        if not needs_deletion:
+        current_sessions = self._details["present_sessions"]
+
+        new_sessions = current_sessions.difference(session_ids_to_delete)
+        if current_sessions == new_sessions:
+            return  # nothing to do
+
+        self._details["present_sessions"] = new_sessions
+        self._totals = None  # force a refresh of the on-demand totals
+
+        if not new_sessions:
+            self._lines = []  # no remaining sessions means no line data
             return
-        self._details["present_sessions"] = [
-            x
-            for x in self._details["present_sessions"]
-            if x not in session_ids_to_delete
-        ]
+
         for index, line in self.lines:
             if any(s.id in session_ids_to_delete for s in line.sessions):
                 new_line = self.line_without_multiple_sessions(
-                    line, set(session_ids_to_delete)
+                    line, session_ids_to_delete
                 )
                 if new_line == EMPTY:
                     del self[index]
                 else:
                     self[index] = new_line
-        self._totals = None
 
 
 class EditableReport(Report):
@@ -150,9 +149,6 @@ class EditableReport(Report):
             else:
                 self._chunks[chunk_index] = None
 
-    def delete_session(self, sessionid: int):
-        return self.delete_multiple_sessions([sessionid])[0]
-
     def delete_labels(self, sessionids, labels_to_delete):
         self._totals = None
         for file in self._chunks:
@@ -160,26 +156,26 @@ class EditableReport(Report):
                 file.delete_labels(sessionids, labels_to_delete)
                 if file:
                     self._files[file.name] = dataclasses.replace(
-                        self._files.get(file.name),
+                        self._files[file.name],
                         file_totals=file.totals,
                     )
                 else:
                     del self[file.name]
         return sessionids
 
-    def delete_multiple_sessions(self, session_ids_to_delete: List[int]):
+    def delete_multiple_sessions(self, session_ids_to_delete: list[int] | set[int]):
+        session_ids_to_delete = set(session_ids_to_delete)
         self._totals = None
-        deleted_sessions = [
-            self.sessions.pop(sessionid) for sessionid in session_ids_to_delete
-        ]
+        for sessionid in session_ids_to_delete:
+            self.sessions.pop(sessionid)
+
         for file in self._chunks:
             if file is not None:
                 file.delete_multiple_sessions(session_ids_to_delete)
                 if file:
                     self._files[file.name] = dataclasses.replace(
-                        self._files.get(file.name),
+                        self._files[file.name],
                         file_totals=file.totals,
                     )
                 else:
                     del self[file.name]
-        return deleted_sessions

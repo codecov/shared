@@ -163,21 +163,6 @@ class ReportFile(object):
             )
         return ReportFile(name=None, totals=None, lines=lines).totals
 
-    def delete_session(self, sessionid: int):
-        self.delete_multiple_sessions([sessionid])
-
-    def delete_multiple_sessions(self, session_ids_to_delete: list[int]):
-        self._totals = None
-        for sessionid in session_ids_to_delete:
-            for index, line in self.lines:
-                if any(s.id == sessionid for s in line.sessions):
-                    log.error(
-                        "Line should not have this session since it's new",
-                        extra=dict(sessionid=sessionid, line=line),
-                    )
-                    line_without_session = self.line_without_session(line, sessionid)
-                    self._lines[index - 1] = line_without_session
-
     def __iter__(self):
         """Iter through lines
         returning (line or None)
@@ -546,10 +531,6 @@ class ReportFile(object):
             datapoints=new_datapoints,
             sessions=new_sessions,
         )
-
-    @classmethod
-    def line_without_session(cls, line: ReportLine, sessionid: int):
-        return cls.line_without_multiple_sessions(line, {sessionid})
 
     @classmethod
     def line_without_multiple_sessions(
