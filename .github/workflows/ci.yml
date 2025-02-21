@@ -21,6 +21,20 @@ jobs:
     uses: codecov/gha-workflows/.github/workflows/codecov-startup.yml@v1.2.19
     secrets: inherit
 
+  benchmark:
+    name: Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --all-extras --dev
+
+      - uses: CodSpeedHQ/action@v3
+        with:
+          run: uv run pytest tests/ --codspeed --codspeed-mode=walltime --codspeed-warmup-time=0.25 --codspeed-max-time=1
+          token: ${{ secrets.CODSPEED_TOKEN }}
+
   test:
     name: Test
     runs-on: ubuntu-latest
