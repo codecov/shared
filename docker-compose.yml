@@ -16,9 +16,9 @@ services:
       - redis
       - timescale
     volumes:
-      - ./shared/:/app/shared
-      - ./tests/:/app/tests
-      - ./.coveragerc:/app/.coveragerc
+      - ./shared/:/app/libs/shared/shared
+      - ./tests/:/app/libs/shared/tests
+      - ./.coveragerc:/app/libs/shared/.coveragerc
 
   postgres:
     image: postgres:14-alpine
