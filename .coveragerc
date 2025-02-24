@@ -1,6 +1,5 @@
 [run]
 branch = True
-relative_files = True
 
 [report]
 exclude_lines =
