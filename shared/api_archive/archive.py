@@ -63,7 +63,7 @@ class ArchiveService(object):
         # Set TTL from config and default to existing value
         self.ttl = ttl or int(get_config("services", "minio", "ttl", default=self.ttl))
 
-        self.storage = StorageService(repository.repoid if repository else None)
+        self.storage = StorageService()
         if repository:
             self.storage_hash = self.get_archive_hash(repository)
         else:
