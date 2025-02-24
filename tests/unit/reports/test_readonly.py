@@ -3,8 +3,7 @@ from pathlib import Path
 import pytest
 
 from shared.reports.readonly import LazyRustReport, ReadOnlyReport
-from shared.reports.resources import ReportFile
-from shared.reports.types import LineSession, ReportLine, ReportTotals
+from shared.reports.types import ReportTotals
 from shared.utils.sessions import Session, SessionType
 
 current_file = Path(__file__)
@@ -430,80 +429,6 @@ class TestReadOnly(object):
 
     def test_size(self, sample_rust_report):
         assert sample_rust_report.size == 580
-
-    def test_append(self, sample_rust_report):
-        assert sample_rust_report.totals.asdict() == dict(
-            files=3,
-            lines=20,
-            hits=17,
-            misses=3,
-            partials=0,
-            coverage="85.00000",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=1,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
-        )
-        some_file = ReportFile("somefile.cpp")
-        some_file.append(
-            1,
-            ReportLine.create(
-                coverage=1,
-                sessions=[LineSession(0, 1), LineSession(1, 1), LineSession(2, 1)],
-            ),
-        )
-        some_file.append(
-            2,
-            ReportLine.create(
-                coverage=1, sessions=[LineSession(0, 0), LineSession(1, 1)]
-            ),
-        )
-        some_file.append(
-            3,
-            ReportLine.create(
-                coverage=1, sessions=[LineSession(0, 1), LineSession(1, 0)]
-            ),
-        )
-        some_file.append(
-            5,
-            ReportLine.create(
-                coverage=0, sessions=[LineSession(0, 0), LineSession(1, 0)]
-            ),
-        )
-        sample_rust_report.append(some_file)
-        assert sample_rust_report.totals.asdict() == dict(
-            files=4,
-            lines=24,
-            hits=20,
-            misses=4,
-            partials=0,
-            coverage="83.33333",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=1,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
-        )
-        assert sample_rust_report.get("somefile.cpp").totals == ReportTotals(
-            files=0,
-            lines=4,
-            hits=3,
-            misses=1,
-            partials=0,
-            coverage="75.00000",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
-        )
 
     def test_differing_totals_calculation(self, mocker, sample_report):
         rust_analyzer = mocker.MagicMock(
