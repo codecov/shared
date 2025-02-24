@@ -2,11 +2,11 @@ import dataclasses
 import logging
 
 from shared.config import get_config
-from shared.helpers.numeric import ratio
+from shared.reports.totals import get_line_totals
 from shared.reports.types import EMPTY, ReportTotals
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import Matcher
-from shared.utils.merge import get_complexity_from_sessions, line_type, merge_all
+from shared.utils.merge import get_complexity_from_sessions, merge_all
 from shared.utils.totals import agg_totals, sum_totals
 
 log = logging.getLogger(__name__)
@@ -29,14 +29,14 @@ class FilteredReportFile(object):
 
     def line_modifier(self, line):
         new_sessions = [s for s in line.sessions if s.id in self.session_ids]
+        if len(new_sessions) == 0:
+            return EMPTY
         new_datapoints = (
             [dp for dp in line.datapoints if dp.sessionid in self.session_ids]
             if line.datapoints is not None
             else None
         )
         remaining_coverages = [s.coverage for s in new_sessions]
-        if len(new_sessions) == 0:
-            return EMPTY
         new_coverage = merge_all(remaining_coverages)
         return dataclasses.replace(
             line,
@@ -110,51 +110,8 @@ class FilteredReportFile(object):
         return self.calculate_totals_from_lines(self.lines)
 
     @classmethod
-    def sum_of_complexity(cls, ln):
-        # (hit, total)
-        c = ln[1].complexity
-        if not c:
-            # no coverage data provided
-            return (0, 0)
-        elif isinstance(c, int):
-            # coverage is of type int
-            return (c, 0)
-        else:
-            # coverage is ratio
-            return c
-
-    @classmethod
     def calculate_totals_from_lines(cls, inputted_lines):
-        inputted_lines = list(inputted_lines)
-        cov, types, messages = [], [], []
-        _cov, _types, _messages = cov.append, types.append, messages.append
-        for ln, line in inputted_lines:
-            _cov(line_type(line.coverage))
-            _types(line.type)
-            _messages(len(line.messages or []))
-        hits = cov.count(0)
-        misses = cov.count(1)
-        partials = cov.count(2)
-        lines = hits + misses + partials
-
-        complexity = tuple(
-            map(sum, zip(*map(cls.sum_of_complexity, inputted_lines)))
-        ) or (0, 0)
-
-        return ReportTotals(
-            files=0,
-            lines=lines,
-            hits=hits,
-            misses=misses,
-            partials=partials,
-            coverage=ratio(hits, lines) if lines else None,
-            branches=types.count("b"),
-            methods=types.count("m"),
-            messages=sum(messages),
-            sessions=0,
-            complexity=complexity[0],
-            complexity_total=complexity[1],
-        )
+        return get_line_totals(line for _ln, line in inputted_lines)
 
 
 class FilteredReport(object):
