@@ -74,6 +74,7 @@ def test_publish(amplitude_mock, base_event_mock):
         groups={"org": 321},
     )
 
+
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.BaseEvent")
 @patch("shared.events.amplitude.publisher.Amplitude")
@@ -172,6 +173,7 @@ def test_publish_converts_anonymous_owner_id_to_user_id(
             "org": 321,
         },
     )
+
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.Amplitude")

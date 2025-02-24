@@ -55,7 +55,6 @@ class AmplitudeEventPublisher(EventPublisher):
             log.error("Failed to publish Amplitude event", extra=dict(error=str(e)))
 
     def unsafe_publish(
-
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
     ):
         user_id = event_properties["user_ownerid"]
