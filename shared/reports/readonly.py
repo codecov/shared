@@ -114,24 +114,6 @@ class ReadOnlyReport(object):
     def apply_diff(self, *args, **kwargs):
         return self.inner_report.apply_diff(*args, **kwargs)
 
-    @sentry_sdk.trace
-    def append(self, *args, **kwargs):
-        log.warning("Modifying report that is read only")
-        res = self.inner_report.append(*args, **kwargs)
-        filename_mapping = {
-            filename: file_summary.file_index
-            for (filename, file_summary) in self.inner_report._files.items()
-        }
-        session_mapping = {
-            sid: (session.flags or [])
-            for sid, session in self.inner_report.sessions.items()
-        }
-        self.rust_report = LazyRustReport(
-            filename_mapping, self.inner_report.to_archive(), session_mapping
-        )
-        self._totals = None
-        return res
-
     def calculate_diff(self, *args, **kwargs):
         return self.inner_report.calculate_diff(*args, **kwargs)
 
