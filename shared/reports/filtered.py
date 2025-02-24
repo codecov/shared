@@ -1,6 +1,8 @@
 import dataclasses
 import logging
 
+import sentry_sdk
+
 from shared.config import get_config
 from shared.helpers.numeric import ratio
 from shared.reports.types import EMPTY, ReportTotals
@@ -194,8 +196,15 @@ class FilteredReport(object):
                     report_flags=sorted(self.report.flags.keys()),
                 ),
             )
-        if get_config("compatibility", "flag_pattern_matching", default=False):
-            return old_style_sessions
+            if get_config("compatibility", "flag_pattern_matching", default=False):
+                sentry_sdk.capture_message(
+                    "Mismatch in flag_pattern_matching",
+                    extras={
+                        "filter_flags": sorted(self.flags),
+                        "report_flags": sorted(self.report.flags.keys()),
+                    },
+                )
+                return old_style_sessions
         return new_style_sessions
 
     @property
