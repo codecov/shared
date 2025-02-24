@@ -52,7 +52,7 @@ def test_set_orgs_throws_when_missing_org_ids(_):
     amplitude = AmplitudeEventPublisher(override_env=True)
 
     with raises(MissingEventPropertyException):
-        amplitude.publish("set_orgs", {"user_ownerid": 123})
+        amplitude.unsafe_publish("set_orgs", {"user_ownerid": 123})
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
@@ -73,7 +73,6 @@ def test_publish(amplitude_mock, base_event_mock):
         event_properties={"ownerid": 321},
         groups={"org": 321},
     )
-
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.BaseEvent")
@@ -174,6 +173,21 @@ def test_publish_converts_anonymous_owner_id_to_user_id(
         },
     )
 
+@override_settings(AMPLITUDE_API_KEY="asdf1234")
+@patch("shared.events.amplitude.publisher.Amplitude")
+def test_publish_fails_gracefully(amplitude_mock):
+    amplitude = AmplitudeEventPublisher(override_env=True)
+
+    amplitude.client.track = Mock()
+
+    try:
+        amplitude.publish("App Installed", {"user_ownerid": 123})
+    except Exception:
+        assert False
+
+    amplitude_mock.assert_called_once()
+    amplitude.client.track.assert_not_called()
+
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.Amplitude")
@@ -183,7 +197,7 @@ def test_publish_missing_required_property(_):
     amplitude.client.track = Mock()
 
     with raises(MissingEventPropertyException):
-        amplitude.publish("App Installed", {"user_ownerid": 123})
+        amplitude.unsafe_publish("App Installed", {"user_ownerid": 123})
 
 
 @override_settings(AMPLITUDE_API_KEY=None)

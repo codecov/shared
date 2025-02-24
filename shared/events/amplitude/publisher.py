@@ -49,6 +49,15 @@ class AmplitudeEventPublisher(EventPublisher):
     def publish(
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
     ):
+        try:
+            self.unsafe_publish(event_type, event_properties)
+        except Exception as e:
+            log.error("Failed to publish Amplitude event", extra=dict(error=str(e)))
+
+    def unsafe_publish(
+
+        self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
+    ):
         user_id = event_properties["user_ownerid"]
 
         # Handle special set_orgs event
