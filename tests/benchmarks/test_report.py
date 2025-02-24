@@ -6,6 +6,7 @@ from shared.reports.carryforward import generate_carryforward_report
 from shared.reports.editable import EditableReport
 from shared.reports.readonly import ReadOnlyReport
 from shared.reports.resources import Report
+from shared.torngit.base import TorngitBaseAdapter
 
 
 def read_fixture(name: str) -> bytes:
@@ -36,6 +37,13 @@ def init_mocks(mocker, should_load_rust) -> tuple[bytes, bytes]:
     raw_report_json = read_fixture("tests/benchmarks/fixtures/worker_report.json.zst")
 
     return raw_chunks, raw_report_json
+
+
+def load_diff() -> dict:
+    contents = read_fixture("tests/benchmarks/fixtures/worker.diff.zst").decode()
+
+    torngit = TorngitBaseAdapter()
+    return torngit.diff_to_json(contents)
 
 
 def do_parse(report_class, raw_report_json, raw_chunks):
@@ -99,6 +107,24 @@ def test_report_filtering(report_class, should_load_rust, mocker, benchmark):
             # what they do have in common is `eof` and `get`:
             for ln in range(1, file.eof):
                 report.get(ln)
+
+    benchmark(bench_fn)
+
+
+@pytest.mark.parametrize(
+    "do_filter",
+    [pytest.param(False, id="Report"), pytest.param(True, id="FilteredReport")],
+)
+def test_report_diff_calculation(mocker, do_filter, benchmark):
+    raw_chunks, raw_report_json = init_mocks(mocker, False)
+    diff = load_diff()
+
+    report = do_parse(Report, raw_report_json, raw_chunks)
+    if do_filter:
+        report = report.filter(paths=[".*"], flags=["unit"])
+
+    def bench_fn():
+        report.apply_diff(diff)
 
     benchmark(bench_fn)
 
