@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import tempfile
+from datetime import timedelta
 from io import BytesIO
 from typing import BinaryIO, overload
 
@@ -20,7 +21,7 @@ from minio.error import MinioException, S3Error
 from urllib3 import Retry
 from urllib3.util import Timeout
 
-from shared.storage.base import CHUNK_SIZE, BaseStorageService
+from shared.storage.base import CHUNK_SIZE, BaseStorageService, PresignedURLService
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ READ_TIMEOUT = 60
 
 
 # Service class for interfacing with codecov's underlying storage layer, minio
-class MinioStorageService(BaseStorageService):
+class MinioStorageService(BaseStorageService, PresignedURLService):
     def __init__(self, minio_config):
         self.minio_config = minio_config
         log.debug("Connecting to minio with config %s", self.minio_config)
@@ -265,3 +266,11 @@ class MinioStorageService(BaseStorageService):
             return True
         except MinioException:
             raise
+
+    def create_presigned_put(self, bucket: str, path: str, expires: int) -> str:
+        expires_td = timedelta(seconds=expires)
+        return self.minio_client.presigned_put_object(bucket, path, expires_td)
+
+    def create_presigned_get(self, bucket: str, path: str, expires: int) -> str:
+        expires_td = timedelta(seconds=expires)
+        return self.minio_client.presigned_get_object(bucket, path, expires_td)

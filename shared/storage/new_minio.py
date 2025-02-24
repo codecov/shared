@@ -2,6 +2,7 @@ import gzip
 import importlib.metadata
 import json
 import logging
+from datetime import timedelta
 from io import BytesIO
 from typing import IO, BinaryIO, Tuple, cast, overload
 
@@ -17,7 +18,12 @@ from minio.error import MinioException, S3Error
 from minio.helpers import ObjectWriteResult
 from urllib3 import HTTPResponse
 
-from shared.storage.base import CHUNK_SIZE, PART_SIZE, BaseStorageService
+from shared.storage.base import (
+    CHUNK_SIZE,
+    PART_SIZE,
+    BaseStorageService,
+    PresignedURLService,
+)
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
@@ -55,7 +61,7 @@ def zstd_decoded_by_default() -> bool:
 
 
 # Service class for interfacing with codecov's underlying storage layer, minio
-class NewMinioStorageService(BaseStorageService):
+class NewMinioStorageService(BaseStorageService, PresignedURLService):
     def __init__(self, minio_config):
         self.zstd_default = zstd_decoded_by_default()
 
@@ -290,10 +296,18 @@ class NewMinioStorageService(BaseStorageService):
         deletion, returns a ResponseError otherwise.
     """
 
-    def delete_file(self, bucket_name, url):
+    def delete_file(self, bucket_name: str, path: str) -> bool:
         try:
             # delete a file given a bucket name and a url
-            self.minio_client.remove_object(bucket_name, url)
+            self.minio_client.remove_object(bucket_name, path)
             return True
         except MinioException:
             raise
+
+    def create_presigned_put(self, bucket: str, path: str, expires: int) -> str:
+        expires_td = timedelta(seconds=expires)
+        return self.minio_client.presigned_put_object(bucket, path, expires_td)
+
+    def create_presigned_get(self, bucket: str, path: str, expires: int) -> str:
+        expires_td = timedelta(seconds=expires)
+        return self.minio_client.presigned_get_object(bucket, path, expires_td)
