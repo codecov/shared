@@ -738,11 +738,6 @@ def test_flare_with_changes():
     assert report.flare(changes=changes) == flare
 
 
-# TODO see filter method on Report(), method does nothing because self.reset() is called after _filter_cache is set
-# @pytest.mark.integration
-# def test_filter():
-
-
 @pytest.mark.integration
 def test_filter_exception():
     with pytest.raises(Exception) as e_info:

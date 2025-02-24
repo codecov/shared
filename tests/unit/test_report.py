@@ -19,7 +19,6 @@ from shared.reports.types import (
     ReportLine,
     ReportTotals,
 )
-from shared.utils.match import match
 from shared.utils.sessions import Session, SessionType
 from tests.helper import v2_to_v3
 
@@ -131,12 +130,11 @@ def test_chunks_from_storage_contains_header(chunks, expected):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "files, chunks, path_filter, network",
+    "files, chunks, network",
     [
         (
             {"py.py": [0, ReportTotals(1)]},
             [],
-            None,
             [
                 (
                     "py.py",
@@ -149,7 +147,6 @@ def test_chunks_from_storage_contains_header(chunks, expected):
             "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
                 END_OF_CHUNK
             ),
-            lambda filename: match(["py.py"], filename),
             [
                 (
                     "py.py",
@@ -162,32 +159,20 @@ def test_chunks_from_storage_contains_header(chunks, expected):
         ),
     ],
 )
-def test_network(files, mocker, chunks, path_filter, network):
+def test_network(files, chunks, network):
     r = Report(files=files)
     r._chunks = chunks
-    r._path_filter = path_filter
-    r._line_modifier = None
     assert list(r.network) == network
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, path_filter",
-    [
-        ({"py.py": [0, ReportTotals(1)]}, None),
-        ({"py.py": [0, ReportTotals(1)]}, lambda filename: match(["py.py"], filename)),
-    ],
-)
-def test_files(files, path_filter):
-    r = Report(files=files)
-    r._path_filter = path_filter
+def test_files():
+    r = Report(files={"py.py": [0, ReportTotals(1)]})
     assert r.files == ["py.py"]
 
 
 @pytest.mark.unit
 def test_resolve_paths(mocker):
     r = Report(files={"py.py": [0, ReportTotals(1)]})
-    r._path_filter = None
     r._chunks = (
         "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
             END_OF_CHUNK
@@ -270,7 +255,6 @@ def test_append_error(mocker):
 def test_get(files, chunks, file_repr, lines):
     r = Report(files=files)
     r._chunks = chunks
-    r._line_modifier = None
 
     assert repr(r.get("file.py")) == file_repr
     if lines:
@@ -280,8 +264,6 @@ def test_get(files, chunks, file_repr, lines):
 @pytest.mark.unit
 def test_rename(mocker):
     r = Report(files={"file.py": [0, ReportTotals(1)]})
-    r._path_filter = None
-    r._line_modifier = None
     r._chunks = (
         "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
             END_OF_CHUNK
@@ -299,8 +281,6 @@ def test_get_item(mocker):
     r = Report()
     r._files = PropertyMock(return_value={"file.py": [0, ReportTotals(1)]})
     r._chunks = None
-    r._path_filter = None
-    r._line_modifier = None
     assert repr(r["file.py"]) == "<ReportFile name=file.py lines=0>"
 
 
@@ -308,8 +288,6 @@ def test_get_item(mocker):
 def test_get_item_exception(mocker):
     r = Report()
     r._files = {"file.py": [0, ReportTotals(1)]}
-    r._path_filter = None
-    r._line_modifier = None
     r._chunks = None
     with pytest.raises(Exception) as e_info:
         r["name.py"]
@@ -319,8 +297,6 @@ def test_get_item_exception(mocker):
 @pytest.mark.unit
 def test_del_item(mocker):
     r = Report(files={"file.py": [0, ReportTotals(1)]})
-    r._path_filter = None
-    r._line_modifier = None
     r._chunks = (
         "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
             END_OF_CHUNK
@@ -336,7 +312,6 @@ def test_manifest():
     r = Report()
     r._files = {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
     r._chunks = None
-    r._line_modifier = None
     assert list(r.files) == ["file1.py", "file2.py"]
 
 
@@ -388,7 +363,6 @@ class TestReportHeader(object):
 @pytest.mark.unit
 def test_get_file_totals(mocker):
     report = report_with_file_summaries()
-    report._path_filter = None
 
     expected_totals = ReportTotals(
         files=0,
@@ -413,8 +387,6 @@ def test_flags(mocker):
     r = Report()
     r._files = {"py.py": [0, ReportTotals(1)]}
     r._chunks = None
-    r._path_filter = None
-    r._line_modifier = None
     r.sessions = {
         1: Session(flags={"a": 1, 1: 1, "test": 1}),
         2: Session(
@@ -435,8 +407,6 @@ def test_iter(mocker):
         files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
     )
     r._chunks = None
-    r._path_filter = None
-    r._line_modifier = None
     files = [_file for _file in r]
     assert (
         repr(files)
@@ -515,10 +485,7 @@ def test_lookup_label_by_id_fails():
 def test_merge(files, chunks, new_report, manifest):
     r = Report(files=files)
     r._chunks = chunks
-    r._path_filter = None
-    r._line_modifier = None
     r.sessions = {}
-    r._filter_cache = (None, None)
     assert list(r.files) == ["file.py"]
     r.merge(new_report)
     assert list(r.files) == manifest
@@ -559,7 +526,6 @@ def test_non_zero(files, boolean):
     r = Report()
     r._files = files
     r._chunks = None
-    r._path_filter = None
     assert bool(r) is boolean
 
 
@@ -605,9 +571,6 @@ def test_to_database(mocker):
     r._totals = None
     r.diff_totals = None
     r.sessions = {}
-    r._path_filter = None
-    r._line_modifier = None
-    r._filter_cache = (None, None)
     assert r.to_database() == (
         {
             "M": 0,
@@ -721,8 +684,6 @@ def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
     r.sessions = v3["sessions"]
     r._totals = v3["totals"]
     r._chunks = v3["chunks"]
-    r._path_filter = None
-    r._line_modifier = None
     if future:
         futuree = v2_to_v3(future)
     else:
@@ -732,8 +693,6 @@ def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
     future_r.sessions = futuree["sessions"]
     future_r._totals = futuree["totals"]
     future_r._chunks = futuree["chunks"]
-    future_r._path_filter = None
-    future_r._line_modifier = None
 
     assert r.does_diff_adjust_tracked_lines(diff, future_r, future_diff) == res
 
@@ -856,8 +815,6 @@ def test_apply_diff_no_append(mocker):
     r.sessions = v3["sessions"]
     r._totals = v3["totals"]
     r._chunks = v3["chunks"]
-    r._path_filter = None
-    r._line_modifier = None
     diff = {
         "files": {
             "a": {
@@ -955,14 +912,11 @@ def test_add_session(mocker):
 def test_flare(files, chunks, params, flare):
     r = Report(files=files)
     r._chunks = chunks
-    r._path_filter = None
-    r._line_modifier = None
     assert r.flare(**params) == flare
 
 
 @pytest.mark.unit
 def test_filter_exception(mocker):
-    Report._filter_cache = (None, None)
     with pytest.raises(Exception) as e_info:
         Report().filter(paths="str")
     assert str(e_info.value) == "expecting list for argument paths got <class 'str'>"

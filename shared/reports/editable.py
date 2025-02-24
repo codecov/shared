@@ -18,7 +18,6 @@ class EditableReportFile(ReportFile):
         editable_file = cls(name)
         editable_file._totals = report_file._totals
         editable_file._lines = report_file._lines
-        editable_file._line_modifier = report_file._line_modifier
         editable_file._ignore = report_file._ignore
         editable_file._details = report_file._details
         editable_file.fix_details()
@@ -143,7 +142,6 @@ class EditableReport(Report):
                     name=filename,
                     totals=file_summary.file_totals,
                     lines=chunk,
-                    line_modifier=None,
                 )
                 self._chunks[chunk_index] = report_file
             else:

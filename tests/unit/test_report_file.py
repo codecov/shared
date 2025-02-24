@@ -27,27 +27,18 @@ def test_repr():
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    "line_modifier, lines",
-    [
-        (None, [(1, ReportLine.create(1)), (2, ReportLine.create(2))]),
-        (lambda line: None, []),
-    ],
-)
-def test_lines(line_modifier, lines):
+def test_lines():
     r = ReportFile("filename")
     r._lines = [ReportLine.create(1), ReportLine.create(2), None]
-    r._line_modifier = line_modifier
-    assert list(r.lines) == lines
+    assert list(r.lines) == [(1, ReportLine.create(1)), (2, ReportLine.create(2))]
 
 
 @pytest.mark.unit
 def test_iter():
     r = ReportFile("filename")
     r._lines = [ReportLine.create(1), ReportLine.create(2), None]
-    r._line_modifier = lambda line: line if line.coverage == 1 else None
     lines = [ln for ln in r]
-    assert lines == [ReportLine.create(1), None, None, None]
+    assert lines == [ReportLine.create(1), ReportLine.create(2), None]
 
 
 @pytest.mark.unit
@@ -92,7 +83,6 @@ def test_get_item_exception(get_val, error_message):
 def test_set_item(ignore, get_val):
     r = ReportFile("filename")
     r._lines = [ReportLine.create(1)]
-    r._line_modifier = None
     r._ignore = _ignore_to_func(ignore)
     assert r[1] == ReportLine.create(1)
     r[1] = ReportLine.create(0)
@@ -124,14 +114,9 @@ def test_get_slice():
         ReportLine.create(3),
         ReportLine.create(4),
     ]
-    r._line_modifier = lambda line: None if line.coverage == 3 else line
     assert list(r[2:4]) == [
-        (
-            2,
-            ReportLine.create(
-                coverage=2, type=None, sessions=None, messages=None, complexity=None
-            ),
-        )
+        (2, ReportLine.create(2)),
+        (3, ReportLine.create(3)),
     ]
 
 
@@ -167,10 +152,7 @@ def test_non_zero(totals, boolean):
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    "line_modifier, line", [(None, ReportLine.create(1)), (lambda line: None, None)]
-)
-def test_get(line_modifier, line):
+def test_get():
     r = ReportFile("filename")
     r._lines = [
         ReportLine.create(1),
@@ -178,8 +160,7 @@ def test_get(line_modifier, line):
         ReportLine.create(3),
         ReportLine.create(4),
     ]
-    r._line_modifier = line_modifier
-    assert r.get(1) == line
+    assert r.get(1) == ReportLine.create(1)
 
 
 @pytest.mark.unit
@@ -208,7 +189,6 @@ def test_report_file_get_exception(get_val, error_message):
 def test_append(ignore, boolean, lines):
     r = ReportFile("filename")
     r._ignore = _ignore_to_func(ignore)
-    r._line_modifier = None
     r._lines = []
     assert r.append(1, ReportLine.create(1)) is boolean
     assert list(r.lines) == lines
