@@ -2,7 +2,8 @@ from typing import Iterator
 
 from shared.helpers.numeric import ratio
 from shared.reports.types import ReportLine, ReportTotals
-from shared.utils.merge import LineType, line_type
+from shared.utils.merge import LineType as Coverage
+from shared.utils.merge import line_type as coverage_type
 
 
 def get_line_totals(lines: Iterator[ReportLine]) -> ReportTotals:
@@ -19,12 +20,12 @@ def get_line_totals(lines: Iterator[ReportLine]) -> ReportTotals:
     complexity_total = 0
 
     for line in lines:
-        match line_type(line.coverage):
-            case LineType.hit:
+        match coverage_type(line.coverage):
+            case Coverage.hit:
                 hits += 1
-            case LineType.miss:
+            case Coverage.miss:
                 misses += 1
-            case LineType.partial:
+            case Coverage.partial:
                 partials += 1
 
         if line.type == "b":
