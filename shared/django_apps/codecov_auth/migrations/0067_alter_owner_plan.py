@@ -2,14 +2,30 @@
 
 from django.db import migrations, models
 
+from shared.django_apps.migration_utils import RiskyRunSQL
+
 
 class Migration(migrations.Migration):
+    """
+        BEGIN;
+    --
+    -- Raw SQL operation
+    --
+    ALTER TABLE owners ALTER COLUMN plan DROP DEFAULT;
+    --
+    -- Alter field plan on owner
+    --
+    UPDATE "owners" SET "plan" = 'users-developer' WHERE "plan" IS NULL; SET CONSTRAINTS ALL IMMEDIATE;
+    ALTER TABLE "owners" ALTER COLUMN "plan" SET NOT NULL;
+    COMMIT;
+    """
+
     dependencies = [
         ("codecov_auth", "0066_add_pro_plan"),
     ]
 
     operations = [
-        migrations.RunSQL("ALTER TABLE owners ALTER COLUMN plan DROP DEFAULT;"),
+        RiskyRunSQL("ALTER TABLE owners ALTER COLUMN plan DROP DEFAULT;"),
         migrations.AlterField(
             model_name="owner",
             name="plan",
