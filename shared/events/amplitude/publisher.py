@@ -6,7 +6,10 @@ from django.conf import settings
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
 from shared.environment.environment import Environment, get_current_env
 from shared.events.amplitude import UNKNOWN_USER_OWNERID
-from shared.events.amplitude.metrics import AMPLITUDE_PUBLISH_COUNTER, AMPLITUDE_PUBLISH_FAILURE_COUNTER
+from shared.events.amplitude.metrics import (
+    AMPLITUDE_PUBLISH_COUNTER,
+    AMPLITUDE_PUBLISH_FAILURE_COUNTER,
+)
 from shared.events.amplitude.types import (
     AMPLITUDE_REQUIRED_PROPERTIES,
     AmplitudeEventProperties,
@@ -62,10 +65,7 @@ class AmplitudeEventPublisher(EventPublisher):
         except Exception as e:
             inc_counter(
                 AMPLITUDE_PUBLISH_FAILURE_COUNTER,
-                labels={
-                    "event_type": event_type,
-                    "error": e.__class__.__name__
-                },
+                labels={"event_type": event_type, "error": e.__class__.__name__},
             )
             log.error("Failed to publish Amplitude event", extra=dict(error=str(e)))
 

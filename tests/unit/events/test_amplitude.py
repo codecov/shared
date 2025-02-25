@@ -3,7 +3,10 @@ from unittest.mock import Mock, patch
 from django.test import override_settings
 
 from shared.events.amplitude import UNKNOWN_USER_OWNERID, AmplitudeEventPublisher
-from shared.events.amplitude.metrics import AMPLITUDE_PUBLISH_COUNTER, AMPLITUDE_PUBLISH_FAILURE_COUNTER
+from shared.events.amplitude.metrics import (
+    AMPLITUDE_PUBLISH_COUNTER,
+    AMPLITUDE_PUBLISH_FAILURE_COUNTER,
+)
 from shared.events.amplitude.publisher import StubbedAmplitudeClient
 
 
@@ -51,10 +54,10 @@ def test_set_orgs_throws_when_missing_org_ids(mock_inc_counter, _):
 
     amplitude.publish("set_orgs", {"user_ownerid": 123})
 
-    mock_inc_counter.assert_called_with(AMPLITUDE_PUBLISH_FAILURE_COUNTER, labels={
-        "event_type": "set_orgs",
-        "error": "MissingEventPropertyException"
-    })
+    mock_inc_counter.assert_called_with(
+        AMPLITUDE_PUBLISH_FAILURE_COUNTER,
+        labels={"event_type": "set_orgs", "error": "MissingEventPropertyException"},
+    )
 
 
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
@@ -76,6 +79,7 @@ def test_publish(amplitude_mock, base_event_mock):
         groups={"org": 321},
     )
 
+
 @override_settings(AMPLITUDE_API_KEY="asdf1234")
 @patch("shared.events.amplitude.publisher.BaseEvent")
 @patch("shared.events.amplitude.publisher.Amplitude")
@@ -96,10 +100,7 @@ def test_publish_increments_counter(mock_inc_counter, amplitude_mock, base_event
         groups={"org": 321},
     )
     mock_inc_counter.assert_called_once_with(
-        AMPLITUDE_PUBLISH_COUNTER,
-        labels={
-            "event_type": "App Installed"
-        }
+        AMPLITUDE_PUBLISH_COUNTER, labels={"event_type": "App Installed"}
     )
 
 
@@ -229,10 +230,13 @@ def test_publish_missing_required_property(mock_inc_counter, _):
 
     amplitude.publish("App Installed", {"user_ownerid": 123})
 
-    mock_inc_counter.assert_called_with(AMPLITUDE_PUBLISH_FAILURE_COUNTER, labels={
-        "event_type": "App Installed",
-        "error": "MissingEventPropertyException"
-    })
+    mock_inc_counter.assert_called_with(
+        AMPLITUDE_PUBLISH_FAILURE_COUNTER,
+        labels={
+            "event_type": "App Installed",
+            "error": "MissingEventPropertyException",
+        },
+    )
 
 
 @override_settings(AMPLITUDE_API_KEY=None)

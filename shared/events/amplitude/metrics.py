@@ -13,6 +13,6 @@ AMPLITUDE_PUBLISH_FAILURE_COUNTER = Counter(
     "Total Amplitude publish calls that failed",
     [
         "event_type",  # AmplitudeEventType
-        "error", # Exception class name
+        "error",  # Exception class name
     ],
 )
