@@ -54,10 +54,13 @@ class AmplitudeEventPublisher(EventPublisher):
         try:
             self.unsafe_publish(event_type, event_properties)
         except Exception as e:
-            inc_counter(AMPLITUDE_PUBLISH_COUNTER, labels={
-                "state": "failure",
-                "event_type": event_type,
-            })
+            inc_counter(
+                AMPLITUDE_PUBLISH_COUNTER,
+                labels={
+                    "state": "failure",
+                    "event_type": event_type,
+                },
+            )
             log.error("Failed to publish Amplitude event", extra=dict(error=str(e)))
 
     def unsafe_publish(
@@ -84,10 +87,13 @@ class AmplitudeEventPublisher(EventPublisher):
                     user_id=str(event_properties["user_ownerid"])
                 ),
             )
-            inc_counter(AMPLITUDE_PUBLISH_COUNTER, labels={
-                "state": "success",
-                "event_type": event_type,
-            })
+            inc_counter(
+                AMPLITUDE_PUBLISH_COUNTER,
+                labels={
+                    "state": "success",
+                    "event_type": event_type,
+                },
+            )
             return
 
         # Handle normal events
@@ -106,10 +112,13 @@ class AmplitudeEventPublisher(EventPublisher):
                 groups={"org": org} if org is not None else {},
             )
         )
-        inc_counter(AMPLITUDE_PUBLISH_COUNTER, labels={
-            "state": "success",
-            "event_type": event_type,
-        })
+        inc_counter(
+            AMPLITUDE_PUBLISH_COUNTER,
+            labels={
+                "state": "success",
+                "event_type": event_type,
+            },
+        )
         return
 
     def __transform_properties(
