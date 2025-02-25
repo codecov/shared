@@ -67,7 +67,14 @@ class AmplitudeEventPublisher(EventPublisher):
                 AMPLITUDE_PUBLISH_FAILURE_COUNTER,
                 labels={"event_type": event_type, "error": e.__class__.__name__},
             )
-            log.error("Failed to publish Amplitude event", extra=dict(error=str(e)))
+            log.error(
+                "Failed to publish Amplitude event",
+                extra=dict(
+                    event_type=event_type,
+                    error_name=e.__class__.__name__,
+                    error_message=str(e),
+                ),
+            )
 
     def _unsafe_publish(
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
