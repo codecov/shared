@@ -73,10 +73,12 @@ def test_merge_coverage():
 
 def test_change_sessionid():
     line = ReportLine.create(
-        1, sessions=[LineSession(0, 1)], datapoints=[CoverageDatapoint(0, 1)]
+        1,
+        sessions=[LineSession(0, 1)],
+        datapoints=[CoverageDatapoint(0, 1, None, None)],
     )
-    file = ReportFile(name="foo.rs")
-    file.append(line)
+    file = EditableReportFile(name="foo.rs")
+    file.append(1, line)
     report = EditableReport()
     report.append(file)
     session = Session(0)
@@ -84,18 +86,17 @@ def test_change_sessionid():
 
     report.change_sessionid(0, 123)
 
-    def assert_sessionid(report: EditableReport):
+    def assert_sessionid(report: EditableReport, id: int):
         assert 0 not in report.sessions
-        assert 123 in report.sessions
-        assert report.sessions[123].id == 123
+        assert id in report.sessions
 
         file = report.get("foo.rs")
-        assert file.details["present_sessions"] == [123]
+        assert file.details["present_sessions"] == [id]
         line = file.get(1)
-        assert line.sessions[0].id == 123
-        assert line.datapoints[0].id == 123
+        assert line.sessions[0].id == id
+        assert line.datapoints[0].sessionid == id
 
-    assert_sessionid(report)
+    assert_sessionid(report, 123)
 
     # also assert a serialization roundtrip:
     _totals, report_json = report.to_database()
@@ -105,7 +106,10 @@ def test_change_sessionid():
     report = EditableReport(
         files=report_json["files"], sessions=report_json["sessions"], chunks=chunks
     )
-    assert_sessionid(report)
+    assert_sessionid(report, 123)
+
+    report.change_sessionid(123, 234)
+    assert_sessionid(report, 234)
 
 
 class TestEditableReportHelpers(object):
