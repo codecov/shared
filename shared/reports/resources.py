@@ -54,7 +54,6 @@ class ReportFile(object):
         "name",
         "_details",
         "_lines",
-        "_line_modifier",
         "_ignore",
         "_totals",
     ]
@@ -64,7 +63,6 @@ class ReportFile(object):
         name,
         totals=None,
         lines=None,
-        line_modifier=None,
         ignore=None,
     ):
         """
@@ -74,7 +72,6 @@ class ReportFile(object):
            if [] then [null, line@1, null, line@3, line@4]
            if str then "\nline@1\n\nline@3"
            a line is [] that maps to ReportLine:obj
-        line_modifier = function, filter lines by sessions.
         ignore is for report buildling only, it filters out lines that should be not covered
             {eof:N, lines:[1,10]}
         """
@@ -93,18 +90,12 @@ class ReportFile(object):
             self._details = {}
             self._lines = []
 
-        # <line_modifier callable>
-        self._line_modifier = line_modifier
         self._ignore = _ignore_to_func(ignore) if ignore else None
 
-        if line_modifier:
-            self._totals = None  # need to reprocess these
+        if isinstance(totals, ReportTotals):
+            self._totals = totals
         else:
-            # totals = <ReportTotals []>
-            if isinstance(totals, ReportTotals):
-                self._totals = totals
-            else:
-                self._totals = ReportTotals(*totals) if totals else None
+            self._totals = ReportTotals(*totals) if totals else None
 
     def __repr__(self):
         try:
@@ -139,15 +130,9 @@ class ReportFile(object):
         returning (ln, line)
         <generator ((3, Line), (4, Line), (7, Line), ...)>
         """
-        func = self._line_modifier
         for ln, line in enumerate(self._lines, start=1):
             if line:
-                line = self._line(line)  # noqa: PLW2901
-                if func:
-                    line = func(line)  # noqa: PLW2901
-                    if not line:
-                        continue
-                yield ln, line
+                yield ln, self._line(line)
 
     def calculate_diff(self, all_file_segments):
         lines = []
@@ -168,15 +153,9 @@ class ReportFile(object):
         returning (line or None)
         <generator (None, Line, None, None, Line, ...)>
         """
-        func = self._line_modifier
         for line in self._lines:
             if line:
-                line = self._line(line)  # noqa: PLW2901
-                if func:
-                    line = func(line)  # noqa: PLW2901
-                    if not line:
-                        yield None
-                yield line
+                yield self._line(line)
             else:
                 yield None
 
@@ -251,15 +230,9 @@ class ReportFile(object):
 
         NOTE: not be confused with the builtin function __getslice__ that was deprecated in python 3.x
         """
-        func = self._line_modifier
         for ln, line in enumerate(self._lines[start - 1 : stop - 1], start=start):
             if line:
-                line = self._line(line)  # noqa: PLW2901
-                if func:
-                    line = func(line)  # noqa: PLW2901
-                    if not line:
-                        continue
-                yield ln, line
+                yield ln, self._line(line)
 
     def __contains__(self, ln):
         if not isinstance(ln, int):
@@ -286,14 +259,7 @@ class ReportFile(object):
 
         else:
             if line:
-                func = self._line_modifier
-                line = self._line(line)
-                if func:
-                    # need to filter this line by sessions
-                    line = func(line)
-                    if not line:
-                        return None
-                return line
+                return self._line(line)
 
     def append(self, ln, line):
         """Append a line to the report
@@ -385,12 +351,6 @@ class ReportFile(object):
 
     def _process_totals(self) -> ReportTotals:
         return get_line_totals(line for _ln, line in self.lines)
-
-    def apply_line_modifier(self, line_modifier):
-        if line_modifier is None and self._line_modifier is None:
-            return
-        self._line_modifier = line_modifier
-        self._totals = None
 
     def does_diff_adjust_tracked_lines(self, diff, future_file):
         for segment in diff["segments"]:
@@ -578,8 +538,6 @@ class Report(object):
         totals=None,
         chunks=None,
         diff_totals=None,
-        yaml=None,
-        flags=None,
         **kwargs,
     ):
         # {"filename": [<line index in chunks :int>, <ReportTotals>]}
@@ -602,11 +560,7 @@ class Report(object):
         else:
             self._totals = None
 
-        self._path_filter = None
-        self._line_modifier = None
-        self._filter_cache = (None, None)
         self.diff_totals = diff_totals
-        self.yaml = yaml  # ignored
 
     @property
     def header(self) -> ReportHeader:
@@ -647,17 +601,11 @@ class Report(object):
 
     @property
     def network(self):
-        if self._path_filter:
-            for fname, data in self._files.items():
-                file = self.get(fname)
-                if file:
-                    yield fname, make_network_file(file.totals)
-        else:
-            for fname, data in self._files.items():
-                yield (
-                    fname,
-                    make_network_file(data.file_totals, data.diff_totals),
-                )
+        for fname, data in self._files.items():
+            yield (
+                fname,
+                make_network_file(data.file_totals, data.diff_totals),
+            )
 
     def __repr__(self):
         try:
@@ -671,17 +619,7 @@ class Report(object):
     @property
     def files(self) -> list[str]:
         """returns a list of files in the report"""
-        path_filter = None
-        if path_filter:
-            # return filtered list of filenames
-            return [
-                filename
-                for filename, _ in self._files.items()
-                if self._path_filter(filename)
-            ]
-        else:
-            # return the fill list of filenames
-            return list(self._files.keys())
+        return list(self._files.keys())
 
     @property
     def flags(self):
@@ -769,10 +707,6 @@ class Report(object):
 
         :bind will replace the chunks and bind file changes to the report
         """
-        if self._path_filter and not self._path_filter(filename):
-            # filtered out of report
-            return _else
-
         _file = self._files.get(filename)
         if _file is not None:
             if self._chunks:
@@ -789,13 +723,11 @@ class Report(object):
                 # may be tree_only request
                 lines = None
             if isinstance(lines, ReportFile):
-                lines.apply_line_modifier(self._line_modifier)
                 return lines
             report_file = self.file_class(
                 name=filename,
                 totals=_file.file_totals,
                 lines=lines,
-                line_modifier=self._line_modifier,
             )
             if bind:
                 self._chunks[_file[0]] = report_file
@@ -849,9 +781,6 @@ class Report(object):
         return True
 
     def get_file_totals(self, path: str) -> ReportTotals | None:
-        if self._path_filter and not self._path_filter(path):
-            return None
-
         if path not in self._files:
             log.warning(
                 "Fetching file totals for a file that isn't in the report",
@@ -876,31 +805,17 @@ class Report(object):
         """Runs through the file network to aggregate totals
         returns <ReportTotals>
         """
-        _path_filter = None or bool
-        _line_modifier = self._line_modifier
 
         def _iter_totals():
             for filename, data in self._files.items():
-                if not _path_filter(filename):
-                    continue
-                elif _line_modifier or data.file_totals is None:
-                    # need to rebuild the file because there are line filters
+                if data.file_totals is None:
                     yield self.get(filename).totals
                 else:
                     yield data.file_totals
 
         totals = agg_totals(_iter_totals())
-        if self._filter_cache and self._filter_cache[1]:
-            flags = set(self._filter_cache[1])
-            totals.sessions = sum(
-                1
-                for _, session in self.sessions.items()
-                if set(session.flags or []) & flags
-            )
-        else:
-            totals.sessions = len(self.sessions)
-
-        return ReportTotals(*tuple(totals))
+        totals.sessions = len(self.sessions)
+        return totals
 
     def next_session_number(self):
         start_number = len(self.sessions)
@@ -927,9 +842,6 @@ class Report(object):
         yielding <ReportFile>
         """
         for filename, _file in self._files.items():
-            if self._path_filter and not self._path_filter(filename):
-                # filtered out
-                continue
             if self._chunks:
                 report = self._chunks[_file.file_index]
             else:
@@ -941,7 +853,6 @@ class Report(object):
                     name=filename,
                     totals=_file.file_totals,
                     lines=report,
-                    line_modifier=self._line_modifier,
                 )
 
     def __contains__(self, filename):

@@ -6,7 +6,7 @@ from shared.reports.types import ReportLine, ReportTotals
 
 @pytest.mark.integration
 def test_report_file_constructor():
-    r1 = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None)
+    r1 = ReportFile("folder/file.py", [0, 1, 1, 1])
     assert r1.name == "folder/file.py"
     r2 = ReportFile(name="file.py", lines="\n[1,2]\n[1,1]")
     assert list(r2.lines) == [
@@ -18,7 +18,7 @@ def test_report_file_constructor():
 
 @pytest.mark.integration
 def test_repr():
-    r = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None)
+    r = ReportFile("folder/file.py", [0, 1, 1, 1])
     assert repr(r) == "<ReportFile name=folder/file.py lines=0>"
 
 
@@ -27,7 +27,7 @@ def test_repr():
     "r, get_val, res",
     [
         (
-            ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None),
+            ReportFile("folder/file.py", [0, 1, 1, 1]),
             "totals",
             ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         ),
@@ -52,7 +52,7 @@ def test_get_item(r, get_val, res):
     ],
 )
 def test_get_item_exception(get_val, error_message):
-    r = ReportFile("folder/file.py", [0, 1, 1, 1], None, None, None)
+    r = ReportFile("folder/file.py", [0, 1, 1, 1])
     with pytest.raises(Exception) as e_info:
         r[get_val]
     assert str(e_info.value) == error_message
@@ -137,11 +137,6 @@ def test_eol():
 
 @pytest.mark.integration
 def test_get_slice():
-    def filter_lines(line):
-        if line.coverage == 3:
-            return
-        return line
-
     r = ReportFile(
         name="folder/file.py",
         lines=[
@@ -150,15 +145,10 @@ def test_get_slice():
             ReportLine.create(3),
             ReportLine.create(4),
         ],
-        line_modifier=filter_lines,
     )
     assert list(r[2:4]) == [
-        (
-            2,
-            ReportLine.create(
-                coverage=2, type=None, sessions=None, messages=None, complexity=None
-            ),
-        )
+        (2, ReportLine.create(2)),
+        (3, ReportLine.create(3)),
     ]
 
 
@@ -195,26 +185,6 @@ def test_report_file_get():
         name="folder/file.py", lines=[ReportLine.create(), ReportLine.create()]
     )
     assert r.get(1) == ReportLine.create()
-
-
-@pytest.mark.integration
-def test_report_file_get_filter():
-    r = ReportFile(
-        name="folder/file.py",
-        lines=[ReportLine.create(), ReportLine.create()],
-        line_modifier=lambda ln: ln,
-    )
-    assert r.get(1) == ReportLine.create()
-
-
-@pytest.mark.integration
-def test_report_file_get_filter_none():
-    r = ReportFile(
-        name="folder/file.py",
-        lines=[ReportLine.create(), ReportLine.create()],
-        line_modifier=lambda ln: None,
-    )
-    assert r.get(1) is None
 
 
 @pytest.mark.integration
@@ -303,72 +273,25 @@ def test_merge_exception():
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize(
-    "r, totals",
-    [
-        (ReportFile(name="file.py", totals=[0]), ReportTotals(0)),
-        (
-            ReportFile(name="file.py", totals=[0], line_modifier=lambda ln: ln),
-            ReportTotals(0, coverage=None),
-        ),
-    ],
-)
-def test_totals(r, totals):
-    assert r.totals == totals
+def test_totals():
+    r = ReportFile(name="file.py", totals=[0])
+    assert r.totals == ReportTotals(0)
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize(
-    "lines_before, line_modifier, lines_after",
-    [
-        (
-            [(1, ReportLine.create(1)), (2, ReportLine.create(2))],
-            None,
-            [(1, ReportLine.create(1)), (2, ReportLine.create(2))],
-        ),
-        ([(1, ReportLine.create(1)), (2, ReportLine.create(2))], lambda ln: None, []),
-    ],
-)
-def test_apply_line_modifier(lines_before, line_modifier, lines_after):
-    r = ReportFile("files", lines=[ReportLine.create(1), ReportLine.create(2)])
-    assert list(r.lines) == lines_before
-    r.apply_line_modifier(line_modifier)
-    assert list(r.lines) == lines_after
-
-
-@pytest.mark.integration
-@pytest.mark.parametrize(
-    "r, lines",
-    [
-        (
-            ReportFile(
-                name="folder/file.py",
-                lines=[ReportLine.create(1), ReportLine.create(0)],
-                line_modifier=lambda ln: None,
-            ),
-            [],
-        ),
-        (ReportFile(name="asd", lines=[[1]]), [(1, ReportLine.create(1))]),
-    ],
-)
-def test_report_file_lines(r, lines):
-    assert list(r.lines) == lines
+def test_report_file_lines():
+    r = ReportFile(name="asd", lines=[[1]])
+    assert list(r.lines) == [(1, ReportLine.create(1))]
 
 
 @pytest.mark.integration
 def test_report_iter():
-    def filter_lines(line):
-        if line.coverage == 0:
-            return
-        return line
-
     r = ReportFile(
         name="folder/file.py",
         lines=[ReportLine.create(coverage=1), ReportLine.create(coverage=0)],
-        line_modifier=filter_lines,
     )
     lines = [ln for ln in r]
-    assert lines == [ReportLine.create(coverage=1), None, None]
+    assert lines == [ReportLine.create(coverage=1), ReportLine.create(coverage=0)]
 
 
 @pytest.mark.integration
