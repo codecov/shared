@@ -11,7 +11,7 @@ ENV UV_LINK_MODE=copy
 ENV PATH=/root/.local/bin:/app/.venv/bin:$PATH
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv tool install codecov-cli
+    uv tool install codecov-cli==10.0.1
 
 # Change the working directory to the `app` directory
 WORKDIR /app
