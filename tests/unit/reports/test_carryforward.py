@@ -8,12 +8,12 @@ from shared.reports.carryforward import (
     generate_carryforward_report,
 )
 from shared.reports.resources import (
-    LineSession,
     Report,
     ReportFile,
     ReportLine,
     Session,
 )
+from shared.reports.types import LineSession
 
 
 @pytest.fixture
