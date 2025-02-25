@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import BinaryIO, overload
 
 CHUNK_SIZE = 1024 * 32
@@ -5,10 +6,8 @@ PART_SIZE = 1024 * 1024 * 20  # 20MiB
 
 
 # Interface class for interfacing with codecov's underlying storage layer
-class BaseStorageService(object):
-    def client(self):
-        return self.minio_client if self.minio_client else None
-
+class BaseStorageService(ABC):
+    @abstractmethod
     def create_root_storage(self, bucket_name="archive", region="us-east-1"):
         """
             Creates root storage (or bucket, as in some terminologies)
@@ -23,6 +22,7 @@ class BaseStorageService(object):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def write_file(
         self,
         bucket_name,
@@ -49,12 +49,15 @@ class BaseStorageService(object):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     @overload
     def read_file(self, bucket_name: str, path: str) -> bytes: ...
 
+    @abstractmethod
     @overload
     def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
 
+    @abstractmethod
     def read_file(
         self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
     ) -> bytes | None:
@@ -74,6 +77,7 @@ class BaseStorageService(object):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def delete_file(self, bucket_name, path):
         """Deletes a single file from the storage
 
@@ -96,3 +100,11 @@ class BaseStorageService(object):
             bool: True if the deletion was succesful
         """
         raise NotImplementedError()
+
+
+class PresignedURLService(ABC):
+    @abstractmethod
+    def create_presigned_put(self, bucket: str, path: str, expires: int) -> str: ...
+
+    @abstractmethod
+    def create_presigned_get(self, bucket: str, path: str, expires: int) -> str: ...
