@@ -6,7 +6,7 @@ from django.conf import settings
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
 from shared.environment.environment import Environment, get_current_env
 from shared.events.amplitude import UNKNOWN_USER_OWNERID
-from shared.events.amplitude.metrics import AMPLITUDE_PUBLISH_COUNTER
+from shared.events.amplitude.metrics import AMPLITUDE_PUBLISH_COUNTER, AMPLITUDE_PUBLISH_FAILURE_COUNTER
 from shared.events.amplitude.types import (
     AMPLITUDE_REQUIRED_PROPERTIES,
     AmplitudeEventProperties,
@@ -51,19 +51,25 @@ class AmplitudeEventPublisher(EventPublisher):
     def publish(
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
     ):
+        inc_counter(
+            AMPLITUDE_PUBLISH_COUNTER,
+            labels={
+                "event_type": event_type,
+            },
+        )
         try:
-            self.unsafe_publish(event_type, event_properties)
+            self._unsafe_publish(event_type, event_properties)
         except Exception as e:
             inc_counter(
-                AMPLITUDE_PUBLISH_COUNTER,
+                AMPLITUDE_PUBLISH_FAILURE_COUNTER,
                 labels={
-                    "state": "failure",
                     "event_type": event_type,
+                    "error": e.__class__.__name__
                 },
             )
             log.error("Failed to publish Amplitude event", extra=dict(error=str(e)))
 
-    def unsafe_publish(
+    def _unsafe_publish(
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
     ):
         user_id = event_properties["user_ownerid"]
@@ -87,13 +93,6 @@ class AmplitudeEventPublisher(EventPublisher):
                     user_id=str(event_properties["user_ownerid"])
                 ),
             )
-            inc_counter(
-                AMPLITUDE_PUBLISH_COUNTER,
-                labels={
-                    "state": "success",
-                    "event_type": event_type,
-                },
-            )
             return
 
         # Handle normal events
@@ -111,13 +110,6 @@ class AmplitudeEventPublisher(EventPublisher):
                 event_properties=structured_payload,
                 groups={"org": org} if org is not None else {},
             )
-        )
-        inc_counter(
-            AMPLITUDE_PUBLISH_COUNTER,
-            labels={
-                "state": "success",
-                "event_type": event_type,
-            },
         )
         return
 
