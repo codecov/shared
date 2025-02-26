@@ -4,6 +4,7 @@ from json import loads
 from pathlib import Path
 from typing import List
 
+import orjson
 import pytest
 
 from shared.reports.editable import EditableReport, EditableReportFile
@@ -68,6 +69,47 @@ def create_sample_line(
 def test_merge_coverage():
     assert merge_coverage(0.5, Fraction(3, 4)) == Fraction(3, 4)
     assert merge_coverage(2, Fraction(3, 4)) == 2
+
+
+def test_change_sessionid():
+    line = ReportLine.create(
+        1,
+        sessions=[LineSession(0, 1)],
+        datapoints=[CoverageDatapoint(0, 1, None, None)],
+    )
+    file = EditableReportFile(name="foo.rs")
+    file.append(1, line)
+    report = EditableReport()
+    report.append(file)
+    session = Session(0)
+    report.add_session(session, use_id_from_session=True)
+
+    report.change_sessionid(0, 123)
+
+    def assert_sessionid(report: EditableReport, id: int):
+        assert 0 not in report.sessions
+        assert id in report.sessions
+
+        file = report.get("foo.rs")
+        assert file.details["present_sessions"] == [id]
+        line = file.get(1)
+        assert line.sessions[0].id == id
+        assert line.datapoints[0].sessionid == id
+
+    assert_sessionid(report, 123)
+
+    # also assert a serialization roundtrip:
+    _totals, report_json = report.to_database()
+    chunks = report.to_archive()
+    report_json = orjson.loads(report_json)
+
+    report = EditableReport(
+        files=report_json["files"], sessions=report_json["sessions"], chunks=chunks
+    )
+    assert_sessionid(report, 123)
+
+    report.change_sessionid(123, 234)
+    assert_sessionid(report, 234)
 
 
 class TestEditableReportHelpers(object):
