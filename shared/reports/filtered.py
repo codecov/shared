@@ -4,12 +4,19 @@ import logging
 import sentry_sdk
 
 from shared.config import get_config
+from shared.reports.diff import (
+    CalculatedDiff,
+    DiffSegment,
+    RawDiff,
+    calculate_file_diff,
+    calculate_report_diff,
+)
 from shared.reports.totals import get_line_totals
 from shared.reports.types import EMPTY, ReportTotals
 from shared.utils.make_network_file import make_network_file
 from shared.utils.match import Matcher
 from shared.utils.merge import get_complexity_from_sessions, merge_all
-from shared.utils.totals import agg_totals, sum_totals
+from shared.utils.totals import agg_totals
 
 log = logging.getLogger(__name__)
 
@@ -78,26 +85,8 @@ class FilteredReportFile(object):
         self._cached_lines = ret
         return ret
 
-    def calculate_diff(self, all_file_segments):
-        fg = self.get
-        lines = []
-        le = lines.extend
-        # add all new lines data to a new file to get totals
-        [
-            le(
-                [
-                    (i, fg(i))
-                    for i, line in enumerate(
-                        [ln for ln in segment["lines"] if ln[0] != "-"],
-                        start=int(segment["header"][2]) or 1,
-                    )
-                    if line[0] == "+"
-                ]
-            )
-            for segment in all_file_segments
-        ]
-        lines = [ln for ln in lines if ln[1] is not None]
-        return self.calculate_totals_from_lines(lines)
+    def calculate_diff(self, segments: list[DiffSegment]) -> ReportTotals:
+        return calculate_file_diff(self, segments)
 
     def get(self, ln):
         line = self.report_file.get(ln)
@@ -109,11 +98,7 @@ class FilteredReportFile(object):
 
     def _process_totals(self):
         """return dict of totals"""
-        return self.calculate_totals_from_lines(self.lines)
-
-    @classmethod
-    def calculate_totals_from_lines(cls, inputted_lines):
-        return get_line_totals(line for _ln, line in inputted_lines)
+        return get_line_totals(line for _ln, line in self.lines)
 
 
 class FilteredReport(object):
@@ -229,27 +214,12 @@ class FilteredReport(object):
         totals.sessions = len(self.session_ids_to_include)
         return ReportTotals(*tuple(totals))
 
-    def calculate_diff(self, diff):
-        file_dict = {}
-        if diff and diff.get("files"):
-            list_of_file_totals = []
-            for path, data in diff["files"].items():
-                if data["type"] in ("modified", "new"):
-                    _file = self.get(path)
-                    if _file:
-                        file_totals = _file.calculate_diff(data["segments"])
-                        file_dict[path] = file_totals
-                        list_of_file_totals.append(file_totals)
-
-            totals = sum_totals(list_of_file_totals)
-
-            if totals.lines == 0:
-                totals = dataclasses.replace(
-                    totals, coverage=None, complexity=None, complexity_total=None
-                )
-
-            return {"general": totals, "files": file_dict}
-        return None
+    def calculate_diff(self, diff: RawDiff) -> CalculatedDiff:
+        """
+        Calculates the per-file totals (and total) of the parts
+            from a `git diff` that are relevant in the report
+        """
+        return calculate_report_diff(self, diff)
 
     def apply_diff(self, diff, _save=True):
         """

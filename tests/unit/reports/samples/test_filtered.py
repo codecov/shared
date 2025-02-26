@@ -109,72 +109,6 @@ class TestFilteredReportFile(object):
         assert f.totals == expected_result
         assert f._totals == expected_result
 
-    def test_calculate_totals_from_lines(self):
-        line_1 = (
-            1,
-            ReportLine.create(coverage=1, sessions=[[0, 1]], complexity=[1, 3]),
-        )
-        line_2 = (
-            2,
-            ReportLine.create(coverage=1, sessions=[[0, 1], [1, 1]], complexity=1),
-        )
-        line_3 = (3, ReportLine.create(coverage=0, sessions=[[0, 0]]))
-        expected_result = ReportTotals(
-            files=0,
-            lines=3,
-            hits=2,
-            misses=1,
-            partials=0,
-            coverage="66.66667",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=2,
-            complexity_total=3,
-            diff=0,
-        )
-        assert (
-            FilteredReportFile.calculate_totals_from_lines([line_1, line_2, line_3])
-            == expected_result
-        )
-
-    def test_calculate_totals_from_lines_iterator(self):
-        line_1 = (
-            1,
-            ReportLine.create(coverage=1, sessions=[[0, 1]], complexity=[1, 3]),
-        )
-        line_2 = (
-            2,
-            ReportLine.create(coverage=1, sessions=[[0, 1], [1, 1]], complexity=1),
-        )
-        line_3 = (3, ReportLine.create(coverage=0, sessions=[[0, 0]]))
-        expected_result = ReportTotals(
-            files=0,
-            lines=3,
-            hits=2,
-            misses=1,
-            partials=0,
-            coverage="66.66667",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=2,
-            complexity_total=3,
-            diff=0,
-        )
-
-        def iterator_to_use():
-            yield line_1
-            yield line_2
-            yield line_3
-
-        assert (
-            FilteredReportFile.calculate_totals_from_lines(iterator_to_use())
-            == expected_result
-        )
-
     def test_line_modifier(self):
         original_file = ReportFile("file_1.py")
         file = FilteredReportFile(original_file, [0, 1, 5])
@@ -659,35 +593,10 @@ class TestFilteredReport(object):
                 },
             }
         }
-        expected_result = {
-            "files": {},
-            "general": ReportTotals(
-                files=0,
-                lines=0,
-                hits=0,
-                misses=0,
-                partials=0,
-                coverage=None,
-                branches=0,
-                methods=0,
-                messages=0,
-                sessions=0,
-                complexity=None,
-                complexity_total=None,
-                diff=0,
-            ),
-        }
         res = sample_report.filter(
             paths=["location.*"], flags=["simple"]
         ).calculate_diff(diff)
-        assert res == expected_result
-
-    def test_calculate_diff_empty_diff(self, sample_report):
-        diff = {"files": {}}
-        res = sample_report.filter(
-            paths=["location.*"], flags=["simple"]
-        ).calculate_diff(diff)
-        assert res is None
+        assert res == {"files": {}, "general": ReportTotals(coverage=None)}
 
     def test_calculate_diff_both_filters(self, sample_report):
         diff = {

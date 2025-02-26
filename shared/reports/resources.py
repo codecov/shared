@@ -12,6 +12,13 @@ import sentry_sdk
 
 from shared.helpers.flag import Flag
 from shared.helpers.yaml import walk
+from shared.reports.diff import (
+    CalculatedDiff,
+    DiffSegment,
+    RawDiff,
+    calculate_file_diff,
+    calculate_report_diff,
+)
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.filtered import FilteredReport
 from shared.reports.totals import get_line_totals
@@ -29,7 +36,7 @@ from shared.utils.make_network_file import make_network_file
 from shared.utils.merge import merge_all, merge_line
 from shared.utils.migrate import migrate_totals
 from shared.utils.sessions import Session, SessionType
-from shared.utils.totals import agg_totals, sum_totals
+from shared.utils.totals import agg_totals
 
 log = logging.getLogger(__name__)
 
@@ -134,19 +141,8 @@ class ReportFile(object):
             if line:
                 yield ln, self._line(line)
 
-    def calculate_diff(self, all_file_segments):
-        lines = []
-        # add all new lines data to a new file to get totals
-        for segment in all_file_segments:
-            lines.extend(
-                self.get(i)
-                for i, line in enumerate(
-                    (ln for ln in segment["lines"] if ln[0] != "-"),
-                    start=int(segment["header"][2]) or 1,
-                )
-                if line[0] == "+"
-            )
-        return ReportFile(name=None, totals=None, lines=lines).totals
+    def calculate_diff(self, segments: list[DiffSegment]) -> ReportTotals:
+        return calculate_file_diff(self, segments)
 
     def __iter__(self):
         """Iter through lines
@@ -1083,81 +1079,12 @@ class Report(object):
                         diff_totals=None,
                     )
 
-    def calculate_diff(self, diff: dict) -> dict:
+    def calculate_diff(self, diff: RawDiff) -> CalculatedDiff:
         """
-            Calculates the per-file totals (and total) of the parts
-                from a `git diff` that are relevant in the report
-
-        Args:
-            diff (Dict): The diff,as generated from `get_compare` or `get_commit_diff`.
-                It has roughly the format:
-
-                {
-                    "files": {
-                        "a": {
-                            "type": "new",
-                            "segments": [{"header": list("1313"), "lines": list("---+++")}],
-                        },
-                        "b": {"type": "deleted"},
-                        "c": {"type": "modified"},
-                        "d": {
-                            "type": "modified",
-                            "segments": [
-                                {"header": ["10", "3", "10", "3"], "lines": list("---+++")}
-                            ],
-                        },
-                    }
-                }
-
-        Returns:
-            Dict: A dictionary in the format:
-
-            {
-                "files": {
-                    "a": ReportTotals(
-                        files=0, lines=2, hits=1, misses=1, partials=0, coverage="50.00000"
-                    ),
-                    "d": ReportTotals(
-                        files=0, lines=0, hits=0, misses=0, partials=0, coverage=None
-                    ),
-                },
-                "general": ReportTotals(
-                    files=2,
-                    lines=2,
-                    hits=1,
-                    misses=1,
-                    partials=0,
-                    coverage="50.00000",
-                    branches=0,
-                    methods=0,
-                    messages=0,
-                    sessions=0,
-                    complexity=0,
-                    complexity_total=0,
-                    diff=0,
-                ),
-            }
+        Calculates the per-file totals (and total) of the parts
+            from a `git diff` that are relevant in the report
         """
-        file_dict = {}
-        totals = ReportTotals()
-        if diff and diff.get("files"):
-            list_of_file_totals = []
-            for path, data in diff["files"].items():
-                if data["type"] in ("modified", "new"):
-                    _file = self.get(path)
-                    if _file:
-                        file_totals = _file.calculate_diff(data["segments"])
-                        file_dict[path] = file_totals
-                        list_of_file_totals.append(file_totals)
-
-            totals = sum_totals(list_of_file_totals)
-
-            if totals.lines == 0:
-                totals = dataclasses.replace(
-                    totals, coverage=None, complexity=None, complexity_total=None
-                )
-
-        return {"general": totals, "files": file_dict}
+        return calculate_report_diff(self, diff)
 
     def save_diff_calculation(self, diff, diff_result):
         diff["totals"] = diff_result["general"]
