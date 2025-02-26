@@ -1,4 +1,4 @@
-from typing import Generator, Protocol, TypedDict
+from typing import Generator, Literal, Protocol, TypedDict
 
 from shared.reports.totals import get_line_totals
 from shared.reports.types import ReportLine, ReportTotals
@@ -7,37 +7,49 @@ from shared.utils.totals import sum_totals
 
 class DiffSegment(TypedDict):
     lines: list[str]
+    """The lines within a diff segment, prefixed with "+" or "-" for added/removed lines, or " " for context."""
     header: tuple[int, int, int, int]
+    """The segment header, which is `old_line`, `old_length`, `new_line`, `new_length`."""
 
 
 class DiffFile(TypedDict):
-    type: str
+    type: Literal["new", "modified", "deleted"]
+    "Whether the file was added, removed or modified in this diff."
     segments: list[DiffSegment]
+    """A list of diff segments, or "hunk"s as they are also called."""
 
 
 class RawDiff(TypedDict):
     files: dict[str, DiffFile]
+    "This is a dictionary from path to `DiffFile`."
 
 
 class CalculatedDiff(TypedDict):
     general: ReportTotals
+    "The totals across this diff"
     files: dict[str, ReportTotals]
+    "Per-file totals, keyed by path."
 
 
 # TODO: it might make sense to move these abstract interfaces to a different place
 class AbstractReportFile(Protocol):
-    def get(self, line_no: int) -> ReportLine | None: ...
-    def calculate_diff(self, segments: list[DiffSegment]) -> ReportTotals: ...
+    def get(self, line_no: int) -> ReportLine | None:
+        "Get the line specified by `line_no` (1-indexed), or `None` if the line does not exist."
+        ...
+
+    def calculate_diff(self, segments: list[DiffSegment]) -> ReportTotals:
+        "Calculates the totals for the given diff `segments`."
+        ...
 
 
 class AbstractReport(Protocol):
-    def get(self, path: str) -> AbstractReportFile | None: ...
+    def get(self, path: str) -> AbstractReportFile | None:
+        "Get the file using its `path` within the Report, or `None` if no such file exists."
+        ...
 
 
 def relevant_lines(segment: DiffSegment) -> Generator[int, None, None]:
-    """
-    Iterates over the relevant line numbers in a diff segment.
-    """
+    "Iterates over the relevant line numbers in a diff segment."
     return (
         i
         for i, line in enumerate(
