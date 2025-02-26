@@ -11,12 +11,12 @@ from shared.profiling import (
 )
 from shared.reports.readonly import ReadOnlyReport
 from shared.reports.resources import (
-    LineSession,
     Report,
     ReportFile,
     ReportLine,
     Session,
 )
+from shared.reports.types import LineSession
 
 here = Path(__file__)
 

@@ -5,12 +5,12 @@ import vcr
 
 from shared.config import ConfigHelper
 from shared.reports.resources import (
-    LineSession,
     Report,
     ReportFile,
     ReportLine,
     Session,
 )
+from shared.reports.types import LineSession
 
 
 @pytest.fixture

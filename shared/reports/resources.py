@@ -5,7 +5,7 @@ from decimal import Decimal
 from fractions import Fraction
 from itertools import filterfalse, zip_longest
 from types import GeneratorType
-from typing import Any
+from typing import Any, cast
 
 import orjson
 import sentry_sdk
@@ -25,7 +25,6 @@ from shared.reports.totals import get_line_totals
 from shared.reports.types import (
     EMPTY,
     TOTALS_MAP,
-    LineSession,
     ReportFileSummary,
     ReportHeader,
     ReportLine,
@@ -114,22 +113,13 @@ class ReportFile(object):
         except Exception:
             return "<%s name=%s lines=n/a>" % (self.__class__.__name__, self.name)
 
-    def _line(self, line):
+    def _line(self, line: ReportLine | list | str):
         if isinstance(line, ReportLine):
             # line is already mapped to obj
             return line
-        elif isinstance(line, list):
-            # line needs to be mapped to ReportLine
-            # line = [1, 'b', [], null, null] = ReportLine.create()
-            return ReportLine.create(*line)
-        else:
-            # these are old versions
-            line = orjson.loads(line)
-            if len(line) > 2 and line[2]:
-                line[2] = [
-                    LineSession(*tuple(session)) for session in line[2] if session
-                ]
-            return ReportLine.create(*line)
+        if isinstance(line, str):
+            line = cast(list, orjson.loads(line))
+        return ReportLine.create(*line)
 
     @property
     def lines(self):
