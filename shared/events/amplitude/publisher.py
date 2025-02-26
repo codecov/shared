@@ -6,6 +6,10 @@ from django.conf import settings
 from amplitude import Amplitude, BaseEvent, Config, EventOptions
 from shared.environment.environment import Environment, get_current_env
 from shared.events.amplitude import UNKNOWN_USER_OWNERID
+from shared.events.amplitude.metrics import (
+    AMPLITUDE_PUBLISH_COUNTER,
+    AMPLITUDE_PUBLISH_FAILURE_COUNTER,
+)
 from shared.events.amplitude.types import (
     AMPLITUDE_REQUIRED_PROPERTIES,
     AmplitudeEventProperties,
@@ -15,6 +19,7 @@ from shared.events.base import (
     EventPublisher,
     MissingEventPropertyException,
 )
+from shared.metrics import inc_counter
 from shared.utils.snake_to_camel_case import snake_to_camel_case
 
 log = logging.getLogger(__name__)
@@ -47,6 +52,31 @@ class AmplitudeEventPublisher(EventPublisher):
             self.client = Amplitude(api_key, Config(min_id_length=1))
 
     def publish(
+        self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
+    ):
+        inc_counter(
+            AMPLITUDE_PUBLISH_COUNTER,
+            labels={
+                "event_type": event_type,
+            },
+        )
+        try:
+            self._unsafe_publish(event_type, event_properties)
+        except Exception as e:
+            inc_counter(
+                AMPLITUDE_PUBLISH_FAILURE_COUNTER,
+                labels={"event_type": event_type, "error": e.__class__.__name__},
+            )
+            log.error(
+                "Failed to publish Amplitude event",
+                extra=dict(
+                    event_type=event_type,
+                    error_name=e.__class__.__name__,
+                    error_message=str(e),
+                ),
+            )
+
+    def _unsafe_publish(
         self, event_type: AmplitudeEventType, event_properties: AmplitudeEventProperties
     ):
         user_id = event_properties["user_ownerid"]
