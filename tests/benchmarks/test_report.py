@@ -54,8 +54,24 @@ def do_parse(report_class, raw_report_json, raw_chunks):
     )
 
 
+def do_full_parse(report_class, raw_report_json, raw_chunks):
+    report = do_parse(report_class, raw_report_json, raw_chunks)
+    # full parsing in this case means iterating over everything in the report
+    # we iterate over `files` and use `get(bind=True)`, as that is caching the
+    # parsed `ReportFile` instance.
+    # the `__iter__` method does not do that.
+    for filename in report.files:
+        file = report.get(filename, bind=True)
+        # … however the same is not true for the `ReportLine`s, which are being
+        # re-parsed *every damn time* :-(
+        for _line in file:
+            pass
+
+    return report
+
+
 @pytest.mark.parametrize("report_class, should_load_rust", READABLE_VARIANTS)
-def test_report_parsing(report_class, should_load_rust, mocker, benchmark):
+def test_parse_shallow(report_class, should_load_rust, mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, should_load_rust)
 
     def bench_fn():
@@ -65,29 +81,30 @@ def test_report_parsing(report_class, should_load_rust, mocker, benchmark):
 
 
 @pytest.mark.parametrize("report_class, should_load_rust", READABLE_VARIANTS)
-def test_report_iterate_all(report_class, should_load_rust, mocker, benchmark):
+def test_parse_full(report_class, should_load_rust, mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, should_load_rust)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
-
     def bench_fn():
-        for file in report:
-            for _line in file:
-                pass
+        do_full_parse(report_class, raw_report_json, raw_chunks)
 
     benchmark(bench_fn)
 
 
 @pytest.mark.parametrize("report_class, should_load_rust", READABLE_VARIANTS)
-def test_report_process_totals(report_class, should_load_rust, mocker, benchmark):
+def test_process_totals(report_class, should_load_rust, mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, should_load_rust)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
+    report = do_full_parse(report_class, raw_report_json, raw_chunks)
 
     def bench_fn():
-        report._process_totals()
+        # both `ReportFile` and `Report` have a cached `_totals` field,
+        # and a `totals` accessor calculating the cache on-demand
         for file in report:
-            file._process_totals()
+            file._totals = None
+            _totals = file.totals
+
+        report._totals = None
+        _totals = report.totals
 
     benchmark(bench_fn)
 
@@ -96,17 +113,26 @@ def test_report_process_totals(report_class, should_load_rust, mocker, benchmark
 def test_report_filtering(report_class, should_load_rust, mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, should_load_rust)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
+    report = do_full_parse(report_class, raw_report_json, raw_chunks)
 
     def bench_fn():
         filtered = report.filter(paths=[".*"], flags=["unit"])
-        filtered._process_totals()
-        for file in report:
-            file._process_totals()
+
+        for filename in filtered.files:
+            # contrary to the normal `Report`, `FilteredReport` does not have a `bind` parameter,
+            # but instead always maintains a cache
+            file = filtered.get(filename)
+
             # the `FilteredReportFile` has no `__iter__`, and all the other have no `.lines`.
             # what they do have in common is `eof` and `get`:
             for ln in range(1, file.eof):
-                report.get(ln)
+                file.get(ln)
+
+            file._totals = None
+            _totals = file.totals
+
+        filtered._totals = None
+        _totals = filtered.totals
 
     benchmark(bench_fn)
 

@@ -726,7 +726,7 @@ class Report(object):
                 lines=lines,
             )
             if bind:
-                self._chunks[_file[0]] = report_file
+                self._chunks[_file.file_index] = report_file
 
             return report_file
 
