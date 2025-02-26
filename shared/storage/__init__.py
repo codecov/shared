@@ -12,8 +12,11 @@ _storage_service_cache: dict[str, BaseStorageService] = {}
 
 def get_appropriate_storage_service(
     repoid: int | None = None,
+    force_minio=False,
 ) -> BaseStorageService:
     chosen_storage: str = get_config("services", "chosen_storage", default="minio")  # type: ignore
+    if force_minio:
+        chosen_storage = "minio"
 
     if repoid:
         if USE_MINIO.check_value(repoid, default=False):
