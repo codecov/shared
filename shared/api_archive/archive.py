@@ -6,10 +6,8 @@ from hashlib import md5
 
 import sentry_sdk
 
+import shared.storage
 from shared.config import get_config
-from shared.rollouts.features import USE_NEW_MINIO
-from shared.storage.minio import MinioStorageService
-from shared.storage.new_minio import NewMinioStorageService
 from shared.utils.ReportEncoder import ReportEncoder
 
 log = logging.getLogger(__name__)
@@ -65,15 +63,12 @@ class ArchiveService(object):
         # Set TTL from config and default to existing value
         self.ttl = ttl or int(get_config("services", "minio", "ttl", default=self.ttl))
 
-        if repository:
-            if USE_NEW_MINIO.check_value(repository.repoid):
-                self.storage = NewMinioStorageService(get_config("services", "minio"))
-            else:
-                self.storage = MinioStorageService(get_config("services", "minio"))
-            self.storage_hash = self.get_archive_hash(repository)
-        else:
-            self.storage = MinioStorageService(get_config("services", "minio"))
-            self.storage_hash = None
+        # The `api_archive.ArchiveService` is always using `minio`
+        self.storage = shared.storage.get_appropriate_storage_service(
+            repository.repoid, force_minio=True
+        )
+
+        self.storage_hash = self.get_archive_hash(repository) if repository else None
 
     @classmethod
     def get_archive_hash(cls, repository) -> str:
