@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Generator, Literal, Protocol, TypedDict
 
 from shared.reports.totals import get_line_totals
@@ -96,5 +97,10 @@ def calculate_report_diff(report: AbstractReport, diff: RawDiff) -> CalculatedDi
                 list_of_file_totals.append(file_totals)
 
     totals = sum_totals(list_of_file_totals)
+
+    if totals.lines == 0:
+        totals = dataclasses.replace(
+            totals, coverage=None, complexity=None, complexity_total=None
+        )
 
     return CalculatedDiff(general=totals, files=files)

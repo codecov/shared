@@ -595,7 +595,12 @@ class TestFilteredReport(object):
         res = sample_report.filter(
             paths=["location.*"], flags=["simple"]
         ).calculate_diff(diff)
-        assert res == {"files": {}, "general": ReportTotals(coverage=None)}
+        assert res == {
+            "files": {},
+            "general": ReportTotals(
+                coverage=None, complexity=None, complexity_total=None
+            ),
+        }
 
     def test_calculate_diff_both_filters(self, sample_report):
         diff = {
