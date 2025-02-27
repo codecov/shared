@@ -5,7 +5,7 @@ from decimal import Decimal
 from fractions import Fraction
 from itertools import filterfalse, zip_longest
 from types import GeneratorType
-from typing import Any, cast
+from typing import Any, Generator, cast
 
 import orjson
 import sentry_sdk
@@ -590,7 +590,6 @@ def parse_chunks(chunks: str) -> tuple[list[str], ReportHeader]:
 
 
 class Report(object):
-    file_class = ReportFile
     _files: dict[str, ReportFileSummary]
     _header: ReportHeader
 
@@ -609,6 +608,7 @@ class Report(object):
         self.sessions = get_sessions(sessions) if sessions else {}
 
         # ["<json>", ...]
+        self._chunks: list[str | ReportFile]
         self._chunks, self._header = (
             parse_chunks(chunks)
             if chunks and isinstance(chunks, str)
@@ -616,14 +616,48 @@ class Report(object):
         )
 
         # <ReportTotals>
+        self._totals: ReportTotals | None = None
         if isinstance(totals, ReportTotals):
             self._totals = totals
         elif totals:
             self._totals = ReportTotals(*migrate_totals(totals))
-        else:
-            self._totals = None
 
         self.diff_totals = diff_totals
+
+    def _invalidate_caches(self):
+        self._totals = None
+
+    @property
+    def totals(self):
+        if not self._totals:
+            self._totals = self._process_totals()
+        return self._totals
+
+    def _process_totals(self):
+        """Runs through the file network to aggregate totals
+        returns <ReportTotals>
+        """
+
+        def _iter_totals():
+            for filename, data in self._files.items():
+                if data.file_totals is None:
+                    yield self.get(filename).totals
+                else:
+                    yield data.file_totals
+
+        totals = agg_totals(_iter_totals())
+        totals.sessions = len(self.sessions)
+        return totals
+
+    def _iter_parsed_files(self) -> Generator[ReportFile, None, None]:
+        for name, summary in self._files.items():
+            idx = summary.file_index
+            file = self._chunks[idx]
+            if not isinstance(file, ReportFile):
+                file = self._chunks[idx] = ReportFile(
+                    name=name, totals=summary.file_totals, lines=file
+                )
+            yield file
 
     @property
     def header(self) -> ReportHeader:
@@ -787,7 +821,7 @@ class Report(object):
                 lines = None
             if isinstance(lines, ReportFile):
                 return lines
-            report_file = self.file_class(
+            report_file = ReportFile(
                 name=filename,
                 totals=_file.file_totals,
                 lines=lines,
@@ -857,29 +891,6 @@ class Report(object):
         else:
             return ReportTotals(*totals)
 
-    @property
-    def totals(self):
-        if not self._totals:
-            # reprocess totals
-            self._totals = self._process_totals()
-        return self._totals
-
-    def _process_totals(self):
-        """Runs through the file network to aggregate totals
-        returns <ReportTotals>
-        """
-
-        def _iter_totals():
-            for filename, data in self._files.items():
-                if data.file_totals is None:
-                    yield self.get(filename).totals
-                else:
-                    yield data.file_totals
-
-        totals = agg_totals(_iter_totals())
-        totals.sessions = len(self.sessions)
-        return totals
-
     def next_session_number(self):
         start_number = len(self.sessions)
         while start_number in self.sessions or str(start_number) in self.sessions:
@@ -912,7 +923,7 @@ class Report(object):
             if isinstance(report, ReportFile):
                 yield report
             else:
-                yield self.file_class(
+                yield ReportFile(
                     name=filename,
                     totals=_file.file_totals,
                     lines=report,
@@ -1229,6 +1240,82 @@ class Report(object):
             )
             return False
         return True
+
+    def delete_labels(
+        self, sessionids: list[int] | set[int], labels_to_delete: list[int] | set[int]
+    ):
+        files_to_delete = []
+        for file in self._iter_parsed_files():
+            file.delete_labels(sessionids, labels_to_delete)
+            if file:
+                self._files[file.name] = dataclasses.replace(
+                    self._files[file.name],
+                    file_totals=file.totals,
+                )
+            else:
+                files_to_delete.append(file.name)
+        for file in files_to_delete:
+            del self[file]
+
+        self._invalidate_caches()
+        return sessionids
+
+    def delete_multiple_sessions(self, session_ids_to_delete: list[int] | set[int]):
+        session_ids_to_delete = set(session_ids_to_delete)
+        for sessionid in session_ids_to_delete:
+            self.sessions.pop(sessionid)
+
+        files_to_delete = []
+        for file in self._iter_parsed_files():
+            file.delete_multiple_sessions(session_ids_to_delete)
+            if file:
+                self._files[file.name] = dataclasses.replace(
+                    self._files[file.name],
+                    file_totals=file.totals,
+                )
+            else:
+                files_to_delete.append(file.name)
+        for file in files_to_delete:
+            del self[file]
+
+        self._invalidate_caches()
+
+    @sentry_sdk.trace
+    def change_sessionid(self, old_id: int, new_id: int):
+        """
+        This changes the session with `old_id` to have `new_id` instead.
+        It patches up all the references to that session across all files and line records.
+
+        In particular, it changes the id in all the `LineSession`s and `CoverageDatapoint`s,
+        and does the equivalent of `calculate_present_sessions`.
+        """
+        session = self.sessions[new_id] = self.sessions.pop(old_id)
+        session.id = new_id
+
+        for file in self._iter_parsed_files():
+            all_sessions = set()
+
+            for idx, _line in enumerate(file._lines):
+                if not _line:
+                    continue
+
+                # this turns the line into an actual `ReportLine`
+                line = file._lines[idx] = file._line(_line)
+
+                for session in line.sessions:
+                    if session.id == old_id:
+                        session.id = new_id
+                    all_sessions.add(session.id)
+
+                if line.datapoints:
+                    for point in line.datapoints:
+                        if point.sessionid == old_id:
+                            point.sessionid = new_id
+
+            file._invalidate_caches()
+            file.__present_sessions = all_sessions
+
+        self._invalidate_caches()
 
 
 def _ignore_to_func(ignore):

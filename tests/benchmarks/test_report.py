@@ -3,7 +3,6 @@ import pytest
 import zstandard as zstd
 
 from shared.reports.carryforward import generate_carryforward_report
-from shared.reports.editable import EditableReport
 from shared.reports.readonly import ReadOnlyReport
 from shared.reports.resources import Report
 from shared.torngit.base import TorngitBaseAdapter
@@ -21,10 +20,9 @@ READABLE_VARIANTS = [
     pytest.param(Report, False, id="Report"),
     pytest.param(ReadOnlyReport, False, id="ReadOnlyReport"),
     pytest.param(ReadOnlyReport, True, id="Rust ReadOnlyReport"),
-    pytest.param(EditableReport, False, id="EditableReport"),
 ]
 
-EDITABLE_VARIANTS = [Report, EditableReport]
+EDITABLE_VARIANTS = [Report]
 
 
 def init_mocks(mocker, should_load_rust) -> tuple[bytes, bytes]:
