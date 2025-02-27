@@ -746,16 +746,10 @@ def test_filter_exception():
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize(
-    "chunk, res",
-    [
-        (None, "null"),
-        (ReportFile(name="name.ply"), "{}\n"),
-        (
-            [ReportLine.create(2), ReportLine.create(1)],
-            "[[2,null,null,null,null,null],[1,null,null,null,null,null]]",
-        ),
-    ],
-)
-def test_encode_chunk(chunk, res):
-    assert _encode_chunk(chunk) == res
+def test_encode_chunk():
+    assert _encode_chunk(None) == "null"
+    assert _encode_chunk(ReportFile(name="name.ply")) == '{"present_sessions":[]}\n'
+    assert (
+        _encode_chunk([ReportLine.create(2), ReportLine.create(1)])
+        == "[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
+    )
