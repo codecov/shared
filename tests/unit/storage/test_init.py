@@ -21,6 +21,8 @@ class TestStorageInitialization(object):
         res = get_appropriate_storage_service()
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
+        assert not res.new_read
+        assert not res.new_write
 
     def test_get_appropriate_storage_service_read_new_minio(
         self, mock_configuration, mocker
@@ -30,12 +32,8 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch(
-            "shared.storage.READ_NEW_MINIO.check_value",
-            return_value=True,
-        )
-        mocker.patch(
-            "shared.storage.WRITE_NEW_MINIO.check_value",
-            return_value=False,
+            "shared.storage.NEW_MINIO.check_value",
+            return_value="read",
         )
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, MinioStorageService)
@@ -51,15 +49,11 @@ class TestStorageInitialization(object):
             "minio": minio_config,
         }
         mocker.patch(
-            "shared.storage.WRITE_NEW_MINIO.check_value",
-            return_value=True,
-        )
-        mocker.patch(
-            "shared.storage.READ_NEW_MINIO.check_value",
-            return_value=False,
+            "shared.storage.NEW_MINIO.check_value",
+            return_value="write",
         )
         res = get_appropriate_storage_service(repoid=123)
         assert isinstance(res, MinioStorageService)
         assert res.minio_config == minio_config
+        assert res.new_read
         assert res.new_write
-        assert not res.new_read

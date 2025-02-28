@@ -133,6 +133,9 @@ def get_cached_minio_client(
     )
 
 
+zstd_default = zstd_decoded_by_default()
+
+
 # Service class for interfacing with codecov's underlying storage layer, minio
 class MinioStorageService(BaseStorageService, PresignedURLService):
     def __init__(
@@ -143,16 +146,12 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         self.minio_config = minio_config
         self.new_read = new_mode == "read" or new_mode == "write"
         self.new_write = new_mode == "write"
-        self.zstd_default = zstd_decoded_by_default()
 
         log.debug("Connecting to minio with config %s", self.minio_config)
 
         self.minio_client = get_cached_minio_client(**self.minio_config)
 
         log.debug("Done setting up minio client")
-
-    def client(self):
-        return self.minio_client if self.minio_client else None
 
     # writes the initial storage bucket to storage via minio.
     def create_root_storage(self, bucket_name="archive", region="us-east-1"):
@@ -239,6 +238,7 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                 bucket_name,
                 path,
                 file_obj,
+                zstd_default,
             )
         else:
             return old_minio_read(
