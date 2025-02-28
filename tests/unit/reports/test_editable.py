@@ -143,7 +143,7 @@ class TestEditableReportHelpers(object):
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1], [5]
+            line, {1}, {5}
         ) == ReportLine.create(
             "2/2",
             None,
@@ -157,7 +157,7 @@ class TestEditableReportHelpers(object):
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1, 0], [5]
+            line, {1, 0}, {5}
         ) == ReportLine.create(
             "1/2",
             None,
@@ -169,7 +169,7 @@ class TestEditableReportHelpers(object):
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1], [5, 6]
+            line, {1}, {5, 6}
         ) == ReportLine.create(
             "2/2",
             None,
@@ -182,7 +182,7 @@ class TestEditableReportHelpers(object):
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [0, 1], [5, 6]
+            line, {0, 1}, {5, 6}
         ) == ReportLine.create(
             "1/2",
             None,
@@ -192,9 +192,9 @@ class TestEditableReportHelpers(object):
                 CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
-        assert EditableReportFile.line_without_labels(line, [0, 1], [5, 6, 10]) == ""
+        assert EditableReportFile.line_without_labels(line, {0, 1}, {5, 6, 10}) == ""
         assert EditableReportFile.line_without_labels(
-            line, [0, 1], [5, 6, 9]
+            line, {0, 1}, {5, 6, 9}
         ) == ReportLine.create(
             0,
             None,
@@ -203,7 +203,7 @@ class TestEditableReportHelpers(object):
                 CoverageDatapoint(0, 0, None, [10, 8]),
             ],
         )
-        assert EditableReportFile.line_without_labels(line, [0, 1], [5, 6, 10]) == ""
+        assert EditableReportFile.line_without_labels(line, {0, 1}, {5, 6, 10}) == ""
 
     def test_delete_labels_session_without_datapoints(self):
         line = ReportLine.create(
@@ -217,7 +217,7 @@ class TestEditableReportHelpers(object):
             ],
         )
         assert EditableReportFile.line_without_labels(
-            line, [1], [5, 6, 10]
+            line, {1}, {5, 6, 10}
         ) == ReportLine.create(
             1,
             None,
@@ -368,7 +368,8 @@ class TestEditableReportFile(object):
             ]
         )
         report_file = EditableReportFile(name="file.py", lines=chunks)
-        assert report_file.details == {}
+        assert report_file.details == {"present_sessions": [0, 1]}
+
         new_chunks = "\n".join(
             [
                 "{}",
@@ -392,53 +393,21 @@ class TestEditableReportFile(object):
         )
         new_report_file = ReportFile(name="file.py", lines=new_chunks)
         report_file.merge(new_report_file)
+
         assert report_file.details == {"present_sessions": [0, 1, 2, 3]}
 
     def test_details(self):
         chunks = "\n".join(['{"some_field": "nah"}', "[1, null, [[0, 1], [1, 0]]]", ""])
         report_file = EditableReportFile(name="file.py", lines=chunks)
-        assert report_file.details == {"some_field": "nah"}
-
-    def test_encode_with_details_with_present_sessions_as_set(self):
-        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
-        report_file = EditableReportFile(name="file.py", lines=chunks)
-        report_file._details = {"present_sessions": set([1, 2, 4])}
-        expected_result = "\n".join(
-            ['{"present_sessions":[1,2,4]}', "[1, null, [[0, 1], [1, 0]]]"]
-        )
-        assert report_file._encode() == expected_result
-
-    def test_encode_with_details_with_present_sessions_as_empty_set(self):
-        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
-        report_file = EditableReportFile(name="file.py", lines=chunks)
-        report_file._details = {"present_sessions": set()}
-        expected_result = "\n".join(
-            ['{"present_sessions":[]}', "[1, null, [[0, 1], [1, 0]]]"]
-        )
-        assert report_file._encode() == expected_result
-
-    def test_encode_with_details_with_present_sessions_as_list(self):
-        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
-        report_file = EditableReportFile(name="file.py", lines=chunks)
-        report_file._details = {"present_sessions": [10, 2, 4]}
-        expected_result = "\n".join(
-            ['{"present_sessions":[2,4,10]}', "[1, null, [[0, 1], [1, 0]]]"]
-        )
-        assert report_file._encode() == expected_result
+        assert report_file.details == {"some_field": "nah", "present_sessions": [0, 1]}
 
     def test_encode_with_details_with_nothing(self):
         chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
         report_file = EditableReportFile(name="file.py", lines=chunks)
-        report_file._details = {}
-        expected_result = "\n".join(["{}", "[1, null, [[0, 1], [1, 0]]]"])
-        assert report_file._encode() == expected_result
 
-    def test_encode_with_details_with_none(self):
-        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
-        report_file = EditableReportFile(name="file.py", lines=chunks)
-        report_file._details = None
-        expected_result = "\n".join(["null", "[1, null, [[0, 1], [1, 0]]]"])
-        assert report_file._encode() == expected_result
+        assert report_file._encode() == "\n".join(
+            ['{"present_sessions":[0,1]}', "[1, null, [[0, 1], [1, 0]]]"]
+        )
 
     def test_merge_already_previously_set_sessions_header(self):
         chunks = "\n".join(
@@ -512,7 +481,7 @@ class TestEditableReportFile(object):
             ]
         )
         report_file = EditableReportFile(name="file.py", lines=chunks)
-        original_lines = [
+        assert list(report_file.lines) == [
             (
                 1,
                 ReportLine.create(
@@ -564,24 +533,13 @@ class TestEditableReportFile(object):
                 ),
             ),
         ]
-        assert list(report_file.lines) == original_lines
         assert report_file.totals == ReportTotals(
-            files=0,
-            lines=10,
-            hits=7,
-            misses=1,
-            partials=2,
-            coverage="70.00000",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
+            files=0, lines=10, hits=7, misses=1, partials=2, coverage="70.00000"
         )
+
         report_file.delete_multiple_sessions({1})
-        expected_result = [
+
+        assert list(report_file.lines) == [
             (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
             (4, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
             (5, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
@@ -592,7 +550,7 @@ class TestEditableReportFile(object):
             (15, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
             (16, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
         ]
-        assert list(report_file.lines) == expected_result
+
         assert report_file.get(1) == ReportLine.create(
             coverage=1, sessions=[LineSession(0, 1)]
         )
@@ -607,14 +565,8 @@ class TestEditableReportFile(object):
             misses=3,
             partials=2,
             coverage="44.44444",
-            branches=0,
-            methods=0,
-            messages=0,
-            sessions=0,
-            complexity=0,
-            complexity_total=0,
-            diff=0,
         )
+
         assert report_file.details == {"present_sessions": [0]}
 
     def test_delete_session_not_present(self):
@@ -720,7 +672,8 @@ class TestEditableReportFile(object):
             ]
         )
         report_file = EditableReportFile(name="file.py", lines=chunks)
-        original_lines = [
+
+        assert list(report_file.lines) == [
             (
                 1,
                 ReportLine.create(
@@ -778,9 +731,10 @@ class TestEditableReportFile(object):
                 ),
             ),
         ]
-        assert list(report_file.lines) == original_lines
-        report_file.delete_multiple_sessions([1, 3, 5])
-        expected_result = [
+
+        report_file.delete_multiple_sessions({1, 3, 5})
+
+        assert list(report_file.lines) == [
             (1, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
             (4, ReportLine.create(coverage=0, sessions=[LineSession(2, 0)])),
             (5, ReportLine.create(coverage=1, sessions=[LineSession(0, 1)])),
@@ -796,9 +750,7 @@ class TestEditableReportFile(object):
             (15, ReportLine.create(coverage="1/2", sessions=[LineSession(0, "1/2")])),
             (16, ReportLine.create(coverage=0, sessions=[LineSession(0, 0)])),
         ]
-        res = list(report_file.lines)
-        assert res[0] == expected_result[0]
-        assert res == expected_result
+
         assert report_file.details == {"present_sessions": [0, 2]}
 
 

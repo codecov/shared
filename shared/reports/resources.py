@@ -56,19 +56,11 @@ END_OF_HEADER = "\n<<<<< end_of_header >>>>>\n"
 
 
 class ReportFile(object):
-    __slots__ = [
-        "name",
-        "_details",
-        "_lines",
-        "_ignore",
-        "_totals",
-    ]
-
     def __init__(
         self,
-        name,
-        totals=None,
-        lines=None,
+        name: str,
+        totals: ReportTotals | list | None = None,
+        lines: list[None | str | ReportLine] | str | None = None,
         ignore=None,
     ):
         """
@@ -82,26 +74,69 @@ class ReportFile(object):
             {eof:N, lines:[1,10]}
         """
         self.name = name
+        self._details: dict[str, Any] = {}
+
         # lines = [<details dict()>, <Line #1>, ....]
+        self._lines: list[None | str | ReportLine] = []
         if lines:
             if isinstance(lines, list):
-                self._details = None
                 self._lines = lines
 
             else:
                 lines = lines.splitlines()
-                self._details = orjson.loads(lines.pop(0) or "null")
+                if detailsline := lines.pop(0):
+                    self._details = orjson.loads(detailsline) or {}
                 self._lines = lines
-        else:
-            self._details = {}
-            self._lines = []
 
         self._ignore = _ignore_to_func(ignore) if ignore else None
 
+        # The `_totals` and `__present_sessions` fields are cached values for the
+        # `totals` and `_present_sessions` properties respectively.
+        # The values are loaded at initialization time, or calculated from line data on-demand.
+        # All mutating methods (like `append`, `merge`, etc) will either re-calculate these values
+        # directly, or clear them so the `@property` accessors re-calculate them when needed.
+
+        self._totals: ReportTotals | None = None
         if isinstance(totals, ReportTotals):
             self._totals = totals
-        else:
-            self._totals = ReportTotals(*totals) if totals else None
+        elif totals:
+            self._totals = ReportTotals(*totals)
+
+        self.__present_sessions: set[int] | None = None
+        if present_sessions := self._details.get("present_sessions"):
+            self.__present_sessions = set(present_sessions)
+
+    def _invalidate_caches(self):
+        self._totals = None
+        self.__present_sessions = None
+
+    @property
+    def _present_sessions(self):
+        if self.__present_sessions is None:
+            self.__present_sessions = set()
+            for _, line in self.lines:
+                self.__present_sessions.update(int(s.id) for s in line.sessions)
+        return self.__present_sessions
+
+    @property
+    def details(self):
+        self._details["present_sessions"] = sorted(self._present_sessions)
+        return self._details
+
+    @property
+    def totals(self):
+        if not self._totals:
+            self._totals = self._process_totals()
+        return self._totals
+
+    def _process_totals(self) -> ReportTotals:
+        return get_line_totals(line for _ln, line in self.lines)
+
+    def _encode(self) -> str:
+        details = orjson.dumps(self.details, option=orjson_option)
+        return (
+            details + b"\n" + b"\n".join(_dumps_not_none(line) for line in self._lines)
+        ).decode()
 
     def __repr__(self):
         try:
@@ -176,6 +211,7 @@ class ReportFile(object):
             self._lines.extend([EMPTY] * (ln - length))
 
         self._lines[ln - 1] = line
+        self._invalidate_caches()
         return
 
     def __delitem__(self, ln: int):
@@ -190,11 +226,12 @@ class ReportFile(object):
             self._lines.extend([EMPTY] * (ln - length))
 
         self._lines[ln - 1] = EMPTY
+        self._invalidate_caches()
         return
 
     def __len__(self):
         """Returns count(number of lines with coverage data)"""
-        return len([_f for _f in self._lines if _f])
+        return sum(1 for _f in self._lines if _f)
 
     @property
     def eof(self):
@@ -268,6 +305,8 @@ class ReportFile(object):
             self._lines[ln - 1] = merge_line(_line, line)
         else:
             self._lines[ln - 1] = line
+
+        self._invalidate_caches()
         return True
 
     def merge(self, other_file, joined=True):
@@ -316,27 +355,8 @@ class ReportFile(object):
                 for before, after in zip_longest(self, other_file)
             ]
 
-        self._totals = None
+        self._invalidate_caches()
         return True
-
-    @property
-    def details(self):
-        return self._details
-
-    def _encode(self) -> str:
-        details = orjson.dumps(self.details, option=orjson_option)
-        return (
-            details + b"\n" + b"\n".join(_dumps_not_none(line) for line in self._lines)
-        ).decode()
-
-    @property
-    def totals(self):
-        if not self._totals:
-            self._totals = self._process_totals()
-        return self._totals
-
-    def _process_totals(self) -> ReportTotals:
-        return get_line_totals(line for _ln, line in self.lines)
 
     def does_diff_adjust_tracked_lines(self, diff, future_file):
         for segment in diff["segments"]:
@@ -385,10 +405,11 @@ class ReportFile(object):
         except (ValueError, KeyError, TypeError, IndexError):
             log.exception("Failed to shift lines by diff")
             pass
+        self._invalidate_caches()
 
     @classmethod
     def line_without_labels(
-        cls, line, session_ids_to_delete: list[int], label_ids_to_delete: list[int]
+        cls, line, session_ids_to_delete: set[int], label_ids_to_delete: set[int]
     ):
         new_datapoints = (
             [
@@ -401,7 +422,7 @@ class ReportFile(object):
             else None
         )
         remaining_session_ids = set(dp.sessionid for dp in new_datapoints)
-        removed_session_ids = set(session_ids_to_delete) - remaining_session_ids
+        removed_session_ids = session_ids_to_delete - remaining_session_ids
         if set(s.id for s in line.sessions) & removed_session_ids:
             new_sessions = [s for s in line.sessions if s.id not in removed_session_ids]
         else:
@@ -424,6 +445,38 @@ class ReportFile(object):
             sessions=new_sessions,
         )
 
+    def delete_labels(
+        self,
+        session_ids_to_delete: list[int] | set[int],
+        label_ids_to_delete: list[int] | set[int],
+    ):
+        """
+        Given a list of session_ids and label_ids to delete, remove all datapoints
+        that belong to at least 1 session_ids to delete and include at least 1 of the label_ids to be removed.
+        """
+        session_ids_to_delete = set(session_ids_to_delete)
+        label_ids_to_delete = set(label_ids_to_delete)
+        for index, line in self.lines:
+            if line.datapoints is not None:
+                if any(
+                    (
+                        dp.sessionid in session_ids_to_delete
+                        and label_id in label_ids_to_delete
+                    )
+                    for dp in line.datapoints
+                    for label_id in dp.label_ids
+                ):
+                    # Line fits change requirements
+                    new_line = self.line_without_labels(
+                        line, session_ids_to_delete, label_ids_to_delete
+                    )
+                    if new_line == EMPTY:
+                        del self[index]
+                    else:
+                        self[index] = new_line
+
+        self._invalidate_caches()
+
     @classmethod
     def line_without_multiple_sessions(
         cls, line: ReportLine, session_ids_to_delete: set[int]
@@ -445,6 +498,30 @@ class ReportFile(object):
             coverage=new_coverage,
             datapoints=new_datapoints,
         )
+
+    def delete_multiple_sessions(self, session_ids_to_delete: set[int]):
+        current_sessions = self._present_sessions
+        new_sessions = current_sessions.difference(session_ids_to_delete)
+        if current_sessions == new_sessions:
+            return  # nothing to do
+
+        self._invalidate_caches()
+
+        if not new_sessions:
+            self._lines = []  # no remaining sessions means no line data
+            return
+
+        for index, line in self.lines:
+            if any(s.id in session_ids_to_delete for s in line.sessions):
+                new_line = self.line_without_multiple_sessions(
+                    line, session_ids_to_delete
+                )
+                if new_line == EMPTY:
+                    del self[index]
+                else:
+                    self[index] = new_line
+
+        self.__present_sessions = new_sessions
 
 
 def chunks_from_storage_contains_header(chunks: str) -> bool:

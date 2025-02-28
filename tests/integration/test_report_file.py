@@ -356,15 +356,7 @@ def test_shift_lines_by_diff():
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize(
-    "r, encoded_val",
-    [
-        (ReportFile("name.py"), "{}\n"),
-        (
-            ReportFile("name.py", lines=[ReportLine.create(1), ReportLine.create(2)]),
-            "null\n[1]\n[2]",
-        ),
-    ],
-)
-def test_encode(r, encoded_val):
-    assert r._encode() == encoded_val
+def test_encode():
+    assert ReportFile("name.py")._encode() == '{"present_sessions":[]}\n'
+    f = ReportFile("name.py", lines=[ReportLine.create(1), ReportLine.create(2)])
+    assert f._encode() == '{"present_sessions":[]}\n[1]\n[2]'

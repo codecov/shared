@@ -172,6 +172,9 @@ class ReportLine(object):
             for i, sess in enumerate(self.sessions):
                 if not isinstance(sess, LineSession) and sess is not None:
                     self.sessions[i] = LineSession(*sess)
+        else:
+            self.sessions = {}
+
         if self.datapoints is not None:
             for i, cov_dp in enumerate(self.datapoints):
                 if not isinstance(cov_dp, CoverageDatapoint) and cov_dp is not None:

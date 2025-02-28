@@ -923,19 +923,13 @@ def test_filter_exception(mocker):
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    "chunk, res",
-    [
-        (None, "null"),
-        (ReportFile(name="name.ply"), "{}\n"),
-        (
-            [ReportLine.create(2), ReportLine.create(1)],
-            "[[2,null,null,null,null,null],[1,null,null,null,null,null]]",
-        ),
-    ],
-)
-def test_encode_chunk(chunk, res):
-    assert _encode_chunk(chunk) == res
+def test_encode_chunk():
+    assert _encode_chunk(None) == "null"
+    assert _encode_chunk(ReportFile(name="name.ply")) == '{"present_sessions":[]}\n'
+    assert (
+        _encode_chunk([ReportLine.create(2), ReportLine.create(1)])
+        == "[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
+    )
 
 
 @pytest.mark.unit
@@ -1097,94 +1091,14 @@ def test_shift_lines_by_diff():
     report = Report(sessions={0: Session()})
     report.append(r)
     assert list(r.lines) == [
-        (
-            1,
-            ReportLine(
-                coverage=0,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            2,
-            ReportLine(
-                coverage=1,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            3,
-            ReportLine(
-                coverage=2,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            4,
-            ReportLine(
-                coverage=3,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            5,
-            ReportLine(
-                coverage=4,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            6,
-            ReportLine(
-                coverage=5,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            7,
-            ReportLine(
-                coverage=6,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            8,
-            ReportLine(
-                coverage=7,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
+        (1, ReportLine.create(0)),
+        (2, ReportLine.create(1)),
+        (3, ReportLine.create(2)),
+        (4, ReportLine.create(3)),
+        (5, ReportLine.create(4)),
+        (6, ReportLine.create(5)),
+        (7, ReportLine.create(6)),
+        (8, ReportLine.create(7)),
     ]
     assert report.totals == ReportTotals(
         files=1,
@@ -1224,50 +1138,10 @@ def test_shift_lines_by_diff():
     )
     assert report.files == ["filename"]
     assert list(report.get("filename").lines) == [
-        (
-            2,
-            ReportLine(
-                coverage=1,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            3,
-            ReportLine(
-                coverage=2,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            4,
-            ReportLine(
-                coverage=3,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
-        (
-            7,
-            ReportLine(
-                coverage=7,
-                type=None,
-                sessions=None,
-                messages=None,
-                complexity=None,
-                datapoints=None,
-            ),
-        ),
+        (2, ReportLine.create(1)),
+        (3, ReportLine.create(2)),
+        (4, ReportLine.create(3)),
+        (7, ReportLine.create(7)),
     ]
     assert report._files == {
         "filename": ReportFileSummary(
