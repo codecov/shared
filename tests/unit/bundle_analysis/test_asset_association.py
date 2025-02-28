@@ -67,7 +67,7 @@ def test_asset_association():
         asset_b = prev_b_asset_mapping["asset-same-name-diff-modules.js"]
         assert (
             curr_b_asset_mapping_after["asset-same-name-diff-modules.js"].uuid
-            != asset_b.uuid
+            == asset_b.uuid
         )
 
         # Diff name, same modules -> asset associated
