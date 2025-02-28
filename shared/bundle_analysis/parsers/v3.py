@@ -381,16 +381,11 @@ class ParserV3(ParserTrait):
             self.db_session.query(Asset)
             .filter(
                 Asset.session_id == self.session.id,
-                # Asset.asset_type == AssetType.JAVASCRIPT,
             )
             .all()
         )
 
-        print("IN HERE", assets)
-
         asset_name_to_id = {asset.name: asset.id for asset in assets}
-
-        print("IN HERE 2", asset_name_to_id)
 
         chunks: list[Chunk] = (
             self.db_session.query(Chunk)
@@ -416,8 +411,9 @@ class ParserV3(ParserTrait):
 
             inserts.extend(
                 [
-                    dict(asset_id=asset_name_to_id[asset_name], chunk_id=chunk_id)
+                    dict(asset_id=asset_name_to_id.get(asset_name), chunk_id=chunk_id)
                     for asset_name in asset_names
+                    if asset_name_to_id.get(asset_name) is not None
                 ]
             )
         if inserts:

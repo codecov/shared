@@ -56,7 +56,7 @@ def test_asset_association():
                 assert asset.uuid == curr_a_asset_mapping_after[hashed_name].uuid
         for hashed_name, asset in curr_b_asset_mapping_before.items():
             if asset.asset_type != AssetType.JAVASCRIPT:
-                assert asset.uuid != curr_b_asset_mapping_after[hashed_name].uuid
+                assert asset.uuid == curr_b_asset_mapping_after[hashed_name].uuid
 
         # Same name -> asset associated
         asset_a = prev_a_asset_mapping["asset-same-name-diff-modules.js"]
@@ -67,20 +67,31 @@ def test_asset_association():
         asset_b = prev_b_asset_mapping["asset-same-name-diff-modules.js"]
         assert (
             curr_b_asset_mapping_after["asset-same-name-diff-modules.js"].uuid
-            == asset_b.uuid
+            != asset_b.uuid
         )
 
         # Diff name, same modules -> asset associated
         asset_a = prev_a_asset_mapping["asset-diff-name-same-modules-ONE.js"]
-        assert curr_a_asset_mapping_after["asset-diff-name-same-modules-TWO.js"]
+        assert (
+            asset_a.uuid
+            == curr_a_asset_mapping_after["asset-diff-name-same-modules-TWO.js"].uuid
+        )
         asset_b = prev_b_asset_mapping["asset-diff-name-same-modules-ONE.js"]
-        assert curr_b_asset_mapping_after["asset-diff-name-same-modules-TWO.js"]
-
+        assert (
+            asset_b.uuid
+            == curr_b_asset_mapping_after["asset-diff-name-same-modules-TWO.js"].uuid
+        )
         # Diff name, diff modules -> asset not associated
         asset_a = prev_a_asset_mapping["asset-diff-name-diff-modules-ONE.js"]
-        assert curr_a_asset_mapping_after["asset-diff-name-diff-modules-TWO.js"]
+        assert (
+            asset_a.uuid
+            != curr_a_asset_mapping_after["asset-diff-name-diff-modules-TWO.js"].uuid
+        )
         asset_b = prev_b_asset_mapping["asset-diff-name-diff-modules-ONE.js"]
-        assert curr_b_asset_mapping_after["asset-diff-name-diff-modules-TWO.js"]
+        assert (
+            asset_b.uuid
+            != curr_b_asset_mapping_after["asset-diff-name-diff-modules-TWO.js"].uuid
+        )
 
     finally:
         prev_bar.cleanup()
