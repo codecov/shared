@@ -342,8 +342,9 @@ class ParserV1(ParserTrait):
             asset_names = self.chunk_asset_names_index[chunk.unique_external_id]
             inserts.extend(
                 [
-                    dict(asset_id=asset_name_to_id[asset_name], chunk_id=chunk_id)
+                    dict(asset_id=asset_name_to_id.get(asset_name), chunk_id=chunk_id)
                     for asset_name in asset_names
+                    if asset_name_to_id.get(asset_name) is not None
                 ]
             )
         if inserts:

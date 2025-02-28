@@ -72,6 +72,12 @@ sample_bundle_stats_path_9 = (
     / "sample_bundle_stats_dynamic_import_routing_1.json"
 )
 
+sample_bundle_stats_path_10 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_w_bad_chunk.json"
+)
+
 
 def _table_rows_count(db_session: DbSession) -> Tuple[int]:
     return (
@@ -1052,5 +1058,35 @@ def test_bundle_report_route_report_with_dynamic_imports():
         assert route_report.get_size("/sverdle/careers") == 2100
         assert route_report.get_size("/sverdle/faq") == 2110
         assert route_report.get_size("/sverdle/users") == 2111
+    finally:
+        report.cleanup()
+
+
+@pytest.mark.parametrize("version", ["1", "2", "3"])
+def test_bundle_report_cleans_bad_chunks(version):
+    try:
+        report = BundleAnalysisReport()
+
+        # Read and modify the JSON content
+        with open(sample_bundle_stats_path_10, "r") as f:
+            content = f.read().replace("__VERSION__", version)
+
+        # Create a temporary file with the modified content
+        import tempfile
+
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".json", delete=False
+        ) as temp:
+            temp.write(content)
+            temp_path = Path(temp.name)
+
+        report.ingest(temp_path)
+        bundle_report = report.bundle_report("sample")
+
+        assets = sorted([item.hashed_name for item in bundle_report.asset_reports()])
+        assert assets == [
+            "assets/LazyComponent-fcbb0922.js",
+        ]
+        temp_path.unlink()
     finally:
         report.cleanup()
