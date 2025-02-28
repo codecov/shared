@@ -381,14 +381,16 @@ class ParserV3(ParserTrait):
             self.db_session.query(Asset)
             .filter(
                 Asset.session_id == self.session.id,
-                Asset.asset_type == AssetType.JAVASCRIPT,
+                # Asset.asset_type == AssetType.JAVASCRIPT,
             )
             .all()
         )
 
-        print("IN HERE")
+        print("IN HERE", assets)
 
         asset_name_to_id = {asset.name: asset.id for asset in assets}
+
+        print("IN HERE 2", asset_name_to_id)
 
         chunks: list[Chunk] = (
             self.db_session.query(Chunk)

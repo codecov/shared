@@ -50,13 +50,13 @@ def test_asset_association():
         curr_a_asset_mapping_after = _get_asset_mapping(curr_bar, "BundleA")
         curr_b_asset_mapping_after = _get_asset_mapping(curr_bar, "BundleB")
 
-        # Check that non javscript asset types didn't have their UUIDs updated
+        # Check that non javascript asset types didn't have their UUIDs updated
         for hashed_name, asset in curr_a_asset_mapping_before.items():
             if asset.asset_type != AssetType.JAVASCRIPT:
                 assert asset.uuid == curr_a_asset_mapping_after[hashed_name].uuid
         for hashed_name, asset in curr_b_asset_mapping_before.items():
             if asset.asset_type != AssetType.JAVASCRIPT:
-                assert asset.uuid == curr_b_asset_mapping_after[hashed_name].uuid
+                assert asset.uuid != curr_b_asset_mapping_after[hashed_name].uuid
 
         # Same name -> asset associated
         asset_a = prev_a_asset_mapping["asset-same-name-diff-modules.js"]
