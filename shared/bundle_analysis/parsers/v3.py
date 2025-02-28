@@ -381,9 +381,12 @@ class ParserV3(ParserTrait):
             self.db_session.query(Asset)
             .filter(
                 Asset.session_id == self.session.id,
+                Asset.asset_type == AssetType.JAVASCRIPT,
             )
             .all()
         )
+
+        print("IN HERE")
 
         asset_name_to_id = {asset.name: asset.id for asset in assets}
 
@@ -409,13 +412,10 @@ class ParserV3(ParserTrait):
             chunk_id = chunk.id
             asset_names = self.chunk_asset_names_index[chunk.unique_external_id]
 
-            # Only add assets which we have references for in the asset_name_to_id map
-            # This is to avoid inserting assets for non-JS files
             inserts.extend(
                 [
-                    dict(asset_id=asset_name_to_id.get(asset_name), chunk_id=chunk_id)
+                    dict(asset_id=asset_name_to_id[asset_name], chunk_id=chunk_id)
                     for asset_name in asset_names
-                    if asset_name_to_id.get(asset_name) is not None
                 ]
             )
         if inserts:
