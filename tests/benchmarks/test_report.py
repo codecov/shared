@@ -22,8 +22,6 @@ READABLE_VARIANTS = [
     pytest.param(ReadOnlyReport, True, id="Rust ReadOnlyReport"),
 ]
 
-EDITABLE_VARIANTS = [Report]
-
 
 def init_mocks(mocker, should_load_rust) -> tuple[bytes, bytes]:
     mocker.patch(
@@ -143,7 +141,7 @@ def test_report_diff_calculation(mocker, do_filter, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
     diff = load_diff()
 
-    report = do_parse(Report, raw_report_json, raw_chunks)
+    report = do_full_parse(Report, raw_report_json, raw_chunks)
     if do_filter:
         report = report.filter(paths=[".*"], flags=["unit"])
 
@@ -153,11 +151,10 @@ def test_report_diff_calculation(mocker, do_filter, benchmark):
     benchmark(bench_fn)
 
 
-@pytest.mark.parametrize("report_class", EDITABLE_VARIANTS)
-def test_report_serialize(report_class, mocker, benchmark):
+def test_report_serialize(mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
+    report = do_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
         report.to_database()
@@ -166,24 +163,22 @@ def test_report_serialize(report_class, mocker, benchmark):
     benchmark(bench_fn)
 
 
-@pytest.mark.parametrize("report_class", EDITABLE_VARIANTS)
-def test_report_merge(report_class, mocker, benchmark):
+def test_report_merge(mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
 
-    report1 = do_parse(report_class, raw_report_json, raw_chunks)
-    report2 = do_parse(report_class, raw_report_json, raw_chunks)
+    report2 = do_full_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
+        report1 = do_parse(Report, raw_report_json, raw_chunks)
         report1.merge(report2)
 
     benchmark(bench_fn)
 
 
-@pytest.mark.parametrize("report_class", EDITABLE_VARIANTS)
-def test_report_carryforward(report_class, mocker, benchmark):
+def test_report_carryforward(mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
+    report = do_full_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
         generate_carryforward_report(report, paths=[".*"], flags=["unit"])
