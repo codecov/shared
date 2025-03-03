@@ -3,7 +3,6 @@ import pytest
 import zstandard as zstd
 
 from shared.reports.carryforward import generate_carryforward_report
-from shared.reports.editable import EditableReport
 from shared.reports.readonly import ReadOnlyReport
 from shared.reports.resources import Report
 from shared.torngit.base import TorngitBaseAdapter
@@ -21,10 +20,7 @@ READABLE_VARIANTS = [
     pytest.param(Report, False, id="Report"),
     pytest.param(ReadOnlyReport, False, id="ReadOnlyReport"),
     pytest.param(ReadOnlyReport, True, id="Rust ReadOnlyReport"),
-    pytest.param(EditableReport, False, id="EditableReport"),
 ]
-
-EDITABLE_VARIANTS = [Report, EditableReport]
 
 
 def init_mocks(mocker, should_load_rust) -> tuple[bytes, bytes]:
@@ -145,7 +141,7 @@ def test_report_diff_calculation(mocker, do_filter, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
     diff = load_diff()
 
-    report = do_parse(Report, raw_report_json, raw_chunks)
+    report = do_full_parse(Report, raw_report_json, raw_chunks)
     if do_filter:
         report = report.filter(paths=[".*"], flags=["unit"])
 
@@ -155,11 +151,10 @@ def test_report_diff_calculation(mocker, do_filter, benchmark):
     benchmark(bench_fn)
 
 
-@pytest.mark.parametrize("report_class", EDITABLE_VARIANTS)
-def test_report_serialize(report_class, mocker, benchmark):
+def test_report_serialize(mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
+    report = do_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
         report.to_database()
@@ -168,24 +163,22 @@ def test_report_serialize(report_class, mocker, benchmark):
     benchmark(bench_fn)
 
 
-@pytest.mark.parametrize("report_class", EDITABLE_VARIANTS)
-def test_report_merge(report_class, mocker, benchmark):
+def test_report_merge(mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
 
-    report1 = do_parse(report_class, raw_report_json, raw_chunks)
-    report2 = do_parse(report_class, raw_report_json, raw_chunks)
+    report2 = do_full_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
+        report1 = do_parse(Report, raw_report_json, raw_chunks)
         report1.merge(report2)
 
     benchmark(bench_fn)
 
 
-@pytest.mark.parametrize("report_class", EDITABLE_VARIANTS)
-def test_report_carryforward(report_class, mocker, benchmark):
+def test_report_carryforward(mocker, benchmark):
     raw_chunks, raw_report_json = init_mocks(mocker, False)
 
-    report = do_parse(report_class, raw_report_json, raw_chunks)
+    report = do_full_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
         generate_carryforward_report(report, paths=[".*"], flags=["unit"])
