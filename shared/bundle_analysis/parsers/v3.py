@@ -188,7 +188,7 @@ class ParserV3(ParserTrait):
                 assert self.session.bundle is not None
                 return self.session.id, self.session.bundle.name
         except Exception as e:
-            # Inject the plugin name to the Exception object so we have visibilitity on which plugin
+            # Inject the plugin name to the Exception object so we have visibility on which plugin
             # is causing the trouble.
             e.bundle_analysis_plugin_name = self.info.get("plugin_name", "unknown")
             raise e
@@ -408,10 +408,12 @@ class ParserV3(ParserTrait):
         for chunk in chunks:
             chunk_id = chunk.id
             asset_names = self.chunk_asset_names_index[chunk.unique_external_id]
+
             inserts.extend(
                 [
-                    dict(asset_id=asset_name_to_id[asset_name], chunk_id=chunk_id)
+                    dict(asset_id=asset_name_to_id.get(asset_name), chunk_id=chunk_id)
                     for asset_name in asset_names
+                    if asset_name_to_id.get(asset_name) is not None
                 ]
             )
         if inserts:

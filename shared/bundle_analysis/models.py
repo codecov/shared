@@ -238,6 +238,10 @@ class Asset(Base):
         "Chunk", secondary=assets_chunks, back_populates="assets", cascade="all, delete"
     )
 
+    def __repr__(self):
+        """Returns a string representation of the Asset with key information"""
+        return f"Asset(name='{self.name}', type={self.asset_type}, size={self.size})"
+
 
 class Chunk(Base):
     """

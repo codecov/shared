@@ -1,5 +1,5 @@
 {
-  "version": "1",
+  "version": "3",
   "builtAt": 1716480551136,
   "duration": 294,
   "bundleName": "BundleA",
@@ -7,15 +7,51 @@
   "bundler": { "name": "rollup", "version": "4.16.2" },
   "plugin": { "name": "@codecov/vite-plugin", "version": "0.0.1-beta.8" },
   "assets": [
-    { "name": "asset-same-name-diff-modules.js", "size": 4126, "normalized": "asset-*.js" },
-    { "name": "asset-diff-name-same-modules-ONE.js", "size": 1421, "normalized": "asset-*.js" },
-    { "name": "asset-diff-name-diff-modules-ONE.js", "size": 161, "normalized": "asset-*.js" },
-    { "name": "asset-css-A-ONE.css", "size": 2, "normalized": "assets/index-*.css"},
-    { "name": "asset-css-B-ONE.css", "size": 3, "normalized": "assets/index-*.css"},
-    { "name": "asset-font-A-ONE.woff", "size": 20, "normalized": "assets/index-*.woff"},
-    { "name": "asset-font-B-ONE.ttf", "size": 30, "normalized": "assets/index-*.ttf"},
-    { "name": "asset-image-A-ONE.jpg", "size": 200, "normalized": "assets/index-*.jpg"},
-    { "name": "asset-image-B-ONE.svg", "size": 300, "normalized": "assets/index-*.svg"}
+    {
+      "name": "asset-same-name-diff-modules.js",
+      "size": 4126,
+      "normalized": "asset-*.js"
+    },
+    {
+      "name": "asset-diff-name-same-modules-ONE.js",
+      "size": 1421,
+      "normalized": "asset-*.js"
+    },
+    {
+      "name": "asset-diff-name-diff-modules-ONE.js",
+      "size": 161,
+      "normalized": "asset-*.js"
+    },
+    {
+      "name": "asset-css-A-ONE.css",
+      "size": 2,
+      "normalized": "assets/index-*.css"
+    },
+    {
+      "name": "asset-css-B-ONE.css",
+      "size": 3,
+      "normalized": "assets/index-*.css"
+    },
+    {
+      "name": "asset-font-A-ONE.woff",
+      "size": 20,
+      "normalized": "assets/index-*.woff"
+    },
+    {
+      "name": "asset-font-B-ONE.ttf",
+      "size": 30,
+      "normalized": "assets/index-*.ttf"
+    },
+    {
+      "name": "asset-image-A-ONE.jpg",
+      "size": 200,
+      "normalized": "assets/index-*.jpg"
+    },
+    {
+      "name": "asset-image-B-ONE.svg",
+      "size": 300,
+      "normalized": "assets/index-*.svg"
+    }
   ],
   "chunks": [
     {
@@ -44,14 +80,34 @@
     }
   ],
   "modules": [
-    { "name": "./src/file-aOne.js", "size": 189, "chunkUniqueIds": ["0-asset"] },
-    { "name": "./src/file-bOne.js", "size": 353, "chunkUniqueIds": ["0-asset"] },
-    { "name": "./src/file-cOne.js", "size": 497, "chunkUniqueIds": ["0-asset"] },
+    {
+      "name": "./src/file-aOne.js",
+      "size": 189,
+      "chunkUniqueIds": ["0-asset"]
+    },
+    {
+      "name": "./src/file-bOne.js",
+      "size": 353,
+      "chunkUniqueIds": ["0-asset"]
+    },
+    {
+      "name": "./src/file-cOne.js",
+      "size": 497,
+      "chunkUniqueIds": ["0-asset"]
+    },
     { "name": "./src/file-d.js", "size": 154, "chunkUniqueIds": ["1-asset"] },
     { "name": "./src/file-e.js", "size": 140, "chunkUniqueIds": ["1-asset"] },
     { "name": "./src/file-f.js", "size": 315, "chunkUniqueIds": ["1-asset"] },
-    { "name": "./src/file-gONE.js", "size": 406, "chunkUniqueIds": ["2-asset"] },
-    { "name": "./src/file-hONE.js", "size": 262, "chunkUniqueIds": ["2-asset"] },
+    {
+      "name": "./src/file-gONE.js",
+      "size": 406,
+      "chunkUniqueIds": ["2-asset"]
+    },
+    {
+      "name": "./src/file-hONE.js",
+      "size": 262,
+      "chunkUniqueIds": ["2-asset"]
+    },
     { "name": "./src/file-iONE.js", "size": 308, "chunkUniqueIds": ["2-asset"] }
   ]
 }

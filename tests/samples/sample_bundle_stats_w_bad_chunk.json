@@ -1,0 +1,49 @@
+{
+  "version": "__VERSION__",
+  "plugin": {
+    "name": "codecov-vite-bundle-analysis-plugin",
+    "version": "1.0.0"
+  },
+  "builtAt": 1701451048604,
+  "duration": 331,
+  "bundler": { "name": "rollup", "version": "3.29.4" },
+  "bundleName": "sample",
+  "assets": [
+    {
+      "name": "assets/LazyComponent-fcbb0922.js",
+      "size": 294,
+      "gzipSize": 293,
+      "normalized": "assets/LazyComponent-*.js"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "LazyComponent",
+      "uniqueId": "0-LazyComponent",
+      "entry": false,
+      "initial": true,
+      "files": ["assets/LazyComponent-fcbb0922.js"],
+      "names": ["LazyComponent"]
+    },
+    {
+      "id": "this_claims_to_have_an_asset_that_does_not_exist",
+      "uniqueId": "invalid_chunk",
+      "entry": false,
+      "initial": true,
+      "files": ["assets/asset_that_does_not_exist.js"],
+      "names": ["Dodo"]
+    }
+  ],
+  "modules": [
+    {
+      "name": "./src/LazyComponent/LazyComponent.tsx",
+      "size": 497,
+      "chunkUniqueIds": ["0-LazyComponent"]
+    },
+    {
+      "name": "./xxx.jpg",
+      "size": 0,
+      "chunkUniqueIds": ["invalid_chunk"]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "version": "1",
+  "version": "3",
   "builtAt": 1716480551148,
   "duration": 294,
   "bundleName": "BundleB",
@@ -7,15 +7,51 @@
   "bundler": { "name": "rollup", "version": "4.16.2" },
   "plugin": { "name": "@codecov/vite-plugin", "version": "0.0.1-beta.8" },
   "assets": [
-    { "name": "asset-same-name-diff-modules.js", "size": 4126, "normalized": "asset-*.js" },
-    { "name": "asset-diff-name-same-modules-TWO.js", "size": 1421, "normalized": "asset-*.js" },
-    { "name": "asset-diff-name-diff-modules-TWO.js", "size": 161, "normalized": "asset-*.js" },
-    { "name": "asset-css-A-TWO.css", "size": 4, "normalized": "assets/index-*.css"},
-    { "name": "asset-css-B-TWO.css", "size": 5, "normalized": "assets/index-*.css"},
-    { "name": "asset-font-A-TWO.woff", "size": 40, "normalized": "assets/index-*.woff"},
-    { "name": "asset-font-B-TWO.ttf", "size": 50, "normalized": "assets/index-*.ttf"},
-    { "name": "asset-image-A-TWO.jpg", "size": 400, "normalized": "assets/index-*.jpg"},
-    { "name": "asset-image-B-TWO.svg", "size": 500, "normalized": "assets/index-*.svg"}
+    {
+      "name": "asset-same-name-diff-modules.js",
+      "size": 4126,
+      "normalized": "asset-*.js"
+    },
+    {
+      "name": "asset-diff-name-same-modules-TWO.js",
+      "size": 1421,
+      "normalized": "asset-*.js"
+    },
+    {
+      "name": "asset-diff-name-diff-modules-TWO.js",
+      "size": 161,
+      "normalized": "asset-*.js"
+    },
+    {
+      "name": "asset-css-A-TWO.css",
+      "size": 4,
+      "normalized": "assets/index-*.css"
+    },
+    {
+      "name": "asset-css-B-TWO.css",
+      "size": 5,
+      "normalized": "assets/index-*.css"
+    },
+    {
+      "name": "asset-font-A-TWO.woff",
+      "size": 40,
+      "normalized": "assets/index-*.woff"
+    },
+    {
+      "name": "asset-font-B-TWO.ttf",
+      "size": 50,
+      "normalized": "assets/index-*.ttf"
+    },
+    {
+      "name": "asset-image-A-TWO.jpg",
+      "size": 400,
+      "normalized": "assets/index-*.jpg"
+    },
+    {
+      "name": "asset-image-B-TWO.svg",
+      "size": 500,
+      "normalized": "assets/index-*.svg"
+    }
   ],
   "chunks": [
     {
@@ -44,14 +80,34 @@
     }
   ],
   "modules": [
-    { "name": "./src/file-aTwo.js", "size": 189, "chunkUniqueIds": ["0-asset"] },
-    { "name": "./src/file-bTwo.js", "size": 353, "chunkUniqueIds": ["0-asset"] },
-    { "name": "./src/file-cTwo.js", "size": 497, "chunkUniqueIds": ["0-asset"] },
+    {
+      "name": "./src/file-aTwo.js",
+      "size": 189,
+      "chunkUniqueIds": ["0-asset"]
+    },
+    {
+      "name": "./src/file-bTwo.js",
+      "size": 353,
+      "chunkUniqueIds": ["0-asset"]
+    },
+    {
+      "name": "./src/file-cTwo.js",
+      "size": 497,
+      "chunkUniqueIds": ["0-asset"]
+    },
     { "name": "./src/file-d.js", "size": 154, "chunkUniqueIds": ["1-asset"] },
     { "name": "./src/file-e.js", "size": 140, "chunkUniqueIds": ["1-asset"] },
     { "name": "./src/file-f.js", "size": 315, "chunkUniqueIds": ["1-asset"] },
-    { "name": "./src/file-sTWO.js", "size": 406, "chunkUniqueIds": ["2-asset"] },
-    { "name": "./src/file-tTWO.js", "size": 262, "chunkUniqueIds": ["2-asset"] },
+    {
+      "name": "./src/file-sTWO.js",
+      "size": 406,
+      "chunkUniqueIds": ["2-asset"]
+    },
+    {
+      "name": "./src/file-tTWO.js",
+      "size": 262,
+      "chunkUniqueIds": ["2-asset"]
+    },
     { "name": "./src/file-uTWO.js", "size": 308, "chunkUniqueIds": ["2-asset"] }
   ]
 }
