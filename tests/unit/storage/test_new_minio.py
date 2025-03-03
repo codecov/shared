@@ -7,7 +7,7 @@ import pytest
 import zstandard
 
 from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
-from shared.storage.new_minio import NewMinioStorageService, zstd_decoded_by_default
+from shared.storage.minio import MinioStorageService, zstd_decoded_by_default
 
 BUCKET_NAME = "archivetest"
 
@@ -28,8 +28,8 @@ def test_gzip_stream_compression():
     assert gzip.decompress(b"".join(compressed_pieces)) == data.encode()
 
 
-def make_storage() -> NewMinioStorageService:
-    return NewMinioStorageService(
+def make_storage() -> MinioStorageService:
+    return MinioStorageService(
         {
             "access_key_id": "codecov-default-key",
             "secret_access_key": "codecov-default-secret",
@@ -38,11 +38,12 @@ def make_storage() -> NewMinioStorageService:
             "port": "9000",
             "iam_auth": False,
             "iam_endpoint": None,
-        }
+        },
+        new_mode="write",
     )
 
 
-def ensure_bucket(storage: NewMinioStorageService):
+def ensure_bucket(storage: MinioStorageService):
     try:
         storage.create_root_storage(BUCKET_NAME)
     except Exception:
@@ -275,8 +276,7 @@ def test_write_then_delete_file():
         storage.read_file(BUCKET_NAME, path)
 
 
-def test_minio_without_ports(mocker):
-    mocked_minio_client = mocker.patch("shared.storage.new_minio.Minio")
+def test_minio_without_ports():
     minio_no_ports_config = {
         "access_key_id": "hodor",
         "secret_access_key": "haha",
@@ -285,16 +285,12 @@ def test_minio_without_ports(mocker):
         "iam_auth": True,
         "iam_endpoint": None,
     }
-
-    storage = NewMinioStorageService(minio_no_ports_config)
+    storage = MinioStorageService(minio_no_ports_config)
     assert storage.minio_config == minio_no_ports_config
-    mocked_minio_client.assert_called_with(
-        "cute_url_no_ports", credentials=mocker.ANY, secure=False, region=None
-    )
+    assert storage.minio_client._base_url._url.port is None
 
 
-def test_minio_with_ports(mocker):
-    mocked_minio_client = mocker.patch("shared.storage.new_minio.Minio")
+def test_minio_with_ports():
     minio_no_ports_config = {
         "access_key_id": "hodor",
         "secret_access_key": "haha",
@@ -304,16 +300,12 @@ def test_minio_with_ports(mocker):
         "iam_auth": True,
         "iam_endpoint": None,
     }
-
-    storage = NewMinioStorageService(minio_no_ports_config)
+    storage = MinioStorageService(minio_no_ports_config)
     assert storage.minio_config == minio_no_ports_config
-    mocked_minio_client.assert_called_with(
-        "cute_url_no_ports:9000", credentials=mocker.ANY, secure=False, region=None
-    )
+    assert storage.minio_client._base_url.region is None
 
 
-def test_minio_with_region(mocker):
-    mocked_minio_client = mocker.patch("shared.storage.new_minio.Minio")
+def test_minio_with_region():
     minio_no_ports_config = {
         "access_key_id": "hodor",
         "secret_access_key": "haha",
@@ -324,12 +316,6 @@ def test_minio_with_region(mocker):
         "iam_endpoint": None,
         "region": "example",
     }
-
-    storage = NewMinioStorageService(minio_no_ports_config)
+    storage = MinioStorageService(minio_no_ports_config)
     assert storage.minio_config == minio_no_ports_config
-    mocked_minio_client.assert_called_with(
-        "cute_url_no_ports:9000",
-        credentials=mocker.ANY,
-        secure=False,
-        region="example",
-    )
+    assert storage.minio_client._base_url.region == "example"

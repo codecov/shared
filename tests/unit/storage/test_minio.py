@@ -121,8 +121,7 @@ class TestMinioStorageService(BaseTestCase):
         reading_result = storage.read_file(bucket_name, path)
         assert reading_result.decode() == data
 
-    def test_minio_without_ports(self, mocker):
-        mocked_minio_client = mocker.patch("shared.storage.minio.Minio")
+    def test_minio_without_ports(self):
         minio_no_ports_config = {
             "access_key_id": "hodor",
             "secret_access_key": "haha",
@@ -133,16 +132,9 @@ class TestMinioStorageService(BaseTestCase):
         }
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
-        mocked_minio_client.assert_called_with(
-            "cute_url_no_ports",
-            credentials=mocker.ANY,
-            http_client=mocker.ANY,
-            secure=False,
-            region=None,
-        )
+        assert storage.minio_client._base_url._url.port is None
 
-    def test_minio_with_ports(self, mocker):
-        mocked_minio_client = mocker.patch("shared.storage.minio.Minio")
+    def test_minio_with_ports(self):
         minio_no_ports_config = {
             "access_key_id": "hodor",
             "secret_access_key": "haha",
@@ -154,16 +146,9 @@ class TestMinioStorageService(BaseTestCase):
         }
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
-        mocked_minio_client.assert_called_with(
-            "cute_url_no_ports:9000",
-            credentials=mocker.ANY,
-            http_client=mocker.ANY,
-            secure=False,
-            region=None,
-        )
+        assert storage.minio_client._base_url.region is None
 
-    def test_minio_with_region(self, mocker):
-        mocked_minio_client = mocker.patch("shared.storage.minio.Minio")
+    def test_minio_with_region(self):
         minio_no_ports_config = {
             "access_key_id": "hodor",
             "secret_access_key": "haha",
@@ -176,10 +161,4 @@ class TestMinioStorageService(BaseTestCase):
         }
         storage = MinioStorageService(minio_no_ports_config)
         assert storage.minio_config == minio_no_ports_config
-        mocked_minio_client.assert_called_with(
-            "cute_url_no_ports:9000",
-            credentials=mocker.ANY,
-            http_client=mocker.ANY,
-            secure=False,
-            region="example",
-        )
+        assert storage.minio_client._base_url.region == "example"

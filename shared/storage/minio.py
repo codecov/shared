@@ -1,28 +1,29 @@
-import gzip
 import json
 import logging
 import os
-import shutil
-import tempfile
 from datetime import timedelta
-from io import BytesIO
-from typing import BinaryIO, overload
+from functools import lru_cache
+from typing import IO, BinaryIO, Literal, overload
 
 import certifi
 import urllib3
 from minio import Minio
-from minio.credentials import (
+from minio.credentials.providers import (
     ChainedProvider,
     EnvAWSProvider,
     EnvMinioProvider,
     IamAwsProvider,
 )
 from minio.error import MinioException, S3Error
+from minio.helpers import ObjectWriteResult
 from urllib3 import Retry
 from urllib3.util import Timeout
 
-from shared.storage.base import CHUNK_SIZE, BaseStorageService, PresignedURLService
-from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
+from shared.storage.base import BaseStorageService, PresignedURLService
+from shared.storage.compression import zstd_decoded_by_default
+from shared.storage.exceptions import BucketAlreadyExistsError
+from shared.storage.read import new_minio_read, old_minio_read
+from shared.storage.write import new_minio_write, old_minio_write
 
 log = logging.getLogger(__name__)
 
@@ -30,104 +31,127 @@ CONNECT_TIMEOUT = 10
 READ_TIMEOUT = 60
 
 
-# Service class for interfacing with codecov's underlying storage layer, minio
-class MinioStorageService(BaseStorageService, PresignedURLService):
-    def __init__(self, minio_config):
-        self.minio_config = minio_config
-        log.debug("Connecting to minio with config %s", self.minio_config)
+def init_minio_client(
+    host: str,
+    port: str | None,
+    access_key: str | None,
+    secret_key: str | None,
+    verify_ssl: bool,
+    iam_auth: bool,
+    iam_endpoint: str | None,
+    region: str | None,
+):
+    """
+        Initialize the minio client
 
-        self.minio_client = self.init_minio_client(
-            self.minio_config["host"],
-            self.minio_config.get("port"),
-            self.minio_config["access_key_id"],
-            self.minio_config["secret_access_key"],
-            self.minio_config["verify_ssl"],
-            self.minio_config.get("iam_auth", False),
-            self.minio_config["iam_endpoint"],
-            self.minio_config.get("region"),
-        )
-        log.debug("Done setting up minio client")
+    `iam_auth` adds support for IAM base authentication in a fallback pattern.
+        The following will be checked in order:
 
-    def client(self):
-        return self.minio_client if self.minio_client else None
+    * EC2 metadata -- a custom endpoint can be provided, default is None.
+    * AWS env vars, specifically AWS_ACCESS_KEY and AWS_SECRECT_KEY
+    * Minio env vars, specifically MINIO_ACCESS_KEY and MINIO_SECRET_KEY
 
-    def init_minio_client(
-        self,
-        host: str,
-        port: str,
-        access_key: str | None = None,
-        secret_key: str | None = None,
-        verify_ssl: bool = False,
-        iam_auth: bool = False,
-        iam_endpoint: str | None = None,
-        region: str | None = None,
-    ):
-        """
-            Initialize the minio client
+    to support backward compatibility, the iam_auth setting should be used in the installation
+        configuration
 
-        `iam_auth` adds support for IAM base authentication in a fallback pattern.
-            The following will be checked in order:
+    Args:
+        host (str): The address of the host where minio lives
+        port (str): The port number (as str or int should be ok)
+        access_key (str, optional): The access key (optional if IAM is being used)
+        secret_key (str, optional): The secret key (optional if IAM is being used)
+        verify_ssl (bool, optional): Whether minio should verify ssl
+        iam_auth (bool, optional): Whether to use iam_auth
+        iam_endpoint (str, optional): The endpoint to try to fetch EC2 metadata
+        region (str, optional): The region of the host where minio lives
+    """
+    if port is not None:
+        host = "{}:{}".format(host, port)
 
-        * EC2 metadata -- a custom endpoint can be provided, default is None.
-        * AWS env vars, specifically AWS_ACCESS_KEY and AWS_SECRECT_KEY
-        * Minio env vars, specifically MINIO_ACCESS_KEY and MINIO_SECRET_KEY
-
-        to support backward compatibility, the iam_auth setting should be used in the installation
-            configuration
-
-        Args:
-            host (str): The address of the host where minio lives
-            port (str): The port number (as str or int should be ok)
-            access_key (str, optional): The access key (optional if IAM is being used)
-            secret_key (str, optional): The secret key (optional if IAM is being used)
-            verify_ssl (bool, optional): Whether minio should verify ssl
-            iam_auth (bool, optional): Whether to use iam_auth
-            iam_endpoint (str, optional): The endpoint to try to fetch EC2 metadata
-            region (str, optional): The region of the host where minio lives
-        """
-        if port is not None:
-            host = "{}:{}".format(host, port)
-
-        http_client = urllib3.PoolManager(
-            timeout=Timeout(connect=CONNECT_TIMEOUT, read=READ_TIMEOUT),
-            maxsize=10,
-            cert_reqs="CERT_REQUIRED",
-            ca_certs=os.environ.get("SSL_CERT_FILE") or certifi.where(),
-            retries=Retry(
-                total=5,
-                backoff_factor=1,
-                status_forcelist=[
-                    408,
-                    429,
-                    500,
-                    502,
-                    503,
-                    504,
-                ],  # https://cloud.google.com/storage/docs/retry-strategy#python
-            ),
-        )
-        if iam_auth:
-            return Minio(
-                host,
-                secure=verify_ssl,
-                region=region,
-                credentials=ChainedProvider(
-                    providers=[
-                        IamAwsProvider(custom_endpoint=iam_endpoint),
-                        EnvMinioProvider(),
-                        EnvAWSProvider(),
-                    ]
-                ),
-                http_client=http_client,
-            )
+    http_client = urllib3.PoolManager(
+        timeout=Timeout(connect=CONNECT_TIMEOUT, read=READ_TIMEOUT),
+        maxsize=10,
+        cert_reqs="CERT_REQUIRED",
+        ca_certs=os.environ.get("SSL_CERT_FILE") or certifi.where(),
+        retries=Retry(
+            total=5,
+            backoff_factor=1,
+            status_forcelist=[
+                408,
+                429,
+                500,
+                502,
+                503,
+                504,
+            ],  # https://cloud.google.com/storage/docs/retry-strategy#python
+        ),
+    )
+    if iam_auth:
         return Minio(
             host,
-            access_key=access_key,
-            secret_key=secret_key,
             secure=verify_ssl,
             region=region,
+            credentials=ChainedProvider(
+                providers=[
+                    IamAwsProvider(custom_endpoint=iam_endpoint),
+                    EnvMinioProvider(),
+                    EnvAWSProvider(),
+                ]
+            ),
             http_client=http_client,
         )
+    return Minio(
+        host,
+        access_key=access_key,
+        secret_key=secret_key,
+        secure=verify_ssl,
+        region=region,
+        http_client=http_client,
+    )
+
+
+@lru_cache(maxsize=None)
+def get_cached_minio_client(
+    host: str = "",
+    port: str | None = None,
+    access_key_id: str | None = None,
+    secret_access_key: str | None = None,
+    verify_ssl: bool = False,
+    iam_auth: bool = False,
+    iam_endpoint: str | None = None,
+    region: str | None = None,
+    **kwargs,
+):
+    return init_minio_client(
+        host,
+        port,
+        access_key_id,
+        secret_access_key,
+        verify_ssl,
+        iam_auth,
+        iam_endpoint,
+        region,
+    )
+
+
+zstd_default = zstd_decoded_by_default()
+
+
+# Service class for interfacing with codecov's underlying storage layer, minio
+class MinioStorageService(BaseStorageService, PresignedURLService):
+    def __init__(
+        self,
+        minio_config,
+        new_mode: Literal["read", "write"] | None = None,
+    ):
+        self.minio_config = minio_config
+        self.new_read = new_mode == "read" or new_mode == "write"
+        self.new_write = new_mode == "write"
+
+        log.debug("Connecting to minio with config %s", self.minio_config)
+
+        self.minio_client = get_cached_minio_client(**self.minio_config)
+
+        log.debug("Done setting up minio client")
 
     # writes the initial storage bucket to storage via minio.
     def create_root_storage(self, bucket_name="archive", region="us-east-1"):
@@ -169,59 +193,35 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
     # Writes a file to storage will gzip if not compressed already
     def write_file(
         self,
-        bucket_name,
-        path,
-        data,
-        reduced_redundancy=False,
+        bucket_name: str,
+        path: str,
+        data: IO[bytes] | str | bytes,
+        reduced_redundancy: bool = False,
         *,
-        is_already_gzipped: bool = False,
-    ):
-        if isinstance(data, str):
-            data = data.encode()
-
-        out: BinaryIO
-        if isinstance(data, bytes):
-            if not is_already_gzipped:
-                out = BytesIO()
-                with gzip.GzipFile(fileobj=out, mode="w", compresslevel=9) as gz:
-                    gz.write(data)
-            else:
-                out = BytesIO(data)
-
-            # get file size
-            out.seek(0, os.SEEK_END)
-            out_size = out.tell()
-        else:
-            # data is already a file-like object
-            if not is_already_gzipped:
-                _, filename = tempfile.mkstemp()
-                with gzip.open(filename, "wb") as f:
-                    shutil.copyfileobj(data, f)
-                out = open(filename, "rb")
-            else:
-                out = data
-
-            out_size = os.stat(filename).st_size
-
-        try:
-            # reset pos for minio reading.
-            out.seek(0)
-
-            headers = {"Content-Encoding": "gzip"}
-            if reduced_redundancy:
-                headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY"
-            self.minio_client.put_object(
+        is_already_gzipped: bool = False,  # deprecated
+        is_compressed: bool = False,
+        compression_type: str | None = "zstd",
+    ) -> ObjectWriteResult | Literal[True]:
+        if self.new_write:
+            return new_minio_write(
+                self.minio_client,
                 bucket_name,
                 path,
-                out,
-                out_size,
-                metadata=headers,
-                content_type="text/plain",
+                data,
+                reduced_redundancy,
+                is_already_gzipped=is_already_gzipped,
+                is_compressed=is_compressed,
+                compression_type=compression_type,
             )
-            return True
-
-        except MinioException:
-            raise
+        else:
+            return old_minio_write(
+                self.minio_client,
+                bucket_name,
+                path,
+                data,
+                reduced_redundancy,
+                is_already_gzipped=is_already_gzipped,
+            )
 
     @overload
     def read_file(self, bucket_name: str, path: str) -> bytes: ...
@@ -232,26 +232,21 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
     def read_file(
         self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
     ) -> bytes | None:
-        try:
-            res = self.minio_client.get_object(bucket_name, path)
-            if file_obj is None:
-                data = BytesIO()
-                for d in res.stream(CHUNK_SIZE):
-                    data.write(d)
-                data.seek(0)
-                return data.getvalue()
-            else:
-                for d in res.stream(CHUNK_SIZE):
-                    file_obj.write(d)
-                return None
-        except S3Error as e:
-            if e.code == "NoSuchKey":
-                raise FileNotInStorageError(
-                    f"File {path} does not exist in {bucket_name}"
-                )
-            raise e
-        except MinioException:
-            raise
+        if self.new_read:
+            return new_minio_read(
+                self.minio_client,
+                bucket_name,
+                path,
+                file_obj,
+                zstd_default,
+            )
+        else:
+            return old_minio_read(
+                self.minio_client,
+                bucket_name,
+                path,
+                file_obj,
+            )
 
     """
         Deletes file url in specified bucket.
