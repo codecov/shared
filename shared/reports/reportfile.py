@@ -13,12 +13,20 @@ from shared.utils.merge import merge_all, merge_line
 log = logging.getLogger(__name__)
 
 
-class ReportFile(object):
+class ReportFile:
+    name: str
+    _totals: ReportTotals | None
+    diff_totals: ReportTotals | None
+    _lines: list[None | str | ReportLine]
+    _details: dict[str, Any]
+    __present_sessions: set[int] | None
+
     def __init__(
         self,
         name: str,
         totals: ReportTotals | list | None = None,
         lines: list[None | str | ReportLine] | str | None = None,
+        diff_totals: ReportTotals | list | None = None,
         ignore=None,
     ):
         """
@@ -32,10 +40,12 @@ class ReportFile(object):
             {eof:N, lines:[1,10]}
         """
         self.name = name
-        self._details: dict[str, Any] = {}
+        self._totals = None
+        self.diff_totals = None
+        self._lines = []
+        self._details = {}
+        self.__present_sessions = None
 
-        # lines = [<details dict()>, <Line #1>, ....]
-        self._lines: list[None | str | ReportLine] = []
         if lines:
             if isinstance(lines, list):
                 self._lines = lines
@@ -43,7 +53,7 @@ class ReportFile(object):
             else:
                 lines = lines.splitlines()
                 if detailsline := lines.pop(0):
-                    self._details = orjson.loads(detailsline) or {}
+                    self._details = orjson.loads(detailsline or b"null") or {}
                 self._lines = lines
 
         self._ignore = _ignore_to_func(ignore) if ignore else None
@@ -54,18 +64,22 @@ class ReportFile(object):
         # All mutating methods (like `append`, `merge`, etc) will either re-calculate these values
         # directly, or clear them so the `@property` accessors re-calculate them when needed.
 
-        self._totals: ReportTotals | None = None
         if isinstance(totals, ReportTotals):
             self._totals = totals
         elif totals:
             self._totals = ReportTotals(*totals)
 
-        self.__present_sessions: set[int] | None = None
+        if isinstance(diff_totals, ReportTotals):
+            self.diff_totals = diff_totals
+        elif diff_totals:
+            self.diff_totals = ReportTotals(*diff_totals)
+
         if present_sessions := self._details.get("present_sessions"):
             self.__present_sessions = set(present_sessions)
 
     def _invalidate_caches(self):
         self._totals = None
+        self.diff_totals = None
         self.__present_sessions = None
 
     @property
@@ -84,11 +98,8 @@ class ReportFile(object):
     @property
     def totals(self):
         if not self._totals:
-            self._totals = self._process_totals()
+            self._totals = get_line_totals(line for _ln, line in self.lines)
         return self._totals
-
-    def _process_totals(self) -> ReportTotals:
-        return get_line_totals(line for _ln, line in self.lines)
 
     def __repr__(self):
         try:
