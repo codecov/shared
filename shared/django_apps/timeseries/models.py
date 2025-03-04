@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 import django.db.models as models
+from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 from django_prometheus.models import ExportModelOperationsMixin
 
@@ -184,3 +185,100 @@ class Dataset(ExportModelOperationsMixin("timeseries.dataset"), models.Model):
         if not self.created_at:
             return False
         return datetime.now() > self.created_at + timedelta(hours=1)
+
+
+class Testrun(ExportModelOperationsMixin("timeseries.testrun"), models.Model):
+    timestamp = models.DateTimeField(null=False, primary_key=True)
+
+    test_id = models.BinaryField(null=False)
+
+    name = models.TextField(null=True)
+    classname = models.TextField(null=True)
+    testsuite = models.TextField(null=True)
+    computed_name = models.TextField(null=True)
+
+    outcome = models.TextField(null=False)
+
+    duration_seconds = models.FloatField(null=True)
+    failure_message = models.TextField(null=True)
+    framework = models.TextField(null=True)
+    filename = models.TextField(null=True)
+
+    repo_id = models.BigIntegerField(null=True)
+    commit_sha = models.TextField(null=True)
+    branch = models.TextField(null=True)
+
+    flags = ArrayField(models.TextField(), null=True)
+    upload_id = models.BigIntegerField(null=True)
+
+    class Meta:
+        app_label = TIMESERIES_APP_LABEL
+        indexes = [
+            models.Index(
+                name="ts__repo_branch_time_i",
+                fields=["repo_id", "branch", "timestamp"],
+            ),
+            models.Index(
+                name="ts__repo_branch_test_time_i",
+                fields=["repo_id", "branch", "test_id", "timestamp"],
+            ),
+            models.Index(
+                name="ts__repo_test_id_time_i",
+                fields=["repo_id", "test_id", "timestamp"],
+            ),
+            models.Index(
+                name="ts__repo_commit_time_i",
+                fields=["repo_id", "commit_sha", "timestamp"],
+            ),
+        ]
+
+
+class TestrunBranchSummary(
+    ExportModelOperationsMixin("timeseries.testrun_continuous_aggregate"), models.Model
+):
+    timestamp_bin = models.DateTimeField(primary_key=True)
+    repo_id = models.IntegerField()
+    branch = models.TextField()
+    name = models.TextField()
+    classname = models.TextField()
+    testsuite = models.TextField()
+    computed_name = models.TextField()
+    failing_commits = models.IntegerField()
+    avg_duration_seconds = models.FloatField()
+    last_duration_seconds = models.FloatField()
+    pass_count = models.IntegerField()
+    fail_count = models.IntegerField()
+    skip_count = models.IntegerField()
+    flaky_fail_count = models.IntegerField()
+    updated_at = models.DateTimeField()
+    flags = ArrayField(models.TextField(), null=True)
+
+    class Meta:
+        app_label = TIMESERIES_APP_LABEL
+        db_table = "timeseries_testrun_branch_summary_1day"
+        managed = False
+
+
+class TestrunSummary(
+    ExportModelOperationsMixin("timeseries.testrun_continuous_aggregate"), models.Model
+):
+    timestamp_bin = models.DateTimeField(primary_key=True)
+    repo_id = models.IntegerField()
+    name = models.TextField()
+    classname = models.TextField()
+    testsuite = models.TextField()
+    computed_name = models.TextField()
+    failing_commits = models.IntegerField()
+    avg_duration_seconds = models.FloatField()
+    last_duration_seconds = models.FloatField()
+    pass_count = models.IntegerField()
+    fail_count = models.IntegerField()
+    skip_count = models.IntegerField()
+    flaky_fail_count = models.IntegerField()
+    updated_at = models.DateTimeField()
+    flags = ArrayField(models.TextField(), null=True)
+
+    class Meta:
+        app_label = TIMESERIES_APP_LABEL
+        db_table = "timeseries_testrun_summary_1day"
+        managed = False
