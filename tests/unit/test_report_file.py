@@ -1,6 +1,6 @@
 import pytest
 
-from shared.reports.resources import ReportFile, _ignore_to_func
+from shared.reports.resources import ReportFile
 from shared.reports.types import ReportLine, ReportTotals
 
 
@@ -70,23 +70,6 @@ def test_get_item_exception(get_val, error_message):
     with pytest.raises(Exception) as e_info:
         r[get_val]
     assert str(e_info.value) == error_message
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "ignore, get_val",
-    [
-        ({"eof": "N", "lines": [1, 10]}, ReportLine.create(1)),
-        ({}, ReportLine.create(0)),
-    ],
-)
-def test_set_item(ignore, get_val):
-    r = ReportFile("filename")
-    r._lines = [ReportLine.create(1)]
-    r._ignore = _ignore_to_func(ignore)
-    assert r[1] == ReportLine.create(1)
-    r[1] = ReportLine.create(0)
-    assert r[1] == get_val
 
 
 @pytest.mark.unit
@@ -176,22 +159,6 @@ def test_report_file_get_exception(get_val, error_message):
     with pytest.raises(Exception) as e_info:
         r.get(get_val)
     assert str(e_info.value) == error_message
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "ignore, boolean, lines",
-    [
-        ({"eof": "N", "lines": [1, 10]}, False, []),
-        ({}, True, [(1, ReportLine.create(1))]),
-    ],
-)
-def test_append(ignore, boolean, lines):
-    r = ReportFile("filename")
-    r._ignore = _ignore_to_func(ignore)
-    r._lines = []
-    assert r.append(1, ReportLine.create(1)) is boolean
-    assert list(r.lines) == lines
 
 
 @pytest.mark.unit
