@@ -530,21 +530,6 @@ def test_non_zero(files, boolean):
 
 
 @pytest.mark.unit
-def test_to_archive(mocker):
-    r = Report()
-    r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    assert (
-        r.to_archive()
-        == "{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
-    )
-
-
-@pytest.mark.unit
 def test_to_archive_with_header(mocker):
     r = Report()
     r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
@@ -557,37 +542,6 @@ def test_to_archive_with_header(mocker):
     assert (
         r.to_archive()
         == '{"labels_index":{"0":"special_label","1":"some_label"}}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'
-    )
-
-
-@pytest.mark.unit
-def test_to_database(mocker):
-    r = Report(files={"file.py": [0, ReportTotals()]})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    r._totals = None
-    r.diff_totals = None
-    r.sessions = {}
-    assert r.to_database() == (
-        {
-            "M": 0,
-            "c": None,
-            "b": 0,
-            "d": 0,
-            "f": 1,
-            "h": 0,
-            "m": 0,
-            "C": 0,
-            "n": 0,
-            "p": 0,
-            "s": 0,
-            "diff": None,
-            "N": 0,
-        },
-        '{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{}}',
     )
 
 
@@ -924,11 +878,11 @@ def test_filter_exception(mocker):
 
 @pytest.mark.unit
 def test_encode_chunk():
-    assert _encode_chunk(None) == "null"
-    assert _encode_chunk(ReportFile(name="name.ply")) == '{"present_sessions":[]}\n'
+    assert _encode_chunk(None) == b"null"
+    assert _encode_chunk(ReportFile(name="name.ply")) == b'{"present_sessions":[]}\n'
     assert (
         _encode_chunk([ReportLine.create(2), ReportLine.create(1)])
-        == "[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
+        == b"[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
     )
 
 

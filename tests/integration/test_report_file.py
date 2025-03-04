@@ -353,10 +353,3 @@ def test_shift_lines_by_diff():
         }
     )
     assert len(list(r.lines)) == 1
-
-
-@pytest.mark.integration
-def test_encode():
-    assert ReportFile("name.py")._encode() == '{"present_sessions":[]}\n'
-    f = ReportFile("name.py", lines=[ReportLine.create(1), ReportLine.create(2)])
-    assert f._encode() == '{"present_sessions":[]}\n[1]\n[2]'

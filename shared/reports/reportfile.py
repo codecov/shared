@@ -6,7 +6,6 @@ from typing import Any, cast
 import orjson
 
 from shared.reports.diff import DiffSegment, calculate_file_diff
-from shared.reports.serde import orjson_option, report_default
 from shared.reports.totals import get_line_totals
 from shared.reports.types import EMPTY, ReportLine, ReportTotals
 from shared.utils.merge import merge_all, merge_line
@@ -90,12 +89,6 @@ class ReportFile(object):
 
     def _process_totals(self) -> ReportTotals:
         return get_line_totals(line for _ln, line in self.lines)
-
-    def _encode(self) -> str:
-        details = orjson.dumps(self.details, option=orjson_option)
-        return (
-            details + b"\n" + b"\n".join(_dumps_not_none(line) for line in self._lines)
-        ).decode()
 
     def __repr__(self):
         try:
@@ -509,23 +502,3 @@ def _ignore_to_func(ignore):
         return lambda ln: ln > eof or ln in lines
     else:
         return lambda ln: ln in lines
-
-
-def _rstrip_none(lst):
-    while lst[-1] is None:
-        lst.pop(-1)
-    return lst
-
-
-def _dumps_not_none(value) -> bytes:
-    if isinstance(value, list):
-        return orjson.dumps(
-            _rstrip_none(list(value)), default=report_default, option=orjson_option
-        )
-    if isinstance(value, ReportLine):
-        return orjson.dumps(
-            _rstrip_none(list(value.astuple())),
-            default=report_default,
-            option=orjson_option,
-        )
-    return value.encode() if value and value != "null" else b""
