@@ -7,13 +7,8 @@ from shared.reports.carryforward import (
     carriedforward_session_name,
     generate_carryforward_report,
 )
-from shared.reports.resources import (
-    Report,
-    ReportFile,
-    ReportLine,
-    Session,
-)
-from shared.reports.types import LineSession
+from shared.reports.resources import Report, ReportFile, Session
+from shared.reports.types import LineSession, ReportLine
 
 
 @pytest.fixture

@@ -1,14 +1,8 @@
 from unittest.mock import patch
 
 from shared.reports.filtered import FilteredReport, FilteredReportFile
-from shared.reports.resources import (
-    Report,
-    ReportFile,
-    ReportLine,
-    ReportTotals,
-    Session,
-)
-from shared.reports.types import CoverageDatapoint, LineSession, NetworkFile
+from shared.reports.resources import Report, ReportFile, ReportTotals, Session
+from shared.reports.types import CoverageDatapoint, LineSession, NetworkFile, ReportLine
 from shared.utils.sessions import SessionType
 
 

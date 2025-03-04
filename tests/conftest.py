@@ -4,13 +4,8 @@ import pytest
 import vcr
 
 from shared.config import ConfigHelper
-from shared.reports.resources import (
-    Report,
-    ReportFile,
-    ReportLine,
-    Session,
-)
-from shared.reports.types import LineSession
+from shared.reports.resources import Report, ReportFile, Session
+from shared.reports.types import LineSession, ReportLine
 
 
 @pytest.fixture
