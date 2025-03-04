@@ -97,7 +97,7 @@ def test_resolve_paths_duplicate_paths():
             False,
             True,
             50,
-            0,
+            10,
         ),
         (Report(), None, True, False, 0, 0),
         (Report(), ReportFile("name.py"), True, False, 0, 0),
@@ -410,7 +410,7 @@ def test_to_archive():
     ).to_archive()
     assert (
         chunks
-        == "{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
+        == """{}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
     )
 
 
@@ -454,7 +454,7 @@ def test_serialize(mocker):
     )
     assert (
         chunks1
-        == b"{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
+        == b"""{}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
     )
     assert totals1 == ReportTotals(files=1, coverage=None, diff=None)
 
@@ -465,10 +465,7 @@ def test_serialize(mocker):
     mocker.patch.object(report, "_process_totals")
 
     report_json2, chunks2, totals2 = report.serialize(with_totals=False)
-    assert (
-        report_json2
-        == b'{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{},"totals":null}'
-    )
+    assert report_json2 == b'{"files":{"file.py":[0,null]},"sessions":{},"totals":null}'
     assert chunks2 == chunks1
     assert totals2 is None
 
