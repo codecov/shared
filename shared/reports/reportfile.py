@@ -13,7 +13,13 @@ from shared.utils.merge import merge_all, merge_line
 log = logging.getLogger(__name__)
 
 
-class ReportFile(object):
+class ReportFile:
+    name: str
+    _totals: ReportTotals | None = None
+    _lines: list[None | str | ReportLine] = []
+    _details: dict[str, Any] = {}
+    __present_sessions: set[int] | None = None
+
     def __init__(
         self,
         name: str,
@@ -32,10 +38,7 @@ class ReportFile(object):
             {eof:N, lines:[1,10]}
         """
         self.name = name
-        self._details: dict[str, Any] = {}
 
-        # lines = [<details dict()>, <Line #1>, ....]
-        self._lines: list[None | str | ReportLine] = []
         if lines:
             if isinstance(lines, list):
                 self._lines = lines
@@ -54,13 +57,11 @@ class ReportFile(object):
         # All mutating methods (like `append`, `merge`, etc) will either re-calculate these values
         # directly, or clear them so the `@property` accessors re-calculate them when needed.
 
-        self._totals: ReportTotals | None = None
         if isinstance(totals, ReportTotals):
             self._totals = totals
         elif totals:
             self._totals = ReportTotals(*totals)
 
-        self.__present_sessions: set[int] | None = None
         if present_sessions := self._details.get("present_sessions"):
             self.__present_sessions = set(present_sessions)
 
@@ -84,11 +85,8 @@ class ReportFile(object):
     @property
     def totals(self):
         if not self._totals:
-            self._totals = self._process_totals()
+            self._totals = get_line_totals(line for _ln, line in self.lines)
         return self._totals
-
-    def _process_totals(self) -> ReportTotals:
-        return get_line_totals(line for _ln, line in self.lines)
 
     def __repr__(self):
         try:

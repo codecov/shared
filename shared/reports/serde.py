@@ -31,11 +31,14 @@ def serialize_report(
     """
 
     chunks = orjson.dumps(report._header, option=orjson_option)
+
+    indexed_files = list(enumerate(report._files.values()))
+
     chunks += END_OF_HEADER
-    for i, chunk in enumerate(report._chunks):
+    for i, file in indexed_files:
         if i > 0:
             chunks += END_OF_CHUNK
-        chunks += _encode_chunk(chunk)
+        chunks += _encode_chunk(file)
 
     if with_totals:
         totals = report.totals
@@ -43,8 +46,11 @@ def serialize_report(
     else:
         totals = None
 
+    # TODO: serialize `diff_totals` as well
+    files = {file.name: [i, file.totals] for i, file in indexed_files}
+
     report_json = orjson.dumps(
-        {"files": report._files, "sessions": report.sessions, "totals": totals},
+        {"files": files, "sessions": report.sessions, "totals": totals},
         default=report_default,
         option=orjson_option,
     )
