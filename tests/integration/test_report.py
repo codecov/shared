@@ -441,27 +441,13 @@ def test_serialize(mocker):
 
     assert (
         report_json1
-        == b'{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{},"totals":{"f":1,"n":0,"h":0,"m":0,"p":0,"c":null,"b":0,"d":0,"M":0,"s":0,"C":0,"N":0,"diff":null}}'
+        == b'{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{},"totals":[1,0,0,0,0,null,0,0,0,0,0,0,null]}'
     )
     assert (
         chunks1
         == b"{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
     )
-    assert totals1 == {
-        "M": 0,
-        "c": None,
-        "b": 0,
-        "d": 0,
-        "f": 1,
-        "h": 0,
-        "m": 0,
-        "C": 0,
-        "n": 0,
-        "p": 0,
-        "s": 0,
-        "diff": None,
-        "N": 0,
-    }
+    assert totals1 == ReportTotals(files=1, coverage=None, diff=None)
 
     report = Report(
         files={"file.py": [0, ReportTotals()]},

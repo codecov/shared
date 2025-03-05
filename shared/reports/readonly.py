@@ -79,13 +79,14 @@ class ReadOnlyReport(object):
     @classmethod
     def create_from_report(cls, report: Report):
         report_json: Any
-        report_json, chunks, _totals = report.serialize(with_totals=False)
+        report_json, chunks, totals = report.serialize()
         report_json = orjson.loads(report_json)
 
         return cls.from_chunks(
             chunks=chunks.decode(),
             sessions=report.sessions,
             files=report_json["files"],
+            totals=totals,
         )
 
     def __iter__(self):

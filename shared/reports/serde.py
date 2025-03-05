@@ -9,8 +9,6 @@ from typing import TYPE_CHECKING
 import orjson
 import sentry_sdk
 
-from shared.utils.migrate import TOTALS_MAP
-
 from .reportfile import ReportFile
 from .types import ReportLine, ReportTotals
 
@@ -25,13 +23,11 @@ END_OF_HEADER = b"\n<<<<< end_of_header >>>>>\n"
 @sentry_sdk.trace
 def serialize_report(
     report: Report, with_totals=True
-) -> tuple[bytes, bytes, dict | None]:
+) -> tuple[bytes, bytes, ReportTotals | None]:
     """
     Serializes a report as `(report_json, chunks, totals)`.
 
-    The `totals` may be `None` in case this was called `with_totals=False`.
-    If `totals` is present, it is returned as a dictionary, encoded according to
-    the `TOTALS_MAP`.
+    The `totals` is either a `ReportTotals`, or `None`, depending on the `with_totals` flag.
     """
 
     chunks = orjson.dumps(report._header, option=orjson_option)
@@ -41,10 +37,11 @@ def serialize_report(
             chunks += END_OF_CHUNK
         chunks += _encode_chunk(chunk)
 
-    totals: dict | None = None
     if with_totals:
-        totals = dict(zip(TOTALS_MAP, report.totals))
-        totals["diff"] = report.diff_totals
+        totals = report.totals
+        totals.diff = report.diff_totals
+    else:
+        totals = None
 
     report_json = orjson.dumps(
         {"files": report._files, "sessions": report.sessions, "totals": totals},

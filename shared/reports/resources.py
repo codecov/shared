@@ -510,7 +510,7 @@ class Report(object):
             ).decode(),
         )
 
-    def serialize(self, with_totals=True) -> tuple[bytes, bytes, dict | None]:
+    def serialize(self, with_totals=True) -> tuple[bytes, bytes, ReportTotals | None]:
         return serialize_report(self, with_totals)
 
     @sentry_sdk.trace
