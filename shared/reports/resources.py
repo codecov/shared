@@ -261,7 +261,7 @@ class Report(object):
                     )
         return flags_dict
 
-    def get_flag_names(self):
+    def get_flag_names(self) -> list[str]:
         all_flags = set()
         for session in self.sessions.values():
             if session and session.flags:
