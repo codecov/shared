@@ -8,8 +8,7 @@ from shared.storage.minio import MinioStorageService
 
 def get_appropriate_storage_service(
     repoid: int | None = None,
-    force_minio=False,
-) -> BaseStorageService:
+) -> MinioStorageService:
     minio_config = get_config("services", "minio", default={})
     if repoid:
         new_minio_mode = cast(

@@ -65,7 +65,7 @@ class ArchiveService(object):
 
         # The `api_archive.ArchiveService` is always using `minio`
         self.storage = shared.storage.get_appropriate_storage_service(
-            repository.repoid, force_minio=True
+            repository.repoid if repository else None
         )
 
         self.storage_hash = self.get_archive_hash(repository) if repository else None
