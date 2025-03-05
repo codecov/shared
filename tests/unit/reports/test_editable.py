@@ -99,12 +99,13 @@ def test_change_sessionid():
     assert_sessionid(report, 123)
 
     # also assert a serialization roundtrip:
-    _totals, report_json = report.to_database()
-    chunks = report.to_archive()
+    report_json, chunks, _totals = report.serialize()
     report_json = orjson.loads(report_json)
 
     report = EditableReport(
-        files=report_json["files"], sessions=report_json["sessions"], chunks=chunks
+        files=report_json["files"],
+        sessions=report_json["sessions"],
+        chunks=chunks.decode(),
     )
     assert_sessionid(report, 123)
 
@@ -400,14 +401,6 @@ class TestEditableReportFile(object):
         chunks = "\n".join(['{"some_field": "nah"}', "[1, null, [[0, 1], [1, 0]]]", ""])
         report_file = EditableReportFile(name="file.py", lines=chunks)
         assert report_file.details == {"some_field": "nah", "present_sessions": [0, 1]}
-
-    def test_encode_with_details_with_nothing(self):
-        chunks = "\n".join(["", "[1, null, [[0, 1], [1, 0]]]", ""])
-        report_file = EditableReportFile(name="file.py", lines=chunks)
-
-        assert report_file._encode() == "\n".join(
-            ['{"present_sessions":[0,1]}', "[1, null, [[0, 1], [1, 0]]]"]
-        )
 
     def test_merge_already_previously_set_sessions_header(self):
         chunks = "\n".join(

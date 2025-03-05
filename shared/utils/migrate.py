@@ -1,4 +1,3 @@
-from itertools import zip_longest
 from json import loads
 
 from shared.helpers.numeric import ratio
@@ -52,34 +51,3 @@ def migrate_totals(totals):
             # v2
             return [tg(k, 0) for k in TOTALS_MAP]
     return []
-
-
-def v3_to_v2(report, path=None):
-    # used for extension
-    return {
-        "files": dict(
-            [
-                (
-                    f.name,
-                    {
-                        "l": dict([(str(ln), line.coverage) for ln, line in f.lines]),
-                        "t": dict(list(zip(TOTALS_MAP, list(f.totals)))),
-                    },
-                )
-                for f in report
-                if not path or path == f.name
-            ]
-        ),
-        "totals": dict(list(zip(TOTALS_MAP, list(report.totals)))),
-    }
-
-
-def totals_to_dict(totals):
-    if isinstance(totals, dict):
-        # turn into list for zipping
-        totals = [totals.get(k, 0) for k in TOTALS_MAP]
-
-    totals = dict(zip_longest(TOTALS_MAP_NAMES, totals, fillvalue=0))
-
-    totals["coverage"] = float(totals["coverage"])
-    return totals

@@ -157,8 +157,7 @@ def test_report_serialize(mocker, benchmark):
     report = do_parse(Report, raw_report_json, raw_chunks)
 
     def bench_fn():
-        report.to_database()
-        report.to_archive()
+        report.serialize()
 
     benchmark(bench_fn)
 
