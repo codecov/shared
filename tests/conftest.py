@@ -22,6 +22,7 @@ def mock_configuration(mocker):
                 "hash_key": "88f572f4726e4971827415efa8867978",
                 "secret_access_key": "codecov-default-secret",
                 "verify_ssl": False,
+                "port": "9000",
             },
             "redis_url": "redis://redis:@localhost:6379/",
         },
