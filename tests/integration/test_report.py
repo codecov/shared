@@ -1,6 +1,6 @@
 import pytest
 
-from shared.reports.resources import Report, ReportFile, _encode_chunk
+from shared.reports.resources import Report, ReportFile
 from shared.reports.types import (
     Change,
     LineSession,
@@ -395,42 +395,73 @@ def test_non_zero(r, boolean):
 
 @pytest.mark.integration
 def test_to_archive():
+    chunks = Report(
+        files={"file.py": [0, ReportTotals()]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    ).to_archive()
     assert (
-        Report(
-            files={"file.py": [0, ReportTotals()]},
-            chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
-        ).to_archive()
+        chunks
         == "{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
     )
 
 
 @pytest.mark.integration
 def test_to_database():
-    expected_result = (
-        {
-            "M": 0,
-            "c": None,
-            "b": 0,
-            "d": 0,
-            "f": 1,
-            "h": 0,
-            "m": 0,
-            "C": 0,
-            "n": 0,
-            "p": 0,
-            "s": 0,
-            "diff": None,
-            "N": 0,
-        },
-        '{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{}}',
-    )
-    res = Report(
+    totals, report_json = Report(
         files={"file.py": [0, ReportTotals()]},
         chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
     ).to_database()
-    assert res[0] == expected_result[0]
-    assert res[1] == expected_result[1]
-    assert res == expected_result
+    assert totals == {
+        "M": 0,
+        "c": None,
+        "b": 0,
+        "d": 0,
+        "f": 1,
+        "h": 0,
+        "m": 0,
+        "C": 0,
+        "n": 0,
+        "p": 0,
+        "s": 0,
+        "diff": None,
+        "N": 0,
+    }
+    assert (
+        report_json
+        == '{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{}}'
+    )
+
+
+def test_serialize(mocker):
+    report = Report(
+        files={"file.py": [0, ReportTotals()]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    )
+    report_json1, chunks1, totals1 = report.serialize()
+
+    assert (
+        report_json1
+        == b'{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{},"totals":[1,0,0,0,0,null,0,0,0,0,0,0,null]}'
+    )
+    assert (
+        chunks1
+        == b"{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]"
+    )
+    assert totals1 == ReportTotals(files=1, coverage=None, diff=None)
+
+    report = Report(
+        files={"file.py": [0, ReportTotals()]},
+        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
+    )
+    mocker.patch.object(report, "_process_totals")
+
+    report_json2, chunks2, totals2 = report.serialize(with_totals=False)
+    assert (
+        report_json2
+        == b'{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{},"totals":null}'
+    )
+    assert chunks2 == chunks1
+    assert totals2 is None
 
 
 @pytest.mark.integration
@@ -743,13 +774,3 @@ def test_filter_exception():
     with pytest.raises(Exception) as e_info:
         Report().filter(paths="str")
     assert str(e_info.value) == "expecting list for argument paths got <class 'str'>"
-
-
-@pytest.mark.integration
-def test_encode_chunk():
-    assert _encode_chunk(None) == "null"
-    assert _encode_chunk(ReportFile(name="name.ply")) == '{"present_sessions":[]}\n'
-    assert (
-        _encode_chunk([ReportLine.create(2), ReportLine.create(1)])
-        == "[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
-    )

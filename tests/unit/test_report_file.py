@@ -204,24 +204,6 @@ def test_merge(name, totals, list_before, merge_val, merge_return, list_after):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "_process_totals_return_val, _totals, is_process_called, totals",
-    [
-        (ReportTotals(1), None, True, ReportTotals(1)),
-        (ReportTotals(2), ReportTotals(1), False, ReportTotals(1)),
-    ],
-)
-def test_totals(_process_totals_return_val, _totals, is_process_called, totals, mocker):
-    mocker.patch.object(
-        ReportFile, "_process_totals", return_value=_process_totals_return_val
-    )
-    r = ReportFile("filename")
-    r._totals = _totals
-    assert r.totals == totals
-    assert ReportFile._process_totals.called is is_process_called
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
     "lines, diff, new_file, boolean",
     [
         ([], {"segments": []}, ReportFile("new.py"), False),

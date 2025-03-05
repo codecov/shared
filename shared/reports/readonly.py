@@ -1,7 +1,9 @@
 import logging
 import os
 import random
+from typing import Any
 
+import orjson
 import sentry_sdk
 from cc_rustyribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 
@@ -63,8 +65,7 @@ class ReadOnlyReport(object):
         )
         totals = inner_report._totals
         filename_mapping = {
-            filename: file_summary.file_index
-            for (filename, file_summary) in inner_report._files.items()
+            filename: idx for idx, filename in enumerate(inner_report._files.keys())
         }
         session_mapping = {
             sid: (session.flags or []) for sid, session in inner_report.sessions.items()
@@ -76,11 +77,15 @@ class ReadOnlyReport(object):
 
     @classmethod
     def create_from_report(cls, report: Report):
+        report_json: Any
+        report_json, chunks, totals = report.serialize()
+        report_json = orjson.loads(report_json)
+
         return cls.from_chunks(
-            chunks=report.to_archive(with_header=False),
+            chunks=chunks.decode(),
             sessions=report.sessions,
-            files=report._files,
-            totals=None,
+            files=report_json["files"],
+            totals=totals,
         )
 
     def __iter__(self):

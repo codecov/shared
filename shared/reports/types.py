@@ -2,7 +2,7 @@ import logging
 from dataclasses import asdict, dataclass
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Dict, List, Optional, Sequence, Tuple, TypedDict, Union
+from typing import Dict, List, Optional, Sequence, Tuple, TypedDict, Union
 
 log = logging.getLogger(__name__)
 
@@ -226,36 +226,6 @@ class NetworkFile(object):
 
 class ReportHeader(TypedDict):
     labels_index: Dict[int, str]
-
-
-@dataclass
-class ReportFileSummary(object):
-    file_index: int
-    file_totals: ReportTotals = None
-    diff_totals: Any = None
-
-    def __init__(
-        self,
-        file_index,
-        file_totals=None,
-        diff_totals=None,
-        *args,
-        **kwargs,
-    ) -> None:
-        self.file_index = file_index
-        self.file_totals = file_totals
-        self.diff_totals = diff_totals
-
-    def astuple(self):
-        return (
-            self.file_index,
-            self.file_totals,
-            # Placeholder for deprecated/broken `session_totals` field.
-            # Old reports had a map of session ID to per-session totals here,
-            # but they weren't used and a bug caused them to bloat wildly.
-            None,
-            self.diff_totals,
-        )
 
 
 class UploadType(Enum):
