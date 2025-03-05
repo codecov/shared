@@ -103,6 +103,9 @@ class ReadOnlyReport(object):
                 )
         return self._flags
 
+    def get_flag_names(self) -> list[str]:
+        return self.inner_report.get_flag_names()
+
     @property
     def sessions(self):
         return self.inner_report.sessions
