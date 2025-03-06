@@ -6,6 +6,7 @@ from typing import IO
 class GZipStreamReader:
     def __init__(self, fileobj: IO[bytes]):
         self.data = fileobj
+        self.bytes_compressed = 0
 
     def read(self, size: int = -1, /) -> bytes:
         curr_data = self.data.read(size)
@@ -13,7 +14,12 @@ class GZipStreamReader:
         if not curr_data:
             return b""
 
-        return gzip.compress(curr_data)
+        compressed = gzip.compress(curr_data)
+        self.bytes_compressed += len(compressed)
+        return compressed
+
+    def tell(self) -> int:
+        return self.bytes_compressed
 
 
 def zstd_decoded_by_default() -> bool:
