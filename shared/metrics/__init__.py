@@ -34,3 +34,13 @@ def set_gauge(gauge: Gauge, value, labels: dict | None = None) -> None:
             gauge.set(value)
     except Exception as e:
         log.warning(f"Error setting gauge {gauge._name}: {e}")
+
+
+def set_summary(summary: Summary, value, labels: dict | None = None) -> None:
+    try:
+        if labels:
+            summary.labels(**labels).observe(value)
+        else:
+            summary.observe(value)
+    except Exception as e:
+        log.warning(f"Error observing summary {summary._name}: {e}")

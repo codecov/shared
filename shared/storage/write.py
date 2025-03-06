@@ -11,8 +11,15 @@ from minio import Minio
 from minio.error import MinioException
 from minio.helpers import ObjectWriteResult
 
+from shared.metrics import Summary, set_summary
 from shared.storage.base import PART_SIZE
 from shared.storage.compression import GZipStreamReader
+
+MINIO_SIZE_SUMMARY = Summary(
+    "minio_compression_size",
+    "Size of the compressed data update to minio",
+    ["impl"],
+)
 
 
 def old_minio_write(
@@ -66,6 +73,8 @@ def old_minio_write(
             metadata=headers,
             content_type="text/plain",
         )
+
+        set_summary(MINIO_SIZE_SUMMARY, out_size, labels={"impl": "gzip"})
 
         span = sentry_sdk.get_current_span()
         if span:
@@ -134,6 +143,8 @@ def new_minio_write(
         content_type="text/plain",
         part_size=PART_SIZE,
     )
+
+    set_summary(MINIO_SIZE_SUMMARY, result.tell(), labels={"impl": compression_type})
 
     span = sentry_sdk.get_current_span()
     if span:
