@@ -79,10 +79,10 @@ class TestOwnerModel(TestCase):
             self.owner.plan = plan
             assert self.owner.repo_credits == INFINITY
 
-    def test_repo_credits_treats_null_plan_as_free_plan(self):
+    def test_repo_credits_errors_when_plan_is_null(self):
         self.owner.plan = None
-        self.owner.save()
-        assert self.owner.repo_credits == 1 + self.owner.free or 0
+        with self.assertRaises(IntegrityError):
+            self.owner.save()
 
     def test_nb_active_private_repos(self):
         owner = OwnerFactory()
