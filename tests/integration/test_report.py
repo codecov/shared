@@ -315,11 +315,20 @@ def test_manifest(r, manifest):
 
 @pytest.mark.integration
 def test_flags():
-    r = Report(
-        files={"py.py": [0, ReportTotals(1)]},
-        sessions={1: {"id": "id", "f": ["a", 1, "test"]}},
-    )
-    assert list(r.flags.keys()) == ["a", 1, "test"]
+    sessions = {
+        1: {"f": ["a", 1, "test"]},
+        2: {
+            "f": ["c"],
+            "st": "carriedforward",
+            "se": {"carriedforward_from": "commit_SHA"},
+        },
+    }
+    r = Report(files={"py.py": [0, ReportTotals(1)]}, sessions=sessions)
+
+    assert list(r.flags.keys()) == ["a", 1, "test", "c"]
+    for name, flag in r.flags.items():
+        assert flag.carriedforward is (True if name == "c" else False)
+        assert flag.carriedforward_from is ("commit_SHA" if name == "c" else None)
 
 
 @pytest.mark.integration
@@ -563,7 +572,13 @@ def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
 
 @pytest.mark.integration
 def test_apply_diff():
-    report = Report(**v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}}))
+    report = Report(
+        files={"a": [0, None], "d": [1, None]},
+        chunks=[
+            "\n[1, null, null, null]\n[0, null, null, null]",
+            "\n[1, null, null, null]\n[0, null, null, null]",
+        ],
+    )
     diff = {
         "files": {
             "a": {
@@ -572,6 +587,12 @@ def test_apply_diff():
             },
             "b": {"type": "deleted"},
             "c": {"type": "modified"},
+            "d": {
+                "type": "modified",
+                "segments": [
+                    {"header": ["10", "3", "10", "3"], "lines": list("---+++")}
+                ],
+            },
         }
     }
     assert report.apply_diff(None) is None

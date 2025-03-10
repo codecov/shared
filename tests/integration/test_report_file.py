@@ -18,28 +18,26 @@ def test_report_file_constructor():
 
 @pytest.mark.integration
 def test_repr():
-    r = ReportFile("folder/file.py", [0, 1, 1, 1])
-    assert repr(r) == "<ReportFile name=folder/file.py lines=0>"
+    r = ReportFile(
+        "folder/file.py",
+        [0, 1, 1, 1],
+        lines=[ReportLine.create(1), ReportLine.create(2), None],
+    )
+    assert repr(r) == "<ReportFile name=folder/file.py lines=2>"
 
 
-@pytest.mark.integration
-@pytest.mark.parametrize(
-    "r, get_val, res",
-    [
-        (
-            ReportFile("folder/file.py", [0, 1, 1, 1]),
-            "totals",
-            ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        ),
-        (
-            ReportFile("file.py", lines=[ReportLine.create(), ReportLine.create()]),
-            1,
-            ReportLine.create(),
-        ),
-    ],
-)
-def test_get_item(r, get_val, res):
-    assert r[get_val] == res
+def test_get_item():
+    lines = [
+        ReportLine.create(1),
+        ReportLine.create(2),
+        ReportLine.create(3),
+        ReportLine.create(4),
+    ]
+    r = ReportFile(
+        "filename", ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0), lines=lines
+    )
+    assert r[1] == ReportLine.create(1)
+    assert r["totals"] == ReportTotals(0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 
 @pytest.mark.integration
@@ -128,7 +126,7 @@ def test_len():
 
 
 @pytest.mark.integration
-def test_eol():
+def test_eof():
     r = ReportFile(
         name="folder/file.py", lines=[ReportLine.create(1), ReportLine.create(), None]
     )
@@ -153,15 +151,9 @@ def test_get_slice():
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize(
-    "r, boolean",
-    [
-        (ReportFile(name="name.py"), False),
-        (ReportFile(name="name.py", lines=[ReportLine.create(1)]), True),
-    ],
-)
-def test_non_zero(r, boolean):
-    assert bool(r) is boolean
+def test_non_zero():
+    assert bool(ReportFile(name="name.py")) is False
+    assert bool(ReportFile(name="name.py", lines=[ReportLine.create(1)])) is True
 
 
 @pytest.mark.integration
@@ -236,7 +228,6 @@ def test_report_file_append_exception(key, val, error_message):
     assert str(e_info.value) == error_message
 
 
-# TODO branch where merge_line is called
 @pytest.mark.integration
 @pytest.mark.parametrize(
     "r, list_before, merge_val, merge_return, list_after",
@@ -279,19 +270,19 @@ def test_totals():
 
 
 @pytest.mark.integration
-def test_report_file_lines():
-    r = ReportFile(name="asd", lines=[[1]])
-    assert list(r.lines) == [(1, ReportLine.create(1))]
+def test_lines():
+    r = ReportFile(name="asd", lines=[[1], ReportLine.create(2), None])
+    assert list(r.lines) == [(1, ReportLine.create(1)), (2, ReportLine.create(2))]
 
 
 @pytest.mark.integration
-def test_report_iter():
+def test_iter():
     r = ReportFile(
         name="folder/file.py",
-        lines=[ReportLine.create(coverage=1), ReportLine.create(coverage=0)],
+        lines=[ReportLine.create(1), ReportLine.create(0), None],
     )
     lines = [ln for ln in r]
-    assert lines == [ReportLine.create(coverage=1), ReportLine.create(coverage=0)]
+    assert lines == [ReportLine.create(1), ReportLine.create(0), None]
 
 
 @pytest.mark.integration
