@@ -408,10 +408,7 @@ def test_to_archive():
         files={"file.py": [0, ReportTotals()]},
         chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
     ).to_archive()
-    assert (
-        chunks
-        == """{}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
-    )
+    assert chunks == """{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]"""
 
 
 @pytest.mark.integration
@@ -452,10 +449,7 @@ def test_serialize(mocker):
         report_json1
         == b'{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{},"totals":[1,0,0,0,0,null,0,0,0,0,0,0,null]}'
     )
-    assert (
-        chunks1
-        == b"""{}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
-    )
+    assert chunks1 == b"""{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]"""
     assert totals1 == ReportTotals(files=1, coverage=None, diff=None)
 
     report = Report(

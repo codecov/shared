@@ -17,7 +17,8 @@ class ReportFile:
     name: str
     _totals: ReportTotals | None
     diff_totals: ReportTotals | None
-    _lines: list[None | str | ReportLine]
+    _raw_lines: str | None
+    _parsed_lines: list[None | str | ReportLine]
     _details: dict[str, Any]
     __present_sessions: set[int] | None
 
@@ -42,19 +43,20 @@ class ReportFile:
         self.name = name
         self._totals = None
         self.diff_totals = None
-        self._lines = []
+        self._raw_lines = None
+        self._parsed_lines = []
         self._details = {}
         self.__present_sessions = None
 
         if lines:
             if isinstance(lines, list):
-                self._lines = lines
-
+                self._parsed_lines = lines
             else:
-                lines = lines.splitlines()
-                if detailsline := lines.pop(0):
-                    self._details = orjson.loads(detailsline or b"null") or {}
-                self._lines = lines
+                self._raw_lines = lines
+                detailsline, _ = lines.split("\n", maxsplit=1)
+                self._details = orjson.loads(detailsline or "null") or {}
+                if present_sessions := self._details.get("present_sessions"):
+                    self.__present_sessions = set(present_sessions)
 
         self._ignore = _ignore_to_func(ignore) if ignore else None
 
@@ -74,13 +76,19 @@ class ReportFile:
         elif diff_totals:
             self.diff_totals = ReportTotals(*diff_totals)
 
-        if present_sessions := self._details.get("present_sessions"):
-            self.__present_sessions = set(present_sessions)
-
     def _invalidate_caches(self):
         self._totals = None
         self.diff_totals = None
         self.__present_sessions = None
+
+    @property
+    def _lines(self):
+        if self._raw_lines:
+            self._parsed_lines = self._raw_lines.splitlines()
+            self._parsed_lines.pop(0)
+            self._raw_lines = None
+
+        return self._parsed_lines
 
     @property
     def _present_sessions(self):
@@ -293,7 +301,8 @@ class ReportFile:
         ):
             # previous file was boil-the-ocean
             # OR previous file had END issue
-            self._lines = other_file._lines
+            self._parsed_lines = other_file._lines.copy()
+            self._raw_lines = None
             log.warning(
                 "Doing something weird because of weird .rb logic",
                 extra=dict(report_filename=self.name),
@@ -313,10 +322,11 @@ class ReportFile:
 
         else:
             # set new lines object
-            self._lines = [
+            self._parsed_lines = [
                 merge_line(before, after, joined)
                 for before, after in zip_longest(self, other_file)
             ]
+            self._raw_lines = None
 
         self._invalidate_caches()
         return True
@@ -471,7 +481,9 @@ class ReportFile:
         self._invalidate_caches()
 
         if not new_sessions:
-            self._lines = []  # no remaining sessions means no line data
+            # no remaining sessions means no line data
+            self._parsed_lines = []
+            self._raw_lines = None
             return
 
         for index, line in self.lines:

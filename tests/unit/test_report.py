@@ -354,7 +354,6 @@ def test_delete_session():
         ]
     )
     report_file = EditableReportFile(name="file.py", lines=chunks)
-    assert report_file._lines == chunks.split("\n")[1:]
     assert report_file.totals == ReportTotals(
         files=0,
         lines=10,

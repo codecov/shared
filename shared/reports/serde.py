@@ -111,11 +111,14 @@ def _encode_chunk(chunk) -> bytes:
     if chunk is None:
         return b"null"
     elif isinstance(chunk, ReportFile):
-        return (
-            orjson.dumps(chunk.details, option=orjson_option)
-            + b"\n"
-            + b"\n".join(_dumps_not_none(line) for line in chunk._lines)
-        )
+        if isinstance(chunk._raw_lines, str):
+            return chunk._raw_lines.encode()
+        else:
+            return (
+                orjson.dumps(chunk.details, option=orjson_option)
+                + b"\n"
+                + b"\n".join(_dumps_not_none(line) for line in chunk._lines)
+            )
     elif isinstance(chunk, (list, dict)):
         return orjson.dumps(chunk, default=chunk_default, option=orjson_option)
     elif isinstance(chunk, str):
