@@ -100,6 +100,7 @@ def init_minio_client(
             ),
             http_client=http_client,
         )
+
     return Minio(
         host,
         access_key=access_key,
