@@ -5,6 +5,7 @@ import tempfile
 from io import BytesIO
 from typing import IO, BinaryIO, Literal, Tuple, cast
 
+import sentry_sdk
 import zstandard
 from minio import Minio
 from minio.error import MinioException
@@ -65,6 +66,11 @@ def old_minio_write(
             metadata=headers,
             content_type="text/plain",
         )
+
+        span = sentry_sdk.get_current_span()
+        if span:
+            span.set_data("size", out_size)
+
         return True
 
     except MinioException:
@@ -119,7 +125,7 @@ def new_minio_write(
     # BytesIO implements read(): https://docs.python.org/3/library/io.html#io.BufferedReader.read
     # IO[bytes] implements read(): https://github.com/python/cpython/blob/3.13/Lib/typing.py#L3502
 
-    return minio_client.put_object(
+    write_result = minio_client.put_object(
         bucket_name,
         path,
         cast(BinaryIO, result),
@@ -128,3 +134,9 @@ def new_minio_write(
         content_type="text/plain",
         part_size=PART_SIZE,
     )
+
+    span = sentry_sdk.get_current_span()
+    if span:
+        span.set_data("size", result.tell())
+
+    return write_result
