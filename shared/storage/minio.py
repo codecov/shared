@@ -6,6 +6,7 @@ from functools import lru_cache
 from typing import IO, BinaryIO, Literal, overload
 
 import certifi
+import sentry_sdk
 import urllib3
 from minio import Minio
 from minio.credentials.providers import (
@@ -202,8 +203,10 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         is_compressed: bool = False,
         compression_type: str | None = "zstd",
     ) -> ObjectWriteResult | Literal[True]:
+        span = sentry_sdk.get_current_span()
         if self.new_write:
-            return new_minio_write(
+            span.set_data("impl", "new") if span else None
+            result = new_minio_write(
                 self.minio_client,
                 bucket_name,
                 path,
@@ -213,8 +216,10 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                 is_compressed=is_compressed,
                 compression_type=compression_type,
             )
+            return result
         else:
-            return old_minio_write(
+            span.set_data("impl", "old") if span else None
+            result = old_minio_write(
                 self.minio_client,
                 bucket_name,
                 path,
@@ -222,6 +227,7 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                 reduced_redundancy,
                 is_already_gzipped=is_already_gzipped,
             )
+            return result
 
     @overload
     def read_file(self, bucket_name: str, path: str) -> bytes: ...
@@ -232,7 +238,9 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
     def read_file(
         self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
     ) -> bytes | None:
+        span = sentry_sdk.get_current_span()
         if self.new_read:
+            span.set_data("impl", "new") if span else None
             return new_minio_read(
                 self.minio_client,
                 bucket_name,
@@ -241,6 +249,7 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                 zstd_default,
             )
         else:
+            span.set_data("impl", "old") if span else None
             return old_minio_read(
                 self.minio_client,
                 bucket_name,
