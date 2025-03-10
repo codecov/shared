@@ -401,7 +401,7 @@ def test_to_archive():
     ).to_archive()
     assert (
         chunks
-        == """{"labels_index":{}}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
+        == """{}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
     )
 
 
@@ -445,7 +445,7 @@ def test_serialize(mocker):
     )
     assert (
         chunks1
-        == b"""{"labels_index":{}}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
+        == b"""{}\n<<<<< end_of_header >>>>>\n{"present_sessions":[]}\n[1]\n[1]\n[1]"""
     )
     assert totals1 == ReportTotals(files=1, coverage=None, diff=None)
 
