@@ -8,9 +8,8 @@ E.g., every 'App Installed' event must have the 'ownerid' property.
 
 Guidelines:
  - Event names should:
-   - be of the form "[Noun] [Past-tense verb]",
-   - have each word capitalized,
-   - describe an action taken by the user.
+   - be of the form "[Noun] [Past-tense verb]" and
+   - have each word capitalized.
  - Keep the event types very generic as we have a limited number of them.
    Instead, add more detail in `properties` where possible.
  - Try to keep event property names unique to the event type to avoid
@@ -25,7 +24,7 @@ type AmplitudeEventType = Literal[
     "User Created",
     "User Logged in",
     "App Installed",
-    "Upload Sent",
+    "Upload Received",
     "set_orgs",  # special event for setting a user's member orgs
 ]
 
@@ -70,5 +69,5 @@ AMPLITUDE_REQUIRED_PROPERTIES: dict[
     "User Created": [],
     "User Logged in": [],
     "App Installed": ["ownerid"],
-    "Upload Sent": ["ownerid", "repoid", "commitid", "pullid", "upload_type"],
+    "Upload Received": ["ownerid", "repoid", "commitid", "pullid", "upload_type"],
 }
