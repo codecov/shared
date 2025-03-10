@@ -60,7 +60,7 @@ def mock_commit():
 
 @pytest.fixture
 def mock_chunks():
-    return [b"chunk1", b"chunk2"]
+    return [b"{}\n", b"{}\n"]
 
 
 @pytest.fixture
