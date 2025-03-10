@@ -26,6 +26,8 @@ from shared.utils.migrate import migrate_totals
 from shared.utils.sessions import Session, SessionType
 from shared.utils.totals import agg_totals
 
+from .serde import _encode_chunk, serialize_report
+
 log = logging.getLogger(__name__)
 
 
@@ -481,7 +483,9 @@ class Report(object):
     @sentry_sdk.trace
     def to_archive(self, with_header=True):
         # TODO: confirm removing encoding here is fine
-        chunks = END_OF_CHUNK.join(_encode_chunk(chunk) for chunk in self._chunks)
+        chunks = END_OF_CHUNK.join(
+            _encode_chunk(chunk).decode() for chunk in self._chunks
+        )
         if with_header:
             # When saving to database we want this
             return END_OF_HEADER.join(
@@ -505,6 +509,9 @@ class Report(object):
                 option=orjson_option,
             ).decode(),
         )
+
+    def serialize(self, with_totals=True) -> tuple[bytes, bytes, ReportTotals | None]:
+        return serialize_report(self, with_totals)
 
     @sentry_sdk.trace
     def flare(self, changes=None, color=None):
@@ -836,20 +843,3 @@ class Report(object):
             file.__present_sessions = all_sessions
 
         self._invalidate_caches()
-
-
-def chunk_default(obj):
-    if dataclasses.is_dataclass(obj):
-        return obj.astuple()
-    return obj
-
-
-def _encode_chunk(chunk) -> str:
-    if chunk is None:
-        return "null"
-    elif isinstance(chunk, ReportFile):
-        return chunk._encode()
-    elif isinstance(chunk, (list, dict)):
-        return orjson.dumps(chunk, default=chunk_default, option=orjson_option).decode()
-    else:
-        return chunk
