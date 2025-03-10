@@ -144,6 +144,15 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         minio_config,
         new_mode: Literal["read", "write"] | None = None,
     ):
+        if "host" not in minio_config:
+            minio_config["host"] = "minio"
+        if "port" not in minio_config:
+            minio_config["port"] = 9000
+        if "iam_auth" not in minio_config:
+            minio_config["iam_auth"] = False
+        if "iam_endpoint" not in minio_config:
+            minio_config["iam_endpoint"] = None
+
         self.minio_config = minio_config
         self.new_read = new_mode == "read" or new_mode == "write"
         self.new_write = new_mode == "write"
