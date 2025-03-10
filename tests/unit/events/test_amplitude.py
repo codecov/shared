@@ -135,7 +135,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
     amplitude.client.track = Mock()
 
     amplitude.publish(
-        "Upload Sent",
+        "Upload Received",
         {
             "user_ownerid": 123,
             "ownerid": 321,
@@ -149,7 +149,7 @@ def test_publish_converts_to_camel_case(amplitude_mock, base_event_mock):
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
-        "Upload Sent",
+        "Upload Received",
         user_id="123",
         event_properties={
             "ownerid": 321,
@@ -175,7 +175,7 @@ def test_publish_converts_anonymous_owner_id_to_user_id(
     amplitude.client.track = Mock()
 
     amplitude.publish(
-        "Upload Sent",
+        "Upload Received",
         {
             "user_ownerid": UNKNOWN_USER_OWNERID,
             "ownerid": 321,
@@ -189,7 +189,7 @@ def test_publish_converts_anonymous_owner_id_to_user_id(
     amplitude_mock.assert_called_once()
     amplitude.client.track.assert_called_once()
     base_event_mock.assert_called_once_with(
-        "Upload Sent",
+        "Upload Received",
         user_id="anon",
         event_properties={
             "ownerid": 321,
