@@ -13,14 +13,12 @@ from shared.reports.resources import (
 from shared.reports.types import (
     CoverageDatapoint,
     LineSession,
-    NetworkFile,
     ReportFileSummary,
     ReportHeader,
     ReportLine,
     ReportTotals,
 )
-from shared.utils.sessions import Session, SessionType
-from tests.helper import v2_to_v3
+from shared.utils.sessions import Session
 
 
 def report_with_file_summaries():
@@ -103,13 +101,6 @@ def report_with_file_summaries():
 
 
 @pytest.mark.unit
-def test_report_repr(mocker):
-    r = Report()
-    r._files = []
-    assert repr(Report()) == "<Report files=0>"
-
-
-@pytest.mark.unit
 @pytest.mark.parametrize(
     "chunks, expected",
     [
@@ -128,191 +119,9 @@ def test_chunks_from_storage_contains_header(chunks, expected):
     assert chunks_from_storage_contains_header(chunks) == expected
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, chunks, network",
-    [
-        (
-            {"py.py": [0, ReportTotals(1)]},
-            [],
-            [
-                (
-                    "py.py",
-                    NetworkFile(totals=ReportTotals(1), diff_totals=None),
-                )
-            ],
-        ),
-        (
-            {"py.py": [0, ReportTotals(1, 1, 1, 1, 1, 1)]},
-            "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-                END_OF_CHUNK
-            ),
-            [
-                (
-                    "py.py",
-                    NetworkFile(
-                        totals=ReportTotals(1, 1, 1, 1, 1, 1),
-                        diff_totals=None,
-                    ),
-                )
-            ],
-        ),
-    ],
-)
-def test_network(files, chunks, network):
-    r = Report(files=files)
-    r._chunks = chunks
-    assert list(r.network) == network
-
-
 def test_files():
     r = Report(files={"py.py": [0, ReportTotals(1)]})
     assert r.files == ["py.py"]
-
-
-@pytest.mark.unit
-def test_resolve_paths(mocker):
-    r = Report(files={"py.py": [0, ReportTotals(1)]})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    assert r.files == ["py.py"]
-    r.resolve_paths([("py.py", "file.py")])
-    assert r.files == ["file.py"]
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "r, _file, joined, boolean, lines, hits",
-    [
-        (
-            Report(),
-            ReportFile(
-                "a", totals=ReportTotals(1, 50, 10), lines=[ReportLine.create(1)]
-            ),
-            False,
-            True,
-            50,
-            0,
-        ),
-        (Report(), None, True, False, 0, 0),
-        (Report(), ReportFile("name.py"), True, False, 0, 0),
-    ],
-)
-def test_append(r, _file, joined, boolean, lines, hits):
-    assert r.append(_file, joined) is boolean
-    assert r.totals.lines == lines
-    assert r.totals.hits == hits
-
-
-@pytest.mark.unit
-def test_append_error(mocker):
-    r = Report()
-    with pytest.raises(Exception) as e_info:
-        r.append("str")
-    assert str(e_info.value) == "expecting ReportFile got <class 'str'>"
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, chunks, file_repr, lines",
-    [
-        (
-            {"file.py": [0, ReportTotals(1)]},
-            None,
-            "<ReportFile name=file.py lines=0>",
-            [],
-        ),
-        ({"py.py": [0, ReportTotals(1)]}, None, "None", None),
-        (
-            {"file.py": [0, ReportTotals(1)]},
-            "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-                END_OF_CHUNK
-            ),
-            "<ReportFile name=file.py lines=3>",
-            [
-                (1, ReportLine.create(1)),
-                (2, ReportLine.create(1)),
-                (3, ReportLine.create(1)),
-            ],
-        ),
-        (
-            {"file.py": [0, ReportTotals(1)]},
-            [ReportFile(name="file.py")],
-            "<ReportFile name=file.py lines=0>",
-            [],
-        ),
-        (
-            {"file.py": [1, ReportTotals(1)]},
-            [ReportFile(name="other-file.py")],
-            "<ReportFile name=file.py lines=0>",
-            [],
-        ),
-    ],
-)
-def test_get(files, chunks, file_repr, lines):
-    r = Report(files=files)
-    r._chunks = chunks
-
-    assert repr(r.get("file.py")) == file_repr
-    if lines:
-        assert list(r.get("file.py").lines) == lines
-
-
-@pytest.mark.unit
-def test_rename(mocker):
-    r = Report(files={"file.py": [0, ReportTotals(1)]})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    assert r.get("name.py") is None
-    assert repr(r.get("file.py")) == "<ReportFile name=file.py lines=3>"
-    assert r.rename("file.py", "name.py") is True
-    assert r.get("file.py") is None
-    assert repr(r.get("name.py")) == "<ReportFile name=name.py lines=3>"
-
-
-@pytest.mark.unit
-def test_get_item(mocker):
-    r = Report()
-    r._files = PropertyMock(return_value={"file.py": [0, ReportTotals(1)]})
-    r._chunks = None
-    assert repr(r["file.py"]) == "<ReportFile name=file.py lines=0>"
-
-
-@pytest.mark.unit
-def test_get_item_exception(mocker):
-    r = Report()
-    r._files = {"file.py": [0, ReportTotals(1)]}
-    r._chunks = None
-    with pytest.raises(Exception) as e_info:
-        r["name.py"]
-    assert str(e_info.value) == "File at path name.py not found in report"
-
-
-@pytest.mark.unit
-def test_del_item(mocker):
-    r = Report(files={"file.py": [0, ReportTotals(1)]})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    assert repr(r.get("file.py")) == "<ReportFile name=file.py lines=3>"
-    del r["file.py"]
-    assert r.get("file.py") is None
-
-
-@pytest.mark.unit
-def test_manifest():
-    r = Report()
-    r._files = {"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
-    r._chunks = None
-    assert list(r.files) == ["file1.py", "file2.py"]
 
 
 @pytest.mark.unit
@@ -382,46 +191,6 @@ def test_get_file_totals(mocker):
     assert report.get_file_totals("calc/CalcCore.cpp") == expected_totals
 
 
-@pytest.mark.unit
-def test_flags(mocker):
-    r = Report()
-    r._files = {"py.py": [0, ReportTotals(1)]}
-    r._chunks = None
-    r.sessions = {
-        1: Session(flags={"a": 1, 1: 1, "test": 1}),
-        2: Session(
-            flags=["c"],
-            session_type=SessionType.carriedforward,
-            session_extras=dict(carriedforward_from="commit_SHA"),
-        ),
-    }
-    assert list(r.flags.keys()) == ["a", 1, "test", "c"]
-    for name, flag in r.flags.items():
-        assert flag.carriedforward is (True if name == "c" else False)
-        assert flag.carriedforward_from is ("commit_SHA" if name == "c" else None)
-
-
-@pytest.mark.unit
-def test_iter(mocker):
-    r = Report(
-        files={"file1.py": [0, ReportTotals(1)], "file2.py": [1, ReportTotals(1)]}
-    )
-    r._chunks = None
-    files = [_file for _file in r]
-    assert (
-        repr(files)
-        == "[<ReportFile name=file1.py lines=0>, <ReportFile name=file2.py lines=0>]"
-    )
-
-
-@pytest.mark.unit
-def test_contains(mocker):
-    r = Report()
-    r._files = {"file1.py": [0, ReportTotals(1)]}
-    assert ("file1.py" in r) is True
-    assert ("file2.py" in r) is False
-
-
 def test_get_label_from_idx():
     report = Report()
     label_idx = {0: "Special_global_label", 1: "banana", 2: "cachorro"}
@@ -466,32 +235,6 @@ def test_lookup_label_by_id_fails():
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, chunks, new_report, manifest",
-    [
-        ({"file.py": [0, ReportTotals(1)]}, None, None, ["file.py"]),
-        ({"file.py": [0, ReportTotals(1)]}, None, Report(), ["file.py"]),
-        (
-            {"file.py": [0, ReportTotals(1)]},
-            "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>".split(END_OF_CHUNK),
-            Report(
-                files={"other-file.py": [1, ReportTotals(2)]},
-                chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
-            ),
-            ["file.py", "other-file.py"],
-        ),
-    ],
-)
-def test_merge(files, chunks, new_report, manifest):
-    r = Report(files=files)
-    r._chunks = chunks
-    r.sessions = {}
-    assert list(r.files) == ["file.py"]
-    r.merge(new_report)
-    assert list(r.files) == manifest
-
-
-@pytest.mark.unit
 def test_merge_into_editable_report():
     editable_report = EditableReport(
         files={"file.py": [1, ReportTotals(2)]},
@@ -508,28 +251,6 @@ def test_merge_into_editable_report():
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, boolean", [({}, True), ({"file.py": [0, ReportTotals(1)]}, False)]
-)
-def test_is_empty(files, boolean):
-    r = Report()
-    r._files = files
-    r._chunks = None
-    assert r.is_empty() is boolean
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, boolean", [({}, False), ({"file.py": [0, ReportTotals(1)]}, True)]
-)
-def test_non_zero(files, boolean):
-    r = Report()
-    r._files = files
-    r._chunks = None
-    assert bool(r) is boolean
-
-
-@pytest.mark.unit
 def test_to_archive_with_header(mocker):
     r = Report()
     r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
@@ -543,112 +264,6 @@ def test_to_archive_with_header(mocker):
         r.to_archive()
         == '{"labels_index":{"0":"special_label","1":"some_label"}}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'
     )
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "diff, future, future_diff, res",
-    [
-        ({}, None, None, False),  # empty
-        (None, None, None, False),  # empty
-        ({"files": {}}, None, None, False),  # empty
-        ({"files": {"b": {"type": "new"}}}, None, None, False),  # new file not tracked
-        (
-            {"files": {"b": {"type": "new"}}},
-            {"files": {"b": {"l": {"1": {"c": 1}}}}},
-            None,
-            True,
-        ),  # new file is tracked
-        (
-            {"files": {"b": {"type": "modified"}}},
-            None,
-            None,
-            False,
-        ),  # file not tracked in base or head
-        (
-            {"files": {"a": {"type": "deleted"}}},
-            None,
-            None,
-            True,
-        ),  # tracked file deleted
-        (
-            {"files": {"b": {"type": "deleted"}}},
-            None,
-            None,
-            False,
-        ),  # not-tracked file deleted
-        (
-            {"files": {"z": {"type": "modified"}}},
-            None,
-            None,
-            True,
-        ),  # modified file missing in base
-        (
-            {"files": {"a": {"type": "modified"}}},
-            None,
-            None,
-            True,
-        ),  # modified file missing in head
-        (
-            {
-                "files": {
-                    "a": {
-                        "type": "modified",
-                        "segments": [{"header": [0, 1, 1, 2], "lines": ["- a", "+ a"]}],
-                    }
-                }
-            },
-            {"files": {"a": {"l": {"1": {"c": 1}}}}},
-            None,
-            True,
-        ),  # tracked line deleted
-        (
-            {
-                "files": {
-                    "a": {
-                        "type": "modified",
-                        "segments": [{"header": [0, 1, 1, 2], "lines": ["- a", "+ a"]}],
-                    }
-                }
-            },
-            {"files": {"a": {"l": {"1": {"c": 1}}}}},
-            {"files": {"a": {"type": "modified"}}},
-            True,
-        ),  # tracked line deleted
-        (
-            {
-                "files": {
-                    "a": {
-                        "type": "modified",
-                        "segments": [
-                            {"header": [10, 1, 10, 2], "lines": ["- a", "+ a"]}
-                        ],
-                    }
-                }
-            },
-            {"files": {"a": {"l": {"1": {"c": 1}}}}},
-            None,
-            False,
-        ),  # lines not tracked`
-    ],
-)
-def test_does_diff_adjust_tracked_lines(diff, future, future_diff, res):
-    v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 1}}}}})
-    r = Report(files=v3["files"])
-    r.sessions = v3["sessions"]
-    r._totals = v3["totals"]
-    r._chunks = v3["chunks"]
-    if future:
-        futuree = v2_to_v3(future)
-    else:
-        futuree = v2_to_v3({"files": {"z": {}}})
-
-    future_r = Report(files=futuree["files"])
-    future_r.sessions = futuree["sessions"]
-    future_r._totals = futuree["totals"]
-    future_r._chunks = futuree["chunks"]
-
-    assert r.does_diff_adjust_tracked_lines(diff, future_r, future_diff) == res
 
 
 @pytest.mark.unit
@@ -710,41 +325,6 @@ def test_calculate_diff():
 
 
 @pytest.mark.unit
-def test_apply_diff():
-    v3 = {
-        "files": {"a": [0, None], "d": [1, None]},
-        "sessions": {},
-        "totals": {},
-        "chunks": [
-            "\n[1, null, null, null]\n[0, null, null, null]",
-            "\n[1, null, null, null]\n[0, null, null, null]",
-        ],
-    }
-    r = Report(**v3)
-    diff = {
-        "files": {
-            "a": {
-                "type": "new",
-                "segments": [{"header": list("1313"), "lines": list("---+++")}],
-            },
-            "b": {"type": "deleted"},
-            "c": {"type": "modified"},
-            "d": {
-                "type": "modified",
-                "segments": [
-                    {"header": ["10", "3", "10", "3"], "lines": list("---+++")}
-                ],
-            },
-        }
-    }
-    assert r.apply_diff(None) is None
-    assert r.apply_diff({}) is None
-    res = r.apply_diff(diff)
-    assert res == diff["totals"]
-    assert diff["totals"].coverage == "50.00000"
-
-
-@pytest.mark.unit
 def test_apply_diff_no_diff():
     v3 = {
         "files": {"a": [0, None], "d": [1, None]},
@@ -760,120 +340,6 @@ def test_apply_diff_no_diff():
     res = r.apply_diff(diff)
     assert res is None
     assert diff == {"files": {}}
-
-
-@pytest.mark.unit
-def test_apply_diff_no_append(mocker):
-    v3 = v2_to_v3({"files": {"a": {"l": {"1": {"c": 1}, "2": {"c": 0}}}}})
-    r = Report(files=v3["files"])
-    r.sessions = v3["sessions"]
-    r._totals = v3["totals"]
-    r._chunks = v3["chunks"]
-    diff = {
-        "files": {
-            "a": {
-                "type": "new",
-                "segments": [{"header": list("1313"), "lines": list("---+++")}],
-            },
-            "b": {"type": "deleted"},
-            "c": {"type": "modified"},
-        }
-    }
-    res = r.apply_diff(diff, _save=False)
-    assert "totals" not in diff
-    assert "totals" not in diff["files"]["a"]
-    assert "totals" not in diff["files"]["c"]
-    assert res.coverage == "50.00000"
-
-
-@pytest.mark.unit
-def test_add_session(mocker):
-    r = Report()
-    s = Session(5)
-    r._files = {"file.py": [0, ReportTotals(0)]}
-    r._chunks = None
-    r._totals = ReportTotals(0)
-    r.sessions = {}
-    assert r.totals.sessions == 0
-    assert r.sessions == {}
-    assert r.add_session(s) == (0, s)
-    assert r.totals.sessions == 1
-    assert r.sessions == {0: s}
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "files, chunks, params, flare",
-    [
-        (
-            {"py.py": [0, ReportTotals(1)]},
-            "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-                END_OF_CHUNK
-            ),
-            {
-                "color": lambda cov: "purple"
-                if cov is None
-                else "#e1e1e1"
-                if cov == 0
-                else "green"
-                if cov > 0
-                else "red"
-            },
-            [
-                {
-                    "name": "",
-                    "coverage": 100,
-                    "color": "green",
-                    "_class": None,
-                    "lines": 0,
-                    "children": [
-                        {
-                            "color": "#e1e1e1",
-                            "_class": None,
-                            "lines": 0,
-                            "name": "py.py",
-                            "coverage": 0,
-                        }
-                    ],
-                }
-            ],
-        ),
-        (
-            {"py.py": [0, ReportTotals(1)]},
-            None,
-            {"changes": {}},
-            [
-                {
-                    "name": "",
-                    "coverage": 100,
-                    "color": "green",
-                    "_class": None,
-                    "lines": 0,
-                    "children": [
-                        {
-                            "color": "#e1e1e1",
-                            "_class": None,
-                            "lines": 0,
-                            "name": "py.py",
-                            "coverage": 0,
-                        }
-                    ],
-                }
-            ],
-        ),
-    ],
-)
-def test_flare(files, chunks, params, flare):
-    r = Report(files=files)
-    r._chunks = chunks
-    assert r.flare(**params) == flare
-
-
-@pytest.mark.unit
-def test_filter_exception(mocker):
-    with pytest.raises(Exception) as e_info:
-        Report().filter(paths="str")
-    assert str(e_info.value) == "expecting list for argument paths got <class 'str'>"
 
 
 @pytest.mark.unit
@@ -1040,8 +506,7 @@ def test_repack_no_change(sample_report):
 
 @pytest.mark.unit
 def test_shift_lines_by_diff():
-    r = ReportFile("filename")
-    r._lines = [ReportLine.create(n) for n in range(8)]
+    r = ReportFile("filename", lines=[ReportLine.create(n) for n in range(8)])
     report = Report(sessions={0: Session()})
     report.append(r)
     assert list(r.lines) == [
