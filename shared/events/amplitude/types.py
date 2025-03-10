@@ -8,9 +8,8 @@ E.g., every 'App Installed' event must have the 'ownerid' property.
 
 Guidelines:
  - Event names should:
-   - be of the form "[Noun] [Past-tense verb]",
-   - have each word capitalized,
-   - describe an action taken by the user.
+   - be of the form "[Noun] [Past-tense verb]" and
+   - have each word capitalized.
  - Keep the event types very generic as we have a limited number of them.
    Instead, add more detail in `properties` where possible.
  - Try to keep event property names unique to the event type to avoid
