@@ -2,6 +2,7 @@ import base64
 import hashlib
 import logging
 import os
+import sentry_sdk
 from base64 import b64decode
 from datetime import datetime, timezone
 from string import Template
@@ -890,6 +891,8 @@ class Github(TorngitBaseAdapter):
                     # Update headers and retry
                     prefix, _ = _headers["Authorization"].split(" ")
                     _headers["Authorization"] = f"{prefix} {token['key']}"
+                    if not self._on_token_refresh:
+                        sentry_sdk.capture_message("Refreshed github token but no on_token_refresh callback defined")
                     await self._on_token_refresh(token)
                     # Skip the rest of the validations and try again.
                     # It does consume one of the retries
