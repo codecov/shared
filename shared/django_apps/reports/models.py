@@ -327,6 +327,7 @@ class TestInstance(BaseCodecovModel):
         indexes = [
             models.Index(fields=["commitid", "repoid", "branch"]),
             models.Index(fields=["repoid", "created_at", "outcome"]),
+            models.Index(fields=["repoid"]),
         ]
 
 
