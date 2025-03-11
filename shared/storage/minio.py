@@ -3,6 +3,7 @@ import logging
 import os
 from datetime import timedelta
 from functools import lru_cache
+from time import perf_counter
 from typing import IO, BinaryIO, Literal, overload
 
 import certifi
@@ -20,6 +21,7 @@ from minio.helpers import ObjectWriteResult
 from urllib3 import Retry
 from urllib3.util import Timeout
 
+from shared.metrics import Summary, set_summary
 from shared.storage.base import BaseStorageService, PresignedURLService
 from shared.storage.compression import zstd_decoded_by_default
 from shared.storage.exceptions import BucketAlreadyExistsError
@@ -30,6 +32,12 @@ log = logging.getLogger(__name__)
 
 CONNECT_TIMEOUT = 10
 READ_TIMEOUT = 60
+
+MINIO_WRITE_TIME_SUMMARY = Summary(
+    "minio_write_time",
+    "Time taken to write to minio",
+    ["impl"],
+)
 
 
 def init_minio_client(
@@ -216,6 +224,7 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         span = sentry_sdk.get_current_span()
         if self.new_write:
             span.set_data("impl", "new") if span else None
+            start = perf_counter()
             result = new_minio_write(
                 self.minio_client,
                 bucket_name,
@@ -226,9 +235,12 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                 is_compressed=is_compressed,
                 compression_type=compression_type,
             )
+            end = perf_counter()
+            set_summary(MINIO_WRITE_TIME_SUMMARY, end - start, labels={"impl": "new"})
             return result
         else:
             span.set_data("impl", "old") if span else None
+            start = perf_counter()
             result = old_minio_write(
                 self.minio_client,
                 bucket_name,
@@ -237,6 +249,9 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                 reduced_redundancy,
                 is_already_gzipped=is_already_gzipped,
             )
+
+            end = perf_counter()
+            set_summary(MINIO_WRITE_TIME_SUMMARY, end - start, labels={"impl": "old"})
             return result
 
     @overload
