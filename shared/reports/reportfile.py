@@ -53,10 +53,6 @@ class ReportFile:
                 self._parsed_lines = lines
             else:
                 self._raw_lines = lines
-                detailsline, _ = lines.split("\n", maxsplit=1)
-                self._details = orjson.loads(detailsline or "null") or {}
-                if present_sessions := self._details.get("present_sessions"):
-                    self.__present_sessions = set(present_sessions)
 
         self._ignore = _ignore_to_func(ignore) if ignore else None
 
@@ -85,13 +81,19 @@ class ReportFile:
     def _lines(self):
         if self._raw_lines:
             self._parsed_lines = self._raw_lines.splitlines()
-            self._parsed_lines.pop(0)
+            detailsline = self._parsed_lines.pop(0)
+
+            self._details = orjson.loads(detailsline or "null") or {}
+            if present_sessions := self._details.get("present_sessions"):
+                self.__present_sessions = set(present_sessions)
+
             self._raw_lines = None
 
         return self._parsed_lines
 
     @property
     def _present_sessions(self):
+        _ensure_is_parsed = self._lines
         if self.__present_sessions is None:
             self.__present_sessions = set()
             for _, line in self.lines:
@@ -100,6 +102,7 @@ class ReportFile:
 
     @property
     def details(self):
+        _ensure_is_parsed = self._lines
         self._details["present_sessions"] = sorted(self._present_sessions)
         return self._details
 
