@@ -38,8 +38,7 @@ def make_storage() -> MinioStorageService:
             "port": "9000",
             "iam_auth": False,
             "iam_endpoint": None,
-        },
-        new_mode="write",
+        }
     )
 
 
