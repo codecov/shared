@@ -7,15 +7,11 @@ from typing import Optional
 import mmh3
 from asgiref.sync import sync_to_async
 from cachetools.func import lru_cache, ttl_cache
-from django.utils import timezone
 
 from shared.config import get_config
 from shared.django_apps.rollouts.models import (
-    FeatureExposure,
     FeatureFlag,
     FeatureFlagVariant,
-    Platform,
-    RolloutUniverse,
 )
 from shared.django_apps.utils.rollout_utils import rollout_universe_to_override_string
 
@@ -309,10 +305,9 @@ class Feature:
         the `Feature` class on every request.
         """
 
-        # don't log exposures for flag evaluations from the endpoint
-        return self._check_value_impl(identifier, default, log_exposures=False)
+        return self._check_value_impl(identifier, default)
 
-    def _check_value_impl(self, identifier, default, log_exposures=True):
+    def _check_value_impl(self, identifier, default):
         """
         This is the core logic of how a feature flag variant is assigned to a user based on some identifier, and
         returns the variant's value.
@@ -338,11 +333,6 @@ class Feature:
         )
         for bucket_start, bucket_end, variant in self._buckets:
             if bucket_start <= key and key < bucket_end:
-                # only log exposures for backend flags because frontend has no SQL metrics and
-                # flag evaluations should be cached client-side anyways
-                if self.feature_flag.platform == Platform.BACKEND and log_exposures:
-                    self.create_exposure(variant, identifier)
-
                 return variant.value
 
         return default
@@ -357,22 +347,3 @@ class Feature:
                 return False
 
         return True
-
-    def create_exposure(self, variant, identifier):
-        """
-        Creates an exposure record indicating that a feature variant has been applied to
-        an entity (repo or owner) at a current point in time. This method should only
-        be used for backend feature flags, as we're only collecting `telemetry_simple`
-        SQL metrics for backend services.
-        """
-        args = {
-            "feature_flag": self.feature_flag,
-            "feature_flag_variant": variant,
-            "timestamp": timezone.now(),
-        }
-        if self.feature_flag.rollout_universe == RolloutUniverse.OWNER_ID:
-            args["owner"] = identifier
-        elif self.feature_flag.rollout_universe == RolloutUniverse.REPO_ID:
-            args["repo"] = identifier
-
-        FeatureExposure.objects.create(**args)
