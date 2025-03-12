@@ -287,7 +287,7 @@ def test_minio_without_ports():
     }
     storage = MinioStorageService(minio_no_ports_config)
     assert storage.minio_config == minio_no_ports_config
-    assert storage.minio_client._base_url._url.port == 9000
+    assert storage.minio_client._base_url._url.port is None
 
 
 def test_minio_with_ports():
