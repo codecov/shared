@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django_better_admin_arrayfield.models.fields import ArrayField
 
@@ -118,43 +117,3 @@ class FeatureFlagVariant(models.Model):
 
     def __str__(self):
         return self.feature_flag.__str__() + ": " + self.name
-
-
-class FeatureExposure(models.Model):
-    """
-    Represents a feature variant being exposed to an entity (repo or owner) at
-    a point in time. Used to keep track of when features and variants have been enabled
-    and who they affected for experimentation purposes.
-    """
-
-    exposure_id = models.AutoField(primary_key=True)
-    feature_flag = models.ForeignKey(
-        "FeatureFlag", on_delete=models.CASCADE, related_name="exposures"
-    )
-    feature_flag_variant = models.ForeignKey(
-        "FeatureFlagVariant", on_delete=models.CASCADE, related_name="exposures"
-    )
-
-    # Weak foreign keys to Owner and Respository models respectively
-    owner = models.IntegerField(null=True, blank=True)
-    repo = models.IntegerField(null=True, blank=True)
-
-    timestamp = models.DateTimeField(null=False)
-
-    def clean(self):
-        if not self.owner and not self.repo:
-            raise ValidationError(
-                "Exposure must have either a corresponding owner or repo"
-            )
-
-        super(FeatureExposure, self).clean()
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super(FeatureExposure, self).save(*args, **kwargs)
-
-    class Meta:
-        db_table = "feature_exposures"
-        # indexes = [ # don't use indexes for now
-        #     models.Index(fields=['feature_flag', 'timestamp'], name='feature_flag_timestamp_idx'),
-        # ]
