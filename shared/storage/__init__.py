@@ -2,7 +2,6 @@ from typing import Literal, cast
 
 from shared.config import get_config
 from shared.rollouts.features import NEW_MINIO
-from shared.storage.base import BaseStorageService
 from shared.storage.minio import MinioStorageService
 
 
