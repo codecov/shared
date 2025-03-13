@@ -173,15 +173,6 @@ class Report:
     def from_chunks(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
-    @property
-    def size(self):
-        # TODO: this `size` is only used for internal metrics and an ATS announcement,
-        # so we can work towards just removing this altogether.
-        size = 0
-        for file in self:
-            size += len(file._lines)
-        return size
-
     def has_precalculated_totals(self):
         return self._totals is not None
 
@@ -261,7 +252,7 @@ class Report:
         self._invalidate_caches()
         return True
 
-    def get(self, filename, **kwargs):
+    def get(self, filename):
         return self._files.get(filename)
 
     def resolve_paths(self, paths: list[tuple[str, str | None]]):
@@ -516,7 +507,7 @@ class Report:
                     in_future = future_state != "deleted" and path in future_report
                     if in_past and in_future:
                         # get the future version
-                        future_file = future_report.get(path, bind=False)
+                        future_file = future_report.get(path)
                         # if modified
                         if future_state == "modified":
                             # shift the lines to "guess" what C was

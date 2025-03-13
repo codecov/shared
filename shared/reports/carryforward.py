@@ -37,34 +37,11 @@ def generate_carryforward_report(
     session_extras: Mapping[str, str] | None = None,
 ) -> Report:
     """
-        Generates a carriedforward report starting from report `report`, flags `flags`
-            and paths `paths`
+    Generates a carriedforward report by filtering the given `report` in-place,
+    to only those files and sessions matching the given `flags` and `paths`.
 
-    What this function does it basically take a report `report` and creates a new report
-        from it (so no changes are done in-place). On this new report, it adds all the information
-        from `report` that relates to sessions that have any of the flags `f`
-
-    This way, for example, if none of the sessions in `report` have a flag in `flags`,
-        it will just produce an empty report
-
-    If there are sessions with any of the flags in `flags`, let's call them `relevant_sessions`,
-        this function will go through all files in `report` that match any of the paths `paths
-        and build a new 'carriedforward' ReportFile from it, with only the ReportLines
-        that had at least one LineSession among the `relevant_sessions` (and proper filter out
-        all the the other sessions from that line). Then all the new EditableReportFile will
-        be added to the report.
-
-    Also, the old sessions are copied over to the new report, with their numbering changed to match
-        the new session order they are in now (they could be the fifth session before,
-        and the first session now)
-
-    Args:
-        report (Report): Description
-        flags (Sequence[str]): Description
-
-    Returns:
-        EditableReport: A new report with only the info related to `flags` on it, as described above
-    """
+    The sessions that are matching the `flags` are being flagged as `carriedforward`,
+    and other sessions are removed from the report."""
     if paths:
         matcher = Matcher(paths)
         files_to_delete = {
