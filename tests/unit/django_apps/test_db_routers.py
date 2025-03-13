@@ -65,30 +65,6 @@ class TestMultiDatabaseRouter:
         assert router.allow_migrate("default", "timeseries") == False
         assert router.allow_migrate("default_read", "timeseries") == False
 
-    @override_settings(TEST_ANALYTICS_DATABASE_ENABLED=False)
-    def test_allow_migrate_test_analytics_disabled(self):
-        router = MultiDatabaseRouter()
-        assert router.allow_migrate("test_analytics", "test_analytics") == False
-        assert router.allow_migrate("test_analytics_read", "test_analytics") == False
-        assert router.allow_migrate("test_analytics", "default") == False
-        assert router.allow_migrate("test_analytics_read", "default") == False
-        assert router.allow_migrate("default", "default") == True
-        assert router.allow_migrate("default_read", "default") == False
-        assert router.allow_migrate("default", "test_analytics") == False
-        assert router.allow_migrate("default_read", "test_analytics") == False
-
-    @override_settings(TEST_ANALYTICS_DATABASE_ENABLED=True)
-    def test_allow_migrate_test_analytics_enabled(self):
-        router = MultiDatabaseRouter()
-        assert router.allow_migrate("test_analytics", "test_analytics") == True
-        assert router.allow_migrate("test_analytics_read", "test_analytics") == False
-        assert router.allow_migrate("test_analytics", "default") == False
-        assert router.allow_migrate("test_analytics_read", "default") == False
-        assert router.allow_migrate("default", "default") == True
-        assert router.allow_migrate("default_read", "default") == False
-        assert router.allow_migrate("default", "test_analytics") == False
-        assert router.allow_migrate("default_read", "test_analytics") == False
-
     def test_allow_relation(self, mocker):
         # At time of writing, the Django timeseries models don't live in this
         # repo so we're pretending a different model is from the timeseries app

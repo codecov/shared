@@ -18,8 +18,6 @@ class MultiDatabaseRouter:
                     return "timeseries_read"
                 else:
                     return "timeseries"
-            case "test_analytics":
-                return "test_analytics"
             case _:
                 if settings.DATABASE_READ_REPLICA_ENABLED:
                     return "default_read"
@@ -30,34 +28,25 @@ class MultiDatabaseRouter:
         match model._meta.app_label:
             case "timeseries":
                 return "timeseries"
-            case "test_analytics":
-                return "test_analytics"
             case _:
                 return "default"
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         match db:
-            case "timeseries_read" | "test_analytics_read" | "default_read":
+            case "timeseries_read" | "default_read":
                 return False
             case "timeseries":
                 if not settings.TIMESERIES_ENABLED:
                     return False
                 return app_label == "timeseries"
-            case "test_analytics":
-                if not settings.TEST_ANALYTICS_DATABASE_ENABLED:
-                    return False
-                return app_label == "test_analytics"
             case _:
-                return app_label not in {"timeseries", "test_analytics"}
+                return app_label not in {"timeseries"}
 
     def allow_relation(self, obj1, obj2, **hints):
         obj1_app = obj1._meta.app_label
         obj2_app = obj2._meta.app_label
 
-        if obj1_app in {"timeseries", "test_analytics"} or obj2_app in {
-            "timeseries",
-            "test_analytics",
-        }:
+        if obj1_app in {"timeseries"} or obj2_app in {"timeseries"}:
             return obj1_app == obj2_app
         else:
             return True
