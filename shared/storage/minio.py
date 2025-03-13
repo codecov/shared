@@ -3,11 +3,9 @@ import logging
 import os
 from datetime import timedelta
 from functools import lru_cache
-from time import perf_counter
 from typing import IO, BinaryIO, Literal, overload
 
 import certifi
-import sentry_sdk
 import urllib3
 from minio import Minio
 from minio.credentials.providers import (
@@ -21,12 +19,12 @@ from minio.helpers import ObjectWriteResult
 from urllib3 import Retry
 from urllib3.util import Timeout
 
-from shared.metrics import Summary, set_summary
+from shared.metrics import Summary
 from shared.storage.base import BaseStorageService, PresignedURLService
 from shared.storage.compression import zstd_decoded_by_default
 from shared.storage.exceptions import BucketAlreadyExistsError
-from shared.storage.read import new_minio_read, old_minio_read
-from shared.storage.write import new_minio_write, old_minio_write
+from shared.storage.read import new_minio_read
+from shared.storage.write import new_minio_write
 
 log = logging.getLogger(__name__)
 
@@ -148,14 +146,8 @@ zstd_default = zstd_decoded_by_default()
 
 # Service class for interfacing with codecov's underlying storage layer, minio
 class MinioStorageService(BaseStorageService, PresignedURLService):
-    def __init__(
-        self,
-        minio_config,
-        new_mode: Literal["read", "write"] | None = None,
-    ):
+    def __init__(self, minio_config):
         self.minio_config = minio_config
-        self.new_read = new_mode == "read" or new_mode == "write"
-        self.new_write = new_mode == "write"
 
         log.debug("Connecting to minio with config %s", self.minio_config)
 
@@ -212,38 +204,16 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         is_compressed: bool = False,
         compression_type: str | None = "zstd",
     ) -> ObjectWriteResult | Literal[True]:
-        span = sentry_sdk.get_current_span()
-        if self.new_write:
-            span.set_data("impl", "new") if span else None
-            start = perf_counter()
-            result = new_minio_write(
-                self.minio_client,
-                bucket_name,
-                path,
-                data,
-                reduced_redundancy,
-                is_already_gzipped=is_already_gzipped,
-                is_compressed=is_compressed,
-                compression_type=compression_type,
-            )
-            end = perf_counter()
-            set_summary(MINIO_WRITE_TIME_SUMMARY, end - start, labels={"impl": "new"})
-            return result
-        else:
-            span.set_data("impl", "old") if span else None
-            start = perf_counter()
-            result = old_minio_write(
-                self.minio_client,
-                bucket_name,
-                path,
-                data,
-                reduced_redundancy,
-                is_already_gzipped=is_already_gzipped,
-            )
-
-            end = perf_counter()
-            set_summary(MINIO_WRITE_TIME_SUMMARY, end - start, labels={"impl": "old"})
-            return result
+        return new_minio_write(
+            self.minio_client,
+            bucket_name,
+            path,
+            data,
+            reduced_redundancy,
+            is_already_gzipped=is_already_gzipped,
+            is_compressed=is_compressed,
+            compression_type=compression_type,
+        )
 
     @overload
     def read_file(self, bucket_name: str, path: str) -> bytes: ...
@@ -254,24 +224,9 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
     def read_file(
         self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
     ) -> bytes | None:
-        span = sentry_sdk.get_current_span()
-        if self.new_read:
-            span.set_data("impl", "new") if span else None
-            return new_minio_read(
-                self.minio_client,
-                bucket_name,
-                path,
-                file_obj,
-                zstd_default,
-            )
-        else:
-            span.set_data("impl", "old") if span else None
-            return old_minio_read(
-                self.minio_client,
-                bucket_name,
-                path,
-                file_obj,
-            )
+        return new_minio_read(
+            self.minio_client, bucket_name, path, file_obj, zstd_default
+        )
 
     """
         Deletes file url in specified bucket.
