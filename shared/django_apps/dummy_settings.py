@@ -93,14 +93,6 @@ DATABASES = {
         "HOST": "timescale",
         "PORT": 5432,
     },
-    "test_analytics": {
-        "ENGINE": "psqlextra.backend",
-        "NAME": "test_analytics",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "postgres",
-        "PORT": 5432,
-    },
 }
 
 # Password validation

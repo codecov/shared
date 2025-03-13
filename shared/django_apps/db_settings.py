@@ -158,47 +158,6 @@ if TIMESERIES_ENABLED:
             "CONN_MAX_AGE": CONN_MAX_AGE,
         }
 
-TEST_ANALYTICS_DATABASE_ENABLED = get_config(
-    "setup", "test_analytics_database", "enabled", default=True
-)
-
-test_analytics_database_url = get_config("services", "test_analytics_database_url")
-if test_analytics_database_url:
-    test_analytics_database_conf = urlparse(test_analytics_database_url)
-    TEST_ANALYTICS_DATABASE_NAME = test_analytics_database_conf.path.replace("/", "")
-    TEST_ANALYTICS_DATABASE_USER = test_analytics_database_conf.username
-    TEST_ANALYTICS_DATABASE_PASSWORD = test_analytics_database_conf.password
-    TEST_ANALYTICS_DATABASE_HOST = test_analytics_database_conf.hostname
-    TEST_ANALYTICS_DATABASE_PORT = test_analytics_database_conf.port
-else:
-    TEST_ANALYTICS_DATABASE_NAME = get_config(
-        "services", "test_analytics_database", "name", default="test_analytics"
-    )
-    TEST_ANALYTICS_DATABASE_USER = get_config(
-        "services", "test_analytics_database", "username", default="postgres"
-    )
-    TEST_ANALYTICS_DATABASE_PASSWORD = get_config(
-        "services", "test_analytics_database", "password", default="postgres"
-    )
-    TEST_ANALYTICS_DATABASE_HOST = get_config(
-        "services", "test_analytics_database", "host", default="postgres"
-    )
-    TEST_ANALYTICS_DATABASE_PORT = get_config(
-        "services", "test_analytics_database", "port", default=5432
-    )
-
-
-if TEST_ANALYTICS_DATABASE_ENABLED:
-    DATABASES["test_analytics"] = {
-        "ENGINE": "psqlextra.backend",
-        "NAME": TEST_ANALYTICS_DATABASE_NAME,
-        "USER": TEST_ANALYTICS_DATABASE_USER,
-        "PASSWORD": TEST_ANALYTICS_DATABASE_PASSWORD,
-        "HOST": TEST_ANALYTICS_DATABASE_HOST,
-        "PORT": TEST_ANALYTICS_DATABASE_PORT,
-        "CONN_MAX_AGE": CONN_MAX_AGE,
-    }
-
 
 # See https://django-postgres-extra.readthedocs.io/en/main/settings.html
 POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"  # type: ignore
