@@ -7,7 +7,6 @@ from io import BytesIO
 from typing import IO, BinaryIO, Literal, cast, overload
 
 import certifi
-import sentry_sdk
 import urllib3
 import zstandard
 from minio import Minio
@@ -22,7 +21,6 @@ from minio.helpers import ObjectWriteResult
 from urllib3 import HTTPResponse, Retry
 from urllib3.util import Timeout
 
-from shared.metrics import Summary, set_summary
 from shared.storage.base import (
     CHUNK_SIZE,
     PART_SIZE,
@@ -36,17 +34,6 @@ log = logging.getLogger(__name__)
 
 CONNECT_TIMEOUT = 10
 READ_TIMEOUT = 60
-
-MINIO_WRITE_TIME_SUMMARY = Summary(
-    "minio_write_time",
-    "Time taken to write to minio",
-    ["impl"],
-)
-MINIO_SIZE_SUMMARY = Summary(
-    "minio_compression_size",
-    "Size of the compressed data update to minio",
-    ["impl"],
-)
 
 
 def init_minio_client(
@@ -259,12 +246,6 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
             content_type="text/plain",
             part_size=PART_SIZE,
         )
-
-        set_summary(
-            MINIO_SIZE_SUMMARY, result.tell(), labels={"impl": compression_type}
-        )
-        if span := sentry_sdk.get_current_span():
-            span.set_data("size", result.tell())
 
         return write_result
 
