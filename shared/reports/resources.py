@@ -2,7 +2,7 @@ import dataclasses
 import logging
 from copy import copy
 from itertools import filterfalse
-from typing import Any, Generator
+from typing import Any
 
 import orjson
 import sentry_sdk
@@ -14,12 +14,7 @@ from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundErro
 from shared.reports.filtered import FilteredReport
 from shared.reports.reportfile import ReportFile
 from shared.reports.serde import orjson_option, report_default
-from shared.reports.types import (
-    TOTALS_MAP,
-    ReportFileSummary,
-    ReportHeader,
-    ReportTotals,
-)
+from shared.reports.types import TOTALS_MAP, ReportHeader, ReportTotals
 from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
 from shared.utils.migrate import migrate_totals
@@ -57,88 +52,75 @@ def chunks_from_storage_contains_header(chunks: str) -> bool:
     return chunks[first_line_end : second_line_end + 1] == END_OF_HEADER
 
 
-@sentry_sdk.trace
-def build_files(files: dict[str, Any]) -> dict[str, ReportFileSummary]:
-    # NOTE: this mutates `files` in-place
-    for filename, file_summary in files.items():
-        if not isinstance(file_summary, ReportFileSummary):
-            # We have a minimum of two pieces of data
-            chunks_index = file_summary[0]
-            file_totals = file_summary[1]
-
-            try:
-                # Indices 2 and 3 may not exist. Index 2 used to be `session_totals`
-                # but is ignored now due to a bug.
-                diff_totals = file_summary[3]
-            except IndexError:
-                diff_totals = None
-
-            files[filename] = ReportFileSummary(chunks_index, file_totals, diff_totals)
-    return files
-
-
-def get_sessions(sessions: dict) -> dict[int, Session]:
-    return {
-        int(sid): copy(session)
-        if isinstance(session, Session)
-        else Session.parse_session(**session)
-        for sid, session in sessions.items()
-    }
-
-
-def parse_header(header: str) -> ReportHeader:
-    if header == "":
-        return ReportHeader()
-    header = orjson.loads(header)
-    return ReportHeader(
-        # JSON can only have str as keys. We cast to int.
-        # Because encoded labels in the CoverageDatapoint level are ints.
-        labels_index={int(k): v for k, v in header.get("labels_index", {}).items()}
-    )
-
-
-@sentry_sdk.trace
-def parse_chunks(chunks: str) -> tuple[list[str], ReportHeader]:
-    # came from archive
-    # split the details header, which is JSON
-    if chunks_from_storage_contains_header(chunks):
-        header_str, chunks = chunks.split(END_OF_HEADER, 1)
-        header = parse_header(header_str)
-    else:
-        header = ReportHeader()
-    split_chunks = chunks.split(END_OF_CHUNK)
-
-    return (split_chunks, header)
-
-
-class Report(object):
-    _files: dict[str, ReportFileSummary]
+class Report:
+    sessions: dict[int, Session]
     _header: ReportHeader
+    _totals: ReportTotals | None
+    _files: dict[str, ReportFile]
 
     def __init__(
         self,
-        files=None,
-        sessions=None,
+        files: dict[str, tuple[int, ReportTotals, Any, ReportTotals]] | None = None,
+        sessions: dict[int | str, Session | dict] | None = None,
         totals=None,
         chunks=None,
         diff_totals=None,
         **kwargs,
     ):
-        # {"filename": [<line index in chunks :int>, <ReportTotals>]}
-        self._files = build_files(files) if files else {}
-        # {1: {...}}
-        self.sessions = get_sessions(sessions) if sessions else {}
+        self.sessions = {}
+        self._header = ReportHeader()
+        self._totals = None
+        self._files = {}
 
-        # ["<json>", ...]
-        self._chunks: list[str | ReportFile]
-        self._chunks, self._header = (
-            parse_chunks(chunks)
-            if chunks and isinstance(chunks, str)
-            else (chunks or [], ReportHeader())
-        )
+        if sessions:
+            self.sessions = {
+                int(sid): copy(session)
+                if isinstance(session, Session)
+                else Session.parse_session(**session)
+                for sid, session in sessions.items()
+            }
 
-        # <ReportTotals>
-        self._totals: ReportTotals | None = None
+        _chunks: list[bytes] = []
+        if chunks:
+            if isinstance(chunks, str):
+                chunks = chunks.encode()
+            if isinstance(chunks, bytes):
+                splits = chunks.split(b"\n<<<<< end_of_header >>>>>\n", maxsplit=1)
+                if len(splits) > 1:
+                    _header = orjson.loads(splits[0] or b"{}")
+                    self._header = ReportHeader(
+                        labels_index={
+                            int(k): v
+                            for k, v in _header.get("labels_index", {}).items()
+                        }
+                    )
+                    chunks = splits[1]
+
+                _chunks = chunks.split(b"\n<<<<< end_of_chunk >>>>>\n")
+            else:
+                _chunks = chunks
+
+        if files:
+            for name, summary in files.items():
+                chunks_index = summary[0]
+                file_totals = summary[1]
+                try:
+                    # Indices 2 and 3 may not exist. Index 2 used to be `session_totals`
+                    # but is ignored now due to a bug.
+                    file_diff_totals = summary[3]
+                except IndexError:
+                    file_diff_totals = None
+
+                try:
+                    _lines = _chunks[chunks_index]
+                    lines = _lines.decode() if isinstance(_lines, bytes) else _lines
+                except IndexError:
+                    lines = ""
+
+                self._files[name] = ReportFile(
+                    name, totals=file_totals, lines=lines, diff_totals=file_diff_totals
+                )
+
         if isinstance(totals, ReportTotals):
             self._totals = totals
         elif totals:
@@ -160,26 +142,9 @@ class Report(object):
         returns <ReportTotals>
         """
 
-        def _iter_totals():
-            for filename, data in self._files.items():
-                if data.file_totals is None:
-                    yield self.get(filename).totals
-                else:
-                    yield data.file_totals
-
-        totals = agg_totals(_iter_totals())
+        totals = agg_totals(file.totals for file in self._files.values())
         totals.sessions = len(self.sessions)
         return totals
-
-    def _iter_parsed_files(self) -> Generator[ReportFile, None, None]:
-        for name, summary in self._files.items():
-            idx = summary.file_index
-            file = self._chunks[idx]
-            if not isinstance(file, ReportFile):
-                file = self._chunks[idx] = ReportFile(
-                    name=name, totals=summary.file_totals, lines=file
-                )
-            yield file
 
     @property
     def header(self) -> ReportHeader:
@@ -208,13 +173,6 @@ class Report(object):
     def from_chunks(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
-    @property
-    def size(self):
-        size = 0
-        for chunk in self._chunks:
-            size += len(chunk)
-        return size
-
     def has_precalculated_totals(self):
         return self._totals is not None
 
@@ -223,7 +181,7 @@ class Report(object):
         for fname, data in self._files.items():
             yield (
                 fname,
-                make_network_file(data.file_totals, data.diff_totals),
+                make_network_file(data.totals, data.diff_totals),
             )
 
     def __repr__(self):
@@ -285,105 +243,31 @@ class Report(object):
 
         assert _file.name, "file must have a name"
 
-        # check if file already exists
-        index = self._files.get(_file.name)
-        if index:
-            # existing file
-            # =============
-            #  merge old report chunk
-            cur_file = self[_file.name]
-            # merge it
-            cur_file.merge(_file, joined)
-            # set totals
-            index.file_totals = cur_file.totals
-            # update chunk in report
-            self._chunks[index.file_index] = cur_file
+        existing_file = self._files.get(_file.name)
+        if existing_file is not None:
+            existing_file.merge(_file, joined)
         else:
-            # new file
-            # ========
-            # override totals
-            if not joined:
-                _file._totals = ReportTotals(0, _file.totals.lines)
+            self._files[_file.name] = _file
 
-            # add to network
-            self._files[_file.name] = ReportFileSummary(
-                len(self._chunks),  # chunk location
-                _file.totals,  # Totals
-                None,  # Diff Totals
-            )
-
-            # add file in chunks
-            self._chunks.append(_file)
-
-        self._totals = None
-
+        self._invalidate_caches()
         return True
 
-    def get(self, filename, _else=None, bind=False):
-        """
-        returns <ReportFile>
-        if not found return _else
+    def get(self, filename):
+        return self._files.get(filename)
 
-        :bind will replace the chunks and bind file changes to the report
-        """
-        _file = self._files.get(filename)
-        if _file is not None:
-            if self._chunks:
-                try:
-                    lines = self._chunks[_file.file_index]
-                except IndexError:
-                    log.warning(
-                        "File not found in chunk",
-                        extra=dict(file_index=_file.file_index),
-                        exc_info=True,
-                    )
-                    lines = None
-            else:
-                # may be tree_only request
-                lines = None
-            if isinstance(lines, ReportFile):
-                return lines
-            report_file = ReportFile(
-                name=filename,
-                totals=_file.file_totals,
-                lines=lines,
-            )
-            if bind:
-                self._chunks[_file.file_index] = report_file
+    def resolve_paths(self, paths: list[tuple[str, str | None]]):
+        for old, new in paths:
+            if old in self._files:
+                self.rename(old, new)
 
-            return report_file
+    def rename(self, old: str, new: str | None):
+        file = self._files.pop(old)
+        if file is not None:
+            if new:
+                file.name = new
+                self._files[new] = file
 
-        return _else
-
-    def resolve_paths(self, paths):
-        """
-        :paths [(old_path, new_path), ...]
-        """
-        already_added_to_file = []
-        paths_to_use = list(unique_everseen(paths))
-        if len(paths_to_use) < len(paths):
-            log.info("Paths being resolved were duplicated. Deduplicating")
-        for old_path, new_path in paths_to_use:
-            if old_path in self:
-                if new_path in already_added_to_file:
-                    del self[old_path]
-                elif new_path is None:
-                    del self[old_path]
-                else:
-                    already_added_to_file.append(new_path)
-                    if old_path != new_path:
-                        # rename and ignore lines
-                        self.rename(old_path, new_path)
-
-    def rename(self, old, new):
-        # remvoe from list
-        _file = self._files.pop(old)
-        # add back with new name
-        self._files[new] = _file
-        # update name if it was a ReportFile
-        chunk = self._chunks[_file.file_index]
-        if isinstance(chunk, ReportFile):
-            chunk.name = new
+        self._invalidate_caches()
         return True
 
     def __getitem__(self, filename):
@@ -393,25 +277,19 @@ class Report(object):
         return _file
 
     def __delitem__(self, filename):
-        # remove from report
-        _file = self._files.pop(filename)
-        # remove chunks
-        self._chunks[_file.file_index] = None
+        self._files.pop(filename)
         return True
 
     def get_file_totals(self, path: str) -> ReportTotals | None:
-        if path not in self._files:
+        file = self._files.get(path)
+        if file is None:
             log.warning(
                 "Fetching file totals for a file that isn't in the report",
                 extra=dict(path=path),
             )
             return None
 
-        totals = self._files[path].file_totals
-        if isinstance(totals, ReportTotals):
-            return totals
-        else:
-            return ReportTotals(*totals)
+        return file.totals
 
     def next_session_number(self):
         start_number = len(self.sessions)
@@ -437,19 +315,8 @@ class Report(object):
         """Iter through all the files
         yielding <ReportFile>
         """
-        for filename, _file in self._files.items():
-            if self._chunks:
-                report = self._chunks[_file.file_index]
-            else:
-                report = None
-            if isinstance(report, ReportFile):
-                yield report
-            else:
-                yield ReportFile(
-                    name=filename,
-                    totals=_file.file_totals,
-                    lines=report,
-                )
+        for file in self._files.values():
+            yield file
 
     def __contains__(self, filename):
         return filename in self._files
@@ -471,8 +338,6 @@ class Report(object):
             if _file.name:
                 self.append(_file, joined)
 
-        self._totals = self._process_totals()
-
     def is_empty(self):
         """returns boolean if the report has no content"""
         return len(self._files) == 0
@@ -484,7 +349,7 @@ class Report(object):
     def to_archive(self, with_header=True):
         # TODO: confirm removing encoding here is fine
         chunks = END_OF_CHUNK.join(
-            _encode_chunk(chunk).decode() for chunk in self._chunks
+            _encode_chunk(chunk).decode() for chunk in self._files.values()
         )
         if with_header:
             # When saving to database we want this
@@ -501,10 +366,15 @@ class Report(object):
         """returns (totals, report) to be stored in database"""
         totals = dict(zip(TOTALS_MAP, self.totals))
         totals["diff"] = self.diff_totals
+
+        files = {
+            file.name: [i, file.totals, None, file.diff_totals]
+            for i, file in enumerate(self._files.values())
+        }
         return (
             totals,
             orjson.dumps(
-                {"files": self._files, "sessions": self.sessions},
+                {"files": files, "sessions": self.sessions},
                 default=report_default,
                 option=orjson_option,
             ).decode(),
@@ -637,7 +507,7 @@ class Report(object):
                     in_future = future_state != "deleted" and path in future_report
                     if in_past and in_future:
                         # get the future version
-                        future_file = future_report.get(path, bind=False)
+                        future_file = future_report.get(path)
                         # if modified
                         if future_state == "modified":
                             # shift the lines to "guess" what C was
@@ -671,18 +541,8 @@ class Report(object):
         if diff and diff.get("files"):
             for path, data in diff["files"].items():
                 if data["type"] == "modified" and path in self:
-                    _file = self.get(path)
-                    _file.shift_lines_by_diff(data, forward=forward)
-                    _file._totals = None
-                    chunk_loc = self._files[path].file_index
-                    # update chunks with file updates
-                    self._chunks[chunk_loc] = _file
-                    # clear out totals
-                    self._files[path] = ReportFileSummary(
-                        file_index=chunk_loc,
-                        file_totals=_file.totals,
-                        diff_totals=None,
-                    )
+                    file = self.get(path)
+                    file.shift_lines_by_diff(data, forward=forward)
 
     def calculate_diff(self, diff: RawDiff) -> CalculatedDiff:
         """
@@ -697,12 +557,12 @@ class Report(object):
         for filename, file_totals in diff_result["files"].items():
             data = diff["files"].get(filename)
             data["totals"] = file_totals
-            network_file = self._files[filename]
+            file = self._files[filename]
             if file_totals.lines == 0:
                 file_totals = dataclasses.replace(  # noqa: PLW2901
                     file_totals, coverage=None, complexity=None, complexity_total=None
                 )
-            network_file.diff_totals = file_totals
+            file.diff_totals = file_totals
 
     @sentry_sdk.trace
     def apply_diff(self, diff, _save=True):
@@ -726,60 +586,15 @@ class Report(object):
 
     @sentry_sdk.trace
     def repack(self):
-        """Repacks in a more compact format to avoid deleted files and such"""
-        if not self._passes_integrity_analysis():
-            log.warning(
-                "There was some integrity issus, not repacking to not accidentally damage it more"
-            )
-            return
-        new_chunks = [x for x in self._chunks if x is not None]
-        if len(new_chunks) == len(self._chunks):
-            return
-        notnull_chunks_new_location = list(
-            enumerate(
-                origin_ind
-                for (origin_ind, x) in enumerate(self._chunks)
-                if x is not None
-            )
-        )
-        chunks_mapping = {b: a for (a, b) in notnull_chunks_new_location}
-        for summary in self._files.values():
-            summary.file_index = chunks_mapping.get(summary.file_index)
-        self._chunks = new_chunks
-        log.info("Repacked files in report")
-
-    def _passes_integrity_analysis(self):
-        declared_files_in_db = {f.file_index for f in self._files.values()}
-        declared_files_in_chunks = {
-            i for (i, j) in enumerate(self._chunks) if j is not None
-        }
-        if declared_files_in_db != declared_files_in_chunks:
-            log.warning(
-                "File has integrity issues",
-                extra=dict(
-                    files_only_in_db=sorted(
-                        declared_files_in_db - declared_files_in_chunks
-                    ),
-                    files_only_in_chunks=sorted(
-                        declared_files_in_chunks - declared_files_in_db
-                    ),
-                ),
-            )
-            return False
-        return True
+        pass
 
     def delete_labels(
         self, sessionids: list[int] | set[int], labels_to_delete: list[int] | set[int]
     ):
         files_to_delete = []
-        for file in self._iter_parsed_files():
+        for file in self:
             file.delete_labels(sessionids, labels_to_delete)
-            if file:
-                self._files[file.name] = dataclasses.replace(
-                    self._files[file.name],
-                    file_totals=file.totals,
-                )
-            else:
+            if not file:
                 files_to_delete.append(file.name)
         for file in files_to_delete:
             del self[file]
@@ -793,14 +608,9 @@ class Report(object):
             self.sessions.pop(sessionid)
 
         files_to_delete = []
-        for file in self._iter_parsed_files():
+        for file in self:
             file.delete_multiple_sessions(session_ids_to_delete)
-            if file:
-                self._files[file.name] = dataclasses.replace(
-                    self._files[file.name],
-                    file_totals=file.totals,
-                )
-            else:
+            if not file:
                 files_to_delete.append(file.name)
         for file in files_to_delete:
             del self[file]
@@ -819,7 +629,7 @@ class Report(object):
         session = self.sessions[new_id] = self.sessions.pop(old_id)
         session.id = new_id
 
-        for file in self._iter_parsed_files():
+        for file in self:
             all_sessions = set()
 
             for idx, _line in enumerate(file._lines):

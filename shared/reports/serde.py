@@ -30,20 +30,29 @@ def serialize_report(
     The `totals` is either a `ReportTotals`, or `None`, depending on the `with_totals` flag.
     """
 
+    indexed_files = list(enumerate(report._files.values()))
+
     chunks = (
         orjson.dumps(report._header, option=orjson_option)
         + END_OF_HEADER
-        + END_OF_CHUNK.join(_encode_chunk(chunk) for chunk in report._chunks)
+        + END_OF_CHUNK.join(_encode_chunk(file) for i, file in indexed_files)
     )
 
     if with_totals:
         totals = report.totals
         totals.diff = report.diff_totals
+
+        files = {
+            file.name: [i, file.totals, None, file.diff_totals]
+            for i, file in indexed_files
+        }
     else:
         totals = None
 
+        files = {file.name: [i, None] for i, file in indexed_files}
+
     report_json = orjson.dumps(
-        {"files": report._files, "sessions": report.sessions, "totals": totals},
+        {"files": files, "sessions": report.sessions, "totals": totals},
         default=report_default,
         option=orjson_option,
     )
@@ -102,11 +111,14 @@ def _encode_chunk(chunk) -> bytes:
     if chunk is None:
         return b"null"
     elif isinstance(chunk, ReportFile):
-        return (
-            orjson.dumps(chunk.details, option=orjson_option)
-            + b"\n"
-            + b"\n".join(_dumps_not_none(line) for line in chunk._lines)
-        )
+        if isinstance(chunk._raw_lines, str):
+            return chunk._raw_lines.encode()
+        else:
+            return (
+                orjson.dumps(chunk.details, option=orjson_option)
+                + b"\n"
+                + b"\n".join(_dumps_not_none(line) for line in chunk._lines)
+            )
     elif isinstance(chunk, (list, dict)):
         return orjson.dumps(chunk, default=chunk_default, option=orjson_option)
     elif isinstance(chunk, str):

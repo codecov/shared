@@ -40,13 +40,9 @@ def do_parse(raw_report_json, raw_chunks):
 def do_full_parse(raw_report_json, raw_chunks):
     report = do_parse(raw_report_json, raw_chunks)
     # full parsing in this case means iterating over everything in the report
-    # we iterate over `files` and use `get(bind=True)`, as that is caching the
-    # parsed `ReportFile` instance.
-    # the `__iter__` method does not do that.
-    for filename in report.files:
-        file = report.get(filename, bind=True)
-        # … however the same is not true for the `ReportLine`s, which are being
-        # re-parsed *every damn time* :-(
+    for file in report:
+        # Which in particular means iterating over every `ReportLine`s,
+        # which are unfortunately being re-parsed *every damn time* :-(
         for _line in file:
             pass
 
