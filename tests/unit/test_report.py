@@ -1,10 +1,8 @@
 import pytest
-from mock import PropertyMock
 
 from shared.reports.editable import EditableReport, EditableReportFile
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.resources import (
-    END_OF_CHUNK,
     Report,
     ReportFile,
     _encode_chunk,
@@ -13,7 +11,6 @@ from shared.reports.resources import (
 from shared.reports.types import (
     CoverageDatapoint,
     LineSession,
-    ReportFileSummary,
     ReportHeader,
     ReportLine,
     ReportTotals,
@@ -24,9 +21,9 @@ from shared.utils.sessions import Session
 def report_with_file_summaries():
     return Report(
         files={
-            "calc/CalcCore.cpp": ReportFileSummary(
-                file_index=0,
-                file_totals=ReportTotals(
+            "calc/CalcCore.cpp": [
+                0,
+                ReportTotals(
                     files=0,
                     lines=10,
                     hits=7,
@@ -41,11 +38,10 @@ def report_with_file_summaries():
                     complexity_total=0,
                     diff=0,
                 ),
-                diff_totals=None,
-            ),
-            "calc/CalcCore.h": ReportFileSummary(
-                file_index=1,
-                file_totals=ReportTotals(
+            ],
+            "calc/CalcCore.h": [
+                1,
+                ReportTotals(
                     files=0,
                     lines=1,
                     hits=1,
@@ -60,11 +56,10 @@ def report_with_file_summaries():
                     complexity_total=0,
                     diff=0,
                 ),
-                diff_totals=None,
-            ),
-            "calc/Calculator.cpp": ReportFileSummary(
-                file_index=2,
-                file_totals=ReportTotals(
+            ],
+            "calc/Calculator.cpp": [
+                2,
+                ReportTotals(
                     files=0,
                     lines=4,
                     hits=3,
@@ -79,8 +74,7 @@ def report_with_file_summaries():
                     complexity_total=0,
                     diff=0,
                 ),
-                diff_totals=None,
-            ),
+            ],
         },
         totals=ReportTotals(
             files=3,
@@ -251,22 +245,6 @@ def test_merge_into_editable_report():
 
 
 @pytest.mark.unit
-def test_to_archive_with_header(mocker):
-    r = Report()
-    r._files = PropertyMock(return_value={"file.py": [0, ReportTotals()]})
-    r._header = ReportHeader(labels_index={0: "special_label", 1: "some_label"})
-    r._chunks = (
-        "null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]".split(
-            END_OF_CHUNK
-        )
-    )
-    assert (
-        r.to_archive()
-        == '{"labels_index":{"0":"special_label","1":"some_label"}}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]'
-    )
-
-
-@pytest.mark.unit
 def test_calculate_diff():
     v3 = {
         "files": {"a": [0, None], "d": [1, None]},
@@ -376,7 +354,6 @@ def test_delete_session():
         ]
     )
     report_file = EditableReportFile(name="file.py", lines=chunks)
-    assert report_file._lines == chunks.split("\n")[1:]
     assert report_file.totals == ReportTotals(
         files=0,
         lines=10,
@@ -448,63 +425,6 @@ def test_get_flag_names_sessions_no_flags():
 
 
 @pytest.mark.unit
-def test_repack(sample_report):
-    f = ReportFile("hahafile.txt")
-    f.append(1, ReportLine.create(1))
-    sample_report.append(f)
-    del sample_report["file_2.go"]
-    del sample_report["hahafile.txt"]
-    old_totals = sample_report.totals
-    assert len(sample_report._chunks) == 4
-    assert len(sample_report._files) == 2
-    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 2]
-    old_line_count = sum(len(list(file.lines)) for file in sample_report)
-    sample_report.repack()
-    sample_report._totals = None
-    assert sample_report.totals == old_totals
-    assert sorted(sample_report.files) == ["file_1.go", "location/file_1.py"]
-    assert len(sample_report._chunks) == len(sample_report._files)
-    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1]
-    assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
-
-
-@pytest.mark.unit
-def test_repack_bad_data(sample_report):
-    f = ReportFile("hahafile.txt")
-    f.append(1, ReportLine.create(1))
-    sample_report.append(f)
-    assert len(sample_report._chunks) == 4
-    assert len(sample_report._files) == 4
-    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1, 2, 3]
-    del sample_report._files["hahafile.txt"]
-    sample_report._chunks[0] = None
-    assert len(sample_report._chunks) == 4
-    assert len(sample_report._files) == 3
-    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1, 2]
-    old_totals = sample_report.totals
-    old_line_count = sum(len(list(file.lines)) for file in sample_report)
-    sample_report.repack()
-    sample_report._totals = None
-    assert sample_report.totals == old_totals
-    assert sorted(sample_report.files) == [
-        "file_1.go",
-        "file_2.go",
-        "location/file_1.py",
-    ]
-    assert len(sample_report._chunks) == 4
-    assert len(sample_report._files) == 3
-    assert sorted(k.file_index for k in sample_report._files.values()) == [0, 1, 2]
-    assert old_line_count == sum(len(list(file.lines)) for file in sample_report)
-
-
-@pytest.mark.unit
-def test_repack_no_change(sample_report):
-    assert len(sample_report._chunks) == len(sample_report._files)
-    sample_report.repack()
-    assert len(sample_report._chunks) == len(sample_report._files)
-
-
-@pytest.mark.unit
 def test_shift_lines_by_diff():
     r = ReportFile("filename", lines=[ReportLine.create(n) for n in range(8)])
     report = Report(sessions={0: Session()})
@@ -556,30 +476,25 @@ def test_shift_lines_by_diff():
         }
     )
     assert report.files == ["filename"]
-    assert list(report.get("filename").lines) == [
+    file = report.get("filename")
+    assert list(file.lines) == [
         (2, ReportLine.create(1)),
         (3, ReportLine.create(2)),
         (4, ReportLine.create(3)),
         (7, ReportLine.create(7)),
     ]
-    assert report._files == {
-        "filename": ReportFileSummary(
-            file_index=0,
-            file_totals=ReportTotals(
-                files=0,
-                lines=4,
-                hits=4,
-                misses=0,
-                partials=0,
-                coverage="100",
-                branches=0,
-                methods=0,
-                messages=0,
-                sessions=0,
-                complexity=0,
-                complexity_total=0,
-                diff=0,
-            ),
-            diff_totals=None,
-        )
-    }
+    assert file.totals == ReportTotals(
+        files=0,
+        lines=4,
+        hits=4,
+        misses=0,
+        partials=0,
+        coverage="100",
+        branches=0,
+        methods=0,
+        messages=0,
+        sessions=0,
+        complexity=0,
+        complexity_total=0,
+        diff=0,
+    )

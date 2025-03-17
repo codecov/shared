@@ -427,9 +427,6 @@ class TestReadOnly(object):
             diff=0,
         )
 
-    def test_size(self, sample_rust_report):
-        assert sample_rust_report.size == 580
-
     def test_differing_totals_calculation(self, mocker, sample_report):
         rust_analyzer = mocker.MagicMock(
             get_totals=mocker.MagicMock(return_value=ReportTotals(1, 999))

@@ -65,8 +65,7 @@ class ReadOnlyReport(object):
         )
         totals = inner_report._totals
         filename_mapping = {
-            filename: file_summary.file_index
-            for (filename, file_summary) in inner_report._files.items()
+            filename: idx for idx, filename in enumerate(inner_report._files.keys())
         }
         session_mapping = {
             sid: (session.flags or []) for sid, session in inner_report.sessions.items()
@@ -115,10 +114,6 @@ class ReadOnlyReport(object):
     @property
     def sessions(self):
         return self.inner_report.sessions
-
-    @property
-    def size(self):
-        return self.inner_report.size
 
     def apply_diff(self, *args, **kwargs):
         return self.inner_report.apply_diff(*args, **kwargs)

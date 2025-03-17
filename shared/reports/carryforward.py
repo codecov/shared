@@ -2,7 +2,6 @@ import logging
 import re
 from typing import Mapping, Sequence
 
-from shared.reports.editable import EditableReport
 from shared.reports.resources import Report
 from shared.utils.match import Matcher
 from shared.utils.sessions import SessionType
@@ -36,49 +35,23 @@ def generate_carryforward_report(
     flags: Sequence[str],
     paths: Sequence[str],
     session_extras: Mapping[str, str] | None = None,
-) -> EditableReport:
+) -> Report:
     """
-        Generates a carriedforward report starting from report `report`, flags `flags`
-            and paths `paths`
+    Generates a carriedforward report by filtering the given `report` in-place,
+    to only those files and sessions matching the given `flags` and `paths`.
 
-    What this function does it basically take a report `report` and creates a new report
-        from it (so no changes are done in-place). On this new report, it adds all the information
-        from `report` that relates to sessions that have any of the flags `f`
-
-    This way, for example, if none of the sessions in `report` have a flag in `flags`,
-        it will just produce an empty report
-
-    If there are sessions with any of the flags in `flags`, let's call them `relevant_sessions`,
-        this function will go through all files in `report` that match any of the paths `paths
-        and build a new 'carriedforward' ReportFile from it, with only the ReportLines
-        that had at least one LineSession among the `relevant_sessions` (and proper filter out
-        all the the other sessions from that line). Then all the new EditableReportFile will
-        be added to the report.
-
-    Also, the old sessions are copied over to the new report, with their numbering changed to match
-        the new session order they are in now (they could be the fifth session before,
-        and the first session now)
-
-    Args:
-        report (Report): Description
-        flags (Sequence[str]): Description
-
-    Returns:
-        EditableReport: A new report with only the info related to `flags` on it, as described above
-    """
-    new_report = EditableReport(
-        chunks=report._chunks,
-        files=report._files,
-        sessions=report.sessions,
-        totals=None,
-    )
+    The sessions that are matching the `flags` are being flagged as `carriedforward`,
+    and other sessions are removed from the report."""
     if paths:
         matcher = Matcher(paths)
-        for filename in new_report.files:
-            if not matcher.match(filename):
-                del new_report[filename]
+        files_to_delete = {
+            filename for filename in report._files.keys() if not matcher.match(filename)
+        }
+        for filename in files_to_delete:
+            del report[filename]
+
     sessions_to_delete = []
-    for sid, session in new_report.sessions.items():
+    for sid, session in report.sessions.items():
         if not contain_any_of_the_flags(flags, session.flags):
             sessions_to_delete.append(int(sid))
         else:
@@ -89,8 +62,8 @@ def generate_carryforward_report(
         "Removing sessions that are not supposed to carryforward",
         extra=dict(deleted_sessions=sessions_to_delete),
     )
-    new_report.delete_multiple_sessions(sessions_to_delete)
-    return new_report
+    report.delete_multiple_sessions(sessions_to_delete)
+    return report
 
 
 def contain_any_of_the_flags(expected_flags, actual_flags):

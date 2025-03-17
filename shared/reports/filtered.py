@@ -165,9 +165,9 @@ class FilteredReport(object):
             if file:
                 yield fname, make_network_file(file.totals)
 
-    def get(self, filename, _else=None):
+    def get(self, filename):
         if not self.should_include(filename):
-            return _else
+            return None
         if not self.flags:
             return self.report.get(filename)
         r = self.report.get(filename)

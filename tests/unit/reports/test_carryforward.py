@@ -321,7 +321,7 @@ class TestCarryfowardFlag(object):
         )
         assert res.files == ["file_2.py"]
         readable_report = self.convert_report_to_better_readable(res)
-        expected_result = {
+        assert readable_report == {
             "archive": {
                 "file_2.py": [
                     (12, 1, None, [[0, 1, None, None, None]], None, None),
@@ -331,7 +331,7 @@ class TestCarryfowardFlag(object):
             "report": {
                 "files": {
                     "file_2.py": [
-                        1,
+                        0,
                         [0, 2, 1, 0, 1, "50.00000", 1, 0, 0, 0, 0, 0, 0],
                         None,
                         None,
@@ -371,23 +371,6 @@ class TestCarryfowardFlag(object):
                 "s": 1,
             },
         }
-        assert (
-            readable_report["archive"]["file_2.py"]
-            == expected_result["archive"]["file_2.py"]
-        )
-        assert readable_report["archive"] == expected_result["archive"]
-        assert (
-            readable_report["report"]["sessions"]
-            == expected_result["report"]["sessions"]
-        )
-        assert (
-            readable_report["report"]["files"]["file_2.py"]
-            == expected_result["report"]["files"]["file_2.py"]
-        )
-        assert readable_report["report"]["files"] == expected_result["report"]["files"]
-        assert readable_report["report"] == expected_result["report"]
-        assert readable_report["totals"] == expected_result["totals"]
-        assert readable_report == expected_result
 
     def test_generate_carryforward_report_one_file_not_covered(self, sample_report):
         res = generate_carryforward_report(sample_report, flags=["complex"], paths=None)

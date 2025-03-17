@@ -13,12 +13,21 @@ from shared.utils.merge import merge_all, merge_line
 log = logging.getLogger(__name__)
 
 
-class ReportFile(object):
+class ReportFile:
+    name: str
+    _totals: ReportTotals | None
+    diff_totals: ReportTotals | None
+    _raw_lines: str | None
+    _parsed_lines: list[None | str | ReportLine]
+    _details: dict[str, Any]
+    __present_sessions: set[int] | None
+
     def __init__(
         self,
         name: str,
         totals: ReportTotals | list | None = None,
         lines: list[None | str | ReportLine] | str | None = None,
+        diff_totals: ReportTotals | list | None = None,
         ignore=None,
     ):
         """
@@ -32,19 +41,18 @@ class ReportFile(object):
             {eof:N, lines:[1,10]}
         """
         self.name = name
-        self._details: dict[str, Any] = {}
+        self._totals = None
+        self.diff_totals = None
+        self._raw_lines = None
+        self._parsed_lines = []
+        self._details = {}
+        self.__present_sessions = None
 
-        # lines = [<details dict()>, <Line #1>, ....]
-        self._lines: list[None | str | ReportLine] = []
         if lines:
             if isinstance(lines, list):
-                self._lines = lines
-
+                self._parsed_lines = lines
             else:
-                lines = lines.splitlines()
-                if detailsline := lines.pop(0):
-                    self._details = orjson.loads(detailsline) or {}
-                self._lines = lines
+                self._raw_lines = lines
 
         self._ignore = _ignore_to_func(ignore) if ignore else None
 
@@ -54,22 +62,38 @@ class ReportFile(object):
         # All mutating methods (like `append`, `merge`, etc) will either re-calculate these values
         # directly, or clear them so the `@property` accessors re-calculate them when needed.
 
-        self._totals: ReportTotals | None = None
         if isinstance(totals, ReportTotals):
             self._totals = totals
         elif totals:
             self._totals = ReportTotals(*totals)
 
-        self.__present_sessions: set[int] | None = None
-        if present_sessions := self._details.get("present_sessions"):
-            self.__present_sessions = set(present_sessions)
+        if isinstance(diff_totals, ReportTotals):
+            self.diff_totals = diff_totals
+        elif diff_totals:
+            self.diff_totals = ReportTotals(*diff_totals)
 
     def _invalidate_caches(self):
         self._totals = None
+        self.diff_totals = None
         self.__present_sessions = None
 
     @property
+    def _lines(self):
+        if self._raw_lines:
+            self._parsed_lines = self._raw_lines.splitlines()
+            detailsline = self._parsed_lines.pop(0)
+
+            self._details = orjson.loads(detailsline or "null") or {}
+            if present_sessions := self._details.get("present_sessions"):
+                self.__present_sessions = set(present_sessions)
+
+            self._raw_lines = None
+
+        return self._parsed_lines
+
+    @property
     def _present_sessions(self):
+        _ensure_is_parsed = self._lines
         if self.__present_sessions is None:
             self.__present_sessions = set()
             for _, line in self.lines:
@@ -78,17 +102,15 @@ class ReportFile(object):
 
     @property
     def details(self):
+        _ensure_is_parsed = self._lines
         self._details["present_sessions"] = sorted(self._present_sessions)
         return self._details
 
     @property
     def totals(self):
         if not self._totals:
-            self._totals = self._process_totals()
+            self._totals = get_line_totals(line for _ln, line in self.lines)
         return self._totals
-
-    def _process_totals(self) -> ReportTotals:
-        return get_line_totals(line for _ln, line in self.lines)
 
     def __repr__(self):
         try:
@@ -282,7 +304,8 @@ class ReportFile(object):
         ):
             # previous file was boil-the-ocean
             # OR previous file had END issue
-            self._lines = other_file._lines
+            self._parsed_lines = other_file._lines.copy()
+            self._raw_lines = None
             log.warning(
                 "Doing something weird because of weird .rb logic",
                 extra=dict(report_filename=self.name),
@@ -302,10 +325,11 @@ class ReportFile(object):
 
         else:
             # set new lines object
-            self._lines = [
+            self._parsed_lines = [
                 merge_line(before, after, joined)
                 for before, after in zip_longest(self, other_file)
             ]
+            self._raw_lines = None
 
         self._invalidate_caches()
         return True
@@ -460,7 +484,9 @@ class ReportFile(object):
         self._invalidate_caches()
 
         if not new_sessions:
-            self._lines = []  # no remaining sessions means no line data
+            # no remaining sessions means no line data
+            self._parsed_lines = []
+            self._raw_lines = None
             return
 
         for index, line in self.lines:
