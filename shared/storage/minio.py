@@ -3,10 +3,12 @@ import logging
 import os
 from datetime import timedelta
 from functools import lru_cache
-from typing import IO, BinaryIO, Literal, overload
+from io import BytesIO
+from typing import IO, BinaryIO, Literal, cast, overload
 
 import certifi
 import urllib3
+import zstandard
 from minio import Minio
 from minio.credentials.providers import (
     ChainedProvider,
@@ -16,26 +18,22 @@ from minio.credentials.providers import (
 )
 from minio.error import MinioException, S3Error
 from minio.helpers import ObjectWriteResult
-from urllib3 import Retry
+from urllib3 import HTTPResponse, Retry
 from urllib3.util import Timeout
 
-from shared.metrics import Summary
-from shared.storage.base import BaseStorageService, PresignedURLService
-from shared.storage.compression import zstd_decoded_by_default
-from shared.storage.exceptions import BucketAlreadyExistsError
-from shared.storage.read import new_minio_read
-from shared.storage.write import new_minio_write
+from shared.storage.base import (
+    CHUNK_SIZE,
+    PART_SIZE,
+    BaseStorageService,
+    PresignedURLService,
+)
+from shared.storage.compression import GZipStreamReader, zstd_decoded_by_default
+from shared.storage.exceptions import BucketAlreadyExistsError, FileNotInStorageError
 
 log = logging.getLogger(__name__)
 
 CONNECT_TIMEOUT = 10
 READ_TIMEOUT = 60
-
-MINIO_WRITE_TIME_SUMMARY = Summary(
-    "minio_write_time",
-    "Time taken to write to minio",
-    ["impl"],
-)
 
 
 def init_minio_client(
@@ -204,16 +202,52 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         is_compressed: bool = False,
         compression_type: str | None = "zstd",
     ) -> ObjectWriteResult | Literal[True]:
-        return new_minio_write(
-            self.minio_client,
+        if isinstance(data, str):
+            data = BytesIO(data.encode())
+        elif isinstance(data, (bytes, bytearray, memoryview)):
+            data = BytesIO(data)
+
+        if is_already_gzipped:
+            is_compressed = True
+            compression_type = "gzip"
+
+        result: IO[bytes]
+        if is_compressed:
+            result = data
+        else:
+            if compression_type == "zstd":
+                cctx = zstandard.ZstdCompressor()
+                result = cctx.stream_reader(data)
+
+            elif compression_type == "gzip":
+                result = cast(IO[bytes], GZipStreamReader(data))
+
+            else:
+                result = data
+
+        headers = {}
+        if compression_type:
+            headers["Content-Encoding"] = compression_type
+        if reduced_redundancy:
+            headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY"
+
+        # it's safe to do a BinaryIO cast here because we know that put_object only uses a function of the shape:
+        # read(self, size: int = -1, /) -> bytes
+        # GZipStreamReader implements this (we did it ourselves)
+        # ZstdCompressionReader implements read(): https://github.com/indygreg/python-zstandard/blob/12a80fac558820adf43e6f16206120685b9eb880/zstandard/__init__.pyi#L233C5-L233C49
+        # BytesIO implements read(): https://docs.python.org/3/library/io.html#io.BufferedReader.read
+        # IO[bytes] implements read(): https://github.com/python/cpython/blob/3.13/Lib/typing.py#L3502
+        write_result = self.minio_client.put_object(
             bucket_name,
             path,
-            data,
-            reduced_redundancy,
-            is_already_gzipped=is_already_gzipped,
-            is_compressed=is_compressed,
-            compression_type=compression_type,
+            cast(BinaryIO, result),
+            -1,
+            metadata=headers,
+            content_type="text/plain",
+            part_size=PART_SIZE,
         )
+
+        return write_result
 
     @overload
     def read_file(self, bucket_name: str, path: str) -> bytes: ...
@@ -224,23 +258,58 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
     def read_file(
         self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
     ) -> bytes | None:
-        return new_minio_read(
-            self.minio_client, bucket_name, path, file_obj, zstd_default
-        )
+        try:
+            response = cast(
+                HTTPResponse,
+                self.minio_client.get_object(bucket_name, path),
+            )
+        except S3Error as e:
+            if e.code == "NoSuchKey":
+                raise FileNotInStorageError(
+                    f"File {path} does not exist in {bucket_name}"
+                )
+            raise e
 
-    """
-        Deletes file url in specified bucket.
-        Return true on successful
-        deletion, returns a ResponseError otherwise.
-    """
+        reader = cast(IO[bytes], response)
+        if (
+            response.headers
+            and not zstd_default
+            and response.headers.get("Content-Encoding") == "zstd"
+        ):
+            # we have to manually decompress zstandard compressed data
+            cctx = zstandard.ZstdDecompressor()
+            # if the object passed to this has a read method then that's
+            # all this object will ever need, since it will just call read
+            # and get the bytes object resulting from it then compress that
+            # HTTPResponse
+            reader = cctx.stream_reader(reader)
+
+        if file_obj:
+            file_obj.seek(0)
+            while chunk := reader.read(CHUNK_SIZE):
+                file_obj.write(chunk)
+            response.close()
+            response.release_conn()
+            return None
+        else:
+            res = BytesIO()
+            while chunk := reader.read(CHUNK_SIZE):
+                res.write(chunk)
+            response.close()
+            response.release_conn()
+            return res.getvalue()
 
     def delete_file(self, bucket_name: str, path: str) -> bool:
         try:
             # delete a file given a bucket name and a path
             self.minio_client.remove_object(bucket_name, path)
             return True
-        except MinioException:
-            raise
+        except S3Error as e:
+            if e.code == "NoSuchKey":
+                raise FileNotInStorageError(
+                    f"File {path} does not exist in {bucket_name}"
+                )
+            raise e
 
     def create_presigned_put(self, bucket: str, path: str, expires: int) -> str:
         expires_td = timedelta(seconds=expires)
