@@ -1,6 +1,4 @@
-import dataclasses
 from fractions import Fraction
-from json import loads
 from pathlib import Path
 from typing import List
 
@@ -17,6 +15,7 @@ from shared.reports.types import (
 )
 from shared.utils.merge import merge_coverage
 from shared.utils.sessions import SessionType
+from tests.unit.reports.utils import convert_report_to_better_readable
 
 current_file = Path(__file__)
 
@@ -887,8 +886,7 @@ class TestEditableReport(object):
         second_file = EditableReportFile("second_file.py")
         first_report.append(first_file)
         first_report.append(second_file)
-        # print(self.convert_report_to_better_readable(first_report)["archive"])
-        assert self.convert_report_to_better_readable(first_report)["archive"] == {
+        assert convert_report_to_better_readable(first_report)["archive"] == {
             "first_file.py": [
                 (
                     1,
@@ -1030,7 +1028,7 @@ class TestEditableReport(object):
         report.append(first_file)
         report.append(some_other_file)
         assert report.files == ["first_file.py", "someother.py"]
-        assert self.convert_report_to_better_readable(report)["archive"] == {
+        assert convert_report_to_better_readable(report)["archive"] == {
             "first_file.py": [
                 (
                     1,
@@ -1045,47 +1043,14 @@ class TestEditableReport(object):
             "someother.py": [(1, 1, None, [[2, 1, None, None, None]], None, None)],
         }
         report.delete_labels([2], [1])
-        assert self.convert_report_to_better_readable(report)["archive"] == {
+        assert convert_report_to_better_readable(report)["archive"] == {
             "someother.py": [(1, 1, None, [[2, 1, None, None, None]], None, None)]
         }
-
-    def convert_report_to_better_readable(self, report):
-        totals_dict, report_dict = report.to_database()
-        report_dict = loads(report_dict)
-        archive_dict = {}
-        for filename in report.files:
-            file_report = report.get(filename)
-            lines = []
-            for line_number, line in file_report.lines:
-                (
-                    coverage,
-                    line_type,
-                    sessions,
-                    messages,
-                    complexity,
-                    datapoints,
-                ) = dataclasses.astuple(line)
-                sessions = [list(s) for s in sessions]
-                lines.append(
-                    (line_number, coverage, line_type, sessions, messages, complexity)
-                    if datapoints is None
-                    else (
-                        line_number,
-                        coverage,
-                        line_type,
-                        sessions,
-                        messages,
-                        complexity,
-                        datapoints,
-                    )
-                )
-            archive_dict[filename] = lines
-        return {"totals": totals_dict, "report": report_dict, "archive": archive_dict}
 
     def test_delete_session(self, sample_report):
         report = sample_report
 
-        assert self.convert_report_to_better_readable(report) == {
+        assert convert_report_to_better_readable(report) == {
             "archive": {
                 "file_1.go": [
                     (
@@ -1362,13 +1327,13 @@ class TestEditableReport(object):
                 "s": 2,
             },
         }
-        res = self.convert_report_to_better_readable(report)
+        res = convert_report_to_better_readable(report)
         assert res["archive"] == expected_result["archive"]
         assert res["report"] == expected_result["report"]
         assert res["totals"] == expected_result["totals"]
         assert res == expected_result
         report.delete_multiple_sessions({0, 2})
-        assert self.convert_report_to_better_readable(report) == {
+        assert convert_report_to_better_readable(report) == {
             "archive": {},
             "report": {"files": {}, "sessions": {}},
             "totals": {
@@ -1390,7 +1355,7 @@ class TestEditableReport(object):
 
     def test_add_conflicting_session(self, sample_report):
         report = sample_report
-        old_readable = self.convert_report_to_better_readable(report)
+        old_readable = convert_report_to_better_readable(report)
         assert old_readable == {
             "archive": {
                 "file_1.go": [
@@ -1564,7 +1529,7 @@ class TestEditableReport(object):
                 sessionid=3, session_type=SessionType.uploaded, flags=["integration"]
             )
         )
-        res = self.convert_report_to_better_readable(report)
+        res = convert_report_to_better_readable(report)
         assert res["archive"] == old_readable["archive"]
         assert res["report"]["files"] == old_readable["report"]["files"]
         assert old_readable["totals"].pop("s") == 3
@@ -1579,7 +1544,7 @@ class TestEditableReport(object):
                 if line.datapoints:
                     for dp in line.datapoints:
                         assert dp.sessionid != 0 or 3 not in dp.label_ids
-        res = self.convert_report_to_better_readable(sample_with_labels_report)
+        res = convert_report_to_better_readable(sample_with_labels_report)
         expected_result = {
             "totals": {
                 "f": 1,

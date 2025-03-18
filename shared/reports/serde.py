@@ -16,8 +16,8 @@ if TYPE_CHECKING:
     from .resources import Report
 
 
-END_OF_CHUNK = b"\n<<<<< end_of_chunk >>>>>\n"
-END_OF_HEADER = b"\n<<<<< end_of_header >>>>>\n"
+END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
+END_OF_HEADER = "\n<<<<< end_of_header >>>>>\n"
 
 
 @sentry_sdk.trace
@@ -33,7 +33,7 @@ def serialize_report(
     indexed_files = list(enumerate(report._files.values()))
 
     chunks = (
-        orjson.dumps(report._header, option=orjson_option)
+        orjson.dumps(report._header, option=orjson_option).decode()
         + END_OF_HEADER
         + END_OF_CHUNK.join(_encode_chunk(file) for i, file in indexed_files)
     )
@@ -57,7 +57,7 @@ def serialize_report(
         option=orjson_option,
     )
 
-    return (report_json, chunks, totals)
+    return (report_json, chunks.encode(), totals)
 
 
 def report_default(obj):
@@ -81,18 +81,18 @@ def report_default(obj):
 orjson_option = orjson.OPT_PASSTHROUGH_DATACLASS | orjson.OPT_NON_STR_KEYS
 
 
-def _dumps_not_none(value) -> bytes:
+def _dumps_not_none(value) -> str:
     if isinstance(value, list):
         return orjson.dumps(
             _rstrip_none(list(value)), default=report_default, option=orjson_option
-        )
+        ).decode()
     if isinstance(value, ReportLine):
         return orjson.dumps(
             _rstrip_none(list(value.astuple())),
             default=report_default,
             option=orjson_option,
-        )
-    return value.encode() if value and str(value) != "null" else b""
+        ).decode()
+    return value if value and value != "null" else ""
 
 
 def _rstrip_none(lst):
@@ -107,21 +107,19 @@ def chunk_default(obj):
     return obj
 
 
-def _encode_chunk(chunk) -> bytes:
+def _encode_chunk(chunk) -> str:
     if chunk is None:
-        return b"null"
+        return "null"
     elif isinstance(chunk, ReportFile):
         if isinstance(chunk._raw_lines, str):
-            return chunk._raw_lines.encode()
+            return chunk._raw_lines
         else:
             return (
-                orjson.dumps(chunk.details, option=orjson_option)
-                + b"\n"
-                + b"\n".join(_dumps_not_none(line) for line in chunk._lines)
+                orjson.dumps(chunk.details, option=orjson_option).decode()
+                + "\n"
+                + "\n".join(_dumps_not_none(line) for line in chunk._lines)
             )
     elif isinstance(chunk, (list, dict)):
-        return orjson.dumps(chunk, default=chunk_default, option=orjson_option)
-    elif isinstance(chunk, str):
-        return chunk.encode()
+        return orjson.dumps(chunk, default=chunk_default, option=orjson_option).decode()
     else:
         return chunk

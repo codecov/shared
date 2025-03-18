@@ -1,6 +1,3 @@
-import dataclasses
-from json import loads
-
 import pytest
 
 from shared.reports.carryforward import (
@@ -9,6 +6,7 @@ from shared.reports.carryforward import (
 )
 from shared.reports.resources import Report, ReportFile, Session
 from shared.reports.types import LineSession, ReportLine
+from tests.unit.reports.utils import convert_report_to_better_readable
 
 
 @pytest.fixture
@@ -65,50 +63,10 @@ class TestCarryfowardFlag(object):
             carriedforward_session_name("CF CF CF CF CF CF CF Dude") == "CF[8] - Dude"
         )
 
-    def convert_report_to_better_readable(self, report):
-        totals_dict, report_dict = report.to_database()
-        report_dict = loads(report_dict)
-        archive_dict = {}
-        for filename in report.files:
-            file_report = report.get(filename)
-            lines = []
-            for line_number, line in file_report.lines:
-                (
-                    coverage,
-                    line_type,
-                    sessions,
-                    messages,
-                    complexity,
-                    datapoints,
-                ) = dataclasses.astuple(line)
-                sessions = [list(s) for s in sessions]
-                lines.append(
-                    (
-                        line_number,
-                        coverage,
-                        line_type,
-                        sessions,
-                        messages,
-                        complexity,
-                        datapoints,
-                    )
-                    if datapoints is not None
-                    else (
-                        line_number,
-                        coverage,
-                        line_type,
-                        sessions,
-                        messages,
-                        complexity,
-                    )
-                )
-            archive_dict[filename] = lines
-        return {"totals": totals_dict, "report": report_dict, "archive": archive_dict}
-
     def test_generate_carryforward_report(self, sample_report):
         res = generate_carryforward_report(sample_report, flags=["simple"], paths=None)
         assert res.files == ["file_1.go", "file_2.py"]
-        readable_report = self.convert_report_to_better_readable(res)
+        readable_report = convert_report_to_better_readable(res)
         expected_result = {
             "archive": {
                 "file_1.go": [
@@ -199,7 +157,7 @@ class TestCarryfowardFlag(object):
             sample_report, flags=["simple"], paths=["file_1.*"]
         )
         assert res.files == ["file_1.go"]
-        readable_report = self.convert_report_to_better_readable(res)
+        readable_report = convert_report_to_better_readable(res)
         expected_result = {
             "archive": {
                 "file_1.go": [
@@ -267,7 +225,7 @@ class TestCarryfowardFlag(object):
             sample_report, flags=["simple"], paths=["file_\\W.*"]
         )
         assert res.files == []
-        readable_report = self.convert_report_to_better_readable(res)
+        readable_report = convert_report_to_better_readable(res)
         expected_result = {
             "archive": {},
             "report": {
@@ -320,7 +278,7 @@ class TestCarryfowardFlag(object):
             sample_report, flags=["simple"], paths=[".*\\.cpp", ".*_2\\..*"]
         )
         assert res.files == ["file_2.py"]
-        readable_report = self.convert_report_to_better_readable(res)
+        readable_report = convert_report_to_better_readable(res)
         assert readable_report == {
             "archive": {
                 "file_2.py": [
@@ -375,7 +333,7 @@ class TestCarryfowardFlag(object):
     def test_generate_carryforward_report_one_file_not_covered(self, sample_report):
         res = generate_carryforward_report(sample_report, flags=["complex"], paths=None)
         assert res.files == ["file_1.go"]
-        readable_report = self.convert_report_to_better_readable(res)
+        readable_report = convert_report_to_better_readable(res)
 
         expected_result = {
             "archive": {
@@ -447,7 +405,7 @@ class TestCarryfowardFlag(object):
             session_extras={"cfed_parent": "0f9ab1fe6c879bc49a9e559b23f49fd033daadb0"},
         )
         assert res.files == ["file_1.go"]
-        readable_report = self.convert_report_to_better_readable(res)
+        readable_report = convert_report_to_better_readable(res)
 
         expected_result = {
             "archive": {
