@@ -2,12 +2,8 @@ import pytest
 
 from shared.reports.editable import EditableReport, EditableReportFile
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
-from shared.reports.resources import (
-    Report,
-    ReportFile,
-    _encode_chunk,
-    chunks_from_storage_contains_header,
-)
+from shared.reports.resources import Report, ReportFile
+from shared.reports.serde import _encode_chunk
 from shared.reports.types import (
     CoverageDatapoint,
     LineSession,
@@ -92,25 +88,6 @@ def report_with_file_summaries():
             diff=0,
         ),
     )
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "chunks, expected",
-    [
-        ("", False),
-        ("{}\nline\nline\n\n", False),
-        ("{}\nline\nline\n\n<<<<< end_of_chunk >>>>>\n{}\nline\nline\n", False),
-        (
-            "{}\n<<<<< end_of_header >>>>>\n{}\nline\nline\n\n<<<<< end_of_chunk >>>>>\n{}\nline\nline\n",
-            True,
-        ),
-        ("{}\n<<<<< end_of_header >>>>>\n{}\nline\nline\n\n", True),
-        ("{}\n<<<<< end_of_header >>>>>\n", True),
-    ],
-)
-def test_chunks_from_storage_contains_header(chunks, expected):
-    assert chunks_from_storage_contains_header(chunks) == expected
 
 
 def test_files():
@@ -322,11 +299,11 @@ def test_apply_diff_no_diff():
 
 @pytest.mark.unit
 def test_encode_chunk():
-    assert _encode_chunk(None) == b"null"
-    assert _encode_chunk(ReportFile(name="name.ply")) == b'{"present_sessions":[]}\n'
+    assert _encode_chunk(None) == "null"
+    assert _encode_chunk(ReportFile(name="name.ply")) == '{"present_sessions":[]}\n'
     assert (
         _encode_chunk([ReportLine.create(2), ReportLine.create(1)])
-        == b"[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
+        == "[[2,null,null,null,null,null],[1,null,null,null,null,null]]"
     )
 
 

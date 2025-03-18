@@ -13,15 +13,14 @@ from shared.reports.diff import CalculatedDiff, RawDiff, calculate_report_diff
 from shared.reports.exceptions import LabelIndexNotFoundError, LabelNotFoundError
 from shared.reports.filtered import FilteredReport
 from shared.reports.reportfile import ReportFile
-from shared.reports.serde import orjson_option, report_default
-from shared.reports.types import TOTALS_MAP, ReportHeader, ReportTotals
+from shared.reports.types import ReportHeader, ReportTotals
 from shared.utils.flare import report_to_flare
 from shared.utils.make_network_file import make_network_file
 from shared.utils.migrate import migrate_totals
 from shared.utils.sessions import Session, SessionType
 from shared.utils.totals import agg_totals
 
-from .serde import _encode_chunk, serialize_report
+from .serde import END_OF_CHUNK, END_OF_HEADER, serialize_report
 
 log = logging.getLogger(__name__)
 
@@ -35,21 +34,6 @@ def unique_everseen(iterable):
     for element in filterfalse(seen.__contains__, iterable):
         seen_add(element)
         yield element
-
-
-END_OF_CHUNK = "\n<<<<< end_of_chunk >>>>>\n"
-END_OF_HEADER = "\n<<<<< end_of_header >>>>>\n"
-
-
-def chunks_from_storage_contains_header(chunks: str) -> bool:
-    try:
-        first_line_end = chunks.index("\n")
-        second_line_end = chunks.index("\n", first_line_end + 1)
-    except ValueError:
-        return False
-    # If the header is present then the END_OF_HEADER marker
-    # is in the 2nd line of the report
-    return chunks[first_line_end : second_line_end + 1] == END_OF_HEADER
 
 
 class Report:
@@ -80,14 +64,14 @@ class Report:
                 for sid, session in sessions.items()
             }
 
-        _chunks: list[bytes] = []
+        _chunks: list[str] = []
         if chunks:
-            if isinstance(chunks, str):
-                chunks = chunks.encode()
             if isinstance(chunks, bytes):
-                splits = chunks.split(b"\n<<<<< end_of_header >>>>>\n", maxsplit=1)
+                chunks = chunks.decode()
+            if isinstance(chunks, str):
+                splits = chunks.split(END_OF_HEADER, maxsplit=1)
                 if len(splits) > 1:
-                    _header = orjson.loads(splits[0] or b"{}")
+                    _header = orjson.loads(splits[0] or "{}")
                     self._header = ReportHeader(
                         labels_index={
                             int(k): v
@@ -96,7 +80,7 @@ class Report:
                     )
                     chunks = splits[1]
 
-                _chunks = chunks.split(b"\n<<<<< end_of_chunk >>>>>\n")
+                _chunks = chunks.split(END_OF_CHUNK)
             else:
                 _chunks = chunks
 
@@ -112,8 +96,7 @@ class Report:
                     file_diff_totals = None
 
                 try:
-                    _lines = _chunks[chunks_index]
-                    lines = _lines.decode() if isinstance(_lines, bytes) else _lines
+                    lines = _chunks[chunks_index]
                 except IndexError:
                     lines = ""
 
@@ -345,42 +328,12 @@ class Report:
     def __bool__(self):
         return self.is_empty() is False
 
-    @sentry_sdk.trace
-    def to_archive(self, with_header=True):
-        # TODO: confirm removing encoding here is fine
-        chunks = END_OF_CHUNK.join(
-            _encode_chunk(chunk).decode() for chunk in self._files.values()
-        )
-        if with_header:
-            # When saving to database we want this
-            return END_OF_HEADER.join(
-                [orjson.dumps(self._header, option=orjson_option).decode(), chunks]
-            )
-        # This is helpful to build ReadOnlyReport
-        # Because Rust can't parse the header. It doesn't need it either,
-        # So it's simpler to just never sent it.
-        return chunks
-
-    @sentry_sdk.trace
-    def to_database(self):
-        """returns (totals, report) to be stored in database"""
-        totals = dict(zip(TOTALS_MAP, self.totals))
-        totals["diff"] = self.diff_totals
-
-        files = {
-            file.name: [i, file.totals, None, file.diff_totals]
-            for i, file in enumerate(self._files.values())
-        }
-        return (
-            totals,
-            orjson.dumps(
-                {"files": files, "sessions": self.sessions},
-                default=report_default,
-                option=orjson_option,
-            ).decode(),
-        )
-
     def serialize(self, with_totals=True) -> tuple[bytes, bytes, ReportTotals | None]:
+        """
+        Serializes a report as `(report_json, chunks, totals)`.
+
+        The `totals` is either a `ReportTotals`, or `None`, depending on the `with_totals` flag.
+        """
         return serialize_report(self, with_totals)
 
     @sentry_sdk.trace
@@ -583,10 +536,6 @@ class Report:
             if sess.session_type == SessionType.uploaded and sess.flags is not None:
                 flags.update(sess.flags)
         return flags
-
-    @sentry_sdk.trace
-    def repack(self):
-        pass
 
     def delete_labels(
         self, sessionids: list[int] | set[int], labels_to_delete: list[int] | set[int]

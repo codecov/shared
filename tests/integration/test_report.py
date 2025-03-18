@@ -402,42 +402,6 @@ def test_non_zero(r, boolean):
     assert bool(r) is boolean
 
 
-@pytest.mark.integration
-def test_to_archive():
-    chunks = Report(
-        files={"file.py": [0, ReportTotals()]},
-        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
-    ).to_archive()
-    assert chunks == """{}\n<<<<< end_of_header >>>>>\nnull\n[1]\n[1]\n[1]"""
-
-
-@pytest.mark.integration
-def test_to_database():
-    totals, report_json = Report(
-        files={"file.py": [0, ReportTotals()]},
-        chunks="null\n[1]\n[1]\n[1]\n<<<<< end_of_chunk >>>>>\nnull\n[1]\n[1]\n[1]",
-    ).to_database()
-    assert totals == {
-        "M": 0,
-        "c": None,
-        "b": 0,
-        "d": 0,
-        "f": 1,
-        "h": 0,
-        "m": 0,
-        "C": 0,
-        "n": 0,
-        "p": 0,
-        "s": 0,
-        "diff": None,
-        "N": 0,
-    }
-    assert (
-        report_json
-        == '{"files":{"file.py":[0,[0,0,0,0,0,0,0,0,0,0,0,0,0],null,null]},"sessions":{}}'
-    )
-
-
 def test_serialize(mocker):
     report = Report(
         files={"file.py": [0, ReportTotals()]},
