@@ -54,6 +54,7 @@ TIMESERIES_REAL_TIME_AGGREGATES = get_config(
     "setup", "timeseries", "real_time_aggregates", default=False
 )
 
+
 timeseries_database_url = get_config("services", "timeseries_database_url")
 if timeseries_database_url:
     timeseries_database_conf = urlparse(timeseries_database_url)
@@ -108,6 +109,34 @@ else:
         "services", "timeseries_database_read", "port", default=5432
     )
 
+
+TA_TIMESERIES_ENABLED = get_config("setup", "ta_timeseries", "enabled", default=False)
+ta_timeseries_database_url = get_config("services", "ta_timeseries_database_url")
+
+if ta_timeseries_database_url:
+    ta_timeseries_database_conf = urlparse(ta_timeseries_database_url)
+    TA_TIMESERIES_DATABASE_USER = ta_timeseries_database_conf.username
+    TA_TIMESERIES_DATABASE_NAME = ta_timeseries_database_conf.path.replace("/", "")
+    TA_TIMESERIES_DATABASE_PASSWORD = ta_timeseries_database_conf.password
+    TA_TIMESERIES_DATABASE_HOST = ta_timeseries_database_conf.hostname
+    TA_TIMESERIES_DATABASE_PORT = ta_timeseries_database_conf.port
+else:
+    TA_TIMESERIES_DATABASE_USER = get_config(
+        "services", "ta_timeseries_database", "username", default="postgres"
+    )
+    TA_TIMESERIES_DATABASE_NAME = get_config(
+        "services", "ta_timeseries_database", "name", default="postgres"
+    )
+    TA_TIMESERIES_DATABASE_PASSWORD = get_config(
+        "services", "ta_timeseries_database", "password", default="postgres"
+    )
+    TA_TIMESERIES_DATABASE_HOST = get_config(
+        "services", "ta_timeseries_database", "host", default="timescale"
+    )
+    TA_TIMESERIES_DATABASE_PORT = get_config(
+        "services", "ta_timeseries_database", "port", default=5432
+    )
+
 # this is the time in seconds django decides to keep the connection open after the request
 # the default is 0 seconds, meaning django closes the connection after every request
 # https://docs.djangoproject.com/en/3.1/ref/settings/#conn-max-age
@@ -158,6 +187,16 @@ if TIMESERIES_ENABLED:
             "CONN_MAX_AGE": CONN_MAX_AGE,
         }
 
+if TA_TIMESERIES_ENABLED:
+    DATABASES["ta_timeseries"] = {
+        "ENGINE": "django_prometheus.db.backends.postgresql",
+        "NAME": TA_TIMESERIES_DATABASE_NAME,
+        "USER": TA_TIMESERIES_DATABASE_USER,
+        "PASSWORD": TA_TIMESERIES_DATABASE_PASSWORD,
+        "HOST": TA_TIMESERIES_DATABASE_HOST,
+        "PORT": TA_TIMESERIES_DATABASE_PORT,
+        "CONN_MAX_AGE": CONN_MAX_AGE,
+    }
 
 # See https://django-postgres-extra.readthedocs.io/en/main/settings.html
 POSTGRES_EXTRA_DB_BACKEND_BASE: "django_prometheus.db.backends.postgresql"  # type: ignore
