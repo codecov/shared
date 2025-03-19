@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "shared.django_apps.profiling",
     "shared.django_apps.reports",
     "shared.django_apps.staticanalysis",
+    "shared.django_apps.ta_timeseries",
     "shared.django_apps.test_analytics",
     "shared.django_apps.timeseries",
 ]
@@ -86,6 +87,14 @@ DATABASES = {
         "PORT": 5432,
     },
     "timeseries": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "timescale",
+        "PORT": 5432,
+    },
+    "ta_timeseries": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres",

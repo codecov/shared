@@ -18,6 +18,8 @@ class MultiDatabaseRouter:
                     return "timeseries_read"
                 else:
                     return "timeseries"
+            case "ta_timeseries":
+                return "ta_timeseries"
             case _:
                 if settings.DATABASE_READ_REPLICA_ENABLED:
                     return "default_read"
@@ -28,6 +30,8 @@ class MultiDatabaseRouter:
         match model._meta.app_label:
             case "timeseries":
                 return "timeseries"
+            case "ta_timeseries":
+                return "ta_timeseries"
             case _:
                 return "default"
 
@@ -39,14 +43,21 @@ class MultiDatabaseRouter:
                 if not settings.TIMESERIES_ENABLED:
                     return False
                 return app_label == "timeseries"
+            case "ta_timeseries":
+                if not settings.TA_TIMESERIES_ENABLED:
+                    return False
+                return app_label == "ta_timeseries"
             case _:
-                return app_label not in {"timeseries"}
+                return app_label not in {"timeseries", "ta_timeseries"}
 
     def allow_relation(self, obj1, obj2, **hints):
         obj1_app = obj1._meta.app_label
         obj2_app = obj2._meta.app_label
 
-        if obj1_app in {"timeseries"} or obj2_app in {"timeseries"}:
+        if obj1_app in {"timeseries", "ta_timeseries"} or obj2_app in {
+            "timeseries",
+            "ta_timeseries",
+        }:
             return obj1_app == obj2_app
         else:
             return True
