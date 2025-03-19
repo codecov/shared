@@ -125,7 +125,7 @@ else:
         "services", "ta_timeseries_database", "username", default="postgres"
     )
     TA_TIMESERIES_DATABASE_NAME = get_config(
-        "services", "ta_timeseries_database", "name", default="postgres"
+        "services", "ta_timeseries_database", "name", default="test_analytics"
     )
     TA_TIMESERIES_DATABASE_PASSWORD = get_config(
         "services", "ta_timeseries_database", "password", default="postgres"

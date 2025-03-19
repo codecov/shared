@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                     COUNT(*) FILTER (WHERE outcome = 'flaky_fail') AS flaky_fail_count,
                     MAX(timestamp) AS updated_at,
                     array_merge_dedup_agg(flags) as flags
-                from timeseries_testrun
+                from ta_timeseries_testrun
                 group by
                     repo_id, testsuite, classname, name, timestamp_bin;
             """,
@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
                     COUNT(*) FILTER (WHERE outcome = 'flaky_fail') AS flaky_fail_count,
                     MAX(timestamp) AS updated_at,
                     array_merge_dedup_agg(flags) as flags
-                from timeseries_testrun
+                from ta_timeseries_testrun
                 where branch in ('main', 'master', 'develop')
                 group by
                     repo_id, branch, testsuite, classname, name, timestamp_bin;

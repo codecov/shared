@@ -96,7 +96,7 @@ DATABASES = {
     },
     "ta_timeseries": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
+        "NAME": "test_analytics",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "timescale",
