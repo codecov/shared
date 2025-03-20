@@ -563,6 +563,29 @@ class AvailablePlansBeforeTrial(TestCase):
             == expected_result
         )
 
+    @patch("shared.plan.service.is_sentry_user")
+    def test_available_plans_for_sentry_plan_not_sentry_user(self, is_sentry_user):
+        is_sentry_user.return_value = False
+        self.current_org.plan = PlanName.SENTRY_MONTHLY.value
+        self.current_org.save()
+
+        plan_service = PlanService(current_org=self.current_org)
+
+        expected_result = {
+            DEFAULT_FREE_PLAN,
+            PlanName.CODECOV_PRO_MONTHLY.value,
+            PlanName.CODECOV_PRO_YEARLY.value,
+            PlanName.SENTRY_MONTHLY.value,
+            PlanName.SENTRY_YEARLY.value,
+            PlanName.TEAM_MONTHLY.value,
+            PlanName.TEAM_YEARLY.value,
+        }
+
+        assert (
+            set(plan.name for plan in plan_service.available_plans(owner=self.owner))
+            == expected_result
+        )
+
 
 @freeze_time("2023-06-19")
 class AvailablePlansExpiredTrialLessThanTenUsers(TestCase):
