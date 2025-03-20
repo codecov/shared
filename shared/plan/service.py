@@ -168,7 +168,7 @@ class PlanService:
         # Build list of available tiers based on conditions
         available_tiers = [TierName.PRO.value]
 
-        if is_sentry_user(owner):
+        if is_sentry_user(owner) or curr_plan.is_sentry_plan:
             available_tiers.append(TierName.SENTRY.value)
 
         if (
