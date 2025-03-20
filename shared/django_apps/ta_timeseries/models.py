@@ -33,19 +33,19 @@ class Testrun(ExportModelOperationsMixin("ta_timeseries.testrun"), models.Model)
         app_label = TA_TIMESERIES_APP_LABEL
         indexes = [
             models.Index(
-                name="ts__repo_branch_time_i",
+                name="ta_ts__branch_i",
                 fields=["repo_id", "branch", "timestamp"],
             ),
             models.Index(
-                name="ts__repo_branch_test_time_i",
+                name="ta_ts__branch_test_i",
                 fields=["repo_id", "branch", "test_id", "timestamp"],
             ),
             models.Index(
-                name="ts__repo_test_id_time_i",
+                name="ta_ts__test_id_i",
                 fields=["repo_id", "test_id", "timestamp"],
             ),
             models.Index(
-                name="ts__repo_commit_time_i",
+                name="ta_ts__commit_i",
                 fields=["repo_id", "commit_sha", "timestamp"],
             ),
         ]
