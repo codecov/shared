@@ -1,5 +1,4 @@
 import logging
-import os
 import random
 from typing import Any
 
@@ -47,7 +46,7 @@ class LazyRustReport(object):
 class ReadOnlyReport(object):
     @classmethod
     def should_load_rust_version(cls):
-        return random.random() < float(os.getenv("RUST_ENABLE_RATE", "1.0"))
+        return random.random() < 0.5
 
     def __init__(self, rust_analyzer, rust_report, inner_report, totals=None):
         self.rust_analyzer = rust_analyzer
@@ -128,6 +127,8 @@ class ReadOnlyReport(object):
     def _process_totals(self):
         if self.inner_report.has_precalculated_totals():
             return self.inner_report.totals
+        if span := sentry_sdk.get_current_span():
+            span.set_data("impl", "rust" if self.rust_report else "python")
         if self.rust_report:
             res = self.rust_analyzer.get_totals(self.rust_report.get_report())
             return ReportTotals(
