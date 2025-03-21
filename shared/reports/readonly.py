@@ -1,6 +1,4 @@
 import logging
-import os
-import random
 from typing import Any
 
 import orjson
@@ -8,11 +6,7 @@ import sentry_sdk
 from cc_rustyribs import FilterAnalyzer, SimpleAnalyzer, parse_report
 
 from shared.helpers.flag import Flag
-from shared.reports.resources import (
-    END_OF_HEADER,
-    Report,
-    ReportTotals,
-)
+from shared.reports.resources import END_OF_HEADER, Report, ReportTotals
 from shared.utils.match import Matcher
 
 log = logging.getLogger(__name__)
@@ -45,10 +39,6 @@ class LazyRustReport(object):
 
 
 class ReadOnlyReport(object):
-    @classmethod
-    def should_load_rust_version(cls):
-        return random.random() < float(os.getenv("RUST_ENABLE_RATE", "1.0"))
-
     def __init__(self, rust_analyzer, rust_report, inner_report, totals=None):
         self.rust_analyzer = rust_analyzer
         self.rust_report = rust_report
@@ -70,9 +60,7 @@ class ReadOnlyReport(object):
         session_mapping = {
             sid: (session.flags or []) for sid, session in inner_report.sessions.items()
         }
-        rust_report = None
-        if cls.should_load_rust_version():
-            rust_report = LazyRustReport(filename_mapping, chunks, session_mapping)
+        rust_report = LazyRustReport(filename_mapping, chunks, session_mapping)
         return cls(rust_analyzer, rust_report, inner_report, totals=totals)
 
     @classmethod
@@ -128,24 +116,22 @@ class ReadOnlyReport(object):
     def _process_totals(self):
         if self.inner_report.has_precalculated_totals():
             return self.inner_report.totals
-        if self.rust_report:
-            res = self.rust_analyzer.get_totals(self.rust_report.get_report())
-            return ReportTotals(
-                files=res.files,
-                lines=res.lines,
-                hits=res.hits,
-                misses=res.misses,
-                partials=res.partials,
-                coverage=res.coverage,
-                branches=res.branches,
-                methods=res.methods,
-                messages=0,
-                sessions=res.sessions,
-                complexity=res.complexity,
-                complexity_total=res.complexity_total,
-                diff=0,
-            )
-        return self.inner_report.totals
+        res = self.rust_analyzer.get_totals(self.rust_report.get_report())
+        return ReportTotals(
+            files=res.files,
+            lines=res.lines,
+            hits=res.hits,
+            misses=res.misses,
+            partials=res.partials,
+            coverage=res.coverage,
+            branches=res.branches,
+            methods=res.methods,
+            messages=0,
+            sessions=res.sessions,
+            complexity=res.complexity,
+            complexity_total=res.complexity_total,
+            diff=0,
+        )
 
     @property
     def totals(self):
