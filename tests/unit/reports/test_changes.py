@@ -15,8 +15,7 @@ current_file = Path(__file__)
 
 
 @pytest.fixture
-def sample_rust_report(mocker):
-    mocker.patch.object(ReadOnlyReport, "should_load_rust_version", return_value=True)
+def sample_rust_report():
     with open(current_file.parent / "samples" / "chunks_01.txt", "r") as f:
         chunks = f.read()
     files_dict = {
