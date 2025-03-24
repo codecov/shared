@@ -3,7 +3,7 @@ name = "shared"
 version = "0.1.0"
 description = "Shared code used in codecov API and worker"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "boto3>=1.20.25",
     "cachetools>=4.1.1",
@@ -44,6 +44,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv]
+required-version = ">=0.6.0"
 dev-dependencies = [
     "factory-boy>=3.2.0",
     "freezegun>=1.1.0",
