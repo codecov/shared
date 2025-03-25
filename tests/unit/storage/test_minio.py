@@ -329,3 +329,18 @@ def test_minio_with_region():
     storage = MinioStorageService(minio_no_ports_config)
     assert storage.minio_config == minio_no_ports_config
     assert storage.minio_client._base_url.region == "example"
+
+
+def test_write_then_read_file_with_metadata():
+    storage = make_storage()
+    path = f"test_write_then_read_file_with_metadata/{uuid4().hex}"
+    data = "lorem ipsum dolor test_write_then_read_file_with_metadata á"
+
+    ensure_bucket(storage)
+    _ = storage.write_file(BUCKET_NAME, path, data, metadata={"test": "test"})
+    metadata_container = {}
+    reading_result = storage.read_file(
+        BUCKET_NAME, path, metadata_container=metadata_container
+    )
+    assert reading_result.decode() == data
+    assert metadata_container == {"test": "test"}
