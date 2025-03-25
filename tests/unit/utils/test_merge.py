@@ -286,6 +286,27 @@ def test_merge_line(l1, l2, expected_res):
         assert res == ReportLine.create(*expected_res)
 
 
+@pytest.mark.xfail(reason='merging "incompatible" branches is broken right now')
+def test_merge_with_incompatible_branches():
+    s1 = LineSession(id=0, coverage="0/2", branches=["0:5", "0:6"])
+    s2 = LineSession(id=0, coverage="0/1", branches=["0"])
+
+    # If we would ignore the "missing branches", we would generate at least some kind of reasonable output.
+    assert merge_branch("0/2", "0/1") == "0/2"
+
+    # We expect this to be a miss, as both sessions are misses.
+    # But the logic to merge coverages taking into account "missed branches" is broken.
+    # Both coverages have a different number (and format) of missed branches.
+    # Thus the intersection of missed branches is empty, and `merge_coverage` will
+    # then just assume the line was hit, and generate a hit coverage accordingly.
+    merged = merge_line_session(s1, s2)
+    assert line_type(merged.coverage) == LineType.miss
+
+    # Depending on the order of arguments, we end up with either `2/2` or `1/1`.
+    # But given they are different formats (and number of branches), it is unclear
+    # what to output from this as well.
+
+
 @pytest.mark.unit
 @pytest.mark.parametrize(
     "s1, s2, res",

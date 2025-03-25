@@ -242,8 +242,8 @@ def _merge_sessions(s1: list[LineSession], s2: list[LineSession]) -> list[LineSe
     if not s1 or not s2:
         return s1 or s2
 
-    session_ids_1 = set(s.id for s in s1)
-    session_ids_2 = set(s.id for s in s2)
+    session_ids_1 = {s.id for s in s1}
+    session_ids_2 = {s.id for s in s2}
     intersection = session_ids_1.intersection(session_ids_2)
     if not intersection:
         s1.extend(s2)
