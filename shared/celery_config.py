@@ -22,6 +22,7 @@ activate_account_user_task_name = (
     f"app.tasks.{TaskConfigGroup.sync_account.value}.ActivateAccountUser"
 )
 notify_task_name = f"app.tasks.{TaskConfigGroup.notify.value}.Notify"
+notification_orchestrator_task_name = f"app.tasks.{TaskConfigGroup.notification_orchestrator.value}.NotificationOrchestrator"
 pulls_task_name = f"app.tasks.{TaskConfigGroup.pulls.value}.Sync"
 status_set_error_task_name = f"app.tasks.{TaskConfigGroup.status.value}.SetError"
 status_set_pending_task_name = f"app.tasks.{TaskConfigGroup.status.value}.SetPending"
@@ -187,6 +188,15 @@ class BaseCeleryConfig(object):
             "setup", "tasks", TaskConfigGroup.notify.value, "timeout", default=120
         )
     )
+    notification_orchestrator_soft_time_limit = int(
+        get_config(
+            "setup",
+            "tasks",
+            TaskConfigGroup.notification_orchestrator.value,
+            "timeout",
+            default=120,
+        )
+    )
     timeseries_soft_time_limit = get_config(
         "setup",
         "tasks",
@@ -218,6 +228,10 @@ class BaseCeleryConfig(object):
         notify_task_name: {
             "soft_time_limit": notify_soft_time_limit,
             "time_limit": notify_soft_time_limit + 20,
+        },
+        notification_orchestrator_task_name: {
+            "soft_time_limit": notification_orchestrator_soft_time_limit,
+            "time_limit": notification_orchestrator_soft_time_limit + 20,
         },
         sync_repos_task_name: {
             "soft_time_limit": 2 * task_soft_time_limit,
@@ -301,6 +315,15 @@ class BaseCeleryConfig(object):
                 "setup",
                 "tasks",
                 TaskConfigGroup.notify.value,
+                "queue",
+                default=task_default_queue,
+            )
+        },
+        notification_orchestrator_task_name: {
+            "queue": get_config(
+                "setup",
+                "tasks",
+                TaskConfigGroup.notification_orchestrator.value,
                 "queue",
                 default=task_default_queue,
             )

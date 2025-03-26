@@ -21,6 +21,7 @@ def test_celery_config():
     assert hasattr(config, "task_soft_time_limit")
     assert hasattr(config, "task_time_limit")
     assert hasattr(config, "notify_soft_time_limit")
+    assert hasattr(config, "notification_orchestrator_soft_time_limit")
     assert hasattr(config, "task_annotations")
     assert hasattr(config, "task_routes")
     assert hasattr(config, "worker_max_memory_per_child")
@@ -38,6 +39,7 @@ def test_celery_config():
         "app.tasks.label_analysis.*",
         "app.tasks.new_user_activated.NewUserActivated",
         "app.tasks.notify.Notify",
+        "app.tasks.notification_orchestrator.NotificationOrchestrator",
         "app.tasks.profiling.*",
         "app.tasks.pulls.Sync",
         "app.tasks.static_analysis.*",
@@ -83,6 +85,10 @@ def test_celery_config():
             TaskConfigGroup.new_user_activated.value,
         ),
         ("app.tasks.notify.Notify", TaskConfigGroup.notify.value),
+        (
+            "app.tasks.notification_orchestrator.NotificationOrchestrator",
+            TaskConfigGroup.notification_orchestrator.value,
+        ),
         ("app.tasks.profiling.collection", TaskConfigGroup.profiling.value),
         ("app.tasks.profiling.normalizer", TaskConfigGroup.profiling.value),
         ("app.tasks.profiling.summarization", TaskConfigGroup.profiling.value),
