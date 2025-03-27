@@ -159,7 +159,17 @@ class UserGivenSecret(object):
 def do_actual_validation(yaml_dict, show_secrets_for):
     validator = CodecovUserYamlValidator(show_secrets_for=show_secrets_for)
     full_schema = {**user_schema, **cli_schema}
-    is_valid = validator.validate(yaml_dict, full_schema)
+
+    try:
+        is_valid = validator.validate(yaml_dict, full_schema)
+    except Exception as e:
+        print("hello")
+        print(e)
+
+        print(validator._errors)
+        raise e
+
+
     if not is_valid:
         error_dict = validator.errors
         (

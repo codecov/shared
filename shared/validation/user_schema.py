@@ -78,6 +78,7 @@ percent_type = {
 
 custom_status_common_config = {
     "name_prefix": {"type": "string", "regex": r"^[\w\-\.]+$"},
+    # TODO - problem spot here
     "type": {"type": "string", "allowed": ("project", "patch", "changes")},
     "target": percent_type_or_auto,
     "threshold": percent_type,
@@ -133,9 +134,17 @@ flags_rule_basic_properties = {
 }
 
 component_rule_basic_properties = {
+    # TODO - here
     "statuses": {
-        "type": "list",
-        "schema": {"type": "dict", "schema": component_status_attributes},
+        "anyof": [
+            {
+                "type": "list",
+                "schema": {
+                    "type": "dict", 
+                    "schema": component_status_attributes,
+                }
+            }
+        ]
     },
     "flag_regexes": {"type": "list", "schema": {"type": "string"}},
     "paths": path_list_structure,
@@ -548,6 +557,7 @@ schema = {
             "default_rules": {
                 "type": "dict",
                 "schema": component_rule_basic_properties,
+                # "return_error_when_dict": True,
             },
             "individual_components": {
                 "type": "list",
@@ -558,6 +568,7 @@ schema = {
                         "name": {"type": "string"},
                         "component_id": {"type": "string", "required": True},
                     },
+                    # "return_error_when_dict": True,
                 },
             },
         },
