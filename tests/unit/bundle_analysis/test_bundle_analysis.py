@@ -84,6 +84,12 @@ sample_bundle_stats_path_11 = (
     / "sample_bundle_stats_dynamic_imports_3.json"
 )
 
+sample_bundle_stats_path_12 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_dynamic_imports_4.json"
+)
+
 
 def _table_rows_count(db_session: DbSession) -> Tuple[int]:
     return (
@@ -1042,7 +1048,23 @@ def test_bundle_report_dynamic_imports_with_missing_assets():
 
         # Check if the warning log for missing assets was triggered
         mock_warn.assert_called_with(
-            'Asset not found for dynamic import: "this-is-a-picture-that-does-not-exist-in-assets.svg"',
+            'Asset not found for dynamic import: "this-is-a-picture-that-does-not-exist-in-assets.svg". Skipping...',
+            exc_info=False,
+        )
+
+def test_bundle_report_dynamic_imports_with_multiple_assets():
+    with patch('shared.bundle_analysis.parsers.v3.log.error') as mock_error:
+        try:
+            report = BundleAnalysisReport()
+            report.ingest(sample_bundle_stats_path_12)
+        except Exception:
+            pass
+        finally:
+            report.cleanup()
+
+        # Check if the error log for multiple assets found was triggered
+        mock_error.assert_called_with(
+            'Multiple assets found for dynamic import: "there-is-two-of-these-assets.js"',
             exc_info=True,
         )
 

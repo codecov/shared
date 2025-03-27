@@ -362,12 +362,11 @@ class ParserV3(ParserTrait):
                     # TODO: Ignore this behavior for now, we'll handle it in the future
                     # https://github.com/codecov/engineering-team/issues/3512
                     log.warn(
-                        f'Asset not found for dynamic import: "{filename}"',
-                        exc_info=True,
+                        f'Asset not found for dynamic import: "{filename}". Skipping...',
                     )
                 except MultipleResultsFound:
                     log.error(
-                        f'Multiple assetsfound for dynamic import: "{filename}"',
+                        f'Multiple assets found for dynamic import: "{filename}"',
                         exc_info=True,
                     )
                     raise
