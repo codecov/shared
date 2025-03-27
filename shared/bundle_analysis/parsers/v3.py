@@ -358,9 +358,15 @@ class ParserV3(ParserTrait):
                         .one()
                     )
                     imported_assets[filename] = asset
-                except (NoResultFound, MultipleResultsFound):
-                    log.info(
-                        f'Asset not found for dynamic import: "{filename}"',
+                except NoResultFound:
+                    # TODO: Ignore this behavior for now, we'll handle it in the future
+                    # https://github.com/codecov/engineering-team/issues/3512
+                    log.warn(
+                        f'Asset not found for dynamic import: "{filename}". Skipping...',
+                    )
+                except MultipleResultsFound:
+                    log.error(
+                        f'Multiple assets found for dynamic import: "{filename}"',
                         exc_info=True,
                     )
                     raise

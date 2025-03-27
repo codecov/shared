@@ -1,0 +1,209 @@
+{
+    "version": "3",
+    "builtAt": 1732907862271,
+    "duration": 252,
+    "bundleName": "dynamic_imports",
+    "outputPath": "/dist",
+    "bundler": { "name": "rollup", "version": "4.22.4" },
+    "plugin": { "name": "@codecov/vite-plugin", "version": "1.4.0" },
+    "assets": [
+      {
+        "name": "react.CHdo91hT.js",
+        "size": 4126,
+        "gzipSize": 2053,
+        "normalized": "react.*.js"
+      },
+      {
+        "name": "index.CRhFRBHw.js",
+        "size": 1433,
+        "gzipSize": 743,
+        "normalized": "index.*.js"
+      },
+      {
+        "name": "index-C-Z8zsvD.js",
+        "size": 161,
+        "gzipSize": 152,
+        "normalized": "index-*.js"
+      },
+      {
+        "name": "LazyComponent-BBSC53Nv.js",
+        "size": 299,
+        "gzipSize": 246,
+        "normalized": "LazyComponent-*.js"
+      },
+      {
+        "name": "assets/index-oTNkmlIs.js",
+        "size": 144686,
+        "gzipSize": 46757,
+        "normalized": "assets/index-*.js"
+      }
+    ],
+    "chunks": [
+      {
+        "id": "index",
+        "uniqueId": "0-index",
+        "entry": false,
+        "initial": true,
+        "files": ["index-C-Z8zsvD.js"],
+        "names": ["index"],
+        "dynamicImports":[
+            "this-is-a-picture-that-does-not-exist-in-assets.svg"
+        ]
+      },
+      {
+        "id": "LazyComponent",
+        "uniqueId": "1-LazyComponent",
+        "entry": false,
+        "initial": true,
+        "files": ["LazyComponent-BBSC53Nv.js"],
+        "names": ["LazyComponent"],
+        "dynamicImports": ["index-C-Z8zsvD.js"]
+      },
+      {
+        "id": "index",
+        "uniqueId": "2-index",
+        "entry": true,
+        "initial": false,
+        "files": ["assets/index-oTNkmlIs.js"],
+        "names": ["index"],
+        "dynamicImports": ["index-C-Z8zsvD.js", "LazyComponent-BBSC53Nv.js"]
+      }
+    ],
+    "modules": [
+      {
+        "name": "./src/IndexedLazyComponent/IndexedLazyComponent.tsx",
+        "size": 189,
+        "chunkUniqueIds": ["0-index"]
+      },
+      {
+        "name": "./src/IndexedLazyComponent/index.ts",
+        "size": 0,
+        "chunkUniqueIds": ["0-index"]
+      },
+      {
+        "name": "./src/LazyComponent/LazyComponent.tsx",
+        "size": 495,
+        "chunkUniqueIds": ["1-LazyComponent"]
+      },
+      {
+        "name": "./vite/modulepreload-polyfill.js",
+        "size": 1280,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "./commonjsHelpers.js",
+        "size": 140,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/jsx-runtime.js?commonjs-module",
+        "size": 31,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react-jsx-runtime.production.min.js?commonjs-exports",
+        "size": 40,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/index.js?commonjs-module",
+        "size": 26,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react.production.min.js?commonjs-exports",
+        "size": 30,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react.production.min.js",
+        "size": 7591,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/index.js",
+        "size": 144,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/cjs/react-jsx-runtime.production.min.js",
+        "size": 919,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react@18.2.0/node_modules/react/jsx-runtime.js",
+        "size": 103,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/client.js?commonjs-exports",
+        "size": 16,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/index.js?commonjs-module",
+        "size": 29,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/cjs/react-dom.production.min.js?commonjs-exports",
+        "size": 33,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/index.js?commonjs-module",
+        "size": 30,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/cjs/scheduler.production.min.js?commonjs-exports",
+        "size": 34,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/cjs/scheduler.production.min.js",
+        "size": 4315,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/scheduler@0.23.0/node_modules/scheduler/index.js",
+        "size": 94,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/cjs/react-dom.production.min.js",
+        "size": 132340,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/index.js",
+        "size": 381,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../node_modules/.pnpm/react-dom@18.2.0_react@18.2.0/node_modules/react-dom/client.js",
+        "size": 102,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "./vite/preload-helper.js",
+        "size": 1928,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "./src/assets/react.svg",
+        "size": 45,
+        "chunkUniqueIds": ["2-index"]
+      },
+      {
+        "name": "../../../../../../vite.svg",
+        "size": 51,
+        "chunkUniqueIds": ["2-index"]
+      },
+      { "name": "./src/App.css", "size": 0, "chunkUniqueIds": ["2-index"] },
+      { "name": "./src/App.tsx", "size": 1975, "chunkUniqueIds": ["2-index"] },
+      { "name": "./src/index.css", "size": 0, "chunkUniqueIds": ["2-index"] },
+      { "name": "./src/main.tsx", "size": 181, "chunkUniqueIds": ["2-index"] },
+      { "name": "./index.html", "size": 0, "chunkUniqueIds": ["2-index"] }
+    ]
+  }
