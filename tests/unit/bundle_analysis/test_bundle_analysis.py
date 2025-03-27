@@ -1049,11 +1049,11 @@ def test_bundle_report_dynamic_imports_with_missing_assets():
         # Check if the warning log for missing assets was triggered
         mock_warn.assert_called_with(
             'Asset not found for dynamic import: "this-is-a-picture-that-does-not-exist-in-assets.svg". Skipping...',
-            exc_info=False,
         )
 
+
 def test_bundle_report_dynamic_imports_with_multiple_assets():
-    with patch('shared.bundle_analysis.parsers.v3.log.error') as mock_error:
+    with patch("shared.bundle_analysis.parsers.v3.log.error") as mock_error:
         try:
             report = BundleAnalysisReport()
             report.ingest(sample_bundle_stats_path_12)
