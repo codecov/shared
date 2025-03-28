@@ -60,9 +60,3 @@ class CodecovYamlValidator(Validator):
                 LayoutStructure().validate(value)
             except Invalid as exc:
                 self._error(field, exc.error_message)
-
-    # def _validate_return_error_when_dict(self, constraint, field, value):
-    #     """{'type': 'boolean'}"""
-
-    #     print("field", field)
-    #     self._error(field, "cannot be a dict")

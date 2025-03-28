@@ -78,7 +78,8 @@ percent_type = {
 
 custom_status_common_config = {
     "name_prefix": {"type": "string", "regex": r"^[\w\-\.]+$"},
-    # TODO - problem spot here
+    # Note that "type" is a reserved word in Cerberus parser so use with caution as a 
+    # key in the schema. See workaround at https://github.com/codecov/shared/pull/588
     "type": {"type": "string", "allowed": ("project", "patch", "changes")},
     "target": percent_type_or_auto,
     "threshold": percent_type,
@@ -120,8 +121,13 @@ notification_standard_attributes = {
 
 flags_rule_basic_properties = {
     "statuses": {
-        "type": "list",
-        "schema": {"type": "dict", "schema": flag_status_attributes},
+        # Use "anyof" to avoid error in Cerberus when child has a key named "type". More background at https://github.com/codecov/shared/pull/588
+        "anyof": [
+            {
+                "type": "list",
+                "schema": {"type": "dict", "schema": flag_status_attributes},
+            },
+        ]
     },
     "carryforward_mode": {
         "type": "string",
@@ -134,8 +140,8 @@ flags_rule_basic_properties = {
 }
 
 component_rule_basic_properties = {
-    # TODO - here
     "statuses": {
+        # Use "anyof" to avoid error in Cerberus when child has a key named "type". More background at https://github.com/codecov/shared/pull/588
         "anyof": [
             {
                 "type": "list",
