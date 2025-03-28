@@ -29,7 +29,7 @@ from shared.django_apps.codecov_auth.helpers import get_gitlab_url
 from shared.django_apps.codecov_auth.managers import OwnerManager
 from shared.django_apps.core.managers import RepositoryManager
 from shared.django_apps.core.models import DateTimeWithoutTZField, Repository
-from shared.plan.constants import PlanName, TierName, TrialDaysAmount
+from shared.plan.constants import DEFAULT_FREE_PLAN, PlanName, TierName, TrialDaysAmount
 
 # Added to avoid 'doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS' error\
 # Needs to be called the same as the API app
@@ -145,7 +145,7 @@ class Account(BaseModel):
         max_length=50,
         choices=PlanName.choices(),
         null=False,
-        default=PlanName.USERS_DEVELOPER.value,
+        default=DEFAULT_FREE_PLAN,
     )
     plan_seat_count = models.SmallIntegerField(default=1, null=False, blank=True)
     free_seat_count = models.SmallIntegerField(default=0, null=False, blank=True)
@@ -327,9 +327,7 @@ class Owner(ExportModelOperationsMixin("codecov_auth.owner"), models.Model):
     staff = models.BooleanField(null=True, default=False)
     cache = models.JSONField(null=True)
     # Really an ENUM in db
-    plan = models.TextField(
-        null=True, default=PlanName.USERS_DEVELOPER.value, blank=True
-    )
+    plan = models.TextField(null=True, default=DEFAULT_FREE_PLAN, blank=True)
     plan_provider = models.TextField(
         null=True, choices=PlanProviders.choices, blank=True
     )  # postgres enum containing only "github"
