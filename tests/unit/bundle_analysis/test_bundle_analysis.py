@@ -78,6 +78,18 @@ sample_bundle_stats_path_10 = (
     / "sample_bundle_stats_w_bad_chunk.json"
 )
 
+sample_bundle_stats_path_11 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_dynamic_imports_3.json"
+)
+
+sample_bundle_stats_path_12 = (
+    Path(__file__).parent.parent.parent
+    / "samples"
+    / "sample_bundle_stats_dynamic_imports_4.json"
+)
+
 
 def _table_rows_count(db_session: DbSession) -> Tuple[int]:
     return (
@@ -1003,6 +1015,58 @@ def test_bundle_report_dynamic_imports_fetching():
         assert "LazyComponent-BBSC53Nv.js" in imports
     finally:
         report.cleanup()
+
+
+def test_bundle_report_dynamic_imports_with_missing_assets():
+    with patch("shared.bundle_analysis.parsers.v3.log.warn") as mock_warn:
+        try:
+            report = BundleAnalysisReport()
+            report.ingest(sample_bundle_stats_path_11)
+            bundle_report = report.bundle_report("dynamic_imports")
+
+            # There should only be 3 dynamic imports total
+            dynamic_imports = []
+            for asset in list(bundle_report.asset_reports()):
+                dynamic_imports.extend(asset.dynamically_imported_assets())
+            assert len(dynamic_imports) == 3
+
+            # 1 of them should be from the asset called: LazyComponent-BBSC53Nv.js
+            asset = bundle_report.asset_report_by_name("LazyComponent-BBSC53Nv.js")
+            imports = [item for item in asset.dynamically_imported_assets()]
+            assert len(imports) == 1
+            assert imports[0].hashed_name == "index-C-Z8zsvD.js"
+
+            # 2 of them should be from the asset called: assets/index-oTNkmlIs.js
+            asset = bundle_report.asset_report_by_name("assets/index-oTNkmlIs.js")
+            imports = [item.hashed_name for item in asset.dynamically_imported_assets()]
+            assert len(imports) == 2
+            assert "index-C-Z8zsvD.js" in imports
+            assert "LazyComponent-BBSC53Nv.js" in imports
+
+        finally:
+            report.cleanup()
+
+        # Check if the warning log for missing assets was triggered
+        mock_warn.assert_called_with(
+            'Asset not found for dynamic import: "this-is-a-picture-that-does-not-exist-in-assets.svg". Skipping...',
+        )
+
+
+def test_bundle_report_dynamic_imports_with_multiple_assets():
+    with patch("shared.bundle_analysis.parsers.v3.log.error") as mock_error:
+        try:
+            report = BundleAnalysisReport()
+            report.ingest(sample_bundle_stats_path_12)
+        except Exception:
+            pass
+        finally:
+            report.cleanup()
+
+        # Check if the error log for multiple assets found was triggered
+        mock_error.assert_called_with(
+            'Multiple assets found for dynamic import: "there-is-two-of-these-assets.js"',
+            exc_info=True,
+        )
 
 
 def test_bundle_report_routes():
