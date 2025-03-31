@@ -520,7 +520,6 @@ query Repos($owner: String!, $cursor: String, $first: Int!) {
     repositories(
       first: $first
       ownerAffiliations: OWNER
-      isFork: false
       isLocked: false
       orderBy: {field: NAME, direction: ASC}
       after: $cursor
