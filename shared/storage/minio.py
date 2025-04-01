@@ -201,6 +201,7 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         is_already_gzipped: bool = False,  # deprecated
         is_compressed: bool = False,
         compression_type: str | None = "zstd",
+        metadata: dict[str, str] | None = None,
     ) -> ObjectWriteResult | Literal[True]:
         if isinstance(data, str):
             data = BytesIO(data.encode())
@@ -230,6 +231,10 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
             headers["Content-Encoding"] = compression_type
         if reduced_redundancy:
             headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY"
+        if metadata:
+            headers.update(
+                {f"x-amz-meta-{k}": v for k, v in metadata.items() if v is not None}
+            )
 
         # it's safe to do a BinaryIO cast here because we know that put_object only uses a function of the shape:
         # read(self, size: int = -1, /) -> bytes
@@ -250,13 +255,29 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
         return write_result
 
     @overload
-    def read_file(self, bucket_name: str, path: str) -> bytes: ...
+    def read_file(
+        self,
+        bucket_name: str,
+        path: str,
+        file_obj: None = None,
+        metadata_container: dict[str, str] | None = None,
+    ) -> bytes: ...
 
     @overload
-    def read_file(self, bucket_name: str, path: str, file_obj: BinaryIO) -> None: ...
+    def read_file(
+        self,
+        bucket_name: str,
+        path: str,
+        file_obj: BinaryIO,
+        metadata_container: dict[str, str] | None = None,
+    ) -> None: ...
 
     def read_file(
-        self, bucket_name: str, path: str, file_obj: BinaryIO | None = None
+        self,
+        bucket_name: str,
+        path: str,
+        file_obj: BinaryIO | None = None,
+        metadata_container: dict[str, str] | None = None,
     ) -> bytes | None:
         try:
             response = cast(
@@ -269,6 +290,12 @@ class MinioStorageService(BaseStorageService, PresignedURLService):
                     f"File {path} does not exist in {bucket_name}"
                 )
             raise e
+
+        if metadata_container is not None:
+            for header, value in response.headers.items():
+                if header.startswith("x-amz-meta-"):
+                    metadata_key = header.removeprefix("x-amz-meta-")
+                    metadata_container[metadata_key] = value
 
         reader = cast(IO[bytes], response)
         if (
