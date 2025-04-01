@@ -1,3 +1,4 @@
+from pathlib import Path
 import orjson
 import pytest
 import zstandard as zstd
@@ -8,7 +9,8 @@ from shared.torngit.base import TorngitBaseAdapter
 
 
 def read_fixture(name: str) -> bytes:
-    with open(name, "rb") as f:
+    path = Path(__file__).parent / "fixtures" / name
+    with open(path, "rb") as f:
         data = f.read()
 
     dctx = zstd.ZstdDecompressor()
@@ -16,14 +18,14 @@ def read_fixture(name: str) -> bytes:
 
 
 def load_report() -> tuple[bytes, bytes]:
-    raw_chunks = read_fixture("tests/benchmarks/fixtures/worker_chunks.txt.zst")
-    raw_report_json = read_fixture("tests/benchmarks/fixtures/worker_report.json.zst")
+    raw_chunks = read_fixture("worker_chunks.txt.zst")
+    raw_report_json = read_fixture("worker_report.json.zst")
 
     return raw_chunks, raw_report_json
 
 
 def load_diff() -> dict:
-    contents = read_fixture("tests/benchmarks/fixtures/worker.diff.zst").decode()
+    contents = read_fixture("worker.diff.zst").decode()
 
     torngit = TorngitBaseAdapter()
     return torngit.diff_to_json(contents)
