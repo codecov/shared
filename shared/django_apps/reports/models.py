@@ -9,8 +9,6 @@ from psqlextra.types import PostgresPartitioningMethod
 
 from shared.django_apps.codecov.models import BaseCodecovModel, BaseModel
 from shared.django_apps.reports.managers import CommitReportManager
-from shared.django_apps.utils.config import should_write_data_to_storage_config_check
-from shared.django_apps.utils.model_utils import ArchiveField
 from shared.django_apps.utils.services import get_short_service_name
 from shared.reports.enums import UploadState, UploadType
 from shared.upload.constants import ci
@@ -81,45 +79,6 @@ class ReportResults(
 
     class Meta:
         app_label = REPORTS_APP_LABEL
-
-
-class ReportDetails(
-    ExportModelOperationsMixin("reports.report_details"), BaseCodecovModel
-):
-    report = models.OneToOneField(CommitReport, on_delete=models.CASCADE)
-    _files_array = ArrayField(models.JSONField(), db_column="files_array", null=True)
-    _files_array_storage_path = models.URLField(
-        db_column="files_array_storage_path", null=True
-    )
-
-    class Meta:
-        app_label = REPORTS_APP_LABEL
-
-    def get_repository(self):
-        return self.report.commit.repository
-
-    def get_commitid(self):
-        return self.report.commit.commitid
-
-    def should_write_to_storage(self) -> bool:
-        if (
-            self.report is None
-            or self.report.commit is None
-            or self.report.commit.repository is None
-            or self.report.commit.repository.author is None
-        ):
-            return False
-        is_codecov_repo = self.report.commit.repository.author.username == "codecov"
-        return should_write_data_to_storage_config_check(
-            master_switch_key="report_details_files_array",
-            is_codecov_repo=is_codecov_repo,
-            repoid=self.report.commit.repository.repoid,
-        )
-
-    files_array = ArchiveField(
-        should_write_to_storage_fn=should_write_to_storage,
-        default_value_class=list,
-    )
 
 
 class ReportLevelTotals(AbstractTotals):

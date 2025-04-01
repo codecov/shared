@@ -1,16 +1,10 @@
-import json
-from unittest.mock import MagicMock, patch
-
 from django.test import TestCase
 
-from shared.django_apps.reports.models import ReportDetails
 from shared.django_apps.reports.tests.factories import (
-    ReportDetailsFactory,
     RepositoryFlagFactory,
     UploadFactory,
     UploadFlagMembershipFactory,
 )
-from shared.storage.exceptions import FileNotInStorageError
 
 
 class UploadTests(TestCase):
@@ -45,86 +39,3 @@ class UploadTests(TestCase):
         assert (
             session.flag_names.sort() == [flag_one.flag_name, flag_two.flag_name].sort()
         )
-
-
-class ReportDetailsTests(TestCase):
-    sample_files_array = [
-        {
-            "filename": "test_file_1.py",
-            "file_index": 2,
-            "file_totals": [1, 10, 8, 2, 5, "80.00000", 6, 7, 9, 8, 20, 40, 13],
-            "diff_totals": [0, 2, 1, 1, 0, "50.00000", 0, 0, 0, 0, 0, 0, 0],
-        },
-        {
-            "filename": "test_file_2.py",
-            "file_index": 0,
-            "file_totals": [1, 3, 2, 1, 0, "66.66667", 0, 0, 0, 0, 0, 0, 0],
-            "diff_totals": None,
-        },
-    ]
-
-    @patch("shared.django_apps.utils.model_utils.ArchiveService")
-    def test_get_files_array_from_db(self, mock_archive):
-        details = ReportDetailsFactory()
-        mock_read_file = MagicMock()
-        mock_archive.return_value.read_file = mock_read_file
-        details._files_array = self.sample_files_array
-        details._files_array_storage_path = None
-        details.save()
-
-        fetched = ReportDetails.objects.get(id=details.id)
-        assert fetched.files_array == self.sample_files_array
-        mock_archive.assert_not_called()
-        mock_read_file.assert_not_called()
-
-    @patch("shared.django_apps.utils.model_utils.ArchiveService")
-    def test_get_files_array_from_storage(self, mock_archive):
-        details = ReportDetailsFactory()
-        storage_path = "https://storage/path/files_array.json"
-        mock_read_file = MagicMock(return_value=json.dumps(self.sample_files_array))
-        mock_archive.return_value.read_file = mock_read_file
-        details._files_array = None
-        details._files_array_storage_path = storage_path
-        details.save()
-
-        fetched = ReportDetails.objects.get(id=details.id)
-        assert fetched.files_array == self.sample_files_array
-        mock_archive.assert_called()
-        mock_read_file.assert_called_with(storage_path)
-        # Calls it again to test caching
-        assert fetched.files_array == self.sample_files_array
-        assert mock_archive.call_count == 1
-        assert mock_read_file.call_count == 1
-        # This one to help us understand caching across different instances
-        assert details.files_array == self.sample_files_array
-        assert mock_archive.call_count == 2
-        assert mock_read_file.call_count == 2
-        # Let's see for objects with different IDs
-        diff_details = ReportDetailsFactory()
-        storage_path = "https://storage/path/files_array.json"
-        diff_details._files_array = None
-        diff_details._files_array_storage_path = storage_path
-        diff_details.save()
-        assert diff_details.files_array == self.sample_files_array
-        assert mock_archive.call_count == 3
-        assert mock_read_file.call_count == 3
-
-    @patch("shared.django_apps.utils.model_utils.ArchiveService")
-    def test_get_files_array_from_storage_file_not_found(self, mock_archive):
-        details = ReportDetailsFactory()
-        storage_path = "https://storage/path/files_array.json"
-
-        def side_effect(*args, **kwargs):
-            raise FileNotInStorageError()
-
-        mock_read_file = MagicMock(side_effect=side_effect)
-        mock_archive.return_value.read_file = mock_read_file
-        details._files_array = None
-        details._files_array_storage_path = storage_path
-        details.save()
-
-        fetched = ReportDetails.objects.get(id=details.id)
-        assert fetched._files_array_storage_path == storage_path
-        assert fetched.files_array == []
-        mock_archive.assert_called()
-        mock_read_file.assert_called_with(storage_path)
