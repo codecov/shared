@@ -4,8 +4,6 @@ import logging
 from dateutil import parser
 from django.db import IntegrityError
 from django.db.models import (
-    Avg,
-    Count,
     F,
     FloatField,
     IntegerField,
@@ -14,7 +12,6 @@ from django.db.models import (
     Q,
     QuerySet,
     Subquery,
-    Sum,
     Value,
 )
 from django.db.models.fields.json import KeyTextTransform
@@ -159,96 +156,6 @@ class RepositoryQuerySet(QuerySet):
             ),
         ).annotate(
             latest_coverage_change=F("latest_coverage") - F("second_latest_coverage")
-        )
-
-    def get_aggregated_coverage(self):
-        """
-        Adds group_bys in the queryset to aggregate the repository coverage totals together to access
-        statistics on an organization repositories. Requires `with_latest_coverage_change` and
-        `with_latest_commit_before` to have been executed beforehand.
-
-        Does not return a queryset and instead returns the aggregated values, fetched from the database.
-        """
-
-        return self.aggregate(
-            repo_count=Count("repoid"),
-            sum_hits=Sum(
-                Cast(
-                    KeyTextTransform("h", "latest_commit_totals"),
-                    output_field=FloatField(),
-                )
-            ),
-            sum_lines=Sum(
-                Cast(
-                    KeyTextTransform("n", "latest_commit_totals"),
-                    output_field=FloatField(),
-                )
-            ),
-            sum_partials=Sum(
-                Cast(
-                    KeyTextTransform("p", "latest_commit_totals"),
-                    output_field=FloatField(),
-                )
-            ),
-            sum_misses=Sum(
-                Cast(
-                    KeyTextTransform("m", "latest_commit_totals"),
-                    output_field=FloatField(),
-                )
-            ),
-            average_complexity=Avg(
-                Cast(
-                    KeyTextTransform("C", "latest_commit_totals"),
-                    output_field=FloatField(),
-                )
-            ),
-            weighted_coverage=(
-                Sum(
-                    Cast(
-                        KeyTextTransform("h", "latest_commit_totals"),
-                        output_field=FloatField(),
-                    )
-                )
-                / Sum(
-                    Cast(
-                        KeyTextTransform("n", "latest_commit_totals"),
-                        output_field=FloatField(),
-                    )
-                )
-                * 100
-            ),
-            # Function to get the weighted coverage change is to calculate the weighted coverage for the previous commit
-            # minus the weighted coverage from the current commit
-            weighted_coverage_change=(
-                Sum(
-                    Cast(
-                        KeyTextTransform("h", "latest_commit_totals"),
-                        output_field=FloatField(),
-                    )
-                )
-                / Sum(
-                    Cast(
-                        KeyTextTransform("n", "latest_commit_totals"),
-                        output_field=FloatField(),
-                    )
-                )
-                * 100
-            )
-            - (
-                Sum(
-                    Cast(
-                        KeyTextTransform("h", "prev_commit_totals"),
-                        output_field=FloatField(),
-                    )
-                )
-                / Sum(
-                    Cast(
-                        KeyTextTransform("n", "prev_commit_totals"),
-                        output_field=FloatField(),
-                    )
-                )
-                * 100
-            ),
         )
 
     def with_latest_commit_at(self):
