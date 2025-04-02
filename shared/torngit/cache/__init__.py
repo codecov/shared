@@ -24,8 +24,7 @@ class TorngitCache(OurOwnCache):
         if use_cache:
             redis = Redis.from_url(get_redis_url())
             backend = RedisBackend(redis_connection=redis)
-            app = get_config("services", "vcs_cache", "metrics_app", default=None)
-            self.configure(backend=backend, app=app)
+            self.configure(backend=backend)
             self._enabled = True
         ttls = {
             "check": get_config("services", "vcs_cache", "check_duration", default=120),

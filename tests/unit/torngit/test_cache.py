@@ -25,7 +25,6 @@ class TestTorngitCacheConfig(object):
         )
         torngit_cache.initialize()
         assert isinstance(torngit_cache._backend, RedisBackend)
-        assert torngit_cache._app == "worker"
         assert torngit_cache.is_initialized == True
         assert torngit_cache.get_ttl("check") == 100
         assert torngit_cache.get_ttl("compare") == 80

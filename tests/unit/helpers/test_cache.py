@@ -123,7 +123,6 @@ class TestCache(object):
     @pytest.mark.asyncio
     async def test_simple_caching_no_backend_async_no_params(self, mocker):
         cache = OurOwnCache()
-        assert cache._app == "not_configured"
         sample_function = RandomCounter().async_call_function
         cached_function = cache.cache_function()(sample_function)
         assert (await cached_function()) == 8
@@ -133,7 +132,6 @@ class TestCache(object):
     def test_simple_caching_fake_backend_no_params(self, mocker):
         cache = OurOwnCache()
         cache.configure(FakeBackend())
-        assert cache._app == "shared"
         sample_function = RandomCounter().call_function
         cached_function = cache.cache_function()(sample_function)
         assert cached_function() == 1
@@ -150,7 +148,6 @@ class TestCache(object):
         )
         cache = OurOwnCache()
         cache.configure(FakeBackend())
-        assert cache._app == "shared"
         sample_function = RandomCounter().call_function_args
         cached_function = cache.cache_function(log_hits=True, log_map=log_map)(
             sample_function
@@ -191,8 +188,7 @@ class TestCache(object):
     @pytest.mark.asyncio
     async def test_simple_caching_fake_backend_async_no_params(self, mocker):
         cache = OurOwnCache()
-        cache.configure(FakeBackend(), app="worker")
-        assert cache._app == "worker"
+        cache.configure(FakeBackend())
         sample_function = RandomCounter().async_call_function
         cached_function = cache.cache_function()(sample_function)
         assert (await cached_function()) == 8
@@ -210,7 +206,6 @@ class TestCache(object):
         )
         cache = OurOwnCache()
         cache.configure(FakeBackend())
-        assert cache._app == "shared"
         sample_function = RandomCounter().async_call_function_args
         cached_function = cache.cache_function(log_hits=True, log_map=log_map)(
             sample_function
