@@ -8,6 +8,7 @@ import requests
 
 import shared.torngit as torngit
 from shared.config import get_config, load_file_from_path_at_config
+from shared.helpers.cache import cache
 
 log = logging.getLogger(__name__)
 
@@ -100,6 +101,9 @@ def get_github_jwt_token(
     return jwt.encode(payload, get_pem(**pem_kwargs), algorithm="RS256")
 
 
+# The integration tokens are valid for 1h
+# We use 30min of that
+@cache.cache_function(ttl=1800)
 def get_github_integration_token(
     service,
     integration_id=None,

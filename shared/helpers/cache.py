@@ -4,7 +4,7 @@ import hashlib
 import json
 import logging
 from functools import wraps
-from typing import Any, Callable, Hashable, List, Optional
+from typing import Any, Callable, Hashable, List
 
 from redis import Redis, RedisError
 
@@ -154,7 +154,7 @@ class OurOwnCache(object):
     The tldr to use it is, given a function f:
 
     ```
-    from helpers.cache import cache
+    from shared.helpers.cache import cache
 
     @cache.cache_function()
     def f(...):
@@ -185,11 +185,9 @@ class OurOwnCache(object):
 
     def __init__(self):
         self._backend = NullBackend()
-        self._app = "not_configured"
 
-    def configure(self, backend: BaseBackend, app: Optional[str] = None):
+    def configure(self, backend: BaseBackend):
         self._backend = backend
-        self._app = app or "shared"
 
     def get_backend(self) -> BaseBackend:
         return self._backend
@@ -211,6 +209,11 @@ class OurOwnCache(object):
         return FunctionCacher(
             self, ttl, log_hits, LogMapping(log_map if log_map is not None else {})
         )
+
+
+cache = OurOwnCache()
+# TODO(swatinem): maybe initialize the cache directly at module load time?
+# cache.configure(RedisBackend(get_redis_connection()))
 
 
 class FunctionCacher(object):

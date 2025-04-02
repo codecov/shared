@@ -7,20 +7,12 @@ from shared.bots.exceptions import RepositoryWithoutValidBotError
 from shared.config import get_config
 from shared.github import InvalidInstallationError
 from shared.github import get_github_integration_token as _get_github_integration_token
-from shared.helpers.cache import OurOwnCache, RedisBackend
-from shared.helpers.redis import get_redis_connection
 from shared.torngit.base import TokenType
 from shared.typings.oauth_token_types import Token
-
-cache = OurOwnCache()
-cache.configure(RedisBackend(get_redis_connection()), app="shared.installation_tokens")
 
 log = logging.getLogger(__name__)
 
 
-# The integration tokens are valid for 1h
-# We use 30min of that
-@cache.cache_function(ttl=1800)
 def get_github_integration_token(
     service: str,
     installation_id: int | None = None,
