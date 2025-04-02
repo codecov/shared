@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Tuple
 import httpx
 
 from shared.django_apps.core.models import Repository
-from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.response_types import ProviderPull
 from shared.typings.oauth_token_types import (
@@ -65,9 +64,6 @@ class TorngitBaseAdapter(object):
         }
         self.verify_ssl = verify_ssl
         self.data.update(kwargs)
-        # This has the side effect of initializing the torngit_cache
-        # (if not yet initialized)
-        torngit_cache.initialize()
 
     def __repr__(self):
         return "<%s slug=%s ownerid=%s repoid=%s>" % (
