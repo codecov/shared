@@ -212,6 +212,8 @@ class OurOwnCache(object):
 
 
 cache = OurOwnCache()
+# TODO(swatinem): maybe initialize the cache directly at module load time?
+# cache.configure(RedisBackend(get_redis_connection()))
 
 
 class FunctionCacher(object):
