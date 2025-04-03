@@ -1750,6 +1750,7 @@ class Github(TorngitBaseAdapter):
 
     # Source
     # ------
+    @cache.cache_function(ttl=60 * 60)
     async def get_source(self, path, ref, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
@@ -1785,7 +1786,7 @@ class Github(TorngitBaseAdapter):
 
         return dict(content=content["content"], commitid=content["sha"])
 
-    @cache.cache_function(ttl=1800)
+    @cache.cache_function(ttl=60 * 60)
     async def get_commit_diff(self, commit, context=None, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
@@ -1810,7 +1811,7 @@ class Github(TorngitBaseAdapter):
             raise
         return self.diff_to_json(res)
 
-    @cache.cache_function(ttl=1800)
+    @cache.cache_function(ttl=60 * 60)
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
@@ -1893,7 +1894,7 @@ class Github(TorngitBaseAdapter):
             ahead_by=res.get("ahead_by"),
         )
 
-    @cache.cache_function(ttl=1800)
+    @cache.cache_function(ttl=60 * 60)
     async def get_commit(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
@@ -2099,6 +2100,7 @@ class Github(TorngitBaseAdapter):
     async def list_top_level_files(self, ref, token=None):
         return await self.list_files(ref, dir_path="", token=None)
 
+    @cache.cache_function(ttl=60 * 60)
     async def list_files(self, ref, dir_path, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.read)
         # https://developer.github.com/v3/repos/contents/#get-contents
