@@ -14,12 +14,12 @@ from httpx import Response
 
 from shared.config import get_config
 from shared.github import get_github_integration_token, get_github_jwt_token
+from shared.helpers.cache import cache
 from shared.helpers.redis import get_redis_connection
 from shared.metrics import Counter
 from shared.rate_limits import set_entity_to_rate_limited
 from shared.rollouts.features import INCLUDE_GITHUB_COMMENT_ACTIONS_BY_OWNER
 from shared.torngit.base import TokenType, TorngitBaseAdapter
-from shared.torngit.cache import torngit_cache
 from shared.torngit.enums import Endpoints
 from shared.torngit.exceptions import (
     TorngitClientError,
@@ -1712,11 +1712,6 @@ class Github(TorngitBaseAdapter):
                 )
             return res
 
-    @torngit_cache.cache_function(
-        torngit_cache.get_ttl("status"),
-        log_hits=True,
-        log_map={"args_indexes_to_log": [0], "kwargs_keys_to_log": ["commit"]},
-    )
     async def get_commit_statuses(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.status)
         page = 0
@@ -1790,6 +1785,7 @@ class Github(TorngitBaseAdapter):
 
         return dict(content=content["content"], commitid=content["sha"])
 
+    @cache.cache_function(ttl=1800)
     async def get_commit_diff(self, commit, context=None, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
@@ -1814,11 +1810,7 @@ class Github(TorngitBaseAdapter):
             raise
         return self.diff_to_json(res)
 
-    @torngit_cache.cache_function(
-        torngit_cache.get_ttl("compare"),
-        log_hits=True,
-        log_map={"args_indexes_to_log": [0, 1], "kwargs_keys_to_log": ["base", "head"]},
-    )
+    @cache.cache_function(ttl=1800)
     async def get_compare(
         self, base, head, context=None, with_commits=True, token=None
     ):
@@ -1901,6 +1893,7 @@ class Github(TorngitBaseAdapter):
             ahead_by=res.get("ahead_by"),
         )
 
+    @cache.cache_function(ttl=1800)
     async def get_commit(self, commit, token=None):
         token = self.get_token_by_type_if_none(token, TokenType.commit)
         # https://developer.github.com/v3/repos/commits/#get-a-single-commit
@@ -2176,14 +2169,6 @@ class Github(TorngitBaseAdapter):
             )
             return res["id"]
 
-    @torngit_cache.cache_function(
-        torngit_cache.get_ttl("check"),
-        log_hits=True,
-        log_map={
-            "args_indexes_to_log": [0, 1, 2],
-            "kwargs_keys_to_log": ["check_suite_id", "head_sha", "name"],
-        },
-    )
     async def get_check_runs(
         self, check_suite_id=None, head_sha=None, name=None, token=None
     ):

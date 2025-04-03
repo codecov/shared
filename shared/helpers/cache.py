@@ -4,7 +4,7 @@ import hashlib
 import json
 import logging
 from functools import wraps
-from typing import Any, Callable, Hashable, List
+from typing import Any, Callable, Hashable
 
 from redis import Redis, RedisError
 
@@ -130,23 +130,6 @@ class RedisBackend(BaseBackend):
             )
 
 
-class LogMapping(dict):
-    """This let cached functions to specify what arguments they want to log.
-    In some cases we want to log cache hits for debugging purposes,
-    but some of the arguments might be dangerous to log (e.g. tokens)
-    """
-
-    @property
-    def args_indexes_to_log(self) -> List[int]:
-        """List of args from the function to be logged (if present)"""
-        return self.get("args_indexes_to_log", [])
-
-    @property
-    def kwargs_keys_to_log(self) -> List[Any]:
-        """List of args from the function to be logged (if present)"""
-        return self.get("kwargs_keys_to_log", [])
-
-
 class OurOwnCache(object):
     """
     This is codecov distributed cache's implementation.
@@ -192,12 +175,7 @@ class OurOwnCache(object):
     def get_backend(self) -> BaseBackend:
         return self._backend
 
-    def cache_function(
-        self,
-        ttl: int = DEFAULT_TTL,
-        log_hits: bool = False,
-        log_map: LogMapping | None = None,
-    ) -> "FunctionCacher":
+    def cache_function(self, ttl: int = DEFAULT_TTL) -> "FunctionCacher":
         """Creates a FunctionCacher with all the needed configuration to cache a function
 
         Args:
@@ -206,9 +184,7 @@ class OurOwnCache(object):
         Returns:
             FunctionCacher: A FunctionCacher that can decorate any callable
         """
-        return FunctionCacher(
-            self, ttl, log_hits, LogMapping(log_map if log_map is not None else {})
-        )
+        return FunctionCacher(self, ttl)
 
 
 cache = OurOwnCache()
@@ -217,33 +193,14 @@ cache = OurOwnCache()
 
 
 class FunctionCacher(object):
-    def __init__(
-        self, cache_instance: OurOwnCache, ttl: int, log_hits: bool, log_map: LogMapping
-    ):
+    def __init__(self, cache_instance: OurOwnCache, ttl: int):
         self.cache_instance = cache_instance
         self.ttl = ttl
-        self.log_hits = log_hits
-        self.log_map = log_map
 
     def __call__(self, func) -> Callable:
         if asyncio.iscoroutinefunction(func):
             return self.cache_async_function(func)
         return self.cache_synchronous_function(func)
-
-    def _log_hits(self, func, args, kwargs, key) -> None:
-        args_to_log = [
-            args[idx] for idx in self.log_map.args_indexes_to_log if idx < len(args)
-        ]
-        kwargs_to_log = {}
-        for lkey in self.log_map.kwargs_keys_to_log:
-            if lkey in kwargs:
-                kwargs_to_log[lkey] = kwargs[lkey]
-        log.info(
-            "Returning cache hit",
-            extra=dict(
-                func=func, fn_args=args_to_log, fn_kwargs=kwargs_to_log, key=key
-            ),
-        )
 
     def cache_synchronous_function(self, func: Callable) -> Callable:
         @wraps(func)
@@ -251,8 +208,6 @@ class FunctionCacher(object):
             key = self.generate_key(func, args, kwargs)
             value = self.cache_instance.get_backend().get(key)
             if value is not NO_VALUE:
-                if self.log_hits:
-                    self._log_hits(func, args, kwargs, key)
                 return value
             result = func(*args, **kwargs)
             self.cache_instance.get_backend().set(key, self.ttl, result)
@@ -272,8 +227,6 @@ class FunctionCacher(object):
             key = self.generate_key(func, args, kwargs)
             value = self.cache_instance.get_backend().get(key)
             if value is not NO_VALUE:
-                if self.log_hits:
-                    self._log_hits(func, args, kwargs, key)
                 return value
             result = await func(*args, **kwargs)
             self.cache_instance.get_backend().set(key, self.ttl, result)
