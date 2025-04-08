@@ -78,7 +78,7 @@ percent_type = {
 
 custom_status_common_config = {
     "name_prefix": {"type": "string", "regex": r"^[\w\-\.]+$"},
-    # Note that "type" is a reserved word in Cerberus parser so use with caution as a 
+    # Note that "type" is a reserved word in Cerberus parser so use with caution as a
     # key in the schema. See workaround at places that call this schema.
     "type": {"type": "string", "allowed": ("project", "patch", "changes")},
     "target": percent_type_or_auto,

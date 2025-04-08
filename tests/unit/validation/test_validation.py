@@ -7,7 +7,9 @@ from shared.rollouts.features import BUNDLE_THRESHOLD_FLAG
 from shared.validation.exceptions import InvalidYamlException
 from shared.yaml.validation import (
     _calculate_error_location_and_message_from_error_dict,
-    do_actual_validation, validate_yaml)
+    do_actual_validation,
+    validate_yaml,
+)
 from tests.base import BaseTestCase
 
 
@@ -465,10 +467,10 @@ class TestUserYamlValidation(BaseTestCase):
                     "statuses": [{"name_prefix": "aaa", "type": "patch"}],
                 },
                 "individual_flags": [
-                    {"name": "cawcaw", 
-                     "paths": ["banana"], 
-                     "after_n_builds": 3, 
-                    # expected "statuses" to be a list but is an object instead & that 
+                    {"name": "cawcaw",
+                     "paths": ["banana"],
+                     "after_n_builds": 3,
+                    # expected "statuses" to be a list but is an object instead & that
                     # object contains a key named "type" (reserved word)
                      "statuses": {"type": "patch"}
                      }
@@ -478,7 +480,7 @@ class TestUserYamlValidation(BaseTestCase):
 
         with pytest.raises(Exception) as exp:
             validate_yaml(user_input)
-        
+
         err = exp.value
         assert err is not None, "validate_yaml didn't raise anything"
         assert err.error_location == [
@@ -1414,7 +1416,7 @@ def test_components_schema_error_for_key_named_type():
                     "component_id": "app_0",
                     "flag_regexes": ["fruit_.*", "^specific_flag$"],
                     "paths": ["src/.*"],
-                    # expected "statuses" to be a list but is an object instead & that 
+                    # expected "statuses" to be a list but is an object instead & that
                     # object contains a key named "type" (reserved word)
                     "statuses": {"type": "patch", "name_prefix": "co", "target": 90},
                 }
@@ -1453,7 +1455,7 @@ def test_components_schema_error_for_key_named_type():
             }
         ]
     }
-    
+
 
 
 def test_removed_code_behavior_config_valid():
