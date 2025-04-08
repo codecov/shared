@@ -817,44 +817,44 @@ class TestUserYamlValidation(BaseTestCase):
         result = validate_yaml(user_input)
         assert result == expected_result
 
-    # def test_yaml_with_flag_management_statuses_with_flags(self):
-    #     user_input = {
-    #         "flag_management": {
-    #             "default_rules": {
-    #                 "carryforward": True,
-    #                 "statuses": [
-    #                     {
-    #                         "type": "project",
-    #                         "name_prefix": "healthcare",
-    #                         "threshold": 80,
-    #                         "flags": ["hahaha"],
-    #                     }
-    #                 ],
-    #             },
-    #             "individual_flags": [
-    #                 {
-    #                     "name": "flag_banana",
-    #                     "statuses": [
-    #                         {
-    #                             "type": "patch",
-    #                             "name_prefix": "alliance",
-    #                             "flag_coverage_not_uploaded_behavior": "include",
-    #                         }
-    #                     ],
-    #                 }
-    #             ],
-    #         }
-    #     }
-    #     with pytest.raises(InvalidYamlException) as exc:
-    #         validate_yaml(user_input)
-    #         assert exc.value.error_location == [
-    #             "flag_management",
-    #             "default_rules",
-    #             "statuses",
-    #             0,
-    #             "flags",
-    #         ]
-    #         assert exc.value.error_message == "extra keys not allowed"
+    def test_yaml_with_flag_management_statuses_with_flags(self):
+        user_input = {
+            "flag_management": {
+                "default_rules": {
+                    "carryforward": True,
+                    "statuses": [
+                        {
+                            "type": "project",
+                            "name_prefix": "healthcare",
+                            "threshold": 80,
+                            "flags": ["hahaha"],
+                        }
+                    ],
+                },
+                "individual_flags": [
+                    {
+                        "name": "flag_banana",
+                        "statuses": [
+                            {
+                                "type": "patch",
+                                "name_prefix": "alliance",
+                                "flag_coverage_not_uploaded_behavior": "include",
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        with pytest.raises(InvalidYamlException) as exc:
+            validate_yaml(user_input)
+            assert exc.value.error_location == [
+                "flag_management",
+                "default_rules",
+                "statuses",
+                0,
+                "flags",
+            ]
+            assert exc.value.error_message == "extra keys not allowed"
 
     def test_github_checks(self):
         user_input = {"github_checks": True}

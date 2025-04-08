@@ -1,14 +1,18 @@
 from cerberus import Validator
 
-from shared.validation.helpers import (BranchSchemaField,
-                                       BundleSizeThresholdSchemaField,
-                                       ByteSizeSchemaField,
-                                       CoverageCommentRequirementSchemaField,
-                                       CoverageRangeSchemaField,
-                                       CustomFixPathSchemaField, Invalid,
-                                       LayoutStructure, PathPatternSchemaField,
-                                       PercentSchemaField,
-                                       UserGivenBranchRegex)
+from shared.validation.helpers import (
+    BranchSchemaField,
+    BundleSizeThresholdSchemaField,
+    ByteSizeSchemaField,
+    CoverageCommentRequirementSchemaField,
+    CoverageRangeSchemaField,
+    CustomFixPathSchemaField,
+    Invalid,
+    LayoutStructure,
+    PathPatternSchemaField,
+    PercentSchemaField,
+    UserGivenBranchRegex,
+)
 
 
 class CodecovYamlValidator(Validator):
