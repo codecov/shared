@@ -1424,7 +1424,6 @@ def test_components_schema_error_for_key_named_type():
 
     with pytest.raises(Exception) as exp:
         validate_yaml(user_input)
-    
     err = exp.value
     assert err is not None, "validate_yaml didn't raise anything"
     assert err.error_location == [
