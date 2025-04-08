@@ -563,7 +563,6 @@ schema = {
             "default_rules": {
                 "type": "dict",
                 "schema": component_rule_basic_properties,
-                # "return_error_when_dict": True,
             },
             "individual_components": {
                 "type": "list",
@@ -574,7 +573,6 @@ schema = {
                         "name": {"type": "string"},
                         "component_id": {"type": "string", "required": True},
                     },
-                    # "return_error_when_dict": True,
                 },
             },
         },

@@ -1330,6 +1330,46 @@ def test_components_schema_error():
             ]
         }
 
+def test_components_schema_error_for_key_named_type():
+    user_input = {
+        "component_management": {
+            "default_rules": {
+                "flag_regexes": ["global_flag"],
+            },
+            "individual_components": [
+                {
+                    "name": "fruits",
+                    "component_id": "app_0",
+                    "flag_regexes": ["fruit_.*", "^specific_flag$"],
+                    "paths": ["src/.*"],
+                    # expected "statuses" to be a list but is an object instead & that 
+                    # object contains a key named "type" (reserved word)
+                    "statuses": {"type": "patch", "name_prefix": "co", "target": 90},
+                }
+            ],
+        }
+    }
+    with pytest.raises(InvalidYamlException) as exp:
+        validate_yaml(user_input)
+        assert exp.error_location == [
+            "component_management",
+            "individual_components",
+            0,
+            "statuses",
+        ]
+        assert exp.error_message == "must be of list type"
+        assert exp.error_dict == {
+            "component_management": [
+                {
+                    "individual_components": [
+                        {
+                            0: [{"statuses": ["must be of list type"]}],
+                        }
+                    ]
+                }
+            ]
+        }
+
 
 def test_removed_code_behavior_config_valid():
     user_input = {
