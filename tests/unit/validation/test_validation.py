@@ -847,14 +847,36 @@ class TestUserYamlValidation(BaseTestCase):
         }
         with pytest.raises(InvalidYamlException) as exc:
             validate_yaml(user_input)
-            assert exc.value.error_location == [
-                "flag_management",
-                "default_rules",
-                "statuses",
-                0,
-                "flags",
+        assert exc.value.error_location == [
+            "flag_management",
+            "default_rules",
+            "statuses"
+        ]
+        assert exc.value.error_message == "no definitions validate"
+        assert exc.value.error_dict == {
+            "flag_management": [
+                {
+                    "default_rules": [
+                        {
+                            "statuses": [
+                                "no definitions validate",
+                                {
+                                    "anyof definition 0": [
+                                        {
+                                            0: [
+                                                {
+                                                    "flags": ["unknown field"]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
             ]
-            assert exc.value.error_message == "extra keys not allowed"
+        }
 
     def test_github_checks(self):
         user_input = {"github_checks": True}

@@ -128,7 +128,8 @@ flags_rule_basic_properties = {
                 "schema": {
                     "type": "dict",
                     "schema": flag_status_attributes,
-                },
+                    "allow_unknown": False
+                }
             },
         ]
     },
@@ -151,6 +152,7 @@ component_rule_basic_properties = {
                 "schema": {
                     "type": "dict",
                     "schema": component_status_attributes,
+                    "allow_unknown": False
                 },
             }
         ],
