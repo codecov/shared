@@ -467,13 +467,14 @@ class TestUserYamlValidation(BaseTestCase):
                     "statuses": [{"name_prefix": "aaa", "type": "patch"}],
                 },
                 "individual_flags": [
-                    {"name": "cawcaw",
-                     "paths": ["banana"],
-                     "after_n_builds": 3,
-                    # expected "statuses" to be a list but is an object instead & that
-                    # object contains a key named "type" (reserved word)
-                     "statuses": {"type": "patch"}
-                     }
+                    {
+                        "name": "cawcaw",
+                        "paths": ["banana"],
+                        "after_n_builds": 3,
+                        # expected "statuses" to be a list but is an object instead & that
+                        # object contains a key named "type" (reserved word)
+                        "statuses": {"type": "patch"},
+                    }
                 ],
             },
         }
@@ -499,9 +500,11 @@ class TestUserYamlValidation(BaseTestCase):
                                 {
                                     "statuses": [
                                         "no definitions validate",
-                                        {"anyof definition 0": [
-                                            "must be of list type"
-                                        ]}
+                                        {
+                                            "anyof definition 0": [
+                                                "must be of list type"
+                                            ]
+                                        },
                                     ]
                                 }
                             ],
@@ -852,7 +855,7 @@ class TestUserYamlValidation(BaseTestCase):
         assert exc.value.error_location == [
             "flag_management",
             "default_rules",
-            "statuses"
+            "statuses",
         ]
         assert exc.value.error_message == "no definitions validate"
         assert exc.value.error_dict == {
@@ -864,15 +867,9 @@ class TestUserYamlValidation(BaseTestCase):
                                 "no definitions validate",
                                 {
                                     "anyof definition 0": [
-                                        {
-                                            0: [
-                                                {
-                                                    "flags": ["unknown field"]
-                                                }
-                                            ]
-                                        }
+                                        {0: [{"flags": ["unknown field"]}]}
                                     ]
-                                }
+                                },
                             ]
                         }
                     ]
@@ -1404,6 +1401,7 @@ def test_components_schema_error():
             ]
         }
 
+
 def test_components_schema_error_for_key_named_type():
     user_input = {
         "component_management": {
@@ -1444,9 +1442,7 @@ def test_components_schema_error_for_key_named_type():
                             {
                                 "statuses": [
                                     "no definitions validate",
-                                    {"anyof definition 0": [
-                                        "must be of list type"
-                                    ]}
+                                    {"anyof definition 0": ["must be of list type"]},
                                 ]
                             }
                         ],
@@ -1455,7 +1451,6 @@ def test_components_schema_error_for_key_named_type():
             }
         ]
     }
-
 
 
 def test_removed_code_behavior_config_valid():
