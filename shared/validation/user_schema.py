@@ -125,7 +125,10 @@ flags_rule_basic_properties = {
         "anyof": [
             {
                 "type": "list",
-                "schema": {"type": "dict", "schema": flag_status_attributes},
+                "schema": {
+                    "type": "dict",
+                    "schema": flag_status_attributes,
+                },
             },
         ]
     },
@@ -146,11 +149,11 @@ component_rule_basic_properties = {
             {
                 "type": "list",
                 "schema": {
-                    "type": "dict", 
+                    "type": "dict",
                     "schema": component_status_attributes,
-                }
+                },
             }
-        ]
+        ],
     },
     "flag_regexes": {"type": "list", "schema": {"type": "string"}},
     "paths": path_list_structure,
