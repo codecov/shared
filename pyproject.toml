@@ -37,6 +37,7 @@ dependencies = [
     "zstandard>=0.23.0",
     "pydantic>=2.10.4",
     "amplitude-analytics>=1.1.4",
+    "msgpack>=1.1.0",
 ]
 
 [build-system]
