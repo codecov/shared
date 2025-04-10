@@ -592,6 +592,7 @@ schema = {
     "ai_pr_review": {
         "type": ["dict"],
         "schema": {
+            "auto_review": {"type": "boolean"},
             "enabled": {"type": "boolean"},
             "method": {"type": "string"},
             "label_name": {"type": "string"},
