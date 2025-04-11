@@ -1,6 +1,7 @@
-import json
 import logging
 from typing import Any, Callable, Optional
+
+import orjson
 
 from shared.api_archive.archive import ArchiveService
 from shared.storage.exceptions import FileNotInStorageError
@@ -83,14 +84,19 @@ class ArchiveField:
         self.archive_field_name = "_" + name + "_storage_path"
         self.cached_value_property_name = f"__{self.public_name}_cached_value"
 
-    def _get_value_from_archive(self, obj):
-        repository = obj.get_repository()
-        archive_service = ArchiveService(repository=repository)
+    def __get__(self, obj, objtype=None):
+        # check cached value first
+        value = getattr(obj, self.cached_value_property_name, None)
+        if value is not None:
+            return value
+
+        # then the archive field
         archive_field = getattr(obj, self.archive_field_name)
-        if archive_field:
+        if archive_field is not None:
+            archive_service = ArchiveService(repository=None)
             try:
                 file_str = archive_service.read_file(archive_field)
-                return self.rehydrate_fn(obj, json.loads(file_str))
+                value = self.rehydrate_fn(obj, orjson.loads(file_str))
             except FileNotInStorageError:
                 log.error(
                     "Archive enabled field not in storage",
@@ -100,25 +106,20 @@ class ArchiveField:
                         commit=obj.get_commitid(),
                     ),
                 )
-        else:
+
+        # then the DB field, possibly loaded on-demand
+        elif (db_field := getattr(obj, self.db_field_name)) is not None:
+            value = self.rehydrate_fn(obj, db_field)
+
+        # and then last, resort to the default value
+        if value is None:
             log.debug(
                 "Both db_field and archive_field are None",
-                extra=dict(
-                    object_id=obj.id,
-                    commit=obj.get_commitid(),
-                ),
+                extra=dict(object_id=obj.id, commit=obj.get_commitid()),
             )
-        return self.default_value_class()
+            value = self.default_value_class()
 
-    def __get__(self, obj, objtype=None):
-        cached_value = getattr(obj, self.cached_value_property_name, None)
-        if cached_value:
-            return cached_value
-        db_field = getattr(obj, self.db_field_name)
-        if db_field is not None:
-            value = self.rehydrate_fn(obj, db_field)
-        else:
-            value = self._get_value_from_archive(obj)
+        # lastly, we want to cache re retrieved value for future use
         setattr(obj, self.cached_value_property_name, value)
         return value
 
