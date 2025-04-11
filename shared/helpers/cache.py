@@ -1,11 +1,11 @@
 import asyncio
 import base64
 import hashlib
-import json
 import logging
 from functools import wraps
 from typing import Any, Callable, Hashable
 
+import msgpack
 from redis import Redis, RedisError
 
 log = logging.getLogger(__name__)
@@ -13,22 +13,6 @@ log = logging.getLogger(__name__)
 NO_VALUE = object()
 
 DEFAULT_TTL = 120
-
-
-def attempt_json_dumps(value: Any) -> str:
-    def assert_string_keys(d: dict[Any, Any]) -> None:
-        for k, v in d.items():
-            if not isinstance(k, str):
-                raise TypeError(
-                    f"Attempted to JSON-serialize a dictionary with non-string key: {k}"
-                )
-            if isinstance(v, dict):
-                assert_string_keys(v)
-
-    if isinstance(value, dict):
-        assert_string_keys(value)
-
-    return json.dumps(value)
 
 
 def make_hash_sha256(o: Any) -> str:
@@ -114,13 +98,13 @@ class RedisBackend(BaseBackend):
         if serialized_value is None:
             return NO_VALUE
         try:
-            return json.loads(serialized_value)
+            return msgpack.loads(serialized_value)
         except ValueError:
             return NO_VALUE
 
     def set(self, key: str, ttl: int, value: Any):
         try:
-            serialized_value = attempt_json_dumps(value)
+            serialized_value = msgpack.dumps(value)
             self.redis_connection.setex(key, ttl, serialized_value)
         except RedisError:
             log.warning("Unable to set cache on redis", exc_info=True)
