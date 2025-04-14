@@ -69,6 +69,16 @@ jobs:
           codecovcli -v upload-process --flag shared-docker-uploader --file tests/unit.coverage.xml --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
           codecovcli -v do-upload --report-type "test_results" --flag shared-docker-uploader --file tests/unit.junit.xml --token ${{ secrets.CODECOV_ORG_TOKEN }} --fail-on-error
 
+      - name: upload using action
+        uses: codecov/codecov-action@v5
+        if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
+        with:
+          verbose: true
+          flag: shared-docker-uploader-action
+          file: tests/unit.coverage.xml
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}
+          fail-on-error: true
+
       - name: upload using codecovcli staging
         if: ${{ !cancelled() && !github.event.pull_request.head.repo.fork && github.repository_owner == 'codecov' }}
         run: |
