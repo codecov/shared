@@ -1,9 +1,6 @@
 import dataclasses
 import logging
 
-import sentry_sdk
-
-from shared.config import get_config
 from shared.reports.diff import (
     CalculatedDiff,
     DiffSegment,
@@ -117,37 +114,11 @@ class FilteredReport(object):
     def _calculate_sessionids_to_include(self):
         if not self.flags:
             return set(self.report.sessions.keys())
-        flags_matcher = Matcher(self.flags)
-        old_style_sessions = set(
-            sid
-            for (sid, session) in self.report.sessions.items()
-            if flags_matcher.match_any(session.flags)
-        )
-        new_style_sessions = set(
+        return set(
             sid
             for (sid, session) in self.report.sessions.items()
             if _contain_any_of_the_flags(self.flags, session.flags)
         )
-        if old_style_sessions != new_style_sessions:
-            log.info(
-                "New result would differ from old result",
-                extra=dict(
-                    old_result=sorted(old_style_sessions),
-                    new_result=sorted(new_style_sessions),
-                    filter_flags=sorted(self.flags),
-                    report_flags=sorted(self.report.flags.keys()),
-                ),
-            )
-            if get_config("compatibility", "flag_pattern_matching", default=False):
-                sentry_sdk.capture_message(
-                    "Mismatch in flag_pattern_matching",
-                    extras={
-                        "filter_flags": sorted(self.flags),
-                        "report_flags": sorted(self.report.flags.keys()),
-                    },
-                )
-                return old_style_sessions
-        return new_style_sessions
 
     @property
     def session_ids_to_include(self):
