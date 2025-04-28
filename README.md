@@ -1,3 +1,7 @@
+# PHASED OUT
+
+This project has been moved to [the `libs/shared` folder in our `umbrella` repository](https://github.com/codecov/umbrella/tree/main/libs/shared). Please contribute there instead.
+
 # shared
 [![Shared CI](https://github.com/codecov/shared/actions/workflows/ci.yml/badge.svg)](https://github.com/codecov/shared/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/codecov/shared/graph/badge.svg?token=IL64imgbOu)](https://codecov.io/gh/codecov/shared)  
