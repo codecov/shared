@@ -142,7 +142,7 @@ class Command(MigrateCommand):
             super().handle(*args, **options)
             django_transaction.commit(database)
         except:
-            log.info("Codecov migrations failed.")
+            log.error("Codecov migrations failed.")
             raise
         else:
             log.info("Codecov migrations succeeded.")
