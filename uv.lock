@@ -80,6 +80,15 @@ wheels = [
 ]
 
 [[package]]
+name = "async-timeout"
+version = "5.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/ae/136395dfbfe00dfc94da3f3e136d0b13f394cba8f4841120e34226265780/async_timeout-5.0.1.tar.gz", hash = "sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3", size = 9274 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fe/ba/e2081de779ca30d473f21f5b30e0e737c438205440784c7dfc81efc2b029/async_timeout-5.0.1-py3-none-any.whl", hash = "sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c", size = 6233 },
+]
+
+[[package]]
 name = "boto3"
 version = "1.35.59"
 source = { registry = "https://pypi.org/simple" }
@@ -1263,11 +1272,14 @@ wheels = [
 
 [[package]]
 name = "redis"
-version = "5.2.0"
+version = "4.4.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/53/17/2f4a87ffa4cd93714cf52edfa3ea94589e9de65f71e9f99cbcfa84347a53/redis-5.2.0.tar.gz", hash = "sha256:0b1087665a771b1ff2e003aa5bdd354f15a70c9e25d5a7dbf9c722c16528a7b0", size = 4607878 }
+dependencies = [
+    { name = "async-timeout" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ff/af/f791fa76162d1e7655a34bca58876b43388209912c6a771756fc0c8f96da/redis-4.4.4.tar.gz", hash = "sha256:68226f7ede928db8302f29ab088a157f41061fa946b7ae865452b6d7838bbffb", size = 4549578 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/f5/ffa560ecc4bafbf25f7961c3d6f50d627a90186352e27e7d0ba5b1f6d87d/redis-5.2.0-py3-none-any.whl", hash = "sha256:ae174f2bb3b1bf2b09d54bf3e51fbc1469cf6c10aa03e21141f51969801a7897", size = 261428 },
+    { url = "https://files.pythonhosted.org/packages/5c/68/da435219cd46d416bf5b59d66dbe36ae4aaf05b91b7be6e8241a87d4c9b1/redis-4.4.4-py3-none-any.whl", hash = "sha256:da92a39fec86438d3f1e2a1db33c312985806954fe860120b582a8430e231d8f", size = 238045 },
 ]
 
 [[package]]
