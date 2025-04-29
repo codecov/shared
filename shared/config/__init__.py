@@ -38,7 +38,7 @@ LEGACY_DEFAULT_SITE_CONFIG = {
         "show_carryforward_flags": False,
     },
     "slack_app": True,
-    "github_checks": {"annotations": True},
+    "github_checks": {"annotations": False},
 }
 
 PATCH_CENTRIC_DEFAULT_TIME_START = datetime.fromisoformat(
