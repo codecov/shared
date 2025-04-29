@@ -13,7 +13,7 @@ interactions:
         user-agent:
           - Default
       method: GET
-      uri: https://github.com/login/oauth/access_token?client_id=Iv23liSqj8DAO20A3KLA&client_secret=a6a6397fffea369e54495c88ca469d988ea4ccd2&code=71367b9f258ca9a60c44
+      uri: https://github.com/login/oauth/access_token?client_id=testkey&client_secret=testsecret&code=71367b9f258ca9a60c44
     response:
       content: '{"access_token":"testtoken","expires_in":28800,"refresh_token":"testtoken","refresh_token_expires_in":15897600,"token_type":"bearer","scope":""}'
       headers:
@@ -166,7 +166,7 @@ interactions:
         x-github-api-version-selected:
           - "2022-11-28"
         x-oauth-client-id:
-          - Iv23liSqj8DAO20A3KLA
+          - testkey
       http_version: HTTP/1.1
       status_code: 200
 version: 1

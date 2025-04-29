@@ -175,8 +175,8 @@ class TestGithubTestCase(object):
 
         handler = Github(
             oauth_consumer_token=dict(
-                key="Iv23liSqj8DAO20A3KLA",
-                secret="a6a6397fffea369e54495c88ca469d988ea4ccd2",
+                key="testkey",
+                secret="testsecret",
             )
         )
         res = await handler.get_authenticated_user(code)
